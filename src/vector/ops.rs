@@ -492,3 +492,53 @@ mod iamax_tests {
         assert_eq!(xr, 1u);
     }
 }
+
+
+pub trait Rot {
+    fn rot(x: &mut BlasVector<Self>, y: &mut BlasVector<Self>, cos: &Self, sin: &Self);
+}
+
+macro_rules! rot_impl(
+    ($t: ty, $rot_fn: ident) => (
+        impl Rot for $t {
+            fn rot(x: &mut BlasVector<$t>, y: &mut BlasVector<$t>, cos: &$t, sin: &$t) {
+                unsafe {
+                    vector::ll::$rot_fn(cmp::min(x.len(), y.len()),
+                        x.as_mut_ptr().as_c_ptr(), x.inc(),
+                        y.as_mut_ptr().as_c_ptr(), y.inc(),
+                        cos.as_const(), sin.as_const());
+                }
+            }
+        }
+    );
+)
+
+rot_impl!(f32, cblas_srot)
+rot_impl!(f64, cblas_drot)
+
+#[cfg(test)]
+mod rot_tests {
+    extern crate num;
+    extern crate test;
+
+    use vector::ops::{
+        Scal,
+        Rot,
+    };
+
+    #[test]
+    fn real() {
+        let mut x = vec![1f32,-2f32,3f32,4f32];
+        let mut y = vec![3f32,7f32,-2f32,2f32];
+        let cos = 0f32;
+        let sin = 1f32;
+
+        let xr = y.clone();
+        let mut yr = x.clone();
+        Scal::scal(-1f32, &mut yr);
+
+        Rot::rot(&mut x, &mut y, &cos, &sin);
+        assert_eq!(x, xr);
+        assert_eq!(y, yr);
+    }
+}
