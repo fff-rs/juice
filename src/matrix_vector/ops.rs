@@ -388,3 +388,34 @@ macro_rules! spr_impl(
 
 spr_impl!(f32, cblas_sspr)
 spr_impl!(f64, cblas_dspr)
+
+pub trait Spr2 {
+    fn spr2(symmetry: Symmetry, alpha: Self, x: &BlasVector<Self>, y: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+pub trait Hpr2 {
+    fn hpr2(symmetry: Symmetry, alpha: Self, x: &BlasVector<Self>, y: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+macro_rules! spr2_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $spr2_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(symmetry: Symmetry, alpha: $t, x: &BlasVector<$t>, y: &BlasVector<$t>, a: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix_vector::ll::$spr2_fn(a.order(), symmetry,
+                        a.rows(),
+                        (&alpha).as_const(),
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        y.as_ptr().as_c_ptr(), y.inc(),
+                        a.as_mut_ptr().as_c_ptr());
+                }
+            }
+        }
+    );
+)
+
+spr2_impl!(Spr2, spr2, f32, cblas_sspr2)
+spr2_impl!(Spr2, spr2, f64, cblas_dspr2)
+
+spr2_impl!(Hpr2, hpr2, Complex32, cblas_chpr2)
+spr2_impl!(Hpr2, hpr2, Complex64, cblas_zhpr2)
