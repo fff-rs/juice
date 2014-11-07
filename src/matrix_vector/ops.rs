@@ -151,3 +151,34 @@ macro_rules! syr_impl(
 
 syr_impl!(f32, cblas_ssyr)
 syr_impl!(f64, cblas_dsyr)
+
+pub trait Syr2 {
+    fn syr2(symmetry: Symmetry, alpha: Self, x: &BlasVector<Self>, y: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+pub trait Her2 {
+    fn her2(symmetry: Symmetry, alpha: Self, x: &BlasVector<Self>, y: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+macro_rules! syr2_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $syr2_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(symmetry: Symmetry, alpha: $t, x: &BlasVector<$t>, y: &BlasVector<$t>, a: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix_vector::ll::$syr2_fn(a.order(), symmetry,
+                        a.rows(),
+                        (&alpha).as_const(),
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        y.as_ptr().as_c_ptr(), y.inc(),
+                        a.as_mut_ptr().as_c_ptr(), a.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+syr2_impl!(Syr2, syr2, f32, cblas_ssyr2)
+syr2_impl!(Syr2, syr2, f64, cblas_dsyr2)
+
+syr2_impl!(Her2, her2, Complex32, cblas_cher2)
+syr2_impl!(Her2, her2, Complex64, cblas_zher2)
