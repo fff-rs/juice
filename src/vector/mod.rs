@@ -3,3 +3,10 @@
 // license that can be found in the LICENSE file.
 
 pub mod ll;
+
+pub trait BlasVector<T> {
+    fn inc(&self) -> i32;
+    fn len(&self) -> i32;
+    fn as_ptr(&self) -> *const T;
+    fn as_mut_ptr(&mut self) -> *mut T;
+}
