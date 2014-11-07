@@ -5,7 +5,7 @@
 extern crate num;
 
 use self::num::complex::{Complex32, Complex64};
-use attribute::{Side, Symmetry};
+use attribute::{Diagonal, Side, Symmetry};
 use pointer::CPtr;
 use scalar::Scalar;
 use matrix;
@@ -74,3 +74,36 @@ symm_impl!(Symm, symm, Complex64, cblas_zsymm)
 
 symm_impl!(Hemm, hemm, Complex32, cblas_chemm)
 symm_impl!(Hemm, hemm, Complex64, cblas_zhemm)
+
+pub trait Trmm {
+    fn trmm(side: Side, symmetry: Symmetry, diag: Diagonal, alpha: Self, a: &BlasMatrix<Self>, b: &mut BlasMatrix<Self>);
+}
+
+pub trait Trsm {
+    fn trsm(side: Side, symmetry: Symmetry, diag: Diagonal, alpha: Self, a: &BlasMatrix<Self>, b: &mut BlasMatrix<Self>);
+}
+
+macro_rules! trmm_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $symm_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(side: Side, symmetry: Symmetry, diag: Diagonal, alpha: $t, a: &BlasMatrix<$t>, b: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix::ll::$symm_fn(a.order(),
+                        side, symmetry, a.transpose(), diag,
+                        b.rows(), b.cols(),
+                        (&alpha).as_const(),
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        b.as_mut_ptr().as_c_ptr(), b.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+trmm_impl!(Trmm, trmm, f32,       cblas_strmm)
+trmm_impl!(Trmm, trmm, f64,       cblas_dtrmm)
+trmm_impl!(Trmm, trmm, Complex32, cblas_ctrmm)
+trmm_impl!(Trmm, trmm, Complex64, cblas_ztrmm)
+
+trmm_impl!(Trsm, trsm, Complex32, cblas_ctrsm)
+trmm_impl!(Trsm, trsm, Complex64, cblas_ztrsm)
