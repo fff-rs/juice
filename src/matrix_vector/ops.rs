@@ -128,3 +128,26 @@ macro_rules! her_impl(
 
 her_impl!(f32, cblas_cher)
 her_impl!(f64, cblas_zher)
+
+pub trait Syr {
+    fn syr(symmetry: Symmetry, alpha: Self, x: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+macro_rules! syr_impl(
+    ($t: ty, $syr_fn: ident) => (
+        impl Syr for $t {
+            fn syr(symmetry: Symmetry, alpha: $t, x: &BlasVector<$t>, a: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix_vector::ll::$syr_fn(a.order(), symmetry,
+                        a.rows(),
+                        alpha,
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        a.as_mut_ptr().as_c_ptr(), a.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+syr_impl!(f32, cblas_ssyr)
+syr_impl!(f64, cblas_dsyr)
