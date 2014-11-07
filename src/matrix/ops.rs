@@ -158,3 +158,30 @@ macro_rules! her2k_impl(
 
 her2k_impl!(f32, cblas_cher2k)
 her2k_impl!(f64, cblas_zher2k)
+
+pub trait Syrk {
+    fn syrk(symmetry: Symmetry, alpha: Self, a: &BlasMatrix<Self>, beta: Self, c: &mut BlasMatrix<Self>);
+}
+
+macro_rules! syrk_impl(
+    ($t: ty, $symm_fn: ident) => (
+        impl Syrk for $t {
+            fn syrk(symmetry: Symmetry, alpha: $t, a: &BlasMatrix<$t>, beta: $t, c: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix::ll::$symm_fn(a.order(),
+                        symmetry, a.transpose(),
+                        a.rows(), a.cols(),
+                        (&alpha).as_const(),
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        (&beta).as_const(),
+                        c.as_mut_ptr().as_c_ptr(), c.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+syrk_impl!(f32,       cblas_ssyrk)
+syrk_impl!(f64,       cblas_dsyrk)
+syrk_impl!(Complex32, cblas_csyrk)
+syrk_impl!(Complex64, cblas_zsyrk)
