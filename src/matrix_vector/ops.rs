@@ -5,6 +5,7 @@
 extern crate num;
 
 use self::num::complex::{Complex32, Complex64};
+use attribute::Symmetry;
 use matrix::{BlasMatrix};
 use matrix_vector;
 use pointer::CPtr;
@@ -37,3 +38,37 @@ gemv_impl!(f32,       cblas_sgemv)
 gemv_impl!(f64,       cblas_dgemv)
 gemv_impl!(Complex32, cblas_cgemv)
 gemv_impl!(Complex64, cblas_zgemv)
+
+pub trait Symv {
+    fn symv(symmetry: Symmetry, alpha: Self, a: &BlasMatrix<Self>, x: &BlasVector<Self>, beta: Self, y: &mut BlasVector<Self>);
+}
+
+pub trait Hemv {
+    fn hemv(symmetry: Symmetry, alpha: Self, a: &BlasMatrix<Self>, x: &BlasVector<Self>, beta: Self, y: &mut BlasVector<Self>);
+}
+
+macro_rules! symv_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $symv_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(symmetry: Symmetry, alpha: $t, a: &BlasMatrix<$t>, x: &BlasVector<$t>, beta: $t, y: &mut BlasVector<$t>){
+                unsafe {
+                    matrix_vector::ll::$symv_fn(a.order(), symmetry,
+                        a.rows(),
+                        (&alpha).as_const(),
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        (&beta).as_const(),
+                        y.as_mut_ptr().as_c_ptr(), y.inc());
+                }
+            }
+        }
+    );
+)
+
+symv_impl!(Symv, symv, f32,       cblas_ssymv)
+symv_impl!(Symv, symv, f64,       cblas_dsymv)
+symv_impl!(Symv, symv, Complex32, cblas_csymv)
+symv_impl!(Symv, symv, Complex64, cblas_zsymv)
+
+symv_impl!(Hemv, hemv, Complex32, cblas_chemv)
+symv_impl!(Hemv, hemv, Complex64, cblas_zhemv)
