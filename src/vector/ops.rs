@@ -445,3 +445,50 @@ mod nrm2_tests {
         assert_eq!(xr, Complex { im: 0.0, re: 5f32 });
     }
 }
+
+pub trait Iamax {
+    fn iamax(x: &BlasVector<Self>) -> uint;
+}
+
+macro_rules! iamax_impl(
+    ($t: ty, $iamax: ident) => (
+        impl Iamax for $t {
+            fn iamax(x: &BlasVector<$t>) -> uint {
+                unsafe {
+                    vector::ll::$iamax(x.len(),
+                        x.as_ptr().as_c_ptr(), x.inc()) as uint
+                }
+            }
+        }
+    );
+)
+
+iamax_impl!(f32,       cblas_isamax)
+iamax_impl!(f64,       cblas_idamax)
+iamax_impl!(Complex32, cblas_icamax)
+iamax_impl!(Complex64, cblas_izamax)
+
+#[cfg(test)]
+mod iamax_tests {
+    extern crate num;
+    extern crate test;
+
+    use self::num::complex::Complex;
+    use vector::ops::Iamax;
+
+    #[test]
+    fn real() {
+        let x = vec![1f32,-2f32,3f32,4f32];
+
+        let xr = Iamax::iamax(&x);
+        assert_eq!(xr, 3u);
+    }
+
+    #[test]
+    fn complex() {
+        let x = vec![Complex::new(3f32, 4f32), Complex::new(3f32, 5f32)];
+
+        let xr = Iamax::iamax(&x);
+        assert_eq!(xr, 1u);
+    }
+}
