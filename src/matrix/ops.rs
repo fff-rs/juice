@@ -185,3 +185,31 @@ syrk_impl!(f32,       cblas_ssyrk)
 syrk_impl!(f64,       cblas_dsyrk)
 syrk_impl!(Complex32, cblas_csyrk)
 syrk_impl!(Complex64, cblas_zsyrk)
+
+pub trait Syr2k {
+    fn syr2k(symmetry: Symmetry, alpha: Self, a: &BlasMatrix<Self>, b: &BlasMatrix<Self>, beta: Self, c: &mut BlasMatrix<Self>);
+}
+
+macro_rules! syr2k_impl(
+    ($t: ty, $syr2k_fn: ident) => (
+        impl Syr2k for $t {
+            fn syr2k(symmetry: Symmetry, alpha: $t, a: &BlasMatrix<$t>, b: &BlasMatrix<$t>, beta: $t, c: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix::ll::$syr2k_fn(a.order(),
+                        symmetry, a.transpose(),
+                        a.rows(), a.cols(),
+                        (&alpha).as_const(),
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        b.as_ptr().as_c_ptr(), b.lead_dim(),
+                        (&beta).as_const(),
+                        c.as_mut_ptr().as_c_ptr(), c.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+syr2k_impl!(f32,       cblas_ssyr2k)
+syr2k_impl!(f64,       cblas_dsyr2k)
+syr2k_impl!(Complex32, cblas_csyr2k)
+syr2k_impl!(Complex64, cblas_zsyr2k)
