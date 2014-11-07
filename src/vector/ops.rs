@@ -169,3 +169,63 @@ mod scal_tests {
     }
 
 }
+
+pub trait Swap {
+    fn swap(x: &mut BlasVector<Self>, y: &mut BlasVector<Self>);
+}
+
+macro_rules! swap_impl(
+    ($t: ty, $swap_fn: ident) => (
+        impl Swap for $t {
+            fn swap(x: &mut BlasVector<$t>, y: &mut BlasVector<$t>) {
+                unsafe {
+                    let n = cmp::min(x.len(), y.len());
+
+                    vector::ll::$swap_fn(n,
+                        x.as_mut_ptr().as_c_ptr(), x.inc(),
+                        y.as_mut_ptr().as_c_ptr(), y.inc());
+                }
+            }
+        }
+    );
+)
+
+swap_impl!(f32,       cblas_sswap)
+swap_impl!(f64,       cblas_dswap)
+swap_impl!(Complex32, cblas_cswap)
+swap_impl!(Complex64, cblas_zswap)
+
+#[cfg(test)]
+mod swap_tests {
+    extern crate num;
+    extern crate test;
+
+    use self::num::complex::Complex;
+    use vector::ops::Swap;
+
+    #[test]
+    fn real() {
+        let mut x = vec![1f32,-2f32,3f32,4f32];
+        let mut y = vec![2f32,-3f32,4f32,1f32];
+        let xr = y.clone();
+        let yr = x.clone();
+
+
+        Swap::swap(&mut x, &mut y);
+        assert_eq!(x, xr);
+        assert_eq!(y, yr);
+    }
+
+    #[test]
+    fn complex() {
+        let mut x = vec![Complex::new(2f32, -3f32)];
+        let mut y = vec![Complex::new(-1f32, 4f32)];
+        let xr = y.clone();
+        let yr = x.clone();
+
+        Swap::swap(&mut x, &mut y);
+        assert_eq!(x, xr);
+        assert_eq!(y, yr);
+    }
+
+}
