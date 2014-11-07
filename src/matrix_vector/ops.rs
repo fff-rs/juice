@@ -342,3 +342,49 @@ tpmv_impl!(Tpsv, tpsv, f32,          cblas_stpsv)
 tpmv_impl!(Tpsv, tpsv, f64,          cblas_dtpsv)
 tpmv_impl!(Tpsv, tpsv, Complex32, cblas_ctpsv)
 tpmv_impl!(Tpsv, tpsv, Complex64, cblas_ztpsv)
+
+pub trait Hpr {
+    fn hpr(symmetry: Symmetry, alpha: Self, x: &BlasVector<Complex<Self>>, a: &mut BlasMatrix<Complex<Self>>);
+}
+
+macro_rules! hpr_impl(
+    ($t: ty, $hpr_fn: ident) => (
+        impl Hpr for $t {
+            fn hpr(symmetry: Symmetry, alpha: $t, x: &BlasVector<Complex<$t>>, a: &mut BlasMatrix<Complex<$t>>) {
+                unsafe {
+                    matrix_vector::ll::$hpr_fn(a.order(), symmetry,
+                        a.rows(),
+                        alpha,
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        a.as_mut_ptr().as_c_ptr());
+                }
+            }
+        }
+    );
+)
+
+hpr_impl!(f32, cblas_chpr)
+hpr_impl!(f64, cblas_zhpr)
+
+pub trait Spr {
+    fn spr(symmetry: Symmetry, alpha: Self, x: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+macro_rules! spr_impl(
+    ($t: ty, $spr_fn: ident) => (
+        impl Spr for $t {
+            fn spr(symmetry: Symmetry, alpha: $t, x: &BlasVector<$t>, a: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix_vector::ll::$spr_fn(a.order(), symmetry,
+                        a.rows(),
+                        alpha,
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        a.as_mut_ptr().as_c_ptr());
+                }
+            }
+        }
+    );
+)
+
+spr_impl!(f32, cblas_sspr)
+spr_impl!(f64, cblas_dspr)
