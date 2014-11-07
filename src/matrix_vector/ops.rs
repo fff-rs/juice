@@ -5,7 +5,7 @@
 extern crate num;
 
 use self::num::complex::{Complex, Complex32, Complex64};
-use attribute::Symmetry;
+use attribute::{Diagonal, Symmetry};
 use matrix::{BandMatrix, BlasMatrix};
 use matrix_vector;
 use pointer::CPtr;
@@ -242,3 +242,37 @@ sbmv_impl!(Sbmv, sbmv, f64,          cblas_dsbmv)
 
 sbmv_impl!(Hbmv, hbmv, Complex32, cblas_chbmv)
 sbmv_impl!(Hbmv, hbmv, Complex64, cblas_zhbmv)
+
+pub trait Tbmv {
+    fn tbmv(symmetry: Symmetry, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut BlasVector<Self>);
+}
+
+pub trait Tbsv {
+    fn tbsv(symmetry: Symmetry, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut BlasVector<Self>);
+}
+
+macro_rules! tbmv_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $tbmv_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(symmetry: Symmetry, diagonal: Diagonal, a: &BandMatrix<$t>, x: &mut BlasVector<$t>) {
+                unsafe {
+                    matrix_vector::ll::$tbmv_fn(a.order(), symmetry,
+                        a.transpose(), diagonal,
+                        a.rows(), a.sub_diagonals(),
+                        a.as_ptr().as_c_ptr(),
+                        x.as_mut_ptr().as_c_ptr(), x.inc());
+                }
+            }
+        }
+    );
+)
+
+tbmv_impl!(Tbmv, tbmv, f32,       cblas_stbmv)
+tbmv_impl!(Tbmv, tbmv, f64,       cblas_dtbmv)
+tbmv_impl!(Tbmv, tbmv, Complex32, cblas_ctbmv)
+tbmv_impl!(Tbmv, tbmv, Complex64, cblas_ztbmv)
+
+tbmv_impl!(Tbsv, tbsv, f32,       cblas_stbsv)
+tbmv_impl!(Tbsv, tbsv, f64,       cblas_dtbsv)
+tbmv_impl!(Tbsv, tbsv, Complex32, cblas_ctbsv)
+tbmv_impl!(Tbsv, tbsv, Complex64, cblas_ztbsv)
