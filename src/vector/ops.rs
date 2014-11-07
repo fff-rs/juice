@@ -350,3 +350,98 @@ mod dotc_tests {
         assert_eq!(xr, Complex::new(-9f32, 9f32));
     }
 }
+
+pub trait Asum {
+    fn asum(x: &BlasVector<Self>) -> Self;
+}
+
+pub trait Nrm2 {
+    fn nrm2(x: &BlasVector<Self>) -> Self;
+}
+
+macro_rules! real_norm_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(x: &BlasVector<$t>) -> $t {
+                unsafe {
+                    vector::ll::$norm_fn(x.len(),
+                        x.as_ptr().as_c_ptr(), x.inc())
+                }
+            }
+        }
+    );
+)
+
+macro_rules! complex_norm_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(x: &BlasVector<$t>) -> $t {
+                let re = unsafe {
+                    vector::ll::$norm_fn(x.len(),
+                        x.as_ptr().as_c_ptr(), x.inc())
+                };
+
+                Complex { im: 0.0, re: re }
+            }
+        }
+    );
+)
+
+real_norm_impl!(Asum, asum, f32, cblas_sasum)
+real_norm_impl!(Asum, asum, f64, cblas_dasum)
+complex_norm_impl!(Asum, asum, Complex32, cblas_scasum)
+complex_norm_impl!(Asum, asum, Complex64, cblas_dzasum)
+real_norm_impl!(Nrm2, nrm2, f32, cblas_snrm2)
+real_norm_impl!(Nrm2, nrm2, f64, cblas_dnrm2)
+complex_norm_impl!(Nrm2, nrm2, Complex32, cblas_scnrm2)
+complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_dznrm2)
+
+#[cfg(test)]
+mod asum_tests {
+    extern crate num;
+    extern crate test;
+
+    use self::num::complex::Complex;
+    use vector::ops::Asum;
+
+    #[test]
+    fn real() {
+        let x = vec![1f32,-2f32,3f32,4f32];
+
+        let r: f32 = Asum::asum(&x);
+        assert_eq!(r, 10f32);
+    }
+
+    #[test]
+    fn complex() {
+        let x = vec![Complex::new(3f32, 4f32)];
+
+        let r: Complex<f32> = Asum::asum(&x);
+        assert_eq!(r, Complex { im: 0.0, re: 7f32 });
+    }
+}
+
+#[cfg(test)]
+mod nrm2_tests {
+    extern crate num;
+    extern crate test;
+
+    use self::num::complex::Complex;
+    use vector::ops::Nrm2;
+
+    #[test]
+    fn real() {
+        let x = vec![3f32,-4f32];
+
+        let xr: f32 = Nrm2::nrm2(&x);
+        assert_eq!(xr, 5f32);
+    }
+
+    #[test]
+    fn complex() {
+        let x = vec![Complex::new(3f32, 4f32)];
+
+        let xr: Complex<f32> = Nrm2::nrm2(&x);
+        assert_eq!(xr, Complex { im: 0.0, re: 5f32 });
+    }
+}
