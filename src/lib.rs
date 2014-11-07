@@ -11,3 +11,5 @@ pub mod attribute;
 mod default;
 mod pointer;
 mod scalar;
+
+pub mod mat;
