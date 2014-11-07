@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file.
 #![feature(macro_rules)]
 
+pub mod mat;
+
 pub mod vector;
 pub mod matrix_vector;
 pub mod matrix;
@@ -11,5 +13,3 @@ pub mod attribute;
 mod default;
 mod pointer;
 mod scalar;
-
-pub mod mat;
