@@ -39,6 +39,29 @@ gemv_impl!(f64,       cblas_dgemv)
 gemv_impl!(Complex32, cblas_cgemv)
 gemv_impl!(Complex64, cblas_zgemv)
 
+#[cfg(test)]
+mod gemv_tests {
+    extern crate num;
+    extern crate test;
+
+    use mat::Mat;
+    use matrix_vector::ops::Gemv;
+
+    #[test]
+    fn real() {
+        let a = mat![
+            [1f32, -2f32],
+            [2f32, -4f32]
+        ];
+        let x = vec![2f32, 1f32];
+        let mut y = vec![1f32, 2f32];
+
+        Gemv::gemv(1f32, &a, &x, 0f32, &mut y);
+
+        assert_eq!(y, vec![0f32, 0f32]);
+    }
+}
+
 pub trait Symv {
     fn symv(symmetry: Symmetry, alpha: Self, a: &BlasMatrix<Self>, x: &BlasVector<Self>, beta: Self, y: &mut BlasVector<Self>);
 }
