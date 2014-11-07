@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 pub mod ll;
+pub mod ops;
 
 pub trait BlasVector<T> {
     fn inc(&self) -> i32;
