@@ -4,7 +4,7 @@
 
 extern crate num;
 
-use self::num::complex::{Complex32, Complex64};
+use self::num::complex::{Complex, Complex32, Complex64};
 use attribute::Symmetry;
 use matrix::{BlasMatrix};
 use matrix_vector;
@@ -105,3 +105,26 @@ ger_impl!(Ger, ger, Complex64, cblas_zgeru)
 
 ger_impl!(Gerc, gerc, Complex32, cblas_cgerc)
 ger_impl!(Gerc, gerc, Complex64, cblas_zgerc)
+
+pub trait Her {
+    fn her(symmetry: Symmetry, alpha: Self, x: &BlasVector<Complex<Self>>, a: &mut BlasMatrix<Complex<Self>>);
+}
+
+macro_rules! her_impl(
+    ($t: ty, $her_fn: ident) => (
+        impl Her for $t {
+            fn her(symmetry: Symmetry, alpha: $t, x: &BlasVector<Complex<$t>>, a: &mut BlasMatrix<Complex<$t>>) {
+                unsafe {
+                    matrix_vector::ll::$her_fn(a.order(), symmetry,
+                        a.rows(),
+                        alpha,
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        a.as_mut_ptr().as_c_ptr(), a.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+her_impl!(f32, cblas_cher)
+her_impl!(f64, cblas_zher)
