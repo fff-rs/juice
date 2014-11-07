@@ -72,3 +72,36 @@ symv_impl!(Symv, symv, Complex64, cblas_zsymv)
 
 symv_impl!(Hemv, hemv, Complex32, cblas_chemv)
 symv_impl!(Hemv, hemv, Complex64, cblas_zhemv)
+
+pub trait Ger {
+    fn ger(alpha: Self, x: &BlasVector<Self>, y: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+pub trait Gerc {
+    fn gerc(alpha: Self, x: &BlasVector<Self>, y: &BlasVector<Self>, a: &mut BlasMatrix<Self>);
+}
+
+macro_rules! ger_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $ger_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(alpha: $t, x: &BlasVector<$t>, y: &BlasVector<$t>, a: &mut BlasMatrix<$t>) {
+                unsafe {
+                    matrix_vector::ll::$ger_fn(a.order(),
+                        a.rows(), a.cols(),
+                        (&alpha).as_const(),
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        y.as_ptr().as_c_ptr(), y.inc(),
+                        a.as_mut_ptr().as_c_ptr(), a.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+ger_impl!(Ger, ger, f32,       cblas_sger)
+ger_impl!(Ger, ger, f64,       cblas_dger)
+ger_impl!(Ger, ger, Complex32, cblas_cgeru)
+ger_impl!(Ger, ger, Complex64, cblas_zgeru)
+
+ger_impl!(Gerc, gerc, Complex32, cblas_cgerc)
+ger_impl!(Gerc, gerc, Complex64, cblas_zgerc)
