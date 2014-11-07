@@ -4,7 +4,7 @@
 
 extern crate num;
 
-use self::num::complex::{Complex32, Complex64};
+use self::num::complex::{Complex, Complex32, Complex64};
 use attribute::{Diagonal, Side, Symmetry};
 use pointer::CPtr;
 use scalar::Scalar;
@@ -107,3 +107,28 @@ trmm_impl!(Trmm, trmm, Complex64, cblas_ztrmm)
 
 trmm_impl!(Trsm, trsm, Complex32, cblas_ctrsm)
 trmm_impl!(Trsm, trsm, Complex64, cblas_ztrsm)
+
+pub trait Herk {
+    fn herk(symmetry: Symmetry, alpha: Self, a: &BlasMatrix<Complex<Self>>, beta: Self, c: &mut BlasMatrix<Complex<Self>>);
+}
+
+macro_rules! herk_impl(
+    ($t: ty, $symm_fn: ident) => (
+        impl Herk for $t {
+            fn herk(symmetry: Symmetry, alpha: $t, a: &BlasMatrix<Complex<$t>>, beta: $t, c: &mut BlasMatrix<Complex<$t>>) {
+                unsafe {
+                    matrix::ll::$symm_fn(a.order(),
+                        symmetry, a.transpose(),
+                        a.rows(), a.cols(),
+                        alpha,
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        beta,
+                        c.as_mut_ptr().as_c_ptr(), c.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+herk_impl!(f32, cblas_cherk)
+herk_impl!(f64, cblas_zherk)
