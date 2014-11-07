@@ -3,3 +3,7 @@
 name = "blas"
 version = "0.0.1"
 authors = ["Michael Yang <mikkyangg@gmail.com>"]
+
+[dependencies.num]
+
+git = "https://github.com/rust-lang/num.git"
