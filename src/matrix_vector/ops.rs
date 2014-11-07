@@ -210,3 +210,35 @@ gbmv_impl!(f32,       cblas_sgbmv)
 gbmv_impl!(f64,       cblas_dgbmv)
 gbmv_impl!(Complex32, cblas_cgbmv)
 gbmv_impl!(Complex64, cblas_zgbmv)
+
+pub trait Sbmv {
+    fn sbmv(symmetry: Symmetry, alpha: Self, a: &BandMatrix<Self>, x: &BlasVector<Self>, beta: Self, y: &mut BlasVector<Self>);
+}
+
+pub trait Hbmv {
+    fn hbmv(symmetry: Symmetry, alpha: Self, a: &BandMatrix<Self>, x: &BlasVector<Self>, beta: Self, y: &mut BlasVector<Self>);
+}
+
+macro_rules! sbmv_impl(
+    ($trait_name: ident, $fn_name: ident, $t: ty, $sbmv_fn: ident) => (
+        impl $trait_name for $t {
+            fn $fn_name(symmetry: Symmetry, alpha: $t, a: &BandMatrix<$t>, x: &BlasVector<$t>, beta: $t, y: &mut BlasVector<$t>) {
+                unsafe {
+                    matrix_vector::ll::$sbmv_fn(a.order(), symmetry,
+                        a.rows(), a.sub_diagonals(),
+                        (&alpha).as_const(),
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        (&beta).as_const(),
+                        y.as_mut_ptr().as_c_ptr(), y.inc());
+                }
+            }
+        }
+    );
+)
+
+sbmv_impl!(Sbmv, sbmv, f32,          cblas_ssbmv)
+sbmv_impl!(Sbmv, sbmv, f64,          cblas_dsbmv)
+
+sbmv_impl!(Hbmv, hbmv, Complex32, cblas_chbmv)
+sbmv_impl!(Hbmv, hbmv, Complex64, cblas_zhbmv)
