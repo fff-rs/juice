@@ -10,6 +10,7 @@ use attribute::{
 };
 
 pub mod ll;
+pub mod ops;
 
 pub trait BlasMatrix<T> {
     fn lead_dim(&self) -> i32 { self.rows() }
