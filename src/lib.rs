@@ -9,3 +9,4 @@ pub mod matrix;
 
 pub mod attribute;
 mod pointer;
+mod scalar;
