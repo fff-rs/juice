@@ -90,3 +90,82 @@ mod axpy_tests {
     }
 
 }
+
+pub trait Scal {
+    fn scal(alpha: Self, x: &mut BlasVector<Self>);
+}
+
+macro_rules! scal_impl(
+    ($t: ty, $scal_fn: ident) => (
+        impl Scal for $t {
+            #[inline]
+            fn scal(alpha: $t, x: &mut BlasVector<$t>) {
+                unsafe {
+                    vector::ll::$scal_fn(x.len(),
+                        alpha,
+                        x.as_mut_ptr().as_c_ptr(), x.inc());
+                }
+            }
+        }
+    );
+
+    ($t: ty, $scal_fn: ident, $real_scal_fn: ident) => (
+        impl Scal for $t {
+            #[inline]
+            fn scal(alpha: $t, x: &mut BlasVector<$t>) {
+                if alpha.im == 0.0 {
+                    unsafe {
+                        vector::ll::$real_scal_fn(x.len(),
+                            alpha.re,
+                            x.as_mut_ptr().as_c_ptr(), x.inc());
+                    }
+                } else {
+                    unsafe {
+                        vector::ll::$scal_fn(x.len(),
+                            (&alpha).as_const(),
+                            x.as_mut_ptr().as_c_ptr(), x.inc());
+                    }
+                }
+            }
+        }
+    );
+)
+
+scal_impl!(f32, cblas_sscal)
+scal_impl!(f64, cblas_dscal)
+scal_impl!(Complex32, cblas_cscal, cblas_csscal)
+scal_impl!(Complex64, cblas_zscal, cblas_zdscal)
+
+#[cfg(test)]
+mod scal_tests {
+    extern crate num;
+    extern crate test;
+
+    use self::num::complex::Complex;
+    use vector::ops::Scal;
+
+    #[test]
+    fn real() {
+        let mut x = vec![1f32,-2f32,3f32,4f32];
+
+        Scal::scal(-2f32, &mut x);
+        assert_eq!(x, vec![-2f32, 4f32, -6f32, -8f32]);
+    }
+
+    #[test]
+    fn complex() {
+        let mut x = vec![Complex::new(1f32, 1f32), Complex::new(1f32, 3f32)];
+
+        Scal::scal(Complex::new(1f32, 1f32), &mut x);
+        assert_eq!(x, vec![Complex::new(0f32, 2f32), Complex::new(-2f32, 4f32)]);
+    }
+
+    #[test]
+    fn complex_real() {
+        let mut x = vec![Complex::new(1f32, 1f32), Complex::new(1f32, 3f32)];
+
+        Scal::scal(Complex::new(2f32, 0f32), &mut x);
+        assert_eq!(x, vec![Complex::new(2f32, 2f32), Complex::new(2f32, 6f32)]);
+    }
+
+}
