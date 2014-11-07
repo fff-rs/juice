@@ -6,6 +6,7 @@ extern crate num;
 
 use self::num::complex::{Complex, Complex32, Complex64};
 use std::cmp;
+use default::Default;
 use pointer::CPtr;
 use scalar::Scalar;
 use vector;
@@ -226,6 +227,80 @@ mod swap_tests {
         Swap::swap(&mut x, &mut y);
         assert_eq!(x, xr);
         assert_eq!(y, yr);
+    }
+
+}
+
+pub trait Dot {
+    fn dot(x: &BlasVector<Self>, y: &BlasVector<Self>) -> Self;
+}
+
+macro_rules! real_dot_impl(
+    ($t: ty, $dot_fn: ident) => (
+        impl Dot for $t {
+            fn dot(x: &BlasVector<$t>, y: &BlasVector<$t>) -> $t {
+                unsafe {
+                    let n = cmp::min(x.len(), y.len());
+
+                    vector::ll::$dot_fn(n,
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        y.as_ptr().as_c_ptr(), y.inc()) as $t
+                }
+            }
+        }
+    );
+)
+
+macro_rules! complex_dot_impl(
+    ($t: ty, $dot_fn: ident) => (
+        impl Dot for $t {
+            fn dot(x: &BlasVector<$t>, y: &BlasVector<$t>) -> $t {
+                let result: $t = Default::zero();
+
+                unsafe {
+                    let n = cmp::min(x.len(), y.len());
+
+                    vector::ll::$dot_fn(n,
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        y.as_ptr().as_c_ptr(), y.inc(),
+                        (&result).as_mut());
+                }
+
+                result
+            }
+        }
+    );
+)
+
+real_dot_impl!(f32, cblas_sdot)
+real_dot_impl!(f64, cblas_ddot)
+complex_dot_impl!(Complex32, cblas_cdotu_sub)
+complex_dot_impl!(Complex64, cblas_zdotu_sub)
+
+#[cfg(test)]
+mod dot_tests {
+    extern crate num;
+    extern crate test;
+
+    use self::num::complex::Complex;
+    use vector::ops::Dot;
+
+    #[test]
+    fn real() {
+        let x = vec![1f32,-2f32,3f32,4f32];
+        let y = vec![1f32,1f32,1f32,1f32];
+
+        let xr: f32 = Dot::dot(&x, &y);
+        assert_eq!(xr, 6f32);
+    }
+
+    #[test]
+    fn complex() {
+        let x = vec![Complex::new(1f32, 1f32), Complex::new(1f32, 3f32)];
+        let y = vec![Complex::new(1f32, 1f32), Complex::new(1f32, 1f32)];
+
+        let xr: Complex<f32> = Dot::dot(&x, &y);
+        assert_eq!(xr, Complex::new(-2f32, 6f32));
     }
 
 }
