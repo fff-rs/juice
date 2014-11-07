@@ -304,3 +304,49 @@ mod dot_tests {
     }
 
 }
+
+pub trait Dotc {
+    fn dotc(x: &BlasVector<Self>, y: &BlasVector<Self>) -> Self;
+}
+
+macro_rules! dot_impl(
+    ($t: ty, $dotc_fn: ident) => (
+        impl Dotc for $t {
+            fn dotc(x: &BlasVector<$t>, y: &BlasVector<$t>) -> $t {
+                let result: $t = Default::zero();
+
+                unsafe {
+                    let n = cmp::min(x.len(), y.len());
+
+                    vector::ll::$dotc_fn(n,
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        y.as_ptr().as_c_ptr(), y.inc(),
+                        (&result).as_mut());
+                }
+
+                result
+            }
+        }
+    );
+)
+
+dot_impl!(Complex32, cblas_cdotc_sub)
+dot_impl!(Complex64, cblas_zdotc_sub)
+
+#[cfg(test)]
+mod dotc_tests {
+    extern crate num;
+    extern crate test;
+
+    use self::num::complex::Complex;
+    use vector::ops::Dotc;
+
+    #[test]
+    fn complex_conj() {
+        let x = vec![Complex::new(1f32, -1f32), Complex::new(1f32, -3f32)];
+        let y = vec![Complex::new(1f32, 2f32), Complex::new(1f32, 3f32)];
+
+        let xr: Complex<f32> = Dotc::dotc(&x, &y);
+        assert_eq!(xr, Complex::new(-9f32, 9f32));
+    }
+}
