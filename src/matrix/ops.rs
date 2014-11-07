@@ -132,3 +132,29 @@ macro_rules! herk_impl(
 
 herk_impl!(f32, cblas_cherk)
 herk_impl!(f64, cblas_zherk)
+
+pub trait Her2k {
+    fn her2k(symmetry: Symmetry, alpha: Complex<Self>, a: &BlasMatrix<Complex<Self>>, b: &BlasMatrix<Complex<Self>>, beta: Self, c: &mut BlasMatrix<Complex<Self>>);
+}
+
+macro_rules! her2k_impl(
+    ($t: ty, $her2k_fn: ident) => (
+        impl Her2k for $t {
+            fn her2k(symmetry: Symmetry, alpha: Complex<$t>, a: &BlasMatrix<Complex<$t>>, b: &BlasMatrix<Complex<$t>>, beta: $t, c: &mut BlasMatrix<Complex<$t>>) {
+                unsafe {
+                    matrix::ll::$her2k_fn(a.order(),
+                        symmetry, a.transpose(),
+                        a.rows(), a.cols(),
+                        (&alpha).as_const(),
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        b.as_ptr().as_c_ptr(), b.lead_dim(),
+                        beta,
+                        c.as_mut_ptr().as_c_ptr(), c.lead_dim());
+                }
+            }
+        }
+    );
+)
+
+her2k_impl!(f32, cblas_cher2k)
+her2k_impl!(f64, cblas_zher2k)
