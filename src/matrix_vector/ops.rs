@@ -6,7 +6,7 @@ extern crate num;
 
 use self::num::complex::{Complex, Complex32, Complex64};
 use attribute::Symmetry;
-use matrix::{BlasMatrix};
+use matrix::{BandMatrix, BlasMatrix};
 use matrix_vector;
 use pointer::CPtr;
 use scalar::Scalar;
@@ -182,3 +182,31 @@ syr2_impl!(Syr2, syr2, f64, cblas_dsyr2)
 
 syr2_impl!(Her2, her2, Complex32, cblas_cher2)
 syr2_impl!(Her2, her2, Complex64, cblas_zher2)
+
+pub trait Gbmv {
+    fn gbmv(alpha: Self, a: &BandMatrix<Self>, x: &BlasVector<Self>, beta: Self, y: &mut BlasVector<Self>);
+}
+
+macro_rules! gbmv_impl(
+    ($t: ty, $gbmv_fn: ident) => (
+        impl Gbmv for $t {
+            fn gbmv(alpha: $t, a: &BandMatrix<$t>, x: &BlasVector<$t>, beta: $t, y: &mut BlasVector<$t>){
+                unsafe {
+                    matrix_vector::ll::$gbmv_fn(a.order(), a.transpose(),
+                        a.rows(), a.cols(),
+                        a.sub_diagonals(), a.sup_diagonals(),
+                        (&alpha).as_const(),
+                        a.as_ptr().as_c_ptr(), a.lead_dim(),
+                        x.as_ptr().as_c_ptr(), x.inc(),
+                        (&beta).as_const(),
+                        y.as_mut_ptr().as_c_ptr(), y.inc());
+                }
+            }
+        }
+    );
+)
+
+gbmv_impl!(f32,       cblas_sgbmv)
+gbmv_impl!(f64,       cblas_dgbmv)
+gbmv_impl!(Complex32, cblas_cgbmv)
+gbmv_impl!(Complex64, cblas_zgbmv)
