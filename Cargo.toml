@@ -1,0 +1,5 @@
+[package]
+
+name = "blas"
+version = "0.0.1"
+authors = ["Michael Yang <mikkyangg@gmail.com>"]
