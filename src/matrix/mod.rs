@@ -13,7 +13,7 @@ use mat::Mat;
 pub mod ll;
 pub mod ops;
 
-pub trait BlasMatrix<T> {
+pub trait Matrix<T> {
     fn lead_dim(&self) -> i32 { self.rows() }
     fn order(&self) -> Order { RowMajor }
     fn transpose(&self) -> Transpose { NoTrans }
@@ -23,12 +23,12 @@ pub trait BlasMatrix<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
-pub trait BandMatrix<T>: BlasMatrix<T> {
+pub trait BandMatrix<T>: Matrix<T> {
     fn sub_diagonals(&self) -> i32;
     fn sup_diagonals(&self) -> i32;
 }
 
-impl<T> BlasMatrix<T> for Mat<T> {
+impl<T> Matrix<T> for Mat<T> {
     #[inline]
     fn rows(&self) -> i32 {
         let l: Option<i32> = NumCast::from(self.rows());

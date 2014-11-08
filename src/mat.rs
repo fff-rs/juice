@@ -8,7 +8,7 @@ use std::mem;
 use std::ops::Index;
 use std::raw::Slice;
 use std::slice::AsSlice;
-use matrix::BlasMatrix;
+use matrix::Matrix;
 
 pub struct Mat<T> {
     rows: uint,
