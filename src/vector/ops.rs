@@ -10,16 +10,16 @@ use default::Default;
 use pointer::CPtr;
 use scalar::Scalar;
 use vector;
-use vector::BlasVector;
+use vector::Vector;
 
 pub trait Copy {
-    fn copy(x: &BlasVector<Self>, y: &mut BlasVector<Self>);
+    fn copy(x: &Vector<Self>, y: &mut Vector<Self>);
 }
 
 macro_rules! copy_impl(
     ($t: ty, $copy_fn: ident) => (
         impl Copy for $t {
-            fn copy(x: &BlasVector<$t>, y: &mut BlasVector<$t>) {
+            fn copy(x: &Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
                     vector::ll::$copy_fn(x.len(),
                         x.as_ptr().as_c_ptr(),  x.inc(),
@@ -36,13 +36,13 @@ copy_impl!(Complex32, cblas_ccopy)
 copy_impl!(Complex64, cblas_zcopy)
 
 pub trait Axpy {
-    fn axpy(alpha: Self, x: &BlasVector<Self>, y: &mut BlasVector<Self>);
+    fn axpy(alpha: Self, x: &Vector<Self>, y: &mut Vector<Self>);
 }
 
 macro_rules! axpy_impl(
     ($t: ty, $update_fn: ident) => (
         impl Axpy for $t {
-            fn axpy(alpha: $t, x: &BlasVector<$t>, y: &mut BlasVector<$t>) {
+            fn axpy(alpha: $t, x: &Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
@@ -93,14 +93,14 @@ mod axpy_tests {
 }
 
 pub trait Scal {
-    fn scal(alpha: Self, x: &mut BlasVector<Self>);
+    fn scal(alpha: Self, x: &mut Vector<Self>);
 }
 
 macro_rules! scal_impl(
     ($t: ty, $scal_fn: ident) => (
         impl Scal for $t {
             #[inline]
-            fn scal(alpha: $t, x: &mut BlasVector<$t>) {
+            fn scal(alpha: $t, x: &mut Vector<$t>) {
                 unsafe {
                     vector::ll::$scal_fn(x.len(),
                         alpha,
@@ -113,7 +113,7 @@ macro_rules! scal_impl(
     ($t: ty, $scal_fn: ident, $real_scal_fn: ident) => (
         impl Scal for $t {
             #[inline]
-            fn scal(alpha: $t, x: &mut BlasVector<$t>) {
+            fn scal(alpha: $t, x: &mut Vector<$t>) {
                 if alpha.im == 0.0 {
                     unsafe {
                         vector::ll::$real_scal_fn(x.len(),
@@ -172,13 +172,13 @@ mod scal_tests {
 }
 
 pub trait Swap {
-    fn swap(x: &mut BlasVector<Self>, y: &mut BlasVector<Self>);
+    fn swap(x: &mut Vector<Self>, y: &mut Vector<Self>);
 }
 
 macro_rules! swap_impl(
     ($t: ty, $swap_fn: ident) => (
         impl Swap for $t {
-            fn swap(x: &mut BlasVector<$t>, y: &mut BlasVector<$t>) {
+            fn swap(x: &mut Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
@@ -232,13 +232,13 @@ mod swap_tests {
 }
 
 pub trait Dot {
-    fn dot(x: &BlasVector<Self>, y: &BlasVector<Self>) -> Self;
+    fn dot(x: &Vector<Self>, y: &Vector<Self>) -> Self;
 }
 
 macro_rules! real_dot_impl(
     ($t: ty, $dot_fn: ident) => (
         impl Dot for $t {
-            fn dot(x: &BlasVector<$t>, y: &BlasVector<$t>) -> $t {
+            fn dot(x: &Vector<$t>, y: &Vector<$t>) -> $t {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
@@ -254,7 +254,7 @@ macro_rules! real_dot_impl(
 macro_rules! complex_dot_impl(
     ($t: ty, $dot_fn: ident) => (
         impl Dot for $t {
-            fn dot(x: &BlasVector<$t>, y: &BlasVector<$t>) -> $t {
+            fn dot(x: &Vector<$t>, y: &Vector<$t>) -> $t {
                 let result: $t = Default::zero();
 
                 unsafe {
@@ -306,13 +306,13 @@ mod dot_tests {
 }
 
 pub trait Dotc {
-    fn dotc(x: &BlasVector<Self>, y: &BlasVector<Self>) -> Self;
+    fn dotc(x: &Vector<Self>, y: &Vector<Self>) -> Self;
 }
 
 macro_rules! dot_impl(
     ($t: ty, $dotc_fn: ident) => (
         impl Dotc for $t {
-            fn dotc(x: &BlasVector<$t>, y: &BlasVector<$t>) -> $t {
+            fn dotc(x: &Vector<$t>, y: &Vector<$t>) -> $t {
                 let result: $t = Default::zero();
 
                 unsafe {
@@ -352,17 +352,17 @@ mod dotc_tests {
 }
 
 pub trait Asum {
-    fn asum(x: &BlasVector<Self>) -> Self;
+    fn asum(x: &Vector<Self>) -> Self;
 }
 
 pub trait Nrm2 {
-    fn nrm2(x: &BlasVector<Self>) -> Self;
+    fn nrm2(x: &Vector<Self>) -> Self;
 }
 
 macro_rules! real_norm_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(x: &BlasVector<$t>) -> $t {
+            fn $fn_name(x: &Vector<$t>) -> $t {
                 unsafe {
                     vector::ll::$norm_fn(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc())
@@ -375,7 +375,7 @@ macro_rules! real_norm_impl(
 macro_rules! complex_norm_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(x: &BlasVector<$t>) -> $t {
+            fn $fn_name(x: &Vector<$t>) -> $t {
                 let re = unsafe {
                     vector::ll::$norm_fn(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc())
@@ -447,13 +447,13 @@ mod nrm2_tests {
 }
 
 pub trait Iamax {
-    fn iamax(x: &BlasVector<Self>) -> uint;
+    fn iamax(x: &Vector<Self>) -> uint;
 }
 
 macro_rules! iamax_impl(
     ($t: ty, $iamax: ident) => (
         impl Iamax for $t {
-            fn iamax(x: &BlasVector<$t>) -> uint {
+            fn iamax(x: &Vector<$t>) -> uint {
                 unsafe {
                     vector::ll::$iamax(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc()) as uint
@@ -495,13 +495,13 @@ mod iamax_tests {
 
 
 pub trait Rot {
-    fn rot(x: &mut BlasVector<Self>, y: &mut BlasVector<Self>, cos: &Self, sin: &Self);
+    fn rot(x: &mut Vector<Self>, y: &mut Vector<Self>, cos: &Self, sin: &Self);
 }
 
 macro_rules! rot_impl(
     ($t: ty, $rot_fn: ident) => (
         impl Rot for $t {
-            fn rot(x: &mut BlasVector<$t>, y: &mut BlasVector<$t>, cos: &$t, sin: &$t) {
+            fn rot(x: &mut Vector<$t>, y: &mut Vector<$t>, cos: &$t, sin: &$t) {
                 unsafe {
                     vector::ll::$rot_fn(cmp::min(x.len(), y.len()),
                         x.as_mut_ptr().as_c_ptr(), x.inc(),

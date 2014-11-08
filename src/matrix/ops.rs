@@ -10,7 +10,7 @@ use pointer::CPtr;
 use scalar::Scalar;
 use matrix;
 use matrix::BlasMatrix;
-use vector::BlasVector;
+use vector::Vector;
 
 pub trait Gemm {
     fn gemm(alpha: Self, a: &BlasMatrix<Self>, b: &BlasMatrix<Self>, beta: Self, c: &mut BlasMatrix<Self>);
