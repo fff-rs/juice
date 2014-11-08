@@ -7,14 +7,14 @@ use std::raw::Repr;
 pub mod ll;
 pub mod ops;
 
-pub trait BlasVector<T> {
+pub trait Vector<T> {
     fn inc(&self) -> i32;
     fn len(&self) -> i32;
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
-impl<T> BlasVector<T> for Vec<T> {
+impl<T> Vector<T> for Vec<T> {
     #[inline]
     fn inc(&self) -> i32 { 1i32 }
 
@@ -34,7 +34,7 @@ impl<T> BlasVector<T> for Vec<T> {
     fn as_mut_ptr(&mut self) -> *mut T { self.as_mut_slice().as_mut_ptr() }
 }
 
-impl<'a, T> BlasVector<T> for &'a [T] {
+impl<'a, T> Vector<T> for &'a [T] {
     #[inline]
     fn inc(&self) -> i32 { 1i32 }
 
