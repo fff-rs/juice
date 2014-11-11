@@ -2,7 +2,10 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+extern crate num;
+
 use std::raw::Repr;
+use self::num::complex::{Complex32, Complex64};
 use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
 
 pub mod ll;
@@ -101,3 +104,15 @@ impl<'a, T> Vector<T> for &'a [T] {
     #[inline]
     fn as_mut_ptr(&mut self) -> *mut T { self.repr().data as *mut T }
 }
+
+macro_rules! operations_impl(
+    ($v: ident, $($t: ty), +) => (
+        $( impl VectorOperations<$t> for $v<$t> {} )+
+    )
+)
+
+operations_impl!(Vec, f32, f64, Complex32, Complex64)
+impl<'a> VectorOperations<f32> for &'a [f32] {}
+impl<'a> VectorOperations<f64> for &'a [f64] {}
+impl<'a> VectorOperations<Complex32> for &'a [Complex32] {}
+impl<'a> VectorOperations<Complex64> for &'a [Complex64] {}
