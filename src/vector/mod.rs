@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 use std::raw::Repr;
+use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
 
 pub mod ll;
 pub mod ops;
@@ -12,6 +13,53 @@ pub trait Vector<T> {
     fn len(&self) -> i32;
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;
+}
+
+pub trait VectorOperations<T>: Vector<T>
+    where T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax {
+
+    #[inline]
+    fn into_vec(&self) -> Vec<T> {
+        let n = self.len() as uint;
+
+        let mut x = Vec::with_capacity(n);
+        Copy::copy(self, &mut x);
+        unsafe { x.set_len(n); }
+
+        x
+    }
+
+    #[inline]
+    fn update(&mut self, alpha: &T, x: &Vector<T>) -> &mut Self {
+        Axpy::axpy(alpha, x, self);
+        self
+    }
+
+    #[inline]
+    fn scale(&mut self, alpha: &T) -> &mut Self {
+        Scal::scal(alpha, self);
+        self
+    }
+
+    #[inline]
+    fn dot(&self, x: &Vector<T>) -> T {
+        Dot::dot(self, x)
+    }
+
+    #[inline]
+    fn abs_sum(&self) -> T {
+        Asum::asum(self)
+    }
+
+    #[inline]
+    fn norm(&self) -> T {
+        Nrm2::nrm2(self)
+    }
+
+    #[inline]
+    fn max_index(&self) -> uint {
+        Iamax::iamax(self)
+    }
 }
 
 impl<T> Vector<T> for Vec<T> {
