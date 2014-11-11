@@ -13,20 +13,20 @@ use scalar::Scalar;
 use vector::Vector;
 
 pub trait Gemv {
-    fn gemv(alpha: Self, a: &Matrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn gemv(alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 macro_rules! gemv_impl(
     ($t: ty, $gemv_fn: ident) => (
         impl Gemv for $t {
-            fn gemv(alpha: $t, a: &Matrix<$t>, x: &Vector<$t>, beta: $t, y: &mut Vector<$t>){
+            fn gemv(alpha: &$t, a: &Matrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>){
                 unsafe {
                     matrix_vector::ll::$gemv_fn(a.order(), a.transpose(),
                         a.rows(), a.cols(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
                         x.as_ptr().as_c_ptr(), x.inc(),
-                        (&beta).as_const(),
+                        beta.as_const(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
@@ -56,31 +56,31 @@ mod gemv_tests {
         let x = vec![2f32, 1f32];
         let mut y = vec![1f32, 2f32];
 
-        Gemv::gemv(1f32, &a, &x, 0f32, &mut y);
+        Gemv::gemv(&1f32, &a, &x, &0f32, &mut y);
 
         assert_eq!(y, vec![0f32, 0f32]);
     }
 }
 
 pub trait Symv {
-    fn symv(symmetry: Symmetry, alpha: Self, a: &Matrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn symv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 pub trait Hemv {
-    fn hemv(symmetry: Symmetry, alpha: Self, a: &Matrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn hemv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 macro_rules! symv_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $symv_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(symmetry: Symmetry, alpha: $t, a: &Matrix<$t>, x: &Vector<$t>, beta: $t, y: &mut Vector<$t>){
+            fn $fn_name(symmetry: Symmetry, alpha: &$t, a: &Matrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>){
                 unsafe {
                     matrix_vector::ll::$symv_fn(a.order(), symmetry,
                         a.rows(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
                         x.as_ptr().as_c_ptr(), x.inc(),
-                        (&beta).as_const(),
+                        beta.as_const(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
@@ -97,21 +97,21 @@ symv_impl!(Hemv, hemv, Complex32, cblas_chemv)
 symv_impl!(Hemv, hemv, Complex64, cblas_zhemv)
 
 pub trait Ger {
-    fn ger(alpha: Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
+    fn ger(alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 pub trait Gerc {
-    fn gerc(alpha: Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
+    fn gerc(alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 macro_rules! ger_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $ger_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(alpha: $t, x: &Vector<$t>, y: &Vector<$t>, a: &mut Matrix<$t>) {
+            fn $fn_name(alpha: &$t, x: &Vector<$t>, y: &Vector<$t>, a: &mut Matrix<$t>) {
                 unsafe {
                     matrix_vector::ll::$ger_fn(a.order(),
                         a.rows(), a.cols(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_ptr().as_c_ptr(), y.inc(),
                         a.as_mut_ptr().as_c_ptr(), a.lead_dim());
@@ -130,17 +130,17 @@ ger_impl!(Gerc, gerc, Complex32, cblas_cgerc)
 ger_impl!(Gerc, gerc, Complex64, cblas_zgerc)
 
 pub trait Her {
-    fn her(symmetry: Symmetry, alpha: Self, x: &Vector<Complex<Self>>, a: &mut Matrix<Complex<Self>>);
+    fn her(symmetry: Symmetry, alpha: &Self, x: &Vector<Complex<Self>>, a: &mut Matrix<Complex<Self>>);
 }
 
 macro_rules! her_impl(
     ($t: ty, $her_fn: ident) => (
         impl Her for $t {
-            fn her(symmetry: Symmetry, alpha: $t, x: &Vector<Complex<$t>>, a: &mut Matrix<Complex<$t>>) {
+            fn her(symmetry: Symmetry, alpha: &$t, x: &Vector<Complex<$t>>, a: &mut Matrix<Complex<$t>>) {
                 unsafe {
                     matrix_vector::ll::$her_fn(a.order(), symmetry,
                         a.rows(),
-                        alpha,
+                        *alpha,
                         x.as_ptr().as_c_ptr(), x.inc(),
                         a.as_mut_ptr().as_c_ptr(), a.lead_dim());
                 }
@@ -153,17 +153,17 @@ her_impl!(f32, cblas_cher)
 her_impl!(f64, cblas_zher)
 
 pub trait Syr {
-    fn syr(symmetry: Symmetry, alpha: Self, x: &Vector<Self>, a: &mut Matrix<Self>);
+    fn syr(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 macro_rules! syr_impl(
     ($t: ty, $syr_fn: ident) => (
         impl Syr for $t {
-            fn syr(symmetry: Symmetry, alpha: $t, x: &Vector<$t>, a: &mut Matrix<$t>) {
+            fn syr(symmetry: Symmetry, alpha: &$t, x: &Vector<$t>, a: &mut Matrix<$t>) {
                 unsafe {
                     matrix_vector::ll::$syr_fn(a.order(), symmetry,
                         a.rows(),
-                        alpha,
+                        *alpha,
                         x.as_ptr().as_c_ptr(), x.inc(),
                         a.as_mut_ptr().as_c_ptr(), a.lead_dim());
                 }
@@ -176,21 +176,21 @@ syr_impl!(f32, cblas_ssyr)
 syr_impl!(f64, cblas_dsyr)
 
 pub trait Syr2 {
-    fn syr2(symmetry: Symmetry, alpha: Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
+    fn syr2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 pub trait Her2 {
-    fn her2(symmetry: Symmetry, alpha: Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
+    fn her2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 macro_rules! syr2_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $syr2_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(symmetry: Symmetry, alpha: $t, x: &Vector<$t>, y: &Vector<$t>, a: &mut Matrix<$t>) {
+            fn $fn_name(symmetry: Symmetry, alpha: &$t, x: &Vector<$t>, y: &Vector<$t>, a: &mut Matrix<$t>) {
                 unsafe {
                     matrix_vector::ll::$syr2_fn(a.order(), symmetry,
                         a.rows(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_ptr().as_c_ptr(), y.inc(),
                         a.as_mut_ptr().as_c_ptr(), a.lead_dim());
@@ -207,21 +207,21 @@ syr2_impl!(Her2, her2, Complex32, cblas_cher2)
 syr2_impl!(Her2, her2, Complex64, cblas_zher2)
 
 pub trait Gbmv {
-    fn gbmv(alpha: Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn gbmv(alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 macro_rules! gbmv_impl(
     ($t: ty, $gbmv_fn: ident) => (
         impl Gbmv for $t {
-            fn gbmv(alpha: $t, a: &BandMatrix<$t>, x: &Vector<$t>, beta: $t, y: &mut Vector<$t>){
+            fn gbmv(alpha: &$t, a: &BandMatrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>){
                 unsafe {
                     matrix_vector::ll::$gbmv_fn(a.order(), a.transpose(),
                         a.rows(), a.cols(),
                         a.sub_diagonals(), a.sup_diagonals(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
                         x.as_ptr().as_c_ptr(), x.inc(),
-                        (&beta).as_const(),
+                        beta.as_const(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
@@ -235,24 +235,24 @@ gbmv_impl!(Complex32, cblas_cgbmv)
 gbmv_impl!(Complex64, cblas_zgbmv)
 
 pub trait Sbmv {
-    fn sbmv(symmetry: Symmetry, alpha: Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn sbmv(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 pub trait Hbmv {
-    fn hbmv(symmetry: Symmetry, alpha: Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn hbmv(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 macro_rules! sbmv_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $sbmv_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(symmetry: Symmetry, alpha: $t, a: &BandMatrix<$t>, x: &Vector<$t>, beta: $t, y: &mut Vector<$t>) {
+            fn $fn_name(symmetry: Symmetry, alpha: &$t, a: &BandMatrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>) {
                 unsafe {
                     matrix_vector::ll::$sbmv_fn(a.order(), symmetry,
                         a.rows(), a.sub_diagonals(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
                         x.as_ptr().as_c_ptr(), x.inc(),
-                        (&beta).as_const(),
+                        beta.as_const(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
@@ -301,24 +301,24 @@ tbmv_impl!(Tbsv, tbsv, Complex32, cblas_ctbsv)
 tbmv_impl!(Tbsv, tbsv, Complex64, cblas_ztbsv)
 
 pub trait Spmv {
-    fn spmv(symmetry: Symmetry, alpha: Self, a: &Matrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn spmv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 pub trait Hpmv {
-    fn hpmv(symmetry: Symmetry, alpha: Self, a: &Matrix<Self>, x: &Vector<Self>, beta: Self, y: &mut Vector<Self>);
+    fn hpmv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 macro_rules! spmv_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $spmv_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(symmetry: Symmetry, alpha: $t, a: &Matrix<$t>, x: &Vector<$t>, beta: $t, y: &mut Vector<$t>) {
+            fn $fn_name(symmetry: Symmetry, alpha: &$t, a: &Matrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>) {
                 unsafe {
                     matrix_vector::ll::$spmv_fn(a.order(), symmetry,
                         a.rows(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         a.as_ptr().as_c_ptr(),
                         x.as_ptr().as_c_ptr(), x.inc(),
-                        (&beta).as_const(),
+                        beta.as_const(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
@@ -367,17 +367,17 @@ tpmv_impl!(Tpsv, tpsv, Complex32, cblas_ctpsv)
 tpmv_impl!(Tpsv, tpsv, Complex64, cblas_ztpsv)
 
 pub trait Hpr {
-    fn hpr(symmetry: Symmetry, alpha: Self, x: &Vector<Complex<Self>>, a: &mut Matrix<Complex<Self>>);
+    fn hpr(symmetry: Symmetry, alpha: &Self, x: &Vector<Complex<Self>>, a: &mut Matrix<Complex<Self>>);
 }
 
 macro_rules! hpr_impl(
     ($t: ty, $hpr_fn: ident) => (
         impl Hpr for $t {
-            fn hpr(symmetry: Symmetry, alpha: $t, x: &Vector<Complex<$t>>, a: &mut Matrix<Complex<$t>>) {
+            fn hpr(symmetry: Symmetry, alpha: &$t, x: &Vector<Complex<$t>>, a: &mut Matrix<Complex<$t>>) {
                 unsafe {
                     matrix_vector::ll::$hpr_fn(a.order(), symmetry,
                         a.rows(),
-                        alpha,
+                        *alpha,
                         x.as_ptr().as_c_ptr(), x.inc(),
                         a.as_mut_ptr().as_c_ptr());
                 }
@@ -390,17 +390,17 @@ hpr_impl!(f32, cblas_chpr)
 hpr_impl!(f64, cblas_zhpr)
 
 pub trait Spr {
-    fn spr(symmetry: Symmetry, alpha: Self, x: &Vector<Self>, a: &mut Matrix<Self>);
+    fn spr(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 macro_rules! spr_impl(
     ($t: ty, $spr_fn: ident) => (
         impl Spr for $t {
-            fn spr(symmetry: Symmetry, alpha: $t, x: &Vector<$t>, a: &mut Matrix<$t>) {
+            fn spr(symmetry: Symmetry, alpha: &$t, x: &Vector<$t>, a: &mut Matrix<$t>) {
                 unsafe {
                     matrix_vector::ll::$spr_fn(a.order(), symmetry,
                         a.rows(),
-                        alpha,
+                        *alpha,
                         x.as_ptr().as_c_ptr(), x.inc(),
                         a.as_mut_ptr().as_c_ptr());
                 }
@@ -413,21 +413,21 @@ spr_impl!(f32, cblas_sspr)
 spr_impl!(f64, cblas_dspr)
 
 pub trait Spr2 {
-    fn spr2(symmetry: Symmetry, alpha: Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
+    fn spr2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 pub trait Hpr2 {
-    fn hpr2(symmetry: Symmetry, alpha: Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
+    fn hpr2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
 macro_rules! spr2_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $spr2_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(symmetry: Symmetry, alpha: $t, x: &Vector<$t>, y: &Vector<$t>, a: &mut Matrix<$t>) {
+            fn $fn_name(symmetry: Symmetry, alpha: &$t, x: &Vector<$t>, y: &Vector<$t>, a: &mut Matrix<$t>) {
                 unsafe {
                     matrix_vector::ll::$spr2_fn(a.order(), symmetry,
                         a.rows(),
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_ptr().as_c_ptr(), y.inc(),
                         a.as_mut_ptr().as_c_ptr());
