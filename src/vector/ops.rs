@@ -36,18 +36,18 @@ copy_impl!(Complex32, cblas_ccopy)
 copy_impl!(Complex64, cblas_zcopy)
 
 pub trait Axpy {
-    fn axpy(alpha: Self, x: &Vector<Self>, y: &mut Vector<Self>);
+    fn axpy(alpha: &Self, x: &Vector<Self>, y: &mut Vector<Self>);
 }
 
 macro_rules! axpy_impl(
     ($t: ty, $update_fn: ident) => (
         impl Axpy for $t {
-            fn axpy(alpha: $t, x: &Vector<$t>, y: &mut Vector<$t>) {
+            fn axpy(alpha: &$t, x: &Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
                     vector::ll::$update_fn(n,
-                        (&alpha).as_const(),
+                        alpha.as_const(),
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
@@ -75,8 +75,8 @@ mod axpy_tests {
         let y = vec![3f32,7f32,-2f32,2f32];
         let mut z = y.clone();
 
-        Axpy::axpy(1f32, &y, &mut z);
-        Axpy::axpy(1f32, &x, &mut z);
+        Axpy::axpy(&1f32, &y, &mut z);
+        Axpy::axpy(&1f32, &x, &mut z);
         assert_eq!(z, vec![7f32,12f32,-1f32,8f32]);
     }
 
@@ -86,24 +86,24 @@ mod axpy_tests {
         let y = vec![Complex::new(3f32, -2f32), Complex::new(2f32, 3f32)];
         let mut z = x.clone();
 
-        Axpy::axpy(Complex::new(-1f32, 1f32), &y, &mut z);
+        Axpy::axpy(&Complex::new(-1f32, 1f32), &y, &mut z);
         assert_eq!(z, vec![Complex::new(0f32, 6f32), Complex::new(-4f32, 2f32)]);
     }
 
 }
 
 pub trait Scal {
-    fn scal(alpha: Self, x: &mut Vector<Self>);
+    fn scal(alpha: &Self, x: &mut Vector<Self>);
 }
 
 macro_rules! scal_impl(
     ($t: ty, $scal_fn: ident) => (
         impl Scal for $t {
             #[inline]
-            fn scal(alpha: $t, x: &mut Vector<$t>) {
+            fn scal(alpha: &$t, x: &mut Vector<$t>) {
                 unsafe {
                     vector::ll::$scal_fn(x.len(),
-                        alpha,
+                        *alpha,
                         x.as_mut_ptr().as_c_ptr(), x.inc());
                 }
             }
@@ -113,7 +113,7 @@ macro_rules! scal_impl(
     ($t: ty, $scal_fn: ident, $real_scal_fn: ident) => (
         impl Scal for $t {
             #[inline]
-            fn scal(alpha: $t, x: &mut Vector<$t>) {
+            fn scal(alpha: &$t, x: &mut Vector<$t>) {
                 if alpha.im == 0.0 {
                     unsafe {
                         vector::ll::$real_scal_fn(x.len(),
@@ -123,7 +123,7 @@ macro_rules! scal_impl(
                 } else {
                     unsafe {
                         vector::ll::$scal_fn(x.len(),
-                            (&alpha).as_const(),
+                            alpha.as_const(),
                             x.as_mut_ptr().as_c_ptr(), x.inc());
                     }
                 }
@@ -149,7 +149,7 @@ mod scal_tests {
     fn real() {
         let mut x = vec![1f32,-2f32,3f32,4f32];
 
-        Scal::scal(-2f32, &mut x);
+        Scal::scal(&-2f32, &mut x);
         assert_eq!(x, vec![-2f32, 4f32, -6f32, -8f32]);
     }
 
@@ -157,7 +157,7 @@ mod scal_tests {
     fn complex() {
         let mut x = vec![Complex::new(1f32, 1f32), Complex::new(1f32, 3f32)];
 
-        Scal::scal(Complex::new(1f32, 1f32), &mut x);
+        Scal::scal(&Complex::new(1f32, 1f32), &mut x);
         assert_eq!(x, vec![Complex::new(0f32, 2f32), Complex::new(-2f32, 4f32)]);
     }
 
@@ -165,7 +165,7 @@ mod scal_tests {
     fn complex_real() {
         let mut x = vec![Complex::new(1f32, 1f32), Complex::new(1f32, 3f32)];
 
-        Scal::scal(Complex::new(2f32, 0f32), &mut x);
+        Scal::scal(&Complex::new(2f32, 0f32), &mut x);
         assert_eq!(x, vec![Complex::new(2f32, 2f32), Complex::new(2f32, 6f32)]);
     }
 
@@ -535,7 +535,7 @@ mod rot_tests {
 
         let xr = y.clone();
         let mut yr = x.clone();
-        Scal::scal(-1f32, &mut yr);
+        Scal::scal(&-1f32, &mut yr);
 
         Rot::rot(&mut x, &mut y, &cos, &sin);
         assert_eq!(x, xr);
