@@ -66,6 +66,14 @@ impl<T> Mat<T> {
     }
 }
 
+impl<T: PartialEq> PartialEq for Mat<T> {
+    fn eq(&self, other: &Mat<T>) -> bool {
+        self.rows == other.rows &&
+        self.cols == other.cols &&
+        self.data == other.data
+    }
+}
+
 impl<T> Index<uint, [T]> for Mat<T> {
     fn index<'a>(&'a self, index: &uint) -> &'a [T] {
         unsafe {
