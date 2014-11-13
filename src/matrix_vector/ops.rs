@@ -129,6 +129,31 @@ ger_impl!(Ger, ger, Complex64, cblas_zgeru)
 ger_impl!(Gerc, gerc, Complex32, cblas_cgerc)
 ger_impl!(Gerc, gerc, Complex64, cblas_zgerc)
 
+#[cfg(test)]
+mod ger_tests {
+    extern crate num;
+    extern crate test;
+
+    use mat::Mat;
+    use matrix_vector::ops::Ger;
+
+    #[test]
+    fn real() {
+        let mut a = Mat::zero(3, 3);
+        let x = vec![2f32, 1f32, 4f32];
+        let y = vec![3f32, 6f32, -1f32];
+
+        Ger::ger(&1f32, &x, &y, &mut a);
+
+        let result = mat![
+            [6f32, 12f32, -2f32],
+            [3f32, 6f32, -1f32],
+            [12f32, 24f32, -4f32]
+        ];
+        assert_eq!(a, result);
+    }
+}
+
 pub trait Her {
     fn her(symmetry: Symmetry, alpha: &Self, x: &Vector<Complex<Self>>, a: &mut Matrix<Complex<Self>>);
 }
