@@ -24,6 +24,13 @@ impl<T> Mat<T> {
     }
 
     #[inline]
+    pub fn zero(rows: uint, cols: uint) -> Mat<T> {
+        let mut _data: Vec<T> = Vec::with_capacity(rows * cols);
+        unsafe { _data.set_len(rows * cols); }
+        Mat { rows: rows, cols: cols, data: _data}
+    }
+
+    #[inline]
     pub fn push(&mut self, value: T) {
         self.data.push(value);
     }
