@@ -40,6 +40,36 @@ gemm_impl!(f64,       cblas_dgemm)
 gemm_impl!(Complex32, cblas_cgemm)
 gemm_impl!(Complex64, cblas_zgemm)
 
+#[cfg(test)]
+mod gemm_tests {
+    extern crate num;
+    extern crate test;
+
+    use mat::Mat;
+    use matrix::ops::Gemm;
+
+    #[test]
+    fn real() {
+        let a = mat![
+            [1f32, 2f32],
+            [3f32, 4f32]
+        ];
+        let b = mat![
+            [-1f32, 3f32],
+            [1f32, 1f32]
+        ];
+
+        let mut c = Mat::zero(a.rows() as uint, b.cols() as uint);
+        Gemm::gemm(&1f32, &a, &b, &0f32, &mut c);
+
+        let result = mat![
+            [1f32, 5f32],
+            [1f32, 13f32]
+        ];
+        assert_eq!(c, result);
+    }
+}
+
 pub trait Symm {
     fn symm(side: Side, symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
