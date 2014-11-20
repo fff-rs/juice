@@ -305,8 +305,10 @@ mod dot_tests {
 
 }
 
-pub trait Dotc {
-    fn dotc(x: &Vector<Self>, y: &Vector<Self>) -> Self;
+pub trait Dotc: Dot {
+    fn dotc(x: &Vector<Self>, y: &Vector<Self>) -> Self {
+        Dot::dot(x, y)
+    }
 }
 
 macro_rules! dot_impl(
@@ -330,6 +332,8 @@ macro_rules! dot_impl(
     );
 )
 
+impl Dotc for f32 {}
+impl Dotc for f64 {}
 dot_impl!(Complex32, cblas_cdotc_sub)
 dot_impl!(Complex64, cblas_zdotc_sub)
 
