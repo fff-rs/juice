@@ -24,6 +24,11 @@ impl<T> Mat<T> {
     }
 
     #[inline]
+    pub fn from_vec(rows: uint, cols: uint, vec: Vec<T>) -> Mat<T> {
+        Mat { rows: rows, cols: cols, data: vec }
+    }
+
+    #[inline]
     pub fn zero(rows: uint, cols: uint) -> Mat<T> {
         let mut _data: Vec<T> = Vec::with_capacity(rows * cols);
         unsafe { _data.set_len(rows * cols); }
