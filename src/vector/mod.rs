@@ -4,6 +4,7 @@
 
 extern crate num;
 
+use std::num::NumCast;
 use std::raw::Repr;
 use self::num::complex::{Complex32, Complex64};
 use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
