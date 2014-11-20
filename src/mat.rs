@@ -9,6 +9,7 @@ use std::ops::Index;
 use std::raw::Slice;
 use std::slice::AsSlice;
 use matrix::Matrix;
+use vector::ops::Copy;
 
 pub struct Mat<T> {
     rows: uint,
@@ -68,6 +69,20 @@ impl<T> Mat<T> {
     #[inline]
     pub unsafe fn as_mut_slice<'a>(&'a mut self) -> &'a mut [T] {
         self.data.as_mut_slice()
+    }
+}
+
+impl<T: Copy> Clone for Mat<T> {
+    fn clone(&self) -> Mat<T> {
+        let n = self.rows * self.cols;
+
+        let mut x = Vec::with_capacity(n);
+        unsafe {
+            Copy::copy(&self.data, &mut x);
+            x.set_len(n);
+        }
+
+        Mat::from_vec(self.rows, self.cols, x)
     }
 }
 
