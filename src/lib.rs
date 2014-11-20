@@ -4,6 +4,7 @@
 #![feature(macro_rules)]
 
 pub use vector::Vector;
+pub use vector::VectorOperations;
 pub use matrix::Matrix;
 
 pub mod mat;
