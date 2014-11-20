@@ -3,6 +3,9 @@
 // license that can be found in the LICENSE file.
 #![feature(macro_rules)]
 
+pub use vector::Vector;
+pub use matrix::Matrix;
+
 pub mod mat;
 
 pub mod vector;
