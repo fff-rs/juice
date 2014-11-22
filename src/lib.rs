@@ -15,5 +15,5 @@ pub mod matrix;
 
 pub mod attribute;
 pub mod default;
-mod pointer;
+pub mod pointer;
 mod scalar;
