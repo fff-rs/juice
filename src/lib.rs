@@ -8,8 +8,6 @@ pub use vector::Vector;
 pub use vector::VectorOperations;
 pub use matrix::Matrix;
 
-pub mod mat;
-
 pub mod vector;
 pub mod matrix_vector;
 pub mod matrix;
