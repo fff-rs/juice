@@ -44,21 +44,17 @@ mod gemv_tests {
     extern crate num;
     extern crate test;
 
-    use mat::Mat;
     use matrix_vector::ops::Gemv;
 
     #[test]
     fn real() {
-        let a = mat![
-            [1f32, -2f32],
-            [2f32, -4f32]
-        ];
-        let x = vec![2f32, 1f32];
-        let mut y = vec![1f32, 2f32];
+        let a = (2, 2, vec![1.0, -2.0, 2.0, -4.0]);
+        let x = vec![2.0, 1.0];
+        let mut y = vec![1.0, 2.0];
 
         Gemv::gemv(&1f32, &a, &x, &0f32, &mut y);
 
-        assert_eq!(y, vec![0f32, 0f32]);
+        assert_eq!(y, vec![0.0, 0.0]);
     }
 }
 
@@ -128,8 +124,6 @@ ger_impl!(Ger, ger, f64,       cblas_dger)
 ger_impl!(Ger, ger, Complex32, cblas_cgeru)
 ger_impl!(Ger, ger, Complex64, cblas_zgeru)
 
-impl Gerc for f32 {}
-impl Gerc for f64 {}
 ger_impl!(Gerc, gerc, Complex32, cblas_cgerc)
 ger_impl!(Gerc, gerc, Complex64, cblas_zgerc)
 
@@ -138,23 +132,18 @@ mod ger_tests {
     extern crate num;
     extern crate test;
 
-    use mat::Mat;
     use matrix_vector::ops::Ger;
 
     #[test]
     fn real() {
-        let mut a = Mat::zero(3, 3);
-        let x = vec![2f32, 1f32, 4f32];
-        let y = vec![3f32, 6f32, -1f32];
+        let mut a = (3, 3, Vec::from_elem(9, 0.0));
+        let x = vec![2.0, 1.0, 4.0];
+        let y = vec![3.0, 6.0, -1.0];
 
         Ger::ger(&1f32, &x, &y, &mut a);
 
-        let result = mat![
-            [6f32, 12f32, -2f32],
-            [3f32, 6f32, -1f32],
-            [12f32, 24f32, -4f32]
-        ];
-        assert_eq!(a, result);
+        let result = vec![6.0, 12.0, -2.0, 3.0, 6.0, -1.0, 12.0, 24.0, -4.0];
+        assert_eq!(a.2, result);
     }
 }
 
