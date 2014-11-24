@@ -2,12 +2,10 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-use std::num::NumCast;
 use attribute::{
     Order,
     Transpose,
 };
-use mat::Mat;
 
 pub mod ll;
 pub mod ops;
@@ -27,32 +25,27 @@ pub trait BandMatrix<T>: Matrix<T> {
     fn sup_diagonals(&self) -> i32;
 }
 
-impl<T> Matrix<T> for Mat<T> {
-    #[inline]
-    fn rows(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(self.rows());
-        match l {
-            Some(l) => l,
-            None => panic!(),
+#[cfg(test)]
+mod test_struct {
+    use matrix::Matrix;
+
+    impl<T> Matrix<T> for (i32, i32, Vec<T>) {
+        fn rows(&self) -> i32 {
+            self.0
         }
-    }
 
-    #[inline]
-    fn cols(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(self.cols());
-        match l {
-            Some(l) => l,
-            None => panic!(),
+        fn cols(&self) -> i32 {
+            self.1
         }
-    }
 
-    #[inline]
-    fn as_ptr(&self) -> *const T {
-        unsafe { self.as_slice().as_ptr() }
-    }
+        #[inline]
+        fn as_ptr(&self) -> *const T {
+            self.2.as_slice().as_ptr()
+        }
 
-    #[inline]
-    fn as_mut_ptr(&mut self) -> *mut T {
-        unsafe { self.as_mut_slice().as_mut_ptr() }
+        #[inline]
+        fn as_mut_ptr(&mut self) -> *mut T {
+            self.2.as_mut_slice().as_mut_ptr()
+        }
     }
 }
