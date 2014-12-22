@@ -27,7 +27,7 @@ macro_rules! default_impl(
             fn zero() -> Complex<$t> { Complex::new($zv, $zv) }
         }
     }
-)
+);
 
-default_impl!(f32, 1f32, 0f32)
-default_impl!(f64, 1f64, 0f64)
+default_impl!(f32, 1f32, 0f32);
+default_impl!(f64, 1f64, 0f64);

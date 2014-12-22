@@ -110,9 +110,9 @@ macro_rules! operations_impl(
     ($v: ident, $($t: ty), +) => (
         $( impl VectorOperations<$t> for $v<$t> {} )+
     )
-)
+);
 
-operations_impl!(Vec, f32, f64, Complex32, Complex64)
+operations_impl!(Vec, f32, f64, Complex32, Complex64);
 impl<'a> VectorOperations<f32> for &'a [f32] {}
 impl<'a> VectorOperations<f64> for &'a [f64] {}
 impl<'a> VectorOperations<Complex32> for &'a [Complex32] {}

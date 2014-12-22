@@ -28,11 +28,11 @@ macro_rules! c_ptr_impl(
             }
         }
     );
-)
+);
 
-c_ptr_impl!(i32, c_int)
-c_ptr_impl!(i64, c_long)
-c_ptr_impl!(f32, c_float)
-c_ptr_impl!(f64, c_double)
-c_ptr_impl!(Complex32, c_void)
-c_ptr_impl!(Complex64, c_void)
+c_ptr_impl!(i32, c_int);
+c_ptr_impl!(i64, c_long);
+c_ptr_impl!(f32, c_float);
+c_ptr_impl!(f64, c_double);
+c_ptr_impl!(Complex32, c_void);
+c_ptr_impl!(Complex64, c_void);
