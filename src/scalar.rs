@@ -39,7 +39,7 @@ macro_rules! scalar_impl(
             }
         }
     );
-)
+);
 
-scalar_impl!(f32, c_float)
-scalar_impl!(f64, c_double)
+scalar_impl!(f32, c_float);
+scalar_impl!(f64, c_double);

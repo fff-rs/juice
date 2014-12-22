@@ -28,12 +28,12 @@ macro_rules! copy_impl(
             }
         }
     );
-)
+);
 
-copy_impl!(f32,       cblas_scopy)
-copy_impl!(f64,       cblas_dcopy)
-copy_impl!(Complex32, cblas_ccopy)
-copy_impl!(Complex64, cblas_zcopy)
+copy_impl!(f32,       cblas_scopy);
+copy_impl!(f64,       cblas_dcopy);
+copy_impl!(Complex32, cblas_ccopy);
+copy_impl!(Complex64, cblas_zcopy);
 
 pub trait Axpy {
     fn axpy(alpha: &Self, x: &Vector<Self>, y: &mut Vector<Self>);
@@ -54,12 +54,12 @@ macro_rules! axpy_impl(
             }
         }
     );
-)
+);
 
-axpy_impl!(f32,       cblas_saxpy)
-axpy_impl!(f64,       cblas_daxpy)
-axpy_impl!(Complex32, cblas_caxpy)
-axpy_impl!(Complex64, cblas_zaxpy)
+axpy_impl!(f32,       cblas_saxpy);
+axpy_impl!(f64,       cblas_daxpy);
+axpy_impl!(Complex32, cblas_caxpy);
+axpy_impl!(Complex64, cblas_zaxpy);
 
 #[cfg(test)]
 mod axpy_tests {
@@ -130,12 +130,12 @@ macro_rules! scal_impl(
             }
         }
     );
-)
+);
 
-scal_impl!(f32, cblas_sscal)
-scal_impl!(f64, cblas_dscal)
-scal_impl!(Complex32, cblas_cscal, cblas_csscal)
-scal_impl!(Complex64, cblas_zscal, cblas_zdscal)
+scal_impl!(f32, cblas_sscal);
+scal_impl!(f64, cblas_dscal);
+scal_impl!(Complex32, cblas_cscal, cblas_csscal);
+scal_impl!(Complex64, cblas_zscal, cblas_zdscal);
 
 #[cfg(test)]
 mod scal_tests {
@@ -189,12 +189,12 @@ macro_rules! swap_impl(
             }
         }
     );
-)
+);
 
-swap_impl!(f32,       cblas_sswap)
-swap_impl!(f64,       cblas_dswap)
-swap_impl!(Complex32, cblas_cswap)
-swap_impl!(Complex64, cblas_zswap)
+swap_impl!(f32,       cblas_sswap);
+swap_impl!(f64,       cblas_dswap);
+swap_impl!(Complex32, cblas_cswap);
+swap_impl!(Complex64, cblas_zswap);
 
 #[cfg(test)]
 mod swap_tests {
@@ -249,7 +249,7 @@ macro_rules! real_dot_impl(
             }
         }
     );
-)
+);
 
 macro_rules! complex_dot_impl(
     ($t: ty, $dot_fn: ident) => (
@@ -270,12 +270,12 @@ macro_rules! complex_dot_impl(
             }
         }
     );
-)
+);
 
-real_dot_impl!(f32, cblas_sdot)
-real_dot_impl!(f64, cblas_ddot)
-complex_dot_impl!(Complex32, cblas_cdotu_sub)
-complex_dot_impl!(Complex64, cblas_zdotu_sub)
+real_dot_impl!(f32, cblas_sdot);
+real_dot_impl!(f64, cblas_ddot);
+complex_dot_impl!(Complex32, cblas_cdotu_sub);
+complex_dot_impl!(Complex64, cblas_zdotu_sub);
 
 #[cfg(test)]
 mod dot_tests {
@@ -330,12 +330,12 @@ macro_rules! dot_impl(
             }
         }
     );
-)
+);
 
 impl Dotc for f32 {}
 impl Dotc for f64 {}
-dot_impl!(Complex32, cblas_cdotc_sub)
-dot_impl!(Complex64, cblas_zdotc_sub)
+dot_impl!(Complex32, cblas_cdotc_sub);
+dot_impl!(Complex64, cblas_zdotc_sub);
 
 #[cfg(test)]
 mod dotc_tests {
@@ -374,7 +374,7 @@ macro_rules! real_norm_impl(
             }
         }
     );
-)
+);
 
 macro_rules! complex_norm_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
@@ -389,16 +389,16 @@ macro_rules! complex_norm_impl(
             }
         }
     );
-)
+);
 
-real_norm_impl!(Asum, asum, f32, cblas_sasum)
-real_norm_impl!(Asum, asum, f64, cblas_dasum)
-complex_norm_impl!(Asum, asum, Complex32, cblas_scasum)
-complex_norm_impl!(Asum, asum, Complex64, cblas_dzasum)
-real_norm_impl!(Nrm2, nrm2, f32, cblas_snrm2)
-real_norm_impl!(Nrm2, nrm2, f64, cblas_dnrm2)
-complex_norm_impl!(Nrm2, nrm2, Complex32, cblas_scnrm2)
-complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_dznrm2)
+real_norm_impl!(Asum, asum, f32, cblas_sasum);
+real_norm_impl!(Asum, asum, f64, cblas_dasum);
+complex_norm_impl!(Asum, asum, Complex32, cblas_scasum);
+complex_norm_impl!(Asum, asum, Complex64, cblas_dzasum);
+real_norm_impl!(Nrm2, nrm2, f32, cblas_snrm2);
+real_norm_impl!(Nrm2, nrm2, f64, cblas_dnrm2);
+complex_norm_impl!(Nrm2, nrm2, Complex32, cblas_scnrm2);
+complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_dznrm2);
 
 #[cfg(test)]
 mod asum_tests {
@@ -465,12 +465,12 @@ macro_rules! iamax_impl(
             }
         }
     );
-)
+);
 
-iamax_impl!(f32,       cblas_isamax)
-iamax_impl!(f64,       cblas_idamax)
-iamax_impl!(Complex32, cblas_icamax)
-iamax_impl!(Complex64, cblas_izamax)
+iamax_impl!(f32,       cblas_isamax);
+iamax_impl!(f64,       cblas_idamax);
+iamax_impl!(Complex32, cblas_icamax);
+iamax_impl!(Complex64, cblas_izamax);
 
 #[cfg(test)]
 mod iamax_tests {
@@ -515,10 +515,10 @@ macro_rules! rot_impl(
             }
         }
     );
-)
+);
 
-rot_impl!(f32, cblas_srot)
-rot_impl!(f64, cblas_drot)
+rot_impl!(f32, cblas_srot);
+rot_impl!(f64, cblas_drot);
 
 #[cfg(test)]
 mod rot_tests {

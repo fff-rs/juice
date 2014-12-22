@@ -33,12 +33,12 @@ macro_rules! gemm_impl(
             }
         }
     );
-)
+);
 
-gemm_impl!(f32,       cblas_sgemm)
-gemm_impl!(f64,       cblas_dgemm)
-gemm_impl!(Complex32, cblas_cgemm)
-gemm_impl!(Complex64, cblas_zgemm)
+gemm_impl!(f32,       cblas_sgemm);
+gemm_impl!(f64,       cblas_dgemm);
+gemm_impl!(Complex32, cblas_cgemm);
+gemm_impl!(Complex64, cblas_zgemm);
 
 #[cfg(test)]
 mod gemm_tests {
@@ -84,15 +84,15 @@ macro_rules! symm_impl(
             }
         }
     );
-)
+);
 
-symm_impl!(Symm, symm, f32,       cblas_ssymm)
-symm_impl!(Symm, symm, f64,       cblas_dsymm)
-symm_impl!(Symm, symm, Complex32, cblas_csymm)
-symm_impl!(Symm, symm, Complex64, cblas_zsymm)
+symm_impl!(Symm, symm, f32,       cblas_ssymm);
+symm_impl!(Symm, symm, f64,       cblas_dsymm);
+symm_impl!(Symm, symm, Complex32, cblas_csymm);
+symm_impl!(Symm, symm, Complex64, cblas_zsymm);
 
-symm_impl!(Hemm, hemm, Complex32, cblas_chemm)
-symm_impl!(Hemm, hemm, Complex64, cblas_zhemm)
+symm_impl!(Hemm, hemm, Complex32, cblas_chemm);
+symm_impl!(Hemm, hemm, Complex64, cblas_zhemm);
 
 pub trait Trmm {
     fn trmm(side: Side, symmetry: Symmetry, diag: Diagonal, alpha: &Self, a: &Matrix<Self>, b: &mut Matrix<Self>);
@@ -117,15 +117,15 @@ macro_rules! trmm_impl(
             }
         }
     );
-)
+);
 
-trmm_impl!(Trmm, trmm, f32,       cblas_strmm)
-trmm_impl!(Trmm, trmm, f64,       cblas_dtrmm)
-trmm_impl!(Trmm, trmm, Complex32, cblas_ctrmm)
-trmm_impl!(Trmm, trmm, Complex64, cblas_ztrmm)
+trmm_impl!(Trmm, trmm, f32,       cblas_strmm);
+trmm_impl!(Trmm, trmm, f64,       cblas_dtrmm);
+trmm_impl!(Trmm, trmm, Complex32, cblas_ctrmm);
+trmm_impl!(Trmm, trmm, Complex64, cblas_ztrmm);
 
-trmm_impl!(Trsm, trsm, Complex32, cblas_ctrsm)
-trmm_impl!(Trsm, trsm, Complex64, cblas_ztrsm)
+trmm_impl!(Trsm, trsm, Complex32, cblas_ctrsm);
+trmm_impl!(Trsm, trsm, Complex64, cblas_ztrsm);
 
 pub trait Herk {
     fn herk(symmetry: Symmetry, alpha: &Self, a: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
@@ -147,10 +147,10 @@ macro_rules! herk_impl(
             }
         }
     );
-)
+);
 
-herk_impl!(f32, cblas_cherk)
-herk_impl!(f64, cblas_zherk)
+herk_impl!(f32, cblas_cherk);
+herk_impl!(f64, cblas_zherk);
 
 pub trait Her2k {
     fn her2k(symmetry: Symmetry, alpha: Complex<Self>, a: &Matrix<Complex<Self>>, b: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
@@ -173,10 +173,10 @@ macro_rules! her2k_impl(
             }
         }
     );
-)
+);
 
-her2k_impl!(f32, cblas_cher2k)
-her2k_impl!(f64, cblas_zher2k)
+her2k_impl!(f32, cblas_cher2k);
+her2k_impl!(f64, cblas_zher2k);
 
 pub trait Syrk {
     fn syrk(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
@@ -198,12 +198,12 @@ macro_rules! syrk_impl(
             }
         }
     );
-)
+);
 
-syrk_impl!(f32,       cblas_ssyrk)
-syrk_impl!(f64,       cblas_dsyrk)
-syrk_impl!(Complex32, cblas_csyrk)
-syrk_impl!(Complex64, cblas_zsyrk)
+syrk_impl!(f32,       cblas_ssyrk);
+syrk_impl!(f64,       cblas_dsyrk);
+syrk_impl!(Complex32, cblas_csyrk);
+syrk_impl!(Complex64, cblas_zsyrk);
 
 pub trait Syr2k {
     fn syr2k(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
@@ -226,9 +226,9 @@ macro_rules! syr2k_impl(
             }
         }
     );
-)
+);
 
-syr2k_impl!(f32,       cblas_ssyr2k)
-syr2k_impl!(f64,       cblas_dsyr2k)
-syr2k_impl!(Complex32, cblas_csyr2k)
-syr2k_impl!(Complex64, cblas_zsyr2k)
+syr2k_impl!(f32,       cblas_ssyr2k);
+syr2k_impl!(f64,       cblas_dsyr2k);
+syr2k_impl!(Complex32, cblas_csyr2k);
+syr2k_impl!(Complex64, cblas_zsyr2k);
