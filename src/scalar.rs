@@ -2,11 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-extern crate libc;
-extern crate num;
-
-use self::num::complex::Complex;
-use self::libc::{c_double, c_float, c_void};
+use num::complex::Complex;
+use libc::{c_double, c_float, c_void};
 
 pub trait Scalar<T, S> {
     fn as_const(self) -> T;

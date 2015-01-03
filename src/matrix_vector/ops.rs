@@ -2,9 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-extern crate num;
-
-use self::num::complex::{Complex, Complex32, Complex64};
+use num::complex::{Complex, Complex32, Complex64};
 use attribute::{Diagonal, Symmetry};
 use matrix::{BandMatrix, Matrix};
 use matrix_vector;
@@ -41,9 +39,6 @@ gemv_impl!(Complex64, cblas_zgemv);
 
 #[cfg(test)]
 mod gemv_tests {
-    extern crate num;
-    extern crate test;
-
     use matrix_vector::ops::Gemv;
 
     #[test]
@@ -129,9 +124,6 @@ ger_impl!(Gerc, gerc, Complex64, cblas_zgerc);
 
 #[cfg(test)]
 mod ger_tests {
-    extern crate num;
-    extern crate test;
-
     use matrix_vector::ops::Ger;
 
     #[test]
