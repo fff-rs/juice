@@ -2,11 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-extern crate libc;
-extern crate num;
-
-use self::num::complex::{Complex32, Complex64};
-use self::libc::{c_double, c_int, c_float, c_long, c_void};
+use num::complex::{Complex32, Complex64};
+use libc::{c_double, c_int, c_float, c_long, c_void};
 
 pub trait CPtr<T> {
     fn as_c_ptr(self) -> T;

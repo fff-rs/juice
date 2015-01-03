@@ -2,8 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-extern crate libc;
-use self::libc::{c_double, c_float, c_int, c_void};
+use libc::{c_double, c_float, c_int, c_void};
 
 use attribute::{
     Order,

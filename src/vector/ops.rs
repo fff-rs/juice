@@ -2,9 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-extern crate num;
-
-use self::num::complex::{Complex, Complex32, Complex64};
+use num::complex::{Complex, Complex32, Complex64};
 use std::cmp;
 use default::Default;
 use pointer::CPtr;
@@ -63,10 +61,7 @@ axpy_impl!(Complex64, cblas_zaxpy);
 
 #[cfg(test)]
 mod axpy_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Axpy;
 
     #[test]
@@ -139,10 +134,7 @@ scal_impl!(Complex64, cblas_zscal, cblas_zdscal);
 
 #[cfg(test)]
 mod scal_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Scal;
 
     #[test]
@@ -198,10 +190,7 @@ swap_impl!(Complex64, cblas_zswap);
 
 #[cfg(test)]
 mod swap_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Swap;
 
     #[test]
@@ -279,10 +268,7 @@ complex_dot_impl!(Complex64, cblas_zdotu_sub);
 
 #[cfg(test)]
 mod dot_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Dot;
 
     #[test]
@@ -339,10 +325,7 @@ dot_impl!(Complex64, cblas_zdotc_sub);
 
 #[cfg(test)]
 mod dotc_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Dotc;
 
     #[test]
@@ -402,10 +385,7 @@ complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_dznrm2);
 
 #[cfg(test)]
 mod asum_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Asum;
 
     #[test]
@@ -427,10 +407,7 @@ mod asum_tests {
 
 #[cfg(test)]
 mod nrm2_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Nrm2;
 
     #[test]
@@ -474,10 +451,7 @@ iamax_impl!(Complex64, cblas_izamax);
 
 #[cfg(test)]
 mod iamax_tests {
-    extern crate num;
-    extern crate test;
-
-    use self::num::complex::Complex;
+    use num::complex::Complex;
     use vector::ops::Iamax;
 
     #[test]
@@ -522,9 +496,6 @@ rot_impl!(f64, cblas_drot);
 
 #[cfg(test)]
 mod rot_tests {
-    extern crate num;
-    extern crate test;
-
     use vector::ops::{
         Scal,
         Rot,

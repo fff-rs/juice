@@ -2,9 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-extern crate num;
-
-use self::num::complex::{Complex, Complex32, Complex64};
+use num::complex::{Complex, Complex32, Complex64};
 use attribute::{Diagonal, Side, Symmetry};
 use pointer::CPtr;
 use scalar::Scalar;
@@ -42,9 +40,6 @@ gemm_impl!(Complex64, cblas_zgemm);
 
 #[cfg(test)]
 mod gemm_tests {
-    extern crate num;
-    extern crate test;
-
     use matrix::ops::Gemm;
 
     #[test]

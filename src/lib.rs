@@ -3,6 +3,9 @@
 // license that can be found in the LICENSE file.
 #![feature(macro_rules)]
 
+extern crate libc;
+extern crate num;
+
 pub use vector::Vector;
 pub use vector::VectorOperations;
 pub use matrix::Matrix;
