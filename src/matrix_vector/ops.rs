@@ -124,11 +124,12 @@ ger_impl!(Gerc, gerc, Complex64, cblas_zgerc);
 
 #[cfg(test)]
 mod ger_tests {
+    use std::iter::repeat;
     use matrix_vector::ops::Ger;
 
     #[test]
     fn real() {
-        let mut a = (3, 3, Vec::from_elem(9, 0.0));
+        let mut a = (3, 3, repeat(0.0).take(9).collect());
         let x = vec![2.0, 1.0, 4.0];
         let y = vec![3.0, 6.0, -1.0];
 
