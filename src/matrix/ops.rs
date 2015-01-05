@@ -7,6 +7,7 @@ use attribute::{Diagonal, Side, Symmetry};
 use pointer::CPtr;
 use scalar::Scalar;
 use matrix;
+use matrix::ll::*;
 use matrix::Matrix;
 use vector::Vector;
 
@@ -15,11 +16,11 @@ pub trait Gemm {
 }
 
 macro_rules! gemm_impl(
-    ($t: ty, $gemm_fn: ident) => (
+    ($t: ident, $gemm_fn: ident) => (
         impl Gemm for $t {
             fn gemm(alpha: &$t, a: &Matrix<$t>, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
                 unsafe {
-                    matrix::ll::$gemm_fn(a.order(),
+                    prefix!($t, gemm)(a.order(),
                         a.transpose(), b.transpose(),
                         a.rows(), b.cols(), a.cols(),
                         alpha.as_const(),
