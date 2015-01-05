@@ -7,57 +7,51 @@ use std::cmp;
 use default::Default;
 use pointer::CPtr;
 use scalar::Scalar;
-use vector;
+use vector::ll::*;
 use vector::Vector;
 
 pub trait Copy {
     fn copy(x: &Vector<Self>, y: &mut Vector<Self>);
 }
 
-macro_rules! copy_impl(
-    ($t: ty, $copy_fn: ident) => (
+macro_rules! copy_impl(($($t: ident), +) => (
+    $(
         impl Copy for $t {
             fn copy(x: &Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
-                    vector::ll::$copy_fn(x.len(),
+                    prefix!($t, copy)(x.len(),
                         x.as_ptr().as_c_ptr(),  x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
         }
-    );
-);
+    )+
+));
 
-copy_impl!(f32,       cblas_scopy);
-copy_impl!(f64,       cblas_dcopy);
-copy_impl!(Complex32, cblas_ccopy);
-copy_impl!(Complex64, cblas_zcopy);
+copy_impl!(f32, f64, Complex32, Complex64);
 
 pub trait Axpy {
     fn axpy(alpha: &Self, x: &Vector<Self>, y: &mut Vector<Self>);
 }
 
-macro_rules! axpy_impl(
-    ($t: ty, $update_fn: ident) => (
+macro_rules! axpy_impl(($($t: ident), +) => (
+    $(
         impl Axpy for $t {
             fn axpy(alpha: &$t, x: &Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
-                    vector::ll::$update_fn(n,
+                    prefix!($t, axpy)(n,
                         alpha.as_const(),
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
         }
-    );
-);
+    )+
+));
 
-axpy_impl!(f32,       cblas_saxpy);
-axpy_impl!(f64,       cblas_daxpy);
-axpy_impl!(Complex32, cblas_caxpy);
-axpy_impl!(Complex64, cblas_zaxpy);
+axpy_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod axpy_tests {
@@ -91,46 +85,22 @@ pub trait Scal {
     fn scal(alpha: &Self, x: &mut Vector<Self>);
 }
 
-macro_rules! scal_impl(
-    ($t: ty, $scal_fn: ident) => (
+macro_rules! scal_impl(($($t: ident), +) => (
+    $(
         impl Scal for $t {
             #[inline]
             fn scal(alpha: &$t, x: &mut Vector<$t>) {
                 unsafe {
-                    vector::ll::$scal_fn(x.len(),
-                        *alpha,
+                    prefix!($t, scal)(x.len(),
+                        alpha.as_const(),
                         x.as_mut_ptr().as_c_ptr(), x.inc());
                 }
             }
         }
-    );
+    )+
+));
 
-    ($t: ty, $scal_fn: ident, $real_scal_fn: ident) => (
-        impl Scal for $t {
-            #[inline]
-            fn scal(alpha: &$t, x: &mut Vector<$t>) {
-                if alpha.im == 0.0 {
-                    unsafe {
-                        vector::ll::$real_scal_fn(x.len(),
-                            alpha.re,
-                            x.as_mut_ptr().as_c_ptr(), x.inc());
-                    }
-                } else {
-                    unsafe {
-                        vector::ll::$scal_fn(x.len(),
-                            alpha.as_const(),
-                            x.as_mut_ptr().as_c_ptr(), x.inc());
-                    }
-                }
-            }
-        }
-    );
-);
-
-scal_impl!(f32, cblas_sscal);
-scal_impl!(f64, cblas_dscal);
-scal_impl!(Complex32, cblas_cscal, cblas_csscal);
-scal_impl!(Complex64, cblas_zscal, cblas_zdscal);
+scal_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod scal_tests {
@@ -167,26 +137,23 @@ pub trait Swap {
     fn swap(x: &mut Vector<Self>, y: &mut Vector<Self>);
 }
 
-macro_rules! swap_impl(
-    ($t: ty, $swap_fn: ident) => (
+macro_rules! swap_impl(($($t: ident), +) => (
+    $(
         impl Swap for $t {
             fn swap(x: &mut Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
-                    vector::ll::$swap_fn(n,
+                    prefix!($t, swap)(n,
                         x.as_mut_ptr().as_c_ptr(), x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
             }
         }
-    );
-);
+    )+
+));
 
-swap_impl!(f32,       cblas_sswap);
-swap_impl!(f64,       cblas_dswap);
-swap_impl!(Complex32, cblas_cswap);
-swap_impl!(Complex64, cblas_zswap);
+swap_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod swap_tests {
@@ -224,24 +191,24 @@ pub trait Dot {
     fn dot(x: &Vector<Self>, y: &Vector<Self>) -> Self;
 }
 
-macro_rules! real_dot_impl(
-    ($t: ty, $dot_fn: ident) => (
+macro_rules! real_dot_impl(($($t: ident), +) => (
+    $(
         impl Dot for $t {
             fn dot(x: &Vector<$t>, y: &Vector<$t>) -> $t {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
-                    vector::ll::$dot_fn(n,
+                    prefix!($t, dot)(n,
                         x.as_ptr().as_c_ptr(), x.inc(),
-                        y.as_ptr().as_c_ptr(), y.inc()) as $t
+                        y.as_ptr().as_c_ptr(), y.inc())
                 }
             }
         }
-    );
-);
+    )+
+));
 
-macro_rules! complex_dot_impl(
-    ($t: ty, $dot_fn: ident) => (
+macro_rules! complex_dot_impl(($($t: ident), +) => (
+    $(
         impl Dot for $t {
             fn dot(x: &Vector<$t>, y: &Vector<$t>) -> $t {
                 let result: $t = Default::zero();
@@ -249,7 +216,7 @@ macro_rules! complex_dot_impl(
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
-                    vector::ll::$dot_fn(n,
+                    prefix!($t, dotu_sub)(n,
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_ptr().as_c_ptr(), y.inc(),
                         (&result).as_mut());
@@ -258,13 +225,11 @@ macro_rules! complex_dot_impl(
                 result
             }
         }
-    );
-);
+    )+
+));
 
-real_dot_impl!(f32, cblas_sdot);
-real_dot_impl!(f64, cblas_ddot);
-complex_dot_impl!(Complex32, cblas_cdotu_sub);
-complex_dot_impl!(Complex64, cblas_zdotu_sub);
+real_dot_impl!(f32, f64);
+complex_dot_impl!(Complex32, Complex64);
 
 #[cfg(test)]
 mod dot_tests {
@@ -297,8 +262,8 @@ pub trait Dotc: Sized + Dot {
     }
 }
 
-macro_rules! dot_impl(
-    ($t: ty, $dotc_fn: ident) => (
+macro_rules! dotc_impl(($($t: ident), +) => (
+    $(
         impl Dotc for $t {
             fn dotc(x: &Vector<$t>, y: &Vector<$t>) -> $t {
                 let result: $t = Default::zero();
@@ -306,7 +271,7 @@ macro_rules! dot_impl(
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
-                    vector::ll::$dotc_fn(n,
+                    prefix!($t, dotc_sub)(n,
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_ptr().as_c_ptr(), y.inc(),
                         (&result).as_mut());
@@ -315,13 +280,12 @@ macro_rules! dot_impl(
                 result
             }
         }
-    );
-);
+    )+
+));
 
 impl Dotc for f32 {}
 impl Dotc for f64 {}
-dot_impl!(Complex32, cblas_cdotc_sub);
-dot_impl!(Complex64, cblas_zdotc_sub);
+dotc_impl!(Complex32, Complex64);
 
 #[cfg(test)]
 mod dotc_tests {
@@ -346,25 +310,25 @@ pub trait Nrm2 {
     fn nrm2(x: &Vector<Self>) -> Self;
 }
 
-macro_rules! real_norm_impl(
-    ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
+macro_rules! real_norm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
+    $(
         impl $trait_name for $t {
             fn $fn_name(x: &Vector<$t>) -> $t {
                 unsafe {
-                    vector::ll::$norm_fn(x.len(),
+                    prefix!($t, $fn_name)(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc())
                 }
             }
         }
-    );
-);
+    )+
+));
 
 macro_rules! complex_norm_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
         impl $trait_name for $t {
             fn $fn_name(x: &Vector<$t>) -> $t {
                 let re = unsafe {
-                    vector::ll::$norm_fn(x.len(),
+                    $norm_fn(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc())
                 };
 
@@ -374,12 +338,10 @@ macro_rules! complex_norm_impl(
     );
 );
 
-real_norm_impl!(Asum, asum, f32, cblas_sasum);
-real_norm_impl!(Asum, asum, f64, cblas_dasum);
+real_norm_impl!(Asum, asum, f32, f64);
+real_norm_impl!(Nrm2, nrm2, f32, f64);
 complex_norm_impl!(Asum, asum, Complex32, cblas_scasum);
 complex_norm_impl!(Asum, asum, Complex64, cblas_dzasum);
-real_norm_impl!(Nrm2, nrm2, f32, cblas_snrm2);
-real_norm_impl!(Nrm2, nrm2, f64, cblas_dnrm2);
 complex_norm_impl!(Nrm2, nrm2, Complex32, cblas_scnrm2);
 complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_dznrm2);
 
@@ -436,7 +398,7 @@ macro_rules! iamax_impl(
         impl Iamax for $t {
             fn iamax(x: &Vector<$t>) -> uint {
                 unsafe {
-                    vector::ll::$iamax(x.len(),
+                    $iamax(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc()) as uint
                 }
             }
@@ -476,23 +438,22 @@ pub trait Rot {
     fn rot(x: &mut Vector<Self>, y: &mut Vector<Self>, cos: &Self, sin: &Self);
 }
 
-macro_rules! rot_impl(
-    ($t: ty, $rot_fn: ident) => (
+macro_rules! rot_impl(($($t: ident), +) => (
+    $(
         impl Rot for $t {
             fn rot(x: &mut Vector<$t>, y: &mut Vector<$t>, cos: &$t, sin: &$t) {
                 unsafe {
-                    vector::ll::$rot_fn(cmp::min(x.len(), y.len()),
+                    prefix!($t, rot)(cmp::min(x.len(), y.len()),
                         x.as_mut_ptr().as_c_ptr(), x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc(),
                         cos.as_const(), sin.as_const());
                 }
             }
         }
-    );
-);
+    )+
+));
 
-rot_impl!(f32, cblas_srot);
-rot_impl!(f64, cblas_drot);
+rot_impl!(f32, f64);
 
 #[cfg(test)]
 mod rot_tests {
