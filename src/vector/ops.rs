@@ -291,7 +291,7 @@ mod dot_tests {
 
 }
 
-pub trait Dotc: Dot {
+pub trait Dotc: Sized + Dot {
     fn dotc(x: &Vector<Self>, y: &Vector<Self>) -> Self {
         Dot::dot(x, y)
     }
