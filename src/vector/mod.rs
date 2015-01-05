@@ -17,7 +17,7 @@ pub trait Vector<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
-pub trait VectorOperations<T>: Vector<T>
+pub trait VectorOperations<T>: Sized + Vector<T>
     where T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax {
 
     #[inline]
