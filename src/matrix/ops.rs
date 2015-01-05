@@ -40,6 +40,7 @@ gemm_impl!(Complex64, cblas_zgemm);
 
 #[cfg(test)]
 mod gemm_tests {
+    use std::iter::repeat;
     use matrix::ops::Gemm;
 
     #[test]
@@ -47,7 +48,7 @@ mod gemm_tests {
         let a = (2, 2, vec![1.0, 2.0, 3.0, 4.0]);
         let b = (2, 2, vec![-1.0, 3.0, 1.0, 1.0]);
 
-        let mut c = (2, 2, Vec::from_elem(4, 0.0));
+        let mut c = (2, 2, repeat(0.0).take(4).collect());
         Gemm::gemm(&1f32, &a, &b, &0f32, &mut c);
 
         assert_eq!(c.2, vec![1.0, 5.0, 1.0, 13.0]);
