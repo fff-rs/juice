@@ -17,6 +17,8 @@ functions: `Vector` for types that implement vector-like characteristics and
 `Matrix` for types taht implement matrix-like characteristics. The `Vector`
 trait is already implemented by `Vec` and `[]` types.
 
+[Documentation](http://mikkyang.github.io/rust-blas/doc/rblas/index.html)
+
 ## Installation
 
 Add this to your `Cargo.toml`:
