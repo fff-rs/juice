@@ -9,6 +9,9 @@ extern crate num;
 pub use vector::Vector;
 pub use vector::VectorOperations;
 pub use matrix::Matrix;
+pub use vector::ops::*;
+pub use matrix_vector::ops::*;
+pub use matrix::ops::*;
 
 #[macro_use]
 mod prefix;
