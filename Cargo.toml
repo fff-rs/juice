@@ -3,6 +3,13 @@
 name = "rblas"
 version = "0.0.1"
 authors = ["Michael Yang <mikkyangg@gmail.com>"]
+description = "BLAS bindings and wrappers"
+documentation = "http://mikkyang.github.io/rust-blas/doc/rblas/index.html"
+homepage = "http://github.com/mikkyang/rust-blas"
+repository = "http://github.com/mikkyang/rust-blas"
+readme = "README.md"
+keywords = ["BLAS"]
+license = "MIT"
 
 [dependencies]
 num = "*"
