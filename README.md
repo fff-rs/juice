@@ -34,6 +34,10 @@ extern crate rblas;
 ## Example
 
 ```rust
+extern crate rblas;
+
+use rblas::Dot;
+
 fn main() {
     let x = vec![1.0f32, -2.0, 3.0, 4.0];
     let y = vec![1.0f32, 1.0, 1.0, 1.0];
