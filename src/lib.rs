@@ -15,12 +15,15 @@ pub use matrix::ops::*;
 
 #[macro_use]
 mod prefix;
-
-pub mod vector;
-pub mod matrix_vector;
-pub mod matrix;
-
-pub mod attribute;
-pub mod default;
-pub mod pointer;
+mod default;
+mod pointer;
 mod scalar;
+
+#[stable]
+pub mod attribute;
+#[unstable]
+pub mod vector;
+#[unstable]
+pub mod matrix_vector;
+#[unstable]
+pub mod matrix;

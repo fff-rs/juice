@@ -7,6 +7,7 @@ use std::raw::Repr;
 use num::complex::{Complex32, Complex64};
 use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
 
+#[stable]
 pub mod ll;
 pub mod ops;
 
@@ -17,6 +18,7 @@ pub trait Vector<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
+#[experimental]
 pub trait VectorOperations<T>: Sized + Vector<T>
     where T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax {
 
