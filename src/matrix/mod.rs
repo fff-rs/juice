@@ -7,6 +7,7 @@ use attribute::{
     Transpose,
 };
 
+#[stable]
 pub mod ll;
 pub mod ops;
 
