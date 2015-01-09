@@ -24,8 +24,8 @@ trait is already implemented by `Vec` and `[]` types.
 Add this to your `Cargo.toml`:
 
 ```toml
-[dependencies.rblas]
-git = "https://github.com/mikkyang/rust-blas.git"
+[dependencies]
+rblas = "0.0.1"
 ```
 
 and this to your crate root:
