@@ -18,13 +18,13 @@ pub trait Vector<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
-#[experimental]
+#[unstable]
 pub trait VectorOperations<T>: Sized + Vector<T>
     where T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax {
 
     #[inline]
     fn into_vec(&self) -> Vec<T> {
-        let n = self.len() as uint;
+        let n = self.len() as usize;
 
         let mut x = Vec::with_capacity(n);
         Copy::copy(self, &mut x);
@@ -61,7 +61,7 @@ pub trait VectorOperations<T>: Sized + Vector<T>
     }
 
     #[inline]
-    fn max_index(&self) -> uint {
+    fn max_index(&self) -> usize {
         Iamax::iamax(self)
     }
 }
@@ -72,7 +72,7 @@ impl<T> Vector<T> for Vec<T> {
 
     #[inline]
     fn len(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(self.len());
+        let l: Option<i32> = NumCast::from(Vec::len(self));
         match l {
             Some(l) => l,
             None => panic!(),
@@ -92,7 +92,7 @@ impl<'a, T> Vector<T> for &'a [T] {
 
     #[inline]
     fn len(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(self.len());
+        let l: Option<i32> = NumCast::from(SliceExt::len(*self));
         match l {
             Some(l) => l,
             None => panic!(),

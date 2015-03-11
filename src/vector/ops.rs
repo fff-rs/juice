@@ -390,16 +390,16 @@ mod nrm2_tests {
 }
 
 pub trait Iamax {
-    fn iamax(x: &Vector<Self>) -> uint;
+    fn iamax(x: &Vector<Self>) -> usize;
 }
 
 macro_rules! iamax_impl(
     ($t: ty, $iamax: ident) => (
         impl Iamax for $t {
-            fn iamax(x: &Vector<$t>) -> uint {
+            fn iamax(x: &Vector<$t>) -> usize {
                 unsafe {
                     $iamax(x.len(),
-                        x.as_ptr().as_c_ptr(), x.inc()) as uint
+                        x.as_ptr().as_c_ptr(), x.inc()) as usize
                 }
             }
         }
@@ -421,7 +421,7 @@ mod iamax_tests {
         let x = vec![1f32,-2f32,3f32,4f32];
 
         let xr = Iamax::iamax(&x);
-        assert_eq!(xr, 3u);
+        assert_eq!(xr, 3usize);
     }
 
     #[test]
@@ -429,7 +429,7 @@ mod iamax_tests {
         let x = vec![Complex::new(3f32, 4f32), Complex::new(3f32, 5f32)];
 
         let xr = Iamax::iamax(&x);
-        assert_eq!(xr, 1u);
+        assert_eq!(xr, 1usize);
     }
 }
 
