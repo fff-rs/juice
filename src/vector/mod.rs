@@ -81,10 +81,10 @@ impl<T> Vector<T> for Vec<T> {
     }
 
     #[inline]
-    fn as_ptr(&self) -> *const T { self.as_slice().as_ptr() }
+    fn as_ptr(&self) -> *const T { self[..].as_ptr() }
 
     #[inline]
-    fn as_mut_ptr(&mut self) -> *mut T { self.as_mut_slice().as_mut_ptr() }
+    fn as_mut_ptr(&mut self) -> *mut T { (&mut self[..]).as_mut_ptr() }
 }
 
 impl<'a, T> Vector<T> for &'a [T] {
