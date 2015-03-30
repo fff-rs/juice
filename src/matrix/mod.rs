@@ -41,12 +41,12 @@ mod test_struct {
 
         #[inline]
         fn as_ptr(&self) -> *const T {
-            self.2.as_slice().as_ptr()
+            self.2[..].as_ptr()
         }
 
         #[inline]
         fn as_mut_ptr(&mut self) -> *mut T {
-            self.2.as_mut_slice().as_mut_ptr()
+            (&mut self.2[..]).as_mut_ptr()
         }
     }
 }
