@@ -2,8 +2,10 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 #![feature(concat_idents)]
+#![feature(core)]
 #![feature(libc)]
 
+extern crate core;
 extern crate libc;
 extern crate num;
 
