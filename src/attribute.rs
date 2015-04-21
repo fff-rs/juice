@@ -4,7 +4,7 @@
 
 #[stable]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Order {
     RowMajor=101,
     ColMajor=102,
@@ -12,7 +12,7 @@ pub enum Order {
 
 #[stable]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Transpose {
     NoTrans=111,
     Trans=112,
@@ -21,7 +21,7 @@ pub enum Transpose {
 
 #[stable]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Symmetry {
     Upper=121,
     Lower=122,
@@ -29,7 +29,7 @@ pub enum Symmetry {
 
 #[stable]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Diagonal {
     NonUnit=131,
     Unit=132,
@@ -37,7 +37,7 @@ pub enum Diagonal {
 
 #[stable]
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum Side {
     Left=141,
     Right=142,
