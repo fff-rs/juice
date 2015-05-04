@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-#[stable]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum Order {
@@ -10,7 +9,6 @@ pub enum Order {
     ColMajor=102,
 }
 
-#[stable]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum Transpose {
@@ -19,7 +17,6 @@ pub enum Transpose {
     ConjTrans=113,
 }
 
-#[stable]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum Symmetry {
@@ -27,7 +24,6 @@ pub enum Symmetry {
     Lower=122,
 }
 
-#[stable]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum Diagonal {
@@ -35,7 +31,6 @@ pub enum Diagonal {
     Unit=132,
 }
 
-#[stable]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum Side {

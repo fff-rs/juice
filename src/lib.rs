@@ -22,7 +22,6 @@ mod default;
 mod pointer;
 mod scalar;
 
-#[stable]
 pub mod attribute;
 #[unstable]
 pub mod vector;
