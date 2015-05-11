@@ -12,7 +12,7 @@ pub mod ll;
 pub mod ops;
 
 pub trait Vector<T> {
-    fn inc(&self) -> i32;
+    fn inc(&self) -> i32 { 1 }
     fn len(&self) -> i32;
     unsafe fn as_ptr(&self) -> *const T;
     unsafe fn as_mut_ptr(&mut self) -> *mut T;
@@ -69,8 +69,6 @@ pub trait VectorOperations<T>: Sized + Vector<T>
 }
 
 impl<T> Vector<T> for Vec<T> {
-    #[inline]
-    fn inc(&self) -> i32 { 1i32 }
 
     #[inline]
     fn len(&self) -> i32 {
@@ -89,8 +87,6 @@ impl<T> Vector<T> for Vec<T> {
 }
 
 impl<'a, T> Vector<T> for &'a [T] {
-    #[inline]
-    fn inc(&self) -> i32 { 1i32 }
 
     #[inline]
     fn len(&self) -> i32 {
