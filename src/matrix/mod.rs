@@ -16,8 +16,8 @@ pub trait Matrix<T> {
     fn transpose(&self) -> Transpose { Transpose::NoTrans }
     fn rows(&self) -> i32;
     fn cols(&self) -> i32;
-    fn as_ptr(&self) -> *const T;
-    fn as_mut_ptr(&mut self) -> *mut T;
+    unsafe fn as_ptr(&self) -> *const T;
+    unsafe fn as_mut_ptr(&mut self) -> *mut T;
 }
 
 pub trait BandMatrix<T>: Matrix<T> {
@@ -39,12 +39,12 @@ mod test_struct {
         }
 
         #[inline]
-        fn as_ptr(&self) -> *const T {
+        unsafe fn as_ptr(&self) -> *const T {
             self.2[..].as_ptr()
         }
 
         #[inline]
-        fn as_mut_ptr(&mut self) -> *mut T {
+        unsafe fn as_mut_ptr(&mut self) -> *mut T {
             (&mut self.2[..]).as_mut_ptr()
         }
     }

@@ -14,8 +14,8 @@ pub mod ops;
 pub trait Vector<T> {
     fn inc(&self) -> i32;
     fn len(&self) -> i32;
-    fn as_ptr(&self) -> *const T;
-    fn as_mut_ptr(&mut self) -> *mut T;
+    unsafe fn as_ptr(&self) -> *const T;
+    unsafe fn as_mut_ptr(&mut self) -> *mut T;
 }
 
 impl<'a, T> Into<Vec<T>> for &'a Vector<T>
@@ -82,10 +82,10 @@ impl<T> Vector<T> for Vec<T> {
     }
 
     #[inline]
-    fn as_ptr(&self) -> *const T { self[..].as_ptr() }
+    unsafe fn as_ptr(&self) -> *const T { self[..].as_ptr() }
 
     #[inline]
-    fn as_mut_ptr(&mut self) -> *mut T { (&mut self[..]).as_mut_ptr() }
+    unsafe fn as_mut_ptr(&mut self) -> *mut T { (&mut self[..]).as_mut_ptr() }
 }
 
 impl<'a, T> Vector<T> for &'a [T] {
@@ -102,10 +102,10 @@ impl<'a, T> Vector<T> for &'a [T] {
     }
 
     #[inline]
-    fn as_ptr(&self) -> *const T { self.repr().data }
+    unsafe fn as_ptr(&self) -> *const T { self.repr().data }
 
     #[inline]
-    fn as_mut_ptr(&mut self) -> *mut T { self.repr().data as *mut T }
+    unsafe fn as_mut_ptr(&mut self) -> *mut T { self.repr().data as *mut T }
 }
 
 macro_rules! operations_impl(
