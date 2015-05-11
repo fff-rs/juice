@@ -21,7 +21,7 @@ macro_rules! copy_impl(($($t: ident), +) => (
         impl Copy for $t {
             fn copy(x: &Vector<$t>, y: &mut Vector<$t>) {
                 unsafe {
-                    prefix!($t, copy)(x.len(),
+                    prefix!($t, copy)(y.len(),
                         x.as_ptr().as_c_ptr(),  x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
                 }
