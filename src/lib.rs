@@ -24,7 +24,5 @@ mod scalar;
 
 pub mod attribute;
 pub mod vector;
-#[unstable]
 pub mod matrix_vector;
-#[unstable]
 pub mod matrix;
