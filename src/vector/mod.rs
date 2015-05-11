@@ -18,12 +18,10 @@ pub trait Vector<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
-#[unstable]
-pub trait VectorOperations<T>: Sized + Vector<T>
-    where T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax {
+impl<'a, T> Into<Vec<T>> for &'a Vector<T>
+    where T: Copy {
 
-    #[inline]
-    fn into_vec(&self) -> Vec<T> {
+    fn into(self) -> Vec<T> {
         let n = self.len() as usize;
 
         let mut x = Vec::with_capacity(n);
@@ -32,6 +30,10 @@ pub trait VectorOperations<T>: Sized + Vector<T>
 
         x
     }
+}
+
+pub trait VectorOperations<T>: Sized + Vector<T>
+    where T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax {
 
     #[inline]
     fn update(&mut self, alpha: &T, x: &Vector<T>) -> &mut Self {

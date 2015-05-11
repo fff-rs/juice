@@ -23,7 +23,6 @@ mod pointer;
 mod scalar;
 
 pub mod attribute;
-#[unstable]
 pub mod vector;
 #[unstable]
 pub mod matrix_vector;
