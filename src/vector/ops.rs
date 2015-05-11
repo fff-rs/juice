@@ -13,6 +13,7 @@ use vector::ll::*;
 use vector::Vector;
 
 pub trait Copy {
+    /// Copies `src.len()` elements of `src` into `dst`.
     fn copy(src: &Vector<Self>, dst: &mut Vector<Self>);
 }
 
@@ -33,6 +34,7 @@ macro_rules! copy_impl(($($t: ident), +) => (
 copy_impl!(f32, f64, Complex32, Complex64);
 
 pub trait Axpy {
+    /// Computes `a * x + y` and stores the result in `y`.
     fn axpy(alpha: &Self, x: &Vector<Self>, y: &mut Vector<Self>);
 }
 
@@ -84,6 +86,7 @@ mod axpy_tests {
 }
 
 pub trait Scal {
+    /// Computes `a * x` and stores the result in `x`.
     fn scal(alpha: &Self, x: &mut Vector<Self>);
 }
 
@@ -136,6 +139,8 @@ mod scal_tests {
 }
 
 pub trait Swap {
+    /// Swaps the content of `x` and `y`. If they are different lengths, the
+    /// shorter length is used.
     fn swap(x: &mut Vector<Self>, y: &mut Vector<Self>);
 }
 
@@ -190,6 +195,7 @@ mod swap_tests {
 }
 
 pub trait Dot {
+    /// Computes `x^T * y`.
     fn dot(x: &Vector<Self>, y: &Vector<Self>) -> Self;
 }
 
@@ -259,6 +265,7 @@ mod dot_tests {
 }
 
 pub trait Dotc: Sized + Dot {
+    /// Computes `x^H * y`.
     fn dotc(x: &Vector<Self>, y: &Vector<Self>) -> Self {
         Dot::dot(x, y)
     }
@@ -305,10 +312,12 @@ mod dotc_tests {
 }
 
 pub trait Asum {
+    /// Computes the sum of the absolute values of elements in a vector.
     fn asum(x: &Vector<Self>) -> Self;
 }
 
 pub trait Nrm2 {
+    /// Computes the L2 norm (Euclidian length) of a vector.
     fn nrm2(x: &Vector<Self>) -> Self;
 }
 
@@ -392,6 +401,7 @@ mod nrm2_tests {
 }
 
 pub trait Iamax {
+    /// Finds the index of the maximum element in a vector.
     fn iamax(x: &Vector<Self>) -> usize;
 }
 
@@ -437,6 +447,9 @@ mod iamax_tests {
 
 
 pub trait Rot {
+    /// Applies a Givens rotation matrix to a pair of vectors, where `cos` is
+    /// the value of the cosine of the angle in the Givens matrix, and `sin` is
+    /// the sine.
     fn rot(x: &mut Vector<Self>, y: &mut Vector<Self>, cos: &Self, sin: &Self);
 }
 
