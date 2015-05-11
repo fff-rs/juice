@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Various attributes of vectors and matrices.
+
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub enum Order {
