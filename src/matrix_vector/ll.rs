@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Bindings for matrix-vector functions.
+
 use libc::{c_double, c_float, c_int, c_void};
 
 use attribute::{

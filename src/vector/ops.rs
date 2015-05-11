@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+//! Wrappers for vector functions.
+
 use num::complex::{Complex, Complex32, Complex64};
 use std::cmp;
 use default::Default;
