@@ -13,17 +13,17 @@ use vector::ll::*;
 use vector::Vector;
 
 pub trait Copy {
-    fn copy(x: &Vector<Self>, y: &mut Vector<Self>);
+    fn copy(src: &Vector<Self>, dst: &mut Vector<Self>);
 }
 
 macro_rules! copy_impl(($($t: ident), +) => (
     $(
         impl Copy for $t {
-            fn copy(x: &Vector<$t>, y: &mut Vector<$t>) {
+            fn copy(src: &Vector<$t>, dst: &mut Vector<$t>) {
                 unsafe {
-                    prefix!($t, copy)(y.len(),
-                        x.as_ptr().as_c_ptr(),  x.inc(),
-                        y.as_mut_ptr().as_c_ptr(), y.inc());
+                    prefix!($t, copy)(dst.len(),
+                        src.as_ptr().as_c_ptr(),  src.inc(),
+                        dst.as_mut_ptr().as_c_ptr(), dst.inc());
                 }
             }
         }
