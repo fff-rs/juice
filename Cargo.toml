@@ -10,6 +10,7 @@ repository = "http://github.com/mikkyang/rust-blas"
 readme = "README.md"
 keywords = ["BLAS"]
 license = "MIT"
+build = "build.rs"
 
 [dependencies]
 num = "*"

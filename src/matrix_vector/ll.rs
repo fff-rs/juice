@@ -13,7 +13,6 @@ use attribute::{
     Diagonal,
 };
 
-#[link(name = "blas")]
 extern {
     // Multiply
     pub fn cblas_sgemv(order: Order, trans: Transpose, m: c_int, n: c_int, alpha: c_float,       a: *const c_float,  lda: c_int, x: *const c_float,  inc_x: c_int, beta: c_float,       y: *mut c_float,  inc_y: c_int);
