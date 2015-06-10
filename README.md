@@ -33,6 +33,14 @@ and this to your crate root:
 extern crate rblas;
 ```
 
+By default, the library links with `blas` dynamically. To link to an alternate
+implementation, like OpenBLAS, use the environment variable `CARGO_BLAS`. If
+you've already built the bindings, you may need to clean and build again.
+
+```
+export CARGO_BLAS=openblas
+```
+
 ## Example
 
 ```rust
