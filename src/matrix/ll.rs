@@ -14,7 +14,6 @@ use attribute::{
     Side,
 };
 
-#[link(name = "blas")]
 extern {
     // Multiply
     pub fn cblas_sgemm(order: Order, trans_a: Transpose, trans_b: Transpose, m: c_int, n: c_int, k: c_int, alpha: c_float,       a: *const c_float,  lda: c_int, b: *const c_float,  ldb: c_int, beta: c_float,       c: *mut c_float,  ldc: c_int);
