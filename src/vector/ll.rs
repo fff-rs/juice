@@ -6,7 +6,6 @@
 
 use libc::{c_double, c_float, c_int, c_void, size_t};
 
-#[link(name = "blas")]
 extern {
     // Copy
     pub fn cblas_scopy(n: c_int, x: *const c_float,  inc_x: c_int, y: *mut c_float,  inc_y: c_int);
