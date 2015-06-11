@@ -2,6 +2,9 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+pub use self::mat::Mat;
+
+pub mod mat;
 pub mod vector;
 pub mod matrix_vector;
 
