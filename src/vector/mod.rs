@@ -33,8 +33,8 @@ impl<'a, T> Into<Vec<T>> for &'a Vector<T>
         let n = self.len() as usize;
 
         let mut x = Vec::with_capacity(n);
-        Copy::copy(self, &mut x);
         unsafe { x.set_len(n); }
+        Copy::copy(self, &mut x);
 
         x
     }
