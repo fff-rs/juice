@@ -7,6 +7,7 @@ use std::ops::{
     BitXor,
     Mul,
 };
+use num::complex::{Complex32, Complex64};
 use default::Default;
 use vector::ops::*;
 use vector::Vector;
@@ -55,6 +56,35 @@ impl<'a, T, V> Mul<&'a V> for Trans<&'a Vector<T>>
     }
 }
 
+impl<'a, T> Mul<T> for &'a Vector<T>
+    where T: Sized + Copy + Scal
+{
+    type Output = Vec<T>;
+
+    fn mul(self, alpha: T) -> Vec<T> {
+        let mut result: Vec<_> = self.into();
+        Scal::scal(&alpha, &mut result);
+        result
+    }
+}
+
+macro_rules! left_scale(($($t: ident), +) => (
+    $(
+        impl<'a> Mul<&'a Vector<$t>> for $t
+        {
+            type Output = Vec<$t>;
+
+            fn mul(self, x: &'a Vector<$t>) -> Vec<$t> {
+                let mut result: Vec<_> = x.into();
+                Scal::scal(&self, &mut result);
+                result
+            }
+        }
+    )+
+));
+
+left_scale!(f32, f64, Complex32, Complex64);
+
 #[cfg(test)]
 mod tests {
     use Vector;
@@ -81,5 +111,16 @@ mod tests {
         };
 
         assert_eq!(dot, 3.0);
+    }
+
+    #[test]
+    fn scale() {
+        let x = vec![1f32, 2f32];
+        let xr = &x as &Vector<_>;
+
+        let y = xr * 3.0;
+        let z = 3.0 * xr;
+        assert_eq!(y, vec![3f32, 6f32]);
+        assert_eq!(z, y);
     }
 }
