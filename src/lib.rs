@@ -33,11 +33,11 @@ pub use matrix::ops::*;
 
 #[macro_use]
 mod prefix;
-mod default;
 mod pointer;
 mod scalar;
 
 pub mod attribute;
+pub mod default;
 pub mod vector;
 pub mod matrix_vector;
 pub mod matrix;
