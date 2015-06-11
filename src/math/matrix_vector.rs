@@ -30,20 +30,14 @@ impl<'a, T, V> Mul<&'a V> for &'a Matrix<T>
     }
 }
 
-impl<'a, T, V> Mul<Trans<&'a V>> for &'a Vector<T>
-    where T: Default + Copy + Ger + Gerc + Clone,
-          V: Vector<T>,
+impl<'a, T> Mul<Trans<&'a Vector<T>>> for &'a Vector<T>
+    where T: Default + Ger + Gerc + Clone,
 {
     type Output = Mat<T>;
 
-    fn mul(self, x: Trans<&'a V>) -> Mat<T> {
-        let inner = match x {
-            Trans::T(v) => v,
-            Trans::H(v) => v,
-        };
-
+    fn mul(self, x: Trans<&'a Vector<T>>) -> Mat<T> {
         let n = self.len() as usize;
-        let m = inner.len() as usize;
+        let m = (*x).len() as usize;
         let mut result = Mat::fill(Default::zero(), n, m);
         let scale = Default::one();
 

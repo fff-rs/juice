@@ -13,6 +13,7 @@ use std::raw;
 use num::traits::NumCast;
 use Matrix;
 
+#[derive(Debug, PartialEq)]
 pub struct Mat<T> {
     rows: usize,
     cols: usize,
@@ -130,7 +131,7 @@ macro_rules! mat(
 
 #[cfg(test)]
 mod tests {
-    use Mat;
+    use math::Mat;
 
     #[test]
     fn index() {
