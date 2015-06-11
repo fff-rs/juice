@@ -11,6 +11,7 @@ use num::complex::{Complex32, Complex64};
 use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
 
 pub mod ll;
+pub mod math;
 pub mod ops;
 
 /// Methods that allow a type to be used in BLAS functions as a vector.
