@@ -4,6 +4,7 @@
 #![macro_use]
 
 use std::fmt;
+use std::iter::repeat;
 use std::mem;
 use std::ops::{
     Index,
@@ -34,6 +35,16 @@ impl<T> Mat<T> {
 
     pub unsafe fn push(&mut self, val: T) {
         self.data.push(val);
+    }
+}
+
+impl<T: Clone> Mat<T> {
+    pub fn fill(value: T, n: usize, m: usize) -> Mat<T> {
+        Mat {
+            rows: n,
+            cols: m,
+            data: repeat(value).take(n * m).collect(),
+        }
     }
 }
 
