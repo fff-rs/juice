@@ -88,7 +88,8 @@ left_scale!(f32, f64, Complex32, Complex64);
 #[cfg(test)]
 mod tests {
     use Vector;
-    use transpose::Marker::T;
+    use transpose::Marker::{T, H};
+    use num::complex::Complex;
 
     #[test]
     fn add() {
@@ -111,6 +112,19 @@ mod tests {
         };
 
         assert_eq!(dot, 3.0);
+    }
+
+    #[test]
+    fn herm_dot() {
+        let x = vec![Complex::new(1f32, -1f32), Complex::new(1f32, -3f32)];
+        let y = vec![Complex::new(1f32, 2f32), Complex::new(1f32, 3f32)];
+
+        let dot = {
+            let z = &x as &Vector<_>;
+            (z ^ H) * &y
+        };
+
+        assert_eq!(dot, Complex::new(-9f32, 9f32));
     }
 
     #[test]
