@@ -28,17 +28,17 @@ impl<'a, T> BitXor<Marker> for &'a Vector<T>
     }
 }
 
-impl<'a, T> Add<&'a Vector<T>> for &'a Vector<T>
+impl<'a, T> Add for &'a Vector<T>
     where T: Axpy + Copy + Default
 {
     type Output = Vec<T>;
 
-    fn add(self, rhs: &Vector<T>) -> Vec<T> {
-        let mut v: Vec<T> = self.into();
+    fn add(self, x: &Vector<T>) -> Vec<T> {
+        let mut result: Vec<_> = self.into();
         let scale = Default::one();
 
-        Axpy::axpy(&scale, rhs, &mut v);
-        Vec::from(v)
+        Axpy::axpy(&scale, x, &mut result);
+        result
     }
 }
 
