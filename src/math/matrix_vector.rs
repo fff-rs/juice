@@ -9,6 +9,8 @@ use default::Default;
 use vector::Vector;
 use matrix_vector::ops::*;
 use matrix::Matrix;
+use math::Trans;
+use math::Mat;
 
 impl<'a, T, V> Mul<&'a V> for &'a Matrix<T>
     where T: Default + Copy + Gemv,
@@ -24,6 +26,32 @@ impl<'a, T, V> Mul<&'a V> for &'a Matrix<T>
         let clear = Default::zero();
 
         Gemv::gemv(&scale, self, x, &clear, &mut result);
+        result
+    }
+}
+
+impl<'a, T, V> Mul<Trans<&'a V>> for &'a Vector<T>
+    where T: Default + Copy + Ger + Gerc + Clone,
+          V: Vector<T>,
+{
+    type Output = Mat<T>;
+
+    fn mul(self, x: Trans<&'a V>) -> Mat<T> {
+        let inner = match x {
+            Trans::T(v) => v,
+            Trans::H(v) => v,
+        };
+
+        let n = self.len() as usize;
+        let m = inner.len() as usize;
+        let mut result = Mat::fill(Default::zero(), n, m);
+        let scale = Default::one();
+
+        match x {
+            Trans::T(v) => Ger::ger(&scale, self, v, &mut result),
+            Trans::H(v) => Gerc::gerc(&scale, self, v, &mut result),
+        }
+
         result
     }
 }
