@@ -5,6 +5,7 @@
 use std::ops::{
     Add,
     BitXor,
+    Mul,
 };
 use default::Default;
 use vector::ops::*;
@@ -40,9 +41,24 @@ impl<'a, T> Add<&'a Vector<T>> for &'a Vector<T>
     }
 }
 
+impl<'a, T, V> Mul<&'a V> for Trans<&'a Vector<T>>
+    where T: Sized + Copy + Dot + Dotc,
+          V: Vector<T>,
+{
+    type Output = T;
+
+    fn mul(self, x: &'a V) -> T {
+        match self {
+            Trans::T(v) => Dot::dot(v, x),
+            Trans::H(v) => Dotc::dotc(v, x),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use Vector;
+    use transpose::Marker::T;
 
     #[test]
     fn add() {
@@ -52,5 +68,18 @@ mod tests {
         let z = &x as &Vector<_> + &y;
 
         assert_eq!(&z, &vec![4f32, 6f32]);
+    }
+
+    #[test]
+    fn dot() {
+        let x = vec![1f32, 2f32];
+        let y = vec![-1f32, 2f32];
+
+        let dot = {
+            let z = &x as &Vector<_>;
+            (z ^ T) * &y
+        };
+
+        assert_eq!(dot, 3.0);
     }
 }
