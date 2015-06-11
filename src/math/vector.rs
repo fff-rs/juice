@@ -11,7 +11,7 @@ use num::complex::{Complex32, Complex64};
 use default::Default;
 use vector::ops::*;
 use vector::Vector;
-use transpose::{
+use math::{
     Marker,
     Trans,
 };
@@ -88,7 +88,7 @@ left_scale!(f32, f64, Complex32, Complex64);
 #[cfg(test)]
 mod tests {
     use Vector;
-    use transpose::Marker::{T, H};
+    use math::Marker::{T, H};
     use num::complex::Complex;
 
     #[test]
