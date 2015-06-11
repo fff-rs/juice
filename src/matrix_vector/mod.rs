@@ -5,5 +5,4 @@
 //! Matrix-vector operations.
 
 pub mod ll;
-pub mod math;
 pub mod ops;
