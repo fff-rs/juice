@@ -30,6 +30,7 @@ pub use matrix::Matrix;
 pub use vector::ops::*;
 pub use matrix_vector::ops::*;
 pub use matrix::ops::*;
+pub use transpose::Marker::{T, H};
 
 #[macro_use]
 mod prefix;
@@ -38,6 +39,7 @@ mod scalar;
 
 pub mod attribute;
 pub mod default;
+pub mod transpose;
 pub mod vector;
 pub mod matrix_vector;
 pub mod matrix;
