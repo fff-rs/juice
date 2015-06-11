@@ -4,10 +4,27 @@
 
 use std::ops::{
     Add,
+    BitXor,
 };
 use default::Default;
 use vector::ops::*;
 use vector::Vector;
+use transpose::{
+    Marker,
+    Trans,
+};
+
+impl<'a, T> BitXor<Marker> for &'a Vector<T>
+{
+    type Output = Trans<&'a Vector<T>>;
+
+    fn bitxor(self, m: Marker) -> Trans<&'a Vector<T>> {
+        match m {
+            Marker::T => Trans::T(self),
+            Marker::H => Trans::H(self),
+        }
+    }
+}
 
 impl<'a, T> Add<&'a Vector<T>> for &'a Vector<T>
     where T: Axpy + Copy + Default
