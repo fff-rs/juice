@@ -6,6 +6,7 @@ use std::ops::{
     BitXor,
     Deref,
 };
+use matrix::Matrix;
 use vector::Vector;
 
 pub use self::mat::Mat;
@@ -41,6 +42,18 @@ impl<'a, T> BitXor<Marker> for &'a Vector<T>
     type Output = Trans<&'a Vector<T>>;
 
     fn bitxor(self, m: Marker) -> Trans<&'a Vector<T>> {
+        match m {
+            Marker::T => Trans::T(self),
+            Marker::H => Trans::H(self),
+        }
+    }
+}
+
+impl<'a, T> BitXor<Marker> for &'a Matrix<T>
+{
+    type Output = Trans<&'a Matrix<T>>;
+
+    fn bitxor(self, m: Marker) -> Trans<&'a Matrix<T>> {
         match m {
             Marker::T => Trans::T(self),
             Marker::H => Trans::H(self),
