@@ -7,11 +7,15 @@ use std::fmt;
 use std::iter::repeat;
 use std::mem;
 use std::ops::{
+    Add,
     Index,
 };
 use std::raw;
 use num::traits::NumCast;
 use Matrix;
+use Vector;
+use default::Default;
+use vector::ops::*;
 
 #[derive(Debug, PartialEq)]
 pub struct Mat<T> {
@@ -40,6 +44,12 @@ impl<T> Mat<T> {
 
     pub unsafe fn push(&mut self, val: T) {
         self.data.push(val);
+    }
+}
+
+impl<T> AsRef<Vec<T>> for Mat<T> {
+    fn as_ref(&self) -> &Vec<T> {
+        &self.data
     }
 }
 
@@ -103,6 +113,60 @@ impl<T> Matrix<T> for Mat<T> {
 
     unsafe fn as_mut_ptr(&mut self) -> *mut T {
         (&mut self.data[..]).as_mut_ptr()
+    }
+}
+
+impl<'a, T> Into<Mat<T>> for &'a Matrix<T>
+    where T: Copy
+{
+    fn into(self) -> Mat<T> {
+        let n = self.rows() as usize;
+        let m = self.cols() as usize;
+        let len = n * m;
+
+        let slice_facade: &[T] = unsafe {
+            mem::transmute(raw::Slice { data: self.as_ptr(), len: len })
+        };
+
+        let mut data = Vec::with_capacity(len);
+        unsafe { data.set_len(len); }
+
+        Copy::copy(&slice_facade as &Vector<_>, &mut data);
+
+        Mat {
+            rows: n,
+            cols: m,
+            data: data,
+        }
+    }
+}
+
+impl<'a, T> Add for &'a Matrix<T>
+    where T: Axpy + Copy + Default
+{
+    type Output = Mat<T>;
+
+    fn add(self, b: &Matrix<T>) -> Mat<T> {
+        let n = self.cols();
+        let m = self.rows();
+
+        if n != b.cols() || m != b.rows() {
+            panic!("Dimension mismatch")
+        }
+
+        let len = (n * m) as usize;
+        let scale = Default::one();
+
+        // Make a mutable copy of self
+        let mut result: Mat<T> = self.into();
+        // Coerce the matrix vector
+        let b_vec: &[T] = unsafe {
+            mem::transmute(raw::Slice { data: b.as_ptr(), len: len })
+        };
+
+        Axpy::axpy(&scale, &b_vec, &mut result.data);
+
+        result
     }
 }
 
