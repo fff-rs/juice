@@ -6,18 +6,12 @@
 use std::fmt;
 use std::iter::repeat;
 use std::mem;
-use std::ops::{
-    Add,
-    Index,
-    Mul,
-};
+use std::ops::Index;
 use std::raw;
-use num::complex::{Complex32, Complex64};
 use num::traits::NumCast;
 use Matrix;
 use Vector;
-use default::Default;
-use vector::ops::*;
+use vector::ops::Copy;
 
 #[derive(Debug, PartialEq)]
 pub struct Mat<T> {
@@ -131,52 +125,6 @@ impl<'a, T> Into<Mat<T>> for &'a Matrix<T>
         result
     }
 }
-
-impl<'a, T> Add for &'a Matrix<T>
-    where T: Axpy + Copy + Default
-{
-    type Output = Mat<T>;
-
-    fn add(self, b: &Matrix<T>) -> Mat<T> {
-        if self.cols() != b.cols() || self.rows() != b.rows() {
-            panic!("Dimension mismatch")
-        }
-
-        let scale = Default::one();
-        let mut result: Mat<T> = self.into();
-        Axpy::axpy_mat(&scale, b, &mut result);
-        result
-    }
-}
-
-impl<'a, T> Mul<T> for &'a Matrix<T>
-    where T: Sized + Copy + Scal
-{
-    type Output = Mat<T>;
-
-    fn mul(self, alpha: T) -> Mat<T> {
-        let mut result: Mat<T> = self.into();
-        Scal::scal_mat(&alpha, &mut result);
-        result
-    }
-}
-
-macro_rules! left_scale(($($t: ident), +) => (
-    $(
-        impl<'a> Mul<&'a Matrix<$t>> for $t
-        {
-            type Output = Mat<$t>;
-
-            fn mul(self, x: &'a Matrix<$t>) -> Mat<$t> {
-                let mut result: Mat<_> = x.into();
-                Scal::scal_mat(&self, &mut result);
-                result
-            }
-        }
-    )+
-));
-
-left_scale!(f32, f64, Complex32, Complex64);
 
 #[macro_export]
 macro_rules! mat(

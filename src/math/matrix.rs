@@ -3,13 +3,62 @@
 // license that can be found in the LICENSE file.
 
 use std::ops::{
+    Add,
     Mul,
 };
+use num::complex::{Complex32, Complex64};
 use attribute::Transpose;
 use default::Default;
 use matrix::ops::*;
 use matrix::Matrix;
 use math::Mat;
+use vector::ops::*;
+
+impl<'a, T> Add for &'a Matrix<T>
+    where T: Axpy + Copy + Default
+{
+    type Output = Mat<T>;
+
+    fn add(self, b: &Matrix<T>) -> Mat<T> {
+        if self.cols() != b.cols() || self.rows() != b.rows() {
+            panic!("Dimension mismatch")
+        }
+
+        let scale = Default::one();
+        let mut result: Mat<T> = self.into();
+        Axpy::axpy_mat(&scale, b, &mut result);
+        result
+    }
+}
+
+impl<'a, T> Mul<T> for &'a Matrix<T>
+    where T: Sized + Copy + Scal
+{
+    type Output = Mat<T>;
+
+    fn mul(self, alpha: T) -> Mat<T> {
+        let mut result: Mat<T> = self.into();
+        Scal::scal_mat(&alpha, &mut result);
+        result
+    }
+}
+
+macro_rules! left_scale(($($t: ident), +) => (
+    $(
+        impl<'a> Mul<&'a Matrix<$t>> for $t
+        {
+            type Output = Mat<$t>;
+
+            fn mul(self, x: &'a Matrix<$t>) -> Mat<$t> {
+                let mut result: Mat<_> = x.into();
+                Scal::scal_mat(&self, &mut result);
+                result
+            }
+        }
+    )+
+));
+
+left_scale!(f32, f64, Complex32, Complex64);
 
 impl<'a, T> Mul<&'a Matrix<T>> for &'a Matrix<T>
     where T: Default + Gemm,
