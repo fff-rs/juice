@@ -49,12 +49,6 @@ impl<T> Mat<T> {
     }
 }
 
-impl<T> AsRef<Vec<T>> for Mat<T> {
-    fn as_ref(&self) -> &Vec<T> {
-        &self.data
-    }
-}
-
 impl<T: Clone> Mat<T> {
     pub fn fill(value: T, n: usize, m: usize) -> Mat<T> {
         Mat {
@@ -126,20 +120,15 @@ impl<'a, T> Into<Mat<T>> for &'a Matrix<T>
         let m = self.cols() as usize;
         let len = n * m;
 
-        let slice_facade: &[T] = unsafe {
-            mem::transmute(raw::Slice { data: self.as_ptr(), len: len })
-        };
-
-        let mut data = Vec::with_capacity(len);
-        unsafe { data.set_len(len); }
-
-        Copy::copy(&slice_facade as &Vector<_>, &mut data);
-
-        Mat {
+        let mut result = Mat {
             rows: n,
             cols: m,
-            data: data,
-        }
+            data: Vec::with_capacity(len),
+        };
+        unsafe { result.data.set_len(len); }
+
+        Copy::copy_mat(self, &mut result);
+        result
     }
 }
 
@@ -149,25 +138,13 @@ impl<'a, T> Add for &'a Matrix<T>
     type Output = Mat<T>;
 
     fn add(self, b: &Matrix<T>) -> Mat<T> {
-        let n = self.cols();
-        let m = self.rows();
-
-        if n != b.cols() || m != b.rows() {
+        if self.cols() != b.cols() || self.rows() != b.rows() {
             panic!("Dimension mismatch")
         }
 
-        let len = (n * m) as usize;
         let scale = Default::one();
-
-        // Make a mutable copy of self
         let mut result: Mat<T> = self.into();
-        // Coerce the matrix vector
-        let b_vec: &[T] = unsafe {
-            mem::transmute(raw::Slice { data: b.as_ptr(), len: len })
-        };
-
-        Axpy::axpy(&scale, &b_vec, &mut result.data);
-
+        Axpy::axpy_mat(&scale, b, &mut result);
         result
     }
 }
@@ -179,7 +156,7 @@ impl<'a, T> Mul<T> for &'a Matrix<T>
 
     fn mul(self, alpha: T) -> Mat<T> {
         let mut result: Mat<T> = self.into();
-        Scal::scal(&alpha, &mut result.data);
+        Scal::scal_mat(&alpha, &mut result);
         result
     }
 }
@@ -192,7 +169,7 @@ macro_rules! left_scale(($($t: ident), +) => (
 
             fn mul(self, x: &'a Matrix<$t>) -> Mat<$t> {
                 let mut result: Mat<_> = x.into();
-                Scal::scal(&self, &mut result.data);
+                Scal::scal_mat(&self, &mut result);
                 result
             }
         }
