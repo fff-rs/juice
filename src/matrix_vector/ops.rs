@@ -113,6 +113,8 @@ ger_impl!(Ger, ger, f64,       cblas_dger);
 ger_impl!(Ger, ger, Complex32, cblas_cgeru);
 ger_impl!(Ger, ger, Complex64, cblas_zgeru);
 
+impl Gerc for f32 {}
+impl Gerc for f64 {}
 ger_impl!(Gerc, gerc, Complex32, cblas_cgerc);
 ger_impl!(Gerc, gerc, Complex64, cblas_zgerc);
 
