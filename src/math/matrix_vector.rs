@@ -54,6 +54,8 @@ impl<'a, T> Mul<Trans<&'a Vector<T>>> for &'a Vector<T>
 mod tests {
     use Vector;
     use Matrix;
+    use math::Mat;
+    use math::Marker::T;
 
     #[test]
     fn mul() {
@@ -66,5 +68,23 @@ mod tests {
         };
 
         assert_eq!(y, vec![2.0, 0.0]);
+    }
+
+    #[test]
+    fn outer() {
+        let x = vec![2.0, 1.0, 4.0];
+        let y = vec![3.0, 6.0, -1.0];
+
+        let a = {
+            let xr = &x as &Vector<_>;
+            let yr = &y as &Vector<_>;
+
+            xr * (yr ^ T)
+        };
+
+        let result = mat![  6.0, 12.0, -2.0;
+                            3.0, 6.0, -1.0;
+                            12.0, 24.0, -4.0];
+        assert_eq!(a, result);
     }
 }
