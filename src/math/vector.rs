@@ -26,13 +26,12 @@ impl<'a, T> Add for &'a Vector<T>
     }
 }
 
-impl<'a, T, V> Mul<&'a V> for Trans<&'a Vector<T>>
-    where T: Sized + Copy + Dot + Dotc,
-          V: Vector<T>,
+impl<'a, T> Mul<&'a Vector<T>> for Trans<&'a Vector<T>>
+    where T: Sized + Copy + Dot + Dotc
 {
     type Output = T;
 
-    fn mul(self, x: &'a V) -> T {
+    fn mul(self, x: &Vector<T>) -> T {
         match self {
             Trans::T(v) => Dot::dot(v, x),
             Trans::H(v) => Dotc::dotc(v, x),
@@ -58,7 +57,7 @@ macro_rules! left_scale(($($t: ident), +) => (
         {
             type Output = Vec<$t>;
 
-            fn mul(self, x: &'a Vector<$t>) -> Vec<$t> {
+            fn mul(self, x: &Vector<$t>) -> Vec<$t> {
                 let mut result: Vec<_> = x.into();
                 Scal::scal(&self, &mut result);
                 result
