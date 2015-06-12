@@ -9,8 +9,10 @@ use std::mem;
 use std::ops::{
     Add,
     Index,
+    Mul,
 };
 use std::raw;
+use num::complex::{Complex32, Complex64};
 use num::traits::NumCast;
 use Matrix;
 use Vector;
@@ -169,6 +171,35 @@ impl<'a, T> Add for &'a Matrix<T>
         result
     }
 }
+
+impl<'a, T> Mul<T> for &'a Matrix<T>
+    where T: Sized + Copy + Scal
+{
+    type Output = Mat<T>;
+
+    fn mul(self, alpha: T) -> Mat<T> {
+        let mut result: Mat<T> = self.into();
+        Scal::scal(&alpha, &mut result.data);
+        result
+    }
+}
+
+macro_rules! left_scale(($($t: ident), +) => (
+    $(
+        impl<'a> Mul<&'a Matrix<$t>> for $t
+        {
+            type Output = Mat<$t>;
+
+            fn mul(self, x: &'a Matrix<$t>) -> Mat<$t> {
+                let mut result: Mat<_> = x.into();
+                Scal::scal(&self, &mut result.data);
+                result
+            }
+        }
+    )+
+));
+
+left_scale!(f32, f64, Complex32, Complex64);
 
 #[macro_export]
 macro_rules! mat(
