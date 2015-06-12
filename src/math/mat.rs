@@ -21,11 +21,15 @@ pub struct Mat<T> {
 }
 
 impl<T> Mat<T> {
-    pub fn new() -> Mat<T> {
+    pub fn new(n: usize, m: usize) -> Mat<T> {
+        let len = n * m;
+        let mut data = Vec::with_capacity(len);
+        unsafe { data.set_len(len); }
+
         Mat {
-            rows: 0,
-            cols: 0,
-            data: Vec::new(),
+            rows: n,
+            cols: m,
+            data: data,
         }
     }
 
@@ -106,7 +110,7 @@ impl<T> Matrix<T> for Mat<T> {
 macro_rules! mat(
     ($($($e: expr),+);*) => ({
         // leading _ to allow empty construction without a warning.
-        let mut _temp = Mat::new();
+        let mut _temp = Mat::new(0, 0);
         let mut rows = 0usize;
         let mut _cols;
         $(
