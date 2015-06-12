@@ -5,6 +5,7 @@
 use std::ops::{
     Mul,
 };
+use attribute::Transpose;
 use default::Default;
 use vector::Vector;
 use matrix_vector::ops::*;
@@ -24,8 +25,9 @@ impl<'a, T, V> Mul<&'a V> for &'a Matrix<T>
         unsafe { result.set_len(n); }
         let scale = Default::one();
         let clear = Default::zero();
+        let t = Transpose::NoTrans;
 
-        Gemv::gemv(&scale, self, x, &clear, &mut result);
+        Gemv::gemv(t, &scale, self, x, &clear, &mut result);
         result
     }
 }

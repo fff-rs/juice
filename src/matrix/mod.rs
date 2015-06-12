@@ -6,7 +6,6 @@
 
 use attribute::{
     Order,
-    Transpose,
 };
 
 pub mod ll;
@@ -18,8 +17,6 @@ pub trait Matrix<T> {
     fn lead_dim(&self) -> i32 { self.rows() }
     /// The order of the matrix. Defaults to `RowMajor`.
     fn order(&self) -> Order { Order::RowMajor }
-    /// Returns the currently applied transpose.
-    fn transpose(&self) -> Transpose { Transpose::NoTrans }
     /// Returns the number of rows.
     fn rows(&self) -> i32;
     /// Returns the number of columns.
