@@ -16,6 +16,10 @@ impl<'a, T> Mul<&'a Matrix<T>> for &'a Matrix<T>
     type Output = Mat<T>;
 
     fn mul(self, b: &'a Matrix<T>) -> Mat<T> {
+        if self.cols() != b.rows() {
+            panic!("Dimension mismatch");
+        }
+
         let n = self.rows() as usize;
         let m = b.cols() as usize;
         let mut result = Mat::new(n, m);
