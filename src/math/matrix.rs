@@ -5,6 +5,7 @@
 use std::ops::{
     Mul,
 };
+use attribute::Transpose;
 use default::Default;
 use matrix::ops::*;
 use matrix::Matrix;
@@ -23,8 +24,9 @@ impl<'a, T> Mul<&'a Matrix<T>> for &'a Matrix<T>
         let n = self.rows() as usize;
         let m = b.cols() as usize;
         let mut result = Mat::new(n, m);
+        let t = Transpose::NoTrans;
 
-        Gemm::gemm(&Default::one(), self, b, &Default::zero(), &mut result);
+        Gemm::gemm(&Default::one(), t, self, t, b, &Default::zero(), &mut result);
         result
     }
 }
