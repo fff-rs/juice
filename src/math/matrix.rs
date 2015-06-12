@@ -9,6 +9,7 @@ use std::ops::{
 use num::complex::{Complex32, Complex64};
 use attribute::Transpose;
 use default::Default;
+use math::Trans;
 use matrix::ops::*;
 use matrix::Matrix;
 use math::Mat;
@@ -80,10 +81,90 @@ impl<'a, T> Mul<&'a Matrix<T>> for &'a Matrix<T>
     }
 }
 
+impl<'a, T> Mul<&'a Matrix<T>> for Trans<&'a Matrix<T>>
+    where T: Default + Gemm,
+{
+    type Output = Mat<T>;
+
+    fn mul(self, b: &'a Matrix<T>) -> Mat<T> {
+        let (a, at) = match self {
+            Trans::T(a) => (a, Transpose::Trans),
+            Trans::H(a) => (a, Transpose::ConjTrans),
+        };
+
+        if a.rows() != b.rows() {
+            panic!("Dimension mismatch");
+        }
+
+        let n = a.cols() as usize;
+        let m = b.cols() as usize;
+        let mut result = Mat::new(n, m);
+        let bt = Transpose::NoTrans;
+
+        Gemm::gemm(&Default::one(), at, a, bt, b, &Default::zero(), &mut result);
+        result
+    }
+}
+
+impl<'a, T> Mul<Trans<&'a Matrix<T>>> for &'a Matrix<T>
+    where T: Default + Gemm,
+{
+    type Output = Mat<T>;
+
+    fn mul(self, rhs: Trans<&'a Matrix<T>>) -> Mat<T> {
+        let (b, bt) = match rhs {
+            Trans::T(a) => (a, Transpose::Trans),
+            Trans::H(a) => (a, Transpose::ConjTrans),
+        };
+
+        if self.cols() != b.cols() {
+            panic!("Dimension mismatch");
+        }
+
+        let n = self.rows() as usize;
+        let m = b.rows() as usize;
+        let mut result = Mat::new(n, m);
+        let at = Transpose::NoTrans;
+
+        Gemm::gemm(&Default::one(), at, self, bt, b, &Default::zero(), &mut result);
+        result
+    }
+}
+
+impl<'a, T> Mul<Trans<&'a Matrix<T>>> for Trans<&'a Matrix<T>>
+    where T: Default + Gemm,
+{
+    type Output = Mat<T>;
+
+    fn mul(self, rhs: Trans<&'a Matrix<T>>) -> Mat<T> {
+        let (a, at) = match self {
+            Trans::T(a) => (a, Transpose::Trans),
+            Trans::H(a) => (a, Transpose::ConjTrans),
+        };
+
+        let (b, bt) = match rhs {
+            Trans::T(a) => (a, Transpose::Trans),
+            Trans::H(a) => (a, Transpose::ConjTrans),
+        };
+
+        if self.rows() != b.cols() {
+            panic!("Dimension mismatch");
+        }
+
+        let n = self.cols() as usize;
+        let m = b.rows() as usize;
+        let mut result = Mat::new(n, m);
+
+        Gemm::gemm(&Default::one(), at, a, bt, b, &Default::zero(), &mut result);
+        result
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use Matrix;
     use math::Mat;
+    use math::Marker::T;
 
     #[test]
     fn add() {
@@ -119,6 +200,48 @@ mod tests {
             let ar = &a as &Matrix<_>;
             let br = &b as &Matrix<_>;
             ar * br
+        };
+
+        assert_eq!(c, mat![1.0, 5.0; 1.0, 13.0]);
+    }
+
+    #[test]
+    fn left_mul_trans() {
+        let a = mat![1.0, 3.0; 2.0, 4.0];
+        let b = mat![-1.0, 3.0; 1.0, 1.0];
+
+        let c = {
+            let ar = &a as &Matrix<_>;
+            let br = &b as &Matrix<_>;
+            (ar ^ T) * br
+        };
+
+        assert_eq!(c, mat![1.0, 5.0; 1.0, 13.0]);
+    }
+
+    #[test]
+    fn right_mul_trans() {
+        let a = mat![1.0, 2.0; 3.0, 4.0];
+        let b = mat![-1.0, 1.0; 3.0, 1.0];
+
+        let c = {
+            let ar = &a as &Matrix<_>;
+            let br = &b as &Matrix<_>;
+            ar * (br ^ T)
+        };
+
+        assert_eq!(c, mat![1.0, 5.0; 1.0, 13.0]);
+    }
+
+    #[test]
+    fn mul_trans() {
+        let a = mat![1.0, 3.0; 2.0, 4.0];
+        let b = mat![-1.0, 1.0; 3.0, 1.0];
+
+        let c = {
+            let ar = &a as &Matrix<_>;
+            let br = &b as &Matrix<_>;
+            (ar ^ T) * (br ^ T)
         };
 
         assert_eq!(c, mat![1.0, 5.0; 1.0, 13.0]);
