@@ -18,7 +18,7 @@ impl<'a, T> Mul<&'a Vector<T>> for &'a Matrix<T>
 {
     type Output = Vec<T>;
 
-    fn mul(self, x: &'a Vector<T>) -> Vec<T> {
+    fn mul(self, x: &Vector<T>) -> Vec<T> {
         let n = self.rows() as usize;
         let mut result = Vec::with_capacity(n);
         unsafe { result.set_len(n); }
@@ -36,7 +36,7 @@ impl<'a, T> Mul<Trans<&'a Vector<T>>> for &'a Vector<T>
 {
     type Output = Mat<T>;
 
-    fn mul(self, x: Trans<&'a Vector<T>>) -> Mat<T> {
+    fn mul(self, x: Trans<&Vector<T>>) -> Mat<T> {
         let n = self.len() as usize;
         let m = (*x).len() as usize;
         let mut result = Mat::fill(Default::zero(), n, m);

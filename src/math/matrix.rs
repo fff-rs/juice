@@ -50,7 +50,7 @@ macro_rules! left_scale(($($t: ident), +) => (
         {
             type Output = Mat<$t>;
 
-            fn mul(self, x: &'a Matrix<$t>) -> Mat<$t> {
+            fn mul(self, x: &Matrix<$t>) -> Mat<$t> {
                 let mut result = Mat::from(x);
                 Scal::scal_mat(&self, &mut result);
                 result
@@ -66,7 +66,7 @@ impl<'a, T> Mul<&'a Matrix<T>> for &'a Matrix<T>
 {
     type Output = Mat<T>;
 
-    fn mul(self, b: &'a Matrix<T>) -> Mat<T> {
+    fn mul(self, b: &Matrix<T>) -> Mat<T> {
         if self.cols() != b.rows() {
             panic!("Dimension mismatch");
         }
@@ -86,7 +86,7 @@ impl<'a, T> Mul<&'a Matrix<T>> for Trans<&'a Matrix<T>>
 {
     type Output = Mat<T>;
 
-    fn mul(self, b: &'a Matrix<T>) -> Mat<T> {
+    fn mul(self, b: &Matrix<T>) -> Mat<T> {
         let (a, at) = match self {
             Trans::T(a) => (a, Transpose::Trans),
             Trans::H(a) => (a, Transpose::ConjTrans),
@@ -111,7 +111,7 @@ impl<'a, T> Mul<Trans<&'a Matrix<T>>> for &'a Matrix<T>
 {
     type Output = Mat<T>;
 
-    fn mul(self, rhs: Trans<&'a Matrix<T>>) -> Mat<T> {
+    fn mul(self, rhs: Trans<&Matrix<T>>) -> Mat<T> {
         let (b, bt) = match rhs {
             Trans::T(a) => (a, Transpose::Trans),
             Trans::H(a) => (a, Transpose::ConjTrans),
@@ -136,7 +136,7 @@ impl<'a, T> Mul<Trans<&'a Matrix<T>>> for Trans<&'a Matrix<T>>
 {
     type Output = Mat<T>;
 
-    fn mul(self, rhs: Trans<&'a Matrix<T>>) -> Mat<T> {
+    fn mul(self, rhs: Trans<&Matrix<T>>) -> Mat<T> {
         let (a, at) = match self {
             Trans::T(a) => (a, Transpose::Trans),
             Trans::H(a) => (a, Transpose::ConjTrans),
