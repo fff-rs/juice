@@ -51,6 +51,17 @@ mod tests {
     }
 
     #[test]
+    fn scale() {
+        let x = mat![1f32, 2f32; 3f32, 4f32];
+        let xr = &x as &Matrix<_>;
+
+        let y = xr * 3.0;
+        let z = 3.0 * xr;
+        assert_eq!(y, mat![3f32, 6f32; 9f32, 12f32]);
+        assert_eq!(z, y);
+    }
+
+    #[test]
     fn mul() {
         let a = mat![1.0, 2.0; 3.0, 4.0];
         let b = mat![-1.0, 3.0; 1.0, 1.0];

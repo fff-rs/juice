@@ -13,13 +13,12 @@ use matrix::Matrix;
 use math::Trans;
 use math::Mat;
 
-impl<'a, T, V> Mul<&'a V> for &'a Matrix<T>
-    where T: Default + Copy + Gemv,
-          V: Vector<T>,
+impl<'a, T> Mul<&'a Vector<T>> for &'a Matrix<T>
+    where T: Default + Copy + Gemv
 {
     type Output = Vec<T>;
 
-    fn mul(self, x: &'a V) -> Vec<T> {
+    fn mul(self, x: &'a Vector<T>) -> Vec<T> {
         let n = self.rows() as usize;
         let mut result = Vec::with_capacity(n);
         unsafe { result.set_len(n); }
@@ -61,12 +60,13 @@ mod tests {
 
     #[test]
     fn mul() {
-        let a = (2, 2, vec![2.0, -2.0, 2.0, -4.0]);
-        let x = vec![2.0, 1.0];
+        let a = mat![2f32, -2.0; 2.0, -4.0];
+        let x = vec![2f32, 1.0];
 
         let y = {
-            let ar = &a as &Matrix<_>;
-            ar * &x
+            let ar = &a as &Matrix<f32>;
+            let xr = &x as &Vector<f32>;
+            ar * xr
         };
 
         assert_eq!(y, vec![2.0, 0.0]);
