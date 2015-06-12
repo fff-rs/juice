@@ -9,12 +9,15 @@ use std::cmp;
 use default::Default;
 use pointer::CPtr;
 use scalar::Scalar;
+use matrix::Matrix;
 use vector::ll::*;
 use vector::Vector;
 
 pub trait Copy {
     /// Copies `src.len()` elements of `src` into `dst`.
     fn copy(src: &Vector<Self>, dst: &mut Vector<Self>);
+    /// Copies the entire matrix `dst` into `src`.
+    fn copy_mat(src: &Matrix<Self>, dst: &mut Matrix<Self>);
 }
 
 macro_rules! copy_impl(($($t: ident), +) => (
@@ -27,6 +30,16 @@ macro_rules! copy_impl(($($t: ident), +) => (
                         dst.as_mut_ptr().as_c_ptr(), dst.inc());
                 }
             }
+
+            fn copy_mat(src: &Matrix<Self>, dst: &mut Matrix<Self>) {
+                let len = dst.rows() * dst.cols();
+
+                unsafe {
+                    prefix!($t, copy)(len,
+                        src.as_ptr().as_c_ptr(),  1,
+                        dst.as_mut_ptr().as_c_ptr(), 1);
+                }
+            }
         }
     )+
 ));
@@ -36,6 +49,8 @@ copy_impl!(f32, f64, Complex32, Complex64);
 pub trait Axpy {
     /// Computes `a * x + y` and stores the result in `y`.
     fn axpy(alpha: &Self, x: &Vector<Self>, y: &mut Vector<Self>);
+    /// Computes `a * x + y` and stores the result in `y`.
+    fn axpy_mat(alpha: &Self, x: &Matrix<Self>, y: &mut Matrix<Self>);
 }
 
 macro_rules! axpy_impl(($($t: ident), +) => (
@@ -49,6 +64,19 @@ macro_rules! axpy_impl(($($t: ident), +) => (
                         alpha.as_const(),
                         x.as_ptr().as_c_ptr(), x.inc(),
                         y.as_mut_ptr().as_c_ptr(), y.inc());
+                }
+            }
+
+            fn axpy_mat(alpha: &$t, x: &Matrix<$t>, y: &mut Matrix<$t>) {
+                unsafe {
+                    let x_len = x.rows() * x.cols();
+                    let y_len = y.rows() * y.cols();
+                    let n = cmp::min(x_len, y_len);
+
+                    prefix!($t, axpy)(n,
+                        alpha.as_const(),
+                        x.as_ptr().as_c_ptr(), 1,
+                        y.as_mut_ptr().as_c_ptr(), 1);
                 }
             }
         }
@@ -88,6 +116,8 @@ mod axpy_tests {
 pub trait Scal {
     /// Computes `a * x` and stores the result in `x`.
     fn scal(alpha: &Self, x: &mut Vector<Self>);
+    /// Computes `a * x` and stores the result in `x`.
+    fn scal_mat(alpha: &Self, x: &mut Matrix<Self>);
 }
 
 macro_rules! scal_impl(($($t: ident), +) => (
@@ -99,6 +129,14 @@ macro_rules! scal_impl(($($t: ident), +) => (
                     prefix!($t, scal)(x.len(),
                         alpha.as_const(),
                         x.as_mut_ptr().as_c_ptr(), x.inc());
+                }
+            }
+
+            fn scal_mat(alpha: &$t, x: &mut Matrix<$t>) {
+                unsafe {
+                    prefix!($t, scal)(x.rows() * x.cols(),
+                        alpha.as_const(),
+                        x.as_mut_ptr().as_c_ptr(), 1);
                 }
             }
         }
