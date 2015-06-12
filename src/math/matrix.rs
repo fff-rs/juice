@@ -25,7 +25,7 @@ impl<'a, T> Add for &'a Matrix<T>
         }
 
         let scale = Default::one();
-        let mut result: Mat<T> = self.into();
+        let mut result = Mat::from(self);
         Axpy::axpy_mat(&scale, b, &mut result);
         result
     }
@@ -37,7 +37,7 @@ impl<'a, T> Mul<T> for &'a Matrix<T>
     type Output = Mat<T>;
 
     fn mul(self, alpha: T) -> Mat<T> {
-        let mut result: Mat<T> = self.into();
+        let mut result = Mat::from(self);
         Scal::scal_mat(&alpha, &mut result);
         result
     }
@@ -50,7 +50,7 @@ macro_rules! left_scale(($($t: ident), +) => (
             type Output = Mat<$t>;
 
             fn mul(self, x: &'a Matrix<$t>) -> Mat<$t> {
-                let mut result: Mat<_> = x.into();
+                let mut result = Mat::from(x);
                 Scal::scal_mat(&self, &mut result);
                 result
             }
