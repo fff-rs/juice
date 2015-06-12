@@ -37,6 +37,20 @@ mod tests {
     use math::Mat;
 
     #[test]
+    fn add() {
+        let a = mat![1.0, 2.0; 3.0, 4.0];
+        let b = mat![-1.0, 3.0; 1.0, 1.0];
+
+        let c = {
+            let ar = &a as &Matrix<_>;
+            let br = &b as &Matrix<_>;
+            ar + br
+        };
+
+        assert_eq!(c, mat![0.0, 5.0; 4.0, 5.0]);
+    }
+
+    #[test]
     fn mul() {
         let a = mat![1.0, 2.0; 3.0, 4.0];
         let b = mat![-1.0, 3.0; 1.0, 1.0];
