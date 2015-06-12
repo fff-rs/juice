@@ -106,12 +106,12 @@ impl<T> Matrix<T> for Mat<T> {
     }
 }
 
-impl<'a, T> Into<Mat<T>> for &'a Matrix<T>
+impl<'a, T> From<&'a Matrix<T>> for Mat<T>
     where T: Copy
 {
-    fn into(self) -> Mat<T> {
-        let n = self.rows() as usize;
-        let m = self.cols() as usize;
+    fn from(a: &Matrix<T>) -> Mat<T> {
+        let n = a.rows() as usize;
+        let m = a.cols() as usize;
         let len = n * m;
 
         let mut result = Mat {
@@ -121,7 +121,7 @@ impl<'a, T> Into<Mat<T>> for &'a Matrix<T>
         };
         unsafe { result.data.set_len(len); }
 
-        Copy::copy_mat(self, &mut result);
+        Copy::copy_mat(a, &mut result);
         result
     }
 }
