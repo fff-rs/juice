@@ -5,7 +5,7 @@
 //! Wrappers for matrix-vector functions.
 
 use num::complex::{Complex, Complex32, Complex64};
-use attribute::{Diagonal, Symmetry};
+use attribute::{Diagonal, Symmetry, Transpose};
 use matrix::{BandMatrix, Matrix};
 use matrix_vector::ll::*;
 use pointer::CPtr;
@@ -13,15 +13,15 @@ use scalar::Scalar;
 use vector::Vector;
 
 pub trait Gemv {
-    fn gemv(alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
+    fn gemv(trans: Transpose, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 macro_rules! gemv_impl(($($t: ident), +) => (
     $(
         impl Gemv for $t {
-            fn gemv(alpha: &$t, a: &Matrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>){
+            fn gemv(trans: Transpose, alpha: &$t, a: &Matrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>){
                 unsafe {
-                    prefix!($t, gemv)(a.order(), a.transpose(),
+                    prefix!($t, gemv)(a.order(), trans,
                         a.rows(), a.cols(),
                         alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
@@ -38,6 +38,7 @@ gemv_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod gemv_tests {
+    use attribute::Transpose;
     use matrix_vector::ops::Gemv;
 
     #[test]
@@ -45,8 +46,9 @@ mod gemv_tests {
         let a = (2, 2, vec![1.0, -2.0, 2.0, -4.0]);
         let x = vec![2.0, 1.0];
         let mut y = vec![1.0, 2.0];
+        let t = Transpose::NoTrans;
 
-        Gemv::gemv(&1f32, &a, &x, &0f32, &mut y);
+        Gemv::gemv(t, &1f32, &a, &x, &0f32, &mut y);
 
         assert_eq!(y, vec![0.0, 0.0]);
     }
@@ -209,15 +211,15 @@ syr2_impl!(Syr2, syr2, f32, f64);
 syr2_impl!(Her2, her2, Complex32, Complex64);
 
 pub trait Gbmv {
-    fn gbmv(alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
+    fn gbmv(trans: Transpose, alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
 macro_rules! gbmv_impl(($($t: ident), +) => (
     $(
         impl Gbmv for $t {
-            fn gbmv(alpha: &$t, a: &BandMatrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>){
+            fn gbmv(trans: Transpose, alpha: &$t, a: &BandMatrix<$t>, x: &Vector<$t>, beta: &$t, y: &mut Vector<$t>){
                 unsafe {
-                    prefix!($t, gbmv)(a.order(), a.transpose(),
+                    prefix!($t, gbmv)(a.order(), trans,
                         a.rows(), a.cols(),
                         a.sub_diagonals(), a.sup_diagonals(),
                         alpha.as_const(),
@@ -263,20 +265,20 @@ sbmv_impl!(Sbmv, sbmv, f32, f64);
 sbmv_impl!(Hbmv, hbmv, Complex32, Complex64);
 
 pub trait Tbmv {
-    fn tbmv(symmetry: Symmetry, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut Vector<Self>);
+    fn tbmv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut Vector<Self>);
 }
 
 pub trait Tbsv {
-    fn tbsv(symmetry: Symmetry, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut Vector<Self>);
+    fn tbsv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut Vector<Self>);
 }
 
 macro_rules! tbmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name(symmetry: Symmetry, diagonal: Diagonal, a: &BandMatrix<$t>, x: &mut Vector<$t>) {
+            fn $fn_name(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<$t>, x: &mut Vector<$t>) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
-                        a.transpose(), diagonal,
+                        trans, diagonal,
                         a.rows(), a.sub_diagonals(),
                         a.as_ptr().as_c_ptr(),
                         x.as_mut_ptr().as_c_ptr(), x.inc());
@@ -319,20 +321,20 @@ spmv_impl!(Spmv, spmv, f32, f64);
 spmv_impl!(Hpmv, hpmv, Complex32, Complex64);
 
 pub trait Tpmv {
-    fn tpmv(symmetry: Symmetry, diagonal: Diagonal, a: &Matrix<Self>, x: &mut Vector<Self>);
+    fn tpmv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut Vector<Self>);
 }
 
 pub trait Tpsv {
-    fn tpsv(symmetry: Symmetry, diagonal: Diagonal, a: &Matrix<Self>, x: &mut Vector<Self>);
+    fn tpsv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut Vector<Self>);
 }
 
 macro_rules! tpmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name(symmetry: Symmetry, diagonal: Diagonal, a: &Matrix<$t>, x: &mut Vector<$t>) {
+            fn $fn_name(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<$t>, x: &mut Vector<$t>) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
-                        a.transpose(), diagonal,
+                        trans, diagonal,
                         a.rows(),
                         a.as_ptr().as_c_ptr(),
                         x.as_mut_ptr().as_c_ptr(), x.inc());

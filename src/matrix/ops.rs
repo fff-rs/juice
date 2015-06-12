@@ -5,7 +5,7 @@
 //! Wrappers for matrix functions.
 
 use num::complex::{Complex, Complex32, Complex64};
-use attribute::{Diagonal, Side, Symmetry};
+use attribute::{Diagonal, Side, Symmetry, Transpose};
 use pointer::CPtr;
 use scalar::Scalar;
 use matrix::ll::*;
@@ -13,16 +13,16 @@ use matrix::Matrix;
 use vector::Vector;
 
 pub trait Gemm {
-    fn gemm(alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
+    fn gemm(alpha: &Self, at: Transpose, a: &Matrix<Self>, bt: Transpose, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
 macro_rules! gemm_impl(($($t: ident), +) => (
     $(
         impl Gemm for $t {
-            fn gemm(alpha: &$t, a: &Matrix<$t>, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
+            fn gemm(alpha: &$t, at: Transpose, a: &Matrix<$t>, bt: Transpose, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
                 unsafe {
                     prefix!($t, gemm)(a.order(),
-                        a.transpose(), b.transpose(),
+                        at, bt,
                         a.rows(), b.cols(), a.cols(),
                         alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
@@ -40,15 +40,17 @@ gemm_impl!(f32, f64, Complex32, Complex64);
 #[cfg(test)]
 mod gemm_tests {
     use std::iter::repeat;
+    use attribute::Transpose;
     use matrix::ops::Gemm;
 
     #[test]
     fn real() {
         let a = (2, 2, vec![1.0, 2.0, 3.0, 4.0]);
         let b = (2, 2, vec![-1.0, 3.0, 1.0, 1.0]);
+        let t = Transpose::NoTrans;
 
         let mut c = (2, 2, repeat(0.0).take(4).collect());
-        Gemm::gemm(&1f32, &a, &b, &0f32, &mut c);
+        Gemm::gemm(&1f32, t, &a, t, &b, &0f32, &mut c);
 
         assert_eq!(c.2, vec![1.0, 5.0, 1.0, 13.0]);
     }
@@ -85,20 +87,20 @@ symm_impl!(Symm, symm, f32, f64, Complex32, Complex64);
 symm_impl!(Hemm, hemm, Complex32, Complex64);
 
 pub trait Trmm {
-    fn trmm(side: Side, symmetry: Symmetry, diag: Diagonal, alpha: &Self, a: &Matrix<Self>, b: &mut Matrix<Self>);
+    fn trmm(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &Self, a: &Matrix<Self>, b: &mut Matrix<Self>);
 }
 
 pub trait Trsm {
-    fn trsm(side: Side, symmetry: Symmetry, diag: Diagonal, alpha: &Self, a: &Matrix<Self>, b: &mut Matrix<Self>);
+    fn trsm(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &Self, a: &Matrix<Self>, b: &mut Matrix<Self>);
 }
 
 macro_rules! trmm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name(side: Side, symmetry: Symmetry, diag: Diagonal, alpha: &$t, a: &Matrix<$t>, b: &mut Matrix<$t>) {
+            fn $fn_name(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &$t, a: &Matrix<$t>, b: &mut Matrix<$t>) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(),
-                        side, symmetry, a.transpose(), diag,
+                        side, symmetry, trans, diag,
                         b.rows(), b.cols(),
                         alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
@@ -113,20 +115,20 @@ trmm_impl!(Trmm, trmm, f32, f64, Complex32, Complex64);
 trmm_impl!(Trsm, trsm, Complex32, Complex64);
 
 pub trait Herk {
-    fn herk(symmetry: Symmetry, alpha: &Self, a: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
+    fn herk(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
 }
 
 pub trait Her2k {
-    fn her2k(symmetry: Symmetry, alpha: Complex<Self>, a: &Matrix<Complex<Self>>, b: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
+    fn her2k(symmetry: Symmetry, trans: Transpose, alpha: Complex<Self>, a: &Matrix<Complex<Self>>, b: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
 }
 
 macro_rules! herk_impl(($($t: ident), +) => (
     $(
         impl Herk for $t {
-            fn herk(symmetry: Symmetry, alpha: &$t, a: &Matrix<Complex<$t>>, beta: &$t, c: &mut Matrix<Complex<$t>>) {
+            fn herk(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &Matrix<Complex<$t>>, beta: &$t, c: &mut Matrix<Complex<$t>>) {
                 unsafe {
                     prefix!(Complex<$t>, herk)(a.order(),
-                        symmetry, a.transpose(),
+                        symmetry, trans,
                         a.rows(), a.cols(),
                         *alpha,
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
@@ -137,10 +139,10 @@ macro_rules! herk_impl(($($t: ident), +) => (
         }
 
         impl Her2k for $t {
-            fn her2k(symmetry: Symmetry, alpha: Complex<$t>, a: &Matrix<Complex<$t>>, b: &Matrix<Complex<$t>>, beta: &$t, c: &mut Matrix<Complex<$t>>) {
+            fn her2k(symmetry: Symmetry, trans: Transpose, alpha: Complex<$t>, a: &Matrix<Complex<$t>>, b: &Matrix<Complex<$t>>, beta: &$t, c: &mut Matrix<Complex<$t>>) {
                 unsafe {
                     prefix!(Complex<$t>, her2k)(a.order(),
-                        symmetry, a.transpose(),
+                        symmetry, trans,
                         a.rows(), a.cols(),
                         alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
@@ -156,20 +158,20 @@ macro_rules! herk_impl(($($t: ident), +) => (
 herk_impl!(f32, f64);
 
 pub trait Syrk {
-    fn syrk(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
+    fn syrk(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
 pub trait Syr2k {
-    fn syr2k(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
+    fn syr2k(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
 macro_rules! syrk_impl(($($t: ident), +) => (
     $(
         impl Syrk for $t {
-            fn syrk(symmetry: Symmetry, alpha: &$t, a: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
+            fn syrk(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
                 unsafe {
                     prefix!($t, syrk)(a.order(),
-                        symmetry, a.transpose(),
+                        symmetry, trans,
                         a.rows(), a.cols(),
                         alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
@@ -180,10 +182,10 @@ macro_rules! syrk_impl(($($t: ident), +) => (
         }
 
         impl Syr2k for $t {
-            fn syr2k(symmetry: Symmetry, alpha: &$t, a: &Matrix<$t>, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
+            fn syr2k(symmetry: Symmetry, trans: Transpose, alpha: &$t, a: &Matrix<$t>, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
                 unsafe {
                     prefix!($t, syr2k)(a.order(),
-                        symmetry, a.transpose(),
+                        symmetry, trans,
                         a.rows(), a.cols(),
                         alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
