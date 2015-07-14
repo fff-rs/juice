@@ -5,7 +5,6 @@
 //! Vector operations.
 
 use std::raw::Repr;
-use core::slice::SliceExt;
 use num::traits::NumCast;
 use num::complex::{Complex32, Complex64};
 use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
@@ -98,7 +97,7 @@ impl<'a, T> Vector<T> for &'a [T] {
 
     #[inline]
     fn len(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(SliceExt::len(*self));
+        let l: Option<i32> = NumCast::from((*self).len());
         match l {
             Some(l) => l,
             None => panic!(),
