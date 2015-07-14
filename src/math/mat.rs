@@ -5,9 +5,8 @@
 
 use std::fmt;
 use std::iter::repeat;
-use std::mem;
 use std::ops::Index;
-use std::raw;
+use std::slice;
 use num::traits::NumCast;
 use Matrix;
 use Vector;
@@ -61,7 +60,7 @@ impl<T> Index<usize> for Mat<T> {
 
         unsafe {
             let ptr = (&self.data[..]).as_ptr().offset(offset);
-            mem::transmute(raw::Slice { data: ptr, len: self.cols })
+            slice::from_raw_parts(ptr, self.cols)
         }
     }
 }
