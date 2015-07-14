@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 #![feature(concat_idents)]
 #![feature(raw)]
-#![feature(libc)]
 
 //! BLAS bindings and wrappers.
 //!

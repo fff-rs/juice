@@ -14,3 +14,4 @@ build = "build.rs"
 
 [dependencies]
 num = "*"
+libc = "*"
