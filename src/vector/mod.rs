@@ -4,8 +4,6 @@
 
 //! Vector operations.
 
-use std::raw::Repr;
-use core::slice::SliceExt;
 use num::traits::NumCast;
 use num::complex::{Complex32, Complex64};
 use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
@@ -98,7 +96,7 @@ impl<'a, T> Vector<T> for &'a [T] {
 
     #[inline]
     fn len(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(SliceExt::len(*self));
+        let l: Option<i32> = NumCast::from(<&[T]>::len(self));
         match l {
             Some(l) => l,
             None => panic!(),
@@ -106,10 +104,10 @@ impl<'a, T> Vector<T> for &'a [T] {
     }
 
     #[inline]
-    unsafe fn as_ptr(&self) -> *const T { self.repr().data }
+    unsafe fn as_ptr(&self) -> *const T { <&[T]>::as_ptr(self) }
 
     #[inline]
-    unsafe fn as_mut_ptr(&mut self) -> *mut T { self.repr().data as *mut T }
+    unsafe fn as_mut_ptr(&mut self) -> *mut T { <&[T]>::as_mut_ptr(self) }
 }
 
 macro_rules! operations_impl(
