@@ -21,9 +21,19 @@ macro_rules! gemm_impl(($($t: ident), +) => (
         impl Gemm for $t {
             fn gemm(alpha: &$t, at: Transpose, a: &Matrix<$t>, bt: Transpose, b: &Matrix<$t>, beta: &$t, c: &mut Matrix<$t>) {
                 unsafe {
+                    let (m, k)  = match at {
+                        Transpose::NoTrans => (a.rows(), a.cols()),
+                        _ => (a.cols(), a.rows()),
+                    };
+
+                    let n = match bt {
+                        Transpose::NoTrans => b.cols(),
+                        _ => b.rows(),
+                    };
+
                     prefix!($t, gemm)(a.order(),
                         at, bt,
-                        a.rows(), b.cols(), a.cols(),
+                        m, n, k,
                         alpha.as_const(),
                         a.as_ptr().as_c_ptr(), a.lead_dim(),
                         b.as_ptr().as_c_ptr(), b.lead_dim(),
@@ -53,6 +63,23 @@ mod gemm_tests {
         Gemm::gemm(&1f32, t, &a, t, &b, &0f32, &mut c);
 
         assert_eq!(c.2, vec![1.0, 5.0, 1.0, 13.0]);
+    }
+
+    #[test]
+    fn transpose() {
+        let a = (3, 2, vec![
+                 1.0, 2.0,
+                 3.0, 4.0,
+                 5.0, 6.0, ]);
+        let b = (2, 3, vec![
+                 -1.0, 3.0, 1.0,
+                 1.0, 1.0, 1.0]);
+        let t = Transpose::Trans;
+
+        let mut c = (2, 2, repeat(0.0).take(4).collect());
+        Gemm::gemm(&1f32, t, &a, t, &b, &0f32, &mut c);
+
+        assert_eq!(c.2, vec![13.0, 9.0, 16.0, 12.0]);
     }
 }
 
