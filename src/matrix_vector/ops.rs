@@ -52,6 +52,23 @@ mod gemv_tests {
 
         assert_eq!(y, vec![0.0, 0.0]);
     }
+
+    #[test]
+    fn transpose() {
+        let a = (3, 2,
+                 vec![
+                     1.0, 2.0,
+                     -3.0, -6.0,
+                     1.0, 2.0]);
+
+        let x = vec![2.0, 1.0, 1.0];
+        let mut y = vec![1.0, 2.0];
+        let t = Transpose::Trans;
+
+        Gemv::gemv(t, &1f32, &a, &x, &0f32, &mut y);
+
+        assert_eq!(y, vec![0.0, 0.0]);
+    }
 }
 
 pub trait Symv {
