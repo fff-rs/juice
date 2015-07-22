@@ -62,6 +62,19 @@ mod gemv_tests {
         let x = vec![2.0, 1.0, 1.0];
         let mut y = vec![1.0, 2.0];
         let t = Transpose::NoTrans;
+    }
+
+    #[test]
+    fn transpose() {
+        let a = (3, 2,
+                 vec![
+                     1.0, 2.0,
+                     -3.0, -6.0,
+                     1.0, 2.0]);
+
+        let x = vec![2.0, 1.0, 1.0];
+        let mut y = vec![1.0, 2.0];
+        let t = Transpose::Trans;
 
         Gemv::gemv(t, &1f32, &a, &x, &0f32, &mut y);
 
