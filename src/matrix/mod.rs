@@ -13,8 +13,14 @@ pub mod ops;
 
 /// Methods that allow a type to be used in BLAS functions as a matrix.
 pub trait Matrix<T> {
-    /// The leading dimension of the matrix. Defaults to `rows`.
-    fn lead_dim(&self) -> i32 { self.rows() }
+    /// The leading dimension of the matrix. Defaults to `cols` for `RowMajor`
+    /// order and 'rows' for `ColMajor` order.
+    fn lead_dim(&self) -> i32 {
+        match self.order() {
+            Order::RowMajor => self.cols(),
+            Order::ColMajor => self.rows(),
+        }
+    }
     /// The order of the matrix. Defaults to `RowMajor`.
     fn order(&self) -> Order { Order::RowMajor }
     /// Returns the number of rows.
