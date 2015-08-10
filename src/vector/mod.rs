@@ -92,11 +92,11 @@ impl<T> Vector<T> for Vec<T> {
     unsafe fn as_mut_ptr(&mut self) -> *mut T { (&mut self[..]).as_mut_ptr() }
 }
 
-impl<'a, T> Vector<T> for &'a [T] {
+impl<T> Vector<T> for [T] {
 
     #[inline]
     fn len(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(<&[T]>::len(self));
+        let l: Option<i32> = NumCast::from(<[T]>::len(self));
         match l {
             Some(l) => l,
             None => panic!(),
@@ -104,10 +104,10 @@ impl<'a, T> Vector<T> for &'a [T] {
     }
 
     #[inline]
-    unsafe fn as_ptr(&self) -> *const T { <&[T]>::as_ptr(self) }
+    unsafe fn as_ptr(&self) -> *const T { <[T]>::as_ptr(self) }
 
     #[inline]
-    unsafe fn as_mut_ptr(&mut self) -> *mut T { <&[T]>::as_mut_ptr(self) }
+    unsafe fn as_mut_ptr(&mut self) -> *mut T { <[T]>::as_mut_ptr(self) }
 }
 
 macro_rules! operations_impl(
@@ -117,7 +117,7 @@ macro_rules! operations_impl(
 );
 
 operations_impl!(Vec, f32, f64, Complex32, Complex64);
-impl<'a> VectorOperations<f32> for &'a [f32] {}
-impl<'a> VectorOperations<f64> for &'a [f64] {}
-impl<'a> VectorOperations<Complex32> for &'a [Complex32] {}
-impl<'a> VectorOperations<Complex64> for &'a [Complex64] {}
+//impl<'a> VectorOperations<f32> for &'a [f32] {}
+//impl<'a> VectorOperations<f64> for &'a [f64] {}
+//impl<'a> VectorOperations<Complex32> for &'a [Complex32] {}
+//impl<'a> VectorOperations<Complex64> for &'a [Complex64] {}
