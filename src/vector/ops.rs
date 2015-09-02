@@ -15,7 +15,7 @@ use vector::Vector;
 
 pub trait Copy: Sized {
     /// Copies `src.len()` elements of `src` into `dst`.
-    fn copy(src: &Vector<Self>, dst: &mut Vector<Self>);
+    fn copy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(src: &V, dst: &mut W);
     /// Copies the entire matrix `dst` into `src`.
     fn copy_mat(src: &Matrix<Self>, dst: &mut Matrix<Self>);
 }
@@ -23,7 +23,7 @@ pub trait Copy: Sized {
 macro_rules! copy_impl(($($t: ident), +) => (
     $(
         impl Copy for $t {
-            fn copy(src: &Vector<$t>, dst: &mut Vector<$t>) {
+            fn copy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(src: &V, dst: &mut W) {
                 unsafe {
                     prefix!($t, copy)(dst.len(),
                         src.as_ptr().as_c_ptr(),  src.inc(),
@@ -48,7 +48,7 @@ copy_impl!(f32, f64, Complex32, Complex64);
 
 pub trait Axpy: Sized {
     /// Computes `a * x + y` and stores the result in `y`.
-    fn axpy(alpha: &Self, x: &Vector<Self>, y: &mut Vector<Self>);
+    fn axpy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &mut W);
     /// Computes `a * x + y` and stores the result in `y`.
     fn axpy_mat(alpha: &Self, x: &Matrix<Self>, y: &mut Matrix<Self>);
 }
@@ -56,7 +56,7 @@ pub trait Axpy: Sized {
 macro_rules! axpy_impl(($($t: ident), +) => (
     $(
         impl Axpy for $t {
-            fn axpy(alpha: &$t, x: &Vector<$t>, y: &mut Vector<$t>) {
+            fn axpy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &$t, x: &V, y: &mut W) {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
@@ -115,7 +115,7 @@ mod axpy_tests {
 
 pub trait Scal: Sized {
     /// Computes `a * x` and stores the result in `x`.
-    fn scal(alpha: &Self, x: &mut Vector<Self>);
+    fn scal<V: ?Sized + Vector<Self>>(alpha: &Self, x: &mut V);
     /// Computes `a * x` and stores the result in `x`.
     fn scal_mat(alpha: &Self, x: &mut Matrix<Self>);
 }
@@ -124,7 +124,7 @@ macro_rules! scal_impl(($($t: ident), +) => (
     $(
         impl Scal for $t {
             #[inline]
-            fn scal(alpha: &$t, x: &mut Vector<$t>) {
+            fn scal<V: ?Sized + Vector<Self>>(alpha: &$t, x: &mut V) {
                 unsafe {
                     prefix!($t, scal)(x.len(),
                         alpha.as_const(),
@@ -179,13 +179,13 @@ mod scal_tests {
 pub trait Swap: Sized {
     /// Swaps the content of `x` and `y`. If they are different lengths, the
     /// shorter length is used.
-    fn swap(x: &mut Vector<Self>, y: &mut Vector<Self>);
+    fn swap<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &mut V, y: &mut W);
 }
 
 macro_rules! swap_impl(($($t: ident), +) => (
     $(
         impl Swap for $t {
-            fn swap(x: &mut Vector<$t>, y: &mut Vector<$t>) {
+            fn swap<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &mut V, y: &mut W) {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
@@ -234,13 +234,13 @@ mod swap_tests {
 
 pub trait Dot: Sized {
     /// Computes `x^T * y`.
-    fn dot(x: &Vector<Self>, y: &Vector<Self>) -> Self;
+    fn dot<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &V, y: &W) -> Self;
 }
 
 macro_rules! real_dot_impl(($($t: ident), +) => (
     $(
         impl Dot for $t {
-            fn dot(x: &Vector<$t>, y: &Vector<$t>) -> $t {
+            fn dot<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &V, y: &W) -> $t {
                 unsafe {
                     let n = cmp::min(x.len(), y.len());
 
@@ -256,7 +256,7 @@ macro_rules! real_dot_impl(($($t: ident), +) => (
 macro_rules! complex_dot_impl(($($t: ident), +) => (
     $(
         impl Dot for $t {
-            fn dot(x: &Vector<$t>, y: &Vector<$t>) -> $t {
+            fn dot<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &V, y: &W) -> $t {
                 let result: $t = Default::zero();
 
                 unsafe {
@@ -304,7 +304,7 @@ mod dot_tests {
 
 pub trait Dotc: Sized + Dot {
     /// Computes `x^H * y`.
-    fn dotc(x: &Vector<Self>, y: &Vector<Self>) -> Self {
+    fn dotc<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &V, y: &W) -> Self {
         Dot::dot(x, y)
     }
 }
@@ -312,7 +312,7 @@ pub trait Dotc: Sized + Dot {
 macro_rules! dotc_impl(($($t: ident), +) => (
     $(
         impl Dotc for $t {
-            fn dotc(x: &Vector<$t>, y: &Vector<$t>) -> $t {
+            fn dotc<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &V, y: &W) -> $t {
                 let result: $t = Default::zero();
 
                 unsafe {
@@ -351,18 +351,18 @@ mod dotc_tests {
 
 pub trait Asum: Sized {
     /// Computes the sum of the absolute values of elements in a vector.
-    fn asum(x: &Vector<Self>) -> Self;
+    fn asum<V: ?Sized + Vector<Self>>(x: &V) -> Self;
 }
 
 pub trait Nrm2: Sized {
     /// Computes the L2 norm (Euclidian length) of a vector.
-    fn nrm2(x: &Vector<Self>) -> Self;
+    fn nrm2<V: ?Sized + Vector<Self>>(x: &V) -> Self;
 }
 
 macro_rules! real_norm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name(x: &Vector<$t>) -> $t {
+            fn $fn_name<V: ?Sized + Vector<Self>>(x: &V) -> $t {
                 unsafe {
                     prefix!($t, $fn_name)(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc())
@@ -375,7 +375,7 @@ macro_rules! real_norm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), 
 macro_rules! complex_norm_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
         impl $trait_name for $t {
-            fn $fn_name(x: &Vector<$t>) -> $t {
+            fn $fn_name<V: ?Sized + Vector<Self>>(x: &V) -> $t {
                 let re = unsafe {
                     $norm_fn(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc())
@@ -440,13 +440,13 @@ mod nrm2_tests {
 
 pub trait Iamax: Sized {
     /// Finds the index of the maximum element in a vector.
-    fn iamax(x: &Vector<Self>) -> usize;
+    fn iamax<V: ?Sized + Vector<Self>>(x: &V) -> usize;
 }
 
 macro_rules! iamax_impl(
     ($t: ty, $iamax: ident) => (
         impl Iamax for $t {
-            fn iamax(x: &Vector<$t>) -> usize {
+            fn iamax<V: ?Sized + Vector<Self>>(x: &V) -> usize {
                 unsafe {
                     $iamax(x.len(),
                         x.as_ptr().as_c_ptr(), x.inc()) as usize
@@ -488,13 +488,13 @@ pub trait Rot: Sized {
     /// Applies a Givens rotation matrix to a pair of vectors, where `cos` is
     /// the value of the cosine of the angle in the Givens matrix, and `sin` is
     /// the sine.
-    fn rot(x: &mut Vector<Self>, y: &mut Vector<Self>, cos: &Self, sin: &Self);
+    fn rot<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &mut V, y: &mut W, cos: &Self, sin: &Self);
 }
 
 macro_rules! rot_impl(($($t: ident), +) => (
     $(
         impl Rot for $t {
-            fn rot(x: &mut Vector<$t>, y: &mut Vector<$t>, cos: &$t, sin: &$t) {
+            fn rot<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &mut V, y: &mut W, cos: &$t, sin: &$t) {
                 unsafe {
                     prefix!($t, rot)(cmp::min(x.len(), y.len()),
                         x.as_mut_ptr().as_c_ptr(), x.inc(),
