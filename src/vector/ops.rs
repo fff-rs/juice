@@ -13,7 +13,7 @@ use matrix::Matrix;
 use vector::ll::*;
 use vector::Vector;
 
-pub trait Copy {
+pub trait Copy: Sized {
     /// Copies `src.len()` elements of `src` into `dst`.
     fn copy(src: &Vector<Self>, dst: &mut Vector<Self>);
     /// Copies the entire matrix `dst` into `src`.
@@ -46,7 +46,7 @@ macro_rules! copy_impl(($($t: ident), +) => (
 
 copy_impl!(f32, f64, Complex32, Complex64);
 
-pub trait Axpy {
+pub trait Axpy: Sized {
     /// Computes `a * x + y` and stores the result in `y`.
     fn axpy(alpha: &Self, x: &Vector<Self>, y: &mut Vector<Self>);
     /// Computes `a * x + y` and stores the result in `y`.
@@ -113,7 +113,7 @@ mod axpy_tests {
 
 }
 
-pub trait Scal {
+pub trait Scal: Sized {
     /// Computes `a * x` and stores the result in `x`.
     fn scal(alpha: &Self, x: &mut Vector<Self>);
     /// Computes `a * x` and stores the result in `x`.
@@ -176,7 +176,7 @@ mod scal_tests {
 
 }
 
-pub trait Swap {
+pub trait Swap: Sized {
     /// Swaps the content of `x` and `y`. If they are different lengths, the
     /// shorter length is used.
     fn swap(x: &mut Vector<Self>, y: &mut Vector<Self>);
@@ -232,7 +232,7 @@ mod swap_tests {
 
 }
 
-pub trait Dot {
+pub trait Dot: Sized {
     /// Computes `x^T * y`.
     fn dot(x: &Vector<Self>, y: &Vector<Self>) -> Self;
 }
@@ -349,12 +349,12 @@ mod dotc_tests {
     }
 }
 
-pub trait Asum {
+pub trait Asum: Sized {
     /// Computes the sum of the absolute values of elements in a vector.
     fn asum(x: &Vector<Self>) -> Self;
 }
 
-pub trait Nrm2 {
+pub trait Nrm2: Sized {
     /// Computes the L2 norm (Euclidian length) of a vector.
     fn nrm2(x: &Vector<Self>) -> Self;
 }
@@ -438,7 +438,7 @@ mod nrm2_tests {
     }
 }
 
-pub trait Iamax {
+pub trait Iamax: Sized {
     /// Finds the index of the maximum element in a vector.
     fn iamax(x: &Vector<Self>) -> usize;
 }
@@ -484,7 +484,7 @@ mod iamax_tests {
 }
 
 
-pub trait Rot {
+pub trait Rot: Sized {
     /// Applies a Givens rotation matrix to a pair of vectors, where `cos` is
     /// the value of the cosine of the angle in the Givens matrix, and `sin` is
     /// the sine.

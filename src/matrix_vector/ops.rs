@@ -12,7 +12,7 @@ use pointer::CPtr;
 use scalar::Scalar;
 use vector::Vector;
 
-pub trait Gemv {
+pub trait Gemv: Sized {
     fn gemv(trans: Transpose, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
@@ -86,11 +86,11 @@ mod gemv_tests {
     }
 }
 
-pub trait Symv {
+pub trait Symv: Sized {
     fn symv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
-pub trait Hemv {
+pub trait Hemv: Sized {
     fn hemv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
@@ -115,7 +115,7 @@ macro_rules! symv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 symv_impl!(Symv, symv, f32, f64, Complex32, Complex64);
 symv_impl!(Hemv, hemv, Complex32, Complex64);
 
-pub trait Ger {
+pub trait Ger: Sized {
     fn ger(alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
@@ -170,11 +170,11 @@ mod ger_tests {
     }
 }
 
-pub trait Syr {
+pub trait Syr: Sized {
     fn syr(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
-pub trait Her {
+pub trait Her: Sized {
     fn her(symmetry: Symmetry, alpha: &Self, x: &Vector<Complex<Self>>, a: &mut Matrix<Complex<Self>>);
 }
 
@@ -214,11 +214,11 @@ macro_rules! syr_impl(($($t: ident), +) => (
 
 syr_impl!(f32, f64);
 
-pub trait Syr2 {
+pub trait Syr2: Sized {
     fn syr2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
-pub trait Her2 {
+pub trait Her2: Sized {
     fn her2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
@@ -242,7 +242,7 @@ macro_rules! syr2_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 syr2_impl!(Syr2, syr2, f32, f64);
 syr2_impl!(Her2, her2, Complex32, Complex64);
 
-pub trait Gbmv {
+pub trait Gbmv: Sized {
     fn gbmv(trans: Transpose, alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
@@ -267,11 +267,11 @@ macro_rules! gbmv_impl(($($t: ident), +) => (
 
 gbmv_impl!(f32, f64, Complex32, Complex64);
 
-pub trait Sbmv {
+pub trait Sbmv: Sized {
     fn sbmv(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
-pub trait Hbmv {
+pub trait Hbmv: Sized {
     fn hbmv(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
@@ -296,11 +296,11 @@ macro_rules! sbmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 sbmv_impl!(Sbmv, sbmv, f32, f64);
 sbmv_impl!(Hbmv, hbmv, Complex32, Complex64);
 
-pub trait Tbmv {
+pub trait Tbmv: Sized {
     fn tbmv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut Vector<Self>);
 }
 
-pub trait Tbsv {
+pub trait Tbsv: Sized {
     fn tbsv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut Vector<Self>);
 }
 
@@ -323,11 +323,11 @@ macro_rules! tbmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 tbmv_impl!(Tbmv, tbmv, f32, f64, Complex32, Complex64);
 tbmv_impl!(Tbsv, tbsv, f32, f64, Complex32, Complex64);
 
-pub trait Spmv {
+pub trait Spmv: Sized {
     fn spmv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
-pub trait Hpmv {
+pub trait Hpmv: Sized {
     fn hpmv(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &Vector<Self>, beta: &Self, y: &mut Vector<Self>);
 }
 
@@ -352,11 +352,11 @@ macro_rules! spmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 spmv_impl!(Spmv, spmv, f32, f64);
 spmv_impl!(Hpmv, hpmv, Complex32, Complex64);
 
-pub trait Tpmv {
+pub trait Tpmv: Sized {
     fn tpmv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut Vector<Self>);
 }
 
-pub trait Tpsv {
+pub trait Tpsv: Sized {
     fn tpsv(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut Vector<Self>);
 }
 
@@ -379,7 +379,7 @@ macro_rules! tpmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 tpmv_impl!(Tpmv, tpmv, f32, f64, Complex32, Complex64);
 tpmv_impl!(Tpsv, tpsv, f32, f64, Complex32, Complex64);
 
-pub trait Hpr {
+pub trait Hpr: Sized {
     fn hpr(symmetry: Symmetry, alpha: &Self, x: &Vector<Complex<Self>>, a: &mut Matrix<Complex<Self>>);
 }
 
@@ -401,7 +401,7 @@ macro_rules! hpr_impl(($($t: ident), +) => (
 
 hpr_impl!(f32, f64);
 
-pub trait Spr {
+pub trait Spr: Sized {
     fn spr(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
@@ -423,11 +423,11 @@ macro_rules! spr_impl(($($t: ident), +) => (
 
 spr_impl!(f32, f64);
 
-pub trait Spr2 {
+pub trait Spr2: Sized {
     fn spr2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 
-pub trait Hpr2 {
+pub trait Hpr2: Sized {
     fn hpr2(symmetry: Symmetry, alpha: &Self, x: &Vector<Self>, y: &Vector<Self>, a: &mut Matrix<Self>);
 }
 

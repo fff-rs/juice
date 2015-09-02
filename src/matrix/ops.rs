@@ -12,7 +12,7 @@ use matrix::ll::*;
 use matrix::Matrix;
 use vector::Vector;
 
-pub trait Gemm {
+pub trait Gemm: Sized {
     fn gemm(alpha: &Self, at: Transpose, a: &Matrix<Self>, bt: Transpose, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
@@ -83,11 +83,11 @@ mod gemm_tests {
     }
 }
 
-pub trait Symm {
+pub trait Symm: Sized {
     fn symm(side: Side, symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
-pub trait Hemm {
+pub trait Hemm: Sized {
     fn hemm(side: Side, symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
@@ -113,11 +113,11 @@ macro_rules! symm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 symm_impl!(Symm, symm, f32, f64, Complex32, Complex64);
 symm_impl!(Hemm, hemm, Complex32, Complex64);
 
-pub trait Trmm {
+pub trait Trmm: Sized {
     fn trmm(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &Self, a: &Matrix<Self>, b: &mut Matrix<Self>);
 }
 
-pub trait Trsm {
+pub trait Trsm: Sized {
     fn trsm(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &Self, a: &Matrix<Self>, b: &mut Matrix<Self>);
 }
 
@@ -141,11 +141,11 @@ macro_rules! trmm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 trmm_impl!(Trmm, trmm, f32, f64, Complex32, Complex64);
 trmm_impl!(Trsm, trsm, Complex32, Complex64);
 
-pub trait Herk {
+pub trait Herk: Sized {
     fn herk(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
 }
 
-pub trait Her2k {
+pub trait Her2k: Sized {
     fn her2k(symmetry: Symmetry, trans: Transpose, alpha: Complex<Self>, a: &Matrix<Complex<Self>>, b: &Matrix<Complex<Self>>, beta: &Self, c: &mut Matrix<Complex<Self>>);
 }
 
@@ -184,11 +184,11 @@ macro_rules! herk_impl(($($t: ident), +) => (
 
 herk_impl!(f32, f64);
 
-pub trait Syrk {
+pub trait Syrk: Sized {
     fn syrk(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
-pub trait Syr2k {
+pub trait Syr2k: Sized {
     fn syr2k(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &Matrix<Self>, b: &Matrix<Self>, beta: &Self, c: &mut Matrix<Self>);
 }
 
