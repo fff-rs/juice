@@ -102,6 +102,17 @@ mod axpy_tests {
     }
 
     #[test]
+    fn slice() {
+        let x = vec![1f32,-2f32,3f32,4f32,5f32];
+        let y = vec![3f32,7f32,-2f32,2f32];
+        let mut z = y.clone();
+
+        Axpy::axpy(&1f32, &y, &mut z);
+        Axpy::axpy(&1f32, &x[..4], &mut z);
+        assert_eq!(z, vec![7f32,12f32,-1f32,8f32]);
+    }
+
+    #[test]
     fn complex() {
         let x = vec![Complex::new(1f32, 1f32), Complex::new(1f32, 3f32)];
         let y = vec![Complex::new(3f32, -2f32), Complex::new(2f32, 3f32)];
@@ -156,6 +167,14 @@ mod scal_tests {
 
         Scal::scal(&-2f32, &mut x);
         assert_eq!(x, vec![-2f32, 4f32, -6f32, -8f32]);
+    }
+
+    #[test]
+    fn slice() {
+        let mut x = vec![1f32,-2f32,3f32,4f32];
+
+        Scal::scal(&-2f32, &mut x[..3]);
+        assert_eq!(x, vec![-2f32, 4f32, -6f32, 4f32]);
     }
 
     #[test]
@@ -214,6 +233,18 @@ mod swap_tests {
 
 
         Swap::swap(&mut x, &mut y);
+        assert_eq!(x, xr);
+        assert_eq!(y, yr);
+    }
+
+    #[test]
+    fn slice() {
+        let mut x = [1f32,-2f32,3f32,4f32];
+        let mut y = [2f32,-3f32,4f32,1f32];
+        let xr = [2f32,-3f32,4f32,1f32];
+        let yr = [1f32,-2f32,3f32,4f32];
+
+        Swap::swap(&mut x[..], &mut y[..]);
         assert_eq!(x, xr);
         assert_eq!(y, yr);
     }
@@ -288,6 +319,15 @@ mod dot_tests {
         let y = vec![1f32,1f32,1f32,1f32];
 
         let xr: f32 = Dot::dot(&x, &y);
+        assert_eq!(xr, 6f32);
+    }
+
+    #[test]
+    fn slice() {
+        let x = [1f32,-2f32,3f32,4f32];
+        let y = [1f32,1f32,1f32,1f32];
+
+        let xr: f32 = Dot::dot(&x[..], &y[..]);
         assert_eq!(xr, 6f32);
     }
 
@@ -408,6 +448,14 @@ mod asum_tests {
     }
 
     #[test]
+    fn slice() {
+        let x = [1f32,-2f32,3f32,4f32];
+
+        let r: f32 = Asum::asum(&x[..]);
+        assert_eq!(r, 10f32);
+    }
+
+    #[test]
     fn complex() {
         let x = vec![Complex::new(3f32, 4f32)];
 
@@ -426,6 +474,14 @@ mod nrm2_tests {
         let x = vec![3f32,-4f32];
 
         let xr: f32 = Nrm2::nrm2(&x);
+        assert_eq!(xr, 5f32);
+    }
+
+    #[test]
+    fn slice() {
+        let x = [3f32,-4f32];
+
+        let xr: f32 = Nrm2::nrm2(&x[..]);
         assert_eq!(xr, 5f32);
     }
 
@@ -471,6 +527,14 @@ mod iamax_tests {
         let x = vec![1f32,-2f32,3f32,4f32];
 
         let xr = Iamax::iamax(&x);
+        assert_eq!(xr, 3usize);
+    }
+
+    #[test]
+    fn slice() {
+        let x = [1f32,-2f32,3f32,4f32];
+
+        let xr = Iamax::iamax(&x[..]);
         assert_eq!(xr, 3usize);
     }
 
