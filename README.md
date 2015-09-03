@@ -25,7 +25,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rblas = "0.0.8"
+rblas = "0.0.9"
 ```
 
 and this to your crate root:
