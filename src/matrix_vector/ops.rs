@@ -64,7 +64,6 @@ mod gemv_tests {
         let t = Transpose::NoTrans;
 
         Gemv::gemv(t, &1f32, &a, &x, &0f32, &mut y);
-
         assert_eq!(y, vec![0.0, 0.0]);
     }
 
