@@ -46,10 +46,9 @@ macro_rules! copy_impl(($($t: ident), +) => (
 
 copy_impl!(f32, f64, Complex32, Complex64);
 
+/// Computes `a * x + y` and stores the result in `y`.
 pub trait Axpy: Sized {
-    /// Computes `a * x + y` and stores the result in `y`.
     fn axpy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &mut W);
-    /// Computes `a * x + y` and stores the result in `y`.
     fn axpy_mat(alpha: &Self, x: &Matrix<Self>, y: &mut Matrix<Self>);
 }
 
@@ -124,10 +123,9 @@ mod axpy_tests {
 
 }
 
+/// Computes `a * x` and stores the result in `x`.
 pub trait Scal: Sized {
-    /// Computes `a * x` and stores the result in `x`.
     fn scal<V: ?Sized + Vector<Self>>(alpha: &Self, x: &mut V);
-    /// Computes `a * x` and stores the result in `x`.
     fn scal_mat(alpha: &Self, x: &mut Matrix<Self>);
 }
 
@@ -195,9 +193,9 @@ mod scal_tests {
 
 }
 
+/// Swaps the content of `x` and `y`.
 pub trait Swap: Sized {
-    /// Swaps the content of `x` and `y`. If they are different lengths, the
-    /// shorter length is used.
+    /// If they are different lengths, the shorter length is used.
     fn swap<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &mut V, y: &mut W);
 }
 
@@ -263,8 +261,8 @@ mod swap_tests {
 
 }
 
+/// Computes `x^T * y`.
 pub trait Dot: Sized {
-    /// Computes `x^T * y`.
     fn dot<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &V, y: &W) -> Self;
 }
 
@@ -342,8 +340,8 @@ mod dot_tests {
 
 }
 
+/// Computes `x^H * y`.
 pub trait Dotc: Sized + Dot {
-    /// Computes `x^H * y`.
     fn dotc<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &V, y: &W) -> Self {
         Dot::dot(x, y)
     }
@@ -389,13 +387,13 @@ mod dotc_tests {
     }
 }
 
+/// Computes the sum of the absolute values of elements in a vector.
 pub trait Asum: Sized {
-    /// Computes the sum of the absolute values of elements in a vector.
     fn asum<V: ?Sized + Vector<Self>>(x: &V) -> Self;
 }
 
+/// Computes the L2 norm (Euclidian length) of a vector.
 pub trait Nrm2: Sized {
-    /// Computes the L2 norm (Euclidian length) of a vector.
     fn nrm2<V: ?Sized + Vector<Self>>(x: &V) -> Self;
 }
 
@@ -494,8 +492,8 @@ mod nrm2_tests {
     }
 }
 
+/// Finds the index of the maximum element in a vector.
 pub trait Iamax: Sized {
-    /// Finds the index of the maximum element in a vector.
     fn iamax<V: ?Sized + Vector<Self>>(x: &V) -> usize;
 }
 
@@ -547,11 +545,10 @@ mod iamax_tests {
     }
 }
 
-
+/// Applies a Givens rotation matrix to a pair of vectors, where `cos` is
+/// the value of the cosine of the angle in the Givens matrix, and `sin` is
+/// the sine.
 pub trait Rot: Sized {
-    /// Applies a Givens rotation matrix to a pair of vectors, where `cos` is
-    /// the value of the cosine of the angle in the Givens matrix, and `sin` is
-    /// the sine.
     fn rot<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(x: &mut V, y: &mut W, cos: &Self, sin: &Self);
 }
 
