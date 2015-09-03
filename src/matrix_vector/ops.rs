@@ -114,6 +114,48 @@ macro_rules! symv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 symv_impl!(Symv, symv, f32, f64, Complex32, Complex64);
 symv_impl!(Hemv, hemv, Complex32, Complex64);
 
+#[cfg(test)]
+mod symv_tests {
+    use attribute::{Symmetry, Transpose};
+    use matrix_vector::ops::{Gemv, Symv};
+
+    #[test]
+    fn real() {
+        let x = vec![2.0, 1.0];
+        let gemv = {
+            let a = (2, 2, vec![1.0, -2.0, -2.0, 1.0]);
+            let mut y = vec![1.0, 2.0];
+            let t = Transpose::NoTrans;
+
+            Gemv::gemv(t, &1.0, &a, &x, &0.0, &mut y);
+            y
+        };
+
+        let symv_upper = {
+            // symv shouldn't look at some elements
+            let a = (2, 2, vec![1.0, -2.0, 0.0, 1.0]);
+            let mut y = vec![1.0, 2.0];
+            let s = Symmetry::Upper;
+
+            Symv::symv(s, &1.0, &a, &x, &0.0, &mut y);
+            y
+        };
+
+        let symv_lower = {
+            // symv shouldn't look at some elements
+            let a = (2, 2, vec![1.0, 0.0, -2.0, 1.0]);
+            let mut y = vec![1.0, 2.0];
+            let s = Symmetry::Lower;
+
+            Symv::symv(s, &1.0, &a, &x, &0.0, &mut y);
+            y
+        };
+
+        assert_eq!(gemv, symv_upper);
+        assert_eq!(gemv, symv_lower);
+    }
+}
+
 pub trait Ger: Sized {
     fn ger<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
 }
