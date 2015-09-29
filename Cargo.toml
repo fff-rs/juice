@@ -1,7 +1,7 @@
 [package]
 
 name = "rblas"
-version = "0.0.9"
+version = "0.0.10"
 authors = ["Michael Yang <mikkyangg@gmail.com>"]
 description = "BLAS bindings and wrappers"
 documentation = "http://mikkyang.github.io/rust-blas/doc/rblas/index.html"
