@@ -1,0 +1,8 @@
+[package]
+authors = ["Michael Hirn <mj@autumnai.com>"]
+name = "cuticula"
+version = "0.1.0"
+
+[dependencies]
+image = "0.4.0"
+murmurhash3 = "0.0.5"
