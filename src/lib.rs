@@ -1,6 +1,5 @@
-//! Cuticula provides convenient and universal Machine Learning Encoding
-//! funcionality for non-numeric data types such as: `Strings`, `Images` and
-//! `Audio`.
+//! Cuticula provides convenient and universal Machine Learning Transformer
+//! for non-numeric data types such as: `Strings`, `Images` and `Audio`.
 extern crate image;
 extern crate murmurhash3;
 
