@@ -1,9 +1,3 @@
-pub use self::image_transformer::ImageTransformer;
-pub use self::string_transformer::StringTransformer;
-
-mod image_transformer;
-mod string_transformer;
-
 pub trait Transformer {
 
     /// Transforms non-numeric data into a numeric Vector/Matrix

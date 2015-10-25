@@ -1,9 +1,11 @@
 extern crate cuticula;
+extern crate modifier;
 
 #[cfg(test)]
-mod image_transformer_spec {
+mod image_spec {
 
-    use cuticula::{ Transformer, ImageTransformer };
+    use cuticula::{ Set, Transformer, Image };
+    use cuticula::image::{ Resize, Crop };
     use std::path::Path;
 
     fn expected_result() -> Vec<u32> {
@@ -21,7 +23,7 @@ mod image_transformer_spec {
     #[test]
     fn it_works_for_png() {
         let path = Path::new("tests/assets/test_image.png");
-        let img = ImageTransformer::new(&path);
+        let img = Image::from_path(&path);
         assert_eq!(expected_result(), img.transform(1).unwrap());
     }
 
@@ -29,42 +31,46 @@ mod image_transformer_spec {
     #[should_panic]
     fn it_works_not_for_progressive_jpeg() {
         let path = Path::new("tests/assets/test_image.jpeg");
-        let img = ImageTransformer::new(&path);
+        let img = Image::from_path(&path);
         assert_eq!(expected_result(), img.transform(1).unwrap());
     }
 
     #[test]
     fn it_works_for_baseline_jpeg() {
         let path = Path::new("tests/assets/test_image.baseline.jpeg");
-        let img = ImageTransformer::new(&path);
+        let img = Image::from_path(&path);
         assert_eq!(expected_result(), img.transform(1).unwrap());
     }
 
     #[test]
     fn it_works_for_gif() {
         let path = Path::new("tests/assets/test_image.gif");
-        let img = ImageTransformer::new(&path);
+        let img = Image::from_path(&path);
         assert_eq!(expected_result_gif(), img.transform(1).unwrap());
     }
 
     #[test]
     fn it_works_for_bmp() {
         let path = Path::new("tests/assets/test_image.bmp");
-        let img = ImageTransformer::new(&path);
+        let img = Image::from_path(&path);
         assert_eq!(expected_result(), img.transform(1).unwrap());
     }
 
     #[test]
     fn it_works_to_resize() {
         let path = Path::new("tests/assets/test_image.png");
-        let img = ImageTransformer::new(&path).resize(1, 1);
+        let mut img = Image::from_path(&path);
+        let resize = Resize { width: 1, height: 1 };
+        img = img.set(resize);
         assert_eq!(expected_result_resize(), img.transform(1).unwrap());
     }
 
     #[test]
     fn it_works_to_crop() {
         let path = Path::new("tests/assets/test_image.png");
-        let img = ImageTransformer::new(&path).crop(0, 0, 1, 1);
+        let mut img = Image::from_path(&path);
+        let crop = Crop { x: 0, y: 0, width: 1, height: 1 };
+        img = img.set(crop);
         assert_eq!(expected_result_crop(), img.transform(1).unwrap());
     }
 }
