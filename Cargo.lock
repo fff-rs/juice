@@ -2,6 +2,7 @@
 name = "cuticula"
 version = "0.1.0"
 dependencies = [
+ "clippy 0.0.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "modifier 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "murmurhash3 0.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -25,6 +26,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "byteorder"
 version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "clippy"
+version = "0.0.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unicode-normalization 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "color_quant"
@@ -146,6 +155,11 @@ dependencies = [
 [[package]]
 name = "rustc-serialize"
 version = "0.3.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "unicode-normalization"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

@@ -1,5 +1,5 @@
 use murmur3::murmurhash3_x86_32 as murmur3;
-use { Set, Transformer };
+use {Set, Transformer};
 pub use self::modifiers::*;
 
 pub mod modifiers;

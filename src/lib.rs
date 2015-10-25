@@ -1,5 +1,7 @@
 //! Cuticula provides convenient and universal Machine Learning Transformer
 //! for non-numeric data types such as: `Strings`, `Images` and `Audio`.
+#![feature(plugin)]
+#![plugin(clippy)]
 extern crate image as image_lib;
 extern crate murmurhash3 as murmur3;
 

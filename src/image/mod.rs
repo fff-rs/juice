@@ -1,6 +1,6 @@
 use std::path::Path;
 use image_lib::{DynamicImage, open};
-use { Set, Transformer };
+use {Set, Transformer};
 pub use self::modifiers::*;
 
 pub mod modifiers;
@@ -30,4 +30,3 @@ impl Image {
         Image { value: open(path).unwrap() }
     }
 }
-
