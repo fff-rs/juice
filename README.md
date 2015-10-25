@@ -1,4 +1,9 @@
-# cuticula  [machine learning transformer]
+# cuticula
+[![Build Status](https://travis-ci.org/storeness/cuticula.svg?branch=master)](https://travis-ci.org/storeness/cuticula)
+
+Cuticula provides a convenient and customizable interface for modifying and
+transforming (non-numeric) data into numeric data, that can be used for machine
+learning purposes.
 
 **Docs**: `cargo doc --open`
 

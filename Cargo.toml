@@ -3,11 +3,18 @@ name = "cuticula"
 description = "Data Transformation library for Machine Learning"
 authors = ["Michael Hirn <mj@autumnai.com>"]
 version = "0.1.0"
+repository = "https://github.com/storeness/cuticula"
+homepace = "https://github.com/storeness/cuticula"
 readme = "README.md"
 keywords = ["transformation", "encoding", "machine learning", "non-numeric"]
+license = "MIT"
 
 [dependencies]
 image = "0.4.0"
 murmurhash3 = "0.0.5"
 modifier = "*"
 clippy = "*"
+
+[features]
+default = []
+dev = [] # possibly for clippy
