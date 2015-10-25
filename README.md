@@ -1,5 +1,5 @@
 # cuticula
-[![Build Status](https://travis-ci.org/storeness/cuticula.svg?branch=master)](https://travis-ci.org/storeness/cuticula) [![Coverage Status](https://coveralls.io/repos/storeness/cuticula/badge.svg?branch=master&service=github)](https://coveralls.io/github/storeness/cuticula?branch=master)
+[![Join the chat at https://gitter.im/storeness/cuticula](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/storeness/cuticula?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/storeness/cuticula.svg?branch=master)](https://travis-ci.org/storeness/cuticula) [![Coverage Status](https://coveralls.io/repos/storeness/cuticula/badge.svg?branch=master&service=github)](https://coveralls.io/github/storeness/cuticula?branch=master)
 
 Cuticula provides a convenient and customizable interface for modifying and
 transforming (non-numeric) data into numeric data, that can be used for machine
