@@ -5,6 +5,7 @@ authors = ["Michael Hirn <mj@autumnai.com>"]
 version = "0.1.0"
 repository = "https://github.com/storeness/cuticula"
 homepace = "https://github.com/storeness/cuticula"
+documentation = "http://storeness.github.io/cuticula"
 readme = "README.md"
 keywords = ["transformation", "encoding", "machine learning", "non-numeric"]
 license = "MIT"
