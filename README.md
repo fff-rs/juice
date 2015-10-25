@@ -5,7 +5,7 @@ Cuticula provides a convenient and customizable interface for modifying and
 transforming (non-numeric) data into numeric data, that can be used for machine
 learning purposes.
 
-**Docs**: `cargo doc --open`
+See the [Documentation](http://storeness.github.io/cuticula).
 
 ## Architecture
 
