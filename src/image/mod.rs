@@ -3,8 +3,11 @@ use image_lib::{DynamicImage, open};
 use {Set, Transformer};
 pub use self::modifiers::*;
 
+/// The Modifiers form `Image`
 pub mod modifiers;
 
+#[allow(missing_debug_implementations)]
+/// The Transformable Data Type `Image`
 pub struct Image {
     value: DynamicImage,
 }

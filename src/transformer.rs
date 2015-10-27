@@ -1,3 +1,7 @@
+/// The Transformer Trait
+///
+/// Gets implemented for all Transformable Data Types.
+/// Allows all Transformable Data Types to get transformed into a `Blob`.
 pub trait Transformer {
 
     /// Transforms non-numeric data into a numeric Vector/Matrix

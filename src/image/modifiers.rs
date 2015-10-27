@@ -2,15 +2,25 @@ use modifier::Modifier;
 use image_lib::FilterType;
 use super::Image;
 
+#[derive(Debug, Clone, Copy)]
+/// Resize Modifier for `Image`
 pub struct Resize {
+    /// The resized width of the new Image
     pub width: u32,
+    /// The resized heigt of the new Image
     pub height: u32,
 }
 
+#[derive(Debug, Clone, Copy)]
+/// Crop Modifier for `Image`
 pub struct Crop {
+    /// The x value from where the new Image should start
     pub x: u32,
+    /// The y value from where the new Image should start
     pub y: u32,
+    /// The width for the new Image
     pub width: u32,
+    /// The height for the new Image
     pub height: u32,
 }
 
