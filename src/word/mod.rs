@@ -14,11 +14,13 @@ pub struct Word {
 impl Set for Word {}
 
 impl Transformer for Word {
-    fn transform(&self, dimensions: u32) -> Option<Vec<u32>> {
-        match dimensions {
-            0 => None,
-            1 => Some(vec![murmur3(self.value.as_bytes(), 0)]),
-            _ => None,
+    fn transform_to_vec(&self) -> Vec<f32> {
+        vec![murmur3(self.value.as_bytes(), 0) as f32]
+    }
+
+    fn write_into_blob_data(&self, blob_data: &mut Vec<f32>) {
+        for (i, &e) in vec![murmur3(self.value.as_bytes(), 0)].iter().enumerate() {
+            blob_data[i] = e as f32;
         }
     }
 }

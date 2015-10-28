@@ -21,6 +21,7 @@ down. First, an example of a Data Type modification:
 ```
 let mut data_type = Image { value: ... }
 data_type = data_type.set((ModifierOne(param1, param2), ModifierTwo(anotherParam));
+image.set(Resize(20, 20))
 ```
 
 After one, none or many modifications through Modifiers, the Data Type can then
@@ -28,8 +29,8 @@ finally be transformed into a [`Blob`](https://github.com/autumnai/phloem)
 (numeric Vector). Taking `data_type` from the above example:
 
 ```
-// 3 specifies the dimensions of the numeric output
-data_type = data_type.transform(3);
+// the Vector secures the correct shape and capacity of the final Blob
+let final_blob = data_type.transform(vec![20, 20, 3]).unwrap();
 ```
 
 ## Transformable Data Types

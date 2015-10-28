@@ -34,4 +34,5 @@ pub mod modifier {
 pub mod blob {
     extern crate phloem;
     pub use self::phloem::Blob;
+    pub use self::phloem::Numeric;
 }

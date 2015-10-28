@@ -11,7 +11,7 @@ keywords = ["transformation", "encoding", "machine learning", "non-numeric"]
 license = "MIT"
 
 [dependencies]
-phloem = "0.1"
+phloem = "0.2.1"
 image = "0.4.0"
 murmurhash3 = "0.0.5"
 modifier = "*"
