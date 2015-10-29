@@ -8,7 +8,7 @@ homepage = "https://github.com/autumnai/cuticula"
 documentation = "http://autumnai.github.io/cuticula"
 readme = "README.md"
 keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
-"machine-learning", "non-numeric", "data", "deep-learning", "neural-nets"]
+"machine-learning"]
 license = "MIT"
 
 [dependencies]
