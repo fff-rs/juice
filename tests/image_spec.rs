@@ -20,6 +20,13 @@ mod image_spec {
     fn expected_result_crop() -> Vec<f32> { vec![255.0, 255.0, 255.0] }
 
     #[test]
+    fn it_works_for_pixels_rgb() {
+        let buffer: Vec<u8> = vec![255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0];
+        let img = Image::from_rgb_pixels(2, 2, buffer);
+        assert_eq!(expected_result(), img.transform_to_vec());
+    }
+
+    #[test]
     fn it_works_for_png() {
         let path = Path::new("tests/assets/test_image.png");
         let img = Image::from_path(&path);
