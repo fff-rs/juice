@@ -1,12 +1,14 @@
 # cuticula
 [![Join the chat at https://gitter.im/autumnai/cuticula](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/autumnai/cuticula?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/cuticula.svg?branch=master)](https://travis-ci.org/autumnai/cuticula) [![Coverage Status](https://coveralls.io/repos/autumnai/cuticula/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/cuticula?branch=master)
 
-Cuticula provides a convenient and customizable interface for modifying and
-transforming (non-numeric) data into numeric
-[`Blobs`](https://github.com/autumnai/phloem), that can be used for machine
-learning purposes.
+Cuticula tries to provide a smart and customizable pipeline for preprocessing
+data for machine learning tasks. Clean preprocessing methods for the most
+common type of data, makes preprocessing easy. Cuticula offers a pipeline of
+Modifiers and Transformers to turn non-numeric data into a safe and consistent
+numeric output - known as [`Blobs`](https://github.com/autumnai/phloem). For
+putting your preprocessed data to use, you might like to use the Machine Learning Framework [`Leaf`](https://github.com/autumnai/leaf).
 
-See the [Documentation](http://autumnai.github.io/cuticula).
+For more information see the [Documentation](http://autumnai.github.io/cuticula).
 
 ## Architecture
 

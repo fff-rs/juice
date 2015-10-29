@@ -1,13 +1,14 @@
 [package]
 name = "cuticula"
-description = "Data Transformation library for Machine Learning"
+description = "Data Preprocessing library for Machine Learning"
 authors = ["Michael Hirn <mj@autumnai.com>"]
 version = "0.1.0"
 repository = "https://github.com/autumnai/cuticula"
 homepage = "https://github.com/autumnai/cuticula"
 documentation = "http://autumnai.github.io/cuticula"
 readme = "README.md"
-keywords = ["transformation", "encoding", "machine learning", "non-numeric"]
+keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
+"machine learning", "non-numeric", "data"]
 license = "MIT"
 
 [dependencies]
