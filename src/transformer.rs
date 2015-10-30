@@ -40,5 +40,13 @@ pub trait Transformer {
 /// The Transformer Errors
 pub enum TransformerError {
     /// When the speficied shape capacitiy differs from the actual capacity of the numeric Vec
-    InvalidShape
+    InvalidShape,
+    /// When The Image Pixel Buffer can't be converted to a RGB Image
+    InvalidRgbPixels,
+    /// When The Image Pixel Buffer can't be converted to a RGBA Image
+    InvalidRgbaPixels,
+    /// When The Image Pixel Buffer can't be converted to a greyscale Image
+    InvalidLumaPixels,
+    /// When The Image Pixel Buffer can't be converted to a greyscale Alpha Image
+    InvalidLumaAlphaPixels,
 }

@@ -1,6 +1,7 @@
 use std::path::Path;
 use image_lib::{DynamicImage, ImageBuffer, open, load_from_memory};
 use {Set, Transformer};
+use transformer::TransformerError;
 pub use self::modifiers::*;
 
 /// The Modifiers form `Image`
@@ -43,16 +44,38 @@ impl Image {
     }
 
     /// Create a new Image from RGB style pixel container such as `Vec`
-    pub fn from_rgb_pixels(w: u32, h: u32, buf: Vec<u8>) -> Image {
-        Image {
-            value: ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageRgb8).unwrap()
+    pub fn from_rgb_pixels(w: u32, h: u32, buf: Vec<u8>) -> Result<Image, TransformerError> {
+        let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageRgb8);
+        match dynamic_image {
+            Some(image) => Ok(Image { value: image }),
+            None => Err(TransformerError::InvalidRgbPixels)
         }
     }
 
     /// Create a new Image from RGBa style pixel container such as `Vec`
-    pub fn from_rgba_pixels(w: u32, h: u32, buf: Vec<u8>) -> Image {
-        Image {
-            value: ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageRgba8).unwrap()
+    pub fn from_rgba_pixels(w: u32, h: u32, buf: Vec<u8>) -> Result<Image, TransformerError> {
+        let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageRgba8);
+        match dynamic_image {
+            Some(image) => Ok(Image { value: image }),
+            None => Err(TransformerError::InvalidRgbaPixels)
+        }
+    }
+
+    /// Create a new Image from Luma (greyscale) style pixel container such as `Vec`
+    pub fn from_luma_pixels(w: u32, h: u32, buf: Vec<u8>) -> Result<Image, TransformerError> {
+        let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageLuma8);
+        match dynamic_image {
+            Some(image) => Ok(Image { value: image }),
+            None => Err(TransformerError::InvalidLumaPixels)
+        }
+    }
+
+    /// Create a new Image from LumaA style pixel container such as `Vec`
+    pub fn from_lumaa_pixels(w: u32, h: u32, buf: Vec<u8>) -> Result<Image, TransformerError> {
+        let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageLumaA8);
+        match dynamic_image {
+            Some(image) => Ok(Image { value: image }),
+            None => Err(TransformerError::InvalidLumaAlphaPixels)
         }
     }
 }
