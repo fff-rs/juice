@@ -10,6 +10,17 @@ putting your preprocessed data to use, you might like to use the Machine Learnin
 
 For more information see the [Documentation](http://autumnai.github.io/cuticula).
 
+
+## Contributing
+
+Want to hack on Autumn? Awesome! We have [instructions to help you get started contributing code or documentation](CONTRIBUTING.md).
+
+Autumn has a mostly real-time collaboration culture and happens on the [Autumn
+Gitter Channels](https://gitter.im/autumnai/autumn). Or you reach out to the
+Maintainers. e.g.
+{[@MJ](https://twitter.com/mjhirn), [@hobofan](https://twitter.com/hobofan)}.
+
+
 ## Architecture
 
 Cuticula exposes several standard data types, which might need a numeric
