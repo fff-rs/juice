@@ -2,7 +2,7 @@
 name = "cuticula"
 description = "Data Preprocessing library for Machine Learning"
 authors = ["Michael Hirn <mj@autumnai.com>"]
-version = "0.1.0"
+version = "0.1.1"
 repository = "https://github.com/autumnai/cuticula"
 homepage = "https://github.com/autumnai/cuticula"
 documentation = "http://autumnai.github.io/cuticula"

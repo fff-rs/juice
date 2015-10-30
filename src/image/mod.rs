@@ -18,12 +18,6 @@ impl Transformer for Image {
     fn transform_to_vec(&self) -> Vec<f32> {
         self.value.raw_pixels().iter().map(|&e| e as f32).collect()
     }
-
-    fn write_into_blob_data(&self, blob_data: &mut Vec<f32>) {
-        for (i, &e) in self.value.raw_pixels().iter().enumerate() {
-            blob_data[i] = e as f32;
-        }
-    }
 }
 
 impl Image {
