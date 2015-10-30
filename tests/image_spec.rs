@@ -23,7 +23,40 @@ mod image_spec {
     fn it_works_for_pixels_rgb() {
         let buffer: Vec<u8> = vec![255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0];
         let img = Image::from_rgb_pixels(2, 2, buffer);
-        assert_eq!(expected_result(), img.transform_to_vec());
+        match img {
+            Ok(i) => assert_eq!(expected_result(), i.transform_to_vec()),
+            Err(_) => assert!(false)
+        }
+    }
+
+    #[test]
+    fn it_works_for_pixels_rgba() {
+        let buffer: Vec<u8> = vec![255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0];
+        let img = Image::from_rgba_pixels(2, 2, buffer);
+        match img {
+            Ok(i) => assert_eq!(expected_result_gif(), i.transform_to_vec()),
+            Err(_) => assert!(false)
+        }
+    }
+
+    #[test]
+    fn it_works_for_pixels_greyscale() {
+        let buffer: Vec<u8> = vec![255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0];
+        let img = Image::from_luma_pixels(3, 4, buffer);
+        match img {
+            Ok(i) => assert_eq!(expected_result(), i.transform_to_vec()),
+            Err(_) => assert!(false)
+        }
+    }
+
+    #[test]
+    fn it_works_for_pixels_greyscale_alpha() {
+        let buffer: Vec<u8> = vec![255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0];
+        let img = Image::from_lumaa_pixels(3, 2, buffer);
+        match img {
+            Ok(i) => assert_eq!(expected_result(), i.transform_to_vec()),
+            Err(_) => assert!(false)
+        }
     }
 
     #[test]
