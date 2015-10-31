@@ -27,8 +27,9 @@ working on the problem you would love to solve.
 #### Making a PR
 
 Pull requests are the primary mechanism we use to change Autumn repos. GitHub
-itself has some [great documentation](https://help.github.com/articles/using-pull-requests/) on using the Pull Request feature. We use the 'fork and pull' model
-described there.
+itself has some [great documentation](https://help.github.com/articles/using-pull-requests/)
+on using the Pull Request feature. We use the 'fork and pull' model described
+there.
 
 Please make pull requests against the `master` branch.
 
