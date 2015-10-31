@@ -11,7 +11,7 @@ pub trait Transformer {
     /// The shape attribute is used to controll the dimensions/shape of the Blob.
     /// It returns an Error, when the expected capacity (defined by the shape) differs, from the
     /// observed one.
-    fn transform(&self, shape: Vec<isize>) -> Result<Box<Blob<f32>>, TransformerError> {
+    fn transform(&self, shape: Vec<usize>) -> Result<Box<Blob<f32>>, TransformerError> {
         let mut blob = Box::new(Blob::of_shape(shape));
         match self.write_into_blob_data(blob.mutable_cpu_data()) {
             Ok(_) => Ok(blob),

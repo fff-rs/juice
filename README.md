@@ -13,7 +13,7 @@ For more information see the [Documentation](http://autumnai.github.io/cuticula)
 
 ## Contributing
 
-Want to hack on Autumn? Awesome! We have [instructions to help you get started contributing code or documentation](CONTRIBUTING.md).
+Want to contribute? Awesome! We have [instructions to help you get started contributing code or documentation](CONTRIBUTING.md).
 
 Autumn has a mostly real-time collaboration culture and happens on the [Autumn
 Gitter Channels](https://gitter.im/autumnai/autumn). Or you reach out to the
