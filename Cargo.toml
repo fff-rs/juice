@@ -2,7 +2,7 @@
 name = "cuticula"
 description = "Data Preprocessing library for Machine Learning"
 authors = ["Michael Hirn <mj@autumnai.com>"]
-version = "0.1.3"
+version = "0.1.4"
 repository = "https://github.com/autumnai/cuticula"
 homepage = "https://github.com/autumnai/cuticula"
 documentation = "http://autumnai.github.io/cuticula"
@@ -12,11 +12,11 @@ keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
 license = "MIT"
 
 [dependencies]
-phloem = "0.2.1"
+phloem = "0.2.4"
 image = "0.4.0"
 murmurhash3 = "0.0.5"
-modifier = "*"
-clippy = "*"
+modifier = "0.1"
+clippy = "0.0.23"
 
 [features]
 default = []
