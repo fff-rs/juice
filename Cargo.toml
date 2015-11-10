@@ -6,9 +6,9 @@ authors = ["Michael Hirn <mj@autumnai.com>"]
 
 [dependencies]
 csv = "0.14"
-cuticula = "0.1.2"
+cuticula = "0.1.4"
 hyper = "0.6"
 # CLI tooling
-docopt = "0.6"
-docopt_macros = "0.6"
+docopt = "0.6.75"
+docopt_macros = "0.6.75"
 rustc-serialize = "0.3"
