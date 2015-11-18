@@ -1,0 +1,23 @@
+[package]
+name          = "collenchyma"
+description   = "fast and parallel CPU/GPU computation through unified API"
+version       = "0.0.1"
+authors       = ["Michael Hirn <mj@autumnai.com>"]
+
+repository    = "https://github.com/autumnai/collenchyma"
+homepage      = "https://github.com/autumnai/collenchyma"
+documentation = "http://autumnai.github.io/collenchyma"
+readme        = "README.md"
+
+keywords      = ["backend", "computation", "opencl", "cuda"]
+license       = "MIT"
+
+[dependencies]
+libc = "0.2"
+enum_primitive = "0.1.0"
+num = "0.1"
+clippy = "0.0.23"
+
+[features]
+default = []
+dev = [] # possibly for clippy
