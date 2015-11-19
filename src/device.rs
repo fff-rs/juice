@@ -1,113 +1,38 @@
-//! Provides a representation for a collection of compute units e.g. CPUs or GPUs.
+//! Provides a representation for one or many ready to use hardwares.
 //!
-//! Devices can be GPUs, multi-core CPUs or DSPs, Cell/B.E. processor or whatever else
-//! is supported by the provided frameworks such as OpenCL, CUDA, etc. The struct holds all
-//! important information about the device.
+//! Devices are a set of hardwares, which got initialized from the framework, in order that they
+//! are ready to receive kernel executions, event processing, memory synchronization, etc. You can
+//! turn available hardware into a device, through the [backend][backend].
 //!
-//! ## Examples
-//!
-//! ```
-//! extern crate collenchyma as co;
-//! use co::device::{Device, DeviceType};
-//! # fn main() {
-//!
-//! let id = 1;
-//! let device = Device::new(id)
-//!     .set_name(Some(String::from("Super GPU")))
-//!     .set_device_type(Some(DeviceType::GPU))
-//!     .set_compute_units(Some(450))
-//!     .build();
-//! # }
-//! ```
+//! [backend]: ../backend/index.html
 
-#[derive(Debug, Copy, Clone)]
-/// Specifies the available Device types.
+use hardware::IHardware;
+use memory::{IMemory, MemoryType};
+use std::hash::{Hash, Hasher};
+use frameworks::native::device::Cpu;
+use frameworks::opencl::context::Context;
+
+/// Specifies Hardware behavior accross frameworks.
+pub trait IDevice {
+    /// The Hardware representation for this Device.
+    type H: IHardware;
+    /// The Memory representation for this Device.
+    type M: IMemory;
+    /// Returns the unique identifier of the Device.
+    fn id(&self) -> isize;
+    /// Returns the hardwares, which define the Device.
+    fn hardwares(&self) -> Vec<Self::H>;
+    /// Allocate memory on the Device.
+    fn alloc_memory(&self, size: usize) -> Self::M;
+    /// Synchronize memory from this Device to `dest_device`.
+    fn sync_memory_to(&self, source: &Self::M, dest: &mut MemoryType, dest_device: &DeviceType);
+}
+
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+/// Container for all known IDevice implementations
 pub enum DeviceType {
-    /// CPU devices
-    CPU,
-    /// GPU devices
-    GPU,
-    /// Used for anything else
-    OTHER
-}
-
-#[derive(Debug, Clone)]
-/// Defines a Device.
-///
-/// It implements a builder pattern, that allows to build a Device by chaining setters. At the end
-/// call .build, to receive an inmutable Device, which is important, as you do not want to chance
-/// your device information after initialization from the Framework.
-pub struct Device {
-    id: i32,
-    name: Option<String>,
-    device_type: Option<DeviceType>,
-    compute_units: Option<u32>,
-}
-
-impl Default for Device {
-    fn default() -> Self {
-        Device {
-            id: -1,
-            name: None,
-            device_type: None,
-            compute_units: None,
-        }
-    }
-}
-
-impl Device {
-
-    /// Initializes a new Device given an ID
-    pub fn new(id: i32) -> Device {
-        Device { id: id, ..Device::default() }
-    }
-
-    /// Returns the ID of the Device
-    pub fn id(&self) -> i32 {
-        self.id
-    }
-
-    /// Returns the name of the Device
-    pub fn name(&self) -> Option<String> {
-        self.name.clone()
-    }
-
-    /// Defines the name of the Device
-    pub fn set_name(&mut self, name: Option<String>) -> Self {
-        self.name = name;
-        self.clone()
-    }
-
-    /// Returns the device_type of the Device
-    pub fn device_type(&self) -> Option<DeviceType> {
-        self.device_type
-    }
-
-    /// Defines the device_type of the Device
-    pub fn set_device_type(&mut self, device_type: Option<DeviceType>) -> Self {
-        self.device_type = device_type;
-        self.clone()
-    }
-
-    /// Returns the compute_units of the Device
-    pub fn compute_units(&self) -> Option<u32> {
-        self.compute_units
-    }
-
-    /// Defines the compute_units of the Device
-    pub fn set_compute_units(&mut self, compute_units: Option<u32>) -> Self {
-        self.compute_units = compute_units;
-        self.clone()
-    }
-
-    /// Build an inmutable Device
-    pub fn build(self) -> Device {
-        Device {
-            id: self.id(),
-            name: self.name(),
-            device_type: self.device_type(),
-            compute_units: self.compute_units(),
-        }
-    }
-
+    /// A native CPU
+    Native(Cpu),
+    /// A OpenCL Context
+    OpenCL(Context),
 }

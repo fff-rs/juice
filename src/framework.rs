@@ -1,14 +1,14 @@
-//! Provides the generic functionality of a device supporting frameworks such as Host CPU, OpenCL, CUDA,
-//! etc..
-//! [device]: ../device/index.html
+//! Provides the generic functionality of a hardware supporting frameworks such as native CPU, OpenCL,
+//! CUDA, etc..
+//! [hardware]: ../hardware/index.html
 //!
 //! The default Framework would be plain host CPU for common computation. To make use of other
-//! computation devices such as GPUs you would choose other computation Frameworks such as OpenCL
-//! or CUDA, which provide the access to those devices for computation.
+//! computation hardwares such as GPUs you would choose other computation Frameworks such as OpenCL
+//! or CUDA, which provide the access to those hardwares for computation.
 //!
 //! To start backend-agnostic and highly parallel computation, you start by initializing on of the
 //! Framework implementations, resulting in an initialized Framework, that contains among
-//! other things, a list of all available devices through that framework.
+//! other things, a list of all available hardwares through that framework.
 //!
 //! ## Examples
 //!
@@ -18,16 +18,18 @@
 //! // let backend: Backend = framework.create_backend();
 //! ```
 
-use device::Device;
-
-#[derive(Debug, Clone)]
-/// The Framework
-pub struct Framework {
-    devices: Vec<Device>,
-}
+use hardware::IHardware;
+use device::IDevice;
+use frameworks::opencl::Error as OpenCLError;
+use std::error;
+use std::fmt;
 
 /// Defines a Framework.
 pub trait IFramework {
+    /// The Hardware representation for this Framework.
+    type H: IHardware;
+    /// The Device representation for this Framework.
+    type D: IDevice + Clone;
 
     /// Defines the Framework by a Name.
     ///
@@ -37,22 +39,50 @@ pub trait IFramework {
 
     /// Initializes a new Framework.
     ///
-    /// Loads all the available devices
+    /// Loads all the available hardwares
     fn new() -> Self where Self: Sized;
 
-    /// Provices all the available devices.
-    fn load_devices() -> Vec<Device>;
+    /// Initializes all the available hardwares.
+    fn load_hardwares() -> Result<Vec<Self::H>, FrameworkError>;
+
+    /// Returns the cached and available hardwares.
+    fn hardwares(&self) -> Vec<Self::H>;
+
+    /// Initializes a new Device from the provided hardwares.
+    fn new_device(&self, Vec<Self::H>) -> Result<Self::D, FrameworkError>;
 }
 
 #[derive(Debug)]
-/// Defines a generic struct for Framework Error.
-///
-/// Is used as a Err for Framework Results.
-pub struct FrameworkError {
-    /// The returned value from the ff.
-    pub code: i32,
-    /// The returned error ID from the ff.
-    pub id: String,
-    /// The message, that should be returned.
-    pub message: String,
+/// Defines a generic set of Framework Errors.
+pub enum FrameworkError {
+    /// Failures related to the OpenCL framework implementation.
+    OpenCL(OpenCLError),
+}
+
+impl fmt::Display for FrameworkError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            FrameworkError::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
+        }
+    }
+}
+
+impl error::Error for FrameworkError {
+    fn description(&self) -> &str {
+        match *self {
+            FrameworkError::OpenCL(ref err) => err.description(),
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            FrameworkError::OpenCL(ref err) => Some(err),
+        }
+    }
+}
+
+impl From<OpenCLError> for FrameworkError {
+    fn from(err: OpenCLError) -> FrameworkError {
+        FrameworkError::OpenCL(err)
+    }
 }

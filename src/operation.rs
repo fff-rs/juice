@@ -1,4 +1,4 @@
-//! Provides the generic functionality for a backend-agnostic operation.
+//! Provides the generic functionality for backend-agnostic operations.
 //!
 //! A Kernel defines a function, a operation, that can be executed on various backends and
 //! [frameworks][frameworks]. A Kernel can also easily be executed in parallel on multi-core
@@ -37,51 +37,5 @@
 //! [backend-call]: ../backend/struct.Backend.html#method.call
 //! [program]: ../program/index.html
 
-use framework::{IFramework, FrameworkError};
-
-#[derive(Debug, Copy, Clone)]
-/// Defines which type of Kernel is present.
-///
-/// The KernelKind defines at backend.call(), how exactly the kernel will be executed.
-pub enum KernelKind {
-    /// A Rust function.
-    ///
-    /// Will be used for native CPU execution.
-    Fn {
-        /// The function.
-        f: i32
-    },
-    /// A Kernel object
-    ///
-    /// Will be used with computation frameworks such as OpenCL, CUDA.
-    Object {
-        /// The Kernel object - as an id.
-        id: i32
-    },
-}
-
-#[derive(Debug, Copy, Clone)]
-/// Defines a backend-agnostic operation.
-pub struct Kernel {
-    kernel: KernelKind,
-    //args: Vec<KernelArgs>,
-}
-
-impl Kernel {
-
-    /*
-
-    pub fn new(kernel: KernelKind) -> Kernel {
-        Kernel {
-            kernel: kernel,
-            args: vec![],
-        }
-    }
-
-    pub fn set_args(args: Vec<KernelArgs) -> Result<(), Error> {
-        // Check if the args are already the same as the one already specified.
-        // Same Memory, ...
-        // If so do nothing. Could provide a speed up.
-    }
-    */
-}
+/// Defines the functionality of an operation.
+pub trait IOperation { }

@@ -2,9 +2,8 @@
 //!
 //! Examples would be OpenCL or CUDA.
 
-pub use self::host::Host;
+pub use self::native::Native;
 pub use self::opencl::OpenCL;
 
-pub mod host;
+pub mod native;
 pub mod opencl;
-pub mod opencl_ffi;

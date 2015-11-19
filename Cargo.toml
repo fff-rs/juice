@@ -14,7 +14,10 @@ license       = "MIT"
 
 [dependencies]
 libc = "0.2"
+bitflags = "0.3"
+rblas = "0.0.10"
 enum_primitive = "0.1.0"
+byteorder = "0.4"
 num = "0.1"
 clippy = "0.0.23"
 

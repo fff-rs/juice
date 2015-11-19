@@ -1,4 +1,4 @@
-//! Exposes the specific Program implementations.
+//! Exposes the specific library implementations.
 //!
 //! The purpose of a program is described at the [generic program module][program]. Collenchyma
 //! comes shipped with the most basic Programs, which provide important low-level, backend-agnostic
@@ -9,7 +9,5 @@
 //! too.
 //!
 //! [program]: ../program/index.html
-
-pub use self::blas::Blas;
 
 pub mod blas;

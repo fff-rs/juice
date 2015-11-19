@@ -3,17 +3,17 @@
 Collenchyma is a framework for fast, parallel and hardware-agnostic computation,
 similar to [Arrayfire][arrayfire].
 
+Collenchyma comes with a super simple API, which allows you to write code once
+and then execute it on one or multiple devices (CPUs, GPUs) without the need to
+care for the specific computation language (OpenCL, CUDA, native CPU) or the
+underlying hardware.
+
 Collenchyma was started at [Autumn][autumn] to support fast and parallel
 computations, at the Machine Intelligence Framework [Leaf][leaf], on various
 backends such as OpenCL, CUDA, or native CPU.
 Collenchyma is written in Rust, which allows for a modular and easily extensible
 architecture and has no hard dependency on any drivers or libraries, which makes
 it easy to use, as it removes long and painful build processes.
-
-Collenchyma comes with a super simple API, which allows you to write code once
-and then execute it on one or multiple devices (CPUs, GPUs) without the need to
-care for the specific computation language (OpenCL, CUDA, native CPU) or the
-underlying hardware.
 
 For more information,
 

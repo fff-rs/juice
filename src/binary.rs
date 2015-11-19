@@ -1,6 +1,6 @@
 //! Provides the generic functionality for a collection of backend-agnostic operations.
 //!
-//! A program defines one or usually many kernel functions, sharing related functionalities.
+//! A binary defines one or usually many operations, sharing related functionalities.
 //! Two examples would be [BLAS][blas] (Basic Linear Algebra Subprograms) or [cuDNN][cudnn],
 //! providing operations for specific applications.
 //! The difference between these programs and programs defined in Collenchyma is, that a program in
@@ -35,7 +35,7 @@
 //!
 //! The specific programs (BLAS, DNN, etc.) implement the shared functionality for all
 //! or some of the supported [frameworks][frameworks]. This is done as the program provides traits
-//! which, then cab be implemented for each of specific framework. This generates a nice, native
+//! which, then can be implemented for each specific framework. This generates a nice, native
 //! Rust access to these kernel methods, with a unified interface for every backend and completely
 //! controllable at runtime.
 //!
@@ -51,5 +51,19 @@
 //! [backend-call]: ../backend/struct.Backend.html#method.call
 //! [kernel]: ../kernel/index.html
 
-/// Defines the functionality that a Program implementation needs to support
-pub trait Program {}
+use operation::IOperation;
+use library::ILibrary;
+use std::collections::HashMap;
+
+/// Defines the functionality for turning a library into backend-specific, executable operations.
+pub trait IBinary {
+    /// The Operation representation for this Binary.
+    type O: IOperation;
+    /// The Library representation for this Binary.
+    type L: ILibrary;
+    /// Returns the unique identifier of the Binary.
+    fn id(&self) -> isize;
+    /// Creates a HashMap of available, ready-to-use operations, based on the provided library and
+    /// tailored for a framework.
+    fn create_operations() -> HashMap<String, Self::O>;
+}
