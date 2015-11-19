@@ -1,4 +1,4 @@
-//! Provides the generic functionality of a device supporting framework such as Host CPU, OpenCL, CUDA,
+//! Provides the generic functionality of a device supporting frameworks such as Host CPU, OpenCL, CUDA,
 //! etc..
 //! [device]: ../device/index.html
 //!

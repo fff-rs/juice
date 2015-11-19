@@ -11,8 +11,9 @@ architecture and has no hard dependency on any drivers or libraries, which makes
 it easy to use, as it removes long and painful build processes.
 
 Collenchyma comes with a super simple API, which allows you to write code once
-and then execute it on any device (CPUs, GPUs) without the need to care for
-the specific computation language (OpenCL, CUDA, native CPU) or the backend.
+and then execute it on one or multiple devices (CPUs, GPUs) without the need to
+care for the specific computation language (OpenCL, CUDA, native CPU) or the
+underlying hardware.
 
 For more information,
 

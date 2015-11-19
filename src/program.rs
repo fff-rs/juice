@@ -13,8 +13,8 @@
 //! functions, removing the need for various system libraries, which often results in a tedious and
 //! frustrating setup experience.
 //!
-//! You are ususally not interaction with a program itself, but rather use it to construct the
-//! needed backend-agnostic operations aka. kernels, which can then be run and parallelized via
+//! You are ususally not interacting with a program itself, but rather use it to construct the
+//! needed backend-agnostic operations aka. kernels, which can then be run and parallelized via an
 //! unified interface - [backend.call()][backend-call].
 //!
 //! ## Architecture
@@ -30,14 +30,14 @@
 //! * accessible through Rust (e.g. ffi for Host CPU execution) or
 //! * writen in other languages such as OpenCL or CUDA, etc.
 //!
-//! controllable in Rust via a unified Interface which is truly backend-agnostic. A program is
-//! therefore one of the most critical aspects of Collenchyma's architecture.
+//! controllable in Rust trough a unified Interface. A program is therefore one of the most
+//! critical aspects of Collenchyma's architecture.
 //!
 //! The specific programs (BLAS, DNN, etc.) implement the shared functionality for all
-//! or some of the supported [frameworks][frameworks]. In order to know, which kernels are
-//! accessible a specific program implements a build tree for it's kernels, which initializes
-//! backend-agnostic kernels at the build step of a program - which is one of the first things
-//! which will happen at the initialization of a new backend.
+//! or some of the supported [frameworks][frameworks]. This is done as the program provides traits
+//! which, then cab be implemented for each of specific framework. This generates a nice, native
+//! Rust access to these kernel methods, with a unified interface for every backend and completely
+//! controllable at runtime.
 //!
 //! ## Development
 //!
