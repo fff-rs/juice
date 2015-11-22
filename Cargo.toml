@@ -13,5 +13,5 @@ license = "MIT"
 build = "build.rs"
 
 [dependencies]
-num = "~0.1.27"
-libc = "~0.1.10"
+num = "0.1"
+libc = "0.2"
