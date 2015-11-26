@@ -17,6 +17,7 @@ use std::collections::HashMap;
 use device::{IDevice, DeviceType};
 use memory::MemoryType;
 use std::marker::PhantomData;
+use std::mem;
 
 #[derive(Debug)]
 /// Container that handles synchronization of [Memory][1] of type `T`.
@@ -24,23 +25,31 @@ use std::marker::PhantomData;
 pub struct SharedMemory<T> {
     latest_location: DeviceType,
     copies: HashMap<DeviceType, MemoryType>,
+    cap: usize,
     phantom: PhantomData<T>,
 }
 
 impl<T> SharedMemory<T> {
-    /// Create new SharedMemory from allocated [Memory][1].
+    /// Create new SharedMemory from by allocating [Memory][1] on a Device.
     /// [1]: ../memory/index.html
-    pub fn new(dev: &DeviceType, copy: MemoryType) -> SharedMemory<T> {
+    pub fn new(dev: &DeviceType, capacity: usize) -> SharedMemory<T> {
         let mut copies = HashMap::<DeviceType, MemoryType>::new();
+        let copy: MemoryType;
+        let alloc_size = mem::size_of::<T>() * capacity;
+        match *dev {
+            DeviceType::Native(ref cpu) => copy = MemoryType::Native(cpu.alloc_memory(alloc_size)),
+            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(context.alloc_memory(alloc_size)),
+        }
         copies.insert(dev.clone(), copy);
         SharedMemory {
             latest_location: dev.clone(),
             copies: copies,
+            cap: capacity,
             phantom: PhantomData,
         }
     }
 
-    /// Synchronize memory from latest location to `destination`.
+    /// Synchronize memory from latest location to `destination`
     pub fn sync(&mut self, destination: &DeviceType) -> Result<(), SharedMemoryError> {
         if &self.latest_location != destination {
             let latest = self.latest_location.clone();
@@ -48,6 +57,20 @@ impl<T> SharedMemory<T> {
             self.latest_location = destination.clone();
         }
         Ok(())
+    }
+
+    /// Get a reference to the memory copy on the provided `device`.
+    ///
+    /// Returns `None` if there is no memory copy on the device.
+    pub fn get(&self, device: &DeviceType) -> Option<&MemoryType> {
+        self.copies.get(device)
+    }
+
+    /// Get a mutable reference to the memory copy on the provided `device`.
+    ///
+    /// Returns `None` if there is no memory copy on the device.
+    pub fn get_mut(&mut self, device: &DeviceType) -> Option<&mut MemoryType> {
+        self.copies.get_mut(device)
     }
 
     /// Synchronize memory from `source` device to `destination` device.
@@ -67,8 +90,7 @@ impl<T> SharedMemory<T> {
                             }
                         },
                     }
-                    self.add_copy(source, source_copy);
-                    self.add_copy(destination, destination_copy);
+                    self.return_copies(source, source_copy, destination, destination_copy);
                     Ok(())
                 },
                 Err(err) => Err(err),
@@ -78,11 +100,7 @@ impl<T> SharedMemory<T> {
         }
     }
 
-    /// Register a memory copy for a device.
-    pub fn add_copy(&mut self, dev: &DeviceType, copy: MemoryType) {
-        self.copies.insert(dev.clone(), copy);
-    }
-
+    /// Aquire ownership over the copies for synchronizing.
     fn aquire_copies(&mut self, source: &DeviceType, destination: &DeviceType) -> Result<(MemoryType, MemoryType), SharedMemoryError> {
         let source_copy: MemoryType;
         let destination_copy: MemoryType;
@@ -98,6 +116,26 @@ impl<T> SharedMemory<T> {
         Ok((source_copy, destination_copy))
     }
 
+    /// Return ownership over the copies after synchronizing.
+    fn return_copies(&mut self, src: &DeviceType, src_mem: MemoryType, dest: &DeviceType, dest_mem: MemoryType) {
+        self.copies.insert(src.clone(), src_mem);
+        self.copies.insert(dest.clone(), dest_mem);
+    }
+
+    /// Track a new device and allocate memory on it.
+    pub fn add_device(&mut self, dev: &DeviceType) {
+        let copy: MemoryType;
+        match *dev {
+            DeviceType::Native(ref cpu) => copy = MemoryType::Native(cpu.alloc_memory(mem::size_of::<T>())),
+            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(context.alloc_memory(mem::size_of::<T>())),
+        }
+        self.copies.insert(dev.clone(), copy);
+    }
+
+    /// Returns the number of elements for which the SharedMemory has been allocated.
+    pub fn capacity(&self) -> usize {
+        self.cap
+    }
 }
 
 /// Errors than can occur when synchronizing memory.

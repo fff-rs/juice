@@ -3,7 +3,6 @@ extern crate libc;
 
 #[cfg(test)]
 mod hardware_spec {
-
     use co::hardware::{IHardware, HardwareType};
     use co::frameworks::opencl::Device;
 
@@ -58,5 +57,4 @@ mod hardware_spec {
             _ => false
         });
     }
-
 }
