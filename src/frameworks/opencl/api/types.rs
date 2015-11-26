@@ -77,7 +77,7 @@ pub struct buffer_region {
 enum_from_primitive! {
 /// OpenCL error codes.
 #[derive(PartialEq, Debug)]
-#[repr()]
+#[repr(C)]
 pub enum Status {
     SUCCESS = 0,
     DEVICE_NOT_FOUND = -1,
