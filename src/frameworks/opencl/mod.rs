@@ -12,7 +12,6 @@
 extern { }
 
 use framework::{IFramework, FrameworkError};
-use hardware::{HardwareType, IHardware};
 pub use self::platform::Platform;
 pub use self::context::Context;
 pub use self::memory::Memory;
@@ -21,7 +20,6 @@ pub use self::kernel::Kernel;
 pub use self::program::Program;
 pub use self::device::{Device, DeviceInfo};
 pub use self::api::{API, Error};
-use self::api::types as cl;
 
 pub mod device;
 pub mod platform;
@@ -73,9 +71,8 @@ impl IFramework for OpenCL {
 
         let mut hardware_container: Vec<Device> = vec!();
         for platform in &platforms {
-            match API::load_devices(platform) {
-                Ok(hardwares) => hardware_container.append(&mut hardwares.clone()),
-                _ => ()
+            if let Ok(hardwares) = API::load_devices(platform) {
+                hardware_container.append(&mut hardwares.clone())
             }
         }
         Ok(hardware_container)

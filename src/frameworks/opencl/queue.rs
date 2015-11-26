@@ -26,7 +26,7 @@ impl Queue {
 
     /// Initializes a new OpenCL command queue from its C type.
     pub fn from_c(id: cl::queue_id) -> Queue {
-        unsafe { Queue { id: id as isize } }
+        Queue { id: id as isize }
     }
 
     /// Returns the id as isize.

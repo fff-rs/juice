@@ -1,8 +1,6 @@
 //! Provides a operation on native CPU.
 
-use hardware::{IHardware, HardwareType};
 use operation::IOperation;
-use shared_memory::SharedMemory;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a host CPU operation.

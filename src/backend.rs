@@ -40,11 +40,9 @@
 //! ```
 
 use framework::{IFramework, FrameworkError};
+use frameworks::{Native, OpenCL};
 use device::IDevice;
 use libraries::blas::IBlas;
-use frameworks::{Native, OpenCL};
-use operation::IOperation;
-use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 /// Defines the main and highest struct of Collenchyma.

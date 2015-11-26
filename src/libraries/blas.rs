@@ -12,16 +12,8 @@
 //!
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 
-use backend::Backend;
-use hardware::IHardware;
-use device::IDevice;
 use framework::IFramework;
-use operation::IOperation;
 use binary::IBinary;
-use frameworks::Native;
-use frameworks::OpenCL;
-use shared_memory::SharedMemory;
-use blas::Vector;
 
 /// Provides the functionality for a backend to support Basic Linear Algebra Subprograms.
 pub trait IBlas {

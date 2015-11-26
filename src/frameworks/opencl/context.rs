@@ -21,7 +21,7 @@ impl Context {
         let callback = unsafe { mem::transmute(ptr::null::<fn()>()) };
         Ok(
             Context::from_c(
-                try!(unsafe {API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())}),
+                try!(API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())),
                 devices.clone()
             )
         )
@@ -29,7 +29,7 @@ impl Context {
 
     /// Initializes a new OpenCL platform from its C type.
     pub fn from_c(id: cl::context_id, devices: Vec<Device>) -> Context {
-        unsafe { Context { id: id as isize, devices: devices } }
+        Context { id: id as isize, devices: devices }
     }
 
     /// Returns the id as isize.
