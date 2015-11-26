@@ -20,9 +20,6 @@
 //!
 //! [blas]: ../libraries/blas/index.html
 
-use operation::IOperation;
-use std::collections::HashMap;
-
 /// Defines the functionality for turning a library into backend-specific, executable operations.
 pub trait IBinary {
     // Returns the unique identifier of the Binary.

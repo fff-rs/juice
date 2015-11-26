@@ -4,7 +4,7 @@ use frameworks::opencl::{API, Error};
 use frameworks::opencl::Platform;
 use super::types as cl;
 use super::ffi::*;
-use std::{ptr, mem};
+use std::ptr;
 use std::iter::repeat;
 use std::sync::{StaticMutex, MUTEX_INIT};
 

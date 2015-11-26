@@ -8,8 +8,6 @@
 
 use hardware::IHardware;
 use memory::{IMemory, MemoryType};
-use operation::IOperation;
-use std::hash::{Hash, Hasher};
 use frameworks::native::device::Cpu;
 use frameworks::opencl::context::Context;
 

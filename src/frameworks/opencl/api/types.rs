@@ -4,7 +4,6 @@
 
 use libc;
 use std::fmt;
-use num::FromPrimitive;
 
 /* Opaque types */
 pub type platform_id                 = *mut libc::c_void;
@@ -62,6 +61,7 @@ pub type event_info                  = uint;
 pub type command_type                = uint;
 pub type profiling_info              = uint;
 
+#[repr(C)]
 pub struct image_format {
     image_channel_order:        channel_order,
     image_channel_data_type:    channel_type
@@ -163,13 +163,13 @@ pub enum DeviceType {
     ALL(bitfield),
 }
 pub static DEVICE_TYPE: [DeviceType; 5] = [
-    DeviceType::DEFAULT(1<<0),
+    DeviceType::DEFAULT(1),
     DeviceType::CPU(1<<1),
     DeviceType::GPU(1<<2),
     DeviceType::ACCELERATOR(1<<3),
     DeviceType::ALL(0xFFFFFFFF)
 ];
-pub const CL_DEVICE_TYPE_DEFAULT:                       bitfield = 1 << 0;
+pub const CL_DEVICE_TYPE_DEFAULT:                       bitfield = 1;
 pub const CL_DEVICE_TYPE_CPU:                           bitfield = 1 << 1;
 pub const CL_DEVICE_TYPE_GPU:                           bitfield = 1 << 2;
 pub const CL_DEVICE_TYPE_ACCELERATOR:                   bitfield = 1 << 3;
@@ -241,7 +241,7 @@ pub static CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF:           uint = 0x103C;
 pub static CL_DEVICE_OPENCL_C_VERSION:                   uint = 0x103D;
 
 /* cl_device_fp_config - bitfield */
-pub static CL_FP_DENORM:                                 bitfield = 1 << 0;
+pub static CL_FP_DENORM:                                 bitfield = 1;
 pub static CL_FP_INF_NAN:                                bitfield = 1 << 1;
 pub static CL_FP_ROUND_TO_NEAREST:                       bitfield = 1 << 2;
 pub static CL_FP_ROUND_TO_ZERO:                          bitfield = 1 << 3;
@@ -259,11 +259,11 @@ pub static CL_LOCAL:                                     uint = 0x1;
 pub static CL_GLOBAL:                                    uint = 0x2;
 
 /* cl_device_exec_capabilities - bitfield */
-pub static CL_EXEC_KERNEL:                               bitfield = 1 << 0;
+pub static CL_EXEC_KERNEL:                               bitfield = 1;
 pub static CL_EXEC_NATIVE_KERNEL:                        bitfield = 1 << 1;
 
 /* cl_command_queue_properties - bitfield */
-pub static CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:       bitfield = 1 << 0;
+pub static CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:       bitfield = 1;
 pub static CL_QUEUE_PROFILING_ENABLE:                    bitfield = 1 << 1;
 
 /* cl_context_info  */
@@ -282,7 +282,7 @@ pub static CL_QUEUE_REFERENCE_COUNT:                     uint = 0x1092;
 pub static CL_QUEUE_PROPERTIES:                          uint = 0x1093;
 
 /* cl_mem_flags - bitfield */
-pub static CL_MEM_READ_WRITE:                            bitfield = 1 << 0;
+pub static CL_MEM_READ_WRITE:                            bitfield = 1;
 pub static CL_MEM_WRITE_ONLY:                            bitfield = 1 << 1;
 pub static CL_MEM_READ_ONLY:                             bitfield = 1 << 2;
 pub static CL_MEM_USE_HOST_PTR:                          bitfield = 1 << 3;
@@ -300,9 +300,9 @@ pub static CL_BGRA:                                      uint = 0x10B6;
 pub static CL_ARGB:                                      uint = 0x10B7;
 pub static CL_INTENSITY:                                 uint = 0x10B8;
 pub static CL_LUMINANCE:                                 uint = 0x10B9;
-pub static CL_Rx:                                        uint = 0x10BA;
-pub static CL_RGx:                                       uint = 0x10BB;
-pub static CL_RGBx:                                      uint = 0x10BC;
+pub static CL_RX:                                        uint = 0x10BA;
+pub static CL_RGX:                                       uint = 0x10BB;
+pub static CL_RGBX:                                      uint = 0x10BC;
 
 /* cl_channel_type */
 pub static CL_SNORM_INT8:                                uint = 0x10D0;
@@ -365,7 +365,7 @@ pub static CL_SAMPLER_ADDRESSING_MODE:                   uint = 0x1153;
 pub static CL_SAMPLER_FILTER_MODE:                       uint = 0x1154;
 
 /* cl_map_flags - bitfield */
-pub static CL_MAP_READ:                                  bitfield = 1 << 0;
+pub static CL_MAP_READ:                                  bitfield = 1;
 pub static CL_MAP_WRITE:                                 bitfield = 1 << 1;
 
 /* cl_program_info */

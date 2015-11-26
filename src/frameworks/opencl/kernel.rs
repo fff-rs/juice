@@ -1,7 +1,6 @@
 //! Provides a Rust wrapper around OpenCL's Kernel.
 
 use operation::IOperation;
-use frameworks::opencl::OpenCL;
 use super::api::types as cl;
 use super::api::API;
 
@@ -22,7 +21,7 @@ impl Kernel {
 
     /// Initializes a new OpenCL device from its C type.
     pub fn from_c(id: cl::kernel_id) -> Kernel {
-        unsafe { Kernel { id: id as isize } }
+        Kernel { id: id as isize }
     }
 
     /// Returns the id as its C type.

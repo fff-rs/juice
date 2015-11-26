@@ -1,9 +1,7 @@
 //! Provides BLAS for a OpenCL backend.
 
-use frameworks::OpenCL;
 use frameworks::opencl::Kernel;
 use frameworks::opencl::Program;
-use binary::IBinary;
 use libraries::blas::*;
 
 impl IBlasBinary for Program {

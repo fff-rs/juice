@@ -16,7 +16,7 @@ impl Platform {
 
     /// Initializes a new OpenCL platform from its C type.
     pub fn from_c(id: cl::platform_id) -> Platform {
-        unsafe { Platform { id: id as isize } }
+        Platform { id: id as isize }
     }
 
     /// Returns the id as isize.

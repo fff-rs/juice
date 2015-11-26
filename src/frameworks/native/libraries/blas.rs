@@ -1,8 +1,6 @@
 //! Provides BLAS for a Native backend.
 
-use frameworks::Native;
 use frameworks::native::{Function, Binary};
-use binary::IBinary;
 use libraries::blas::*;
 
 impl IBlasBinary for Binary {

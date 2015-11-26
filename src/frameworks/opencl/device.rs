@@ -1,7 +1,6 @@
 //! Provides a Rust wrapper around OpenCL's device.
 
 use hardware::{IHardware, HardwareType};
-use frameworks::opencl::OpenCL;
 use super::api::types as cl;
 use super::api::API;
 use std::io::Cursor;
@@ -38,7 +37,7 @@ impl Device {
 
     /// Initializes a new OpenCL device from its C type.
     pub fn from_c(id: cl::device_id) -> Device {
-        unsafe { Device { id: id as isize, ..Device::default() } }
+        Device { id: id as isize, ..Device::default() }
     }
 
     /// Returns the id as its C type.
@@ -48,16 +47,16 @@ impl Device {
 
     /// Loads the name of the device via a foreign OpenCL call.
     pub fn load_name(&mut self) -> Self {
-        self.name = match unsafe { API::load_device_info(self, cl::CL_DEVICE_NAME) } {
+        self.name = match API::load_device_info(self, cl::CL_DEVICE_NAME) {
             Ok(result) => Some(result.to_string()),
-            Err(err) => None
+            Err(_) => None
         };
         self.clone()
     }
 
     /// Loads the device type via a foreign OpenCL call.
     pub fn load_device_type(&mut self) -> Self {
-        self.device_type = match unsafe { API::load_device_info(self, cl::CL_DEVICE_TYPE) } {
+        self.device_type = match API::load_device_info(self, cl::CL_DEVICE_TYPE) {
             Ok(result) => {
                 let device_type = result.to_device_type();
                 match device_type {
@@ -69,16 +68,16 @@ impl Device {
                     _ => None
                 }
             },
-            Err(err) => None
+            Err(_) => None
         };
         self.clone()
     }
 
     /// Loads the compute units of the device via a foreign OpenCL call.
     pub fn load_compute_units(&mut self) -> Self {
-        self.compute_units = match unsafe { API::load_device_info(self, cl::CL_DEVICE_MAX_COMPUTE_UNITS) } {
+        self.compute_units = match API::load_device_info(self, cl::CL_DEVICE_MAX_COMPUTE_UNITS) {
             Ok(result) => Some(result.to_isize()),
-            Err(err) => None
+            Err(_) => None
         };
         self.clone()
     }
