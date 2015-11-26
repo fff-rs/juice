@@ -20,6 +20,7 @@
 
 use hardware::IHardware;
 use device::IDevice;
+use binary::IBinary;
 use frameworks::opencl::Error as OpenCLError;
 use std::error;
 use std::fmt;
@@ -30,6 +31,8 @@ pub trait IFramework {
     type H: IHardware;
     /// The Device representation for this Framework.
     type D: IDevice + Clone;
+    /// The Binary representation for this Framework.
+    type B: IBinary + Clone;
 
     /// Defines the Framework by a Name.
     ///
@@ -47,6 +50,9 @@ pub trait IFramework {
 
     /// Returns the cached and available hardwares.
     fn hardwares(&self) -> Vec<Self::H>;
+
+    /// Returns the initialized binary.
+    fn binary(&self) -> Self::B;
 
     /// Initializes a new Device from the provided hardwares.
     fn new_device(&self, Vec<Self::H>) -> Result<Self::D, FrameworkError>;

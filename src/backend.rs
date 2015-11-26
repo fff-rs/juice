@@ -41,6 +41,10 @@
 
 use framework::{IFramework, FrameworkError};
 use device::IDevice;
+use libraries::blas::IBlas;
+use frameworks::{Native, OpenCL};
+use operation::IOperation;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 /// Defines the main and highest struct of Collenchyma.
@@ -86,6 +90,27 @@ impl<F: IFramework + Clone> Backend<F> {
     /// Returns the backend device.
     pub fn device(&self) -> F::D {
         self.device.clone()
+    }
+
+    /// Returns the blas binary.
+    pub fn binary(&self) -> F::B {
+        self.framework().binary().clone()
+    }
+}
+
+impl IBlas for Backend<OpenCL> {
+    type B = ::frameworks::opencl::Program;
+
+    fn binary(&self) -> Self::B {
+        self.binary()
+    }
+}
+
+impl IBlas for Backend<Native> {
+    type B = ::frameworks::native::Binary;
+
+    fn binary(&self) -> Self::B {
+        self.binary()
     }
 }
 

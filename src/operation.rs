@@ -38,4 +38,4 @@
 //! [program]: ../program/index.html
 
 /// Defines the functionality of an operation.
-pub trait IOperation { }
+pub trait IOperation {}
