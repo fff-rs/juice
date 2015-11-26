@@ -70,7 +70,6 @@ pub mod hardware;
 pub mod framework;
 pub mod frameworks;
 pub mod memory;
-pub mod library;
 pub mod libraries;
 pub mod shared_memory;
 pub mod operation;

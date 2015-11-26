@@ -1,4 +1,16 @@
 //! Provides backend-agnostic BLAS operations.
+//!
+//! BLAS (Basic Linear Algebra Subprograms) is a specification that prescribes a set of low-level
+//! routines for performing common linear algebra operations such as vector addition, scalar
+//! multiplication, dot products, linear combinations, and matrix multiplication. They are the de
+//! facto standard low-level routines for linear algebra libraries; the routines have bindings for
+//! both C and Fortran. Although the BLAS specification is general, BLAS implementations are often
+//! optimized for speed on a particular machine, so using them can bring substantial performance
+//! benefits. BLAS implementations will take advantage of special floating point hardware such as
+//! vector registers or SIMD instructions.<br/>
+//! [Source][blas-source]
+//!
+//! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 
 use backend::Backend;
 use hardware::IHardware;
@@ -11,19 +23,7 @@ use frameworks::OpenCL;
 use shared_memory::SharedMemory;
 use blas::Vector;
 
-/// Provides the functionality for a backend for Basic Linear Algebra Subprograms.
-///
-/// BLAS (Basic Linear Algebra Subprograms) is a specification that prescribes a set of low-level
-/// routines for performing common linear algebra operations such as vector addition, scalar
-/// multiplication, dot products, linear combinations, and matrix multiplication. They are the de
-/// facto standard low-level routines for linear algebra libraries; the routines have bindings for
-/// both C and Fortran. Although the BLAS specification is general, BLAS implementations are often
-/// optimized for speed on a particular machine, so using them can bring substantial performance
-/// benefits. BLAS implementations will take advantage of special floating point hardware such as
-/// vector registers or SIMD instructions.<br/>
-/// [Source][blas-source]
-///
-/// [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
+/// Provides the functionality for a backend to support Basic Linear Algebra Subprograms.
 pub trait IBlas {
     /// The Binary representation for this Library.
     type B: IBlasBinary + IBinary;
