@@ -57,13 +57,9 @@ use std::collections::HashMap;
 
 /// Defines the functionality for turning a library into backend-specific, executable operations.
 pub trait IBinary {
-    /// The Operation representation for this Binary.
-    type O: IOperation;
-    /// The Library representation for this Binary.
-    type L: ILibrary;
-    /// Returns the unique identifier of the Binary.
-    fn id(&self) -> isize;
-    /// Creates a HashMap of available, ready-to-use operations, based on the provided library and
-    /// tailored for a framework.
-    fn create_operations() -> HashMap<String, Self::O>;
+    // Returns the unique identifier of the Binary.
+    //fn id(&self) -> isize;
+    // Creates a HashMap of available, ready-to-use operations, based on the provided library and
+    // tailored for a framework.
+    //fn create_operations();
 }

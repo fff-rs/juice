@@ -5,7 +5,7 @@ use frameworks::opencl::OpenCL;
 use super::api::types as cl;
 use super::api::API;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 /// Defines a OpenCL Kernel.
 ///
 /// A Kernel is OpenCL's version of Collenchyma's [operation][operation].
@@ -31,8 +31,4 @@ impl Kernel {
     }
 }
 
-impl IOperation for Kernel {
-    fn id(&self) -> isize {
-        self.id
-    }
-}
+impl IOperation for Kernel {}

@@ -17,6 +17,8 @@ pub use self::platform::Platform;
 pub use self::context::Context;
 pub use self::memory::Memory;
 pub use self::queue::Queue;
+pub use self::kernel::Kernel;
+pub use self::program::Program;
 pub use self::device::{Device, DeviceInfo};
 pub use self::api::{API, Error};
 use self::api::types as cl;
@@ -26,12 +28,16 @@ pub mod platform;
 pub mod context;
 pub mod memory;
 pub mod queue;
+pub mod kernel;
+pub mod program;
+pub mod libraries;
 mod api;
 
 #[derive(Debug, Clone)]
 /// Provides the OpenCL Framework.
 pub struct OpenCL {
     hardwares: Vec<Device>,
+    binary: Program,
 }
 
 /// Provides the OpenCL framework trait for explicit Backend behaviour.
@@ -44,6 +50,7 @@ impl IOpenCL for OpenCL {}
 impl IFramework for OpenCL {
     type H = Device;
     type D = Context;
+    type B = Program;
     const ID: &'static str = "OPENCL";
 
     fn new() -> OpenCL {
@@ -51,6 +58,7 @@ impl IFramework for OpenCL {
             Ok(hardwares) => {
                 OpenCL {
                     hardwares: hardwares,
+                    binary: Program::from_isize(1)
                 }
             },
             Err(err) => panic!(err)
@@ -75,6 +83,10 @@ impl IFramework for OpenCL {
 
     fn hardwares(&self) -> Vec<Device> {
         self.hardwares.clone()
+    }
+
+    fn binary(&self) -> Self::B {
+        self.binary.clone()
     }
 
     /// Creates a new OpenCL context over one or many devices ready for computation.
