@@ -43,8 +43,8 @@
 //! [autumn]: http://autumnai.com
 //! [leaf]: https://github.com/autumnai/leaf
 //! [glium]: https://github.com/tomaka/glium
-#![feature(plugin)]
-#![plugin(clippy)]
+#![cfg_attr(lint, feature(plugin))]
+#![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
 #![feature(associated_consts)]
 #![feature(associated_type_defaults)]
