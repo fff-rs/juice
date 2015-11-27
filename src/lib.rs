@@ -74,3 +74,4 @@ pub mod libraries;
 pub mod shared_memory;
 pub mod operation;
 pub mod binary;
+pub mod error;

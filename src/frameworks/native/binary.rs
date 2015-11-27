@@ -12,11 +12,11 @@ pub struct Binary {
 }
 
 impl Binary {
-    /// Initializes a native CPU hardware.
-    pub fn new(id: isize) -> Binary {
+    /// Initializes the native CPU binary.
+    pub fn new() -> Binary {
         Binary {
-            id: id,
-            blas_dot: Function::new(1)
+            id: 0,
+            blas_dot: Function::new()
         }
     }
 }

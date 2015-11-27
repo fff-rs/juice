@@ -19,7 +19,7 @@
 //! ```
 
 use hardware::IHardware;
-use device::IDevice;
+use device::{IDevice, DeviceType};
 use binary::IBinary;
 use frameworks::opencl::Error as OpenCLError;
 use std::error;
@@ -46,7 +46,7 @@ pub trait IFramework {
     fn new() -> Self where Self: Sized;
 
     /// Initializes all the available hardwares.
-    fn load_hardwares() -> Result<Vec<Self::H>, FrameworkError>;
+    fn load_hardwares() -> Result<Vec<Self::H>, Error>;
 
     /// Returns the cached and available hardwares.
     fn hardwares(&self) -> Vec<Self::H>;
@@ -55,40 +55,46 @@ pub trait IFramework {
     fn binary(&self) -> Self::B;
 
     /// Initializes a new Device from the provided hardwares.
-    fn new_device(&self, Vec<Self::H>) -> Result<Self::D, FrameworkError>;
+    fn new_device(&self, Vec<Self::H>) -> Result<DeviceType, Error>;
 }
 
 #[derive(Debug)]
 /// Defines a generic set of Framework Errors.
-pub enum FrameworkError {
+pub enum Error {
     /// Failures related to the OpenCL framework implementation.
     OpenCL(OpenCLError),
 }
 
-impl fmt::Display for FrameworkError {
+impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            FrameworkError::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
+            Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
         }
     }
 }
 
-impl error::Error for FrameworkError {
+impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            FrameworkError::OpenCL(ref err) => err.description(),
+            Error::OpenCL(ref err) => err.description(),
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
-            FrameworkError::OpenCL(ref err) => Some(err),
+            Error::OpenCL(ref err) => Some(err),
         }
     }
 }
 
-impl From<OpenCLError> for FrameworkError {
-    fn from(err: OpenCLError) -> FrameworkError {
-        FrameworkError::OpenCL(err)
+impl From<OpenCLError> for Error {
+    fn from(err: OpenCLError) -> Error {
+        Error::OpenCL(err)
+    }
+}
+
+impl From<Error> for ::error::Error {
+    fn from(err: Error) -> ::error::Error {
+        ::error::Error::Framework(err)
     }
 }

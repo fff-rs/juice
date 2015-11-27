@@ -4,9 +4,9 @@
 //!
 //!
 
-use framework::{IFramework, FrameworkError};
+use framework::IFramework;
 use hardware::{HardwareType, IHardware};
-use device::IDevice;
+use device::DeviceType;
 use self::hardware::Hardware;
 pub use self::device::Cpu;
 pub use self::function::Function;
@@ -46,13 +46,13 @@ impl IFramework for Native {
         match Native::load_hardwares() {
             Ok(hardwares) => Native {
                 hardwares: hardwares,
-                binary: Binary::new(1)
+                binary: Binary::new()
             },
             Err(err) => panic!(err)
         }
     }
 
-    fn load_hardwares() -> Result<Vec<Hardware>, FrameworkError> {
+    fn load_hardwares() -> Result<Vec<Hardware>, ::framework::Error> {
         let cpu = Hardware::new(1)
             .set_name(Some(String::from("Host CPU")))
             .set_hardware_type(Some(HardwareType::CPU))
@@ -69,7 +69,7 @@ impl IFramework for Native {
         self.binary.clone()
     }
 
-    fn new_device(&self, devices: Vec<Hardware>) -> Result<Cpu, FrameworkError> {
-        Ok(Cpu::new(devices.to_vec()))
+    fn new_device(&self, devices: Vec<Hardware>) -> Result<DeviceType, ::framework::Error> {
+        Ok(DeviceType::Native(Cpu::new(devices.to_vec())))
     }
 }

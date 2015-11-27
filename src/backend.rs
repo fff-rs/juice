@@ -39,9 +39,10 @@
 //! }
 //! ```
 
-use framework::{IFramework, FrameworkError};
+use error::Error;
+use framework::IFramework;
 use frameworks::{Native, OpenCL};
-use device::IDevice;
+use device::{IDevice, DeviceType};
 use libraries::blas::IBlas;
 
 #[derive(Debug, Clone)]
@@ -59,20 +60,20 @@ pub struct Backend<F: IFramework> {
     framework: Box<F>,
     /// Provides a device, created from one or many hardwares, which are ready to execute kernel
     /// methods and synchronize memory.
-    device: F::D,
+    device: DeviceType,
 }
 
 /// Defines the functionality of the Backend.
 impl<F: IFramework + Clone> Backend<F> {
-    /// Initialize a new Backend from a BackendConfig.
-    pub fn new(config: BackendConfig<F>) -> Result<Backend<F>, FrameworkError> {
-        match config.framework.new_device(config.hardwares) {
-            Ok(device) => Ok(Backend {
+    /// Initialize a new native Backend from a BackendConfig.
+    pub fn new(config: BackendConfig<F>) -> Result<Backend<F>, Error> {
+        let device = try!(config.framework.new_device(config.hardwares));
+        Ok(
+            Backend {
                 framework: Box::new(config.framework),
                 device: device,
-            }),
-            Err(err) => Err(err),
-        }
+            }
+        )
     }
 
     /// Returns the available hardware.
@@ -86,8 +87,8 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the backend device.
-    pub fn device(&self) -> F::D {
-        self.device.clone()
+    pub fn device(&self) -> &DeviceType {
+        &self.device
     }
 
     /// Returns the blas binary.
@@ -102,6 +103,10 @@ impl IBlas for Backend<OpenCL> {
     fn binary(&self) -> Self::B {
         self.binary()
     }
+
+    fn device(&self) -> &DeviceType {
+        self.device()
+    }
 }
 
 impl IBlas for Backend<Native> {
@@ -109,6 +114,10 @@ impl IBlas for Backend<Native> {
 
     fn binary(&self) -> Self::B {
         self.binary()
+    }
+
+    fn device(&self) -> &DeviceType {
+        self.device()
     }
 }
 
@@ -130,3 +139,4 @@ impl<F: IFramework + Clone> BackendConfig<F> {
         }
     }
 }
+

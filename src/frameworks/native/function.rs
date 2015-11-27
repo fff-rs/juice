@@ -4,14 +4,12 @@ use operation::IOperation;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a host CPU operation.
-pub struct Function {
-    id: isize,
-}
+pub struct Function;
 
 impl Function {
     /// Initializes a native CPU hardware.
-    pub fn new(id: isize) -> Function {
-        Function { id: id }
+    pub fn new() -> Function {
+        Function
     }
 }
 

@@ -12,24 +12,34 @@
 //!
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 
-use framework::IFramework;
+use memory::MemoryType;
+use shared_memory::SharedMemory;
 use binary::IBinary;
+use device::DeviceType;
 
-/// Provides the functionality for a backend to support Basic Linear Algebra Subprograms.
+/// Provides the functionality for a backend to support Basic Linear Algebra Subprogram operations.
 pub trait IBlas {
     /// The Binary representation for this Library.
     type B: IBlasBinary + IBinary;
 
     /// Level 1 operation
-    fn dot(&self, a: i32) {
-        // check if operation is provided;
-        // create_mem;
-        // sync_mem;
-        self.binary().dot().compute(2)
+    fn dot(&self, x: &mut SharedMemory<f32>, y: &mut SharedMemory<f32>, result: &mut SharedMemory<f32>) -> Result<(), ::error::Error> {
+        try!(try!(x.add_device(self.device())).sync(self.device()));
+        try!(try!(y.add_device(self.device())).sync(self.device()));
+        Ok(try!(
+            self.binary().dot().compute::<f32>(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
+                try!(y.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
+                try!(result.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
+            )
+        ))
     }
 
     /// Returns the binary representation
     fn binary(&self) -> Self::B;
+
+    /// Returns the device representation
+    fn device(&self) -> &DeviceType;
 }
 
 /// Describes the operation binding for a Blas Binary implementation.
@@ -44,5 +54,51 @@ pub trait IBlasBinary {
 /// Describes a Dot Operation.
 pub trait IOperationDot {
     /// Computes the Dot operation.
-    fn compute(&self, a: i32);
+    fn compute<T>(&self, x: &MemoryType, y: &MemoryType, result: &MemoryType) -> Result<(), Error>;
+}
+
+#[derive(Debug)]
+/// Defines Blas Errors.
+pub enum Error {
+    /// Failure related to a Dot operation.
+    Dot(String),
+    /// Failure related to a missing argument.
+    MissingArgument(String),
+}
+
+impl ::std::fmt::Display for Error {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match *self {
+            Error::Dot(ref err) => write!(f, "{:?}", err),
+            Error::MissingArgument(ref err) => write!(f, "{:?}", err),
+        }
+    }
+}
+
+impl ::std::error::Error for Error {
+    fn description(&self) -> &str {
+        match *self {
+            Error::Dot(ref err) => err,
+            Error::MissingArgument(ref err) => err,
+        }
+    }
+
+    fn cause(&self) -> Option<&::std::error::Error> {
+        match *self {
+            Error::Dot(_) => None,
+            Error::MissingArgument(_) => None,
+        }
+    }
+}
+
+impl From<Error> for ::libraries::Error {
+    fn from(err: Error) -> ::libraries::Error {
+        ::libraries::Error::Blas(err)
+    }
+}
+
+impl From<Error> for ::error::Error {
+    fn from(err: Error) -> ::error::Error {
+        ::error::Error::Operation(From::from(err))
+    }
 }
