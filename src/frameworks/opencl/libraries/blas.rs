@@ -14,7 +14,7 @@ impl IBlasBinary for Program {
 }
 
 impl IOperationDot for Kernel {
-    fn compute<T>(&self, x: &MemoryType, y: &MemoryType, result: &MemoryType) -> Result<(), Error> {
+    fn compute<T>(&self, x: &MemoryType, y: &MemoryType, result: &mut MemoryType) -> Result<(), Error> {
         unimplemented!()
     }
 }

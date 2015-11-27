@@ -24,13 +24,14 @@ pub trait IBlas {
 
     /// Level 1 operation
     fn dot(&self, x: &mut SharedMemory<f32>, y: &mut SharedMemory<f32>, result: &mut SharedMemory<f32>) -> Result<(), ::error::Error> {
-        try!(try!(x.add_device(self.device())).sync(self.device()));
-        try!(try!(y.add_device(self.device())).sync(self.device()));
+        match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+        match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
+        match result.add_device(self.device()) { _ => () }
         Ok(try!(
             self.binary().dot().compute::<f32>(
                 try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
                 try!(y.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
-                try!(result.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
             )
         ))
     }
@@ -54,7 +55,7 @@ pub trait IBlasBinary {
 /// Describes a Dot Operation.
 pub trait IOperationDot {
     /// Computes the Dot operation.
-    fn compute<T>(&self, x: &MemoryType, y: &MemoryType, result: &MemoryType) -> Result<(), Error>;
+    fn compute<T>(&self, x: &MemoryType, y: &MemoryType, result: &mut MemoryType) -> Result<(), Error>;
 }
 
 #[derive(Debug)]
@@ -64,6 +65,8 @@ pub enum Error {
     Dot(String),
     /// Failure related to a missing argument.
     MissingArgument(String),
+    /// Failure related to an invalid argument.
+    InvalidArgument(String),
 }
 
 impl ::std::fmt::Display for Error {
@@ -71,6 +74,7 @@ impl ::std::fmt::Display for Error {
         match *self {
             Error::Dot(ref err) => write!(f, "{:?}", err),
             Error::MissingArgument(ref err) => write!(f, "{:?}", err),
+            Error::InvalidArgument(ref err) => write!(f, "{:?}", err),
         }
     }
 }
@@ -80,6 +84,7 @@ impl ::std::error::Error for Error {
         match *self {
             Error::Dot(ref err) => err,
             Error::MissingArgument(ref err) => err,
+            Error::InvalidArgument(ref err) => err,
         }
     }
 
@@ -87,6 +92,7 @@ impl ::std::error::Error for Error {
         match *self {
             Error::Dot(_) => None,
             Error::MissingArgument(_) => None,
+            Error::InvalidArgument(_) => None,
         }
     }
 }

@@ -37,11 +37,14 @@ mod blas_spec {
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[1f32, 2f32, 3f32]);
 
         let mut result = &mut SharedMemory::<f32>::new(backend.device(), 1);
-        backend.dot(x, y, result);
-
-        match result.get(backend.device()).unwrap() {
-            &MemoryType::Native(ref mem) => assert_eq!(14f32, mem.as_slice::<f32>()[0]),
-            _ => assert_eq!(1, 2),
+        match backend.dot(x, y, result) {
+            Ok(_) => {
+                match result.get(backend.device()).unwrap().as_native() {
+                    Some(mem) => assert_eq!(14f32, mem.as_slice::<f32>()[0]),
+                    None => assert_eq!(1, 2),
+                }
+            },
+            Err(err) => println!("{}", err)
         }
     }
 }

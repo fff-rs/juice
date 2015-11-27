@@ -26,8 +26,7 @@ mod shared_memory_spec {
     fn it_has_correct_latest_device() {
         let ntv = Native::new();
         let cpu = ntv.new_device(ntv.hardwares()).unwrap();
-        let cpu_dev = &mut DeviceType::Native(cpu.clone());
-        let shared_data = &mut SharedMemory::<f32>::new(cpu_dev, 10);
-        assert_eq!(cpu_dev, shared_data.latest_device());
+        let shared_data = &mut SharedMemory::<f32>::new(&cpu, 10);
+        assert_eq!(cpu, *shared_data.latest_device());
     }
 }
