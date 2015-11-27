@@ -21,3 +21,33 @@ pub enum MemoryType {
     /// A OpenCL Context
     OpenCL(Memory),
 }
+
+impl MemoryType {
+    fn as_native(&self) -> Option<&FlatBox> {
+        match *self {
+            MemoryType::Native(ref ret) => Some(ret),
+            _ => None,
+        }
+    }
+
+    fn as_native_mut(&mut self) -> Option<&mut FlatBox> {
+        match *self {
+            MemoryType::Native(ref mut ret) => Some(ret),
+            _ => None,
+        }
+    }
+
+    fn as_opencl(&self) -> Option<&Memory> {
+        match *self {
+            MemoryType::OpenCL(ref ret) => Some(ret),
+            _ => None,
+        }
+    }
+
+    fn as_opencl_mut(&mut self) -> Option<&mut Memory> {
+        match *self {
+            MemoryType::OpenCL(ref mut ret) => Some(ret),
+            _ => None,
+        }
+    }
+}
