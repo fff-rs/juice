@@ -19,8 +19,10 @@ rblas = "0.0.10"
 enum_primitive = "0.1.0"
 byteorder = "0.4"
 num = "0.1"
-clippy = "0.0.23"
+
+clippy = { version = "0.0.23", optional = true }
 
 [features]
 default = []
-dev = [] # possibly for clippy
+dev = []
+lint = ["clippy"]
