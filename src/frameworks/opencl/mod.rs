@@ -11,7 +11,8 @@
 #[cfg(target_os = "linux")]
 extern { }
 
-use framework::{IFramework, FrameworkError};
+use framework::IFramework;
+use device::DeviceType;
 pub use self::platform::Platform;
 pub use self::context::Context;
 pub use self::memory::Memory;
@@ -63,11 +64,8 @@ impl IFramework for OpenCL {
         }
     }
 
-    fn load_hardwares() -> Result<Vec<Device>, FrameworkError> {
-        let platforms = match API::load_platforms() {
-            Ok(p) => p,
-            Err(err) => return Err(FrameworkError::OpenCL(err))
-        };
+    fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
+        let platforms = try!(API::load_platforms());
 
         let mut hardware_container: Vec<Device> = vec!();
         for platform in &platforms {
@@ -91,7 +89,7 @@ impl IFramework for OpenCL {
     /// Contexts are used by the OpenCL runtime for managing objects such as command-queues,
     /// memory, program and kernel objects and for executing kernels on one or more hardwares
     /// specified in the context.
-    fn new_device(&self, hardwares: Vec<Device>) -> Result<Context, FrameworkError> {
-        Ok(try!(Context::new(hardwares)))
+    fn new_device(&self, hardwares: Vec<Device>) -> Result<DeviceType, ::framework::Error> {
+        Ok(DeviceType::OpenCL(try!(Context::new(hardwares))))
     }
 }

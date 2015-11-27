@@ -25,8 +25,10 @@ impl FlatBox {
     /// The preffered way to access native memory.
     pub fn as_slice<T>(&self) -> &[T] {
         unsafe {
-            slice::from_raw_parts_mut(self.raw_box as *mut T,
-                                   self.len / mem::size_of::<T>())
+            slice::from_raw_parts_mut(
+                self.raw_box as *mut T,
+                self.len / mem::size_of::<T>()
+            )
         }
     }
 
@@ -35,8 +37,10 @@ impl FlatBox {
     /// The preffered way to access native memory.
     pub fn as_mut_slice<T>(&mut self) -> &mut [T] {
         unsafe {
-            slice::from_raw_parts_mut(self.raw_box as *mut T,
-                                   self.len / mem::size_of::<T>())
+            slice::from_raw_parts_mut(
+                self.raw_box as *mut T,
+                self.len / mem::size_of::<T>()
+            )
         }
     }
 }

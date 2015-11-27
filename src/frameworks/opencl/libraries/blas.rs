@@ -2,6 +2,7 @@
 
 use frameworks::opencl::Kernel;
 use frameworks::opencl::Program;
+use memory::MemoryType;
 use libraries::blas::*;
 
 impl IBlasBinary for Program {
@@ -13,7 +14,7 @@ impl IBlasBinary for Program {
 }
 
 impl IOperationDot for Kernel {
-    fn compute(&self, a: i32) {
-        println!("{}", format!("OPENCL"))
+    fn compute<T>(&self, x: &MemoryType, y: &MemoryType, result: &MemoryType) -> Result<(), Error> {
+        unimplemented!()
     }
 }

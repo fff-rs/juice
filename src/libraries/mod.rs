@@ -20,3 +20,38 @@
 //! [program]: ../program/index.html
 
 pub mod blas;
+
+#[derive(Debug)]
+/// Defines a high-level library Error.
+pub enum Error {
+    /// Failure at a Blas Operation.
+    Blas(::libraries::blas::Error),
+}
+
+impl ::std::fmt::Display for Error {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match *self {
+            Error::Blas(ref err) => write!(f, "Blas error: {}", err),
+        }
+    }
+}
+
+impl ::std::error::Error for Error {
+    fn description(&self) -> &str {
+        match *self {
+            Error::Blas(ref err) => err.description(),
+        }
+    }
+
+    fn cause(&self) -> Option<&::std::error::Error> {
+        match *self {
+            Error::Blas(ref err) => Some(err),
+        }
+    }
+}
+
+impl From<Error> for ::error::Error {
+    fn from(err: Error) -> ::error::Error {
+        ::error::Error::Operation(err)
+    }
+}
