@@ -22,14 +22,14 @@ mod framework_opencl_spec {
         println!("{:?}", frm.new_device(hardwares));
     }
 
-    #[test]
-    #[allow(unused_must_use)]
-    fn it_allocates_memory() {
-        let vec_a = vec![0isize, 1, 2, -3, 4, 5, 6, 7];
-        let frm = OpenCL::new();
-        if let DeviceType::OpenCL(ctx) = frm.new_device(frm.hardwares()[0..1].to_vec()).unwrap() {
-            // OpenCL memory
-            Memory::new(ctx.id_c(), vec_a.len());
-        }
-    }
+    // #[test]
+    // #[allow(unused_must_use)]
+    // fn it_allocates_memory() {
+    //     let vec_a = vec![0isize, 1, 2, -3, 4, 5, 6, 7];
+    //     let frm = OpenCL::new();
+    //     if let DeviceType::OpenCL(ctx) = frm.new_device(frm.hardwares()[0..1].to_vec()).unwrap() {
+    //         // OpenCL memory
+    //         Memory::new(ctx.id_c(), vec_a.len());
+    //     }
+    // }
 }
