@@ -23,7 +23,7 @@ pub enum MemoryType {
 }
 
 impl MemoryType {
-    /// Returns the native memory type, if available.
+    /// Extract the FlatBox if MemoryType is Native.
     pub fn as_native(&self) -> Option<&FlatBox> {
         match *self {
             MemoryType::Native(ref ret) => Some(ret),
@@ -31,7 +31,7 @@ impl MemoryType {
         }
     }
 
-    /// Returns the mut native memory type, if available.
+    /// Extract the FlatBox mutably if MemoryType is Native.
     pub fn as_mut_native(&mut self) -> Option<&mut FlatBox> {
         match *self {
             MemoryType::Native(ref mut ret) => Some(ret),
@@ -39,7 +39,7 @@ impl MemoryType {
         }
     }
 
-    /// Returns the opencl memory type, if available.
+    /// Extract the OpenCL Memory if MemoryType is OpenCL.
     pub fn as_opencl(&self) -> Option<&Memory> {
         match *self {
             MemoryType::OpenCL(ref ret) => Some(ret),
@@ -47,7 +47,7 @@ impl MemoryType {
         }
     }
 
-    /// Returns the mut opencl memory type, if available.
+    /// Extract the OpenCL Memory mutably if MemoryType is OpenCL.
     pub fn as_mut_opencl(&mut self) -> Option<&mut Memory> {
         match *self {
             MemoryType::OpenCL(ref mut ret) => Some(ret),
