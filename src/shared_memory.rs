@@ -140,6 +140,11 @@ impl<T> SharedMemory<T> {
         }
     }
 
+    /// Returns the device that contains the up-to-date memory copy.
+    pub fn latest_device(&self) -> &DeviceType {
+        &self.latest_location
+    }
+
     /// Returns the number of elements for which the SharedMemory has been allocated.
     pub fn capacity(&self) -> usize {
         self.cap
