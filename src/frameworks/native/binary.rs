@@ -9,6 +9,10 @@ pub struct Binary {
     id: isize,
     /// The initialized Blas Dot Operation.
     pub blas_dot: Function,
+    /// The initialized Blas Scale Operation.
+    pub blas_scale: Function,
+    /// The initialized Blas Axpy Operation.
+    pub blas_axpy: Function,
 }
 
 impl Binary {
@@ -16,7 +20,9 @@ impl Binary {
     pub fn new() -> Binary {
         Binary {
             id: 0,
-            blas_dot: Function::new()
+            blas_dot: Function::new(),
+            blas_scale: Function::new(),
+            blas_axpy: Function::new(),
         }
     }
 }

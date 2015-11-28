@@ -49,6 +49,7 @@
 #![feature(associated_consts)]
 #![feature(associated_type_defaults)]
 #![feature(unboxed_closures)]
+#![feature(macro_rules)]
 #![feature(static_mutex)]
 #![deny(missing_docs,
         missing_debug_implementations, missing_copy_implementations,
