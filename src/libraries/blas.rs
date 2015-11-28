@@ -23,6 +23,53 @@ pub trait IBlas<F: Float> {
     /// The Binary representation for this Library.
     type B: IBlasBinary<F> + IBinary;
 
+    /// Computes the absolute sum of vector `x`.
+    ///
+    /// Saves the result to `result`.
+    /// This is a Level 1 BLAS operation.
+    fn asum(&self, x: &mut SharedMemory<F>, result: &mut SharedMemory<F>) -> Result<(), ::error::Error> {
+        match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+        match result.add_device(self.device()) { _ => () }
+        Ok(try!(
+            self.binary().asum().compute(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
+            )
+        ))
+    }
+
+    /// Computes a vector `x` times a constant `a` plus a vector `y` aka. `a * x + y`.
+    ///
+    /// Saves the resulting vector back into `y`.
+    /// This is a Level 1 BLAS operation.
+    fn axpy(&self, a: &mut SharedMemory<F>, x: &mut SharedMemory<F>, y: &mut SharedMemory<F>) -> Result<(), ::error::Error> {
+        match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
+        match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+        match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
+        Ok(try!(
+            self.binary().axpy().compute(
+                try!(a.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `a`")))),
+                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
+            )
+        ))
+    }
+
+    /// Copies `x.len()` elements of vector `x` into vector `y`.
+    ///
+    /// Saves the result to `y`.
+    /// This is a Level 1 BLAS operation.
+    fn copy(&self, x: &mut SharedMemory<F>, y: &mut SharedMemory<F>) -> Result<(), ::error::Error> {
+        match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+        match y.add_device(self.device()) { _ => () }
+        Ok(try!(
+            self.binary().copy().compute(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
+            )
+        ))
+    }
+
     /// Computes the [dot product][dot-product] over x and y.
     /// [dot-product]: https://en.wikipedia.org/wiki/Dot_product
     ///
@@ -36,6 +83,21 @@ pub trait IBlas<F: Float> {
             self.binary().dot().compute(
                 try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
                 try!(y.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
+            )
+        ))
+    }
+
+    /// Computes the L2 norm aka. euclidean length of vector `x`.
+    ///
+    /// Saves the result to `result`.
+    /// This is a Level 1 BLAS operation.
+    fn nrm2(&self, x: &mut SharedMemory<F>, result: &mut SharedMemory<F>) -> Result<(), ::error::Error> {
+        match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+        match result.add_device(self.device()) { _ => () }
+        Ok(try!(
+            self.binary().nrm2().compute(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
                 try!(result.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
             )
         ))
@@ -56,18 +118,16 @@ pub trait IBlas<F: Float> {
         ))
     }
 
-    /// Computes a vector `x` times a constant `a` plus a vector `y` aka. `a * x + y`.
+    /// Swapes the content of vector `x` and vector `y`.
     ///
-    /// Saves the resulting vector back into `y`.
+    /// Saves the resulting vector back into `x`.
     /// This is a Level 1 BLAS operation.
-    fn axpy(&self, a: &mut SharedMemory<F>, x: &mut SharedMemory<F>, y: &mut SharedMemory<F>) -> Result<(), ::error::Error> {
-        match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
+    fn swap(&self, x: &mut SharedMemory<F>, y: &mut SharedMemory<F>) -> Result<(), ::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-        match y.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+        match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
         Ok(try!(
-            self.binary().axpy().compute(
-                try!(a.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `a`")))),
-                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
+            self.binary().swap().compute(
+                try!(x.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
                 try!(y.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
             )
         ))
@@ -82,19 +142,53 @@ pub trait IBlas<F: Float> {
 
 /// Describes the operation binding for a Blas Binary implementation.
 pub trait IBlasBinary<F: Float> {
-    /// Describes the Dot Operation.
-    type Dot: IOperationDot<F>;
-    /// Describes the Scale Operation.
-    type Scale: IOperationScale<F>;
+    /// Describes the Asum Operation.
+    type Asum: IOperationAsum<F>;
     /// Describes the Axpy Operation.
     type Axpy: IOperationAxpy<F>;
+    /// Describes the Copy Operation.
+    type Copy: IOperationCopy<F>;
+    /// Describes the Dot Operation.
+    type Dot: IOperationDot<F>;
+    /// Describes the Nrm2 Operation.
+    type Nrm2: IOperationNrm2<F>;
+    /// Describes the Scale Operation.
+    type Scale: IOperationScale<F>;
+    /// Describes the Swap Operation.
+    type Swap: IOperationSwap<F>;
 
-    /// Returns an initialized Dot operation.
-    fn dot(&self) -> Self::Dot;
-    /// Returns an initialized Scale operation.
-    fn scale(&self) -> Self::Scale;
+    /// Returns an initialized Asum operation.
+    fn asum(&self) -> Self::Asum;
     /// Returns an initialized Axpy operation.
     fn axpy(&self) -> Self::Axpy;
+    /// Returns an initialized Copy operation.
+    fn copy(&self) -> Self::Copy;
+    /// Returns an initialized Dot operation.
+    fn dot(&self) -> Self::Dot;
+    /// Returns an initialized Nrm2 operation.
+    fn nrm2(&self) -> Self::Nrm2;
+    /// Returns an initialized Scale operation.
+    fn scale(&self) -> Self::Scale;
+    /// Returns an initialized Swap operation.
+    fn swap(&self) -> Self::Swap;
+}
+
+/// Describes a Asum Operation.
+pub trait IOperationAsum<F: Float> {
+    /// Computes the Asum operation.
+    fn compute(&self, x: &MemoryType, result: &mut MemoryType) -> Result<(), Error>;
+}
+
+/// Describes a Axpy Operation.
+pub trait IOperationAxpy<F: Float> {
+    /// Computes the Axpy operation.
+    fn compute(&self, a: &MemoryType, x: & MemoryType, y: &mut MemoryType) -> Result<(), Error>;
+}
+
+/// Describes a Copy Operation.
+pub trait IOperationCopy<F: Float> {
+    /// Computes the Copy operation.
+    fn compute(&self, x: &MemoryType, y: &mut MemoryType) -> Result<(), Error>;
 }
 
 /// Describes a Dot Operation.
@@ -103,16 +197,22 @@ pub trait IOperationDot<F: Float> {
     fn compute(&self, x: &MemoryType, y: &MemoryType, result: &mut MemoryType) -> Result<(), Error>;
 }
 
+/// Describes a Nrm2 Operation.
+pub trait IOperationNrm2<F: Float> {
+    /// Computes the Nrm2 operation.
+    fn compute(&self, x: &MemoryType, result: &mut MemoryType) -> Result<(), Error>;
+}
+
 /// Describes a Scale Operation.
 pub trait IOperationScale<F: Float> {
     /// Computes the Scale operation.
     fn compute(&self, a: &MemoryType, x: &mut MemoryType) -> Result<(), Error>;
 }
 
-/// Describes a Axpy Operation.
-pub trait IOperationAxpy<F: Float> {
-    /// Computes the Axpy operation.
-    fn compute(&self, a: &MemoryType, x: & MemoryType, y: &mut MemoryType) -> Result<(), Error>;
+/// Describes a Swap Operation.
+pub trait IOperationSwap<F: Float> {
+    /// Computes the Swap operation.
+    fn compute(&self, x: &mut MemoryType, y: &mut MemoryType) -> Result<(), Error>;
 }
 
 #[derive(Debug)]
