@@ -1,19 +1,31 @@
 # Collenchyma • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma) [![Coverage Status](https://coveralls.io/repos/autumnai/collenchyma/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/collenchyma?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma)](https://crates.io/crates/collenchyma) [![License](https://img.shields.io/crates/l/collenchyma.svg)](LICENSE)
 
-Collenchyma is a framework for fast, parallel and hardware-agnostic computation,
-similar to [Arrayfire][arrayfire].
+Collenchyma provides a common Rust interface to run operations on any Cuda or OpenCL supported device, making deployment of high-performance code as easy and platform-agnostic as common code.
 
-Collenchyma comes with a super simple API, which allows you to write code once
-and then execute it on one or multiple devices (CPUs, GPUs) without the need to
-care for the specific computation language (OpenCL, CUDA, native CPU) or the
-underlying hardware.
+Collenchyma's abstracts over the different computation languages (Native, OpenCL, Cuda) and let's you run highly-performant code, thanks to easy parallelization, on servers, desktops or mobiles without the need to adapt your code for the machine you deploy to. Collenchyma does not require OpenCL or Cuda on the machine and automatically falls back to the native host CPU, making your application highly flexible.
 
-Collenchyma was started at [Autumn][autumn] to support fast and parallel
-computations, at the Machine Intelligence Framework [Leaf][leaf], on various
-backends such as OpenCL, CUDA, or native CPU.
-Collenchyma is written in Rust, which allows for a modular and easily extensible
-architecture and has no hard dependency on any drivers or libraries, which makes
-it easy to use, as it removes long and painful build processes.
+* __Parallelizing Performance__<br/>
+Using the full potential of the hardware results in significantly better
+performance for many computation intensive applications. With Collenchyma
+you parallelize your computations across all the cores of your handware, instead
+of just the one on your CPU. Collenchyma also provides optimized operations for
+the most popular computations such as BLAS, that you can use right away.
+
+* __Easily Extensible__<br/>
+Making your application support custom operations and logic for GPU execution is
+easy. No need to care about framework specifications, memory management or other
+overhead. Extending the backend with your own operations is a straight-forward
+process - define the kernel code and mount it on the backend.
+
+* __Butter-smooth Builds__<br/>
+Unlike [Arrayfire][arrayfire], Collenchyma does not add significantly to the
+build time of your application, as it does not require the installation of
+various frameworks and libraries. It will rather check at run-time if these
+frameworks can be used and gracefully fall back to the standard, native host
+CPU if they are not. No long and painful build procedures for you or your users.
+
+Collenchyma was started at [Autumn][autumn] to support the Machine Intelligence
+Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 For more information,
 
@@ -34,13 +46,48 @@ For more information,
 If you're using Cargo, just add Collenchyma to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.1"
+    collenchyma = "0.0.2"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
     $ cargo add collenchyma
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
+
+## Example
+
+Backend with custom defined Framework and Device.
+
+```
+extern crate collenchyma as co;
+use co::framework::IFramework;
+use co::backend::{Backend, BackendConfig};
+use co::frameworks::Native;
+fn main() {
+   let framework = Native::new(); // Initialize the Framework
+   let hardwares = framework.hardwares(); // Now you can obtain a list of available hardware for that Framework.
+   // Create the custom Backend by providing a Framework and one or many Hardwares.
+   let backend_config = BackendConfig::new(framework, hardwares);
+   let backend = Backend::new(backend_config);
+   // You can now execute all the operations available, e.g.
+   // backend.dot(x, y);
+ }
+```
+Machine-agnostic Backend.
+
+```
+extern crate collenchyma as co;
+use co::framework::IFramework;
+use co::backend::{Backend, BackendConfig};
+use co::frameworks::Native;
+fn main() {
+    // Not yet implemented.
+    // No need to provide a Backend Configuration.
+    let backend = Backend::new(None);
+    // You can now execute all the operations available, e.g.
+    // backend.dot(x, y);
+}
+```
 
 ## Contributing
 
@@ -59,6 +106,6 @@ You can also reach out to the Maintainers
 
 ## License
 
-Leaf is released under the [MIT License][license].
+Collenchyma is released under the [MIT License][license].
 
 [license]: LICENSE

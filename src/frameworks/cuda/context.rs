@@ -1,22 +1,22 @@
-//! Provides a Rust wrapper around OpenCL's context.
+//! Provides a Rust wrapper around Cuda's context.
 
 use device::{IDevice, DeviceType};
 use super::api::types as cl;
-use super::{API, Error, Device};
+use frameworks::opencl::{API, Error, Device};
 use super::memory::*;
 use memory::MemoryType;
 use std::{ptr, mem};
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
-/// Defines a OpenCL Context.
+/// Defines a Cuda Context.
 pub struct Context {
     id: isize,
     devices: Vec<Device>,
 }
 
 impl Context {
-    /// Initializes a new OpenCL platform.
+    /// Initializes a new Cuda platform.
     pub fn new(devices: Vec<Device>) -> Result<Context, Error> {
         let callback = unsafe { mem::transmute(ptr::null::<fn()>()) };
         Ok(
@@ -27,7 +27,7 @@ impl Context {
         )
     }
 
-    /// Initializes a new OpenCL platform from its C type.
+    /// Initializes a new Cuda platform from its C type.
     pub fn from_c(id: cl::context_id, devices: Vec<Device>) -> Context {
         Context { id: id as isize, devices: devices }
     }
@@ -66,7 +66,7 @@ impl IDevice for Context {
             DeviceType::Native(cpu) => {
                 unimplemented!();
             }
-            DeviceType::OpenCL(_) => {},
+            DeviceType::Cuda(_) => {},
         }
         */
         unimplemented!()
