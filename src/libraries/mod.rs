@@ -18,8 +18,16 @@
 //! own backend-agnostic operations, too.
 //!
 //! [program]: ../program/index.html
+//! [blas]: http://www.netlib.org/blas/
+//! [cudnn]: https://developer.nvidia.com/cudnn
+
+pub use self::numeric_helpers::Float;
 
 pub mod blas;
+/// Describes the Library numeric types and traits.
+pub mod numeric_helpers {
+    pub use num::traits::*;
+}
 
 #[derive(Debug)]
 /// Defines a high-level library Error.

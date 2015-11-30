@@ -41,7 +41,7 @@
 
 use error::Error;
 use framework::IFramework;
-use frameworks::{Native, OpenCL};
+use frameworks::{Native, OpenCL, Cuda};
 use device::{IDevice, DeviceType};
 use libraries::blas::IBlas;
 
@@ -95,6 +95,26 @@ impl<F: IFramework + Clone> Backend<F> {
     pub fn binary(&self) -> F::B {
         self.framework().binary().clone()
     }
+}
+
+/// Describes a Backend.
+///
+/// Serves as a marker trait and helps for extern implementation.
+pub trait IBackend {
+    /// Represents the Framework of a Backend.
+    type F: IFramework + Clone;
+}
+
+impl IBackend for Backend<Native> {
+    type F = Native;
+}
+
+impl IBackend for Backend<OpenCL> {
+    type F = OpenCL;
+}
+
+impl IBackend for Backend<Cuda> {
+    type F = Cuda;
 }
 
 impl IBlas<f32> for Backend<OpenCL> {

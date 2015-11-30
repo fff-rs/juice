@@ -11,12 +11,16 @@ code for the machine you deploy to. Collenchyma does not require OpenCL or Cuda
 on the machine and automatically falls back to the native host CPU, making your
 application highly flexible and fast to build.
 
+Collenchyma was started at [Autumn][autumn] to support the Machine Intelligence
+Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
+
 * __Parallelizing Performance__<br/>
-The biggest benefit to using special purpose devices for computations, such as
-GPUs, is the ability to greater parallelize operations. Collenchyma makes it
-easy to parallelize computation on your machine, using all the available cores.
+Collenchyma makes it easy to parallelize computations on your machine, putting
+all the available cores of your CPUs/GPUs to use.
 Collenchyma also provides optimized operations for the most popular operations,
 such as BLAS, that you can use right away to speed up your application.
+Highly-optimized computation libraries like open-BLAS and cuDNN can be dropped
+in.
 
 * __Easily Extensible__<br/>
 Writing custom operations for GPU execution becomes easier with Collenchyma, as
@@ -25,14 +29,11 @@ overhead. Therefore extending the Backend becomes a straight-forward process of
 defining the kernels and mounting them on the Backend.
 
 * __Butter-smooth Builds__<br/>
-A Collenchyma does not require the installation of various frameworks and
+As Collenchyma does not require the installation of various frameworks and
 libraries, it will not add significantly to the build time of your application.
 Collenchyma checks at run-time if these frameworks can be used and gracefully
 falls back to the standard, native host CPU if they are not.
 No long and painful build procedures for you or your users.
-
-Collenchyma was started at [Autumn][autumn] to support the Machine Intelligence
-Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 For more information,
 
@@ -53,7 +54,7 @@ For more information,
 If you're using Cargo, just add Collenchyma to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.2"
+    collenchyma = "0.0.3"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 

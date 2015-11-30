@@ -16,7 +16,7 @@ use memory::MemoryType;
 use shared_memory::SharedMemory;
 use binary::IBinary;
 use device::DeviceType;
-use num::traits::Float;
+use libraries::Float;
 
 /// Provides the functionality for a backend to support Basic Linear Algebra Subprogram operations.
 pub trait IBlas<F: Float> {

@@ -1,8 +1,10 @@
 [package]
 name          = "collenchyma"
 description   = "fast, parallel, backend-agnostic computation on any hardware"
-version       = "0.0.2"
-authors       = ["Michael Hirn <mj@autumnai.com>"]
+version       = "0.0.3"
+authors       = [
+"Michael Hirn <mj@autumnai.com>",
+"Maximilian Goisser <max@autumnai.com"]
 
 repository    = "https://github.com/autumnai/collenchyma"
 homepage      = "https://github.com/autumnai/collenchyma"
