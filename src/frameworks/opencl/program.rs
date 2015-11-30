@@ -13,7 +13,11 @@ use super::api::API;
 pub struct Program {
     id: isize,
     /// The initialized BLAS dot Operation.
-    pub blas_dot: Kernel
+    pub blas_dot: Kernel,
+    /// The initialized BLAS scale Operation.
+    pub blas_scale: Kernel,
+    /// The initialized BLAS axpy Operation.
+    pub blas_axpy: Kernel,
 }
 
 impl Program {
@@ -21,7 +25,9 @@ impl Program {
     pub fn from_isize(id: isize) -> Program {
         Program {
             id: id,
-            blas_dot: Kernel::from_isize(1)
+            blas_dot: Kernel::from_isize(1),
+            blas_scale: Kernel::from_isize(1),
+            blas_axpy: Kernel::from_isize(1),
         }
     }
 
@@ -29,7 +35,9 @@ impl Program {
     pub fn from_c(id: cl::kernel_id) -> Program {
         Program {
             id: id as isize,
-            blas_dot: Kernel::from_isize(1)
+            blas_dot: Kernel::from_isize(1),
+            blas_scale: Kernel::from_isize(1),
+            blas_axpy: Kernel::from_isize(1),
         }
     }
 

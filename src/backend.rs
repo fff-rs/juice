@@ -97,7 +97,7 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 }
 
-impl IBlas for Backend<OpenCL> {
+impl IBlas<f32> for Backend<OpenCL> {
     type B = ::frameworks::opencl::Program;
 
     fn binary(&self) -> Self::B {
@@ -109,7 +109,19 @@ impl IBlas for Backend<OpenCL> {
     }
 }
 
-impl IBlas for Backend<Native> {
+impl IBlas<f32> for Backend<Native> {
+    type B = ::frameworks::native::Binary;
+
+    fn binary(&self) -> Self::B {
+        self.binary()
+    }
+
+    fn device(&self) -> &DeviceType {
+        self.device()
+    }
+}
+
+impl IBlas<f64> for Backend<Native> {
     type B = ::frameworks::native::Binary;
 
     fn binary(&self) -> Self::B {
@@ -139,4 +151,3 @@ impl<F: IFramework + Clone> BackendConfig<F> {
         }
     }
 }
-
