@@ -98,7 +98,7 @@
 //! fn main() {
 //!     // Not yet implemented.
 //!     // No need to provide a Backend Configuration.
-//!     let backend = Backend::new(None);
+//!     // let backend = Backend::new(None);
 //!     // You can now execute all the operations available, e.g.
 //!     // backend.dot(x, y);
 //! }

@@ -1403,7 +1403,6 @@ impl ::std::default::Default for Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st {
 }
 pub type CUDA_POINTER_ATTRIBUTE_P2P_TOKENS =
     Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st;
-#[link(name = "cuda")]
 extern "C" {
     pub fn __ctype_get_mb_cur_max() -> size_t;
     pub fn atof(__nptr: *const ::libc::c_char) -> ::libc::c_double;
@@ -1625,7 +1624,7 @@ extern "C" {
         flags: *mut ::libc::c_uint,
         active: *mut ::libc::c_int
     ) -> CUresult;
-    
+
     pub fn cuDevicePrimaryCtxReset(dev: CUdevice) -> CUresult;
 
     pub fn cuCtxCreate_v2(

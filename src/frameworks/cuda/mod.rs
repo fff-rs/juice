@@ -7,8 +7,6 @@
 //! Cuda device -> Hardware
 //! Cuda context -> Device
 
-#[link(name = "cuda")]
-#[cfg(target_os = "linux")]
 extern { }
 
 use framework::IFramework;
