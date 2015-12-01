@@ -134,7 +134,6 @@
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
-#![feature(associated_type_defaults)]
 #![feature(unboxed_closures)]
 #![feature(static_mutex)]
 #![deny(missing_docs,
