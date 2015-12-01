@@ -128,11 +128,11 @@ impl<T> SharedMemory<T> {
         let destination_copy: MemoryType;
         match self.copies.remove(source) {
             Some(source_cpy) => source_copy = source_cpy,
-            None => return Err(Error::MissingSource(format!("SharedMemory does not hold a copy on source device {:?}.", source)))
+            None => return Err(Error::MissingSource("SharedMemory does not hold a copy on source device."))
         }
         match self.copies.remove(destination) {
             Some(destination_cpy) => destination_copy = destination_cpy,
-            None => return Err(Error::MissingDestination(format!("SharedMemory does not hold a copy on destination device {:?}.", destination)))
+            None => return Err(Error::MissingDestination("SharedMemory does not hold a copy on destination device."))
         }
 
         Ok((source_copy, destination_copy))
@@ -148,8 +148,12 @@ impl<T> SharedMemory<T> {
     ///
     /// Returns an error if the SharedMemory is already tracking the `device`.
     pub fn add_device(&mut self, device: &DeviceType) -> Result<&mut Self, Error> {
+        // first check if device is not current location. This is cheaper since we only have to test for equality not hash equality.
+        if &self.latest_location == device {
+            return Err(Error::InvalidMemoryAllocation("SharedMemory already tracks memory for this device. No memory allocation."))
+        }
         match self.copies.get(device) {
-            Some(_) => Err(Error::InvalidMemoryAllocation(format!("SharedMemory already tracks memory for this device. No memory allocation."))),
+            Some(_) => Err(Error::InvalidMemoryAllocation("SharedMemory already tracks memory for this device. No memory allocation.")),
             None => {
                 let copy: MemoryType;
                 match *device {
@@ -174,14 +178,14 @@ impl<T> SharedMemory<T> {
 }
 
 /// Errors than can occur when synchronizing memory.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum Error {
     /// No copy on source device.
-    MissingSource(String),
+    MissingSource(&'static str),
     /// No copy on destination device.
-    MissingDestination(String),
+    MissingDestination(&'static str),
     /// No memory allocation on specified device happened.
-    InvalidMemoryAllocation(String),
+    InvalidMemoryAllocation(&'static str),
 }
 
 impl fmt::Display for Error {

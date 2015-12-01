@@ -47,8 +47,8 @@ impl IDevice for Context {
     type H = Device;
     type M = Memory;
 
-    fn id(&self) -> isize {
-        self.id
+    fn id(&self) -> &isize {
+        &self.id
     }
 
     fn hardwares(&self) -> Vec<Device> {

@@ -26,8 +26,9 @@ impl IDevice for Cpu {
     type H = Hardware;
     type M = FlatBox;
 
-    fn id(&self) -> isize {
-        0
+    fn id(&self) -> &isize {
+        static ID: isize = 0;
+        &ID
     }
 
     fn hardwares(&self) -> Vec<Hardware> {

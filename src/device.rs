@@ -18,7 +18,7 @@ pub trait IDevice {
     /// The Memory representation for this Device.
     type M: IMemory;
     /// Returns the unique identifier of the Device.
-    fn id(&self) -> isize;
+    fn id(&self) -> &isize;
     /// Returns the hardwares, which define the Device.
     fn hardwares(&self) -> Vec<Self::H>;
     /// Allocate memory on the Device.

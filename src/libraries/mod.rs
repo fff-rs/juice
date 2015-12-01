@@ -29,7 +29,7 @@ pub mod numeric_helpers {
     pub use num::traits::*;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 /// Defines a high-level library Error.
 pub enum Error {
     /// Failure at a Blas Operation.

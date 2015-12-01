@@ -51,8 +51,8 @@ macro_rules! impl_asum(($($t: ident), +) => (
     $(
         impl IOperationAsum<$t> for Function {
             fn compute(&self, x: &MemoryType, result: &mut MemoryType) -> Result<(), Error> {
-                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `x`.")))).as_slice::<$t>();
-                let mut r_slice = try!(result.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `result`.")))).as_mut_slice::<$t>();
+                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `x`."))).as_slice::<$t>();
+                let mut r_slice = try!(result.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `result`."))).as_mut_slice::<$t>();
                 r_slice[0] = Asum::asum(x_slice);
                 Ok(())
             }
@@ -64,9 +64,9 @@ macro_rules! impl_axpy(($($t: ident), +) => (
     $(
         impl IOperationAxpy<$t> for Function {
             fn compute(&self, a: &MemoryType, x: &MemoryType, y: &mut MemoryType) -> Result<(), Error> {
-                let a_slice = try!(a.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `a`.")))).as_slice::<$t>();
-                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `x`.")))).as_slice::<$t>();
-                let y_slice = try!(y.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `y`.")))).as_mut_slice::<$t>();
+                let a_slice = try!(a.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `a`."))).as_slice::<$t>();
+                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `x`."))).as_slice::<$t>();
+                let y_slice = try!(y.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `y`."))).as_mut_slice::<$t>();
                 Axpy::axpy(&a_slice[0], x_slice, y_slice);
                 Ok(())
             }
@@ -78,8 +78,8 @@ macro_rules! impl_copy(($($t: ident), +) => (
     $(
         impl IOperationCopy<$t> for Function {
             fn compute(&self, x: &MemoryType, y: &mut MemoryType) -> Result<(), Error> {
-                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `x`.")))).as_slice::<$t>();
-                let y_slice = try!(y.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `y`.")))).as_mut_slice::<$t>();
+                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `x`."))).as_slice::<$t>();
+                let y_slice = try!(y.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `y`."))).as_mut_slice::<$t>();
                 Copy::copy(x_slice, y_slice);
                 Ok(())
             }
@@ -91,9 +91,9 @@ macro_rules! impl_dot(($($t: ident), +) => (
     $(
         impl IOperationDot<$t> for Function {
             fn compute(&self, x: &MemoryType, y: &MemoryType, result: &mut MemoryType) -> Result<(), Error> {
-                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `x`.")))).as_slice::<$t>();
-                let y_slice = try!(y.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `y`.")))).as_slice::<$t>();
-                let mut r_slice = try!(result.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `result`.")))).as_mut_slice::<$t>();
+                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `x`."))).as_slice::<$t>();
+                let y_slice = try!(y.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `y`."))).as_slice::<$t>();
+                let mut r_slice = try!(result.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `result`."))).as_mut_slice::<$t>();
                 r_slice[0] = Dot::dot(x_slice, y_slice);
                 Ok(())
             }
@@ -105,8 +105,8 @@ macro_rules! impl_nrm2(($($t: ident), +) => (
     $(
         impl IOperationNrm2<$t> for Function {
             fn compute(&self, x: &MemoryType, result: &mut MemoryType) -> Result<(), Error> {
-                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `x`.")))).as_slice::<$t>();
-                let mut r_slice = try!(result.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `result`.")))).as_mut_slice::<$t>();
+                let x_slice = try!(x.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `x`."))).as_slice::<$t>();
+                let mut r_slice = try!(result.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `result`."))).as_mut_slice::<$t>();
                 r_slice[0] = Nrm2::nrm2(x_slice);
                 Ok(())
             }
@@ -118,8 +118,8 @@ macro_rules! impl_scale(($($t: ident), +) => (
     $(
         impl IOperationScale<$t> for Function {
             fn compute(&self, a: &MemoryType, x: &mut MemoryType) -> Result<(), Error> {
-                let a_slice = try!(a.as_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `a`.")))).as_slice::<$t>();
-                let mut x_slice = try!(x.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `x`.")))).as_mut_slice::<$t>();
+                let a_slice = try!(a.as_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `a`."))).as_slice::<$t>();
+                let mut x_slice = try!(x.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `x`."))).as_mut_slice::<$t>();
                 Scal::scal(&a_slice[0], x_slice);
                 Ok(())
             }
@@ -131,8 +131,8 @@ macro_rules! impl_swap(($($t: ident), +) => (
     $(
         impl IOperationSwap<$t> for Function {
             fn compute(&self, x: &mut MemoryType, y: &mut MemoryType) -> Result<(), Error> {
-                let mut x_slice = try!(x.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `x`.")))).as_mut_slice::<$t>();
-                let mut y_slice = try!(y.as_mut_native().ok_or(Error::InvalidArgument(format!("Unable to receive native memory for `y`.")))).as_mut_slice::<$t>();
+                let mut x_slice = try!(x.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `x`."))).as_mut_slice::<$t>();
+                let mut y_slice = try!(y.as_mut_native().ok_or(Error::InvalidArgument("Unable to receive native memory for `y`."))).as_mut_slice::<$t>();
                 Swap::swap(x_slice, y_slice);
                 Ok(())
             }

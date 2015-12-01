@@ -32,8 +32,8 @@ pub trait IBlas<F: Float> {
         match result.add_device(self.device()) { _ => () }
         Ok(try!(
             self.binary().asum().compute(
-                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
-                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `result`"))),
             )
         ))
     }
@@ -48,9 +48,9 @@ pub trait IBlas<F: Float> {
         match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
         Ok(try!(
             self.binary().axpy().compute(
-                try!(a.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `a`")))),
-                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
-                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
+                try!(a.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `a`"))),
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
             )
         ))
     }
@@ -64,8 +64,8 @@ pub trait IBlas<F: Float> {
         match y.add_device(self.device()) { _ => () }
         Ok(try!(
             self.binary().copy().compute(
-                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
-                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
             )
         ))
     }
@@ -81,9 +81,9 @@ pub trait IBlas<F: Float> {
         match result.add_device(self.device()) { _ => () }
         Ok(try!(
             self.binary().dot().compute(
-                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
-                try!(y.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
-                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `result`"))),
             )
         ))
     }
@@ -97,8 +97,8 @@ pub trait IBlas<F: Float> {
         match result.add_device(self.device()) { _ => () }
         Ok(try!(
             self.binary().nrm2().compute(
-                try!(x.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
-                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `result`")))),
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `result`"))),
             )
         ))
     }
@@ -112,8 +112,8 @@ pub trait IBlas<F: Float> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         Ok(try!(
             self.binary().scale().compute(
-                try!(a.get(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `a`")))),
-                try!(x.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
+                try!(a.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `a`"))),
+                try!(x.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
             )
         ))
     }
@@ -127,8 +127,8 @@ pub trait IBlas<F: Float> {
         match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
         Ok(try!(
             self.binary().swap().compute(
-                try!(x.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `x`")))),
-                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument(format!("Unable to resolve memory for `y`")))),
+                try!(x.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
             )
         ))
     }
@@ -215,15 +215,15 @@ pub trait IOperationSwap<F: Float> {
     fn compute(&self, x: &mut MemoryType, y: &mut MemoryType) -> Result<(), Error>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 /// Defines Blas Errors.
 pub enum Error {
     /// Failure related to a Dot operation.
-    Dot(String),
+    Dot(&'static str),
     /// Failure related to a missing argument.
-    MissingArgument(String),
+    MissingArgument(&'static str),
     /// Failure related to an invalid argument.
-    InvalidArgument(String),
+    InvalidArgument(&'static str),
 }
 
 impl ::std::fmt::Display for Error {
