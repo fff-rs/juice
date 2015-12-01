@@ -36,7 +36,8 @@ impl IFramework for Cuda {
     type H = Device;
     type D = Context;
     type B = Module;
-    const ID: &'static str = "CUDA";
+
+    fn ID() -> &'static str { "CUDA" }
 
     fn new() -> Cuda {
         match Cuda::load_hardwares() {
