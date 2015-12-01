@@ -59,8 +59,8 @@ impl IFramework for Cuda {
         self.hardwares.clone()
     }
 
-    fn binary(&self) -> Self::B {
-        self.binary.clone()
+    fn binary(&self) -> &Self::B {
+        &self.binary
     }
 
     /// Creates a new Cuda device for computation.

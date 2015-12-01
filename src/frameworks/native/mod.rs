@@ -65,8 +65,8 @@ impl IFramework for Native {
         self.hardwares.clone()
     }
 
-    fn binary(&self) -> Binary {
-        self.binary.clone()
+    fn binary(&self) -> &Binary {
+        &self.binary
     }
 
     fn new_device(&self, devices: Vec<Hardware>) -> Result<DeviceType, ::framework::Error> {

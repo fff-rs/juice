@@ -81,8 +81,8 @@ impl IFramework for OpenCL {
         self.hardwares.clone()
     }
 
-    fn binary(&self) -> Self::B {
-        self.binary.clone()
+    fn binary(&self) -> &Self::B {
+        &self.binary
     }
 
     /// Creates a new OpenCL context over one or many devices ready for computation.

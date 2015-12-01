@@ -134,7 +134,7 @@ pub trait IBlas<F: Float> {
     }
 
     /// Returns the binary representation
-    fn binary(&self) -> Self::B;
+    fn binary(&self) -> &Self::B;
 
     /// Returns the device representation
     fn device(&self) -> &DeviceType;

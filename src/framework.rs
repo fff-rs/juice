@@ -53,7 +53,7 @@ pub trait IFramework {
     fn hardwares(&self) -> Vec<Self::H>;
 
     /// Returns the initialized binary.
-    fn binary(&self) -> Self::B;
+    fn binary(&self) -> &Self::B;
 
     /// Initializes a new Device from the provided hardwares.
     fn new_device(&self, Vec<Self::H>) -> Result<DeviceType, Error>;

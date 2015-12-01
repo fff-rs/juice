@@ -82,8 +82,8 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the backend framework.
-    pub fn framework(&self) -> Box<F> {
-        self.framework.clone()
+    pub fn framework(&self) -> &Box<F> {
+        &self.framework
     }
 
     /// Returns the backend device.
@@ -92,8 +92,8 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the blas binary.
-    pub fn binary(&self) -> F::B {
-        self.framework().binary().clone()
+    pub fn binary(&self) -> &F::B {
+        self.framework().binary()
     }
 }
 
@@ -120,7 +120,7 @@ impl IBackend for Backend<Cuda> {
 impl IBlas<f32> for Backend<OpenCL> {
     type B = ::frameworks::opencl::Program;
 
-    fn binary(&self) -> Self::B {
+    fn binary(&self) -> &Self::B {
         self.binary()
     }
 
@@ -132,7 +132,7 @@ impl IBlas<f32> for Backend<OpenCL> {
 impl IBlas<f32> for Backend<Native> {
     type B = ::frameworks::native::Binary;
 
-    fn binary(&self) -> Self::B {
+    fn binary(&self) -> &Self::B {
         self.binary()
     }
 
@@ -144,7 +144,7 @@ impl IBlas<f32> for Backend<Native> {
 impl IBlas<f64> for Backend<Native> {
     type B = ::frameworks::native::Binary;
 
-    fn binary(&self) -> Self::B {
+    fn binary(&self) -> &Self::B {
         self.binary()
     }
 

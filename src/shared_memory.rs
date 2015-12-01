@@ -35,18 +35,19 @@
 //! # }
 //! ```
 
-use std::collections::HashMap;
+use linear_map::LinearMap;
 use device::{IDevice, DeviceType};
 use memory::MemoryType;
 use std::marker::PhantomData;
 use std::{fmt, mem, error};
 
-#[derive(Debug)]
+// #[derive(Debug)]
 /// Container that handles synchronization of [Memory][1] of type `T`.
 /// [1]: ../memory/index.html
+#[allow(missing_debug_implementations)] // due to LinearMap
 pub struct SharedMemory<T> {
     latest_location: DeviceType,
-    copies: HashMap<DeviceType, MemoryType>,
+    copies: LinearMap<DeviceType, MemoryType>,
     cap: usize,
     phantom: PhantomData<T>,
 }
@@ -55,7 +56,7 @@ impl<T> SharedMemory<T> {
     /// Create new SharedMemory by allocating [Memory][1] on a Device.
     /// [1]: ../memory/index.html
     pub fn new(dev: &DeviceType, capacity: usize) -> SharedMemory<T> {
-        let mut copies = HashMap::<DeviceType, MemoryType>::new();
+        let mut copies = LinearMap::<DeviceType, MemoryType>::new();
         let copy: MemoryType;
         let alloc_size = mem::size_of::<T>() * capacity;
         match *dev {
