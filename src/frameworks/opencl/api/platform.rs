@@ -6,7 +6,7 @@ use super::types as cl;
 use super::ffi::*;
 use std::ptr;
 use std::iter::repeat;
-use std::sync::{StaticMutex, MUTEX_INIT};
+use std::sync::Mutex;
 
 impl API {
     /// Returns a list of available platforms.
@@ -22,7 +22,9 @@ impl API {
         // This mutex is used to work around weak OpenCL implementations.
         // On some implementations concurrent calls to clGetPlatformIDs
         // will cause the implantation to return invalid status.
-        static mut platforms_mutex: StaticMutex = MUTEX_INIT;
+        lazy_static! {
+            static ref platforms_mutex: Mutex<()> = Mutex::new(());
+        }
 
         let guard = unsafe {platforms_mutex.lock()};
         try!(unsafe {API::ffi_get_platform_ids(0, ptr::null_mut(), (&mut num_platforms))});

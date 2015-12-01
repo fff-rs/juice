@@ -134,7 +134,6 @@
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
-#![feature(static_mutex)]
 #![deny(missing_docs,
         missing_debug_implementations, missing_copy_implementations,
         trivial_casts, trivial_numeric_casts,
@@ -145,6 +144,8 @@ extern crate libc;
 extern crate bitflags;
 #[macro_use]
 extern crate enum_primitive;
+#[macro_use]
+extern crate lazy_static;
 extern crate num;
 extern crate byteorder;
 extern crate rblas as blas;
