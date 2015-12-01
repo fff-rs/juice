@@ -1,13 +1,13 @@
-//! Provides the functionality for memory management accross devices.
+//! Provides the functionality for memory management across devices.
 //!
-//! A SharedMemory tracks the memory copies accross the devices of the Backend and manages
+//! A SharedMemory tracks the memory copies across the devices of the Backend and manages
 //!
 //! * the location of these memory copies
 //! * the location of the latest memory copy and
 //! * the synchronisation of memory copies between devices
 //!
 //! A [memory copy][mem] represents one logical unit of data, which might me located at the host. The
-//! SharedMemory, tracks the location of the data blob accross the various devices that the backend might
+//! SharedMemory, tracks the location of the data blob across the various devices that the backend might
 //! consist of. This allows us to run operations on various backends with the same data blob.
 //!
 //! [frameworks]: ../frameworks/index.html
