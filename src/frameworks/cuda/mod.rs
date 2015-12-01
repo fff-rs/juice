@@ -40,6 +40,11 @@ impl IFramework for Cuda {
     fn ID() -> &'static str { "CUDA" }
 
     fn new() -> Cuda {
+        // Init function must be called before any other function from the Cuda Driver API can be
+        // called.
+        if let Err(err) = API::init() {
+            panic!("Unable to initialize Cuda Framework: {}", err);
+        }
         match Cuda::load_hardwares() {
             Ok(hardwares) => {
                 Cuda {
@@ -47,12 +52,12 @@ impl IFramework for Cuda {
                     binary: Module::from_isize(1)
                 }
             },
-            Err(err) => panic!(err)
+            Err(err) => panic!("Could not initialize Cuda Framework, due to: {}", err)
         }
     }
 
     fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
-        unimplemented!()
+        Ok(try!(API::load_devices()))
     }
 
     fn hardwares(&self) -> Vec<Device> {

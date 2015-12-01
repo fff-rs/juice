@@ -1,7 +1,7 @@
 //! Provides a Rust wrapper around Cuda's device.
 
 use hardware::{IHardware, HardwareType};
-use super::api::types as cl;
+use super::api::ffi::{CUdevice, CUdevice_attribute};
 use super::api::API;
 use std::io::Cursor;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
@@ -35,18 +35,18 @@ impl Device {
     }
 
     /// Initializes a new Cuda device from its C type.
-    pub fn from_c(id: cl::device_id) -> Device {
+    pub fn from_c(id: CUdevice) -> Device {
         Device { id: id as isize, ..Device::default() }
     }
 
     /// Returns the id as its C type.
-    pub fn id_c(&self) -> cl::device_id {
-        self.id as cl::device_id
+    pub fn id_c(&self) -> CUdevice {
+        self.id as CUdevice
     }
 
     /// Loads the name of the device via a foreign Cuda call.
     pub fn load_name(&mut self) -> Self {
-        self.name = match API::load_device_info(self, cl::CL_DEVICE_NAME) {
+        self.name = match API::load_device_info(self, CUdevice_attribute::CU_DEVICE_NAME) {
             Ok(result) => Some(result.to_string()),
             Err(_) => None
         };
@@ -55,26 +55,13 @@ impl Device {
 
     /// Loads the device type via a foreign Cuda call.
     pub fn load_device_type(&mut self) -> Self {
-        self.device_type = match API::load_device_info(self, cl::CL_DEVICE_TYPE) {
-            Ok(result) => {
-                let device_type = result.to_device_type();
-                match device_type {
-                    cl::CL_DEVICE_TYPE_CPU => Some(HardwareType::CPU),
-                    cl::CL_DEVICE_TYPE_GPU => Some(HardwareType::GPU),
-                    cl::CL_DEVICE_TYPE_ACCELERATOR => Some(HardwareType::ACCELERATOR),
-                    cl::CL_DEVICE_TYPE_DEFAULT => Some(HardwareType::OTHER),
-                    cl::CL_DEVICE_TYPE_CUSTOM => Some(HardwareType::OTHER),
-                    _ => None
-                }
-            },
-            Err(_) => None
-        };
+        self.device_type = Some(HardwareType::GPU);
         self.clone()
     }
 
     /// Loads the compute units of the device via a foreign Cuda call.
     pub fn load_compute_units(&mut self) -> Self {
-        self.compute_units = match API::load_device_info(self, cl::CL_DEVICE_MAX_COMPUTE_UNITS) {
+        self.compute_units = match API::load_device_info(self, CUdevice_attribute::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT) {
             Ok(result) => Some(result.to_isize()),
             Err(_) => None
         };
@@ -143,12 +130,6 @@ impl DeviceInfo {
     #[allow(missing_docs)]
     pub fn to_string(self) -> String {
         unsafe { String::from_utf8_unchecked(self.info) }
-    }
-
-    #[allow(missing_docs)]
-    pub fn to_device_type(self) -> cl::device_type {
-        let mut bytes = Cursor::new(&self.info);
-        bytes.read_u64::<LittleEndian>().unwrap()
     }
 
     #[allow(missing_docs)]

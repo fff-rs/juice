@@ -21,12 +21,13 @@ impl API {
         callback: extern fn (*const libc::c_char, *const libc::c_void, libc::size_t, *mut libc::c_void),
         user_data: *mut libc::c_void
     ) -> Result<cl::context_id, Error> {
-        let mut device_ids: Vec<cl::device_id> = devices.iter().map(|device| device.id_c()).collect();
-        Ok(
-            try!(
-                unsafe { API::ffi_create_context(properties, device_ids.len() as u32, device_ids.as_ptr(), callback, user_data) }
-            )
-        )
+        //let mut device_ids: Vec<cl::device_id> = devices.iter().map(|device| device.id_c()).collect();
+        //Ok(
+        //    try!(
+    //            unsafe { API::ffi_create_context(properties, device_ids.len() as u32, device_ids.as_ptr(), callback, user_data) }
+    //        )
+    //   )
+        unimplemented!()
     }
 
     unsafe fn ffi_create_context(

@@ -10,5 +10,6 @@ mod error;
 mod context;
 mod device;
 mod memory;
-mod ffi;
+pub mod ffi;
+mod utils;
 pub mod types;
