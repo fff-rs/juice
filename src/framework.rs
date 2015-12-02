@@ -38,7 +38,8 @@ pub trait IFramework {
     ///
     /// For convention, let the ID be uppercase.<br/>
     /// EXAMPLE: OPENCL
-    const ID: &'static str;
+    #[allow(non_snake_case)]
+    fn ID() -> &'static str;
 
     /// Initializes a new Framework.
     ///

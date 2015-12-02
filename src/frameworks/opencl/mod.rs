@@ -50,7 +50,8 @@ impl IFramework for OpenCL {
     type H = Device;
     type D = Context;
     type B = Program;
-    const ID: &'static str = "OPENCL";
+
+    fn ID() -> &'static str { "OPENCL" }
 
     fn new() -> OpenCL {
         match OpenCL::load_hardwares() {

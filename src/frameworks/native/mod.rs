@@ -40,7 +40,7 @@ impl IFramework for Native {
     type D = Cpu;
     type B = Binary;
 
-    const ID: &'static str = "NATIVE";
+    fn ID() -> &'static str { "NATIVE" }
 
     fn new() -> Native {
         match Native::load_hardwares() {
