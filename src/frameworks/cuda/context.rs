@@ -1,11 +1,10 @@
 //! Provides a Rust wrapper around Cuda's context.
 
 use device::{IDevice, DeviceType};
-use super::api::types as cl;
-use frameworks::opencl::{API, Error, Device};
+use super::api::ffi::*;
+use super::{API, Error, Device};
 use super::memory::*;
 use memory::MemoryType;
-use std::{ptr, mem};
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
@@ -15,20 +14,26 @@ pub struct Context {
     devices: Vec<Device>,
 }
 
+impl Drop for Context {
+    #[allow(unused_must_use)]
+    fn drop(&mut self) {
+        API::destroy_context(self);
+    }
+}
+
 impl Context {
-    /// Initializes a new Cuda platform.
-    pub fn new(devices: Vec<Device>) -> Result<Context, Error> {
-        let callback = unsafe { mem::transmute(ptr::null::<fn()>()) };
+    /// Initializes a new Cuda context.
+    pub fn new(devices: Device) -> Result<Context, Error> {
         Ok(
             Context::from_c(
-                try!(API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())),
-                devices.clone()
+                try!(API::create_context(devices.clone())),
+                vec!(devices.clone())
             )
         )
     }
 
     /// Initializes a new Cuda platform from its C type.
-    pub fn from_c(id: cl::context_id, devices: Vec<Device>) -> Context {
+    pub fn from_c(id: CUcontext, devices: Vec<Device>) -> Context {
         Context { id: id as isize, devices: devices }
     }
 
@@ -38,8 +43,8 @@ impl Context {
     }
 
     /// Returns the id as its C type.
-    pub fn id_c(&self) -> cl::context_id {
-        self.id as cl::context_id
+    pub fn id_c(&self) -> CUcontext {
+        self.id as CUcontext
     }
 }
 

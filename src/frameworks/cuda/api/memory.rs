@@ -7,19 +7,19 @@ use super::types as cl;
 use super::ffi::*;
 
 impl API {
-    /// Allocates memory on the OpenCL device.
+    /// Allocates memory on the Cuda device.
     ///
-    /// A buffer object stores a one-dimensional collection of elements.  Elements of a buffer
-    /// object can be a scalar data type (such as an int, float), vector data type, or a
-    /// user-defined structure.
+    /// Allocates bytesize bytes of linear memory on the device. The allocated memory is suitably
+    /// aligned for any kind of variable. The memory is not cleared.
     /// Returns a memory id for the created buffer, which can now be writen to.
-    pub fn create_buffer(context: Context) -> Result<cl::memory_id, Error> {
-        unimplemented!()
+    pub fn mem_alloc(bytesize: size_t) -> Result<CUdeviceptr, Error> {
+        let r = unsafe {API::ffi_mem_alloc(bytesize)};
+        r
     }
 
-    /// Releases allocated memory from the OpenCL device.
-    pub fn release_memory(memory: &mut Memory) -> Result<(), Error> {
-        Ok(try!(unsafe {API::ffi_release_mem_object(memory.id_c())}))
+    /// Releases allocated memory from the Cuda device.
+    pub fn mem_free(memory: &mut Memory) -> Result<(), Error> {
+        unsafe {API::ffi_mem_free(memory.id_c())}
     }
 
     /// Reads from a buffer to the host memory.
@@ -38,17 +38,28 @@ impl API {
         unimplemented!();
     }
 
-    unsafe fn ffi_create_buffer(
-        context: cl::context_id,
-        flags: cl::mem_flags,
-        size: libc::size_t,
-        host_ptr: *mut libc::c_void
-    ) -> Result<cl::memory_id, Error> {
-        unimplemented!()
+    unsafe fn ffi_mem_alloc(bytesize: size_t) -> Result<CUdeviceptr, Error> {
+        let mut memory_id: CUdeviceptr = 0;
+        match cuMemAlloc_v2(&mut memory_id, bytesize) {
+            CUresult::CUDA_SUCCESS => Ok(memory_id),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
+            CUresult::CUDA_ERROR_OUT_OF_MEMORY => Err(Error::OutOfMemory(format!("Device is out of memory."))),
+            _ => Err(Error::Unknown(format!("Unable to allocate memory."))),
+        }
     }
 
-    unsafe fn ffi_release_mem_object(memobj: cl::memory_id) -> Result<(), Error> {
-        unimplemented!()
+    unsafe fn ffi_mem_free(dptr: CUdeviceptr) -> Result<(), Error> {
+        match cuMemFree_v2(dptr) {
+            CUresult::CUDA_SUCCESS => Ok(()),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
+            _ => Err(Error::Unknown(format!("Unable to free memory."))),
+        }
     }
 
     unsafe fn ffi_enqueue_read_buffer(

@@ -67,6 +67,8 @@ pub enum Error {
     OpenCL(OpenCLError),
     /// Failures related to the Cuda framework implementation.
     Cuda(CudaError),
+    /// Failure related to the Collenchyma implementation of a specific Framework.
+    Implementation(String),
 }
 
 impl fmt::Display for Error {
@@ -74,6 +76,7 @@ impl fmt::Display for Error {
         match *self {
             Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
             Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
+            Error::Implementation(ref err) => write!(f, "Collenchyma Implementation error: {}", err),
         }
     }
 }
@@ -83,6 +86,7 @@ impl error::Error for Error {
         match *self {
             Error::OpenCL(ref err) => err.description(),
             Error::Cuda(ref err) => err.description(),
+            Error::Implementation(ref err) => err,
         }
     }
 
@@ -90,6 +94,7 @@ impl error::Error for Error {
         match *self {
             Error::OpenCL(ref err) => Some(err),
             Error::Cuda(ref err) => Some(err),
+            Error::Implementation(_) => None,
         }
     }
 }

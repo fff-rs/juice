@@ -44,9 +44,8 @@ impl IDevice for Cpu {
     fn sync_memory_to(&self, source: &FlatBox, dest: &mut MemoryType, dest_device: &DeviceType) {
         match dest_device.clone() {
             DeviceType::Native(_) => {},
-            DeviceType::OpenCL(_) => {
-                unimplemented!();
-            }
+            DeviceType::OpenCL(_) => unimplemented!(),
+            DeviceType::Cuda(_) => unimplemented!(),
         }
     }
 }

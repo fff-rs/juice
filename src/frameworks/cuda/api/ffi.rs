@@ -1523,6 +1523,7 @@ extern "C" {
 
     pub fn cuLinkDestroy(state: CUlinkState) -> CUresult;
 
+    // CUDA MEMORY MANAGEMENT
     pub fn cuMemGetInfo_v2(free: *mut size_t, total: *mut size_t) -> CUresult;
 
     pub fn cuMemAlloc_v2(dptr: *mut CUdeviceptr, bytesize: size_t) -> CUresult;

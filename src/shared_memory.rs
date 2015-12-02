@@ -63,6 +63,7 @@ impl<T> SharedMemory<T> {
         match *dev {
             DeviceType::Native(ref cpu) => copy = MemoryType::Native(cpu.alloc_memory(alloc_size)),
             DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(context.alloc_memory(alloc_size)),
+            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(context.alloc_memory(alloc_size)),
         }
         SharedMemory {
             latest_location: dev.clone(),
@@ -122,6 +123,11 @@ impl<T> SharedMemory<T> {
                                 context.sync_memory_to(&src,&mut destination_copy, destination)
                             }
                         },
+                        DeviceType::Cuda(context) => {
+                            if let MemoryType::Cuda(ref src) = source_copy {
+                                context.sync_memory_to(&src,&mut destination_copy, destination)
+                            }
+                        },
                     }
                     self.return_copies(source, source_copy, destination, destination_copy);
                     Ok(())
@@ -170,6 +176,7 @@ impl<T> SharedMemory<T> {
                 match *device {
                     DeviceType::Native(ref cpu) => copy = MemoryType::Native(cpu.alloc_memory(mem::size_of::<T>())),
                     DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(context.alloc_memory(mem::size_of::<T>())),
+                    DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(context.alloc_memory(mem::size_of::<T>())),
                 };
                 self.copies.insert(device.clone(), copy);
                 Ok(self)

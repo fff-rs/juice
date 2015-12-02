@@ -9,7 +9,8 @@
 use hardware::IHardware;
 use memory::{IMemory, MemoryType};
 use frameworks::native::device::Cpu;
-use frameworks::opencl::context::Context;
+use frameworks::opencl::context::Context as OpenCLContext;
+use frameworks::cuda::context::Context as CudaContext;
 
 /// Specifies Hardware behavior accross frameworks.
 pub trait IDevice {
@@ -33,5 +34,7 @@ pub enum DeviceType {
     /// A native CPU
     Native(Cpu),
     /// A OpenCL Context
-    OpenCL(Context),
+    OpenCL(OpenCLContext),
+    /// A Cuda Context
+    Cuda(CudaContext),
 }
