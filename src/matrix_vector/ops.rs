@@ -167,7 +167,7 @@ pub trait Gerc: Ger {
 }
 
 macro_rules! ger_impl(
-    ($trait_name: ident, $fn_name: ident, $t: ty, $ger_fn: ident) => (
+    ($trait_name: ident, $fn_name: ident, $t: ty, $ger_fn: expr) => (
         impl $trait_name for $t {
             fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &$t, x: &V, y: &W, a: &mut Matrix<$t>) {
                 unsafe {
@@ -183,15 +183,15 @@ macro_rules! ger_impl(
     );
 );
 
-ger_impl!(Ger, ger, f32,       cblas_sger);
-ger_impl!(Ger, ger, f64,       cblas_dger);
-ger_impl!(Ger, ger, Complex32, cblas_cgeru);
-ger_impl!(Ger, ger, Complex64, cblas_zgeru);
+ger_impl!(Ger, ger, f32,       cblas_s::ger);
+ger_impl!(Ger, ger, f64,       cblas_d::ger);
+ger_impl!(Ger, ger, Complex32, cblas_c::geru);
+ger_impl!(Ger, ger, Complex64, cblas_z::geru);
 
 impl Gerc for f32 {}
 impl Gerc for f64 {}
-ger_impl!(Gerc, gerc, Complex32, cblas_cgerc);
-ger_impl!(Gerc, gerc, Complex64, cblas_zgerc);
+ger_impl!(Gerc, gerc, Complex32, cblas_c::gerc);
+ger_impl!(Gerc, gerc, Complex64, cblas_z::gerc);
 
 #[cfg(test)]
 mod ger_tests {

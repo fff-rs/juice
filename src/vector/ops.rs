@@ -411,7 +411,7 @@ macro_rules! real_norm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), 
 ));
 
 macro_rules! complex_norm_impl(
-    ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: ident) => (
+    ($trait_name: ident, $fn_name: ident, $t: ty, $norm_fn: expr) => (
         impl $trait_name for $t {
             fn $fn_name<V: ?Sized + Vector<Self>>(x: &V) -> $t {
                 let re = unsafe {
@@ -427,10 +427,10 @@ macro_rules! complex_norm_impl(
 
 real_norm_impl!(Asum, asum, f32, f64);
 real_norm_impl!(Nrm2, nrm2, f32, f64);
-complex_norm_impl!(Asum, asum, Complex32, cblas_scasum);
-complex_norm_impl!(Asum, asum, Complex64, cblas_dzasum);
-complex_norm_impl!(Nrm2, nrm2, Complex32, cblas_scnrm2);
-complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_dznrm2);
+complex_norm_impl!(Asum, asum, Complex32, cblas_s::casum);
+complex_norm_impl!(Asum, asum, Complex64, cblas_d::zasum);
+complex_norm_impl!(Nrm2, nrm2, Complex32, cblas_s::cnrm2);
+complex_norm_impl!(Nrm2, nrm2, Complex64, cblas_d::znrm2);
 
 #[cfg(test)]
 mod asum_tests {
@@ -498,7 +498,7 @@ pub trait Iamax: Sized {
 }
 
 macro_rules! iamax_impl(
-    ($t: ty, $iamax: ident) => (
+    ($t: ty, $iamax: expr) => (
         impl Iamax for $t {
             fn iamax<V: ?Sized + Vector<Self>>(x: &V) -> usize {
                 unsafe {
@@ -510,10 +510,10 @@ macro_rules! iamax_impl(
     );
 );
 
-iamax_impl!(f32,       cblas_isamax);
-iamax_impl!(f64,       cblas_idamax);
-iamax_impl!(Complex32, cblas_icamax);
-iamax_impl!(Complex64, cblas_izamax);
+iamax_impl!(f32,       cblas_i::samax);
+iamax_impl!(f64,       cblas_i::damax);
+iamax_impl!(Complex32, cblas_i::camax);
+iamax_impl!(Complex64, cblas_i::zamax);
 
 #[cfg(test)]
 mod iamax_tests {
