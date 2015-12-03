@@ -47,6 +47,7 @@ use std::{fmt, mem, error};
 #[allow(missing_debug_implementations)] // due to LinearMap
 pub struct SharedMemory<T> {
     latest_location: DeviceType,
+    latest_copy: MemoryType,
     copies: LinearMap<DeviceType, MemoryType>,
     cap: usize,
     phantom: PhantomData<T>,
@@ -56,16 +57,16 @@ impl<T> SharedMemory<T> {
     /// Create new SharedMemory by allocating [Memory][1] on a Device.
     /// [1]: ../memory/index.html
     pub fn new(dev: &DeviceType, capacity: usize) -> SharedMemory<T> {
-        let mut copies = LinearMap::<DeviceType, MemoryType>::new();
+        let copies = LinearMap::<DeviceType, MemoryType>::new();
         let copy: MemoryType;
         let alloc_size = mem::size_of::<T>() * capacity;
         match *dev {
             DeviceType::Native(ref cpu) => copy = MemoryType::Native(cpu.alloc_memory(alloc_size)),
             DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(context.alloc_memory(alloc_size)),
         }
-        copies.insert(dev.clone(), copy);
         SharedMemory {
             latest_location: dev.clone(),
+            latest_copy: copy,
             copies: copies,
             cap: capacity,
             phantom: PhantomData,
@@ -78,6 +79,7 @@ impl<T> SharedMemory<T> {
             let latest = self.latest_location.clone();
             try!(self.sync_from_to(&latest, &destination));
             self.latest_location = destination.clone();
+            self.latest_copy = try!(self.copies.remove(destination).ok_or(Error::MissingDestination("SharedMemory does not hold a copy on destination device.")));
         }
         Ok(())
     }
@@ -86,6 +88,10 @@ impl<T> SharedMemory<T> {
     ///
     /// Returns `None` if there is no memory copy on the device.
     pub fn get(&self, device: &DeviceType) -> Option<&MemoryType> {
+        // first check if device is not current location. This is cheaper than a lookup in `copies`.
+        if &self.latest_location == device {
+            return Some(&self.latest_copy)
+        }
         self.copies.get(device)
     }
 
@@ -93,6 +99,10 @@ impl<T> SharedMemory<T> {
     ///
     /// Returns `None` if there is no memory copy on the device.
     pub fn get_mut(&mut self, device: &DeviceType) -> Option<&mut MemoryType> {
+        // first check if device is not current location. This is cheaper than a lookup in `copies`.
+        if &self.latest_location == device {
+            return Some(&mut self.latest_copy)
+        }
         self.copies.get_mut(device)
     }
 
@@ -149,7 +159,7 @@ impl<T> SharedMemory<T> {
     ///
     /// Returns an error if the SharedMemory is already tracking the `device`.
     pub fn add_device(&mut self, device: &DeviceType) -> Result<&mut Self, Error> {
-        // first check if device is not current location. This is cheaper since we only have to test for equality not hash equality.
+        // first check if device is not current location. This is cheaper than a lookup in `copies`.
         if &self.latest_location == device {
             return Err(Error::InvalidMemoryAllocation("SharedMemory already tracks memory for this device. No memory allocation."))
         }

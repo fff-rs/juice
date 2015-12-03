@@ -44,6 +44,10 @@ use framework::IFramework;
 use frameworks::{Native, OpenCL, Cuda};
 use device::{IDevice, DeviceType};
 use libraries::blas::IBlas;
+use libraries::blas as bl;
+use shared_memory::SharedMemory;
+use libraries::blas::{IOperationAsum, IOperationAxpy, IOperationCopy, IOperationDot,
+                      IOperationNrm2, IOperationScale, IOperationSwap};
 
 #[derive(Debug, Clone)]
 /// Defines the main and highest struct of Collenchyma.
@@ -129,8 +133,125 @@ impl IBlas<f32> for Backend<OpenCL> {
     }
 }
 
+macro_rules! iblas_asum_for {
+    ($t:ident, $b:ty) => (
+        fn asum(&self, x: &mut SharedMemory<$t>, result: &mut SharedMemory<$t>) -> Result<(), ::error::Error> {
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => () }
+            Ok(try!(
+                <$b as IOperationAsum<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(result.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `result`"))),
+                )
+            ))
+        }
+    );
+}
+
+macro_rules! iblas_axpy_for {
+    ($t:ident, $b:ty) => (
+        fn axpy(&self, a: &mut SharedMemory<$t>, x: &mut SharedMemory<$t>, y: &mut SharedMemory<$t>) -> Result<(), ::error::Error> {
+            match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
+            Ok(try!(
+                <$b as IOperationAxpy<$t>>::compute(&self,
+                    try!(a.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `a`"))),
+                    try!(x.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                )
+            ))
+        }
+    );
+}
+
+macro_rules! iblas_copy_for {
+    ($t:ident, $b:ty) => (
+        fn copy(&self, x: &mut SharedMemory<$t>, y: &mut SharedMemory<$t>) -> Result<(), ::error::Error> {
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match y.add_device(self.device()) { _ => () }
+            Ok(try!(
+                <$b as IOperationCopy<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                )
+            ))
+        }
+    );
+}
+
+macro_rules! iblas_dot_for {
+    ($t:ident, $b:ty) => (
+        fn dot(&self, x: &mut SharedMemory<$t>, y: &mut SharedMemory<$t>, result: &mut SharedMemory<$t>) -> Result<(), Error> {
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
+            match result.add_device(self.device()) { _ => () }
+            Ok(try!(
+                <$b as IOperationDot<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                    try!(result.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `result`")))
+                )
+            ))
+        }
+    );
+}
+
+macro_rules! iblas_nrm2_for {
+    ($t:ident, $b:ty) => (
+        fn nrm2(&self, x: &mut SharedMemory<$t>, result: &mut SharedMemory<$t>) -> Result<(), ::error::Error> {
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => () }
+            Ok(try!(
+                <$b as IOperationNrm2<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(result.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `result`"))),
+                )
+            ))
+        }
+    );
+}
+
+macro_rules! iblas_scale_for {
+    ($t:ident, $b:ty) => (
+        fn scale(&self, a: &mut SharedMemory<$t>, x: &mut SharedMemory<$t>) -> Result<(), ::error::Error> {
+            match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            Ok(try!(
+                <$b as IOperationScale<$t>>::compute(&self,
+                    try!(a.get(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `a`"))),
+                    try!(x.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                )
+            ))
+        }
+    );
+}
+
+macro_rules! iblas_swap_for {
+    ($t:ident, $b:ty) => (
+        fn swap(&self, x: &mut SharedMemory<$t>, y: &mut SharedMemory<$t>) -> Result<(), ::error::Error> {
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
+            Ok(try!(
+                <$b as IOperationSwap<$t>>::compute(&self,
+                    try!(x.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get_mut(self.device()).ok_or(bl::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                )
+            ))
+        }
+    );
+}
+
 impl IBlas<f32> for Backend<Native> {
     type B = ::frameworks::native::Binary;
+
+    iblas_asum_for!(f32, Backend<Native>);
+    iblas_axpy_for!(f32, Backend<Native>);
+    iblas_copy_for!(f32, Backend<Native>);
+    iblas_dot_for!(f32, Backend<Native>);
+    iblas_nrm2_for!(f32, Backend<Native>);
+    iblas_scale_for!(f32, Backend<Native>);
+    iblas_swap_for!(f32, Backend<Native>);
 
     fn binary(&self) -> &Self::B {
         self.binary()
@@ -143,6 +264,14 @@ impl IBlas<f32> for Backend<Native> {
 
 impl IBlas<f64> for Backend<Native> {
     type B = ::frameworks::native::Binary;
+
+    iblas_asum_for!(f64, Backend<Native>);
+    iblas_axpy_for!(f64, Backend<Native>);
+    iblas_copy_for!(f64, Backend<Native>);
+    iblas_dot_for!(f64, Backend<Native>);
+    iblas_nrm2_for!(f64, Backend<Native>);
+    iblas_scale_for!(f64, Backend<Native>);
+    iblas_swap_for!(f64, Backend<Native>);
 
     fn binary(&self) -> &Self::B {
         self.binary()

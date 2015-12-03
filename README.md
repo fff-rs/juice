@@ -97,6 +97,20 @@ fn main() {
 }
 ```
 
+## Benchmarks
+
+The following benchmarks highlight the overhead of calling the underlying library implementations.
+
+Operation                                    | Collenchyma (Native backend) | rust-blas
+-------------------------------------------- | ---------------------------- | ----------
+1000x Dot product of two vectors of size 100 | 48,870 ns (+/- 499) | 15,226 ns (+/- 244)
+100x Dot product of two vectors of size 1000 | 9,997 ns (+/- 215) | 6,920 ns (+/- 179)
+10x Dot product of two vectors of size 10000 | 10,958 ns (+/- 377) | 10,333 ns (+/- 460)
+5x Dot product of two vectors of size 20000  | 10,784 ns (+/- 2,338) | 10,533 ns (+/- 1,981)
+
+The overhead of Collenchyma becomes negligible when executing operations on vectors bigger than ~10000-20000 elements.  
+Reducing this overhead is a big priority and [you can help!](https://github.com/autumnai/collenchyma/issues/13)
+
 ## Contributing
 
 Want to contribute? Awesome! We have
