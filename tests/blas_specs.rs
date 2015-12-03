@@ -30,67 +30,67 @@ mod blas_spec {
     }
 
     fn get_asum_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T>, SharedMemory<T>){
-        let mut x = SharedMemory::<T>::new(backend.device(), 3);
+        let mut x = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(-2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let result = SharedMemory::<T>::new(backend.device(), 1);
+        let result = SharedMemory::<T>::new(backend.device(), 1).unwrap();
         (x, result)
     }
 
     fn get_axpy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T>, SharedMemory<T>, SharedMemory<T>){
-        let mut a = SharedMemory::<T>::new(backend.device(), 1);
+        let mut a = SharedMemory::<T>::new(backend.device(), 1).unwrap();
         write_to_memory(a.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap()]);
 
-        let mut x = SharedMemory::<T>::new(backend.device(), 3);
+        let mut x = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedMemory::<T>::new(backend.device(), 3);
+        let mut y = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
         (a, x, y)
     }
 
     fn get_copy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T>, SharedMemory<T>){
-        let mut x = SharedMemory::<T>::new(backend.device(), 3);
+        let mut x = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let y = SharedMemory::<T>::new(backend.device(), 3);
+        let y = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         (x, y)
     }
 
     fn get_dot_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T>, SharedMemory<T>, SharedMemory<T>){
-        let mut x = SharedMemory::<T>::new(backend.device(), 3);
+        let mut x = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedMemory::<T>::new(backend.device(), 3);
+        let mut y = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let result = SharedMemory::<T>::new(backend.device(), 1);
+        let result = SharedMemory::<T>::new(backend.device(), 1).unwrap();
         (x, y, result)
     }
 
     fn get_nrm2_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T>, SharedMemory<T>){
-        let mut x = SharedMemory::<T>::new(backend.device(), 3);
+        let mut x = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap()]);
 
-        let result = SharedMemory::<T>::new(backend.device(), 1);
+        let result = SharedMemory::<T>::new(backend.device(), 1).unwrap();
         (x, result)
     }
 
     fn get_scale_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T>, SharedMemory<T>){
-        let mut x = SharedMemory::<T>::new(backend.device(), 1);
+        let mut x = SharedMemory::<T>::new(backend.device(), 1).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap()]);
 
-        let mut y = SharedMemory::<T>::new(backend.device(), 3);
+        let mut y = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
         (x, y)
     }
 
     fn get_swap_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T>, SharedMemory<T>){
-        let mut x = SharedMemory::<T>::new(backend.device(), 3);
+        let mut x = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedMemory::<T>::new(backend.device(), 3);
+        let mut y = SharedMemory::<T>::new(backend.device(), 3).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(3).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(1).unwrap()]);
 
         (x, y)

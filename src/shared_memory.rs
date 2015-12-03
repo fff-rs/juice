@@ -27,7 +27,7 @@
 //! // allocate memory
 //! let native = Native::new();
 //! let device = native.new_device(native.hardwares()).unwrap();
-//! let shared_data = &mut SharedMemory::<i32>::new(&device, 5);
+//! let shared_data = &mut SharedMemory::<i32>::new(&device, 5).unwrap();
 //! // fill memory with some numbers
 //! let local_data = [0, 1, 2, 3, 4];
 //! let data = shared_data.get_mut(&device).unwrap().as_mut_native().unwrap();
@@ -56,22 +56,22 @@ pub struct SharedMemory<T> {
 impl<T> SharedMemory<T> {
     /// Create new SharedMemory by allocating [Memory][1] on a Device.
     /// [1]: ../memory/index.html
-    pub fn new(dev: &DeviceType, capacity: usize) -> SharedMemory<T> {
+    pub fn new(dev: &DeviceType, capacity: usize) -> Result<SharedMemory<T>, Error> {
         let copies = LinearMap::<DeviceType, MemoryType>::new();
         let copy: MemoryType;
         let alloc_size = mem::size_of::<T>() * capacity;
         match *dev {
-            DeviceType::Native(ref cpu) => copy = MemoryType::Native(cpu.alloc_memory(alloc_size)),
-            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(context.alloc_memory(alloc_size)),
-            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(context.alloc_memory(alloc_size)),
+            DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size))),
+            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size))),
+            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size))),
         }
-        SharedMemory {
+        Ok(SharedMemory {
             latest_location: dev.clone(),
             latest_copy: copy,
             copies: copies,
             cap: capacity,
             phantom: PhantomData,
-        }
+        })
     }
 
     /// Synchronize memory from latest location to `destination`.
@@ -174,9 +174,9 @@ impl<T> SharedMemory<T> {
             None => {
                 let copy: MemoryType;
                 match *device {
-                    DeviceType::Native(ref cpu) => copy = MemoryType::Native(cpu.alloc_memory(mem::size_of::<T>())),
-                    DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(context.alloc_memory(mem::size_of::<T>())),
-                    DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(context.alloc_memory(mem::size_of::<T>())),
+                    DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(mem::size_of::<T>()))),
+                    DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(mem::size_of::<T>()))),
+                    DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(mem::size_of::<T>()))),
                 };
                 self.copies.insert(device.clone(), copy);
                 Ok(self)
@@ -204,6 +204,8 @@ pub enum Error {
     MissingDestination(&'static str),
     /// No memory allocation on specified device happened.
     InvalidMemoryAllocation(&'static str),
+    /// Framework error at memory allocation.
+    MemoryAllocationError(::device::Error),
 }
 
 impl fmt::Display for Error {
@@ -212,6 +214,7 @@ impl fmt::Display for Error {
             Error::MissingSource(ref err) => write!(f, "{:?}", err),
             Error::MissingDestination(ref err) => write!(f, "{:?}", err),
             Error::InvalidMemoryAllocation(ref err) => write!(f, "{:?}", err),
+            Error::MemoryAllocationError(ref err) => write!(f, "{}", err),
         }
     }
 }
@@ -222,6 +225,7 @@ impl error::Error for Error {
             Error::MissingSource(ref err) => err,
             Error::MissingDestination(ref err) => err,
             Error::InvalidMemoryAllocation(ref err) => err,
+            Error::MemoryAllocationError(ref err) => err.description(),
         }
     }
 
@@ -230,6 +234,7 @@ impl error::Error for Error {
             Error::MissingSource(_) => None,
             Error::MissingDestination(_) => None,
             Error::InvalidMemoryAllocation(_) => None,
+            Error::MemoryAllocationError(ref err) => Some(err),
         }
     }
 }

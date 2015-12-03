@@ -73,11 +73,11 @@ impl API {
     ) -> Result<(), Error> {
         match cuDeviceGet(device, ordinal) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
-            _ => Err(Error::Unknown(format!("Unable to get Device count."))),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            _ => Err(Error::Unknown("Unable to get Device count.")),
         }
     }
 
@@ -86,11 +86,11 @@ impl API {
     ) -> Result<(), Error> {
         match cuDeviceGetCount(count) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
-            _ => Err(Error::Unknown(format!("Unable to get Device count."))),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            _ => Err(Error::Unknown("Unable to get Device count.")),
         }
     }
 
@@ -101,12 +101,12 @@ impl API {
     ) -> Result<(), Error> {
         match cuDeviceGetAttribute(pi, attrib, device) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
-            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue(format!("Invalid value for `device` provided."))),
-            _ => Err(Error::Unknown(format!("Unable to get device attribute.")))
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
+            _ => Err(Error::Unknown("Unable to get device attribute."))
         }
     }
 
@@ -117,12 +117,12 @@ impl API {
     ) -> Result<(), Error> {
         match cuDeviceGetName(name, len, device) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
-            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue(format!("Invalid value for `device` provided."))),
-            _ => Err(Error::Unknown(format!("Unable to get device name.")))
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
+            _ => Err(Error::Unknown("Unable to get device name."))
         }
     }
 
@@ -132,12 +132,12 @@ impl API {
     ) -> Result<(), Error> {
         match cuDeviceTotalMem_v2(bytes, device) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
-            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue(format!("Invalid value for `device` provided."))),
-            _ => Err(Error::Unknown(format!("Unable to get total mem of device.")))
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
+            _ => Err(Error::Unknown("Unable to get total mem of device."))
         }
     }
 }

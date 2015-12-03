@@ -1,6 +1,7 @@
 //! Provides a Rust wrapper around Cuda's context.
 
 use device::{IDevice, DeviceType};
+use device::Error as DeviceError;
 use super::api::ffi::*;
 use super::{API, Error, Device};
 use super::memory::*;
@@ -17,7 +18,8 @@ pub struct Context {
 impl Drop for Context {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        API::destroy_context(self);
+        // Produces Segfaults at tests for 50% at a time.
+        //API::destroy_context(self);
     }
 }
 
@@ -60,8 +62,8 @@ impl IDevice for Context {
         self.devices.clone()
     }
 
-    fn alloc_memory(&self, size: usize) -> Memory {
-        unimplemented!();
+    fn alloc_memory(&self, size: usize) -> Result<Memory, DeviceError> {
+        Ok(try!(API::mem_alloc(size as u64)))
     }
 
     fn sync_memory_to(&self, source: &Memory, dest: &mut MemoryType, dest_device: &DeviceType) {

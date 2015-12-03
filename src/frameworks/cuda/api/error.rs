@@ -2,123 +2,123 @@
 
 use std::{fmt, error};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 /// Defines OpenCL errors.
 pub enum Error {
     /// Failure with provided value.
-    InvalidValue(String),
+    InvalidValue(&'static str),
     /// Failure with memory allocation.
-    OutOfMemory(String),
+    OutOfMemory(&'static str),
     /// Failure with Cuda initialization.
-    NotInitialized(String),
+    NotInitialized(&'static str),
     /// Failure with Cuda initialization.
-    Deinitialized(String),
+    Deinitialized(&'static str),
     /// Failure with Profiler.
-    ProfilerDisabled(String),
+    ProfilerDisabled(&'static str),
     /// Failure with Profiler.
-    ProfilerNotInitialized(String),
+    ProfilerNotInitialized(&'static str),
     /// Failure with Profiler.
-    ProfilerAlreadyStarted(String),
+    ProfilerAlreadyStarted(&'static str),
     /// Failure with Profiler.
-    ProfilerAlreadyStopped(String),
+    ProfilerAlreadyStopped(&'static str),
     /// Failure with Cuda devices.
-    NoDevice(String),
+    NoDevice(&'static str),
     /// Failure with provided Cuda device.
-    InvalidDevice(String),
+    InvalidDevice(&'static str),
     /// Failure with provided Cuda image.
-    InvalidImage(String),
+    InvalidImage(&'static str),
     /// Failure with provided Cuda context.
-    InvalidContext(String),
+    InvalidContext(&'static str),
     /// Failure with provided Cuda context.
-    ContextAlreadyCurrent(String),
+    ContextAlreadyCurrent(&'static str),
     /// Failure
-    MapFailed(String),
+    MapFailed(&'static str),
     /// Failure
-    UnmapFailed(String),
+    UnmapFailed(&'static str),
     /// Failure
-    ArrayIsMapped(String),
+    ArrayIsMapped(&'static str),
     /// Failure
-    AlreadyMapped(String),
+    AlreadyMapped(&'static str),
     /// Failure with binary.
-    NoBinaryForGpu(String),
+    NoBinaryForGpu(&'static str),
     /// Failure
-    AlreadyAquired(String),
+    AlreadyAquired(&'static str),
     /// Failure
-    NotMapped(String),
+    NotMapped(&'static str),
     /// Failure
-    NotMappedAsArray(String),
+    NotMappedAsArray(&'static str),
     /// Failure
-    NotMappedAsPointer(String),
+    NotMappedAsPointer(&'static str),
     /// Failure
-    EccUncorrectable(String),
+    EccUncorrectable(&'static str),
     /// Failure
-    UnsupportedLimit(String),
+    UnsupportedLimit(&'static str),
     /// Failure with context.
-    ContextAlreadyInUse(String),
+    ContextAlreadyInUse(&'static str),
     /// Failure
-    PeerAccessUnsupported(String),
+    PeerAccessUnsupported(&'static str),
     /// Failure with provided PTX.
-    InvalidPtx(String),
+    InvalidPtx(&'static str),
     /// Failure
-    InvalidGraphicsContent(String),
+    InvalidGraphicsContent(&'static str),
     /// Failure
-    InvalidSource(String),
+    InvalidSource(&'static str),
     /// Failure
-    FileNotFound(String),
+    FileNotFound(&'static str),
     /// Failure
-    SharedObjectSymbolNotFound(String),
+    SharedObjectSymbolNotFound(&'static str),
     /// Failure
-    SharedObjectInitFailed(String),
+    SharedObjectInitFailed(&'static str),
     /// Failure
-    OperatingSystem(String),
+    OperatingSystem(&'static str),
     /// Failure
-    InvalidHandle(String),
+    InvalidHandle(&'static str),
     /// Failure
-    NotFound(String),
+    NotFound(&'static str),
     /// Failure
-    NotReady(String),
+    NotReady(&'static str),
     /// Failure
-    IllegalAddress(String),
+    IllegalAddress(&'static str),
     /// Failure
-    LaunchOutOfResources(String),
+    LaunchOutOfResources(&'static str),
     /// Failure
-    LaunchTimeout(String),
+    LaunchTimeout(&'static str),
     /// Failure
-    LauncIncompatibleTexturing(String),
+    LauncIncompatibleTexturing(&'static str),
     /// Failure
-    PeerAccessAlreadyEnabled(String),
+    PeerAccessAlreadyEnabled(&'static str),
     /// Failure
-    PeerAccessNotEnabled(String),
+    PeerAccessNotEnabled(&'static str),
     /// Failure
-    PrimaryContextActive(String),
+    PrimaryContextActive(&'static str),
     /// Failure
-    ContextIsDestroyed(String),
+    ContextIsDestroyed(&'static str),
     /// Failure
-    Assert(String),
+    Assert(&'static str),
     /// Failure
-    TooManyPeers(String),
+    TooManyPeers(&'static str),
     /// Failure
-    HostMemoryAlreadyRegistered(String),
+    HostMemoryAlreadyRegistered(&'static str),
     /// Failure
-    HostMemoryNotRegistered(String),
+    HostMemoryNotRegistered(&'static str),
     /// Failure
-    HardwareStackError(String),
+    HardwareStackError(&'static str),
     /// Failure
-    IllegalInstruction(String),
+    IllegalInstruction(&'static str),
     /// Failure
-    MisalignedAddress(String),
+    MisalignedAddress(&'static str),
     /// Failure
-    InvalidAddressSpace(String),
+    InvalidAddressSpace(&'static str),
     /// Failure
-    InvalidPc(String),
+    InvalidPc(&'static str),
     /// Failure
-    LaunchFailed(String),
+    LaunchFailed(&'static str),
     /// Failure
-    NotPermitted(String),
+    NotPermitted(&'static str),
     /// Failure
-    NotSupported(String),
+    NotSupported(&'static str),
     /// Failure
-    Unknown(String),
+    Unknown(&'static str),
 }
 
 impl fmt::Display for Error {

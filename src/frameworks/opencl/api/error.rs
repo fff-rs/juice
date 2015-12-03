@@ -2,49 +2,49 @@
 
 use std::{fmt, error};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 /// Defines OpenCL errors.
 pub enum Error {
     /// Failure with provided platform.
-    InvalidPlatform(String),
+    InvalidPlatform(&'static str),
     /// Failure with provided device param.
-    InvalidDevice(String),
+    InvalidDevice(&'static str),
     /// Failure with provided platform.
-    InvalidDeviceType(String),
+    InvalidDeviceType(&'static str),
     /// Failure with provided context.
-    InvalidContext(String),
+    InvalidContext(&'static str),
     /// Failure with provided memory object.
-    InvalidMemObject(String),
+    InvalidMemObject(&'static str),
     /// Failure with provided command queue.
-    InvalidCommandQueue(String),
+    InvalidCommandQueue(&'static str),
     /// Failure with provided event list.
-    InvalidEventWaitList(String),
+    InvalidEventWaitList(&'static str),
     /// Failure with provided param(s).
-    InvalidValue(String),
+    InvalidValue(&'static str),
     /// Failure with provided property param.
-    InvalidProperty(String),
+    InvalidProperty(&'static str),
     /// Failure with provided operation param.
-    InvalidOperation(String),
+    InvalidOperation(&'static str),
     /// Failure with provided buffer size.
-    InvalidBufferSize(String),
+    InvalidBufferSize(&'static str),
     /// Failure with provided host pointer.
-    InvalidHostPtr(String),
+    InvalidHostPtr(&'static str),
     /// Failure with device availability.
-    DeviceNotFound(String),
+    DeviceNotFound(&'static str),
     /// Failure with device availability.
-    DeviceNotAvailable(String),
+    DeviceNotAvailable(&'static str),
     /// Failure to allocate memory.
-    MemObjectAllocationFailure(String),
+    MemObjectAllocationFailure(&'static str),
     /// Failure with sub buffer offset.
-    MisalignedSubBufferOffset(String),
+    MisalignedSubBufferOffset(&'static str),
     /// Failure with events in wait list.
-    ExecStatusErrorForEventsInWaitList(String),
+    ExecStatusErrorForEventsInWaitList(&'static str),
     /// Failure to allocate resources on the device.
-    OutOfResources(String),
+    OutOfResources(&'static str),
     /// Failure to allocate resources on the host.
-    OutOfHostMemory(String),
+    OutOfHostMemory(&'static str),
     /// Failure not closer defined.
-    Other(String),
+    Other(&'static str),
 }
 
 impl fmt::Display for Error {

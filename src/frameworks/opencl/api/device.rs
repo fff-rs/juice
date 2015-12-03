@@ -70,12 +70,12 @@ impl API {
     ) -> Result<(), Error> {
         match clGetDeviceIDs(platform, device_type, num_entries, devices, num_devices) {
             cl::Status::SUCCESS => Ok(()),
-            cl::Status::INVALID_PLATFORM => Err(Error::InvalidPlatform(format!("`platform`: {:?} is not a valid platform", platform))),
-            cl::Status::INVALID_DEVICE_TYPE => Err(Error::InvalidDeviceType(format!("`device type`: {} is not a valid device type", device_type))),
-            cl::Status::DEVICE_NOT_FOUND => Err(Error::DeviceNotFound(format!("no devices for `device type`: {} found", device_type))),
-            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources(format!("Failure to allocate resources on the device"))),
-            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory(format!("Failure to allocate resources on the host"))),
-            _ => Err(Error::Other(format!("Unable to get device ids")))
+            cl::Status::INVALID_PLATFORM => Err(Error::InvalidPlatform("`platform` is not a valid platform")),
+            cl::Status::INVALID_DEVICE_TYPE => Err(Error::InvalidDeviceType("`device type` is not a valid device type")),
+            cl::Status::DEVICE_NOT_FOUND => Err(Error::DeviceNotFound("no devices for `device type` found")),
+            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Failure to allocate resources on the device")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to get device ids"))
         }
     }
 
@@ -88,10 +88,10 @@ impl API {
     ) -> Result<(), Error> {
         match clGetDeviceInfo(device, param_name, param_value_size, param_value, param_value_size_ret) {
             cl::Status::SUCCESS => Ok(()),
-            cl::Status::INVALID_VALUE => Err(Error::InvalidValue(format!("`param_name`: {} is not one of the supported values", param_name))),
-            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources(format!("Failure to allocate resources on the device"))),
-            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory(format!("Failure to allocate resources on the host"))),
-            _ => Err(Error::Other(format!("Unable to get device info string length")))
+            cl::Status::INVALID_VALUE => Err(Error::InvalidValue("`param_name` is not one of the supported values")),
+            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Failure to allocate resources on the device")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to get device info string length"))
         }
     }
 }

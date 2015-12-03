@@ -33,14 +33,14 @@ impl API {
         let mut context: CUcontext = ptr::null_mut();
         match cuCtxCreate_v2(&mut context, CU_CTX_SCHED_AUTO, dev) {
             CUresult::CUDA_SUCCESS => Ok(context),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
-            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue(format!("Invalid value for `device` provided."))),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
-            CUresult::CUDA_ERROR_OUT_OF_MEMORY => Err(Error::OutOfMemory(format!("Device is out of memory."))),
-            CUresult::CUDA_ERROR_UNKNOWN => Err(Error::Unknown(format!("An unknown Error occured. Check the CUDA DRIVER API manual for more details."))),
-            _ => Err(Error::Unknown(format!("Unable to create Cuda context."))),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            CUresult::CUDA_ERROR_OUT_OF_MEMORY => Err(Error::OutOfMemory("Device is out of memory.")),
+            CUresult::CUDA_ERROR_UNKNOWN => Err(Error::Unknown("An unknown Error occured. Check the CUDA DRIVER API manual for more details.")),
+            _ => Err(Error::Unknown("Unable to create Cuda context.")),
         }
     }
 
@@ -49,11 +49,11 @@ impl API {
     ) -> Result<(), Error> {
         match cuCtxDestroy_v2(ctx) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized(format!("CUDA got deinitialized."))),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized(format!("CUDA is not initialized."))),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext(format!("No valid context available."))),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue(format!("Invalid value provided."))),
-            _ => Err(Error::Unknown(format!("Unable to destroy Cuda context."))),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            _ => Err(Error::Unknown("Unable to destroy Cuda context.")),
         }
     }
 }

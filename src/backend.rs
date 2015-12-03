@@ -25,6 +25,7 @@
 //! use co::framework::*;
 //! use co::backend::{Backend, BackendConfig};
 //! use co::frameworks::OpenCL;
+//! #[allow(unused_variables)]
 //! fn main() {
 //!     // Initialize a new Framewok.
 //!     let framework = OpenCL::new();

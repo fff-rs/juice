@@ -1,6 +1,6 @@
 //! Provides a hardware aka. the host CPU.
 
-use device::{IDevice, DeviceType};
+use device::{IDevice, DeviceType, Error};
 use memory::MemoryType;
 use super::hardware::Hardware;
 use super::flatbox::FlatBox;
@@ -35,10 +35,10 @@ impl IDevice for Cpu {
         self.hardwares.clone()
     }
 
-    fn alloc_memory(&self, size: usize) -> FlatBox {
+    fn alloc_memory(&self, size: usize) -> Result<FlatBox, Error> {
         let vec: Vec<u8> = vec![0; size];
         let bx: Box<[u8]> = vec.into_boxed_slice();
-        FlatBox::from_box(bx)
+        Ok(FlatBox::from_box(bx))
     }
 
     fn sync_memory_to(&self, source: &FlatBox, dest: &mut MemoryType, dest_device: &DeviceType) {

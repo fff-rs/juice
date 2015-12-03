@@ -1,6 +1,7 @@
 //! Provides a Rust wrapper around OpenCL's context.
 
 use device::{IDevice, DeviceType};
+use device::Error as DeviceError;
 use super::api::types as cl;
 use super::{API, Error, Device};
 use super::memory::*;
@@ -55,7 +56,7 @@ impl IDevice for Context {
         self.devices.clone()
     }
 
-    fn alloc_memory(&self, size: usize) -> Memory {
+    fn alloc_memory(&self, size: usize) -> Result<Memory, DeviceError> {
         unimplemented!();
     }
 
