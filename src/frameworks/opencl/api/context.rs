@@ -39,14 +39,14 @@ impl API {
         let context_id = clCreateContext(properties, num_devices, devices, pfn_notify, user_data, &mut errcode);
         match errcode {
             errcode if errcode == cl::Status::SUCCESS as i32 => Ok(context_id),
-            errcode if errcode == cl::Status::INVALID_PLATFORM as i32 => Err(Error::InvalidPlatform(format!("properties is NULL and no platform could be selected or if platform value specified in propertiesis not a valid platform."))),
-            errcode if errcode == cl::Status::INVALID_PROPERTY as i32 => Err(Error::InvalidProperty(format!("context property name in propertiesis not a supported property name, if the value specified for a supported property name is not valid,or if the same property name is specified more than once."))),
-            errcode if errcode == cl::Status::INVALID_VALUE as i32 => Err(Error::InvalidValue(format!("devices is NULL or num_devices is equal to zero or pfn_notify is NULL but user_data is not NULL"))),
-            errcode if errcode == cl::Status::INVALID_DEVICE as i32 => Err(Error::InvalidDevice(format!("devices contains an invalid device."))),
-            errcode if errcode == cl::Status::DEVICE_NOT_AVAILABLE as i32 => Err(Error::DeviceNotAvailable(format!("a device in devices is currently not available even though the device was returned by clGetDeviceIDs."))),
-            errcode if errcode == cl::Status::OUT_OF_RESOURCES as i32 => Err(Error::OutOfResources(format!("Failure to allocate resources on the device"))),
-            errcode if errcode == cl::Status::OUT_OF_HOST_MEMORY as i32 => Err(Error::OutOfHostMemory(format!("Failure to allocate resources on the host"))),
-            _ => Err(Error::Other(format!("Unable to create context")))
+            errcode if errcode == cl::Status::INVALID_PLATFORM as i32 => Err(Error::InvalidPlatform("properties is NULL and no platform could be selected or if platform value specified in propertiesis not a valid platform.")),
+            errcode if errcode == cl::Status::INVALID_PROPERTY as i32 => Err(Error::InvalidProperty("context property name in propertiesis not a supported property name, if the value specified for a supported property name is not valid,or if the same property name is specified more than once.")),
+            errcode if errcode == cl::Status::INVALID_VALUE as i32 => Err(Error::InvalidValue("devices is NULL or num_devices is equal to zero or pfn_notify is NULL but user_data is not NULL")),
+            errcode if errcode == cl::Status::INVALID_DEVICE as i32 => Err(Error::InvalidDevice("devices contains an invalid device.")),
+            errcode if errcode == cl::Status::DEVICE_NOT_AVAILABLE as i32 => Err(Error::DeviceNotAvailable("a device in devices is currently not available even though the device was returned by clGetDeviceIDs.")),
+            errcode if errcode == cl::Status::OUT_OF_RESOURCES as i32 => Err(Error::OutOfResources("Failure to allocate resources on the device")),
+            errcode if errcode == cl::Status::OUT_OF_HOST_MEMORY as i32 => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to create context"))
         }
     }
 }

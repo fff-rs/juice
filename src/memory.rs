@@ -8,7 +8,8 @@
 //! [shared_mem]: ../shared_mem/index.html
 
 use frameworks::native::flatbox::FlatBox;
-use frameworks::opencl::memory::Memory;
+use frameworks::opencl::memory::Memory as OpenCLMemory;
+use frameworks::cuda::memory::Memory as CudaMemory;
 
 /// Specifies Memory behavior accross frameworks.
 pub trait IMemory { }
@@ -16,10 +17,12 @@ pub trait IMemory { }
 #[derive(Debug)]
 /// Container for all known IMemory implementations
 pub enum MemoryType {
-    /// A OpenCL Context
+    /// A Native Memory representation.
     Native(FlatBox),
-    /// A OpenCL Context
-    OpenCL(Memory),
+    /// A OpenCL Memory representation.
+    OpenCL(OpenCLMemory),
+    /// A Cuda Memory representation.
+    Cuda(CudaMemory),
 }
 
 impl MemoryType {
@@ -40,7 +43,7 @@ impl MemoryType {
     }
 
     /// Extract the OpenCL Memory if MemoryType is OpenCL.
-    pub fn as_opencl(&self) -> Option<&Memory> {
+    pub fn as_opencl(&self) -> Option<&OpenCLMemory> {
         match *self {
             MemoryType::OpenCL(ref ret) => Some(ret),
             _ => None,
@@ -48,9 +51,25 @@ impl MemoryType {
     }
 
     /// Extract the OpenCL Memory mutably if MemoryType is OpenCL.
-    pub fn as_mut_opencl(&mut self) -> Option<&mut Memory> {
+    pub fn as_mut_opencl(&mut self) -> Option<&mut OpenCLMemory> {
         match *self {
             MemoryType::OpenCL(ref mut ret) => Some(ret),
+            _ => None,
+        }
+    }
+
+    /// Extract the Cuda Memory if MemoryType is Cuda
+    pub fn as_cuda(&self) -> Option<&CudaMemory> {
+        match *self {
+            MemoryType::Cuda(ref ret) => Some(ret),
+            _ => None,
+        }
+    }
+
+    /// Extract the Cuda Memory mutably if MemoryType is Cuda
+    pub fn as_mut_cuda(&mut self) -> Option<&mut CudaMemory> {
+        match *self {
+            MemoryType::Cuda(ref mut ret) => Some(ret),
             _ => None,
         }
     }

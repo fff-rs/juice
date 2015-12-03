@@ -1,8 +1,10 @@
 //! Provides a hardware aka. the host CPU.
 
-use device::{IDevice, DeviceType};
+use device::{IDevice, DeviceType, IDeviceSyncOut};
+use device::Error as DeviceError;
 use memory::MemoryType;
 use super::hardware::Hardware;
+use super::Error;
 use super::flatbox::FlatBox;
 use std::hash::{Hash, Hasher};
 
@@ -35,18 +37,22 @@ impl IDevice for Cpu {
         self.hardwares.clone()
     }
 
-    fn alloc_memory(&self, size: usize) -> FlatBox {
-        let vec: Vec<u8> = vec![0; size];
+    fn alloc_memory(&self, size: u64) -> Result<FlatBox, DeviceError> {
+        let vec: Vec<u8> = vec![0; size as usize];
         let bx: Box<[u8]> = vec.into_boxed_slice();
-        FlatBox::from_box(bx)
+        Ok(FlatBox::from_box(bx))
     }
 
-    fn sync_memory_to(&self, source: &FlatBox, dest: &mut MemoryType, dest_device: &DeviceType) {
-        match dest_device.clone() {
-            DeviceType::Native(_) => {},
-            DeviceType::OpenCL(_) => {
-                unimplemented!();
-            }
+    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
+        match source {
+            &DeviceType::Native(ref cpu) => unimplemented!(),
+            &DeviceType::OpenCL(ref context) => unimplemented!(),
+            &DeviceType::Cuda(ref context) => {
+                match source_data.as_cuda() {
+                    Some(mut h_mem) => Ok(try!(context.sync_out(&DeviceType::Native(self.clone()), &h_mem, dest_data))),
+                    None => Err(DeviceError::Native(Error::Memory("Expected CUDA Memory")))
+                }
+            },
         }
     }
 }

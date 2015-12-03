@@ -22,6 +22,7 @@ use hardware::IHardware;
 use device::{IDevice, DeviceType};
 use binary::IBinary;
 use frameworks::opencl::Error as OpenCLError;
+use frameworks::cuda::Error as CudaError;
 use std::error;
 use std::fmt;
 
@@ -64,12 +65,18 @@ pub trait IFramework {
 pub enum Error {
     /// Failures related to the OpenCL framework implementation.
     OpenCL(OpenCLError),
+    /// Failures related to the Cuda framework implementation.
+    Cuda(CudaError),
+    /// Failure related to the Collenchyma implementation of a specific Framework.
+    Implementation(String),
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
+            Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
+            Error::Implementation(ref err) => write!(f, "Collenchyma Implementation error: {}", err),
         }
     }
 }
@@ -78,12 +85,16 @@ impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
             Error::OpenCL(ref err) => err.description(),
+            Error::Cuda(ref err) => err.description(),
+            Error::Implementation(ref err) => err,
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
             Error::OpenCL(ref err) => Some(err),
+            Error::Cuda(ref err) => Some(err),
+            Error::Implementation(_) => None,
         }
     }
 }
@@ -91,6 +102,12 @@ impl error::Error for Error {
 impl From<OpenCLError> for Error {
     fn from(err: OpenCLError) -> Error {
         Error::OpenCL(err)
+    }
+}
+
+impl From<CudaError> for Error {
+    fn from(err: CudaError) -> Error {
+        Error::Cuda(err)
     }
 }
 

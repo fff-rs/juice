@@ -50,24 +50,24 @@ impl API {
         let memory_id = clCreateBuffer(context, flags, size, host_ptr, &mut errcode);
         match errcode {
             errcode if errcode == cl::Status::SUCCESS as i32 => Ok(memory_id),
-            errcode if errcode == cl::Status::INVALID_CONTEXT as i32 => Err(Error::InvalidContext(format!("context: {:?} is not a valid context.", context))),
-            errcode if errcode == cl::Status::INVALID_VALUE as i32 => Err(Error::InvalidValue(format!("values specified in flags are not valid"))),
-            errcode if errcode == cl::Status::INVALID_BUFFER_SIZE as i32 => Err(Error::InvalidBufferSize(format!("size is 0^10"))),
-            errcode if errcode == cl::Status::INVALID_HOST_PTR as i32 => Err(Error::InvalidHostPtr(format!("if host_ptr is NULL and CL_MEM_USE_HOST_PTR or CL_MEM_COPY_HOST_PTR are set in flags or if host_ptr is not NULL but CL_MEM_COPY_HOST_PTR or CL_MEM_USE_HOST_PTR are not set in flags"))),
-            errcode if errcode == cl::Status::MEM_OBJECT_ALLOCATION_FAILURE as i32 => Err(Error::MemObjectAllocationFailure(format!("failure toallocate memory for buffer object."))),
-            errcode if errcode == cl::Status::OUT_OF_RESOURCES as i32 => Err(Error::OutOfResources(format!("Failure to allocate resources on the device"))),
-            errcode if errcode == cl::Status::OUT_OF_HOST_MEMORY as i32 => Err(Error::OutOfHostMemory(format!("Failure to allocate resources on the host"))),
-            _ => Err(Error::Other(format!("Unable to create memory buffer.")))
+            errcode if errcode == cl::Status::INVALID_CONTEXT as i32 => Err(Error::InvalidContext("context is not a valid context.")),
+            errcode if errcode == cl::Status::INVALID_VALUE as i32 => Err(Error::InvalidValue("values specified in flags are not valid")),
+            errcode if errcode == cl::Status::INVALID_BUFFER_SIZE as i32 => Err(Error::InvalidBufferSize("size is 0^10")),
+            errcode if errcode == cl::Status::INVALID_HOST_PTR as i32 => Err(Error::InvalidHostPtr("if host_ptr is NULL and CL_MEM_USE_HOST_PTR or CL_MEM_COPY_HOST_PTR are set in flags or if host_ptr is not NULL but CL_MEM_COPY_HOST_PTR or CL_MEM_USE_HOST_PTR are not set in flags")),
+            errcode if errcode == cl::Status::MEM_OBJECT_ALLOCATION_FAILURE as i32 => Err(Error::MemObjectAllocationFailure("failure toallocate memory for buffer object.")),
+            errcode if errcode == cl::Status::OUT_OF_RESOURCES as i32 => Err(Error::OutOfResources("Failure to allocate resources on the device")),
+            errcode if errcode == cl::Status::OUT_OF_HOST_MEMORY as i32 => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to create memory buffer."))
         }
     }
 
     unsafe fn ffi_release_mem_object(memobj: cl::memory_id) -> Result<(), Error> {
         match clReleaseMemObject(memobj) {
             cl::Status::SUCCESS => Ok(()),
-            cl::Status::INVALID_MEM_OBJECT => Err(Error::InvalidMemObject(format!("memobj: {:?} is not a valid memory object.", memobj))),
-            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources(format!("Failure to allocate resources on the device"))),
-            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory(format!("Failure to allocate resources on the host"))),
-            _ => Err(Error::Other(format!("Unable to release memory object.")))
+            cl::Status::INVALID_MEM_OBJECT => Err(Error::InvalidMemObject("memobj is not a valid memory object.")),
+            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Failure to allocate resources on the device")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to release memory object."))
         }
     }
 
@@ -84,18 +84,18 @@ impl API {
     ) -> Result<(), Error> {
         match clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, cb, ptr, num_events_in_wait_list, event_wait_list, event) {
             cl::Status::SUCCESS => Ok(()),
-            cl::Status::INVALID_COMMAND_QUEUE => Err(Error::InvalidCommandQueue(format!("command_queue: {:?} is not a valid command-queue", command_queue))),
-            cl::Status::INVALID_CONTEXT => Err(Error::InvalidContext(format!("the context associated with command_queue and buffer are not the same or if the context associated with command_queue and events in event_wait_list are not the same."))),
-            cl::Status::INVALID_MEM_OBJECT => Err(Error::InvalidMemObject(format!("buffer: {:?} is not a valid memory object.", buffer))),
-            cl::Status::INVALID_VALUE => Err(Error::InvalidValue(format!("the region being read or written specified by (offset, size) is out of bounds or if ptris a NULLvalueor if sizeis 0."))),
-            cl::Status::INVALID_EVENT_WAIT_LIST => Err(Error::InvalidEventWaitList(format!("event_wait_list is NULL and num_events_in_wait_list > 0, or event_wait_listis not NULL and num_events_in_wait_list is 0, or if event objects in event_wait_list are not valid events."))),
-            cl::Status::MISALIGNED_SUB_BUFFER_OFFSET => Err(Error::MisalignedSubBufferOffset(format!("buffer is a sub-buffer object and offsetspecified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue."))),
-            cl::Status::EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST => Err(Error::ExecStatusErrorForEventsInWaitList(format!("the read and write operations are blocking and the execution status of any of the events in event_wait_listis a negative integer value."))),
-            cl::Status::MEM_OBJECT_ALLOCATION_FAILURE => Err(Error::MemObjectAllocationFailure(format!("there is a failure to allocate memory fordata store associated with buffer."))),
-            cl::Status::INVALID_OPERATION => Err(Error::InvalidOperation(format!("called on buffer which has been created with CL_MEM_HOST_WRITE_ONLY or CL_MEM_HOST_NO_ACCESS."))),
-            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources(format!("Failure to allocate resources on the device"))),
-            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory(format!("Failure to allocate resources on the host"))),
-            _ => Err(Error::Other(format!("Unable to enqueue read buffer.")))
+            cl::Status::INVALID_COMMAND_QUEUE => Err(Error::InvalidCommandQueue("command_queue is not a valid command-queue")),
+            cl::Status::INVALID_CONTEXT => Err(Error::InvalidContext("the context associated with command_queue and buffer are not the same or if the context associated with command_queue and events in event_wait_list are not the same.")),
+            cl::Status::INVALID_MEM_OBJECT => Err(Error::InvalidMemObject("buffer is not a valid memory object.")),
+            cl::Status::INVALID_VALUE => Err(Error::InvalidValue("the region being read or written specified by (offset, size) is out of bounds or if ptris a NULLvalueor if sizeis 0.")),
+            cl::Status::INVALID_EVENT_WAIT_LIST => Err(Error::InvalidEventWaitList("event_wait_list is NULL and num_events_in_wait_list > 0, or event_wait_listis not NULL and num_events_in_wait_list is 0, or if event objects in event_wait_list are not valid events.")),
+            cl::Status::MISALIGNED_SUB_BUFFER_OFFSET => Err(Error::MisalignedSubBufferOffset("buffer is a sub-buffer object and offsetspecified when the sub-buffer object is created is not aligned to CL_DEVICE_MEM_BASE_ADDR_ALIGN value for device associated with queue.")),
+            cl::Status::EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST => Err(Error::ExecStatusErrorForEventsInWaitList("the read and write operations are blocking and the execution status of any of the events in event_wait_listis a negative integer value.")),
+            cl::Status::MEM_OBJECT_ALLOCATION_FAILURE => Err(Error::MemObjectAllocationFailure("there is a failure to allocate memory fordata store associated with buffer.")),
+            cl::Status::INVALID_OPERATION => Err(Error::InvalidOperation("called on buffer which has been created with CL_MEM_HOST_WRITE_ONLY or CL_MEM_HOST_NO_ACCESS.")),
+            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Failure to allocate resources on the device")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to enqueue read buffer."))
         }
     }
 }

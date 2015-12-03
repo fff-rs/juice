@@ -1,41 +1,59 @@
-//! Provides the OpenCL API with its context functionality.
+//! Provides the Cuda API with its context functionality.
 //!
-//! At Collenchyma device can be understood as a synonym to OpenCL's context.
+//! A Collenchyma device can be understood as a synonym to Cuda's context.
 
 use libc;
 use super::{API, Error};
 use frameworks::cuda::Device;
-use super::types as cl;
+use frameworks::cuda::Context;
 use super::ffi::*;
+use std::ptr;
 
 impl API {
-    /// Creates a OpenCL context.
+    /// Creates a Cuda context.
     ///
-    /// An OpenCL context is created with one or more devices. Contexts are used by the OpenCL
+    /// An Cuda context can only be created with one device. Contexts are used by the Cuda
     /// runtime for managing objects such as command-queues, memory, program and kernel objects
     /// and for executing kernels on one or more devices specified in the context.
-    /// An OpenCL context is a synonym to a Collenchyma device.
-    pub fn create_context(
-        devices: Vec<Device>,
-        properties: *const cl::context_properties,
-        callback: extern fn (*const libc::c_char, *const libc::c_void, libc::size_t, *mut libc::c_void),
-        user_data: *mut libc::c_void
-    ) -> Result<cl::context_id, Error> {
-        let mut device_ids: Vec<cl::device_id> = devices.iter().map(|device| device.id_c()).collect();
-        Ok(
-            try!(
-                unsafe { API::ffi_create_context(properties, device_ids.len() as u32, device_ids.as_ptr(), callback, user_data) }
-            )
-        )
+    /// An Cuda context is a synonym to a Collenchyma device.
+    pub fn create_context(device: Device) -> Result<CUcontext, Error> {
+        unsafe {API::ffi_create_context(device.id_c())}
+    }
+
+    /// Removes a created Cuda context from the device.
+    ///
+    /// Should be called when freeing a Cuda::Context to not trash up the Cuda device.
+    pub fn destroy_context(context: &mut Context) -> Result<(), Error> {
+        unsafe {API::ffi_destroy_context(context.id_c())}
     }
 
     unsafe fn ffi_create_context(
-        properties: *const cl::context_properties,
-        num_devices: cl::uint,
-        devices: *const cl::device_id,
-        pfn_notify: extern fn (*const libc::c_char, *const libc::c_void, libc::size_t, *mut libc::c_void),
-        user_data: *mut libc::c_void
-    ) -> Result<cl::context_id, Error> {
-        unimplemented!()
+        dev: CUdevice,
+    ) -> Result<CUcontext, Error> {
+        let mut context: CUcontext = ptr::null_mut();
+        match cuCtxCreate_v2(&mut context, CU_CTX_SCHED_AUTO, dev) {
+            CUresult::CUDA_SUCCESS => Ok(context),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            CUresult::CUDA_ERROR_OUT_OF_MEMORY => Err(Error::OutOfMemory("Device is out of memory.")),
+            CUresult::CUDA_ERROR_UNKNOWN => Err(Error::Unknown("An unknown Error occured. Check the CUDA DRIVER API manual for more details.")),
+            _ => Err(Error::Unknown("Unable to create Cuda context.")),
+        }
+    }
+
+    unsafe fn ffi_destroy_context (
+        ctx: CUcontext,
+    ) -> Result<(), Error> {
+        match cuCtxDestroy_v2(ctx) {
+            CUresult::CUDA_SUCCESS => Ok(()),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            _ => Err(Error::Unknown("Unable to destroy Cuda context.")),
+        }
     }
 }

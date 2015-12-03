@@ -45,9 +45,9 @@ impl API {
     ) -> Result<(), Error> {
         match clGetPlatformIDs(num_entries, platforms, num_platforms) {
             cl::Status::SUCCESS => Ok(()),
-            cl::Status::INVALID_VALUE => Err(Error::InvalidValue(format!("`num_entries` is equal to zero and `platforms` is not NULL or if both `num_platforms` and `platforms` are NULL"))),
-            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory(format!("Failure to allocate resources on the host"))),
-            _ => Err(Error::Other(format!("Unable to get platform ids")))
+            cl::Status::INVALID_VALUE => Err(Error::InvalidValue("`num_entries` is equal to zero and `platforms` is not NULL or if both `num_platforms` and `platforms` are NULL")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to get platform ids"))
         }
     }
 }

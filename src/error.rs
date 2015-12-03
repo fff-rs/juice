@@ -9,8 +9,10 @@ pub enum Error {
     Framework(::framework::Error),
     /// Failure related to the SharedMemory.
     SharedMemory(::shared_memory::Error),
-    /// Failure realted to an Library(Operation).
+    /// Failure related to an Library(Operation).
     Operation(::libraries::Error),
+    /// Failure related to a Device.
+    Device(::device::Error),
 }
 
 impl fmt::Display for Error {
@@ -19,6 +21,7 @@ impl fmt::Display for Error {
             Error::Framework(ref err) => write!(f, "Framwork error: {}", err),
             Error::SharedMemory(ref err) => write!(f, "SharedMemory error: {}", err),
             Error::Operation(ref err) => write!(f, "Library/Operation error: {}", err),
+            Error::Device(ref err) => write!(f, "Device error: {}", err),
         }
     }
 }
@@ -29,6 +32,7 @@ impl error::Error for Error {
             Error::Framework(ref err) => err.description(),
             Error::SharedMemory(ref err) => err.description(),
             Error::Operation(ref err) => err.description(),
+            Error::Device(ref err) => err.description(),
         }
     }
 
@@ -37,6 +41,7 @@ impl error::Error for Error {
             Error::Framework(ref err) => Some(err),
             Error::SharedMemory(ref err) => Some(err),
             Error::Operation(ref err) => Some(err),
+            Error::Device(ref err) => Some(err),
         }
     }
 }
