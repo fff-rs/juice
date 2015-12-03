@@ -56,20 +56,11 @@ impl IDevice for Context {
         self.devices.clone()
     }
 
-    fn alloc_memory(&self, size: usize) -> Result<Memory, DeviceError> {
+    fn alloc_memory(&self, size: u64) -> Result<Memory, DeviceError> {
         unimplemented!();
     }
 
-    fn sync_memory_to(&self, source: &Memory, dest: &mut MemoryType, dest_device: &DeviceType) {
-        /*
-        let src = Memory::<Vec<u8>>::from_c(source as cl::memory_id);
-        match dest_device.clone() {
-            DeviceType::Native(cpu) => {
-                unimplemented!();
-            }
-            DeviceType::OpenCL(_) => {},
-        }
-        */
+    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {
         unimplemented!()
     }
 }

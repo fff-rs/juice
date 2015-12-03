@@ -1,9 +1,8 @@
 //! Provides the Cuda API with its memory/buffer functionality.
 
-use libc;
 use super::{API, Error};
+use frameworks::native::flatbox::FlatBox;
 use frameworks::cuda::Memory;
-use super::types as cl;
 use super::ffi::*;
 
 impl API {
@@ -21,20 +20,14 @@ impl API {
         unsafe {API::ffi_mem_free(memory.id_c())}
     }
 
-    /// Reads from a buffer to the host memory.
-    ///
-    /// With write_to_buffer you can do the opposite, write from the host memory to a buffer.
-    pub fn read_from_buffer<T>(
-        mem: Memory,
-        blocking_read: cl::boolean,
-        offset: libc::size_t,
-        size: libc::size_t,
-        ptr: *mut libc::c_void,
-        num_events_in_wait_list: cl::uint,
-        event_wait_list: *const cl::event,
-        event: *mut cl::event,
-    ) -> Result<(), Error> {
-        unimplemented!();
+    /// Copies memory from the Host to the Cuda device.
+    pub fn mem_cpy_h_to_d(host_mem: &FlatBox, device_mem: &mut Memory) -> Result<(), Error> {
+        unsafe {API::ffi_mem_cpy_h_to_d(device_mem.id_c(), host_mem.as_slice().as_ptr(), host_mem.byte_size() as u64)}
+    }
+
+    /// Copies memory from the Cuda device to the Host.
+    pub fn mem_cpy_d_to_h(device_mem: &Memory, host_mem: &mut FlatBox) -> Result<(), Error> {
+        unsafe {API::ffi_mem_cpy_d_to_h(host_mem.as_mut_slice().as_mut_ptr(), device_mem.id_c(), host_mem.byte_size() as u64)}
     }
 
     unsafe fn ffi_mem_alloc(bytesize: size_t) -> Result<CUdeviceptr, Error> {
@@ -61,17 +54,33 @@ impl API {
         }
     }
 
-    unsafe fn ffi_enqueue_read_buffer(
-        command_queue: cl::queue_id,
-        buffer: cl::memory_id,
-        blocking_read: cl::boolean,
-        offset: libc::size_t,
-        cb: libc::size_t,
-        ptr: *mut libc::c_void,
-        num_events_in_wait_list: cl::uint,
-        event_wait_list: *const cl::event,
-        event: *mut cl::event
+    unsafe fn ffi_mem_cpy_h_to_d(
+        dstDevice: CUdeviceptr,
+        srcHost: *const ::libc::c_void,
+        ByteCount: size_t,
     ) -> Result<(), Error> {
-        unimplemented!()
+        match cuMemcpyHtoD_v2(dstDevice, srcHost, ByteCount) {
+            CUresult::CUDA_SUCCESS => Ok(()),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            _ => Err(Error::Unknown("Unable to copy memory from host to device.")),
+        }
+    }
+
+    unsafe fn ffi_mem_cpy_d_to_h(
+        dstHost: *mut ::libc::c_void,
+        srcDevice: CUdeviceptr,
+        ByteCount: size_t,
+    ) -> Result<(), Error> {
+        match cuMemcpyDtoH_v2(dstHost, srcDevice, ByteCount) {
+            CUresult::CUDA_SUCCESS => Ok(()),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            _ => Err(Error::Unknown("Unable to copy memory from device to host.")),
+        }
     }
 }

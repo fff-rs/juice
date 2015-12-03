@@ -16,7 +16,7 @@ use frameworks::opencl::Error as OpenCLError;
 use frameworks::cuda::Error as CudaError;
 use std::{fmt, error};
 
-/// Specifies Hardware behavior accross frameworks.
+/// Specifies Hardware behavior across frameworks.
 pub trait IDevice {
     /// The Hardware representation for this Device.
     type H: IHardware;
@@ -27,10 +27,22 @@ pub trait IDevice {
     /// Returns the hardwares, which define the Device.
     fn hardwares(&self) -> Vec<Self::H>;
     /// Allocate memory on the Device.
-    fn alloc_memory(&self, size: usize) -> Result<Self::M, Error>;
-    /// Synchronize memory from this Device to `dest_device`.
-    fn sync_memory_to(&self, source: &Self::M, dest: &mut MemoryType, dest_device: &DeviceType);
+    fn alloc_memory(&self, size: u64) -> Result<Self::M, Error>;
+    /// Synchronize memory from `source_data` to the memory at `dest_data`.
+    ///
+    /// Defines how data is synchronized into the device.
+    /// All Frameworks, except Native(host), are also defining a `sync_out` method.
+    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Self::M) -> Result<(), Error>;
 }
+
+/// Specifies Sync out behavior across frameworks.
+pub trait IDeviceSyncOut<T: IMemory> {
+    /// The Memory representation for this Device.
+    type M: IMemory;
+    /// Synchronizes memory from `source_data` to `dest_data`.
+    fn sync_out(&self, dest: &DeviceType, source_data: &Self::M, dest_data: &mut T) -> Result<(), Error>;
+}
+
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
 /// Container for all known IDevice implementations

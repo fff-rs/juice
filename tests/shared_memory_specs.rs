@@ -10,6 +10,15 @@ mod shared_memory_spec {
     use co::memory::MemoryType;
     use co::shared_memory::*;
 
+    fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
+        if let &mut MemoryType::Native(ref mut mem) = mem {
+            let mut mem_buffer = mem.as_mut_slice::<T>();
+            for (index, datum) in data.iter().enumerate() {
+                mem_buffer[index] = *datum;
+            }
+        }
+    }
+
     #[test]
     fn it_creates_new_shared_memory_for_native() {
         let ntv = Native::new();
@@ -29,6 +38,33 @@ mod shared_memory_spec {
         match shared_data.get(&device) {
             Some(&MemoryType::Cuda(_)) => assert!(true),
             _ => assert!(false),
+        }
+    }
+
+    #[test]
+    fn it_syncs_from_native_to_cuda_and_back() {
+        let cu = Cuda::new();
+        let nt = Native::new();
+        let cu_device = cu.new_device(cu.hardwares()[0..1].to_vec()).unwrap();
+        let nt_device = nt.new_device(nt.hardwares()).unwrap();
+        let mem = &mut SharedMemory::<f64>::new(&nt_device, 3).unwrap();
+        write_to_memory(mem.get_mut(&nt_device).unwrap(), &[1, 2, 3]);
+        mem.add_device(&cu_device);
+        match mem.sync(&cu_device) {
+            Ok(_) => assert!(true),
+            Err(err) => {
+                println!("{:?}", err);
+                assert!(false);
+            }
+        }
+        // It has not successfully synced to the device.
+        // Not the other way around.
+        match mem.sync(&nt_device) {
+            Ok(_) => assert!(true),
+            Err(err) => {
+                println!("{:?}", err);
+                assert!(false);
+            }
         }
     }
 

@@ -59,11 +59,11 @@ impl<T> SharedMemory<T> {
     pub fn new(dev: &DeviceType, capacity: usize) -> Result<SharedMemory<T>, Error> {
         let copies = LinearMap::<DeviceType, MemoryType>::new();
         let copy: MemoryType;
-        let alloc_size = mem::size_of::<T>() * capacity;
+        let alloc_size = Self::mem_size(capacity);
         match *dev {
-            DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size))),
-            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size))),
-            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size))),
+            DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size as u64))),
+            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size as u64))),
+            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size as u64))),
         }
         Ok(SharedMemory {
             latest_location: dev.clone(),
@@ -111,23 +111,21 @@ impl<T> SharedMemory<T> {
     fn sync_from_to(&mut self, source: &DeviceType, destination: &DeviceType) -> Result<(), Error> {
         if source != destination {
             match self.aquire_copies(source, destination) {
-                Ok((source_copy, mut destination_copy)) => {
-                    match source.clone() {
-                        DeviceType::Native(cpu) => {
-                            if let MemoryType::Native(ref src) = source_copy {
-                                cpu.sync_memory_to(&src, &mut destination_copy, destination)
+                Ok((mut source_copy, mut destination_copy)) => {
+                    match destination {
+                        &DeviceType::Native(ref cpu) => {
+                            match destination_copy.as_mut_native() {
+                                Some(ref mut mem) => try!(cpu.sync_in(source, &source_copy, mem)),
+                                None => return Err(Error::InvalidMemory("Expected Native Memory (FlatBox)"))
                             }
                         },
-                        DeviceType::OpenCL(context) => {
-                            if let MemoryType::OpenCL(ref src) = source_copy {
-                                context.sync_memory_to(&src,&mut destination_copy, destination)
+                        &DeviceType::OpenCL(ref context) => unimplemented!(),
+                        &DeviceType::Cuda(ref context) => {
+                            match destination_copy.as_mut_cuda() {
+                                Some(ref mut mem) => try!(context.sync_in(source, &source_copy, mem)),
+                                None => return Err(Error::InvalidMemory("Expected Cuda Memory."))
                             }
-                        },
-                        DeviceType::Cuda(context) => {
-                            if let MemoryType::Cuda(ref src) = source_copy {
-                                context.sync_memory_to(&src,&mut destination_copy, destination)
-                            }
-                        },
+                        }
                     }
                     self.return_copies(source, source_copy, destination, destination_copy);
                     Ok(())
@@ -174,9 +172,9 @@ impl<T> SharedMemory<T> {
             None => {
                 let copy: MemoryType;
                 match *device {
-                    DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(mem::size_of::<T>()))),
-                    DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(mem::size_of::<T>()))),
-                    DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(mem::size_of::<T>()))),
+                    DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(Self::mem_size(self.capacity()) as u64))),
+                    DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),
+                    DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),
                 };
                 self.copies.insert(device.clone(), copy);
                 Ok(self)
@@ -193,6 +191,10 @@ impl<T> SharedMemory<T> {
     pub fn capacity(&self) -> usize {
         self.cap
     }
+
+    fn mem_size(capacity: usize) -> usize {
+        mem::size_of::<T>() * capacity
+    }
 }
 
 /// Errors than can occur when synchronizing memory.
@@ -202,10 +204,14 @@ pub enum Error {
     MissingSource(&'static str),
     /// No copy on destination device.
     MissingDestination(&'static str),
+    /// No valid MemoryType provided. Other than expected.
+    InvalidMemory(&'static str),
     /// No memory allocation on specified device happened.
     InvalidMemoryAllocation(&'static str),
     /// Framework error at memory allocation.
     MemoryAllocationError(::device::Error),
+    /// Framework error at memory synchronization.
+    MemorySynchronizationError(::device::Error),
 }
 
 impl fmt::Display for Error {
@@ -213,8 +219,10 @@ impl fmt::Display for Error {
         match *self {
             Error::MissingSource(ref err) => write!(f, "{:?}", err),
             Error::MissingDestination(ref err) => write!(f, "{:?}", err),
+            Error::InvalidMemory(ref err) => write!(f, "{:?}", err),
             Error::InvalidMemoryAllocation(ref err) => write!(f, "{:?}", err),
             Error::MemoryAllocationError(ref err) => write!(f, "{}", err),
+            Error::MemorySynchronizationError(ref err) => write!(f, "{}", err),
         }
     }
 }
@@ -224,8 +232,10 @@ impl error::Error for Error {
         match *self {
             Error::MissingSource(ref err) => err,
             Error::MissingDestination(ref err) => err,
+            Error::InvalidMemory(ref err) => err,
             Error::InvalidMemoryAllocation(ref err) => err,
             Error::MemoryAllocationError(ref err) => err.description(),
+            Error::MemorySynchronizationError(ref err) => err.description(),
         }
     }
 
@@ -233,8 +243,10 @@ impl error::Error for Error {
         match *self {
             Error::MissingSource(_) => None,
             Error::MissingDestination(_) => None,
+            Error::InvalidMemory(_) => None,
             Error::InvalidMemoryAllocation(_) => None,
             Error::MemoryAllocationError(ref err) => Some(err),
+            Error::MemorySynchronizationError(ref err) => Some(err),
         }
     }
 }
