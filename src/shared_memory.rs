@@ -63,6 +63,7 @@ impl<T> SharedMemory<T> {
         match *dev {
             DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size as u64))),
             DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size as u64))),
+            #[cfg(feature = "cuda")]
             DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size as u64))),
         }
         Ok(SharedMemory {
@@ -120,6 +121,7 @@ impl<T> SharedMemory<T> {
                             }
                         },
                         &DeviceType::OpenCL(ref context) => unimplemented!(),
+                        #[cfg(feature = "cuda")]
                         &DeviceType::Cuda(ref context) => {
                             match destination_copy.as_mut_cuda() {
                                 Some(ref mut mem) => try!(context.sync_in(source, &source_copy, mem)),
@@ -174,6 +176,7 @@ impl<T> SharedMemory<T> {
                 match *device {
                     DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(Self::mem_size(self.capacity()) as u64))),
                     DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),
+                    #[cfg(feature = "cuda")]
                     DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),
                 };
                 self.copies.insert(device.clone(), copy);

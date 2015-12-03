@@ -10,9 +10,11 @@ use hardware::IHardware;
 use memory::{IMemory, MemoryType};
 use frameworks::native::device::Cpu;
 use frameworks::opencl::Context as OpenCLContext;
-use frameworks::cuda::Context as CudaContext;
 use frameworks::native::Error as NativeError;
 use frameworks::opencl::Error as OpenCLError;
+#[cfg(feature = "cuda")]
+use frameworks::cuda::Context as CudaContext;
+#[cfg(feature = "cuda")]
 use frameworks::cuda::Error as CudaError;
 use std::{fmt, error};
 
@@ -52,6 +54,7 @@ pub enum DeviceType {
     /// A OpenCL Context
     OpenCL(OpenCLContext),
     /// A Cuda Context
+    #[cfg(feature = "cuda")]
     Cuda(CudaContext),
 }
 
@@ -63,6 +66,7 @@ pub enum Error {
     /// Failures related to the OpenCL framework implementation.
     OpenCL(OpenCLError),
     /// Failures related to the Cuda framework implementation.
+    #[cfg(feature = "cuda")]
     Cuda(CudaError),
 }
 
@@ -71,6 +75,7 @@ impl fmt::Display for Error {
         match *self {
             Error::Native(ref err) => write!(f, "Native error: {}", err),
             Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
+            #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
         }
     }
@@ -81,6 +86,7 @@ impl error::Error for Error {
         match *self {
             Error::Native(ref err) => err.description(),
             Error::OpenCL(ref err) => err.description(),
+            #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => err.description(),
         }
     }
@@ -89,6 +95,7 @@ impl error::Error for Error {
         match *self {
             Error::Native(ref err) => Some(err),
             Error::OpenCL(ref err) => Some(err),
+            #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => Some(err),
         }
     }
@@ -106,6 +113,7 @@ impl From<OpenCLError> for Error {
     }
 }
 
+#[cfg(feature = "cuda")]
 impl From<CudaError> for Error {
     fn from(err: CudaError) -> Error {
         Error::Cuda(err)

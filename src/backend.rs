@@ -42,7 +42,9 @@
 
 use error::Error;
 use framework::IFramework;
-use frameworks::{Native, OpenCL, Cuda};
+use frameworks::{Native, OpenCL};
+#[cfg(feature = "cuda")]
+use frameworks::Cuda;
 use device::{IDevice, DeviceType};
 use libraries::blas::IBlas;
 use libraries::blas as bl;
@@ -118,6 +120,7 @@ impl IBackend for Backend<OpenCL> {
     type F = OpenCL;
 }
 
+#[cfg(feature = "cuda")]
 impl IBackend for Backend<Cuda> {
     type F = Cuda;
 }

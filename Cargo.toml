@@ -31,8 +31,11 @@ clippy = { version = "0.0.27", optional = true }
 rand = "0.3"
 
 [features]
-default = []
+default = ["cuda"]
+cuda = []
+
 dev = []
+travis = []
 lint = ["clippy"]
 
 [profile.bench]

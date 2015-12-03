@@ -9,6 +9,7 @@
 
 use frameworks::native::flatbox::FlatBox;
 use frameworks::opencl::memory::Memory as OpenCLMemory;
+#[cfg(feature = "cuda")]
 use frameworks::cuda::memory::Memory as CudaMemory;
 
 /// Specifies Memory behavior accross frameworks.
@@ -22,6 +23,7 @@ pub enum MemoryType {
     /// A OpenCL Memory representation.
     OpenCL(OpenCLMemory),
     /// A Cuda Memory representation.
+    #[cfg(feature = "cuda")]
     Cuda(CudaMemory),
 }
 
@@ -58,6 +60,7 @@ impl MemoryType {
         }
     }
 
+    #[cfg(feature = "cuda")]
     /// Extract the Cuda Memory if MemoryType is Cuda
     pub fn as_cuda(&self) -> Option<&CudaMemory> {
         match *self {
@@ -66,6 +69,7 @@ impl MemoryType {
         }
     }
 
+    #[cfg(feature = "cuda")]
     /// Extract the Cuda Memory mutably if MemoryType is Cuda
     pub fn as_mut_cuda(&mut self) -> Option<&mut CudaMemory> {
         match *self {

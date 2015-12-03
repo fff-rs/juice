@@ -1,6 +1,7 @@
 extern crate collenchyma as co;
 extern crate libc;
 
+#[cfg(feature = "cuda")]
 #[cfg(test)]
 mod framework_cuda_spec {
 

@@ -6,6 +6,7 @@ mod shared_memory_spec {
 
     use co::framework::IFramework;
     use co::frameworks::Native;
+    #[cfg(feature = "cuda")]
     use co::frameworks::Cuda;
     use co::memory::MemoryType;
     use co::shared_memory::*;
@@ -30,6 +31,7 @@ mod shared_memory_spec {
         }
     }
 
+    #[cfg(feature = "cuda")]
     #[test]
     fn it_creates_new_shared_memory_for_cuda() {
         let ntv = Cuda::new();
@@ -41,6 +43,7 @@ mod shared_memory_spec {
         }
     }
 
+    #[cfg(feature = "cuda")]
     #[test]
     fn it_syncs_from_native_to_cuda_and_back() {
         let cu = Cuda::new();

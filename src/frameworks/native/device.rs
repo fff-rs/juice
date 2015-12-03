@@ -47,6 +47,7 @@ impl IDevice for Cpu {
         match source {
             &DeviceType::Native(ref cpu) => unimplemented!(),
             &DeviceType::OpenCL(ref context) => unimplemented!(),
+            #[cfg(feature = "cuda")]
             &DeviceType::Cuda(ref context) => {
                 match source_data.as_cuda() {
                     Some(mut h_mem) => Ok(try!(context.sync_out(&DeviceType::Native(self.clone()), &h_mem, dest_data))),
