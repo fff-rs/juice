@@ -2,8 +2,7 @@
 
 use binary::IBinary;
 use super::function::Function;
-use super::api::types as cl;
-use super::api::API;
+use super::api::Driver;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Module.
@@ -31,6 +30,7 @@ impl Module {
         }
     }
 
+    /*
     /// Initializes a new OpenCL device from its C type.
     pub fn from_c(id: cl::kernel_id) -> Module {
         Module {
@@ -45,6 +45,7 @@ impl Module {
     pub fn id_c(&self) -> cl::kernel_id {
         self.id as cl::kernel_id
     }
+    */
 }
 
 impl IBinary for Module {}

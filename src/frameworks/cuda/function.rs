@@ -1,8 +1,7 @@
 //! Provides a Rust wrapper around Cuda's Function.
 
 use operation::IOperation;
-use super::api::types as cl;
-use super::api::API;
+use super::api::driver::API;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Function.
@@ -19,8 +18,9 @@ impl Function {
         Function { id: id }
     }
 
+    /*
     /// Initializes a new OpenCL device from its C type.
-    pub fn from_c(id: cl::kernel_id) -> Function {
+    //pub fn from_c(id: cl::kernel_id) -> Function {
         Function { id: id as isize }
     }
 
@@ -28,6 +28,7 @@ impl Function {
     pub fn id_c(&self) -> cl::kernel_id {
         self.id as cl::kernel_id
     }
+    */
 }
 
 impl IOperation for Function {}

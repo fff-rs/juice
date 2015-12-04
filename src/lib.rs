@@ -131,6 +131,7 @@
 //! [shared-memory]: ./shared-memory/index.html
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
+#![feature(link_args)]
 #![allow(dead_code)]
 #![deny(missing_docs,
         missing_debug_implementations, missing_copy_implementations,

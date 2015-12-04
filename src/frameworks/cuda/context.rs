@@ -2,7 +2,7 @@
 
 use device::{IDevice, DeviceType, IDeviceSyncOut};
 use device::Error as DeviceError;
-use super::api::ffi::*;
+use super::api::driver::ffi::*;
 use super::{API, Error, Device};
 use super::memory::*;
 use frameworks::native::flatbox::FlatBox;

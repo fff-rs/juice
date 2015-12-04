@@ -1,15 +1,15 @@
-//! Provides a safe wrapper around Cuda.
+//! Provides safe wrappers around various CUDA APIs.
+//!
+//! You can find wrappers for the<br/>
+//! * CUDA Driver API
+//! * CUDA cuDNN API
 
-pub use self::error::Error;
+pub use self::driver::API as Driver;
+pub use self::driver::ffi as DriverFFI;
+pub use self::driver::Error as DriverError;
+pub use self::dnn::API as Dnn;
+pub use self::dnn::ffi as DnnFFI;
+pub use self::dnn::Error as DnnError;
 
-#[derive(Debug, Copy, Clone)]
-/// Defines the Cuda API.
-pub struct API;
-
-mod error;
-mod context;
-mod device;
-mod memory;
-pub mod ffi;
-mod utils;
-pub mod types;
+pub mod driver;
+pub mod dnn;

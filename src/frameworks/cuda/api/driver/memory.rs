@@ -12,7 +12,7 @@ impl API {
     /// aligned for any kind of variable. The memory is not cleared.
     /// Returns a memory id for the created buffer, which can now be writen to.
     pub fn mem_alloc(bytesize: size_t) -> Result<Memory, Error> {
-        Ok(Memory::from_c(try!(unsafe {API::ffi_mem_alloc(bytesize)})))
+        Ok(Memory::from_c(try!(unsafe {API::ffi_mem_alloc(bytesize)}), None))
     }
 
     /// Releases allocated memory from the Cuda device.
@@ -55,11 +55,11 @@ impl API {
     }
 
     unsafe fn ffi_mem_cpy_h_to_d(
-        dstDevice: CUdeviceptr,
-        srcHost: *const ::libc::c_void,
-        ByteCount: size_t,
+        dst_device: CUdeviceptr,
+        src_host: *const ::libc::c_void,
+        byte_count: size_t,
     ) -> Result<(), Error> {
-        match cuMemcpyHtoD_v2(dstDevice, srcHost, ByteCount) {
+        match cuMemcpyHtoD_v2(dst_device, src_host, byte_count) {
             CUresult::CUDA_SUCCESS => Ok(()),
             CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
@@ -70,11 +70,11 @@ impl API {
     }
 
     unsafe fn ffi_mem_cpy_d_to_h(
-        dstHost: *mut ::libc::c_void,
-        srcDevice: CUdeviceptr,
-        ByteCount: size_t,
+        dst_host: *mut ::libc::c_void,
+        src_device: CUdeviceptr,
+        byte_count: size_t,
     ) -> Result<(), Error> {
-        match cuMemcpyDtoH_v2(dstHost, srcDevice, ByteCount) {
+        match cuMemcpyDtoH_v2(dst_host, src_device, byte_count) {
             CUresult::CUDA_SUCCESS => Ok(()),
             CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),

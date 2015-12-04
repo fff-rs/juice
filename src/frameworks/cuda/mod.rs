@@ -17,7 +17,7 @@ pub use self::context::Context;
 pub use self::function::Function;
 pub use self::module::Module;
 pub use self::device::{Device, DeviceInfo};
-pub use self::api::{API, Error};
+pub use self::api::driver::{API, Error};
 
 pub mod device;
 pub mod context;

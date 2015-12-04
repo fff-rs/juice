@@ -13,7 +13,7 @@
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 
 use memory::MemoryType;
-use shared_memory::{SharedMemory, ITensor, TensorR1, TensorR0};
+use shared_memory::{SharedMemory, TensorR1, TensorR0};
 use binary::IBinary;
 use device::DeviceType;
 use libraries::Float;
