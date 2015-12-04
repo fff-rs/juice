@@ -24,7 +24,7 @@ mod shared_memory_spec {
     fn it_creates_new_shared_memory_for_native() {
         let ntv = Native::new();
         let cpu = ntv.new_device(ntv.hardwares()).unwrap();
-        let shared_data = &mut SharedMemory::<f32>::new(&cpu, 10).unwrap();
+        let shared_data = &mut SharedMemory::<f32, TensorR1>::new(&cpu, TensorR1::new([10])).unwrap();
         if let &MemoryType::Native(ref dat) = shared_data.get(&cpu).unwrap() {
             let data = dat.as_slice::<f32>();
             assert_eq!(10, data.len());
@@ -36,7 +36,7 @@ mod shared_memory_spec {
     fn it_creates_new_shared_memory_for_cuda() {
         let ntv = Cuda::new();
         let device = ntv.new_device(ntv.hardwares()[0..1].to_vec()).unwrap();
-        let shared_data = &mut SharedMemory::<f32>::new(&device, 10).unwrap();
+        let shared_data = &mut SharedMemory::<f32, TensorR1>::new(&device, TensorR1::new([10])).unwrap();
         match shared_data.get(&device) {
             Some(&MemoryType::Cuda(_)) => assert!(true),
             _ => assert!(false),
@@ -50,7 +50,7 @@ mod shared_memory_spec {
         let nt = Native::new();
         let cu_device = cu.new_device(cu.hardwares()[0..1].to_vec()).unwrap();
         let nt_device = nt.new_device(nt.hardwares()).unwrap();
-        let mem = &mut SharedMemory::<f64>::new(&nt_device, 3).unwrap();
+        let mem = &mut SharedMemory::<f64, TensorR1>::new(&nt_device, TensorR1::new([3])).unwrap();
         write_to_memory(mem.get_mut(&nt_device).unwrap(), &[1, 2, 3]);
         mem.add_device(&cu_device);
         match mem.sync(&cu_device) {
@@ -75,7 +75,7 @@ mod shared_memory_spec {
     fn it_has_correct_latest_device() {
         let ntv = Native::new();
         let cpu_dev = ntv.new_device(ntv.hardwares()).unwrap();
-        let shared_data = &mut SharedMemory::<f32>::new(&cpu_dev, 10).unwrap();
+        let shared_data = &mut SharedMemory::<f32, TensorR1>::new(&cpu_dev, TensorR1::new([10])).unwrap();
         assert_eq!(&cpu_dev, shared_data.latest_device());
     }
 }
