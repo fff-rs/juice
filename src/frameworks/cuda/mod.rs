@@ -9,6 +9,7 @@
 
 extern { }
 
+use backend::{Backend, IBackend};
 use framework::IFramework;
 use device::DeviceType;
 pub use self::memory::Memory;
@@ -80,4 +81,8 @@ impl IFramework for Cuda {
             _ => Err(::framework::Error::Implementation(format!("Cuda's `new_device` method currently supports only one Harware for Device creation.")))
         }
     }
+}
+
+impl IBackend for Backend<Cuda> {
+    type F = Cuda;
 }

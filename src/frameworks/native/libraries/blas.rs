@@ -1,9 +1,11 @@
 //! Provides BLAS for a Native backend.
 
 use backend::Backend;
+use device::DeviceType;
 use frameworks::native::{Native, Function, Binary};
 use memory::MemoryType;
 use libraries::blas::*;
+use libraries::blas;
 use blas::{Asum, Axpy, Copy, Dot, Nrm2, Scal, Swap};
 
 macro_rules! impl_binary(($($t: ident), +) => (
@@ -159,3 +161,43 @@ impl_iblas_for!(f64, Function);
 
 impl_iblas_for!(f32, Backend<Native>);
 impl_iblas_for!(f64, Backend<Native>);
+
+impl IBlas<f32> for Backend<Native> {
+    type B = ::frameworks::native::Binary;
+
+    iblas_asum_for!(f32, Backend<Native>);
+    iblas_axpy_for!(f32, Backend<Native>);
+    iblas_copy_for!(f32, Backend<Native>);
+    iblas_dot_for!(f32, Backend<Native>);
+    iblas_nrm2_for!(f32, Backend<Native>);
+    iblas_scale_for!(f32, Backend<Native>);
+    iblas_swap_for!(f32, Backend<Native>);
+
+    fn binary(&self) -> &Self::B {
+        self.binary()
+    }
+
+    fn device(&self) -> &DeviceType {
+        self.device()
+    }
+}
+
+impl IBlas<f64> for Backend<Native> {
+    type B = ::frameworks::native::Binary;
+
+    iblas_asum_for!(f64, Backend<Native>);
+    iblas_axpy_for!(f64, Backend<Native>);
+    iblas_copy_for!(f64, Backend<Native>);
+    iblas_dot_for!(f64, Backend<Native>);
+    iblas_nrm2_for!(f64, Backend<Native>);
+    iblas_scale_for!(f64, Backend<Native>);
+    iblas_swap_for!(f64, Backend<Native>);
+
+    fn binary(&self) -> &Self::B {
+        self.binary()
+    }
+
+    fn device(&self) -> &DeviceType {
+        self.device()
+    }
+}

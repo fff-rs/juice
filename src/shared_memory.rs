@@ -125,7 +125,7 @@ impl<T> SharedMemory<T> {
                         &DeviceType::Cuda(ref context) => {
                             match destination_copy.as_mut_cuda() {
                                 Some(ref mut mem) => try!(context.sync_in(source, &source_copy, mem)),
-                                None => return Err(Error::InvalidMemory("Expected Cuda Memory."))
+                                None => return Err(Error::InvalidMemory("Expected CUDA Memory."))
                             }
                         }
                     }

@@ -23,6 +23,7 @@
 
 pub use self::numeric_helpers::Float;
 
+#[macro_use]
 pub mod blas;
 /// Describes the Library numeric types and traits.
 pub mod numeric_helpers {

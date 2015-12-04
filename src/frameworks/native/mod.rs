@@ -5,6 +5,7 @@
 //!
 
 use framework::IFramework;
+use backend::{Backend, IBackend};
 use hardware::{HardwareType, IHardware};
 use device::DeviceType;
 use self::hardware::Hardware;
@@ -74,4 +75,8 @@ impl IFramework for Native {
     fn new_device(&self, devices: Vec<Hardware>) -> Result<DeviceType, ::framework::Error> {
         Ok(DeviceType::Native(Cpu::new(devices.to_vec())))
     }
+}
+
+impl IBackend for Backend<Native> {
+    type F = Native;
 }

@@ -149,13 +149,14 @@ extern crate byteorder;
 extern crate linear_map;
 extern crate rblas as blas;
 
+#[macro_use]
+pub mod libraries;
 pub mod backend;
 pub mod device;
 pub mod hardware;
 pub mod framework;
 pub mod frameworks;
 pub mod memory;
-pub mod libraries;
 pub mod shared_memory;
 pub mod operation;
 pub mod binary;

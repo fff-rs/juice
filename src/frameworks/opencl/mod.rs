@@ -11,6 +11,7 @@
 #[cfg(target_os = "linux")]
 extern { }
 
+use backend::{Backend, IBackend};
 use framework::IFramework;
 use device::DeviceType;
 pub use self::platform::Platform;
@@ -93,4 +94,8 @@ impl IFramework for OpenCL {
     fn new_device(&self, hardwares: Vec<Device>) -> Result<DeviceType, ::framework::Error> {
         Ok(DeviceType::OpenCL(try!(Context::new(hardwares))))
     }
+}
+
+impl IBackend for Backend<OpenCL> {
+    type F = OpenCL;
 }
