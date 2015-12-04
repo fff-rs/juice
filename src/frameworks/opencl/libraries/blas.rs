@@ -1,7 +1,8 @@
 //! Provides BLAS for a OpenCL backend.
 
-use frameworks::opencl::Kernel;
-use frameworks::opencl::Program;
+use backend::Backend;
+use device::DeviceType;
+use frameworks::opencl::{Kernel, Program, OpenCL} ;
 use memory::MemoryType;
 use libraries::blas::*;
 use num::traits::Float;
@@ -83,5 +84,17 @@ impl IOperationScale<f32> for Kernel {
 impl IOperationSwap<f32> for Kernel {
     fn compute(&self, x: &mut MemoryType, y: &mut MemoryType) -> Result<(), Error> {
         unimplemented!()
+    }
+}
+
+impl IBlas<f32> for Backend<OpenCL> {
+    type B = ::frameworks::opencl::Program;
+
+    fn binary(&self) -> &Self::B {
+        self.binary()
+    }
+
+    fn device(&self) -> &DeviceType {
+        self.device()
     }
 }

@@ -5,6 +5,7 @@ use std::fmt;
 use std::mem;
 use std::slice;
 
+#[derive(Clone)]
 /// A Box without any knowledge of its underlying type.
 pub struct FlatBox {
     len: usize,
@@ -42,6 +43,11 @@ impl FlatBox {
                 self.len / mem::size_of::<T>()
             )
         }
+    }
+
+    /// Returns memory size of the Flatbox.
+    pub fn byte_size(&self) -> usize {
+        self.len
     }
 }
 

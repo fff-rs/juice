@@ -1,6 +1,7 @@
 //! Provides a Rust wrapper around OpenCL's context.
 
 use device::{IDevice, DeviceType};
+use device::Error as DeviceError;
 use super::api::types as cl;
 use super::{API, Error, Device};
 use super::memory::*;
@@ -47,28 +48,19 @@ impl IDevice for Context {
     type H = Device;
     type M = Memory;
 
-    fn id(&self) -> isize {
-        self.id
+    fn id(&self) -> &isize {
+        &self.id
     }
 
     fn hardwares(&self) -> Vec<Device> {
         self.devices.clone()
     }
 
-    fn alloc_memory(&self, size: usize) -> Memory {
+    fn alloc_memory(&self, size: u64) -> Result<Memory, DeviceError> {
         unimplemented!();
     }
 
-    fn sync_memory_to(&self, source: &Memory, dest: &mut MemoryType, dest_device: &DeviceType) {
-        /*
-        let src = Memory::<Vec<u8>>::from_c(source as cl::memory_id);
-        match dest_device.clone() {
-            DeviceType::Native(cpu) => {
-                unimplemented!();
-            }
-            DeviceType::OpenCL(_) => {},
-        }
-        */
+    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {
         unimplemented!()
     }
 }

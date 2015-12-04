@@ -9,6 +9,7 @@
 
 extern { }
 
+use backend::{Backend, IBackend};
 use framework::IFramework;
 use device::DeviceType;
 pub use self::memory::Memory;
@@ -40,6 +41,11 @@ impl IFramework for Cuda {
     fn ID() -> &'static str { "CUDA" }
 
     fn new() -> Cuda {
+        // Init function must be called before any other function from the Cuda Driver API can be
+        // called.
+        if let Err(err) = API::init() {
+            panic!("Unable to initialize Cuda Framework: {}", err);
+        }
         match Cuda::load_hardwares() {
             Ok(hardwares) => {
                 Cuda {
@@ -47,27 +53,36 @@ impl IFramework for Cuda {
                     binary: Module::from_isize(1)
                 }
             },
-            Err(err) => panic!(err)
+            Err(err) => panic!("Could not initialize Cuda Framework, due to: {}", err)
         }
     }
 
     fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
-        unimplemented!()
+        Ok(try!(API::load_devices()))
     }
 
     fn hardwares(&self) -> Vec<Device> {
         self.hardwares.clone()
     }
 
-    fn binary(&self) -> Self::B {
-        self.binary.clone()
+    fn binary(&self) -> &Self::B {
+        &self.binary
     }
 
-    /// Creates a new Cuda device for computation.
+    /// Creates a new Cuda context for computation.
     ///
-    /// Cuda's device differs from OpenCL's context. Multi device support works different in Cuda.
-    /// This function currently suppports only one device, but be a wrapper for multi device support.
+    /// Cuda's context differs from OpenCL's context. Multi device support works different in Cuda.
+    /// This function currently suppports only one device, but should be a wrapper for multi device support.
     fn new_device(&self, hardwares: Vec<Device>) -> Result<DeviceType, ::framework::Error> {
-        unimplemented!()
+        let length = hardwares.len();
+        match length {
+            0 => Err(::framework::Error::Implementation(format!("No device for context specified."))),
+            1 => Ok(DeviceType::Cuda(try!(Context::new(hardwares[0].clone())))),
+            _ => Err(::framework::Error::Implementation(format!("Cuda's `new_device` method currently supports only one Harware for Device creation.")))
+        }
     }
+}
+
+impl IBackend for Backend<Cuda> {
+    type F = Cuda;
 }

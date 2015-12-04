@@ -77,6 +77,7 @@
 //! use co::framework::IFramework;
 //! use co::backend::{Backend, BackendConfig};
 //! use co::frameworks::Native;
+//! #[allow(unused_variables)]
 //! fn main() {
 //!     let framework = Native::new(); // Initialize the Framework
 //!     let hardwares = framework.hardwares(); // Now you can obtain a list of available hardware for that Framework.
@@ -92,9 +93,6 @@
 //!
 //! ```
 //! extern crate collenchyma as co;
-//! use co::framework::IFramework;
-//! use co::backend::{Backend, BackendConfig};
-//! use co::frameworks::Native;
 //! fn main() {
 //!     // Not yet implemented.
 //!     // No need to provide a Backend Configuration.
@@ -148,15 +146,17 @@ extern crate enum_primitive;
 extern crate lazy_static;
 extern crate num;
 extern crate byteorder;
+extern crate linear_map;
 extern crate rblas as blas;
 
+#[macro_use]
+pub mod libraries;
 pub mod backend;
 pub mod device;
 pub mod hardware;
 pub mod framework;
 pub mod frameworks;
 pub mod memory;
-pub mod libraries;
 pub mod shared_memory;
 pub mod operation;
 pub mod binary;

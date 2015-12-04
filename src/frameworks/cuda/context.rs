@@ -1,11 +1,12 @@
 //! Provides a Rust wrapper around Cuda's context.
 
-use device::{IDevice, DeviceType};
-use super::api::types as cl;
-use frameworks::opencl::{API, Error, Device};
+use device::{IDevice, DeviceType, IDeviceSyncOut};
+use device::Error as DeviceError;
+use super::api::ffi::*;
+use super::{API, Error, Device};
 use super::memory::*;
-use memory::MemoryType;
-use std::{ptr, mem};
+use frameworks::native::flatbox::FlatBox;
+use memory::{MemoryType, IMemory};
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
@@ -15,20 +16,28 @@ pub struct Context {
     devices: Vec<Device>,
 }
 
+impl Drop for Context {
+    #[allow(unused_must_use)]
+    fn drop(&mut self) {
+        // Produces Segfaults at tests for 50% at a time.
+        // Maybe because CUDA context's are linked to a CPU thread?
+        //API::destroy_context(self);
+    }
+}
+
 impl Context {
-    /// Initializes a new Cuda platform.
-    pub fn new(devices: Vec<Device>) -> Result<Context, Error> {
-        let callback = unsafe { mem::transmute(ptr::null::<fn()>()) };
+    /// Initializes a new Cuda context.
+    pub fn new(devices: Device) -> Result<Context, Error> {
         Ok(
             Context::from_c(
-                try!(API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())),
-                devices.clone()
+                try!(API::create_context(devices.clone())),
+                vec!(devices.clone())
             )
         )
     }
 
     /// Initializes a new Cuda platform from its C type.
-    pub fn from_c(id: cl::context_id, devices: Vec<Device>) -> Context {
+    pub fn from_c(id: CUcontext, devices: Vec<Device>) -> Context {
         Context { id: id as isize, devices: devices }
     }
 
@@ -38,8 +47,15 @@ impl Context {
     }
 
     /// Returns the id as its C type.
-    pub fn id_c(&self) -> cl::context_id {
-        self.id as cl::context_id
+    pub fn id_c(&self) -> CUcontext {
+        self.id as CUcontext
+    }
+}
+
+impl IDeviceSyncOut<FlatBox> for Context {
+    type M = Memory;
+    fn sync_out(&self, dest: &DeviceType, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
+        Ok(try!(API::mem_cpy_d_to_h(source_data, dest_data)))
     }
 }
 
@@ -47,29 +63,28 @@ impl IDevice for Context {
     type H = Device;
     type M = Memory;
 
-    fn id(&self) -> isize {
-        self.id
+    fn id(&self) -> &isize {
+        &self.id
     }
 
     fn hardwares(&self) -> Vec<Device> {
         self.devices.clone()
     }
 
-    fn alloc_memory(&self, size: usize) -> Memory {
-        unimplemented!();
+    fn alloc_memory(&self, size: u64) -> Result<Memory, DeviceError> {
+        Ok(try!(API::mem_alloc(size)))
     }
 
-    fn sync_memory_to(&self, source: &Memory, dest: &mut MemoryType, dest_device: &DeviceType) {
-        /*
-        let src = Memory::<Vec<u8>>::from_c(source as cl::memory_id);
-        match dest_device.clone() {
-            DeviceType::Native(cpu) => {
-                unimplemented!();
-            }
-            DeviceType::Cuda(_) => {},
+    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {
+        match source {
+            &DeviceType::Native(_) => {
+                match source_data.as_native() {
+                    Some(h_mem) => Ok(try!(API::mem_cpy_h_to_d(h_mem, dest_data))),
+                    None => unimplemented!()
+                }
+            },
+            _ => unimplemented!()
         }
-        */
-        unimplemented!()
     }
 }
 

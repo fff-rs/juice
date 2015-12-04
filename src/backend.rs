@@ -25,6 +25,7 @@
 //! use co::framework::*;
 //! use co::backend::{Backend, BackendConfig};
 //! use co::frameworks::OpenCL;
+//! #[allow(unused_variables)]
 //! fn main() {
 //!     // Initialize a new Framewok.
 //!     let framework = OpenCL::new();
@@ -41,9 +42,7 @@
 
 use error::Error;
 use framework::IFramework;
-use frameworks::{Native, OpenCL, Cuda};
 use device::{IDevice, DeviceType};
-use libraries::blas::IBlas;
 
 #[derive(Debug, Clone)]
 /// Defines the main and highest struct of Collenchyma.
@@ -82,8 +81,8 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the backend framework.
-    pub fn framework(&self) -> Box<F> {
-        self.framework.clone()
+    pub fn framework(&self) -> &Box<F> {
+        &self.framework
     }
 
     /// Returns the backend device.
@@ -92,8 +91,8 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the blas binary.
-    pub fn binary(&self) -> F::B {
-        self.framework().binary().clone()
+    pub fn binary(&self) -> &F::B {
+        self.framework().binary()
     }
 }
 
@@ -103,54 +102,6 @@ impl<F: IFramework + Clone> Backend<F> {
 pub trait IBackend {
     /// Represents the Framework of a Backend.
     type F: IFramework + Clone;
-}
-
-impl IBackend for Backend<Native> {
-    type F = Native;
-}
-
-impl IBackend for Backend<OpenCL> {
-    type F = OpenCL;
-}
-
-impl IBackend for Backend<Cuda> {
-    type F = Cuda;
-}
-
-impl IBlas<f32> for Backend<OpenCL> {
-    type B = ::frameworks::opencl::Program;
-
-    fn binary(&self) -> Self::B {
-        self.binary()
-    }
-
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
-}
-
-impl IBlas<f32> for Backend<Native> {
-    type B = ::frameworks::native::Binary;
-
-    fn binary(&self) -> Self::B {
-        self.binary()
-    }
-
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
-}
-
-impl IBlas<f64> for Backend<Native> {
-    type B = ::frameworks::native::Binary;
-
-    fn binary(&self) -> Self::B {
-        self.binary()
-    }
-
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
 }
 
 #[derive(Debug, Clone)]

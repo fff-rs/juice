@@ -22,6 +22,8 @@ use hardware::IHardware;
 use device::{IDevice, DeviceType};
 use binary::IBinary;
 use frameworks::opencl::Error as OpenCLError;
+#[cfg(feature = "cuda")]
+use frameworks::cuda::Error as CudaError;
 use std::error;
 use std::fmt;
 
@@ -53,7 +55,7 @@ pub trait IFramework {
     fn hardwares(&self) -> Vec<Self::H>;
 
     /// Returns the initialized binary.
-    fn binary(&self) -> Self::B;
+    fn binary(&self) -> &Self::B;
 
     /// Initializes a new Device from the provided hardwares.
     fn new_device(&self, Vec<Self::H>) -> Result<DeviceType, Error>;
@@ -64,12 +66,20 @@ pub trait IFramework {
 pub enum Error {
     /// Failures related to the OpenCL framework implementation.
     OpenCL(OpenCLError),
+    /// Failures related to the Cuda framework implementation.
+    #[cfg(feature = "cuda")]
+    Cuda(CudaError),
+    /// Failure related to the Collenchyma implementation of a specific Framework.
+    Implementation(String),
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
+            #[cfg(feature = "cuda")]
+            Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
+            Error::Implementation(ref err) => write!(f, "Collenchyma Implementation error: {}", err),
         }
     }
 }
@@ -78,12 +88,18 @@ impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
             Error::OpenCL(ref err) => err.description(),
+            #[cfg(feature = "cuda")]
+            Error::Cuda(ref err) => err.description(),
+            Error::Implementation(ref err) => err,
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
             Error::OpenCL(ref err) => Some(err),
+            #[cfg(feature = "cuda")]
+            Error::Cuda(ref err) => Some(err),
+            Error::Implementation(_) => None,
         }
     }
 }
@@ -91,6 +107,13 @@ impl error::Error for Error {
 impl From<OpenCLError> for Error {
     fn from(err: OpenCLError) -> Error {
         Error::OpenCL(err)
+    }
+}
+
+#[cfg(feature = "cuda")]
+impl From<CudaError> for Error {
+    fn from(err: CudaError) -> Error {
+        Error::Cuda(err)
     }
 }
 

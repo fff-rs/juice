@@ -23,13 +23,14 @@
 
 pub use self::numeric_helpers::Float;
 
+#[macro_use]
 pub mod blas;
 /// Describes the Library numeric types and traits.
 pub mod numeric_helpers {
     pub use num::traits::*;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 /// Defines a high-level library Error.
 pub enum Error {
     /// Failure at a Blas Operation.

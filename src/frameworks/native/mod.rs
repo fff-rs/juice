@@ -5,12 +5,14 @@
 //!
 
 use framework::IFramework;
+use backend::{Backend, IBackend};
 use hardware::{HardwareType, IHardware};
 use device::DeviceType;
 use self::hardware::Hardware;
 pub use self::device::Cpu;
 pub use self::function::Function;
 pub use self::binary::Binary;
+pub use self::error::Error;
 
 pub mod device;
 pub mod flatbox;
@@ -18,6 +20,7 @@ pub mod hardware;
 pub mod function;
 pub mod libraries;
 pub mod binary;
+mod error;
 
 #[derive(Debug, Clone)]
 /// Provides the Native framework.
@@ -65,11 +68,15 @@ impl IFramework for Native {
         self.hardwares.clone()
     }
 
-    fn binary(&self) -> Binary {
-        self.binary.clone()
+    fn binary(&self) -> &Binary {
+        &self.binary
     }
 
     fn new_device(&self, devices: Vec<Hardware>) -> Result<DeviceType, ::framework::Error> {
         Ok(DeviceType::Native(Cpu::new(devices.to_vec())))
     }
+}
+
+impl IBackend for Backend<Native> {
+    type F = Native;
 }

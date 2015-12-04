@@ -22,10 +22,26 @@ enum_primitive = "0.1.0"
 byteorder = "0.4"
 num = "0.1"
 lazy_static = "0.1.15"
+linear-map = "0.0.3"
 
 clippy = { version = "0.0.27", optional = true }
 
+[dev-dependencies]
+
+rand = "0.3"
+
 [features]
-default = []
+default = ["cuda"]
+cuda = []
+
 dev = []
+travis = []
 lint = ["clippy"]
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = false
+debug-assertions = false
+codegen-units = 1
