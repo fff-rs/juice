@@ -5,15 +5,15 @@ rust:
 - stable
 matrix:
   allow_failures:
-    - rust: beta
-    - rust: stable
-    - rust: nightly
-      env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+  - rust: beta
+  - rust: stable
+  - rust: nightly
+    env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
   exclude:
-    - rust: beta
-      env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
-    - rust: stable
-      env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+  - rust: beta
+    env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+  - rust: stable
+    env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
 before_script:
 - |
   pip install 'travis-cargo<0.2' --user &&
@@ -32,8 +32,8 @@ addons:
     - libdw-dev
     - libblas-dev
 install:
-  - sudo apt-get update
-  - sudo apt-get install fglrx opencl-headers
+- sudo apt-get update
+- sudo apt-get install fglrx opencl-headers
 after_success:
 - travis-cargo doc-upload
 - travis-cargo coveralls --no-sudo
@@ -42,7 +42,7 @@ notifications:
     on_success: never
 env:
   global:
-    - secure: iq9uF0iCndl7hnnUmtL9qdYaDvBvPGrImFtrDq1XtJQoNurXYO9OXyOyTIBGFIRkwfEt8Fk79cWaif6hktpammv/0uWrVzRQd8b6stOFRjOJ9fJ46ETQcNn3usr2YrRdTm7k01GXB1U5RSyYYiG63pcIkcui2NgOmnqZaCuQ4pJsHWQVGUbBey5vLTEC1zAdfYY4V9554yVW1V+eA9Atdnur8f9gUbkkG/XKhoKcpT3UtS6MD7MAPIH1Rnrf8GXIc1NAxzLD0zcKBo2o3yIbfGMm4RgRnmI6tRZBI0MgDoB8/1AGLZbBWoSaB5d7S8f/ghqzMu2AnM1HO26sTGYvy0kwt9DAmdBVcB82yFV4y4KMCr0R0Kz9XO3jukl42cmyPyYWAFQG8TO+/LjvPuj1PDSTvvvvit9QotCS+q9FE2aG5lag6W55GlMNPhR2JqLQtuCSaEgkDOmGQIDvZLkceekC2gC6/ryVcDNOUEYyUFrLpd20koDfuttth73tnYgcDIqWIoZ5nhQw1ciXfkSiP9/rOFKTZZXvO0KVgVi95Pwn4xjbBPOWQelIJtOzGRzehUaBnYZWKVFsyk7d7BVK9hWWv2DeOsbGc5Oz9X70ThAA/9d3E2vjVlJmwrijVSWnga/SJFhV5XgYaAO1vHe2tMDJGtGAT9B4ZWjuudNYPyg=
+    secure: tjUWrMG4ThRh2UMnKnLsNwXlgVxrK0ThF1sRExMkL+B0ed4HMNNJ2fzb2q1iTkp9k3PNXxB4p00J6VIxG9jBgCN4AKv6YFWrR7XtNC0OqRt75YTeVomb3U07Xmzc2w+uHQHpUkKdK01DkRRSnCKXSmjH/AlKFP3wARQERTAzJf6x9W4YcAX7ycQPMxQqFJPeMkkJf5+uIK2KbldgroL/NGtdShuP52RgYoFeEQ3/920P2D2NQJvpLigKuWnGlSBwFHeqy8qSCMybCQ5CSzkXxkBmQ1MOPXhWlntbGUQbXmjZhwdUQDcremSJybuUfZ/clHyoFRYnIAn9Atbj1/pvff93Ur1zCTh/onwNSPghKmbh5AkUcF3keoS8+Z18uLCrmE12IBbQulmFqbWb1pIV+71CWVIJyRgBIjlS+b5n2oqR1B5A+Mfzkpzbh2QKJlw1b3BPrbpfa1GM1qPDSFgfW+zbJSboLDMGxVvxDHL/50THlHP68Em+bTkk2PvWQOgqpsZw6y56jHmA4o815OSgX6DtdGBP/cVmw4iO5XmGX1spIAl30x50AAvVCDLxOG6qlKSG7pecP7qyE7G1lATeWovjiifwxBUYfVE2cdFsVEfKbEsLPbv8OULa+fPy2Zp0L28xwdZC8pfWHc6jYBYlDgXUaTg76uPtSJGriOcgrfI=
   matrix:
-    - TRAVIS_CARGO_NIGHTLY_FEATURE=travis
-    - TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+  - TRAVIS_CARGO_NIGHTLY_FEATURE=travis
+  - TRAVIS_CARGO_NIGHTLY_FEATURE=lint
