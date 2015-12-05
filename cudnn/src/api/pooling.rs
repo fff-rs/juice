@@ -3,7 +3,7 @@
 //! This includes the Pooling Descriptor as well as the Pooling for- and backwar computation.
 
 use ::{API, Error};
-use super::ffi::*;
+use ffi::*;
 
 impl API {
     /// Computes a pooling forward function.

@@ -40,7 +40,7 @@ If you're using [Cargo Edit][cargo-edit], you can call:
 
 Initialize a new cuDNN context and execute a cuDNN function.
 
-```
+```rust
 extern crate cudnn;
 use co::framework::IFramework;
 use co::backend::{Backend, BackendConfig};
@@ -55,6 +55,29 @@ fn main() {
    // You can now execute all the operations available, e.g.
    // backend.dot(x, y);
  }
+```
+
+## Building
+
+rust-cudnn depends on the cuDNN runtime libraries,
+which can be obtained from [NVIDIA](https://developer.nvidia.com/cudnn).
+
+### Manual Configuration
+
+rust-cudnn's build script will by default attempt to locate `cudnn` via pkg-config. This will not work in some situations, for example, on systems that don't have pkg-config, when cross compiling, or when cuDNN is not installed in the default system library directory (e.g. `/usr/lib`).
+
+The build script can be configured by exporting the following environment variables:
+
+`CUDNN_LIB_DIR` - If specified, a directory that will be used to find cuDNN runtime libraries.  
+`CUDNN_STATIC` - If specified, cuDNN libraries will be statically rather than dynamically linked.  
+`CUDNN_LIBS` - If specified, will be used to find cuDNN libraries under a different name.  
+If either `CUDNN_LIB_DIR` or `CUDNN_INCLUDE_DIR` are specified, then the build script will skip the pkg-config step.
+
+If your also need to run the compiled binaries yourself, make sure that they are available:
+```sh
+# Linux; for other platforms consult the instructions that come with cuDNN
+cd <cudnn_installpath>
+export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
 ```
 
 ## Contributing

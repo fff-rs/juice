@@ -3,7 +3,7 @@
 //! Includes the convolution and filter functionality.
 
 use ::{API, Error};
-use super::ffi::*;
+use ffi::*;
 
 impl API {
     //
