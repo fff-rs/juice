@@ -3,9 +3,10 @@
 rust-cuDNN provides safe wrapper around [CUDA's cuDNN][cudnn] library, so you can use
 it comfortably and safely in your Rust application.
 
-For high-performance computation on machines which might not be CUDA/cuDNN enabled,
+As cuDNN relies on CUDA to allocate memory on the GPU and sync the data, you might also
+check out [rust-cuda][rust-cuda].
+To let your high-performance computations run on machines which might not be CUDA/cuDNN enabled,
 you can check out [Collenchyma][collenchyma].
-For more general CUDA computations you can check out [rust-cuda][rust-cuda].
 
 rust-cuDNN was started at [Autumn][autumn] to support the Machine Intelligence
 Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
@@ -35,17 +36,18 @@ If you're using [Cargo Edit][cargo-edit], you can call:
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
 
-## Examples
+## Example
 
-Backend with custom defined Framework and Device.
+Initialize a new cuDNN context and execute a cuDNN function.
 
 ```
-extern crate collenchyma as co;
+extern crate cudnn;
 use co::framework::IFramework;
 use co::backend::{Backend, BackendConfig};
 use co::frameworks::Native;
 fn main() {
-   let framework = Native::new(); // Initialize the Framework
+   let cudnn = Cudnn::new().unwrap(); // Initialize a new cuDNN context and allocates resources.
+   let data_desc =
    let hardwares = framework.hardwares(); // Now you can obtain a list of available hardware for that Framework.
    // Create the custom Backend by providing a Framework and one or many Hardwares.
    let backend_config = BackendConfig::new(framework, hardwares);

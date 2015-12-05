@@ -1,20 +1,22 @@
+#![feature(test)]
+
+extern crate test;
 extern crate cudnn;
 extern crate collenchyma as co;
+
+use test::Bencher;
+use co::backend::{Backend, BackendConfig};
+use co::frameworks::Cuda;
+use co::framework::IFramework;
 
 #[cfg(test)]
 mod cudnn_spec {
 
     use cudnn::Cudnn;
-    use co::backend::{Backend, BackendConfig};
-    use co::frameworks::Cuda;
-    use co::framework::IFramework;
 
     #[test]
     fn it_initializes_correctly() {
         /*
-        let cuda = Cuda::new();
-        println!("{:?}", cuda.hardwares());
-        cuda.new_device(cuda.hardwares()[0..1].to_vec());
         match Cudnn::new() {
             Ok(_) => assert!(true),
             Err(err) => {
