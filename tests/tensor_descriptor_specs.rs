@@ -7,8 +7,8 @@ mod tensor_descriptor_spec {
 
     #[test]
     fn it_initializes_a_tensor_descriptor() {
-        match TensorDescriptor::new(&[2, 2], DataType::Float) {
-            Ok(tensor_desc) => println!("{:?}", tensor_desc.id_c()),
+        match TensorDescriptor::new(&[2, 2, 2], DataType::Float) {
+            Ok(_) => assert!(true),
             Err(err) => {
                 println!("{:?}", err);
                 assert!(false);
