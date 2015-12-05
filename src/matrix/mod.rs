@@ -28,9 +28,9 @@ pub trait Matrix<T> {
     /// Returns the number of columns.
     fn cols(&self) -> i32;
     /// An unsafe pointer to a contiguous block of memory.
-    unsafe fn as_ptr(&self) -> *const T;
+    fn as_ptr(&self) -> *const T;
     /// An unsafe pointer to a contiguous block of memory.
-    unsafe fn as_mut_ptr(&mut self) -> *mut T;
+    fn as_mut_ptr(&mut self) -> *mut T;
 }
 
 pub trait BandMatrix<T>: Matrix<T> {
@@ -52,12 +52,12 @@ mod test_struct {
         }
 
         #[inline]
-        unsafe fn as_ptr(&self) -> *const T {
+        fn as_ptr(&self) -> *const T {
             self.2[..].as_ptr()
         }
 
         #[inline]
-        unsafe fn as_mut_ptr(&mut self) -> *mut T {
+        fn as_mut_ptr(&mut self) -> *mut T {
             (&mut self.2[..]).as_mut_ptr()
         }
     }
