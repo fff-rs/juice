@@ -1,5 +1,8 @@
 # RBLAS
 
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![crates.io](http://meritbadge.herokuapp.com/rblas)](https://crates.io/crates/rblas)
+
 Rust bindings and wrappers for BLAS (Basic Linear Algebra Subprograms).
 
 ## Overview
@@ -20,18 +23,6 @@ trait is already implemented by `Vec` and `[]` types.
 [Documentation](http://mikkyang.github.io/rust-blas/doc/rblas/index.html)
 
 ## Installation
-
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-rblas = "0.0.11"
-```
-
-and this to your crate root:
-```rust
-extern crate rblas;
-```
 
 By default, the library links with `blas` dynamically. To link to an alternate
 implementation, like OpenBLAS, use the environment variable `CARGO_BLAS`. If
