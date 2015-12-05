@@ -1,2 +1,3 @@
-/target
+/cudnn/target
+/cudnn-sys/target
 Cargo.lock

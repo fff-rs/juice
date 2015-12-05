@@ -5,7 +5,7 @@
 //! stores the handle and manages future calls.
 
 use super::{API, Error, TensorDescriptor, ScalParams};
-use super::api::ffi::*;
+use ffi::*;
 
 #[derive(Debug, Clone)]
 /// Provides a the high-level interface to CUDA's cuDNN.

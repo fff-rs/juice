@@ -1,6 +1,8 @@
 //! Defines the Foreign Function Interface for the CUDA cuDNN API.
 #![allow(non_camel_case_types)]
 
+extern crate libc;
+
 pub enum Struct_CUstream_st { }
 pub type cudaStream_t = *mut Struct_CUstream_st;
 
@@ -213,7 +215,6 @@ pub type Enum_Unnamed26 = ::libc::c_uint;
 pub const CUDNN_DIVNORM_PRECOMPUTED_MEANS: ::libc::c_uint = 0;
 pub type cudnnDivNormMode_t = Enum_Unnamed26;
 
-#[link(name = "cudnn")]
 extern "C" {
     pub fn cudnnGetVersion() -> ::libc::size_t;
 

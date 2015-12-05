@@ -16,7 +16,6 @@
 //! [cudnn]: https://developer.nvidia.com/cudnn
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
-#![feature(link_args)]
 #![allow(dead_code)]
 #![deny(missing_docs,
         missing_debug_implementations, missing_copy_implementations,
@@ -24,6 +23,7 @@
         unused_import_braces, unused_qualifications)]
 
 extern crate libc;
+extern crate cudnn_sys as ffi;
 
 pub use self::cudnn::Cudnn;
 pub use self::error::Error;
