@@ -20,9 +20,8 @@ before_script:
   export PATH=$HOME/.local/bin:$PATH
 script:
 - |
+  cd cudnn
   travis-cargo build -- --no-default-features &&
-  travis-cargo test -- --no-default-features &&
-  travis-cargo bench -- --no-default-features &&
   travis-cargo doc -- --no-default-features
 addons:
   apt:
@@ -30,10 +29,6 @@ addons:
     - libcurl4-openssl-dev
     - libelf-dev
     - libdw-dev
-    - libblas-dev
-install:
-- sudo apt-get update
-- sudo apt-get install fglrx opencl-headers
 after_success:
 - travis-cargo doc-upload
 - travis-cargo coveralls --no-sudo
@@ -46,3 +41,10 @@ env:
   matrix:
   - TRAVIS_CARGO_NIGHTLY_FEATURE=travis
   - TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+before_install:
+  - wget https://packagecloud.io/github/git-lfs/packages/debian/jessie/git-lfs_1.0.2_amd64.deb/download -O git-lfs_1.0.2_amd64.deb
+  - sudo dpkg -i git-lfs_1.0.2_amd64.deb && sudo apt-get install -f
+  - git lfs install
+  - git lfs pull
+  - openssl aes-256-cbc -K $encrypted_7074f9622e7e_key -iv $encrypted_7074f9622e7e_iv
+    -in .travis/libcudnn.so.enc -out .travis/libcudnn.so -d
