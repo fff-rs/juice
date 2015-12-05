@@ -24,6 +24,8 @@ impl TensorDescriptor {
     /// Initializes a new CUDA cuDNN Tensor Descriptor.
     pub fn new(dims: &[i32], data_type: DataType) -> Result<TensorDescriptor, Error> {
         let nb_dims = dims.len() as i32;
+        if nb_dims < 3 { return Err(Error::BadParam("CUDA cuDNN only supports Tensors with 3 to 8 dimensions.")) }
+
         let dims_ptr = dims.as_ptr();
         let generic_tensor_desc = try!(API::create_tensor_descriptor());
         match data_type {

@@ -1,10 +1,10 @@
-# rust-cuDNN • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/rust-cudnn?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/rust-cudnn.svg?branch=master)](https://travis-ci.org/autumnai/rust-cudnn) [![Coverage Status](https://coveralls.io/repos/autumnai/rust-cudnn/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/rust-cudnn?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/rust-cudnn)](https://crates.io/crates/rust-cudnn) [![License](https://img.shields.io/crates/l/rust-cudnn.svg)](LICENSE)
+# rust-cuDNN • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/rust-cudnn.svg?branch=master)](https://travis-ci.org/autumnai/rust-cudnn) [![Coverage Status](https://coveralls.io/repos/autumnai/rust-cudnn/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/rust-cudnn?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/rust-cudnn)](https://crates.io/crates/rust-cudnn) [![License](https://img.shields.io/crates/l/rust-cudnn.svg)](LICENSE)
 
-rust-cuDNN provides safe wrapper around [CUDA's cuDNN library][cudnn], so you can use
+rust-cuDNN provides safe wrapper around [CUDA's cuDNN][cudnn] library, so you can use
 it comfortably and safely in your Rust application.
 
-If you want high-performance computation in Rust and want to deploy it to machines
-which are not CUDA/cuDNN enabled, you can check out [Collenchyma][collenchyma].
+For high-performance computation on machines which might not be CUDA/cuDNN enabled,
+you can check out [Collenchyma][collenchyma].
 For more general CUDA computations you can check out [rust-cuda][rust-cuda].
 
 rust-cuDNN was started at [Autumn][autumn] to support the Machine Intelligence
@@ -12,7 +12,7 @@ Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 For more information,
 
-* see rust-cuDNN's [Documentation](http://autumnai.github.io/collenchyma)
+* see rust-cuDNN's [Documentation](http://autumnai.github.io/rust-cudnn)
 * or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
 
 [cudnn]: https://developer.nvidia.com/cudnn

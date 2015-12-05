@@ -35,8 +35,12 @@ impl API {
         match cudnnCreate(&mut handle) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(handle),
             cudnnStatus_t::CUDNN_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA Driver/Runtime API not initialized.")),
+            cudnnStatus_t::CUDNN_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch("cuDNN only supports devices with compute capabilities greater than or equal to 3.0.")),
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
-            _ => Err(Error::Unknown("Unable to create the CUDA cuDNN context/resources.")),
+            e @ _ => {
+                println!("STATUS {:?}", e);
+                Err(Error::Unknown("Unable to create the CUDA cuDNN context/resources."))
+            }
         }
     }
 

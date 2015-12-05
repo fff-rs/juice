@@ -5,5 +5,6 @@
 //! a more convenient and "rusty" interface.
 
 pub mod tensor;
+pub mod activation;
 pub mod utils;
 pub mod ffi;
