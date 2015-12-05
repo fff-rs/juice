@@ -1,3 +1,4 @@
+Cargo.lock
 /cudnn/target
 /cudnn-sys/target
-Cargo.lock
+.travis/libcudnn.so
