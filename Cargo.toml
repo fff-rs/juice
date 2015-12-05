@@ -1,0 +1,22 @@
+[package]
+name            = "cudnn"
+description     = "safe wrapper around CUDA's cuDNN"
+version         = "0.1.0"
+authors         = ["MichaelHirn <mj@autumnai.com>"]
+
+repository      = "https://github.com/autumnai/rust-cudnn"
+homepage        = "https://github.com/autumnai/rust-cudnn"
+documentation   = "https://autumnai.github.io/rust-cudnn"
+readme          = "README.md"
+
+keywords        = ["cudnn", "cuda", "nvidia", "neural-network"]
+license         = "MIT"
+
+[dependencies]
+libc = "0.2"
+clippy = { version = "0.0.27", optional = true }
+
+[features]
+dev = []
+travis = []
+lint = ["clippy"]
