@@ -96,11 +96,11 @@ impl<T> Matrix<T> for Mat<T> {
         n.unwrap()
     }
 
-    unsafe fn as_ptr(&self) -> *const T {
+    fn as_ptr(&self) -> *const T {
         self.data[..].as_ptr()
     }
 
-    unsafe fn as_mut_ptr(&mut self) -> *mut T {
+    fn as_mut_ptr(&mut self) -> *mut T {
         (&mut self.data[..]).as_mut_ptr()
     }
 }
