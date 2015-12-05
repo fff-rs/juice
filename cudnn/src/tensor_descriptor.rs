@@ -5,7 +5,7 @@
 //! the structure and dimensionality of the data.
 
 use super::{API, Error};
-use super::api::ffi::*;
+use ffi::*;
 
 #[derive(Debug, Clone)]
 /// Describes a TensorDescriptor.
@@ -23,6 +23,8 @@ impl Drop for TensorDescriptor {
 impl TensorDescriptor {
     /// Initializes a new CUDA cuDNN Tensor Descriptor.
     pub fn new(dims: &[i32], data_type: DataType) -> Result<TensorDescriptor, Error> {
+        // let nb_dims = (dims.len() + 2) as i32;
+        // let nb_dims = (dims.len() + 1) as i32;
         let nb_dims = dims.len() as i32;
         if nb_dims < 3 { return Err(Error::BadParam("CUDA cuDNN only supports Tensors with 3 to 8 dimensions.")) }
 

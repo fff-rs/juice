@@ -1,7 +1,7 @@
 //! Provides the activation functionality from the CUDA cuDNN API.
 
 use ::{API, Error};
-use super::ffi::*;
+use ffi::*;
 
 impl API {
     /// Computes an activation forward function.

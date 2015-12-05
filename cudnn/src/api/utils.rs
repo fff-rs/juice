@@ -1,7 +1,7 @@
 //! Provides utility functionality for the CUDA cuDNN API.
 
 use ::{API, Error};
-use super::ffi::*;
+use ffi::*;
 use std::ptr;
 
 impl API {

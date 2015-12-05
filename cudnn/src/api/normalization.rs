@@ -3,7 +3,7 @@
 //! This includes divisive normalization and Local Response Normalization.
 
 use ::{API, Error};
-use super::ffi::*;
+use ffi::*;
 
 impl API {
     /// Creates a generic CUDA cuDNN LRN Descriptor.

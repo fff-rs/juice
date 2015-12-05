@@ -4,7 +4,7 @@
 //! such as transformation and co..
 
 use ::{API, Error};
-use super::ffi::*;
+use ffi::*;
 
 impl API {
     /// Creates a generic CUDA cuDNN Tensor Descriptor.
