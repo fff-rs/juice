@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 //! Vector operations.
-
+use libc::c_int;
 use num::traits::NumCast;
 use num::complex::{Complex32, Complex64};
 use vector::ops::{Copy, Axpy, Scal, Dot, Nrm2, Asum, Iamax};
@@ -15,9 +15,9 @@ pub mod ops;
 pub trait Vector<T> {
     /// The stride within the vector. For example, if `inc` returns 7, every
     /// 7th element is used. Defaults to 1.
-    fn inc(&self) -> i32 { 1 }
+    fn inc(&self) -> c_int { 1 }
     /// The number of elements in the vector.
-    fn len(&self) -> i32;
+    fn len(&self) -> c_int;
     /// An unsafe pointer to a contiguous block of memory.
     unsafe fn as_ptr(&self) -> *const T;
     /// An unsafe mutable pointer to a contiguous block of memory.
@@ -77,8 +77,8 @@ pub trait VectorOperations<T>: Sized + Vector<T>
 impl<T> Vector<T> for Vec<T> {
 
     #[inline]
-    fn len(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(Vec::len(self));
+    fn len(&self) -> c_int {
+        let l: Option<c_int> = NumCast::from(Vec::len(self));
         match l {
             Some(l) => l,
             None => panic!(),
@@ -95,8 +95,8 @@ impl<T> Vector<T> for Vec<T> {
 impl<T> Vector<T> for [T] {
 
     #[inline]
-    fn len(&self) -> i32 {
-        let l: Option<i32> = NumCast::from(<[T]>::len(self));
+    fn len(&self) -> c_int {
+        let l: Option<c_int> = NumCast::from(<[T]>::len(self));
         match l {
             Some(l) => l,
             None => panic!(),
