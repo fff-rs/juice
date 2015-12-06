@@ -25,7 +25,7 @@ impl Drop for Memory {
 impl Memory {
     /// Initializes a new Cuda memory.
     pub fn new(size: usize) -> Result<Memory, Error> {
-        API::mem_alloc(size as u64)
+        API::mem_alloc(size as size_t)
     }
 
     /// Initializes a new Cuda memory from its C type.
