@@ -52,14 +52,15 @@ mod gemm_tests {
     use std::iter::repeat;
     use attribute::Transpose;
     use matrix::ops::Gemm;
+    use matrix::tests::M;
 
     #[test]
     fn real() {
-        let a = (2, 2, vec![1.0, 2.0, 3.0, 4.0]);
-        let b = (2, 2, vec![-1.0, 3.0, 1.0, 1.0]);
+        let a = M(2, 2, vec![1.0, 2.0, 3.0, 4.0]);
+        let b = M(2, 2, vec![-1.0, 3.0, 1.0, 1.0]);
         let t = Transpose::NoTrans;
 
-        let mut c = (2, 2, repeat(0.0).take(4).collect());
+        let mut c = M(2, 2, repeat(0.0).take(4).collect());
         Gemm::gemm(&1f32, t, &a, t, &b, &0f32, &mut c);
 
         assert_eq!(c.2, vec![1.0, 5.0, 1.0, 13.0]);
@@ -67,16 +68,16 @@ mod gemm_tests {
 
     #[test]
     fn transpose() {
-        let a = (3, 2, vec![
+        let a = M(3, 2, vec![
                  1.0, 2.0,
                  3.0, 4.0,
                  5.0, 6.0, ]);
-        let b = (2, 3, vec![
+        let b = M(2, 3, vec![
                  -1.0, 3.0, 1.0,
                  1.0, 1.0, 1.0]);
         let t = Transpose::Trans;
 
-        let mut c = (2, 2, repeat(0.0).take(4).collect());
+        let mut c = M(2, 2, repeat(0.0).take(4).collect());
         Gemm::gemm(&1f32, t, &a, t, &b, &0f32, &mut c);
 
         assert_eq!(c.2, vec![13.0, 9.0, 16.0, 12.0]);

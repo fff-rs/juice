@@ -39,11 +39,12 @@ gemv_impl!(f32, f64, Complex32, Complex64);
 #[cfg(test)]
 mod gemv_tests {
     use attribute::Transpose;
+    use matrix::tests::M;
     use matrix_vector::ops::Gemv;
 
     #[test]
     fn real() {
-        let a = (2, 2, vec![1.0, -2.0, 2.0, -4.0]);
+        let a = M(2, 2, vec![1.0, -2.0, 2.0, -4.0]);
         let x = vec![2.0, 1.0];
         let mut y = vec![1.0, 2.0];
         let t = Transpose::NoTrans;
@@ -55,7 +56,7 @@ mod gemv_tests {
 
     #[test]
     fn non_square() {
-        let a = (2, 3,
+        let a = M(2, 3,
                  vec![
                  1.0, -3.0, 1.0,
                  2.0, -6.0, 2.0]);
@@ -69,7 +70,7 @@ mod gemv_tests {
 
     #[test]
     fn transpose() {
-        let a = (3, 2,
+        let a = M(3, 2,
                  vec![
                      1.0, 2.0,
                      -3.0, -6.0,
@@ -117,13 +118,14 @@ symv_impl!(Hemv, hemv, Complex32, Complex64);
 #[cfg(test)]
 mod symv_tests {
     use attribute::{Symmetry, Transpose};
+    use matrix::tests::M;
     use matrix_vector::ops::{Gemv, Symv};
 
     #[test]
     fn real() {
         let x = vec![2.0, 1.0];
         let gemv = {
-            let a = (2, 2, vec![1.0, -2.0, -2.0, 1.0]);
+            let a = M(2, 2, vec![1.0, -2.0, -2.0, 1.0]);
             let mut y = vec![1.0, 2.0];
             let t = Transpose::NoTrans;
 
@@ -133,7 +135,7 @@ mod symv_tests {
 
         let symv_upper = {
             // symv shouldn't look at some elements
-            let a = (2, 2, vec![1.0, -2.0, 0.0, 1.0]);
+            let a = M(2, 2, vec![1.0, -2.0, 0.0, 1.0]);
             let mut y = vec![1.0, 2.0];
             let s = Symmetry::Upper;
 
@@ -143,7 +145,7 @@ mod symv_tests {
 
         let symv_lower = {
             // symv shouldn't look at some elements
-            let a = (2, 2, vec![1.0, 0.0, -2.0, 1.0]);
+            let a = M(2, 2, vec![1.0, 0.0, -2.0, 1.0]);
             let mut y = vec![1.0, 2.0];
             let s = Symmetry::Lower;
 
@@ -196,11 +198,12 @@ ger_impl!(Gerc, gerc, Complex64, cblas_z::gerc);
 #[cfg(test)]
 mod ger_tests {
     use std::iter::repeat;
+    use matrix::tests::M;
     use matrix_vector::ops::Ger;
 
     #[test]
     fn real() {
-        let mut a = (3, 3, repeat(0.0).take(9).collect());
+        let mut a = M(3, 3, repeat(0.0).take(9).collect());
         let x = vec![2.0, 1.0, 4.0];
         let y = vec![3.0, 6.0, -1.0];
 
