@@ -39,10 +39,12 @@ pub trait BandMatrix<T>: Matrix<T> {
 }
 
 #[cfg(test)]
-mod test_struct {
+pub mod tests {
     use matrix::Matrix;
 
-    impl<T> Matrix<T> for (i32, i32, Vec<T>) {
+    pub struct M<T>(pub i32, pub i32, pub Vec<T>);
+
+    impl<T> Matrix<T> for M<T> {
         fn rows(&self) -> i32 {
             self.0
         }
