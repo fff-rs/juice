@@ -14,6 +14,7 @@
 //! The `ffi.rs` file of the `api` folder contains the foreign function interface of cuDNN.
 //!
 //! [cudnn]: https://developer.nvidia.com/cudnn
+//! [api]: ./struct.API.html
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
@@ -25,6 +26,7 @@
 extern crate libc;
 extern crate cudnn_sys as ffi;
 
+pub use ffi::*;
 pub use self::cudnn::Cudnn;
 pub use self::error::Error;
 pub use self::utils::{Direction, ScalParams};
