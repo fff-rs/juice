@@ -13,6 +13,8 @@ keywords        = ["blas", "collenchyma", "computation", "hpc"]
 license         = "MIT"
 
 [dependencies]
+collenchyma = { path = "/home/hobofan/collenchyma" }
+rblas = "0.0.11"
 clippy = { version = "0.0.27", optional = true }
 
 [features]
