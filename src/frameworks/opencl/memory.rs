@@ -17,6 +17,7 @@ pub struct Memory {
 }
 
 impl Drop for Memory {
+    #[allow(unused_must_use)]
     fn drop(&mut self) {
         API::release_memory(self);
         if self.memory_flags.contains(MEM_USE_HOST_PTR) {

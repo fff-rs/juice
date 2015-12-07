@@ -3,7 +3,6 @@
 use binary::IBinary;
 use frameworks::opencl::Kernel;
 use super::api::types as cl;
-use super::api::API;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a OpenCL Program.

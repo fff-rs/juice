@@ -23,10 +23,12 @@ pub trait IBlas<F: Float> {
     /// The Binary representation for this Library.
     type B: IBlasBinary<F> + IBinary;
 
-    /// Computes the absolute sum of vector `x`.
+    /// Computes the absolute sum of vector `x` with complete memory management.
     ///
     /// Saves the result to `result`.
     /// This is a Level 1 BLAS operation.
+    ///
+    /// For a no-memory managed version see `asum_plain`.
     fn asum(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
@@ -38,10 +40,29 @@ pub trait IBlas<F: Float> {
         ))
     }
 
-    /// Computes a vector `x` times a constant `a` plus a vector `y` aka. `a * x + y`.
+    /// Computes the absolute sum of vector `x` without any memory management.
+    ///
+    /// Saves the result to `result`.
+    /// This is a Level 1 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `asum`.
+    fn asum_plain(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::error::Error> {
+        Ok(try!(
+            self.binary().asum().compute(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `result`"))),
+            )
+        ))
+    }
+
+    /// Computes a vector `x` times a constant `a` plus a vector `y` aka. `a * x + y` with complete memory management.
     ///
     /// Saves the resulting vector back into `y`.
     /// This is a Level 1 BLAS operation.
+    ///
+    /// For a no-memory managed version see `axpy_plain`.
     fn axpy(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
         match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
@@ -55,10 +76,30 @@ pub trait IBlas<F: Float> {
         ))
     }
 
-    /// Copies `x.len()` elements of vector `x` into vector `y`.
+    /// Computes a vector `x` times a constant `a` plus a vector `y` aka. `a * x + y` without any memory management.
+    ///
+    /// Saves the resulting vector back into `y`.
+    /// This is a Level 1 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `axpy`.
+    fn axpy_plain(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
+        Ok(try!(
+            self.binary().axpy().compute(
+                try!(a.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `a`"))),
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
+            )
+        ))
+    }
+
+    /// Copies `x.len()` elements of vector `x` into vector `y` with complete memory management.
     ///
     /// Saves the result to `y`.
     /// This is a Level 1 BLAS operation.
+    ///
+    /// For a no-memory managed version see `copy_plain`.
     fn copy(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match y.add_device(self.device()) { _ => () }
@@ -70,11 +111,30 @@ pub trait IBlas<F: Float> {
         ))
     }
 
-    /// Computes the [dot product][dot-product] over x and y.
+    /// Copies `x.len()` elements of vector `x` into vector `y` without any memory management.
+    ///
+    /// Saves the result to `y`.
+    /// This is a Level 1 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `copy`.
+    fn copy_plain(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
+        Ok(try!(
+            self.binary().copy().compute(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
+            )
+        ))
+    }
+
+    /// Computes the [dot product][dot-product] over x and y with complete memory management.
     /// [dot-product]: https://en.wikipedia.org/wiki/Dot_product
     ///
     /// Saves the resulting value into `result`.
     /// This is a Level 1 BLAS operation.
+    ///
+    /// For a no-memory managed version see `dot_plain`.
     fn dot(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
@@ -88,10 +148,31 @@ pub trait IBlas<F: Float> {
         ))
     }
 
-    /// Computes the L2 norm aka. euclidean length of vector `x`.
+    /// Computes the [dot product][dot-product] over x and y without any memory management.
+    /// [dot-product]: https://en.wikipedia.org/wiki/Dot_product
+    ///
+    /// Saves the resulting value into `result`.
+    /// This is a Level 1 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `dot`.
+    fn dot_plain(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::error::Error> {
+        Ok(try!(
+            self.binary().dot().compute(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `result`"))),
+            )
+        ))
+    }
+
+    /// Computes the L2 norm aka. euclidean length of vector `x` with complete memory management.
     ///
     /// Saves the result to `result`.
     /// This is a Level 1 BLAS operation.
+    ///
+    /// For a no-memory managed version see `nrm2_plain`.
     fn nrm2(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
@@ -103,10 +184,29 @@ pub trait IBlas<F: Float> {
         ))
     }
 
-    /// Scales a vector `x` by a constant `a` aka. `a * x`.
+    /// Computes the L2 norm aka. euclidean length of vector `x` without any memory management.
+    ///
+    /// Saves the result to `result`.
+    /// This is a Level 1 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `nrm2`.
+    fn nrm2_plain(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::error::Error> {
+        Ok(try!(
+            self.binary().nrm2().compute(
+                try!(x.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(result.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `result`"))),
+            )
+        ))
+    }
+
+    /// Scales a vector `x` by a constant `a` aka. `a * x` with complete memory management.
     ///
     /// Saves the resulting vector back into `x`.
     /// This is a Level 1 BLAS operation.
+    ///
+    /// For a no-memory managed version see `scale_plain`.
     fn scale(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
         match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
@@ -118,13 +218,49 @@ pub trait IBlas<F: Float> {
         ))
     }
 
-    /// Swapes the content of vector `x` and vector `y`.
+    /// Scales a vector `x` by a constant `a` aka. `a * x` without any memory management.
     ///
     /// Saves the resulting vector back into `x`.
     /// This is a Level 1 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `scale`.
+    fn scale_plain(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
+        Ok(try!(
+            self.binary().scale().compute(
+                try!(a.get(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `a`"))),
+                try!(x.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+            )
+        ))
+    }
+
+    /// Swaps the content of vector `x` and vector `y` with complete memory management.
+    ///
+    /// Saves the resulting vector back into `x`.
+    /// This is a Level 1 BLAS operation.
+    ///
+    /// For a no-memory managed version see `swap_plain`.
     fn swap(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
+        Ok(try!(
+            self.binary().swap().compute(
+                try!(x.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
+                try!(y.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `y`"))),
+            )
+        ))
+    }
+
+    /// Swaps the content of vector `x` and vector `y` without any memory management.
+    ///
+    /// Saves the resulting vector back into `x`.
+    /// This is a Level 1 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `swap`.
+    fn swap_plain(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::error::Error> {
         Ok(try!(
             self.binary().swap().compute(
                 try!(x.get_mut(self.device()).ok_or(Error::MissingArgument("Unable to resolve memory for `x`"))),
@@ -282,6 +418,18 @@ macro_rules! iblas_asum_for {
                 )
             ))
         }
+
+        fn asum_plain(&self,
+            x: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>,
+            result: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR0>
+        ) -> Result<(), ::error::Error> {
+            Ok(try!(
+                <$b as IOperationAsum<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(result.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `result`"))),
+                )
+            ))
+        }
     );
 }
 
@@ -304,6 +452,20 @@ macro_rules! iblas_axpy_for {
                 )
             ))
         }
+
+        fn axpy_plain(&self,
+            a: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR0>,
+            x: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>,
+            y: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>
+        ) -> Result<(), ::error::Error> {
+            Ok(try!(
+                <$b as IOperationAxpy<$t>>::compute(&self,
+                    try!(a.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `a`"))),
+                    try!(x.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                )
+            ))
+        }
     );
 }
 
@@ -316,6 +478,18 @@ macro_rules! iblas_copy_for {
         ) -> Result<(), ::error::Error> {
             match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
             match y.add_device(self.device()) { _ => () }
+            Ok(try!(
+                <$b as IOperationCopy<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                )
+            ))
+        }
+
+        fn copy_plain(&self,
+            x: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>,
+            y: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>
+        ) -> Result<(), ::error::Error> {
             Ok(try!(
                 <$b as IOperationCopy<$t>>::compute(&self,
                     try!(x.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
@@ -345,6 +519,20 @@ macro_rules! iblas_dot_for {
                 )
             ))
         }
+
+        fn dot_plain(&self,
+            x: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>,
+            y: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>,
+            result: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR0>
+        ) -> Result<(), ::error::Error> {
+            Ok(try!(
+                <$b as IOperationDot<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                    try!(result.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `result`")))
+                )
+            ))
+        }
     );
 }
 
@@ -357,6 +545,18 @@ macro_rules! iblas_nrm2_for {
         ) -> Result<(), ::error::Error> {
             match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
             match result.add_device(self.device()) { _ => () }
+            Ok(try!(
+                <$b as IOperationNrm2<$t>>::compute(&self,
+                    try!(x.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(result.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `result`"))),
+                )
+            ))
+        }
+
+        fn nrm2_plain(&self,
+            x: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>,
+            result: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR0>
+        ) -> Result<(), ::error::Error> {
             Ok(try!(
                 <$b as IOperationNrm2<$t>>::compute(&self,
                     try!(x.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
@@ -383,6 +583,18 @@ macro_rules! iblas_scale_for {
                 )
             ))
         }
+
+        fn scale_plain(&self,
+            a: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR0>,
+            x: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>
+        ) -> Result<(), ::error::Error> {
+            Ok(try!(
+                <$b as IOperationScale<$t>>::compute(&self,
+                    try!(a.get(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `a`"))),
+                    try!(x.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                )
+            ))
+        }
     );
 }
 
@@ -395,6 +607,18 @@ macro_rules! iblas_swap_for {
         ) -> Result<(), ::error::Error> {
             match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
             match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
+            Ok(try!(
+                <$b as IOperationSwap<$t>>::compute(&self,
+                    try!(x.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),
+                    try!(y.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `y`"))),
+                )
+            ))
+        }
+
+        fn swap_plain(&self,
+            x: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>,
+            y: &mut ::shared_memory::SharedMemory<$t, ::shared_memory::TensorR1>
+        ) -> Result<(), ::error::Error> {
             Ok(try!(
                 <$b as IOperationSwap<$t>>::compute(&self,
                     try!(x.get_mut(self.device()).ok_or(blas::Error::MissingArgument("Unable to resolve memory for `x`"))),

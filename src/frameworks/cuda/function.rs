@@ -1,7 +1,7 @@
 //! Provides a Rust wrapper around Cuda's Function.
 
 use operation::IOperation;
-use super::api::driver::API;
+use super::api::Driver;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Function.

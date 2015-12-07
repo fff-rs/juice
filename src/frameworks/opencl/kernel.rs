@@ -2,7 +2,6 @@
 
 use operation::IOperation;
 use super::api::types as cl;
-use super::api::API;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a OpenCL Kernel.

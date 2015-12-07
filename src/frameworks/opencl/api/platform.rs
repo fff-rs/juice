@@ -26,7 +26,7 @@ impl API {
             static ref platforms_mutex: Mutex<()> = Mutex::new(());
         }
 
-        let guard = unsafe {platforms_mutex.lock()};
+        let guard = platforms_mutex.lock();
         try!(unsafe {API::ffi_get_platform_ids(0, ptr::null_mut(), (&mut num_platforms))});
 
         let mut ids: Vec<cl::device_id> = repeat(0 as cl::device_id).take(num_platforms as usize).collect();

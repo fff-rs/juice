@@ -2,8 +2,8 @@
 
 use device::{IDevice, DeviceType, IDeviceSyncOut};
 use device::Error as DeviceError;
-use super::api::driver::ffi::*;
-use super::{API, Error, Device};
+use super::api::DriverFFI;
+use super::{Driver, DriverError, Device};
 use super::memory::*;
 use frameworks::native::flatbox::FlatBox;
 use memory::{MemoryType, IMemory};
@@ -27,17 +27,17 @@ impl Drop for Context {
 
 impl Context {
     /// Initializes a new Cuda context.
-    pub fn new(devices: Device) -> Result<Context, Error> {
+    pub fn new(devices: Device) -> Result<Context, DriverError> {
         Ok(
             Context::from_c(
-                try!(API::create_context(devices.clone())),
+                try!(Driver::create_context(devices.clone())),
                 vec!(devices.clone())
             )
         )
     }
 
     /// Initializes a new Cuda platform from its C type.
-    pub fn from_c(id: CUcontext, devices: Vec<Device>) -> Context {
+    pub fn from_c(id: DriverFFI::CUcontext, devices: Vec<Device>) -> Context {
         Context { id: id as isize, devices: devices }
     }
 
@@ -47,15 +47,15 @@ impl Context {
     }
 
     /// Returns the id as its C type.
-    pub fn id_c(&self) -> CUcontext {
-        self.id as CUcontext
+    pub fn id_c(&self) -> DriverFFI::CUcontext {
+        self.id as DriverFFI::CUcontext
     }
 }
 
 impl IDeviceSyncOut<FlatBox> for Context {
     type M = Memory;
     fn sync_out(&self, dest: &DeviceType, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
-        Ok(try!(API::mem_cpy_d_to_h(source_data, dest_data)))
+        Ok(try!(Driver::mem_cpy_d_to_h(source_data, dest_data)))
     }
 }
 
@@ -72,14 +72,14 @@ impl IDevice for Context {
     }
 
     fn alloc_memory(&self, size: u64) -> Result<Memory, DeviceError> {
-        Ok(try!(API::mem_alloc(size)))
+        Ok(try!(Driver::mem_alloc(size)))
     }
 
     fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {
         match source {
             &DeviceType::Native(_) => {
                 match source_data.as_native() {
-                    Some(h_mem) => Ok(try!(API::mem_cpy_h_to_d(h_mem, dest_data))),
+                    Some(h_mem) => Ok(try!(Driver::mem_cpy_h_to_d(h_mem, dest_data))),
                     None => unimplemented!()
                 }
             },

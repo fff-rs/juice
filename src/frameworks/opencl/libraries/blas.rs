@@ -5,7 +5,6 @@ use device::DeviceType;
 use frameworks::opencl::{Kernel, Program, OpenCL} ;
 use memory::MemoryType;
 use libraries::blas::*;
-use num::traits::Float;
 
 impl IBlasBinary<f32> for Program {
     type Asum = Kernel;
