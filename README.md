@@ -1,8 +1,9 @@
 # Collenchyma • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma) [![Coverage Status](https://coveralls.io/repos/autumnai/collenchyma/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/collenchyma?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma)](https://crates.io/crates/collenchyma) [![License](https://img.shields.io/crates/l/collenchyma.svg)](LICENSE)
 
-Collenchyma provides a common Rust interface to run operations on potentially
-Cuda or OpenCL supported machines, making deployment of high-performance code as
-easy and platform-agnostic as common code.
+Collenchyma is an extensible, pluggable backend-agnostic framework for parallel computations
+on CUDA, OpenCL and common host CPU. It is fast and easy to build and provides
+a extensible Rust struct to run high-performance computation on almost any device,
+even if it does not have CUDA or OpenCL capable devices.
 
 Collenchyma's abstracts over the different computation languages (Native,
 OpenCL, Cuda) and let's you run highly-performant code, thanks to easy
@@ -17,16 +18,14 @@ Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 * __Parallelizing Performance__<br/>
 Collenchyma makes it easy to parallelize computations on your machine, putting
 all the available cores of your CPUs/GPUs to use.
-Collenchyma also provides optimized operations for the most popular operations,
+Collenchyma also provides optimized operations, through Plugins, for popular libraries,
 such as BLAS, that you can use right away to speed up your application.
-Highly-optimized computation libraries like open-BLAS and cuDNN can be dropped
-in.
 
 * __Easily Extensible__<br/>
-Writing custom operations for GPU execution becomes easier with Collenchyma, as
+Writing custom operations for GPU execution becomes easy with Collenchyma, as
 it already takes care of Framework peculiarities, memory management and other
-overhead. Therefore extending the Backend becomes a straight-forward process of
-defining the kernels and mounting them on the Backend.
+overhead. Collenchyma provides Plugins (see examples below), that you can use to extend
+the Collenchyma backend with your own, business-specific operations.
 
 * __Butter-smooth Builds__<br/>
 As Collenchyma does not require the installation of various frameworks and
@@ -61,6 +60,22 @@ If you're using [Cargo Edit][cargo-edit], you can call:
     $ cargo add collenchyma
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
+
+## Plugins
+
+You can extend the operations available for your the Collenchyma backend with Plugins.
+Plugins are a common set of related operations such as BLAS. Just add a Collenchyma Plugin,
+which is nothing but a Rust crate, with collenchyma to your Cargo.toml. Here are some
+available Collenchyma Plugins.
+
+* [BLAS][collenchyma-blas] - Collenchyma plugin for backend-agnostic Basic Linear Algebra Subprogram Operations.
+* [NN][collenchyma-nn] - Collenchyma plugin for Neural Network related algorithms.
+
+You can easily write your own backend-agnostic, parallel operations and provide it for others,
+via a Plugin. We are happy to feature your Plugin here, just send us a PR.
+
+[collenchyma-blas]: http://github.com/autumnai/collenchyma-blas
+[collenchyma-nn]: http://github.com/autumnai/collenchyma-nn
 
 ## Examples
 

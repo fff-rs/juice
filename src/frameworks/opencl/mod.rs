@@ -32,7 +32,6 @@ pub mod queue;
 pub mod event;
 pub mod kernel;
 pub mod program;
-pub mod libraries;
 mod api;
 
 #[derive(Debug, Clone)]

@@ -18,7 +18,6 @@ pub mod device;
 pub mod flatbox;
 pub mod hardware;
 pub mod function;
-pub mod libraries;
 pub mod binary;
 mod error;
 
