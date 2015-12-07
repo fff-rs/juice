@@ -1,0 +1,21 @@
+[package]
+name            = "collenchyma-nn"
+description     = "Collenchyma library for full Neural Network algorithm support"
+version         = "0.0.1"
+authors         = ["MichaelHirn <michael.hirn@storeness.de>"]
+
+repository      = "https://github.com/autumnai/collenchyma-nn"
+homepage        = "https://github.com/autumnai/collenchyma-nn"
+documentation   = "https://autumnai.github.io/collenchyma-nn"
+readme          = "README.md"
+
+keywords        = ["neural-network", "collenchyma", "computation", "hfc"]
+license         = "MIT"
+
+[dependencies]
+clippy = { version = "0.0.27", optional = true }
+
+[features]
+dev = []
+travis = []
+lint = ["clippy"]
