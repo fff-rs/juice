@@ -1,0 +1,21 @@
+[package]
+name            = "collenchyma-blas"
+description     = "Collenchyma library for full BLAS support"
+version         = "0.0.1"
+authors         = ["MichaelHirn <michael.hirn@storeness.de>"]
+
+repository      = "https://github.com/autumnai/collenchyma-blas"
+homepage        = "https://github.com/autumnai/collenchyma-blas"
+documentation   = "https://autumnai.github.io/collenchyma-blas"
+readme          = "README.md"
+
+keywords        = ["blas", "collenchyma", "computation", "hpc"]
+license         = "MIT"
+
+[dependencies]
+clippy = { version = "0.0.27", optional = true }
+
+[features]
+dev = []
+travis = []
+lint = ["clippy"]
