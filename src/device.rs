@@ -27,7 +27,7 @@ pub trait IDevice {
     /// Returns the unique identifier of the Device.
     fn id(&self) -> &isize;
     /// Returns the hardwares, which define the Device.
-    fn hardwares(&self) -> Vec<Self::H>;
+    fn hardwares(&self) -> &Vec<Self::H>;
     /// Allocate memory on the Device.
     fn alloc_memory(&self, size: u64) -> Result<Self::M, Error>;
     /// Synchronize memory from `source_data` to the memory at `dest_data`.

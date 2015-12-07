@@ -29,6 +29,8 @@ pub enum Error {
     InvalidBufferSize(&'static str),
     /// Failure with provided host pointer.
     InvalidHostPtr(&'static str),
+    /// Failure with provided properties for the device.
+    InvalidQueueProperties(&'static str),
     /// Failure with device availability.
     DeviceNotFound(&'static str),
     /// Failure with device availability.
@@ -62,6 +64,7 @@ impl fmt::Display for Error {
             Error::InvalidOperation(ref err) => write!(f, "{:?}", err),
             Error::InvalidBufferSize(ref err) => write!(f, "{:?}", err),
             Error::InvalidHostPtr(ref err) => write!(f, "{:?}", err),
+            Error::InvalidQueueProperties(ref err) => write!(f, "{:?}", err),
             Error::DeviceNotFound(ref err) => write!(f, "{:?}", err),
             Error::DeviceNotAvailable(ref err) => write!(f, "{:?}", err),
             Error::MemObjectAllocationFailure(ref err) => write!(f, "{:?}", err),
@@ -89,6 +92,7 @@ impl error::Error for Error {
             Error::InvalidOperation(ref err) => err,
             Error::InvalidBufferSize(ref err) => err,
             Error::InvalidHostPtr(ref err) => err,
+            Error::InvalidQueueProperties(ref err) => err,
             Error::DeviceNotFound(ref err) => err,
             Error::DeviceNotAvailable(ref err) => err,
             Error::MemObjectAllocationFailure(ref err) => err,
@@ -114,6 +118,7 @@ impl error::Error for Error {
             Error::InvalidOperation(_) => None,
             Error::InvalidBufferSize(_) => None,
             Error::InvalidHostPtr(_) => None,
+            Error::InvalidQueueProperties(_) => None,
             Error::DeviceNotFound(_) => None,
             Error::DeviceNotAvailable(_) => None,
             Error::MemObjectAllocationFailure(_) => None,

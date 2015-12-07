@@ -11,5 +11,6 @@ mod context;
 mod device;
 mod memory;
 mod platform;
+mod queue;
 mod ffi;
 pub mod types;

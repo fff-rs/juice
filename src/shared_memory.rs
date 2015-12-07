@@ -296,12 +296,17 @@ impl<T, D: ITensor> SharedMemory<T, D> {
                                 None => return Err(Error::InvalidMemory("Expected Native Memory (FlatBox)"))
                             }
                         },
-                        &DeviceType::OpenCL(ref context) => unimplemented!(),
                         #[cfg(feature = "cuda")]
                         &DeviceType::Cuda(ref context) => {
                             match destination_copy.as_mut_cuda() {
                                 Some(ref mut mem) => try!(context.sync_in(&self.latest_location, &self.latest_copy, mem)),
                                 None => return Err(Error::InvalidMemory("Expected CUDA Memory."))
+                            }
+                        },
+                        &DeviceType::OpenCL(ref context) => {
+                            match destination_copy.as_mut_opencl() {
+                                Some(ref mut mem) => try!(context.sync_in(&self.latest_location, &self.latest_copy, mem)),
+                                None => return Err(Error::InvalidMemory("Expected OpenCL Memory."))
                             }
                         }
                     }

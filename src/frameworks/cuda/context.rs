@@ -67,8 +67,8 @@ impl IDevice for Context {
         &self.id
     }
 
-    fn hardwares(&self) -> Vec<Device> {
-        self.devices.clone()
+    fn hardwares(&self) -> &Vec<Device> {
+        &self.devices
     }
 
     fn alloc_memory(&self, size: u64) -> Result<Memory, DeviceError> {

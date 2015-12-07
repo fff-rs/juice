@@ -4,7 +4,7 @@
 //!
 //! ## Ontology
 //!
-//! OpenCL device -> Hardware
+//! OpenCL device -> Hardware  
 //! OpenCL context -> Device
 
 #[link(name = "OpenCL")]
@@ -16,8 +16,9 @@ use framework::IFramework;
 use device::DeviceType;
 pub use self::platform::Platform;
 pub use self::context::Context;
-pub use self::memory::Memory;
-pub use self::queue::Queue;
+pub use self::memory::{Memory, MemoryFlags};
+pub use self::queue::{Queue, QueueFlags};
+pub use self::event::Event;
 pub use self::kernel::Kernel;
 pub use self::program::Program;
 pub use self::device::{Device, DeviceInfo};
@@ -28,6 +29,7 @@ pub mod platform;
 pub mod context;
 pub mod memory;
 pub mod queue;
+pub mod event;
 pub mod kernel;
 pub mod program;
 pub mod libraries;

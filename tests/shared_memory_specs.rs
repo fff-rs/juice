@@ -8,6 +8,7 @@ mod shared_memory_spec {
     use co::frameworks::Native;
     #[cfg(feature = "cuda")]
     use co::frameworks::Cuda;
+    use co::frameworks::OpenCL;
     use co::memory::MemoryType;
     use co::shared_memory::*;
 
@@ -43,6 +44,17 @@ mod shared_memory_spec {
         }
     }
 
+    #[test]
+    fn it_creates_new_shared_memory_for_opencl() {
+        let ntv = OpenCL::new();
+        let device = ntv.new_device(ntv.hardwares()[0..1].to_vec()).unwrap();
+        let shared_data = &mut SharedMemory::<f32, TensorR1>::new(&device, TensorR1::new([10])).unwrap();
+        match shared_data.get(&device) {
+            Some(&MemoryType::OpenCL(_)) => assert!(true),
+            _ => assert!(false),
+        }
+    }
+
     #[cfg(feature = "cuda")]
     #[test]
     fn it_syncs_from_native_to_cuda_and_back() {
@@ -54,6 +66,33 @@ mod shared_memory_spec {
         write_to_memory(mem.get_mut(&nt_device).unwrap(), &[1, 2, 3]);
         mem.add_device(&cu_device);
         match mem.sync(&cu_device) {
+            Ok(_) => assert!(true),
+            Err(err) => {
+                println!("{:?}", err);
+                assert!(false);
+            }
+        }
+        // It has not successfully synced to the device.
+        // Not the other way around.
+        match mem.sync(&nt_device) {
+            Ok(_) => assert!(true),
+            Err(err) => {
+                println!("{:?}", err);
+                assert!(false);
+            }
+        }
+    }
+
+    #[test]
+    fn it_syncs_from_native_to_opencl_and_back() {
+        let cl = OpenCL::new();
+        let nt = Native::new();
+        let cl_device = cl.new_device(cl.hardwares()[0..1].to_vec()).unwrap();
+        let nt_device = nt.new_device(nt.hardwares()).unwrap();
+        let mem = &mut SharedMemory::<f64, TensorR1>::new(&nt_device, TensorR1::new([3])).unwrap();
+        write_to_memory(mem.get_mut(&nt_device).unwrap(), &[1, 2, 3]);
+        mem.add_device(&cl_device);
+        match mem.sync(&cl_device) {
             Ok(_) => assert!(true),
             Err(err) => {
                 println!("{:?}", err);
