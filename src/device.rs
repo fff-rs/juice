@@ -15,7 +15,7 @@ use frameworks::opencl::Error as OpenCLError;
 #[cfg(feature = "cuda")]
 use frameworks::cuda::Context as CudaContext;
 #[cfg(feature = "cuda")]
-use frameworks::cuda::Error as CudaError;
+use frameworks::cuda::DriverError as CudaError;
 use std::{fmt, error};
 
 /// Specifies Hardware behavior across frameworks.

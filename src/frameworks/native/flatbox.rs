@@ -5,7 +5,6 @@ use std::fmt;
 use std::mem;
 use std::slice;
 
-#[derive(Clone)]
 /// A Box without any knowledge of its underlying type.
 pub struct FlatBox {
     len: usize,

@@ -1,9 +1,9 @@
 //! Provides the Cuda API with its device functionality.
 
-use frameworks::cuda::api::{API, Error};
 use frameworks::cuda::{Device, DeviceInfo};
 use byteorder::{ByteOrder, LittleEndian, WriteBytesExt};
 use super::ffi::*;
+use super::{API, Error};
 
 impl API {
     /// Returns fully initialized devices available through Cuda.

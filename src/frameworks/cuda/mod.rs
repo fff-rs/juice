@@ -17,7 +17,7 @@ pub use self::context::Context;
 pub use self::function::Function;
 pub use self::module::Module;
 pub use self::device::{Device, DeviceInfo};
-pub use self::api::{API, Error};
+pub use self::api::{Driver, DriverError};
 
 pub mod device;
 pub mod context;
@@ -43,7 +43,7 @@ impl IFramework for Cuda {
     fn new() -> Cuda {
         // Init function must be called before any other function from the Cuda Driver API can be
         // called.
-        if let Err(err) = API::init() {
+        if let Err(err) = Driver::init() {
             panic!("Unable to initialize Cuda Framework: {}", err);
         }
         match Cuda::load_hardwares() {
@@ -58,7 +58,7 @@ impl IFramework for Cuda {
     }
 
     fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
-        Ok(try!(API::load_devices()))
+        Ok(try!(Driver::load_devices()))
     }
 
     fn hardwares(&self) -> Vec<Device> {

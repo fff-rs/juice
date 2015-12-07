@@ -1,8 +1,7 @@
 //! Provides a Rust wrapper around Cuda's device.
 
 use hardware::{IHardware, HardwareType};
-use super::api::ffi::{CUdevice, CUdevice_attribute};
-use super::api::API;
+use super::api::{Driver, DriverFFI, DriverError};
 use std::io::Cursor;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
 
@@ -35,18 +34,18 @@ impl Device {
     }
 
     /// Initializes a new Cuda device from its C type.
-    pub fn from_c(id: CUdevice) -> Device {
+    pub fn from_c(id: DriverFFI::CUdevice) -> Device {
         Device { id: id as isize, ..Device::default() }
     }
 
     /// Returns the id as its C type.
-    pub fn id_c(&self) -> CUdevice {
-        self.id as CUdevice
+    pub fn id_c(&self) -> DriverFFI::CUdevice {
+        self.id as DriverFFI::CUdevice
     }
 
     /// Loads the name of the device via a foreign Cuda call.
     pub fn load_name(&mut self) -> Self {
-        self.name = match API::load_device_info(self, CUdevice_attribute::CU_DEVICE_NAME) {
+        self.name = match Driver::load_device_info(self, DriverFFI::CUdevice_attribute::CU_DEVICE_NAME) {
             Ok(result) => Some(result.to_string()),
             Err(_) => None
         };
@@ -61,7 +60,7 @@ impl Device {
 
     /// Loads the compute units of the device via a foreign Cuda call.
     pub fn load_compute_units(&mut self) -> Self {
-        self.compute_units = match API::load_device_info(self, CUdevice_attribute::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT) {
+        self.compute_units = match Driver::load_device_info(self, DriverFFI::CUdevice_attribute::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT) {
             Ok(result) => Some(result.to_isize()),
             Err(_) => None
         };

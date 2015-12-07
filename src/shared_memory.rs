@@ -22,7 +22,7 @@
 //! # extern crate collenchyma;
 //! use collenchyma::framework::IFramework;
 //! use collenchyma::frameworks::Native;
-//! use collenchyma::shared_memory::{SharedMemory, ITensor, TensorR1};
+//! use collenchyma::shared_memory::{SharedMemory, TensorR1};
 //! # fn main() {
 //! // allocate memory
 //! let native = Native::new();

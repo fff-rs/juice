@@ -1347,8 +1347,8 @@ impl ::std::clone::Clone for Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st {
 impl ::std::default::Default for Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-pub type CUDA_POINTER_ATTRIBUTE_P2P_TOKENS =
-    Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st;
+pub type CUDA_POINTER_ATTRIBUTE_P2P_TOKENS = Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st;
+
 #[link(name = "cuda")]
 extern "C" {
     // CUDA ERROR HANDLING
