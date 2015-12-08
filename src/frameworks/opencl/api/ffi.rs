@@ -5,6 +5,7 @@
 use libc;
 use super::types as cl;
 
+#[link(name = "OpenCL")]
 extern
 {
     /* Platform APIs */
