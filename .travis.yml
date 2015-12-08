@@ -20,7 +20,6 @@ before_script:
   export PATH=$HOME/.local/bin:$PATH
 script:
 - |
-  cd cudnn
   travis-cargo build -- --no-default-features &&
   travis-cargo doc -- --no-default-features
 addons:
