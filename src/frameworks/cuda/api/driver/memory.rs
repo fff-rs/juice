@@ -22,12 +22,12 @@ impl API {
 
     /// Copies memory from the Host to the Cuda device.
     pub fn mem_cpy_h_to_d(host_mem: &FlatBox, device_mem: &mut Memory) -> Result<(), Error> {
-        unsafe {API::ffi_mem_cpy_h_to_d(device_mem.id_c(), host_mem.as_slice().as_ptr(), host_mem.byte_size() as u64)}
+        unsafe {API::ffi_mem_cpy_h_to_d(device_mem.id_c(), host_mem.as_slice().as_ptr(), host_mem.byte_size() as size_t)}
     }
 
     /// Copies memory from the Cuda device to the Host.
     pub fn mem_cpy_d_to_h(device_mem: &Memory, host_mem: &mut FlatBox) -> Result<(), Error> {
-        unsafe {API::ffi_mem_cpy_d_to_h(host_mem.as_mut_slice().as_mut_ptr(), device_mem.id_c(), host_mem.byte_size() as u64)}
+        unsafe {API::ffi_mem_cpy_d_to_h(host_mem.as_mut_slice().as_mut_ptr(), device_mem.id_c(), host_mem.byte_size() as size_t)}
     }
 
     unsafe fn ffi_mem_alloc(bytesize: size_t) -> Result<CUdeviceptr, Error> {

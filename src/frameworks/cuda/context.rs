@@ -71,7 +71,7 @@ impl IDevice for Context {
         &self.devices
     }
 
-    fn alloc_memory(&self, size: u64) -> Result<Memory, DeviceError> {
+    fn alloc_memory(&self, size: DriverFFI::size_t) -> Result<Memory, DeviceError> {
         Ok(try!(Driver::mem_alloc(size)))
     }
 
