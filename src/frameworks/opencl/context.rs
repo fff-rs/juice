@@ -63,7 +63,7 @@ impl Context {
 
 impl IDeviceSyncOut<FlatBox> for Context {
     type M = Memory;
-    fn sync_out(&self, dest: &DeviceType, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
+    fn sync_out(&self, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
         try!(API::read_from_memory(self.queue().unwrap(), source_data, true, 0, dest_data.byte_size(), dest_data.as_mut_slice().as_mut_ptr(), &[]));
         Ok(())
     }

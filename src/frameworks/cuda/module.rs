@@ -2,7 +2,6 @@
 
 use binary::IBinary;
 use super::function::Function;
-use super::api::Driver;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Module.

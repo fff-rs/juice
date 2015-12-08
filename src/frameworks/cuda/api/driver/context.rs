@@ -2,7 +2,6 @@
 //!
 //! A Collenchyma device can be understood as a synonym to Cuda's context.
 
-use libc;
 use super::{API, Error};
 use frameworks::cuda::Device;
 use frameworks::cuda::Context;
