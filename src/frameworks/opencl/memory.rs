@@ -1,6 +1,7 @@
 #![allow(missing_docs)]
 use super::api::types as cl;
 use super::api::{API, Error};
+use super::Context;
 use memory::*;
 
 use std::ptr;
@@ -17,6 +18,7 @@ pub struct Memory {
 }
 
 impl Drop for Memory {
+    #[allow(unused_must_use)]
     fn drop(&mut self) {
         API::release_memory(self);
         if self.memory_flags.contains(MEM_USE_HOST_PTR) {
@@ -46,23 +48,8 @@ impl Default for MemoryFlags {
 
 #[allow(unused_mut)]
 impl Memory {
-    pub fn new(context: cl::context_id, size: usize) -> Result<Memory, Error> {
-        // Memory::from_c(API::create_buffer(...))
-        /*
-        Memory::<T>::ffi_create_buffer(context,
-                                       MEM_READ_WRITE,
-                                       size,
-                                       ptr::null_mut())
-        */
-        unimplemented!();
-    }
-
-    pub fn from_box(context: cl::context_id, x: Box<u8>) -> Result<Memory, Error> {
-        /*Memory::<T>::ffi_create_buffer(context,
-                                       MEM_USE_HOST_PTR,
-                                       1,
-                                       Box::into_raw(x))*/
-        unimplemented!();
+    pub fn new(context: &Context, size: usize) -> Result<Memory, Error> {
+        API::create_buffer(context, MemoryFlags::default(), size, None)
     }
 
     pub fn id_c(&self) -> cl::memory_id {

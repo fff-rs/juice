@@ -2,8 +2,10 @@
 //!
 //! At Collenchyma device can be understood as a synonym to OpenCL's context.
 
+use std::ptr;
 use libc;
-use frameworks::opencl::{API, Error, Context, Memory, Queue};
+use frameworks::opencl::{API, Error, Event, Context, Memory, MemoryFlags, Queue};
+use frameworks::native::flatbox::FlatBox;
 use super::types as cl;
 use super::ffi::*;
 
@@ -14,8 +16,11 @@ impl API {
     /// object can be a scalar data type (such as an int, float), vector data type, or a
     /// user-defined structure.
     /// Returns a memory id for the created buffer, which can now be writen to.
-    pub fn create_buffer(context: Context) -> Result<cl::memory_id, Error> {
-        unimplemented!()
+    pub fn create_buffer(context: &Context, flags: MemoryFlags, size: usize, host_pointer: Option<*mut u8>) -> Result<Memory, Error> {
+        let host_ptr = host_pointer.unwrap_or(ptr::null_mut());
+        Ok(Memory::from_c(try!(unsafe {
+            API::ffi_create_buffer(context.id() as *mut libc::c_void, flags.bits(), size, host_ptr as *mut libc::c_void)
+        })))
     }
 
     /// Releases allocated memory from the OpenCL device.
@@ -23,21 +28,72 @@ impl API {
         Ok(try!(unsafe {API::ffi_release_mem_object(memory.id_c())}))
     }
 
-    /// Reads from a buffer to the host memory.
+    /// Reads from a OpenCL memory object to the host memory.
     ///
-    /// With write_to_buffer you can do the opposite, write from the host memory to a buffer.
-    pub fn read_from_buffer<T>(
-        queue: Queue,
-        mem: Memory,
-        blocking_read: cl::boolean,
-        offset: libc::size_t,
-        size: libc::size_t,
-        ptr: *mut libc::c_void,
-        num_events_in_wait_list: cl::uint,
-        event_wait_list: *const cl::event,
-        event: *mut cl::event,
-    ) -> Result<(), Error> {
-        unimplemented!();
+    /// With write_to_memory you can do the opposite, write from the host memory to a OpenCL memory object.
+    pub fn read_from_memory(
+        queue: &Queue,
+        mem: &Memory,
+        blocking_read: bool,
+        offset: usize,
+        size: usize,
+        host_mem: *mut libc::c_void,
+        event_wait_list: &[Event],
+    ) -> Result<Event, Error> {
+        let num_events_in_wait_list = event_wait_list.len();
+        let event_list: *const *mut libc::c_void = if !event_wait_list.is_empty() {
+            event_wait_list.as_ptr() as *const *mut libc::c_void
+        } else {
+            ptr::null_mut()
+        };
+        let new_event: cl::event = 0 as *mut libc::c_void;
+        let res = unsafe {API::ffi_enqueue_read_buffer(queue.id_c(),
+                                      mem.id_c(),
+                                      blocking_read as cl::boolean,
+                                      offset,
+                                      size,
+                                      host_mem,
+                                      num_events_in_wait_list as cl::uint,
+                                      event_list,
+                                      new_event as *mut cl::event)};
+        match res {
+            Ok(_) => Ok(Event::from_c(new_event)),
+            Err(err) => Err(err)
+        }
+    }
+
+    /// Write to a OpenCL memory object from host memory.
+    ///
+    /// With read_from_memory you can do the opposite, read from a OpenCL memory object to host memory.
+    pub fn write_to_memory(
+        queue: &Queue,
+        mem: &mut Memory,
+        blocking_write: bool,
+        offset: usize,
+        size: usize,
+        host_mem: *const libc::c_void,
+        event_wait_list: &[Event],
+    ) -> Result<Event, Error> {
+        let num_events_in_wait_list = event_wait_list.len();
+        let event_list: *const *mut libc::c_void = if !event_wait_list.is_empty() {
+            event_wait_list.as_ptr() as *const *mut libc::c_void
+        } else {
+            ptr::null_mut()
+        };
+        let new_event: cl::event = 0 as *mut libc::c_void;
+        let res = unsafe {API::ffi_enqueue_write_buffer(queue.id_c(),
+                                      mem.id_c(),
+                                      blocking_write as cl::boolean,
+                                      offset,
+                                      size,
+                                      host_mem,
+                                      num_events_in_wait_list as cl::uint,
+                                      event_list,
+                                      new_event as *mut cl::event)};
+        match res {
+            Ok(_) => Ok(Event::from_c(new_event)),
+            Err(err) => Err(err)
+        }
     }
 
     unsafe fn ffi_create_buffer(
@@ -96,6 +152,30 @@ impl API {
             cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Failure to allocate resources on the device")),
             cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
             _ => Err(Error::Other("Unable to enqueue read buffer."))
+        }
+    }
+
+    unsafe fn ffi_enqueue_write_buffer(
+        command_queue: cl::queue_id,
+        buffer: cl::memory_id,
+        blocking_write: cl::boolean,
+        offset: libc::size_t,
+        cb: libc::size_t,
+        ptr: *const libc::c_void,
+        num_events_in_wait_list: cl::uint,
+        event_wait_list: *const cl::event,
+        event: *mut cl::event
+    ) -> Result<(), Error> {
+        match clEnqueueWriteBuffer(command_queue, buffer, blocking_write, offset, cb, ptr, num_events_in_wait_list, event_wait_list, event) {
+            cl::Status::SUCCESS => Ok(()),
+            cl::Status::INVALID_COMMAND_QUEUE => Err(Error::InvalidCommandQueue("command_queue is not a valid command-queue")),
+            cl::Status::INVALID_CONTEXT => Err(Error::InvalidContext("the context associated with command_queue and buffer are not the same or if the context associated with command_queue and events in event_wait_list are not the same.")),
+            cl::Status::INVALID_MEM_OBJECT => Err(Error::InvalidMemObject("buffer is not a valid memory object.")),
+            cl::Status::INVALID_VALUE => Err(Error::InvalidValue("the region being read or written specified by (offset, size) is out of bounds or if ptris a NULLvalueor if sizeis 0.")),
+            cl::Status::INVALID_EVENT_WAIT_LIST => Err(Error::InvalidEventWaitList("event_wait_list is NULL and num_events_in_wait_list > 0, or event_wait_listis not NULL and num_events_in_wait_list is 0, or if event objects in event_wait_list are not valid events.")),
+            cl::Status::MEM_OBJECT_ALLOCATION_FAILURE => Err(Error::MemObjectAllocationFailure("there is a failure to allocate memory fordata store associated with buffer.")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
+            _ => Err(Error::Other("Unable to enqueue write buffer."))
         }
     }
 }

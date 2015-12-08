@@ -6,7 +6,6 @@ mod backend_spec {
 
     use co::backend::{Backend, BackendConfig};
     use co::frameworks::{OpenCL, Native};
-    use co::libraries::blas::*;
     use co::framework::IFramework;
 
     #[test]

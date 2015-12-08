@@ -4,10 +4,11 @@ extern crate libc;
 #[cfg(test)]
 mod framework_opencl_spec {
 
+    use co::device::DeviceType;
     use co::framework::IFramework;
     use co::frameworks::OpenCL;
-    use co::device::DeviceType;
     use co::frameworks::opencl::memory::*;
+    use co::frameworks::opencl::queue::*;
 
     #[test]
     fn it_works() {
@@ -22,14 +23,20 @@ mod framework_opencl_spec {
         println!("{:?}", frm.new_device(hardwares));
     }
 
-    // #[test]
-    // #[allow(unused_must_use)]
-    // fn it_allocates_memory() {
-    //     let vec_a = vec![0isize, 1, 2, -3, 4, 5, 6, 7];
-    //     let frm = OpenCL::new();
-    //     if let DeviceType::OpenCL(ctx) = frm.new_device(frm.hardwares()[0..1].to_vec()).unwrap() {
-    //         // OpenCL memory
-    //         Memory::new(ctx.id_c(), vec_a.len());
-    //     }
-    // }
+    #[test]
+    #[allow(unused_must_use)]
+    fn it_creates_memory() {
+        let frm = OpenCL::new();
+        if let DeviceType::OpenCL(ref ctx) = frm.new_device(frm.hardwares()[0..1].to_vec()).unwrap() {
+            Memory::new(ctx, 8);
+        }
+    }
+
+    #[test]
+    fn it_creates_queue() {
+        let frm = OpenCL::new();
+        if let DeviceType::OpenCL(ref ctx) = frm.new_device(frm.hardwares()[0..1].to_vec()).unwrap() {
+            assert!(Queue::new(ctx, &frm.hardwares()[0..1][0], None).is_ok());
+        }
+    }
 }

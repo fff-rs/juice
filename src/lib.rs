@@ -48,17 +48,16 @@
 //! Hardware is available on the machine. That gives us the freedom to write code once and deploy it on different
 //! machines where it will execute on the most potent Hardware by default.
 //!
-//! Operations get introduced by a [Library][library]. A Library provides which operations are available and provides
-//! the finished implementation of an Operation. This allows us, to implement the Library directly on the Backend, which
-//! gives us a native Rust interface to execute our Operations. The interface is like any other interface e.g. to
-//! execute the dot product operation we can simply call `backend.dot(...)`. If the dot Operation is executed on e.g.
+//! Operations get introduced by a [Plugin][plugin]. A Plugin extends your Backend with ready-to-execute Operations.
+//! All you need to do is, providing these Collenchyma Plugin crates alongside the Collenchyma crate in your Cargo
+//! file. Your Backend will than be extend with the operations provided by the Plugin. The interface is just common
+//! Rust e.g. to execute the dot product operation of the [Collenchyma-BLAS][collenchyma-blas] Plugin,
+//! we can simply call `backend.dot(...)`. If the dot Operation is executed on e.g.
 //! one or many GPUs or CPUs depends solely on how you configured the Backend or if you did not further specify which
-//! Framework and Hardware to use, solely on the machine you execute the dot Operation on. A Library exposes the
-//! Operation traits, which define one `computation` method, that is further defined by the Framework, where the
-//! exact Operation execution is stated. In the field of Operation there is one more component
-//! - the [Binary][binary]. As - different to executing code on the native CPU - devices need to compile and build the
-//! Operation, which is a significant part of a Framework, each Framework exposes a Binary representation, which mounts
-//! the Operations exposed by a Library.
+//! Framework and Hardware to use, solely on the machine you execute the dot Operation on. In the field of Operations
+//! is one more component - the [Binary][binary]. As - different to executing code on the native CPU - devices need
+//! to compile and build the Operation manually at run-time, which makes a significant part of a Framework, we need
+//! an initlizable instance for holding the state and compiled Operations, wich the Binary is good for.
 //!
 //! The last peace of Collenchyma is the [Memory][memory]. A Operation happens over data, but this data needs to be
 //! accessable by the device on which the Operation is executed. The process is therefore often, that memory space needs
@@ -108,7 +107,7 @@
 //! and CUDA. One step we are looking out for is to seperate OpenCL and CUDA into their own crate.
 //! Something similar to [Glium][glium].
 //!
-//! Every operation exposed via a library and implemented on the backend, should take as the last argument an
+//! Every operation exposed via a Plugin and implemented on the backend, should take as the last argument an
 //! `Option<OperationConfig>` to specify custom parallelisation behaviour and tracking the operation via events.
 //!
 //! When initializing a new Backend from a BackendConfig you might not want to specify the Framework, which is currently
@@ -126,7 +125,8 @@
 //! [operation]: ./operation/index.html
 //! [hardware]: ./hardware/index.html
 //! [framework]: ./framework/index.html
-//! [library]: ./libraries/index.html
+//! [plugin]: ./plugin/index.html
+//! [collenchyma-blas]: https://github.com/autumnai/collenchyma-blas
 //! [memory]: ./memory/index.html
 //! [shared-memory]: ./shared-memory/index.html
 #![cfg_attr(lint, feature(plugin))]
@@ -149,8 +149,6 @@ extern crate byteorder;
 extern crate linear_map;
 extern crate rblas as blas;
 
-#[macro_use]
-pub mod libraries;
 pub mod backend;
 pub mod device;
 pub mod hardware;
@@ -161,3 +159,4 @@ pub mod shared_memory;
 pub mod operation;
 pub mod binary;
 pub mod error;
+pub mod plugin;

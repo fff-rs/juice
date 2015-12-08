@@ -1,7 +1,7 @@
 //! Provides Cuda Driver API utility functionality.
 
 use libc;
-use frameworks::cuda::api::{API, Error};
+use super::{API, Error};
 use frameworks::cuda::Device;
 use super::ffi::*;
 

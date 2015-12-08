@@ -23,7 +23,7 @@ use device::{IDevice, DeviceType};
 use binary::IBinary;
 use frameworks::opencl::Error as OpenCLError;
 #[cfg(feature = "cuda")]
-use frameworks::cuda::Error as CudaError;
+use frameworks::cuda::DriverError as CudaError;
 use std::error;
 use std::fmt;
 
