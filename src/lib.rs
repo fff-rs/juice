@@ -49,7 +49,8 @@
         unused_import_braces, unused_qualifications)]
 
 extern crate collenchyma;
-extern crate rblas as blas;
+#[cfg(feature = "native")]
+extern crate rblas;
 
 pub mod library;
 pub mod binary;

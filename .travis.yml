@@ -20,10 +20,10 @@ before_script:
   export PATH=$HOME/.local/bin:$PATH
 script:
 - |
-  travis-cargo build &&
-  travis-cargo test  &&
-  travis-cargo bench &&
-  travis-cargo doc
+  travis-cargo build -- --no-default-features &&
+  travis-cargo test -- --no-default-features  &&
+  travis-cargo bench -- --no-default-features &&
+  travis-cargo doc -- --no-default-features
 addons:
   apt:
     packages:

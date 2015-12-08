@@ -8,7 +8,7 @@ use collenchyma::backend::Backend;
 use collenchyma::memory::MemoryType;
 use collenchyma::frameworks::native::{Native, Function, Binary};
 use collenchyma::plugin::Error;
-use blas::{Asum, Axpy, Copy, Dot, Nrm2, Scal, Swap};
+use rblas::{Asum, Axpy, Copy, Dot, Nrm2, Scal, Swap};
 
 macro_rules! impl_binary(($($t: ident), +) => (
     $(
