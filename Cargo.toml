@@ -1,6 +1,6 @@
 [package]
 name            = "collenchyma-nn"
-description     = "Collenchyma library for full Neural Network algorithm support"
+description     = "Collenchyma plugin for full Neural Network algorithm support"
 version         = "0.0.1"
 authors         = ["MichaelHirn <michael.hirn@storeness.de>"]
 
@@ -9,10 +9,13 @@ homepage        = "https://github.com/autumnai/collenchyma-nn"
 documentation   = "https://autumnai.github.io/collenchyma-nn"
 readme          = "README.md"
 
-keywords        = ["neural-network", "collenchyma", "computation", "hfc"]
+keywords        = ["neural-network", "collenchyma", "computation", "hfc", "plugin"]
 license         = "MIT"
 
 [dependencies]
+collenchyma = "0.0.4"
+cudnn = "0.1"
+lazy_static = "0.1"
 clippy = { version = "0.0.27", optional = true }
 
 [features]
