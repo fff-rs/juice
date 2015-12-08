@@ -23,10 +23,10 @@ impl API {
         // On some implementations concurrent calls to clGetPlatformIDs
         // will cause the implantation to return invalid status.
         lazy_static! {
-            static ref platforms_mutex: Mutex<()> = Mutex::new(());
+            static ref PLATFORM_MUTEX: Mutex<()> = Mutex::new(());
         }
 
-        let guard = platforms_mutex.lock();
+        let guard = PLATFORM_MUTEX.lock();
         try!(unsafe {API::ffi_get_platform_ids(0, ptr::null_mut(), (&mut num_platforms))});
 
         let mut ids: Vec<cl::device_id> = repeat(0 as cl::device_id).take(num_platforms as usize).collect();

@@ -1,7 +1,7 @@
 //! Provides a Rust wrapper around Cuda's device.
 
 use hardware::{IHardware, HardwareType};
-use super::api::{Driver, DriverFFI, DriverError};
+use super::api::{Driver, DriverFFI};
 use std::io::Cursor;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
 

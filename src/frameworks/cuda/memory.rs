@@ -3,14 +3,19 @@
 use super::api::{Driver, DriverFFI, DriverError};
 use memory::*;
 
-use std::ptr;
+use std::{ptr, fmt};
 
-#[derive(Debug)]
 /// Defines a Cuda Memory.
 pub struct Memory {
     id: isize,
     /// Pointer to host memory that is used for pinned host memory.
     host_ptr: *mut u8,
+}
+
+impl fmt::Debug for Memory {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Memory({})", self.id)
+    }
 }
 
 impl Drop for Memory {

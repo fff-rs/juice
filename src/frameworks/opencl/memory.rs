@@ -4,10 +4,9 @@ use super::api::{API, Error};
 use super::Context;
 use memory::*;
 
-use std::ptr;
+use std::{ptr, fmt};
 
 /// Holds a OpenCL memory id and manages its deallocation
-#[derive(Debug)]
 pub struct Memory {
     /// The underlying memory id>
     memory: cl::memory_id,
@@ -15,6 +14,12 @@ pub struct Memory {
 
     /// Pointer to host memory that is used for pinned host memory.
     host_ptr: *mut u8,
+}
+
+impl fmt::Debug for Memory {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Memory({:?}, {:?})", self.memory, self.memory_flags)
+    }
 }
 
 impl Drop for Memory {

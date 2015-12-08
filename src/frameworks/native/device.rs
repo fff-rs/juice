@@ -45,17 +45,17 @@ impl IDevice for Cpu {
 
     fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
         match source {
-            &DeviceType::Native(ref cpu) => unimplemented!(),
+            &DeviceType::Native(_) => unimplemented!(),
             #[cfg(feature = "cuda")]
             &DeviceType::Cuda(ref context) => {
                 match source_data.as_cuda() {
-                    Some(h_mem) => Ok(try!(context.sync_out(&DeviceType::Native(self.clone()), &h_mem, dest_data))),
+                    Some(h_mem) => Ok(try!(context.sync_out(&h_mem, dest_data))),
                     None => Err(DeviceError::Native(Error::Memory("Expected CUDA Memory")))
                 }
             },
             &DeviceType::OpenCL(ref context) => {
                 match source_data.as_opencl() {
-                    Some(mut h_mem) => Ok(try!(context.sync_out(&DeviceType::Native(self.clone()), &h_mem, dest_data))),
+                    Some(h_mem) => Ok(try!(context.sync_out(&h_mem, dest_data))),
                     None => Err(DeviceError::Native(Error::Memory("Expected OpenCL Memory")))
                 }
             },

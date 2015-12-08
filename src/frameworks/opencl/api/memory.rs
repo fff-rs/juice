@@ -5,7 +5,6 @@
 use std::ptr;
 use libc;
 use frameworks::opencl::{API, Error, Event, Context, Memory, MemoryFlags, Queue};
-use frameworks::native::flatbox::FlatBox;
 use super::types as cl;
 use super::ffi::*;
 

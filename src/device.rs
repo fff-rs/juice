@@ -42,7 +42,7 @@ pub trait IDeviceSyncOut<T: IMemory> {
     /// The Memory representation for this Device.
     type M: IMemory;
     /// Synchronizes memory from `source_data` to `dest_data`.
-    fn sync_out(&self, dest: &DeviceType, source_data: &Self::M, dest_data: &mut T) -> Result<(), Error>;
+    fn sync_out(&self, source_data: &Self::M, dest_data: &mut T) -> Result<(), Error>;
 }
 
 

@@ -33,7 +33,7 @@ impl API {
 
         Ok((0..device_counter).collect::<Vec<i32>>().iter().map(|ordinal| {
             let mut device_id: CUdevice = 0;
-            unsafe { API::ffi_device_get(&mut device_id, *ordinal) };
+            let _ = unsafe { API::ffi_device_get(&mut device_id, *ordinal) };
             Device::from_isize(device_id as isize)
         }).collect::<Vec<Device>>())
     }

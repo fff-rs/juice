@@ -6,7 +6,7 @@ use super::api::DriverFFI;
 use super::{Driver, DriverError, Device};
 use super::memory::*;
 use frameworks::native::flatbox::FlatBox;
-use memory::{MemoryType, IMemory};
+use memory::MemoryType;
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
@@ -54,7 +54,7 @@ impl Context {
 
 impl IDeviceSyncOut<FlatBox> for Context {
     type M = Memory;
-    fn sync_out(&self, dest: &DeviceType, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
+    fn sync_out(&self, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
         Ok(try!(Driver::mem_cpy_d_to_h(source_data, dest_data)))
     }
 }
