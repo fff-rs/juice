@@ -12,25 +12,28 @@
 //!
 //! ## Overview
 //!
-//! A Collenchyma library describes the functionality through three types of traits.
+//! A Collenchyma Plugin describes the functionality through three types of traits.
 //!
 //! * __PluginTrait__ -> IBlas<br/>
-//! This trait provides 'provided methods', which already provide the exact, backend-agnostic
-//! behavior of a library Operation. These come in two forms `operation()` and `operation_plain()`,
+//! This trait provides 'provided methods', which already specify the exact, backend-agnostic
+//! behavior of an Operation. These come in two forms `operation()` and `operation_plain()`,
 //! where the first takes care of full memory management and the later one just provides the computation
 //! without any memory management. In some scenarios you would like to use the plain operation for faster
 //! exection.
 //!
 //! * __BinaryTrait__ -> IBlasBinary<br>
 //! The binary trait provides the actual and potentially initialized Functions, which are able to compute
-//! the operations (as they implement the OperationTrait).
+//! the Operations (as they implement the OperationTrait).
 //!
 //! * __OperationTrait__ -> e.g. IOperationDot<br/>
 //! The PluginTrait can provide 'provided methods', thanks to the OperationTrait. The OperationTrait,
-//! has one required method `compute` which every Framework Function will implement in it's own way.
+//! has one required method `compute` which every Framework Function will implement on it's own way.
 //!
 //! Beside these traits a Collenchyma Plugin might also use macros for faster
 //! implementation for various Collenchyma Frameworks such as CUDA, OpenCL or common host CPU.
+//!
+//! Beside these generic functionality through traits, a Plugin also extends the Collenchyma Backend
+//! with implementations of the generic functionality for the Collenchyma Frameworks.
 //!
 //! For more information, give the [Collenchyma docs][collenchyma-docs] a visit.
 //!
