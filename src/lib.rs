@@ -39,6 +39,7 @@
         unused_import_braces, unused_qualifications)]
 
 extern crate collenchyma;
+#[cfg(feature = "cuda")]
 extern crate cudnn;
 #[macro_use]
 extern crate lazy_static;
