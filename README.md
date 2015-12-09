@@ -28,7 +28,7 @@ For more information,
 If you're using Cargo, just add collenchyma-BLAS to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "X"
+    collenchyma = "0.0.5"
     collenchyma-blas = "0.1.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
