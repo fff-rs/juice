@@ -233,7 +233,9 @@ impl<T, D: ITensor> SharedMemory<T, D> {
         let copy: MemoryType;
         let alloc_size = Self::mem_size(dim.elements());
         match *dev {
+            #[cfg(feature = "native")]
             DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size as u64))),
+            #[cfg(feature = "opencl")]
             DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size as u64))),
             #[cfg(feature = "cuda")]
             DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size as u64))),
@@ -290,6 +292,7 @@ impl<T, D: ITensor> SharedMemory<T, D> {
             match self.aquire_copy(destination) {
                 Ok(mut destination_copy) => {
                     match destination {
+                        #[cfg(feature = "native")]
                         &DeviceType::Native(ref cpu) => {
                             match destination_copy.as_mut_native() {
                                 Some(ref mut mem) => try!(cpu.sync_in(&self.latest_location, &self.latest_copy, mem)),
@@ -303,6 +306,7 @@ impl<T, D: ITensor> SharedMemory<T, D> {
                                 None => return Err(Error::InvalidMemory("Expected CUDA Memory."))
                             }
                         },
+                        #[cfg(feature = "opencl")]
                         &DeviceType::OpenCL(ref context) => {
                             match destination_copy.as_mut_opencl() {
                                 Some(ref mut mem) => try!(context.sync_in(&self.latest_location, &self.latest_copy, mem)),
@@ -349,7 +353,9 @@ impl<T, D: ITensor> SharedMemory<T, D> {
             None => {
                 let copy: MemoryType;
                 match *device {
+                    #[cfg(feature = "native")]
                     DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(Self::mem_size(self.capacity()) as u64))),
+                    #[cfg(feature = "opencl")]
                     DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),
                     #[cfg(feature = "cuda")]
                     DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),

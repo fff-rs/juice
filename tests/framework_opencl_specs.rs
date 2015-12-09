@@ -2,6 +2,7 @@ extern crate collenchyma as co;
 extern crate libc;
 
 #[cfg(test)]
+#[cfg(feature = "opencl")]
 mod framework_opencl_spec {
 
     use co::device::DeviceType;

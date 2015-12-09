@@ -5,10 +5,12 @@ extern crate libc;
 mod backend_spec {
 
     use co::backend::{Backend, BackendConfig};
-    use co::frameworks::{OpenCL, Native};
+    #[cfg(feature = "opencl")]
+    use co::frameworks::OpenCL;
     use co::framework::IFramework;
 
     #[test]
+    #[cfg(feature = "opencl")]
     fn it_works() {
         let framework = OpenCL::new();
         let hardwares = framework.hardwares();

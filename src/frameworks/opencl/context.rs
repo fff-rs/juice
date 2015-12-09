@@ -6,6 +6,7 @@ use super::api::types as cl;
 use super::{API, Error, Device, Queue};
 use super::memory::*;
 use memory::MemoryType;
+#[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
 use std::{ptr, mem};
 use std::hash::{Hash, Hasher};
@@ -61,6 +62,7 @@ impl Context {
     }
 }
 
+#[cfg(feature = "native")]
 impl IDeviceSyncOut<FlatBox> for Context {
     type M = Memory;
     fn sync_out(&self, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
@@ -87,6 +89,7 @@ impl IDevice for Context {
 
     fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {
         match source {
+            #[cfg(feature = "native")]
             &DeviceType::Native(_) => {
                 match source_data.as_native() {
                     Some(h_mem) => {

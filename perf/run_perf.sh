@@ -1,12 +1,14 @@
 #! /bin/bash
-if [ $# -eq 0 ]
+set -e
+if [ $# -lt 2 ]
   then
-    echo "No benchmark name supplied"
+    echo "No binary name or benchmark name supplied"
     exit 1
 fi
-benchname=$1
+binaryname=$1
+benchname=$2
 mkdir -p target/perf
-perf record -a -g --output target/perf/${benchname}.data target/debug/rblas_overhead-cf1a2670c118749d --bench ${benchname}
+perf record -a -g --output target/perf/${benchname}.data target/debug/${binaryname} --bench ${benchname}
 perf script -f -i target/perf/${benchname}.data > target/perf/${benchname}.scripted
 stackcollapse-perf target/perf/${benchname}.scripted | grep ${benchname} > target/perf/${benchname}.folded
 flamegraph target/perf/${benchname}.folded > target/perf/${benchname}.svg

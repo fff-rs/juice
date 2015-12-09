@@ -53,6 +53,7 @@ impl IDevice for Cpu {
                     None => Err(DeviceError::Native(Error::Memory("Expected CUDA Memory")))
                 }
             },
+            #[cfg(feature = "opencl")]
             &DeviceType::OpenCL(ref context) => {
                 match source_data.as_opencl() {
                     Some(h_mem) => Ok(try!(context.sync_out(&h_mem, dest_data))),

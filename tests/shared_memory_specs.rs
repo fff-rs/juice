@@ -5,35 +5,46 @@ extern crate libc;
 mod shared_memory_spec {
 
     use co::framework::IFramework;
+    #[cfg(feature = "native")]
     use co::frameworks::Native;
     #[cfg(feature = "cuda")]
     use co::frameworks::Cuda;
+    #[cfg(feature = "opencl")]
     use co::frameworks::OpenCL;
     use co::memory::MemoryType;
     use co::shared_memory::*;
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        if let &mut MemoryType::Native(ref mut mem) = mem {
-            let mut mem_buffer = mem.as_mut_slice::<T>();
-            for (index, datum) in data.iter().enumerate() {
-                mem_buffer[index] = *datum;
-            }
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "cuda", feature = "opencl"))]
+            _ => assert!(false)
         }
     }
 
     #[test]
+    #[cfg(feature = "native")]
     fn it_creates_new_shared_memory_for_native() {
         let ntv = Native::new();
         let cpu = ntv.new_device(ntv.hardwares()).unwrap();
         let shared_data = &mut SharedMemory::<f32, TensorR1>::new(&cpu, TensorR1::new([10])).unwrap();
-        if let &MemoryType::Native(ref dat) = shared_data.get(&cpu).unwrap() {
-            let data = dat.as_slice::<f32>();
-            assert_eq!(10, data.len());
+        match shared_data.get(&cpu).unwrap() {
+            &MemoryType::Native(ref dat) => {
+                let data = dat.as_slice::<f32>();
+                assert_eq!(10, data.len());
+            },
+            #[cfg(any(feature = "cuda", feature = "opencl"))]
+            _ => assert!(false)
         }
     }
 
-    #[cfg(feature = "cuda")]
     #[test]
+    #[cfg(feature = "cuda")]
     fn it_creates_new_shared_memory_for_cuda() {
         let ntv = Cuda::new();
         let device = ntv.new_device(ntv.hardwares()[0..1].to_vec()).unwrap();
@@ -45,6 +56,7 @@ mod shared_memory_spec {
     }
 
     #[test]
+    #[cfg(feature = "opencl")]
     fn it_creates_new_shared_memory_for_opencl() {
         let ntv = OpenCL::new();
         let device = ntv.new_device(ntv.hardwares()[0..1].to_vec()).unwrap();
@@ -55,8 +67,8 @@ mod shared_memory_spec {
         }
     }
 
-    #[cfg(feature = "cuda")]
     #[test]
+    #[cfg(feature = "cuda")]
     fn it_syncs_from_native_to_cuda_and_back() {
         let cu = Cuda::new();
         let nt = Native::new();
@@ -84,6 +96,7 @@ mod shared_memory_spec {
     }
 
     #[test]
+    #[cfg(feature = "opencl")]
     fn it_syncs_from_native_to_opencl_and_back() {
         let cl = OpenCL::new();
         let nt = Native::new();

@@ -8,9 +8,13 @@
 
 use hardware::IHardware;
 use memory::{IMemory, MemoryType};
+#[cfg(feature = "native")]
 use frameworks::native::device::Cpu;
-use frameworks::opencl::Context as OpenCLContext;
+#[cfg(feature = "native")]
 use frameworks::native::Error as NativeError;
+#[cfg(feature = "opencl")]
+use frameworks::opencl::Context as OpenCLContext;
+#[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
 #[cfg(feature = "cuda")]
 use frameworks::cuda::Context as CudaContext;
@@ -50,8 +54,10 @@ pub trait IDeviceSyncOut<T: IMemory> {
 /// Container for all known IDevice implementations
 pub enum DeviceType {
     /// A native CPU
+    #[cfg(feature = "native")]
     Native(Cpu),
     /// A OpenCL Context
+    #[cfg(feature = "opencl")]
     OpenCL(OpenCLContext),
     /// A Cuda Context
     #[cfg(feature = "cuda")]
@@ -62,8 +68,10 @@ pub enum DeviceType {
 /// Defines a generic set of Memory Errors.
 pub enum Error {
     /// Failures related to the Native framework implementation.
+    #[cfg(feature = "native")]
     Native(NativeError),
     /// Failures related to the OpenCL framework implementation.
+    #[cfg(feature = "opencl")]
     OpenCL(OpenCLError),
     /// Failures related to the Cuda framework implementation.
     #[cfg(feature = "cuda")]
@@ -73,7 +81,9 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            #[cfg(feature = "native")]
             Error::Native(ref err) => write!(f, "Native error: {}", err),
+            #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
@@ -84,7 +94,9 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
+            #[cfg(feature = "native")]
             Error::Native(ref err) => err.description(),
+            #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => err.description(),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => err.description(),
@@ -93,7 +105,9 @@ impl error::Error for Error {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
+            #[cfg(feature = "native")]
             Error::Native(ref err) => Some(err),
+            #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => Some(err),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => Some(err),
@@ -101,12 +115,14 @@ impl error::Error for Error {
     }
 }
 
+#[cfg(feature = "native")]
 impl From<NativeError> for Error {
     fn from(err: NativeError) -> Error {
         Error::Native(err)
     }
 }
 
+#[cfg(feature = "opencl")]
 impl From<OpenCLError> for Error {
     fn from(err: OpenCLError) -> Error {
         Error::OpenCL(err)
