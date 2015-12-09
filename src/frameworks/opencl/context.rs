@@ -81,8 +81,8 @@ impl IDevice for Context {
         &self.devices
     }
 
-    fn alloc_memory(&self, size: u64) -> Result<Memory, DeviceError> {
-        Ok(try!(Memory::new(self, size as usize)))
+    fn alloc_memory(&self, size: usize) -> Result<Memory, DeviceError> {
+        Ok(try!(Memory::new(self, size)))
     }
 
     fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {

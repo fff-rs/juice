@@ -29,7 +29,7 @@ pub trait IDevice {
     /// Returns the hardwares, which define the Device.
     fn hardwares(&self) -> &Vec<Self::H>;
     /// Allocate memory on the Device.
-    fn alloc_memory(&self, size: u64) -> Result<Self::M, Error>;
+    fn alloc_memory(&self, size: usize) -> Result<Self::M, Error>;
     /// Synchronize memory from `source_data` to the memory at `dest_data`.
     ///
     /// Defines how data is synchronized into the device.

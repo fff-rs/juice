@@ -233,10 +233,10 @@ impl<T, D: ITensor> SharedMemory<T, D> {
         let copy: MemoryType;
         let alloc_size = Self::mem_size(dim.elements());
         match *dev {
-            DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size as u64))),
-            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size as u64))),
+            DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size))),
+            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size))),
             #[cfg(feature = "cuda")]
-            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size as u64))),
+            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size))),
         }
         Ok(SharedMemory {
             latest_location: dev.clone(),
@@ -349,10 +349,10 @@ impl<T, D: ITensor> SharedMemory<T, D> {
             None => {
                 let copy: MemoryType;
                 match *device {
-                    DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(Self::mem_size(self.capacity()) as u64))),
-                    DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),
+                    DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(Self::mem_size(self.capacity())))),
+                    DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(Self::mem_size(self.capacity())))),
                     #[cfg(feature = "cuda")]
-                    DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(Self::mem_size(self.capacity()) as u64))),
+                    DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(Self::mem_size(self.capacity())))),
                 };
                 self.copies.insert(device.clone(), copy);
                 Ok(self)

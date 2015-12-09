@@ -37,8 +37,8 @@ impl IDevice for Cpu {
         &self.hardwares
     }
 
-    fn alloc_memory(&self, size: u64) -> Result<FlatBox, DeviceError> {
-        let vec: Vec<u8> = vec![0; size as usize];
+    fn alloc_memory(&self, size: usize) -> Result<FlatBox, DeviceError> {
+        let vec: Vec<u8> = vec![0; size];
         let bx: Box<[u8]> = vec.into_boxed_slice();
         Ok(FlatBox::from_box(bx))
     }
