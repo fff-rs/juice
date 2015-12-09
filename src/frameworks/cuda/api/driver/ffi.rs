@@ -3,7 +3,7 @@
 #![allow(non_camel_case_types, non_snake_case)]
 // Created by bindgen
 
-pub type size_t = ::libc::c_ulong;
+pub type size_t = ::libc::size_t;
 pub type wchar_t = ::libc::c_int;
 pub type __u_char = ::libc::c_uchar;
 pub type __u_short = ::libc::c_ushort;
