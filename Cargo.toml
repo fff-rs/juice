@@ -36,6 +36,7 @@ cuda = []
 opencl = []
 
 dev = []
+unstable = [] # for travis-cargo
 travis = ["native"]
 lint = ["clippy"]
 

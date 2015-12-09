@@ -15,10 +15,9 @@
 //!
 //! ## Examples
 //!
-//! Create SharedMemory and fill it with some numbers:
+//! Create SharedMemory:
 //!
 //! ```
-//! #![feature(clone_from_slice)]
 //! # extern crate collenchyma;
 //! use collenchyma::framework::IFramework;
 //! use collenchyma::frameworks::Native;
@@ -31,7 +30,6 @@
 //! // fill memory with some numbers
 //! let local_data = [0, 1, 2, 3, 4];
 //! let data = shared_data.get_mut(&device).unwrap().as_mut_native().unwrap();
-//! data.as_mut_slice().clone_from_slice(&local_data);
 //! # }
 //! ```
 
