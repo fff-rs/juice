@@ -53,7 +53,7 @@ For more information,
 If you're using Cargo, just add Collenchyma to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.4"
+    collenchyma = "0.0.5"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
