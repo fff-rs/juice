@@ -29,7 +29,7 @@ impl Drop for Memory {
 impl Memory {
     /// Initializes a new Cuda memory.
     pub fn new(size: usize) -> Result<Memory, DriverError> {
-        Driver::mem_alloc(size as DriverFFI::size_t)
+        Driver::mem_alloc(size)
     }
 
     /// Initializes a new Cuda memory from its C type.
