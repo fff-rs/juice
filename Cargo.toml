@@ -17,7 +17,6 @@ license       = "MIT"
 [dependencies]
 libc = "0.2"
 bitflags = "0.3"
-rblas = "0.0.11"
 enum_primitive = "0.1.0"
 byteorder = "0.4"
 num = "0.1"
@@ -31,11 +30,13 @@ clippy = { version = "0.0.27", optional = true }
 rand = "0.3"
 
 [features]
-default = ["cuda"]
+default = ["native", "cuda", "opencl"]
+native = []
 cuda = []
+opencl = []
 
 dev = []
-travis = []
+travis = ["native"]
 lint = ["clippy"]
 
 [profile.bench]

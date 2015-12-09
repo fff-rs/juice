@@ -147,7 +147,6 @@ extern crate lazy_static;
 extern crate num;
 extern crate byteorder;
 extern crate linear_map;
-extern crate rblas as blas;
 
 pub mod backend;
 pub mod device;

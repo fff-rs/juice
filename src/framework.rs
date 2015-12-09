@@ -21,6 +21,7 @@
 use hardware::IHardware;
 use device::{IDevice, DeviceType};
 use binary::IBinary;
+#[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
 #[cfg(feature = "cuda")]
 use frameworks::cuda::DriverError as CudaError;
@@ -65,6 +66,7 @@ pub trait IFramework {
 /// Defines a generic set of Framework Errors.
 pub enum Error {
     /// Failures related to the OpenCL framework implementation.
+    #[cfg(feature = "opencl")]
     OpenCL(OpenCLError),
     /// Failures related to the Cuda framework implementation.
     #[cfg(feature = "cuda")]
@@ -76,6 +78,7 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
@@ -87,6 +90,7 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
+            #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => err.description(),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => err.description(),
@@ -96,6 +100,7 @@ impl error::Error for Error {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
+            #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => Some(err),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => Some(err),
@@ -104,6 +109,7 @@ impl error::Error for Error {
     }
 }
 
+#[cfg(feature = "opencl")]
 impl From<OpenCLError> for Error {
     fn from(err: OpenCLError) -> Error {
         Error::OpenCL(err)

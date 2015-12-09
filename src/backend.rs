@@ -24,11 +24,11 @@
 //! extern crate collenchyma as co;
 //! use co::framework::*;
 //! use co::backend::{Backend, BackendConfig};
-//! use co::frameworks::OpenCL;
+//! use co::frameworks::Native;
 //! #[allow(unused_variables)]
 //! fn main() {
 //!     // Initialize a new Framewok.
-//!     let framework = OpenCL::new();
+//!     let framework = Native::new();
 //!     // After initialization, the available hardware through the Framework can be obtained.
 //!     let hardwares = framework.hardwares();
 //!     // Create a Backend configuration with
