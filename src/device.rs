@@ -136,8 +136,8 @@ impl From<CudaError> for Error {
     }
 }
 
-impl From<Error> for ::shared_memory::Error {
-    fn from(err: Error) -> ::shared_memory::Error {
-        ::shared_memory::Error::MemoryAllocationError(err)
+impl From<Error> for ::tensor::Error {
+    fn from(err: Error) -> ::tensor::Error {
+        ::tensor::Error::MemoryAllocationError(err)
     }
 }

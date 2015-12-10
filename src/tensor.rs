@@ -1,32 +1,46 @@
 //! Provides the functionality for memory management across devices.
 //!
-//! A SharedMemory tracks the memory copies across the devices of the Backend and manages
+//! A Tensor is a potentially multi-dimensional matrix containing information about the actual data and it's structure.
+//! A Collenchyma Tensor tracks the memory copies of the numeric data of an Tensor across the devices of the Backend
+//! and manages
 //!
 //! * the location of these memory copies
 //! * the location of the latest memory copy and
 //! * the synchronisation of memory copies between devices
 //!
+//! This is important, as this provides a unified data interface for exectuing Tensor operations on CUDA, OpenCL and
+//! common host CPU.
+//!
 //! A [memory copy][mem] represents one logical unit of data, which might me located at the host. The
-//! SharedMemory, tracks the location of the data blob across the various devices that the backend might
+//! Tensor, tracks the location of the data blob across the various devices that the backend might
 //! consist of. This allows us to run operations on various backends with the same data blob.
+//!
+//! ## Terminology
+//!
+//! A Tensor is a homogeneous multi-dimensional array - a table of elements (usually numeric elements) of the same type,
+//! indexed by tuples of positive integers. In Collenchyma `dimensions` of a Tensor describe what axis are for a
+//! coordinate system. The numbers of dimensions is the `rank`. A scala value like `3` has the rank 0, and a Rust array
+//! like `[1, 2, 3]` has a rank of 1 as it has one dimension. A array of arrays like `[[1, 2, 3], [2, 3]]` has a rank
+//! of 2 as it has two dimensions. The number of elements for a dimension is called `length`.
+//! And the number of all elements for each dimension summed up is the `size`. These meta data about a Tensor is called
+//! the `descriptor` of the Tensor.
 //!
 //! [frameworks]: ../frameworks/index.html
 //! [mem]: ../memory/index.html
-//!
 //! ## Examples
 //!
-//! Create SharedMemory:
+//! Create a SharedTensor and fill it with some numbers:
 //!
 //! ```
 //! # extern crate collenchyma;
 //! use collenchyma::framework::IFramework;
 //! use collenchyma::frameworks::Native;
-//! use collenchyma::shared_memory::{SharedMemory, TensorR1};
+//! use collenchyma::tensor::SharedTensor;
 //! # fn main() {
 //! // allocate memory
 //! let native = Native::new();
 //! let device = native.new_device(native.hardwares()).unwrap();
-//! let shared_data = &mut SharedMemory::<i32, TensorR1>::new(&device, TensorR1::new([5])).unwrap();
+//! let shared_data = &mut SharedTensor::<i32>::new(&device, &5).unwrap();
 //! // fill memory with some numbers
 //! let local_data = [0, 1, 2, 3, 4];
 //! let data = shared_data.get_mut(&device).unwrap().as_mut_native().unwrap();
@@ -39,197 +53,183 @@ use memory::MemoryType;
 use std::marker::PhantomData;
 use std::{fmt, mem, error};
 
-// #[derive(Debug)]
+/// Describes the Descriptor of a SharedTensor.
+pub type TensorDesc = Vec<usize>;
+
+#[derive(Debug)]
 /// Container that handles synchronization of [Memory][1] of type `T`.
 /// [1]: ../memory/index.html
-#[allow(missing_debug_implementations)] // due to LinearMap
-pub struct SharedMemory<T, D: ITensor> {
+pub struct SharedTensor<T> {
+    desc: TensorDesc,
     latest_location: DeviceType,
     latest_copy: MemoryType,
     copies: LinearMap<DeviceType, MemoryType>,
-    dim: D,
     phantom: PhantomData<T>,
 }
 
-/// Describes the dimensionality of a slice.
-///
-/// Is used for implementation of the exact Tensor ranks.
-pub trait ITensor {
-    /// Returns the dimensionality of the Tensor.
-    #[allow(non_snake_case)]
-    fn D() -> usize;
-
-    /// Returns the number of elements represented by a Tensor - its capacity.
+/// Describes the Descriptor of a Tensor.
+pub trait ITensorDesc {
+    /// Returns the rank of the Tensor.
     ///
-    /// A TensorR2[5, 5] would contain 25 elements.
-    fn elements(&self) -> usize;
+    /// The rank of the Tensor is the number of its dimensions.
+    fn rank(&self) -> usize;
 
-    /// Returns the dimensions as a slice.
-    fn dims(&self) -> Vec<usize>;
-}
+    /// Returns the summed up length of all dimensions of the Tensor.
+    ///
+    /// A Tensor of rank 2 with the following dimesion specification [5, 5] would have a size of 25.
+    fn size(&self) -> usize;
 
-#[derive(Debug, Copy, Clone)]
-/// Describes a scala value.
-pub struct TensorR0;
-impl TensorR0 {
-    /// Initializes a new TensorR0
-    pub fn new() -> TensorR0 {
-        TensorR0
-    }
-}
-impl ITensor for TensorR0 {
-    fn D() -> usize { 0 }
+    /// Returns the dimensions of the Tensor.
+    ///
+    /// To return the length of one dimensions of the Tensor, you would call
+    /// tensor_desc.dims()[0] // e.g. 64
+    fn dims(&self) -> &Vec<usize>;
 
-    fn elements(&self) -> usize { 1 }
+    /// Returns the dimensions of the Tensor as Vec<i32>.
+    fn dims_i32(&self) -> Vec<i32>;
 
-    fn dims(&self) -> Vec<usize> { vec!() }
-}
-
-#[derive(Debug, Copy, Clone)]
-/// Describes a vector value.
-pub struct TensorR1 {
-    dims: [usize; 1],
-}
-impl TensorR1 {
-    /// Initializes a new TensorR1 with the cardinality of it dimensions.
-    pub fn new(dims: [usize; 1]) -> TensorR1 {
-        TensorR1 { dims: dims }
-    }
-}
-impl ITensor for TensorR1 {
-    fn D() -> usize { 1 }
-
-    fn elements(&self) -> usize {
-        self.dims[0]
-    }
-
-    fn dims(&self) -> Vec<usize> {
-        self.dims.to_vec()
-    }
-}
-
-#[derive(Debug, Copy, Clone)]
-/// Describes a matrix value.
-pub struct TensorR2 {
-    dims: [usize; 2],
-}
-impl TensorR2 {
-    /// Initializes a new TensorR2 with the cardinality of it dimensions.
-    pub fn new(dims: [usize; 2]) -> TensorR2 {
-        TensorR2 { dims: dims }
-    }
-}
-impl ITensor for TensorR2 {
-    fn D() -> usize { 2 }
-
-    fn elements(&self) -> usize {
-        self.dims[0] * self.dims[1]
+    /// Returns the default stride for an Rust allocated Tensor.
+    ///
+    /// A rank 2 Tensor with dimensions [a, b] has a default stride of [b, 1]
+    /// A rank 3 Tensor with dimensions [a, b, c] has a default stride of [b * c, c, 1]
+    /// A rank 4 Tensor with dimensions [a, b, c, d] has a default stride of [b * c * d, c * d, d, 1]
+    /// and so on.
+    fn default_stride(&self) -> Vec<usize> {
+        let mut strides: Vec<usize> = Vec::with_capacity(self.rank());
+        let dim_length = self.dims().len();
+        match dim_length {
+            0 => strides,
+            1 => {
+                strides.push(1);
+                strides
+            },
+            _ => {
+                let imp_dims = &self.dims()[1..dim_length];
+                for (i, _) in imp_dims.iter().enumerate() {
+                    strides.push(imp_dims[i..imp_dims.len()].iter().fold(1, |prod, &x| prod * x))
+                }
+                strides.push(1);
+                strides
+            }
+        }
     }
 
-    fn dims(&self) -> Vec<usize> {
-        self.dims.to_vec()
+    /// Returns the default stride for a Rust allocated Tensor as i32.
+    fn default_stride_i32(&self) -> Vec<i32> {
+        self.default_stride().iter().map(|&e| e as i32).collect()
     }
 }
 
-#[derive(Debug, Copy, Clone)]
-/// Describes a rank 3 Tensor value.
-pub struct TensorR3 {
-    dims: [usize; 3],
+/// Describes a conversion into a Tensor Descriptor.
+///
+/// This allows for convenient creation of a new SharedTensor.
+/// e.g. (2, 4) -> [2,4] or () -> [] or 2 -> [2]
+pub trait IntoTensorDesc {
+    /// Converts the implemented type into a TensorDesc.
+    fn into(&self) -> TensorDesc;
 }
-impl TensorR3 {
-    /// Initializes a new TensorR3 with the cardinality of it dimensions.
-    pub fn new(dims: [usize; 3]) -> TensorR3 {
-        TensorR3 { dims: dims }
-    }
-}
-impl ITensor for TensorR3 {
-    fn D() -> usize { 3 }
 
-    fn elements(&self) -> usize {
-        self.dims[0] * self.dims[1] * self.dims[2]
-    }
-
-    fn dims(&self) -> Vec<usize> {
-        self.dims.to_vec()
+impl IntoTensorDesc for () {
+    fn into(&self) -> TensorDesc {
+        Vec::with_capacity(1)
     }
 }
 
-#[derive(Debug, Copy, Clone)]
-/// Describes a rank 4 Tensor value.
-pub struct TensorR4 {
-    dims: [usize; 4],
-}
-impl TensorR4 {
-    /// Initializes a new TensorR4 with the cardinality of it dimensions.
-    pub fn new(dims: [usize; 4]) -> TensorR4 {
-        TensorR4 { dims: dims }
-    }
-}
-impl ITensor for TensorR4 {
-    fn D() -> usize { 4 }
-
-    fn elements(&self) -> usize {
-        self.dims[0] * self.dims[1] * self.dims[2] * self.dims[3]
-    }
-
-    fn dims(&self) -> Vec<usize> {
-        self.dims.to_vec()
+impl IntoTensorDesc for usize {
+    fn into(&self) -> TensorDesc {
+        vec![*self]
     }
 }
 
-#[derive(Debug, Copy, Clone)]
-/// Describes a rank 5 Tensor value.
-pub struct TensorR5 {
-    dims: [usize; 5],
-}
-impl TensorR5 {
-    /// Initializes a new TensorR5 with the cardinality of it dimensions.
-    pub fn new(dims: [usize; 5]) -> TensorR5 {
-        TensorR5 { dims: dims }
-    }
-}
-impl ITensor for TensorR5 {
-    fn D() -> usize { 5 }
-
-    fn elements(&self) -> usize {
-        self.dims[0] * self.dims[1] * self.dims[2] * self.dims[3] * self.dims[4]
-    }
-
-    fn dims(&self) -> Vec<usize> {
-        self.dims.to_vec()
+impl IntoTensorDesc for u32 {
+    fn into(&self) -> TensorDesc {
+        vec![*self as usize]
     }
 }
 
-#[derive(Debug, Copy, Clone)]
-/// Describes a rank 6 Tensor value.
-pub struct TensorR6 {
-    dims: [usize; 6],
-}
-impl TensorR6 {
-    /// Initializes a new TensorR6 with the cardinality of it dimensions.
-    pub fn new(dims: [usize; 6]) -> TensorR6 {
-        TensorR6 { dims: dims }
-    }
-}
-impl ITensor for TensorR6 {
-    fn D() -> usize { 6 }
-
-    fn elements(&self) -> usize {
-        self.dims[0] * self.dims[1] * self.dims[2] * self.dims[3] * self.dims[4] * self.dims[5]
-    }
-
-    fn dims(&self) -> Vec<usize> {
-        self.dims.to_vec()
+impl IntoTensorDesc for isize {
+    fn into(&self) -> TensorDesc {
+        vec![*self as usize]
     }
 }
 
-impl<T, D: ITensor> SharedMemory<T, D> {
-    /// Create new SharedMemory by allocating [Memory][1] on a Device.
+impl IntoTensorDesc for i32 {
+    fn into(&self) -> TensorDesc {
+        vec![*self as usize]
+    }
+}
+
+impl IntoTensorDesc for Vec<usize> {
+    fn into(&self) -> TensorDesc {
+        self.clone()
+    }
+}
+
+impl<'a> IntoTensorDesc for &'a [usize] {
+    fn into(&self) -> TensorDesc {
+        From::from(self.to_owned())
+    }
+}
+
+impl IntoTensorDesc for (usize, usize) {
+    fn into(&self) -> TensorDesc {
+        vec![self.0, self.1]
+    }
+}
+
+impl IntoTensorDesc for (usize, usize, usize) {
+    fn into(&self) -> TensorDesc {
+        vec![self.0, self.1, self.2]
+    }
+}
+
+impl IntoTensorDesc for (usize, usize, usize, usize) {
+    fn into(&self) -> TensorDesc {
+        vec![self.0, self.1, self.2, self.3]
+    }
+}
+
+impl IntoTensorDesc for (usize, usize, usize, usize, usize) {
+    fn into(&self) -> TensorDesc {
+        vec![self.0, self.1, self.2, self.3, self.4]
+    }
+}
+
+impl IntoTensorDesc for (usize, usize, usize, usize, usize, usize) {
+    fn into(&self) -> TensorDesc {
+        vec![self.0, self.1, self.2, self.3, self.4, self.5]
+    }
+}
+
+impl ITensorDesc for TensorDesc {
+    fn rank(&self) -> usize {
+        self.len()
+    }
+
+    fn size(&self) -> usize {
+        match self.rank() {
+            0 => 1,
+            _ => self.iter().fold(1, |s, &a| s * a)
+        }
+    }
+
+    fn dims(&self) -> &Vec<usize> {
+        self
+    }
+
+    fn dims_i32(&self) -> Vec<i32> {
+        self.iter().map(|&e| e as i32).collect()
+    }
+}
+
+impl<T> SharedTensor<T> {
+    /// Create new Tensor by allocating [Memory][1] on a Device.
     /// [1]: ../memory/index.html
-    pub fn new(dev: &DeviceType, dim: D) -> Result<SharedMemory<T, D>, Error> {
+    pub fn new<D: IntoTensorDesc>(dev: &DeviceType, desc: &D) -> Result<SharedTensor<T>, Error> {
         let copies = LinearMap::<DeviceType, MemoryType>::new();
+        let tensor_desc: TensorDesc = desc.into();
         let copy: MemoryType;
-        let alloc_size = Self::mem_size(dim.elements());
+        let alloc_size = Self::mem_size(tensor_desc.size());
         match *dev {
             #[cfg(feature = "native")]
             DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size))),
@@ -238,11 +238,11 @@ impl<T, D: ITensor> SharedMemory<T, D> {
             #[cfg(feature = "cuda")]
             DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size))),
         }
-        Ok(SharedMemory {
+        Ok(SharedTensor {
+            desc: tensor_desc,
             latest_location: dev.clone(),
             latest_copy: copy,
             copies: copies,
-            dim: dim,
             phantom: PhantomData,
         })
     }
@@ -254,7 +254,7 @@ impl<T, D: ITensor> SharedMemory<T, D> {
             try!(self.sync_from_to(&latest, &destination));
 
             let mut swap_location = destination.clone();
-            let mut swap_copy = try!(self.copies.remove(destination).ok_or(Error::MissingDestination("SharedMemory does not hold a copy on destination device.")));
+            let mut swap_copy = try!(self.copies.remove(destination).ok_or(Error::MissingDestination("Tensor does not hold a copy on destination device.")));
             mem::swap(&mut self.latest_location, &mut swap_location);
             mem::swap(&mut self.latest_copy, &mut swap_copy);
             self.copies.insert(swap_location, swap_copy);
@@ -327,7 +327,7 @@ impl<T, D: ITensor> SharedMemory<T, D> {
         let destination_copy: MemoryType;
         match self.copies.remove(destination) {
             Some(destination_cpy) => destination_copy = destination_cpy,
-            None => return Err(Error::MissingDestination("SharedMemory does not hold a copy on destination device."))
+            None => return Err(Error::MissingDestination("Tensor does not hold a copy on destination device."))
         }
 
         Ok(destination_copy)
@@ -340,14 +340,14 @@ impl<T, D: ITensor> SharedMemory<T, D> {
 
     /// Track a new `device` and allocate memory on it.
     ///
-    /// Returns an error if the SharedMemory is already tracking the `device`.
+    /// Returns an error if the Tensor is already tracking the `device`.
     pub fn add_device(&mut self, device: &DeviceType) -> Result<&mut Self, Error> {
         // first check if device is not current location. This is cheaper than a lookup in `copies`.
         if &self.latest_location == device {
-            return Err(Error::InvalidMemoryAllocation("SharedMemory already tracks memory for this device. No memory allocation."))
+            return Err(Error::InvalidMemoryAllocation("Tensor already tracks memory for this device. No memory allocation."))
         }
         match self.copies.get(device) {
-            Some(_) => Err(Error::InvalidMemoryAllocation("SharedMemory already tracks memory for this device. No memory allocation.")),
+            Some(_) => Err(Error::InvalidMemoryAllocation("Tensor already tracks memory for this device. No memory allocation.")),
             None => {
                 let copy: MemoryType;
                 match *device {
@@ -369,9 +369,14 @@ impl<T, D: ITensor> SharedMemory<T, D> {
         &self.latest_location
     }
 
-    /// Returns the number of elements for which the SharedMemory has been allocated.
+    /// Returns the number of elements for which the Tensor has been allocated.
     pub fn capacity(&self) -> usize {
-        self.dim.elements()
+        self.desc.size()
+    }
+
+    /// Returns the descriptor of the Tensor.
+    pub fn desc(&self) -> &TensorDesc {
+        &self.desc
     }
 
     fn mem_size(capacity: usize) -> usize {
@@ -435,6 +440,6 @@ impl error::Error for Error {
 
 impl From<Error> for ::error::Error {
     fn from(err: Error) -> ::error::Error {
-        ::error::Error::SharedMemory(err)
+        ::error::Error::Tensor(err)
     }
 }

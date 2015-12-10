@@ -21,7 +21,7 @@ use co::frameworks::Cuda;
 #[cfg(feature = "cuda")]
 use co::frameworks::cuda;
 use co::framework::IFramework;
-use co::shared_memory::{SharedMemory, ITensor, TensorR0, TensorR1};
+use co::tensor::SharedTensor;
 
 use rand::{thread_rng, Rng};
 
@@ -55,7 +55,7 @@ fn sync_back_and_forth(
     n: usize,
     nt_device: &DeviceType,
     cl_device: &DeviceType,
-    mem: &mut SharedMemory<u8, TensorR1>
+    mem: &mut SharedTensor<u8>
 ) {
     b.iter(|| {
         for _ in 0..n {
@@ -97,7 +97,7 @@ fn bench_256_alloc_1mb_opencl_profile(
 ) {
     b.iter(|| {
         for _ in 0..256 {
-            device.alloc_memory(size as u64);
+            device.alloc_memory(size);
         }
     });
 }
@@ -112,14 +112,14 @@ fn bench_256_sync_1mb_native_opencl(b: &mut Bencher) {
     // if let &DeviceType::OpenCL(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedMemory::<u8, TensorR1>::new(nt_device, TensorR1::new([1_048_576])).unwrap();
+    let mem = &mut SharedTensor::<u8>::new(nt_device, &1_048_576).unwrap();
     mem.add_device(&cl_device);
     bench_256_sync_1mb_native_opencl_profile(b, nt_device, cl_device, mem);
 }
 
 #[inline(never)]
 #[cfg(feature = "opencl")]
-fn bench_256_sync_1mb_native_opencl_profile(b: &mut Bencher, nt_device: &DeviceType, cl_device: &DeviceType, mem: &mut SharedMemory<u8, TensorR1>) {
+fn bench_256_sync_1mb_native_opencl_profile(b: &mut Bencher, nt_device: &DeviceType, cl_device: &DeviceType, mem: &mut SharedTensor<u8>) {
     sync_back_and_forth(b, 256, nt_device, cl_device, mem)
 }
 
@@ -133,14 +133,14 @@ fn bench_256_sync_1mb_native_cuda(b: &mut Bencher) {
     // if let &DeviceType::Cuda(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedMemory::<u8, TensorR1>::new(nt_device, TensorR1::new([1_048_576])).unwrap();
+    let mem = &mut SharedTensor::<u8>::new(nt_device, &1_048_576).unwrap();
     mem.add_device(&cl_device);
     bench_256_sync_1mb_native_cuda_profile(b, nt_device, cl_device, mem);
 }
 
 #[inline(never)]
 #[cfg(feature = "cuda")]
-fn bench_256_sync_1mb_native_cuda_profile(b: &mut Bencher, nt_device: &DeviceType, cl_device: &DeviceType, mem: &mut SharedMemory<u8, TensorR1>) {
+fn bench_256_sync_1mb_native_cuda_profile(b: &mut Bencher, nt_device: &DeviceType, cl_device: &DeviceType, mem: &mut SharedTensor<u8>) {
     sync_back_and_forth(b, 256, nt_device, cl_device, mem)
 }
 
@@ -154,13 +154,13 @@ fn bench_2_sync_128mb_native_cuda(b: &mut Bencher) {
     // if let &DeviceType::Cuda(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedMemory::<u8, TensorR1>::new(nt_device, TensorR1::new([128 * 1_048_576])).unwrap();
+    let mem = &mut SharedTensor::<u8>::new(nt_device, &(128 * 1_048_576)).unwrap();
     mem.add_device(&cl_device);
     bench_2_sync_128mb_native_cuda_profile(b, nt_device, cl_device, mem);
 }
 
 #[inline(never)]
 #[cfg(feature = "cuda")]
-fn bench_2_sync_128mb_native_cuda_profile(b: &mut Bencher, nt_device: &DeviceType, cl_device: &DeviceType, mem: &mut SharedMemory<u8, TensorR1>) {
+fn bench_2_sync_128mb_native_cuda_profile(b: &mut Bencher, nt_device: &DeviceType, cl_device: &DeviceType, mem: &mut SharedTensor<u8>) {
     sync_back_and_forth(b, 2, nt_device, cl_device, mem)
 }

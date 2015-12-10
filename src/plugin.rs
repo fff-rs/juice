@@ -42,7 +42,9 @@ pub enum Error {
     /// Failure at receiving the correct device memory from the SharedMemory.
     MissingMemoryForDevice(&'static str),
     /// Failure at the execution of the Operation.
-    Operation(&'static str)
+    Operation(&'static str),
+    /// Failure at the Plugin.
+    Plugin(&'static str),
 }
 
 impl ::std::fmt::Display for Error {
@@ -50,6 +52,7 @@ impl ::std::fmt::Display for Error {
         match *self {
             Error::MissingMemoryForDevice(ref err) => write!(f, "MissingMemoryForDevice error: {}", err),
             Error::Operation(ref err) => write!(f, "Operation error: {}", err),
+            Error::Plugin(ref err) => write!(f, "Plugin error: {}", err),
         }
     }
 }
@@ -59,6 +62,7 @@ impl ::std::error::Error for Error {
         match *self {
             Error::MissingMemoryForDevice(ref err) => err,
             Error::Operation(ref err) => err,
+            Error::Plugin(ref err) => err,
         }
     }
 
@@ -66,6 +70,7 @@ impl ::std::error::Error for Error {
         match *self {
             Error::MissingMemoryForDevice(_) => None,
             Error::Operation(_) => None,
+            Error::Plugin(_) => None,
         }
     }
 }
@@ -75,3 +80,4 @@ impl From<Error> for ::error::Error {
         ::error::Error::Plugin(err)
     }
 }
+
