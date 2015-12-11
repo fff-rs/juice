@@ -19,7 +19,7 @@ cudnn-sys = { version = "0.0.1", path = "../cudnn-sys" }
 clippy = { version = "0.0.27", optional = true }
 
 [dev-dependencies]
-collenchyma = "0.0.3"
+collenchyma = "0.0.5"
 
 [features]
 dev = []
