@@ -7,7 +7,7 @@ mod blas_spec {
     use co::framework::IFramework;
     use co_blas::library::*;
     use co::memory::MemoryType;
-    use co::shared_memory::{SharedMemory, TensorR0, TensorR1};
+    use co::tensor::SharedTensor;
     use co::plugin::numeric_helpers::{cast, Float};
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
@@ -23,68 +23,68 @@ mod blas_spec {
         }
     }
 
-    pub fn get_asum_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T, TensorR1>, SharedMemory<T, TensorR0>){
-        let mut x = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+    pub fn get_asum_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
+        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(-2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let result = SharedMemory::<T, TensorR0>::new(backend.device(), TensorR0::new()).unwrap();
+        let result = SharedTensor::<T>::new(backend.device(), ()).unwrap();
         (x, result)
     }
 
-    pub fn get_axpy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T, TensorR0>, SharedMemory<T, TensorR1>, SharedMemory<T, TensorR1>){
-        let mut a = SharedMemory::<T, TensorR0>::new(backend.device(), TensorR0::new()).unwrap();
+    pub fn get_axpy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
+        let mut a = SharedTensor::<T>::new(backend.device(), ()).unwrap();
         write_to_memory(a.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap()]);
 
-        let mut x = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
         (a, x, y)
     }
 
-    pub fn get_copy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T, TensorR1>, SharedMemory<T, TensorR1>){
-        let mut x = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+    pub fn get_copy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
+        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let y = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+        let y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         (x, y)
     }
 
-    pub fn get_dot_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T, TensorR1>, SharedMemory<T, TensorR1>, SharedMemory<T, TensorR0>){
-        let mut x = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+    pub fn get_dot_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
+        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let result = SharedMemory::<T, TensorR0>::new(backend.device(), TensorR0::new()).unwrap();
+        let result = SharedTensor::<T>::new(backend.device(), ()).unwrap();
         (x, y, result)
     }
 
-    pub fn get_nrm2_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T, TensorR1>, SharedMemory<T, TensorR0>){
-        let mut x = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+    pub fn get_nrm2_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
+        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap()]);
 
-        let result = SharedMemory::<T, TensorR0>::new(backend.device(), TensorR0::new()).unwrap();
+        let result = SharedTensor::<T>::new(backend.device(), ()).unwrap();
         (x, result)
     }
 
-    pub fn get_scale_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T, TensorR0>, SharedMemory<T, TensorR1>){
-        let mut a = SharedMemory::<T, TensorR0>::new(backend.device(), TensorR0::new()).unwrap();
+    pub fn get_scale_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
+        let mut a = SharedTensor::<T>::new(backend.device(), ()).unwrap();
         write_to_memory(a.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap()]);
 
-        let mut y = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
         (a, y)
     }
 
-    pub fn get_swap_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedMemory<T, TensorR1>, SharedMemory<T, TensorR1>){
-        let mut x = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+    pub fn get_swap_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
+        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedMemory::<T, TensorR1>::new(backend.device(), TensorR1::new([3])).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(3).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(1).unwrap()]);
 
         (x, y)

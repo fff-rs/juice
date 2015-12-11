@@ -4,7 +4,7 @@ use super::binary::IBlasBinary;
 use super::operation::*;
 use collenchyma::plugin::numeric_helpers::Float;
 use collenchyma::binary::IBinary;
-use collenchyma::shared_memory::{SharedMemory, TensorR0, TensorR1};
+use collenchyma::tensor::SharedTensor;
 use collenchyma::device::DeviceType;
 use collenchyma::plugin::Error as LibError;
 
@@ -19,7 +19,7 @@ pub trait IBlas<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `asum_plain`.
-    fn asum(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn asum(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
         Ok(try!(
@@ -38,7 +38,7 @@ pub trait IBlas<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `asum`.
-    fn asum_plain(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn asum_plain(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().asum().compute(
                 try!(x.get(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `x`"))),
@@ -53,7 +53,7 @@ pub trait IBlas<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `axpy_plain`.
-    fn axpy(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn axpy(&self, a: &mut SharedTensor<F>, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
@@ -74,7 +74,7 @@ pub trait IBlas<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `axpy`.
-    fn axpy_plain(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn axpy_plain(&self, a: &mut SharedTensor<F>, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().axpy().compute(
                 try!(a.get(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `a`"))),
@@ -90,7 +90,7 @@ pub trait IBlas<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `copy_plain`.
-    fn copy(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn copy(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match y.add_device(self.device()) { _ => () }
         Ok(try!(
@@ -109,7 +109,7 @@ pub trait IBlas<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `copy`.
-    fn copy_plain(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn copy_plain(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().copy().compute(
                 try!(x.get(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `x`"))),
@@ -125,7 +125,7 @@ pub trait IBlas<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `dot_plain`.
-    fn dot(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn dot(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
@@ -147,7 +147,7 @@ pub trait IBlas<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `dot`.
-    fn dot_plain(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn dot_plain(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().dot().compute(
                 try!(x.get(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `x`"))),
@@ -163,7 +163,7 @@ pub trait IBlas<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `nrm2_plain`.
-    fn nrm2(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn nrm2(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
         Ok(try!(
@@ -182,7 +182,7 @@ pub trait IBlas<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `nrm2`.
-    fn nrm2_plain(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn nrm2_plain(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().nrm2().compute(
                 try!(x.get(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `x`"))),
@@ -197,7 +197,7 @@ pub trait IBlas<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `scale_plain`.
-    fn scale(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn scale(&self, a: &mut SharedTensor<F>, x: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         Ok(try!(
@@ -216,7 +216,7 @@ pub trait IBlas<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `scale`.
-    fn scale_plain(&self, a: &mut SharedMemory<F, TensorR0>, x: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn scale_plain(&self, a: &mut SharedTensor<F>, x: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().scale().compute(
                 try!(a.get(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `a`"))),
@@ -231,7 +231,7 @@ pub trait IBlas<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `swap_plain`.
-    fn swap(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn swap(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match y.add_device(self.device()) { _ => try!(y.sync(self.device())) }
         Ok(try!(
@@ -250,7 +250,7 @@ pub trait IBlas<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `swap`.
-    fn swap_plain(&self, x: &mut SharedMemory<F, TensorR1>, y: &mut SharedMemory<F, TensorR1>) -> Result<(), ::collenchyma::error::Error> {
+    fn swap_plain(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().swap().compute(
                 try!(x.get_mut(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `x`"))),
