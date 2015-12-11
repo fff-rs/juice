@@ -5,25 +5,23 @@ rust:
 - stable
 matrix:
   allow_failures:
-  - rust: beta
-  - rust: stable
-  - rust: nightly
-    env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+    - rust: nightly
+      env: FEATURES=lint
   exclude:
-  - rust: beta
-    env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
-  - rust: stable
-    env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+    - rust: beta
+      env: FEATURES=lint
+    - rust: stable
+      env: FEATURES=lint
 before_script:
 - |
   pip install 'travis-cargo<0.2' --user &&
   export PATH=$HOME/.local/bin:$PATH
 script:
 - |
-  travis-cargo build -- --no-default-features &&
-  travis-cargo test -- --no-default-features  &&
-  travis-cargo bench -- --no-default-features &&
-  travis-cargo doc -- --no-default-features
+  travis-cargo build -- --no-default-features --features $FEATURES &&
+  travis-cargo test -- --no-default-features --features $FEATURES &&
+  travis-cargo bench -- --no-default-features --features $FEATURES &&
+  travis-cargo doc -- --no-default-features --features $FEATURES
 addons:
   apt:
     packages:
@@ -39,7 +37,8 @@ notifications:
     on_success: never
 env:
   global:
-    secure: i3kj5FuX4Qq9wJedC6a5I6FIiW6C5N38yiR86/e52/KEo3+0zI3bKiZfACA+frnYHS3BL0TJSOYrQT+NhLHoIkrwEPHzPoaUw2XordQQP6BlDEkj8gqNkkDEHHeIw3YfYpTpDYzAvEY5F92k5OKTqQOIm/W+LVrUOsgn+H2Pp5tj/jJo7kY30VRZuSHskadJO78sUTuzTyMl4gEjNaLSqjxFItljIxaxLey7SamUfVsjn/yqnXfwXvwnhXHlRJxwaqih28n0Bpk8jzK3cZgov4jHAgOnmI0IaYYtlnmAqLwZX5jtLnWKcVAGtHPVgRnFfbaZxkmnH2Eic+yYLxErjjCEkUKYnVf7lEYdj7Jt92j3H9P3CjWJPi0oFp3UN9ayrtuD+FliYZkIkPIPW9kmr0UIJpicE1U80R7HCNRExF5kHAjlnLHVMk2Mw6KKsUig3pIfJnRFAYxtJE9LIyefR39j0l6ZZksw4TygFzhCpRuLGaUsPK3dWqRgHMlYVjlJ2E94ChMFCN/w2u2rPNsdCOXPBIs13AUvrd2O1R3DfBmjV76SS9r2diuk66V/UOM/Qp2OTyDx8O/t4D8ausl0hR/F6IxnbJnesOFY0MNx6UdhVh9TGNcYEUfpGcnnWkubywEC3mTs4mxpizGmx1hVof2XAm5KrFwof5WEL5C/Kow=
+    - secure: i3kj5FuX4Qq9wJedC6a5I6FIiW6C5N38yiR86/e52/KEo3+0zI3bKiZfACA+frnYHS3BL0TJSOYrQT+NhLHoIkrwEPHzPoaUw2XordQQP6BlDEkj8gqNkkDEHHeIw3YfYpTpDYzAvEY5F92k5OKTqQOIm/W+LVrUOsgn+H2Pp5tj/jJo7kY30VRZuSHskadJO78sUTuzTyMl4gEjNaLSqjxFItljIxaxLey7SamUfVsjn/yqnXfwXvwnhXHlRJxwaqih28n0Bpk8jzK3cZgov4jHAgOnmI0IaYYtlnmAqLwZX5jtLnWKcVAGtHPVgRnFfbaZxkmnH2Eic+yYLxErjjCEkUKYnVf7lEYdj7Jt92j3H9P3CjWJPi0oFp3UN9ayrtuD+FliYZkIkPIPW9kmr0UIJpicE1U80R7HCNRExF5kHAjlnLHVMk2Mw6KKsUig3pIfJnRFAYxtJE9LIyefR39j0l6ZZksw4TygFzhCpRuLGaUsPK3dWqRgHMlYVjlJ2E94ChMFCN/w2u2rPNsdCOXPBIs13AUvrd2O1R3DfBmjV76SS9r2diuk66V/UOM/Qp2OTyDx8O/t4D8ausl0hR/F6IxnbJnesOFY0MNx6UdhVh9TGNcYEUfpGcnnWkubywEC3mTs4mxpizGmx1hVof2XAm5KrFwof5WEL5C/Kow=
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
   matrix:
-  - TRAVIS_CARGO_NIGHTLY_FEATURE=travis
-  - TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+  - FEATURES=travis
+  - FEATURES=lint
