@@ -7,7 +7,7 @@ mod tensor_descriptor_spec {
 
     #[test]
     fn it_initializes_a_tensor_descriptor() {
-        match TensorDescriptor::new(&[2, 2, 2], DataType::Float) {
+        match TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float) {
             Ok(_) => assert!(true),
             Err(err) => {
                 println!("{:?}", err);

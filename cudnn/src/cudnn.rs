@@ -53,9 +53,9 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_data`.
     pub fn sigmoid_forward(
         &self,
-        src_desc: TensorDescriptor,
+        src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
-        dest_desc: TensorDescriptor,
+        dest_desc: &TensorDescriptor,
         dest_data: *mut ::libc::c_void,
         scale: ScalParams,
     ) -> Result<(), Error> {
