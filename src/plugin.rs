@@ -4,7 +4,7 @@ use super::binary::INnBinary;
 use super::operation::*;
 use collenchyma::plugin::numeric_helpers::Float;
 use collenchyma::binary::IBinary;
-use collenchyma::shared_memory::{SharedMemory, TensorR0, TensorR1};
+use collenchyma::tensor::SharedTensor;
 use collenchyma::device::DeviceType;
 use collenchyma::plugin::Error as LibError;
 
@@ -19,7 +19,7 @@ pub trait INn<F: Float> {
     /// This is a Level 1 BLAS operation.
     ///
     /// For a no-memory managed version see `asum_plain`.
-    fn sigmoid(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn sigmoid(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
         Ok(try!(
@@ -38,7 +38,7 @@ pub trait INn<F: Float> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `asum`.
-    fn sigmoid_plain(&self, x: &mut SharedMemory<F, TensorR1>, result: &mut SharedMemory<F, TensorR0>) -> Result<(), ::collenchyma::error::Error> {
+    fn sigmoid_plain(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
         Ok(try!(
             self.binary().sigmoid().compute(
                 try!(x.get(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `x`"))),

@@ -2,7 +2,7 @@
 
 use ::operation::*;
 use ::binary::*;
-use ::library::*;
+use ::plugin::*;
 use collenchyma::device::DeviceType;
 use collenchyma::backend::Backend;
 use collenchyma::memory::MemoryType;

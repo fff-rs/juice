@@ -40,10 +40,11 @@
 
 extern crate collenchyma;
 extern crate cudnn;
+extern crate libc;
 #[macro_use]
 extern crate lazy_static;
 
-pub mod library;
+pub mod plugin;
 pub mod binary;
 pub mod operation;
 #[macro_use]
