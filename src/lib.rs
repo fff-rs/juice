@@ -62,10 +62,10 @@
 //! The last peace of Collenchyma is the [Memory][memory]. A Operation happens over data, but this data needs to be
 //! accessable by the device on which the Operation is executed. The process is therefore often, that memory space needs
 //! to be allocated on the device and then in a later step, synced from the host to the device or from
-//! the device back to the host. Thanks to [SharedMemory][shared-memory] we do not have to care about memory management
-//! between devices for the execution of Operations. SharedMemory tracks and automatically manages data and it's memory
+//! the device back to the host. Thanks to the [Tensor][tensor] we do not have to care about memory management
+//! between devices for the execution of Operations. Tensor tracks and automatically manages data and it's memory
 //! accross devices, which is often the host and the Device. But it can also be passed around to different Backends.
-//! Operations take as arguments SharedMemory and handle the synchronization and allocation for you.
+//! Operations take as arguments Tensors and handle the synchronization and allocation for you.
 //!
 //! ## Examples
 //!
@@ -128,7 +128,7 @@
 //! [plugin]: ./plugin/index.html
 //! [collenchyma-blas]: https://github.com/autumnai/collenchyma-blas
 //! [memory]: ./memory/index.html
-//! [shared-memory]: ./shared-memory/index.html
+//! [tensor]: ./tensor/index.html
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
@@ -154,7 +154,7 @@ pub mod hardware;
 pub mod framework;
 pub mod frameworks;
 pub mod memory;
-pub mod shared_memory;
+pub mod tensor;
 pub mod operation;
 pub mod binary;
 pub mod error;
