@@ -5,7 +5,6 @@
 //! the structure and dimensionality of the data.
 
 use super::{API, Error};
-use std::mem::transmute;
 use ffi::*;
 
 #[derive(Debug, Clone)]
