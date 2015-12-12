@@ -33,9 +33,6 @@ impl TensorDescriptor {
         match data_type {
             DataType::Float => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                println!("Dims {:?} : {:?}", dims_ptr, dims);
-                println!("Strides {:?} : {:?}", strides_ptr, strides);
-                println!("DataType {:?}", data_type);
                 try!(API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr));
                 Ok(TensorDescriptor::from_c(generic_tensor_desc))
             },
