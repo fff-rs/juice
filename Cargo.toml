@@ -14,7 +14,7 @@ license         = "MIT"
 
 [dependencies]
 collenchyma = { path = "/home/hobofan/collenchyma" }
-cudnn = { path = "/home/hobofan/rust-cudnn/cudnn" }
+cudnn = "0.1"
 libc = "0.2"
 lazy_static = "0.1"
 clippy = { version = "0.0.27", optional = true }

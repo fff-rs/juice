@@ -1,8 +1,8 @@
 //! Provides the IOperationX operation traits for Collenchyma's Framework implementation.
 
-use collenchyma::plugin::numeric_helpers::Float;
-use collenchyma::memory::MemoryType;
-use collenchyma::plugin::Error;
+use co::plugin::numeric_helpers::Float;
+use co::memory::MemoryType;
+use co::plugin::Error;
 
 /// Describes a Sigmoid Operation.
 pub trait IOperationSigmoid<F: Float> {

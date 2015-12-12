@@ -38,7 +38,7 @@
         trivial_casts, trivial_numeric_casts,
         unused_import_braces, unused_qualifications)]
 
-extern crate collenchyma;
+extern crate collenchyma as co;
 extern crate cudnn;
 extern crate libc;
 #[macro_use]
