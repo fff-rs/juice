@@ -35,7 +35,7 @@ mod cudnn_spec {
         let cuda = Cudnn::new().unwrap();
         let desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
         match cuda.sigmoid_forward(
-            &desc, unsafe { transmute::<u64, *const ::libc::c_void>(1u64) }, &desc, unsafe { transmute::<u64, *mut ::libc::c_void>(1u64) }, ScalParams::default()
+            &desc, unsafe { transmute::<u64, *const ::libc::c_void>(1u64) }, &desc, unsafe { transmute::<u64, *mut ::libc::c_void>(1u64) }, ScalParams::<f32>::default()
         ) {
             Ok(_) => assert!(true),
             Err(err) => { println!("{:?}", err); assert!(false) }
