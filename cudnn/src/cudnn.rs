@@ -51,13 +51,13 @@ impl Cudnn {
     /// Computes the forward Sigmoid Activation function.
     ///
     /// Writes the result of the computation to `dest_data`.
-    pub fn sigmoid_forward(
+    pub fn sigmoid_forward<T>(
         &self,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_desc: &TensorDescriptor,
         dest_data: *mut ::libc::c_void,
-        scale: ScalParams,
+        scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_forward(
             self.id_c(),
@@ -70,7 +70,7 @@ impl Cudnn {
     /// Computes the backward Sigmoid Activation function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
-    pub fn sigmoid_backward(
+    pub fn sigmoid_backward<T>(
         &self,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
@@ -80,7 +80,7 @@ impl Cudnn {
         dest_data: *const ::libc::c_void,
         dest_diff_desc: TensorDescriptor,
         dest_diff_data: *mut ::libc::c_void,
-        scale: ScalParams,
+        scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_backward(
             self.id_c(),
@@ -93,13 +93,13 @@ impl Cudnn {
     /// Computes the forward Rectified Linear Activation function.
     ///
     /// Writes the result of the computation to `dest_data`.
-    pub fn relu_forward(
+    pub fn relu_forward<T>(
         &self,
         src_desc: TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_desc: TensorDescriptor,
         dest_data: *mut ::libc::c_void,
-        scale: ScalParams,
+        scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_forward(
             self.id_c(),
@@ -112,7 +112,7 @@ impl Cudnn {
     /// Computes the backward Rectified Linear Activation function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
-    pub fn relu_backward(
+    pub fn relu_backward<T>(
         &self,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
@@ -122,7 +122,7 @@ impl Cudnn {
         dest_data: *const ::libc::c_void,
         dest_diff_desc: TensorDescriptor,
         dest_diff_data: *mut ::libc::c_void,
-        scale: ScalParams,
+        scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_backward(
             self.id_c(),
@@ -135,13 +135,13 @@ impl Cudnn {
     /// Computes the forward Hyperbolic Tangent Activation function.
     ///
     /// Writes the result of the computation to `dest_data`.
-    pub fn tanh_forward(
+    pub fn tanh_forward<T>(
         &self,
         src_desc: TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_desc: TensorDescriptor,
         dest_data: *mut ::libc::c_void,
-        scale: ScalParams,
+        scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_forward(
             self.id_c(),
@@ -154,7 +154,7 @@ impl Cudnn {
     /// Computes the backward Hyperbolic Tangent Activation function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
-    pub fn tanh_backward(
+    pub fn tanh_backward<T>(
         &self,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
@@ -164,7 +164,7 @@ impl Cudnn {
         dest_data: *const ::libc::c_void,
         dest_diff_desc: TensorDescriptor,
         dest_diff_data: *mut ::libc::c_void,
-        scale: ScalParams,
+        scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_backward(
             self.id_c(),

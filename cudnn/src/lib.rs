@@ -29,7 +29,7 @@ extern crate cudnn_sys as ffi;
 pub use ffi::*;
 pub use self::cudnn::Cudnn;
 pub use self::error::Error;
-pub use self::utils::{Direction, ScalParams, IScalParamsDefault};
+pub use self::utils::{Direction, ScalParams};
 pub use self::tensor_descriptor::{TensorDescriptor, DataType};
 
 #[derive(Debug, Copy, Clone)]
