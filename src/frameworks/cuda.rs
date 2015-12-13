@@ -6,23 +6,22 @@ use ::plugin::*;
 use co::backend::Backend;
 use co::device::DeviceType;
 use co::memory::MemoryType;
-use co::tensor::{SharedTensor, TensorDesc, ITensorDesc};
+use co::tensor::{SharedTensor, ITensorDesc};
 use co::plugin::Error as PluginError;
 use co::frameworks::cuda::{Function, Module, Cuda};
 use cudnn::*;
-use std::mem::transmute;
 
 lazy_static! {
     static ref SIGMOID: Function = Function::from_isize(1);
 }
 
-pub trait ICudnnTensorDesc<T> : ITensorDesc {
+pub trait ICudnnTensorDesc<T> {
     fn get_cudnn_desc(&self) -> Result<TensorDescriptor, PluginError>;
 }
 
-impl ICudnnTensorDesc<f32> for TensorDesc {
+impl ICudnnTensorDesc<f32> for SharedTensor<f32> {
     fn get_cudnn_desc(&self) -> Result<TensorDescriptor, PluginError> {
-        match TensorDescriptor::new(&self.dims_i32(), &self.default_stride_i32(), DataType::Float) {
+        match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), DataType::Float) {
             Ok(desc) => Ok(desc),
             Err(err) => {
                 println!("{:?}", err);
@@ -32,9 +31,9 @@ impl ICudnnTensorDesc<f32> for TensorDesc {
     }
 }
 
-impl ICudnnTensorDesc<f64> for TensorDesc {
+impl ICudnnTensorDesc<f64> for SharedTensor<f64> {
     fn get_cudnn_desc(&self) -> Result<TensorDescriptor, PluginError> {
-        match TensorDescriptor::new(&self.dims_i32(), &self.default_stride_i32(), DataType::Double) {
+        match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), DataType::Double) {
             Ok(desc) => Ok(desc),
             Err(err) => {
                 println!("{:?}", err);
