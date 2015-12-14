@@ -95,9 +95,9 @@ pub struct ScalParams<T> {
     scal_type: PhantomData<T>,
 }
 
-impl ScalParams<f32> {
+impl Default for ScalParams<f32> {
     /// Provides default values for ScalParams<f32>.
-    pub fn default() -> ScalParams<f32> {
+    fn default() -> ScalParams<f32> {
         let alpha_ptr: *const ::libc::c_void = *&[1.0f32].as_ptr() as *const ::libc::c_void;
         let beta_ptr: *const ::libc::c_void = *&[0.0f32].as_ptr() as *const ::libc::c_void;
         ScalParams {
@@ -108,9 +108,9 @@ impl ScalParams<f32> {
     }
 }
 
-impl ScalParams<f64> {
+impl Default for ScalParams<f64> {
     /// Provides default values for ScalParams<f64>.
-    pub fn default() -> ScalParams<f64> {
+    fn default() -> ScalParams<f64> {
         let alpha_ptr: *const ::libc::c_void = *&[1.0f64].as_ptr() as *const ::libc::c_void;
         let beta_ptr: *const ::libc::c_void = *&[0.0f64].as_ptr() as *const ::libc::c_void;
         ScalParams {
