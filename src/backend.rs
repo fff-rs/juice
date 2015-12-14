@@ -89,11 +89,6 @@ impl<F: IFramework + Clone> Backend<F> {
     pub fn device(&self) -> &DeviceType {
         &self.device
     }
-
-    /// Returns the blas binary.
-    pub fn binary(&self) -> &F::B {
-        self.framework().binary()
-    }
 }
 
 /// Describes a Backend.
