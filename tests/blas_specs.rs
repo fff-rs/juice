@@ -5,7 +5,7 @@ extern crate collenchyma as co;
 mod blas_spec {
     use co::backend::Backend;
     use co::framework::IFramework;
-    use co_blas::library::*;
+    use co_blas::plugin::*;
     use co::memory::MemoryType;
     use co::tensor::SharedTensor;
     use co::plugin::numeric_helpers::{cast, Float};
@@ -24,67 +24,67 @@ mod blas_spec {
     }
 
     pub fn get_asum_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
-        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut x = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(-2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let result = SharedTensor::<T>::new(backend.device(), ()).unwrap();
+        let result = SharedTensor::<T>::new(backend.device(), &()).unwrap();
         (x, result)
     }
 
     pub fn get_axpy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
-        let mut a = SharedTensor::<T>::new(backend.device(), ()).unwrap();
+        let mut a = SharedTensor::<T>::new(backend.device(), &()).unwrap();
         write_to_memory(a.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap()]);
 
-        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut x = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
         (a, x, y)
     }
 
     pub fn get_copy_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
-        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut x = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let y = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         (x, y)
     }
 
     pub fn get_dot_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
-        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut x = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let result = SharedTensor::<T>::new(backend.device(), ()).unwrap();
+        let result = SharedTensor::<T>::new(backend.device(), &()).unwrap();
         (x, y, result)
     }
 
     pub fn get_nrm2_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
-        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut x = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap()]);
 
-        let result = SharedTensor::<T>::new(backend.device(), ()).unwrap();
+        let result = SharedTensor::<T>::new(backend.device(), &()).unwrap();
         (x, result)
     }
 
-    pub fn get_scale_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
-        let mut a = SharedTensor::<T>::new(backend.device(), ()).unwrap();
+    pub fn get_scal_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
+        let mut a = SharedTensor::<T>::new(backend.device(), &()).unwrap();
         write_to_memory(a.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap()]);
 
-        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
         (a, y)
     }
 
     pub fn get_swap_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
-        let mut x = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut x = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(x.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap()]);
 
-        let mut y = SharedTensor::<T>::new(backend.device(), vec![3]).unwrap();
+        let mut y = SharedTensor::<T>::new(backend.device(), &vec![3]).unwrap();
         write_to_memory(y.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(3).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(1).unwrap()]);
 
         (x, y)
@@ -95,7 +95,7 @@ mod blas_spec {
         use co::backend::{Backend, BackendConfig};
         use co::framework::IFramework;
         use co::frameworks::Native;
-        use co_blas::library::*;
+        use co_blas::plugin::*;
         use super::*;
 
         fn get_native_backend() -> Backend<Native> {
@@ -217,28 +217,28 @@ mod blas_spec {
             backend.nrm2(&mut x, &mut result).unwrap();
         }
 
-        /// SCALE
+        /// SCAL
 
         #[test]
-        fn it_computes_correct_scale_on_native_for_f32() {
+        fn it_computes_correct_scal_on_native_for_f32() {
             let backend = get_native_backend();
-            let (mut x, mut y) = get_scale_memory::<f32, Native>(&backend);
+            let (mut x, mut y) = get_scal_memory::<f32, Native>(&backend);
 
-            if let Ok(_) = backend.scale(&mut x, &mut y) {
+            if let Ok(_) = backend.scal(&mut x, &mut y) {
                 if let Some(mem) = y.get(backend.device()).unwrap().as_native() { assert_eq!(&[2f32, 4f32, 6f32], mem.as_slice::<f32>()) }
             }
-            backend.scale(&mut x, &mut y).unwrap();
+            backend.scal(&mut x, &mut y).unwrap();
         }
 
         #[test]
-        fn it_computes_correct_scale_on_native_for_f64() {
+        fn it_computes_correct_scal_on_native_for_f64() {
             let backend = get_native_backend();
-            let (mut x, mut y) = get_scale_memory::<f64, Native>(&backend);
+            let (mut x, mut y) = get_scal_memory::<f64, Native>(&backend);
 
-            if let Ok(_) = backend.scale(&mut x, &mut y) {
+            if let Ok(_) = backend.scal(&mut x, &mut y) {
                 if let Some(mem) = y.get(backend.device()).unwrap().as_native() { assert_eq!(&[2f64, 4f64, 6f64], mem.as_slice::<f64>()) }
             }
-            backend.scale(&mut x, &mut y).unwrap();
+            backend.scal(&mut x, &mut y).unwrap();
         }
 
         /// SWAP

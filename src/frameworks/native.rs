@@ -1,56 +1,12 @@
 //! Provides BLAS for a Native backend.
 
 use ::operation::*;
-use ::binary::*;
-use ::library::*;
-use collenchyma::device::DeviceType;
+use ::plugin::*;
 use collenchyma::backend::Backend;
 use collenchyma::memory::MemoryType;
-use collenchyma::frameworks::native::{Native, Function, Binary};
+use collenchyma::frameworks::native::Native;
 use collenchyma::plugin::Error;
 use rblas::{Asum, Axpy, Copy, Dot, Nrm2, Scal, Swap};
-
-macro_rules! impl_binary(($($t: ident), +) => (
-    $(
-        impl IBlasBinary<$t> for Binary {
-            type Asum = Function;
-            type Axpy = Function;
-            type Copy = Function;
-            type Dot = Function;
-            type Nrm2 = Function;
-            type Scale = Function;
-            type Swap = Function;
-
-            fn asum(&self) -> Self::Asum {
-                self.blas_asum
-            }
-
-            fn axpy(&self) -> Self::Axpy {
-                self.blas_axpy
-            }
-
-            fn copy(&self) -> Self::Copy {
-                self.blas_copy
-            }
-
-            fn dot(&self) -> Self::Dot {
-                self.blas_dot
-            }
-
-            fn nrm2(&self) -> Self::Nrm2 {
-                self.blas_nrm2
-            }
-
-            fn scale(&self) -> Self::Scale {
-                self.blas_scale
-            }
-
-            fn swap(&self) -> Self::Swap {
-                self.blas_swap
-            }
-        }
-    )+
-));
 
 macro_rules! impl_asum_for {
     ($t:ident, $b:ty) => (
@@ -154,52 +110,18 @@ macro_rules! impl_iblas_for {
         impl_nrm2_for!($t, $b);
         impl_scale_for!($t, $b);
         impl_swap_for!($t, $b);
+
+        impl IBlas<$t> for $b {
+            iblas_asum_for!($t, $b);
+            iblas_axpy_for!($t, $b);
+            iblas_copy_for!($t, $b);
+            iblas_dot_for!($t, $b);
+            iblas_nrm2_for!($t, $b);
+            iblas_scale_for!($t, $b);
+            iblas_swap_for!($t, $b);
+        }
     );
 }
 
-impl_binary!(f32, f64);
-impl_iblas_for!(f32, Function);
-impl_iblas_for!(f64, Function);
-
 impl_iblas_for!(f32, Backend<Native>);
 impl_iblas_for!(f64, Backend<Native>);
-
-impl IBlas<f32> for Backend<Native> {
-    type B = Binary;
-
-    iblas_asum_for!(f32, Backend<Native>);
-    iblas_axpy_for!(f32, Backend<Native>);
-    iblas_copy_for!(f32, Backend<Native>);
-    iblas_dot_for!(f32, Backend<Native>);
-    iblas_nrm2_for!(f32, Backend<Native>);
-    iblas_scale_for!(f32, Backend<Native>);
-    iblas_swap_for!(f32, Backend<Native>);
-
-    fn binary(&self) -> &Self::B {
-        self.binary()
-    }
-
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
-}
-
-impl IBlas<f64> for Backend<Native> {
-    type B = Binary;
-
-    iblas_asum_for!(f64, Backend<Native>);
-    iblas_axpy_for!(f64, Backend<Native>);
-    iblas_copy_for!(f64, Backend<Native>);
-    iblas_dot_for!(f64, Backend<Native>);
-    iblas_nrm2_for!(f64, Backend<Native>);
-    iblas_scale_for!(f64, Backend<Native>);
-    iblas_swap_for!(f64, Backend<Native>);
-
-    fn binary(&self) -> &Self::B {
-        self.binary()
-    }
-
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
-}

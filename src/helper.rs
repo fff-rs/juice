@@ -18,7 +18,7 @@ macro_rules! iblas_asum_for {
         }
 
         fn asum_plain(&self,
-            x: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            x: &::collenchyma::tensor::SharedTensor<$t>,
             result: &mut ::collenchyma::tensor::SharedTensor<$t>
         ) -> Result<(), ::collenchyma::error::Error> {
             Ok(try!(
@@ -52,8 +52,8 @@ macro_rules! iblas_axpy_for {
         }
 
         fn axpy_plain(&self,
-            a: &mut ::collenchyma::tensor::SharedTensor<$t>,
-            x: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            a: &::collenchyma::tensor::SharedTensor<$t>,
+            x: &::collenchyma::tensor::SharedTensor<$t>,
             y: &mut ::collenchyma::tensor::SharedTensor<$t>
         ) -> Result<(), ::collenchyma::error::Error> {
             Ok(try!(
@@ -85,7 +85,7 @@ macro_rules! iblas_copy_for {
         }
 
         fn copy_plain(&self,
-            x: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            x: &::collenchyma::tensor::SharedTensor<$t>,
             y: &mut ::collenchyma::tensor::SharedTensor<$t>
         ) -> Result<(), ::collenchyma::error::Error> {
             Ok(try!(
@@ -119,8 +119,8 @@ macro_rules! iblas_dot_for {
         }
 
         fn dot_plain(&self,
-            x: &mut ::collenchyma::tensor::SharedTensor<$t>,
-            y: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            x: &::collenchyma::tensor::SharedTensor<$t>,
+            y: &::collenchyma::tensor::SharedTensor<$t>,
             result: &mut ::collenchyma::tensor::SharedTensor<$t>
         ) -> Result<(), ::collenchyma::error::Error> {
             Ok(try!(
@@ -152,7 +152,7 @@ macro_rules! iblas_nrm2_for {
         }
 
         fn nrm2_plain(&self,
-            x: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            x: &::collenchyma::tensor::SharedTensor<$t>,
             result: &mut ::collenchyma::tensor::SharedTensor<$t>
         ) -> Result<(), ::collenchyma::error::Error> {
             Ok(try!(
@@ -168,7 +168,7 @@ macro_rules! iblas_nrm2_for {
 #[macro_export]
 macro_rules! iblas_scale_for {
     ($t:ident, $b:ty) => (
-        fn scale(&self,
+        fn scal(&self,
             a: &mut ::collenchyma::tensor::SharedTensor<$t>,
             x: &mut ::collenchyma::tensor::SharedTensor<$t>
         ) -> Result<(), ::collenchyma::error::Error> {
@@ -182,8 +182,8 @@ macro_rules! iblas_scale_for {
             ))
         }
 
-        fn scale_plain(&self,
-            a: &mut ::collenchyma::tensor::SharedTensor<$t>,
+        fn scal_plain(&self,
+            a: &::collenchyma::tensor::SharedTensor<$t>,
             x: &mut ::collenchyma::tensor::SharedTensor<$t>
         ) -> Result<(), ::collenchyma::error::Error> {
             Ok(try!(
