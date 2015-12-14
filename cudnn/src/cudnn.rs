@@ -101,9 +101,9 @@ impl Cudnn {
         src_data: *const ::libc::c_void,
         src_diff_desc: &TensorDescriptor,
         src_diff_data: *const ::libc::c_void,
-        dest_desc: TensorDescriptor,
+        dest_desc: &TensorDescriptor,
         dest_data: *const ::libc::c_void,
-        dest_diff_desc: TensorDescriptor,
+        dest_diff_desc: &TensorDescriptor,
         dest_diff_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
@@ -120,9 +120,9 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_data`.
     pub fn relu_forward<T>(
         &self,
-        src_desc: TensorDescriptor,
+        src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
-        dest_desc: TensorDescriptor,
+        dest_desc: &TensorDescriptor,
         dest_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
@@ -143,9 +143,9 @@ impl Cudnn {
         src_data: *const ::libc::c_void,
         src_diff_desc: &TensorDescriptor,
         src_diff_data: *const ::libc::c_void,
-        dest_desc: TensorDescriptor,
+        dest_desc: &TensorDescriptor,
         dest_data: *const ::libc::c_void,
-        dest_diff_desc: TensorDescriptor,
+        dest_diff_desc: &TensorDescriptor,
         dest_diff_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
@@ -162,9 +162,9 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_data`.
     pub fn tanh_forward<T>(
         &self,
-        src_desc: TensorDescriptor,
+        src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
-        dest_desc: TensorDescriptor,
+        dest_desc: &TensorDescriptor,
         dest_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
@@ -185,9 +185,9 @@ impl Cudnn {
         src_data: *const ::libc::c_void,
         src_diff_desc: &TensorDescriptor,
         src_diff_data: *const ::libc::c_void,
-        dest_desc: TensorDescriptor,
+        dest_desc: &TensorDescriptor,
         dest_data: *const ::libc::c_void,
-        dest_diff_desc: TensorDescriptor,
+        dest_diff_desc: &TensorDescriptor,
         dest_diff_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
@@ -210,7 +210,7 @@ impl Cudnn {
         src_data: *const ::libc::c_void,
         filter_desc: &FilterDescriptor,
         filter_data: *const ::libc::c_void,
-        dest_desc: TensorDescriptor,
+        dest_desc: &TensorDescriptor,
         dest_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
@@ -233,7 +233,7 @@ impl Cudnn {
         src_diff_data: *const ::libc::c_void,
         filter_desc: &FilterDescriptor,
         filter_data: *const ::libc::c_void,
-        dest_grad_desc: TensorDescriptor,
+        dest_grad_desc: &TensorDescriptor,
         dest_grad_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
