@@ -27,8 +27,8 @@ For more information,
 If you're using Cargo, just add collenchyma-NN to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.4"
-    collenchyma-nn = "0.1.0"
+    collenchyma = "0.0.5"
+    collenchyma-nn = "0.0.1"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 

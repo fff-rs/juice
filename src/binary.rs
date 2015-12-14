@@ -1,7 +1,7 @@
 //! Provides the INnBinary Binary trait for Collenchyma's Framework implementation.
 
 use super::operation::*;
-use collenchyma::plugin::numeric_helpers::Float;
+use co::plugin::numeric_helpers::Float;
 
 /// Describes the operation binding for a NN Binary implementation.
 pub trait INnBinary<F: Float> {

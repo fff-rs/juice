@@ -3,11 +3,11 @@
 use ::operation::*;
 use ::binary::*;
 use ::plugin::*;
-use collenchyma::backend::Backend;
-use collenchyma::device::DeviceType;
-use collenchyma::memory::MemoryType;
-use collenchyma::plugin::Error;
-use collenchyma::frameworks::opencl::{Kernel, Program, OpenCL};
+use co::backend::Backend;
+use co::device::DeviceType;
+use co::memory::MemoryType;
+use co::plugin::Error;
+use co::frameworks::opencl::{Kernel, Program, OpenCL};
 
 impl INnBinary<f32> for Program {
     type Sigmoid = Kernel;

@@ -38,7 +38,8 @@
         trivial_casts, trivial_numeric_casts,
         unused_import_braces, unused_qualifications)]
 
-extern crate collenchyma;
+extern crate collenchyma as co;
+#[cfg(feature = "cuda")]
 extern crate cudnn;
 extern crate libc;
 #[macro_use]
@@ -47,6 +48,6 @@ extern crate lazy_static;
 pub mod plugin;
 pub mod binary;
 pub mod operation;
-#[macro_use]
-pub mod helper;
+#[cfg(feature = "cuda")]
+#[macro_use] pub mod helper;
 mod frameworks;

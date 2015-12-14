@@ -2,24 +2,32 @@
 name            = "collenchyma-nn"
 description     = "Collenchyma plugin for full Neural Network algorithm support"
 version         = "0.0.1"
-authors         = ["MichaelHirn <michael.hirn@storeness.de>"]
+authors         = ["MichaelHirn <michael.hirn@storeness.de>",
+                   "Maximilian Goisser <max@autumnai.com>"]
 
 repository      = "https://github.com/autumnai/collenchyma-nn"
 homepage        = "https://github.com/autumnai/collenchyma-nn"
 documentation   = "https://autumnai.github.io/collenchyma-nn"
 readme          = "README.md"
 
-keywords        = ["neural-network", "collenchyma", "computation", "hfc", "plugin"]
+keywords        = ["neural-network", "collenchyma", "computation", "hpc", "plugin"]
 license         = "MIT"
 
 [dependencies]
-collenchyma = { path = "/home/hobofan/collenchyma" }
-cudnn = { path = "/home/hobofan/rust-cudnn/cudnn" }
+collenchyma = { git = "https://github.com/autumnai/collenchyma.git", rev = "fdd030d", default-features = false }
+# cudnn = "0.1.3"
+cudnn = { git = "https://github.com/autumnai/rust-cudnn.git", rev = "6436d44", optional = true }
 libc = "0.2"
 lazy_static = "0.1"
+
 clippy = { version = "0.0.27", optional = true }
 
 [features]
+default = ["native", "cuda", "opencl"]
+native = ["collenchyma/native"]
+cuda = ["collenchyma/cuda", "cudnn"]
+opencl = ["collenchyma/opencl"]
+
+travis = ["native"]
 dev = []
-travis = []
 lint = ["clippy"]

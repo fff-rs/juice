@@ -3,11 +3,11 @@
 use ::operation::*;
 use ::binary::*;
 use ::plugin::*;
-use collenchyma::device::DeviceType;
-use collenchyma::backend::Backend;
-use collenchyma::memory::MemoryType;
-use collenchyma::frameworks::native::{Native, Function, Binary};
-use collenchyma::plugin::Error;
+use co::device::DeviceType;
+use co::backend::Backend;
+use co::memory::MemoryType;
+use co::frameworks::native::{Native, Function, Binary};
+use co::plugin::Error;
 
 macro_rules! impl_binary(($($t: ident), +) => (
     $(
