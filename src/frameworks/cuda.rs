@@ -13,6 +13,7 @@ use cudnn::*;
 
 lazy_static! {
     static ref SIGMOID: Function = Function::from_isize(1);
+    static ref CUDNN: Result<Cudnn, Error> = Cudnn::new();
 }
 
 pub trait ICudnnTensorDesc<T> {
@@ -96,6 +97,8 @@ impl INn<f32> for Backend<Cuda> {
     type B = Module;
 
     impl_ops_sigmoid_for!(f32, Backend<Cuda>);
+    impl_ops_relu_for!(f32, Backend<Cuda>);
+    impl_ops_tanh_for!(f32, Backend<Cuda>);
 
     fn binary(&self) -> &Self::B {
         self.binary()
@@ -110,6 +113,8 @@ impl INn<f64> for Backend<Cuda> {
     type B = Module;
 
     impl_ops_sigmoid_for!(f64, Backend<Cuda>);
+    impl_ops_relu_for!(f64, Backend<Cuda>);
+    impl_ops_tanh_for!(f64, Backend<Cuda>);
 
     fn binary(&self) -> &Self::B {
         self.binary()

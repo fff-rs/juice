@@ -14,7 +14,8 @@ license         = "MIT"
 
 [dependencies]
 collenchyma = { path = "/home/hobofan/collenchyma" }
-cudnn = "0.1"
+# cudnn = "0.1.3"
+cudnn = { git = "https://github.com/autumnai/rust-cudnn.git", rev = "6436d44" }
 libc = "0.2"
 lazy_static = "0.1"
 clippy = { version = "0.0.27", optional = true }
