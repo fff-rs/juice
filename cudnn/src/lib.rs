@@ -29,8 +29,9 @@ extern crate cudnn_sys as ffi;
 pub use ffi::*;
 pub use self::cudnn::Cudnn;
 pub use self::error::Error;
-pub use self::utils::{Direction, ScalParams};
 pub use self::tensor_descriptor::{TensorDescriptor, DataType};
+pub use self::convolution_descriptor::ConvolutionDescriptor;
+pub use self::filter_descriptor::FilterDescriptor;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the Cuda cuDNN API.
@@ -38,6 +39,8 @@ pub struct API;
 
 mod cudnn;
 mod error;
-mod utils;
+pub mod utils;
 mod tensor_descriptor;
+mod filter_descriptor;
+mod convolution_descriptor;
 mod api;
