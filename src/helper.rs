@@ -18,11 +18,12 @@ macro_rules! impl_ops_sigmoid_for {
             let dest_data = try!(try!(result.get_mut(self.device()).ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `result`")))
             .as_cuda().ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to receive native memory for `result`.")))
             .id_c();
+            let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
             Ok(try!(match self.binary().cudnn().sigmoid_forward(
                 &src_desc, unsafe { ::std::mem::transmute::<u64, *const ::libc::c_void>(src_data) },
                 &dest_desc, unsafe { ::std::mem::transmute::<u64, *mut ::libc::c_void>(dest_data) },
-                ::cudnn::ScalParams::<$t>::default()
+                scal_params
             ) {
                 Ok(_) => Ok(()),
                 Err(err) => {
@@ -45,11 +46,12 @@ macro_rules! impl_ops_sigmoid_for {
             let dest_data = try!(try!(result.get_mut(self.device()).ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `result`")))
             .as_cuda().ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to receive native memory for `result`.")))
             .id_c();
+            let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
             Ok(try!(match self.binary().cudnn().sigmoid_forward(
                 &src_desc, unsafe { ::std::mem::transmute::<u64, *const ::libc::c_void>(src_data) },
                 &dest_desc, unsafe { ::std::mem::transmute::<u64, *mut ::libc::c_void>(dest_data) },
-                ::cudnn::ScalParams::<$t>::default()
+                scal_params
             ) {
                 Ok(_) => Ok(()),
                 Err(err) => {
@@ -74,11 +76,12 @@ macro_rules! impl_ops_sigmoid_for {
             let dest_data = try!(try!(result.get_mut(self.device()).ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `result`")))
             .as_cuda().ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to receive native memory for `result`.")))
             .id_c();
+            let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
             Ok(try!(match self.binary().cudnn().sigmoid_forward(
                 &src_desc, unsafe { ::std::mem::transmute::<u64, *const ::libc::c_void>(src_data) },
                 &dest_desc, unsafe { ::std::mem::transmute::<u64, *mut ::libc::c_void>(dest_data) },
-                ::cudnn::ScalParams::<$t>::default()
+                scal_params
             ) {
                 Ok(_) => Ok(()),
                 Err(err) => {
@@ -101,11 +104,12 @@ macro_rules! impl_ops_sigmoid_for {
             let dest_data = try!(try!(result.get_mut(self.device()).ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `result`")))
             .as_cuda().ok_or(::co::plugin::Error::MissingMemoryForDevice("Unable to receive native memory for `result`.")))
             .id_c();
+            let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
             Ok(try!(match self.binary().cudnn().sigmoid_forward(
                 &src_desc, unsafe { ::std::mem::transmute::<u64, *const ::libc::c_void>(src_data) },
                 &dest_desc, unsafe { ::std::mem::transmute::<u64, *mut ::libc::c_void>(dest_data) },
-                ::cudnn::ScalParams::<$t>::default()
+                scal_params
             ) {
                 Ok(_) => Ok(()),
                 Err(err) => {
