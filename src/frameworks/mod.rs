@@ -5,4 +5,4 @@
 //#[cfg(feature = "opencl")]
 //mod opencl;
 #[cfg(feature = "cuda")]
-mod cuda;
+pub mod cuda;
