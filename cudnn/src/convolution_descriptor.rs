@@ -4,6 +4,7 @@
 //! which is needed for forward and backward convolutional operations.
 
 use super::{API, Error};
+use super::utils::DataType;
 use ffi::*;
 
 #[derive(Debug, Clone)]
@@ -21,8 +22,9 @@ impl Drop for ConvolutionDescriptor {
 
 impl ConvolutionDescriptor {
     /// Initializes a new CUDA cuDNN ConvolutionDescriptor.
-    pub fn new(pad: &[i32], filter_stride: &[i32], upscale: &[i32], data_type: DataType) -> Result<ConvolutionDescriptor, Error> {
+    pub fn new(pad: &[i32], filter_stride: &[i32], data_type: DataType) -> Result<ConvolutionDescriptor, Error> {
         let array_length = pad.len() as i32;
+        let upscale: Vec<i32> = ::std::iter::repeat(1i32).take(array_length as usize).collect();
 
         let generic_convolution_desc = try!(API::create_convolution_descriptor());
         match data_type {
@@ -58,15 +60,4 @@ impl ConvolutionDescriptor {
     pub fn id_c(&self) -> cudnnConvolutionDescriptor_t {
         self.id as cudnnConvolutionDescriptor_t
     }
-}
-
-#[derive(Debug, Copy, Clone)]
-/// Defines the available data types for the CUDA cuDNN data representation.
-pub enum DataType {
-    /// F32
-    Float,
-    /// F64
-    Double,
-    /// F16 (no native Rust support yet)
-    Half,
 }

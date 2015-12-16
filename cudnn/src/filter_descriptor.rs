@@ -4,6 +4,7 @@
 //! which is needed for forward and backward convolutional operations.
 
 use super::{API, Error};
+use super::utils::DataType;
 use ffi::*;
 
 #[derive(Debug, Clone)]
@@ -58,15 +59,4 @@ impl FilterDescriptor {
     pub fn id_c(&self) -> cudnnFilterDescriptor_t {
         self.id as cudnnFilterDescriptor_t
     }
-}
-
-#[derive(Debug, Copy, Clone)]
-/// Defines the available data types for the CUDA cuDNN data representation.
-pub enum DataType {
-    /// F32
-    Float,
-    /// F64
-    Double,
-    /// F16 (no native Rust support yet)
-    Half,
 }
