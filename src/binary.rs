@@ -6,7 +6,7 @@ use collenchyma::plugin::numeric_helpers::Float;
 /// Describes the operation binding for a Blas Binary implementation.
 pub trait IBlasBinary<F: Float> {
     /// Describes the Asum Operation.
-    type Asum: IOperationAsum<F >;
+    type Asum: IOperationAsum<F>;
     /// Describes the Axpy Operation.
     type Axpy: IOperationAxpy<F>;
     /// Describes the Copy Operation.

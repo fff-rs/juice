@@ -2,7 +2,7 @@
 name            = "collenchyma-blas"
 description     = "Collenchyma library for full BLAS support"
 version         = "0.1.0"
-authors         = ["MichaelHirn <michael.hirn@storeness.de>",
+authors         = ["Michael Hirn <mj@autumnai.com>",
                    "Maximilian Goisser <max@autumnai.com>"]
 
 repository      = "https://github.com/autumnai/collenchyma-blas"
@@ -14,7 +14,7 @@ keywords        = ["blas", "collenchyma", "computation", "hpc", "plugin"]
 license         = "MIT"
 
 [dependencies]
-collenchyma = { version = "0.0.5", default-features = false }
+collenchyma = { version = "0.0.6", default-features = false }
 
 rblas = { version = "0.0.11", optional = true }
 

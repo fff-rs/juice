@@ -52,9 +52,9 @@ extern crate collenchyma;
 #[cfg(feature = "native")]
 extern crate rblas;
 
-pub mod library;
+pub mod plugin;
 pub mod binary;
 pub mod operation;
 #[macro_use]
 pub mod helper;
-mod frameworks;
+pub mod frameworks;
