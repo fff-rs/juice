@@ -63,7 +63,7 @@ impl API {
         unsafe { API::ffi_lrn_cross_channel_backward(handle, norm_desc, mode, alpha, src_desc, src_data, src_diff_desc, src_diff_data, beta, dest_desc, dest_data, dest_diff_desc, dest_diff_data) }
     }
 
-    /// Computes an activation forward function.
+    /// Computes an devisive normalization forward function.
     pub fn divisive_normalization_forward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -81,7 +81,7 @@ impl API {
         unsafe { API::ffi_divisive_normalization_forward(handle, norm_desc, mode, alpha, src_desc, src_data, src_means_data, temp_data, temp_data2, beta, dest_desc, dest_data) }
     }
 
-    /// Computes an activation backward function.
+    /// Computes an devisive normalization backward function.
     pub fn divisive_normalization_backward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,

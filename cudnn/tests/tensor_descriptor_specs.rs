@@ -3,7 +3,8 @@ extern crate cudnn;
 #[cfg(test)]
 mod tensor_descriptor_spec {
 
-    use cudnn::{TensorDescriptor, DataType};
+    use cudnn::TensorDescriptor;
+    use cudnn::utils::DataType;
 
     #[test]
     fn it_initializes_a_tensor_descriptor() {

@@ -1,15 +1,15 @@
 # rust-cuDNN • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/rust-cudnn.svg?branch=master)](https://travis-ci.org/autumnai/rust-cudnn) [![Coverage Status](https://coveralls.io/repos/autumnai/rust-cudnn/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/rust-cudnn?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/cudnn)](https://crates.io/crates/cudnn) [![License](https://img.shields.io/crates/l/cudnn.svg)](LICENSE)
 
-rust-cuDNN provides safe wrapper around [CUDA's cuDNN][cudnn] library, so you can use
+rust-cuDNN provides safe wrapper for [CUDA's cuDNN][cudnn] library, so you can use
 it comfortably and safely in your Rust application.
 
-As cuDNN relies on CUDA to allocate memory on the GPU and sync the data, you might also
-check out [rust-cuda][rust-cuda].
-To let your high-performance computations run on machines which might not be CUDA/cuDNN enabled,
-you can check out [Collenchyma][collenchyma].
+As cuDNN relies on CUDA to allocate memory on the GPU, you might also look into [rust-cuda][rust-cuda].
 
-rust-cuDNN was started at [Autumn][autumn] to support the Machine Intelligence
-Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
+rust-cudnn was developed at [Autumn][autumn] for the Rust Machine Intelligence Framework [Leaf][leaf].
+
+rust-cudnn is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the
+[Neural Network Plugin][nn]. For an easy, unified interface for NN operations, such as those provided by
+cuDNN, you might check out [Collenchyma][collenchyma].
 
 For more information,
 
@@ -28,7 +28,7 @@ For more information,
 If you're using Cargo, just add rust-cuDNN to your Cargo.toml:
 
     [dependencies]
-    cudnn = "0.1"
+    cudnn = "1.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
@@ -42,21 +42,21 @@ Using the high-level `Cudnn` interface.
 
 ```rust
 extern crate cudnn;
-use cudnn::Cudnn;
+extern crate libc;
+use cudnn::{Cudnn, TensorDescriptor};
+use cudnn::utils::{ScalParams, DataType};
 fn main() {
     // Initialize a new cuDNN context and allocates resources.
     let cudnn = Cudnn::new().unwrap();
-    cudnn.sigmoid_forward(srcTensorDescriptor, srcMemoryPtr, destTensorDescriptor, destMemoryPtr, ScalParams);
- }
-```
-
-Using the low-level `API` interface.
-
-```rust
-extern crate cudnn;
-use cudnn::API;
-fn main() {
-  API::activation_forward(cudnnHandle, cudnnActivationMode, alpha, srcTensorDescriptor, srcMemoryPtr, beta, destTensorDescriptor, destMemoryPtr);
+    // Create a cuDNN Tensor Descriptor for `src` and `dest` memory.
+    let src_desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
+    let dest_desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
+    // Obtain the `src` and memory pointer on the GPU.
+    // NOTE: You wouldn't do it like that. You need to really allocate memory on the GPU with e.g. CUDA or Collenchyma.
+    let src_data: *const ::libc::c_void = ::std::ptr::null();
+    let dest_data: *mut ::libc::c_void = ::std::ptr::null_mut();
+    // Now you can compute the forward sigmoid activation on your GPU.
+    cudnn.sigmoid_forward::<f32>(&src_desc, src_data, &dest_desc, dest_data, ScalParams::default());
 }
 ```
 

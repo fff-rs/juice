@@ -6,38 +6,6 @@ use ::{API, Error};
 use ffi::*;
 
 impl API {
-    /// Computes a pooling forward function.
-    pub fn pooling_forward(
-        handle: cudnnHandle_t,
-        pooling_desc: cudnnPoolingDescriptor_t,
-        alpha: *const ::libc::c_void,
-        src_desc: cudnnTensorDescriptor_t,
-        src_data: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
-    ) -> Result<(), Error> {
-        unsafe { API::ffi_pooling_forward(handle, pooling_desc, alpha, src_desc, src_data, beta, dest_desc, dest_data) }
-    }
-
-    /// Computes a pooling backward function.
-    pub fn pooling_backward(
-        handle: cudnnHandle_t,
-        pooling_desc: cudnnPoolingDescriptor_t,
-        alpha: *const ::libc::c_void,
-        src_desc: cudnnTensorDescriptor_t,
-        src_data: *const ::libc::c_void,
-        src_diff_desc: cudnnTensorDescriptor_t,
-        src_diff_data: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *const ::libc::c_void,
-        dest_diff_desc: cudnnTensorDescriptor_t,
-        dest_diff_data: *mut ::libc::c_void
-    ) -> Result<(), Error> {
-        unsafe { API::ffi_pooling_backward(handle, pooling_desc, alpha, src_desc, src_data, src_diff_desc, src_diff_data, beta, dest_desc, dest_data, dest_diff_desc, dest_diff_data) }
-    }
-
     /// Creates a generic CUDA cuDNN Pooling Descriptor.
     pub fn create_pooling_descriptor() -> Result<cudnnPoolingDescriptor_t, Error> {
         unsafe { API::ffi_create_pooling_descriptor() }
@@ -70,6 +38,38 @@ impl API {
         out_dim_a: *mut ::libc::c_int,
     ) -> Result<(), Error> {
         unsafe { API::ffi_get_pooling_nd_forward_output_dim(pooling_desc, input_desc, nb_dims, out_dim_a) }
+    }
+    
+    /// Computes a pooling forward function.
+    pub fn pooling_forward(
+        handle: cudnnHandle_t,
+        pooling_desc: cudnnPoolingDescriptor_t,
+        alpha: *const ::libc::c_void,
+        src_desc: cudnnTensorDescriptor_t,
+        src_data: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dest_desc: cudnnTensorDescriptor_t,
+        dest_data: *mut ::libc::c_void
+    ) -> Result<(), Error> {
+        unsafe { API::ffi_pooling_forward(handle, pooling_desc, alpha, src_desc, src_data, beta, dest_desc, dest_data) }
+    }
+
+    /// Computes a pooling backward function.
+    pub fn pooling_backward(
+        handle: cudnnHandle_t,
+        pooling_desc: cudnnPoolingDescriptor_t,
+        alpha: *const ::libc::c_void,
+        src_desc: cudnnTensorDescriptor_t,
+        src_data: *const ::libc::c_void,
+        src_diff_desc: cudnnTensorDescriptor_t,
+        src_diff_data: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dest_desc: cudnnTensorDescriptor_t,
+        dest_data: *const ::libc::c_void,
+        dest_diff_desc: cudnnTensorDescriptor_t,
+        dest_diff_data: *mut ::libc::c_void
+    ) -> Result<(), Error> {
+        unsafe { API::ffi_pooling_backward(handle, pooling_desc, alpha, src_desc, src_data, src_diff_desc, src_diff_data, beta, dest_desc, dest_data, dest_diff_desc, dest_diff_data) }
     }
 
     unsafe fn ffi_create_pooling_descriptor() -> Result<cudnnPoolingDescriptor_t, Error> {
