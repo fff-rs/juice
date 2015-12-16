@@ -1,9 +1,9 @@
 # Collenchyma • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma) [![Coverage Status](https://coveralls.io/repos/autumnai/collenchyma/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/collenchyma?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma)](https://crates.io/crates/collenchyma) [![License](https://img.shields.io/crates/l/collenchyma.svg)](LICENSE)
 
-Collenchyma is an extensible, pluggable backend-agnostic framework for parallel computations
-on CUDA, OpenCL and common host CPU. It is fast and easy to build and provides
-a extensible Rust struct to run high-performance computation on almost any device,
-even if it does not have CUDA or OpenCL capable devices.
+Collenchyma is an extensible, pluggable, backend-agnostic framework for parallel,
+high-performance computations on CUDA, OpenCL and common host CPU. It is fast, easy
+to build and provides an extensible Rust struct to execute operations on almost any
+machine, even if it does not have CUDA or OpenCL capable devices.
 
 Collenchyma's abstracts over the different computation languages (Native,
 OpenCL, Cuda) and let's you run highly-performant code, thanks to easy
@@ -41,7 +41,7 @@ For more information,
 
 > Disclaimer: Collenchyma is currently in a very early and heavy stage of
 > development. If you are experiencing any bugs that are not due to not yet
-> implemented features, feel free to create a issue.
+> implemented features, feel free to create an issue.
 
 [arrayfire]: https://github.com/arrayfire/arrayfire
 [autumn]: http://autumnai.com
@@ -53,7 +53,7 @@ For more information,
 If you're using Cargo, just add Collenchyma to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.5"
+    collenchyma = "0.0.6"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
