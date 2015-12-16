@@ -29,9 +29,6 @@ addons:
     - libelf-dev
     - libdw-dev
     - libblas-dev
-install:
-  - sudo apt-get update
-  - sudo apt-get install fglrx opencl-headers
 after_success:
 - travis-cargo doc-upload
 - travis-cargo coveralls --no-sudo
