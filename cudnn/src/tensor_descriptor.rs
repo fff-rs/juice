@@ -5,6 +5,7 @@
 //! the structure and dimensionality of the data.
 
 use super::{API, Error};
+use super::utils::DataType;
 use ffi::*;
 
 #[derive(Debug, Clone)]
@@ -62,15 +63,4 @@ impl TensorDescriptor {
     pub fn id_c(&self) -> cudnnTensorDescriptor_t {
         self.id as cudnnTensorDescriptor_t
     }
-}
-
-#[derive(Debug, Copy, Clone)]
-/// Defines the available data types for the CUDA cuDNN data representation.
-pub enum DataType {
-    /// F32
-    Float,
-    /// F64
-    Double,
-    /// F16 (no native Rust support yet)
-    Half,
 }

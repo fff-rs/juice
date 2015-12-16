@@ -119,7 +119,7 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_desc: cudnnTensorDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionFwdAlgoPerf_t>, Error> {
-        let mut perf_results: Vec<cudnnConvolutionFwdAlgoPerf_t> = Vec::<cudnnConvolutionFwdAlgoPerf_t>::with_capacity(2);
+        let mut perf_results: Vec<cudnnConvolutionFwdAlgoPerf_t> = vec![Struct_Unnamed14::default(), Struct_Unnamed14::default()];
         match cudnnFindConvolutionForwardAlgorithm(handle, src_desc, filter_desc, conv_desc, dest_desc, 2, &mut 0, perf_results.as_mut_ptr()) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")),
@@ -152,7 +152,7 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_grad_desc: cudnnTensorDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionBwdDataAlgoPerf_t>, Error> {
-        let mut perf_results: Vec<cudnnConvolutionBwdDataAlgoPerf_t> = Vec::<cudnnConvolutionBwdDataAlgoPerf_t>::with_capacity(2);
+        let mut perf_results: Vec<cudnnConvolutionBwdDataAlgoPerf_t> = vec![Struct_Unnamed20::default(), Struct_Unnamed20::default()];
         match cudnnFindConvolutionBackwardDataAlgorithm(handle, filter_desc, src_diff_desc, conv_desc, dest_grad_desc, 2, &mut 0, perf_results.as_mut_ptr()) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")),
