@@ -30,6 +30,18 @@ impl API {
         unsafe { API::ffi_set_tensor_nd_descriptor(tensor_desc, data_type, nb_dims, dim_a, stride_a) }
     }
 
+    /// Returns informations about a generic CUDA cuDNN Tensor Descriptor.
+    pub fn get_tensor_descriptor(
+        tensor_desc: cudnnTensorDescriptor_t,
+        nb_dims_requested: ::libc::c_int,
+        data_type: *mut cudnnDataType_t,
+        nb_dims: *mut ::libc::c_int,
+        dim_a: *mut ::libc::c_int,
+        stride_a: *mut ::libc::c_int
+    ) -> Result<(), Error> {
+        unsafe { API::ffi_get_tensor_nd_descriptor(tensor_desc, nb_dims_requested, data_type, nb_dims, dim_a, stride_a) }
+    }
+
     /// Transforms a CUDA cuDNN Tensor from to another Tensor with a different layout.
     ///
     /// This function copies the scaled data from one tensor to another tensor with a different
@@ -114,6 +126,22 @@ impl API {
         stride_a: *const ::libc::c_int,
     ) -> Result<(), Error> {
         match cudnnSetTensorNdDescriptor(tensor_desc, data_type, nb_dims, dim_a, stride_a) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`dim_a` invalid due to negative or zero value, or invalid `data_type`.")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.")),
+            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Tensor Descriptor.")),
+        }
+    }
+
+    unsafe fn ffi_get_tensor_nd_descriptor(
+        tensor_desc: cudnnTensorDescriptor_t,
+        nb_dims_requested: ::libc::c_int,
+        data_type: *mut cudnnDataType_t,
+        nb_dims: *mut ::libc::c_int,
+        dim_a: *mut ::libc::c_int,
+        stride_a: *mut ::libc::c_int
+    ) -> Result<(), Error> {
+        match cudnnGetTensorNdDescriptor(tensor_desc, nb_dims_requested, data_type, nb_dims, dim_a, stride_a) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`dim_a` invalid due to negative or zero value, or invalid `data_type`.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.")),

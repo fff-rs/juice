@@ -11,13 +11,13 @@ use ffi::*;
 #[derive(Debug, Clone)]
 /// Describes a TensorDescriptor.
 pub struct TensorDescriptor {
-    id: isize,
+    id: cudnnTensorDescriptor_t,
 }
 
 impl Drop for TensorDescriptor {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        API::destroy_tensor_descriptor(self.id_c());
+        API::destroy_tensor_descriptor(*self.id_c());
     }
 }
 
@@ -51,16 +51,11 @@ impl TensorDescriptor {
 
     /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.
     pub fn from_c(id: cudnnTensorDescriptor_t) -> TensorDescriptor {
-        TensorDescriptor { id: id as isize }
-    }
-
-    /// Returns the id as isize.
-    pub fn id(&self) -> isize {
-        self.id
+        TensorDescriptor { id: id }
     }
 
     /// Returns the CUDA cuDNN Tensor Descriptor as its C type.
-    pub fn id_c(&self) -> cudnnTensorDescriptor_t {
-        self.id as cudnnTensorDescriptor_t
+    pub fn id_c(&self) -> &cudnnTensorDescriptor_t {
+        &self.id
     }
 }

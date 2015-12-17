@@ -1,6 +1,8 @@
 //! Describes utility functionality for CUDA cuDNN.
-use std::marker::PhantomData;
+use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor};
 use ffi::*;
+use std::marker::PhantomData;
+use co::frameworks::cuda::Memory;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the available data types for the CUDA cuDNN data representation.
@@ -21,27 +23,27 @@ pub enum DataType {
 pub struct ConvolutionConfig {
     forward_algo: cudnnConvolutionFwdAlgo_t,
     backward_algo: cudnnConvolutionBwdDataAlgo_t,
-    forward_workspace: *mut ::libc::c_void,
+    forward_workspace: Memory,
     forward_workspace_size: usize,
-    backward_workspace: *mut ::libc::c_void,
+    backward_workspace: Memory,
     backward_workspace_size: usize,
-    conv_desc: cudnnConvolutionDescriptor_t,
-    filter_desc: cudnnFilterDescriptor_t,
-    filter_data: *const ::libc::c_void,
+    conv_desc: ConvolutionDescriptor,
+    filter_desc: FilterDescriptor,
+    filter_data: Memory,
 }
 
 impl ConvolutionConfig {
     /// Returns a new ConvolutionConfig
     pub fn new(
         algo_fwd: cudnnConvolutionFwdAlgo_t,
-        workspace_fwd: *mut ::libc::c_void,
+        workspace_fwd: Memory,
         workspace_size_fwd: usize,
         algo_bwd: cudnnConvolutionBwdDataAlgo_t,
-        workspace_bwd: *mut ::libc::c_void,
+        workspace_bwd: Memory,
         workspace_size_bwd: usize,
-        conv_desc: cudnnConvolutionDescriptor_t,
-        filter_desc: cudnnFilterDescriptor_t,
-        filter_data: *const ::libc::c_void,
+        conv_desc: ConvolutionDescriptor,
+        filter_desc: FilterDescriptor,
+        filter_data: Memory,
     ) -> ConvolutionConfig {
         ConvolutionConfig {
             forward_algo: algo_fwd,
@@ -62,7 +64,7 @@ impl ConvolutionConfig {
     }
 
     /// Returns `forward_workspace`.
-    pub fn forward_workspace(&self) -> &*mut ::libc::c_void {
+    pub fn forward_workspace(&self) -> &Memory {
         &self.forward_workspace
     }
 
@@ -77,7 +79,7 @@ impl ConvolutionConfig {
     }
 
     /// Returns `backward_workspace`.
-    pub fn backward_workspace(&self) -> &*mut ::libc::c_void {
+    pub fn backward_workspace(&self) -> &Memory {
         &self.backward_workspace
     }
 
@@ -87,17 +89,17 @@ impl ConvolutionConfig {
     }
 
     /// Returns `conv_desc`.
-    pub fn conv_desc(&self) -> &cudnnConvolutionDescriptor_t {
+    pub fn conv_desc(&self) -> &ConvolutionDescriptor {
         &self.conv_desc
     }
 
     /// Returns `filter_desc`.
-    pub fn filter_desc(&self) -> &cudnnFilterDescriptor_t {
+    pub fn filter_desc(&self) -> &FilterDescriptor {
         &self.filter_desc
     }
 
     /// Returns `filter_data`.
-    pub fn filter_data(&self) -> &*const ::libc::c_void {
+    pub fn filter_data(&self) -> &Memory {
         &self.filter_data
     }
 }
@@ -107,19 +109,19 @@ impl ConvolutionConfig {
 ///
 /// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_normalization()`.
 pub struct NormalizationConfig {
-    lrn_desc: cudnnLRNDescriptor_t,
+    lrn_desc: NormalizationDescriptor,
 }
 
 impl NormalizationConfig {
     /// Returns a new LRN Config.
-    pub fn new(lrn_desc: cudnnLRNDescriptor_t) -> NormalizationConfig {
+    pub fn new(lrn_desc: NormalizationDescriptor) -> NormalizationConfig {
         NormalizationConfig {
             lrn_desc: lrn_desc,
         }
     }
 
     /// Returns `lrn_desc`.
-    pub fn lrn_desc(&self) -> &cudnnLRNDescriptor_t {
+    pub fn lrn_desc(&self) -> &NormalizationDescriptor {
         &self.lrn_desc
     }
 }
@@ -129,15 +131,15 @@ impl NormalizationConfig {
 ///
 /// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_pooling()`.
 pub struct PoolingConfig {
-    pooling_avg_desc: cudnnPoolingDescriptor_t,
-    pooling_max_desc: cudnnPoolingDescriptor_t,
+    pooling_avg_desc: PoolingDescriptor,
+    pooling_max_desc: PoolingDescriptor,
 }
 
 impl PoolingConfig {
     /// Returns a new PoolingConfig.
     pub fn new(
-        pooling_avg_desc: cudnnPoolingDescriptor_t,
-        pooling_max_desc: cudnnPoolingDescriptor_t,
+        pooling_avg_desc: PoolingDescriptor,
+        pooling_max_desc: PoolingDescriptor,
     ) -> PoolingConfig {
         PoolingConfig {
             pooling_avg_desc: pooling_avg_desc,
@@ -146,12 +148,12 @@ impl PoolingConfig {
     }
 
     /// Returns `pooling_avg_desc`.
-    pub fn pooling_avg_desc(&self) -> &cudnnPoolingDescriptor_t {
+    pub fn pooling_avg_desc(&self) -> &PoolingDescriptor {
         &self.pooling_avg_desc
     }
 
     /// Returns `pooling_max_desc`.
-    pub fn pooling_max_desc(&self) -> &cudnnPoolingDescriptor_t {
+    pub fn pooling_max_desc(&self) -> &PoolingDescriptor {
         &self.pooling_max_desc
     }
 }
