@@ -130,4 +130,20 @@ mod shared_memory_spec {
         let shared_data = &mut SharedTensor::<f32>::new(&cpu_dev, &10).unwrap();
         assert_eq!(&cpu_dev, shared_data.latest_device());
     }
+
+    #[test]
+    fn it_reshapes_correctly() {
+        let ntv = Native::new();
+        let cpu_dev = ntv.new_device(ntv.hardwares()).unwrap();
+        let mut shared_data = &mut SharedTensor::<f32>::new(&cpu_dev, &10).unwrap();
+        assert!(shared_data.reshape(&vec![5, 2]).is_ok());
+    }
+
+    #[test]
+    fn it_returns_err_for_invalid_size_reshape() {
+        let ntv = Native::new();
+        let cpu_dev = ntv.new_device(ntv.hardwares()).unwrap();
+        let mut shared_data = &mut SharedTensor::<f32>::new(&cpu_dev, &10).unwrap();
+        assert!(shared_data.reshape(&vec![10, 2]).is_err());
+    }
 }

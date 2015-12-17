@@ -85,4 +85,8 @@ impl IFramework for Cuda {
 
 impl IBackend for Backend<Cuda> {
     type F = Cuda;
+
+    fn device(&self) -> &DeviceType {
+        &self.device()
+    }
 }

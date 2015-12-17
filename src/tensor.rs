@@ -247,6 +247,19 @@ impl<T> SharedTensor<T> {
         })
     }
 
+    /// Change the shape of the Tensor.
+    ///
+    /// Will return an Error if size of new shape is not equal to the old shape.
+    pub fn reshape<D: IntoTensorDesc>(&mut self, desc: &D) -> Result<(), Error> {
+        let new_desc: TensorDesc = desc.into();
+        if new_desc.size() == self.desc().size() {
+            self.desc = new_desc;
+            Ok(())
+        } else {
+            Err(Error::InvalidShape("Size of the provided shape is not equal to the old shape."))
+        }
+    }
+
     /// Synchronize memory from latest location to `destination`.
     pub fn sync(&mut self, destination: &DeviceType) -> Result<(), Error> {
         if &self.latest_location != destination {
@@ -399,6 +412,8 @@ pub enum Error {
     MemoryAllocationError(::device::Error),
     /// Framework error at memory synchronization.
     MemorySynchronizationError(::device::Error),
+    /// Shape provided for reshaping is not compatible with old shape.
+    InvalidShape(&'static str)
 }
 
 impl fmt::Display for Error {
@@ -410,6 +425,7 @@ impl fmt::Display for Error {
             Error::InvalidMemoryAllocation(ref err) => write!(f, "{:?}", err),
             Error::MemoryAllocationError(ref err) => write!(f, "{}", err),
             Error::MemorySynchronizationError(ref err) => write!(f, "{}", err),
+            Error::InvalidShape(ref err) => write!(f, "{}", err),
         }
     }
 }
@@ -423,6 +439,7 @@ impl error::Error for Error {
             Error::InvalidMemoryAllocation(ref err) => err,
             Error::MemoryAllocationError(ref err) => err.description(),
             Error::MemorySynchronizationError(ref err) => err.description(),
+            Error::InvalidShape(ref err) => err,
         }
     }
 
@@ -434,6 +451,7 @@ impl error::Error for Error {
             Error::InvalidMemoryAllocation(_) => None,
             Error::MemoryAllocationError(ref err) => Some(err),
             Error::MemorySynchronizationError(ref err) => Some(err),
+            Error::InvalidShape(_) => None,
         }
     }
 }
