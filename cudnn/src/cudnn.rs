@@ -6,17 +6,20 @@
 
 use super::*;
 use super::utils::{ConvolutionConfig, NormalizationConfig, PoolingConfig, ScalParams};
+use co::frameworks::cuda::Memory;
 
 #[derive(Debug, Clone)]
 /// Provides a the high-level interface to CUDA's cuDNN.
 pub struct Cudnn {
-    id: isize,
+    id: cudnnHandle_t,
 }
+
+unsafe impl ::std::marker::Sync for Cudnn {}
 
 impl Drop for Cudnn {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        API::destroy(self.id_c());
+        API::destroy(*self.id_c());
     }
 }
 
@@ -30,17 +33,12 @@ impl Cudnn {
 
     /// Initializes a new CUDA cuDNN Context from its C type.
     pub fn from_c(id: cudnnHandle_t) -> Cudnn {
-        Cudnn { id: id as isize }
-    }
-
-    /// Returns the id as isize.
-    pub fn id(&self) -> isize {
-        self.id
+        Cudnn { id: id }
     }
 
     /// Returns the CUDA cuDNN Context as its C type.
-    pub fn id_c(&self) -> cudnnHandle_t {
-        self.id as cudnnHandle_t
+    pub fn id_c(&self) -> &cudnnHandle_t {
+        &self.id
     }
 
     /// Returns the version of the CUDA cuDNN library.
@@ -54,24 +52,23 @@ impl Cudnn {
     /// that workspace.
     pub fn init_convolution(
         &self,
-        mem_alloc: fn(usize) -> *mut ::libc::c_void,
-        filter_data: *const ::libc::c_void,
         src_desc: &TensorDescriptor,
-        filter_desc: &FilterDescriptor,
-        conv_desc: &ConvolutionDescriptor,
+        conv_desc: ConvolutionDescriptor,
+        filter_desc: FilterDescriptor,
+        filter_data: Memory,
         dest_desc: &TensorDescriptor,
     ) -> Result<ConvolutionConfig, Error> {
-        let algos_fwd = try!(API::find_convolution_forward_algorithm(self.id_c(), filter_desc.id_c(), src_desc.id_c(), conv_desc.id_c(), dest_desc.id_c()));
-        let workspace_size_fwd = try!(API::get_convolution_forward_workspace_size(self.id_c(), algos_fwd[0].algo, filter_desc.id_c(), src_desc.id_c(), conv_desc.id_c(), dest_desc.id_c()));
+        let algos_fwd = try!(API::find_convolution_forward_algorithm(*self.id_c(), *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()));
+        let workspace_size_fwd = try!(API::get_convolution_forward_workspace_size(*self.id_c(), algos_fwd[0].algo, *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()));
 
-        let algos_bwd = try!(API::find_convolution_backward_data_algorithm(self.id_c(), filter_desc.id_c(), src_desc.id_c(), conv_desc.id_c(), dest_desc.id_c()));
-        let workspace_size_bwd = try!(API::get_convolution_backward_data_workspace_size(self.id_c(), algos_bwd[0].algo, filter_desc.id_c(), src_desc.id_c(), conv_desc.id_c(), dest_desc.id_c()));
+        let algos_bwd = try!(API::find_convolution_backward_data_algorithm(*self.id_c(), *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()));
+        let workspace_size_bwd = try!(API::get_convolution_backward_data_workspace_size(*self.id_c(), algos_bwd[0].algo, *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()));
 
         Ok(
             ConvolutionConfig::new(
-                algos_fwd[0].algo, mem_alloc(workspace_size_fwd), workspace_size_fwd,
-                algos_bwd[0].algo, mem_alloc(workspace_size_bwd), workspace_size_bwd,
-                conv_desc.id_c(), filter_desc.id_c(), filter_data
+                algos_fwd[0].algo, Memory::new(workspace_size_fwd).unwrap(), workspace_size_fwd,
+                algos_bwd[0].algo, Memory::new(workspace_size_bwd).unwrap(), workspace_size_bwd,
+                conv_desc, filter_desc, filter_data
             )
         )
     }
@@ -79,9 +76,13 @@ impl Cudnn {
     /// Initializes the parameters and configurations for running CUDA cuDNN LRN operations.
     pub fn init_normalization(
         &self,
-        lrn_desc: &NormalizationDescriptor,
+        lrn_n: u32,
+        lrn_alpha: f64,
+        lrn_beta: f64,
+        lrn_k: f64
     ) -> Result<NormalizationConfig, Error> {
-        Ok(NormalizationConfig::new(lrn_desc.id_c()))
+        let norm_desc = try!(NormalizationDescriptor::new(lrn_n, lrn_alpha, lrn_beta, lrn_k));
+        Ok(NormalizationConfig::new(norm_desc))
     }
 
     /// Initializes the parameters and configurations for running CUDA cuDNN Pooling operations.
@@ -91,10 +92,9 @@ impl Cudnn {
         padding: &[i32],
         stride: &[i32],
     ) -> Result<PoolingConfig, Error> {
-        Ok(PoolingConfig::new(
-            try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING, window, padding, stride)).id_c(),
-            try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_MAX, window, padding, stride)).id_c(),
-        ))
+        let avg = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING, window, padding, stride));
+        let max = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_MAX, window, padding, stride));
+        Ok(PoolingConfig::new(avg, max))
     }
 
     /// Computes the forward Sigmoid Activation function.
@@ -109,10 +109,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_forward(
-            self.id_c(),
+            *self.id_c(),
             cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID,
-            scale.a, src_desc.id_c(), src_data,
-            scale.b, dest_desc.id_c(), dest_data
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -132,10 +132,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_backward(
-            self.id_c(),
+            *self.id_c(),
             cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID,
-            scale.a, src_desc.id_c(), src_data, src_diff_desc.id_c(), src_diff_data,
-            scale.b, dest_desc.id_c(), dest_data, dest_diff_desc.id_c(), dest_diff_data
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_desc.id_c(), dest_data, *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
@@ -151,10 +151,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_forward(
-            self.id_c(),
+            *self.id_c(),
             cudnnActivationMode_t::CUDNN_ACTIVATION_RELU,
-            scale.a, src_desc.id_c(), src_data,
-            scale.b, dest_desc.id_c(), dest_data
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -174,10 +174,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_backward(
-            self.id_c(),
+            *self.id_c(),
             cudnnActivationMode_t::CUDNN_ACTIVATION_RELU,
-            scale.a, src_desc.id_c(), src_data, src_diff_desc.id_c(), src_diff_data,
-            scale.b, dest_desc.id_c(), dest_data, dest_diff_desc.id_c(), dest_diff_data
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_desc.id_c(), dest_data, *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
@@ -193,10 +193,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_forward(
-            self.id_c(),
+            *self.id_c(),
             cudnnActivationMode_t::CUDNN_ACTIVATION_TANH,
-            scale.a, src_desc.id_c(), src_data,
-            scale.b, dest_desc.id_c(), dest_data
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -216,10 +216,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::activation_backward(
-            self.id_c(),
+            *self.id_c(),
             cudnnActivationMode_t::CUDNN_ACTIVATION_TANH,
-            scale.a, src_desc.id_c(), src_data, src_diff_desc.id_c(), src_diff_data,
-            scale.b, dest_desc.id_c(), dest_data, dest_diff_desc.id_c(), dest_diff_data
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_desc.id_c(), dest_data, *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
@@ -236,10 +236,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::convolution_forward(
-            self.id_c(),
-            *conv_config.forward_algo(), *conv_config.conv_desc(), *conv_config.forward_workspace(), *conv_config.forward_workspace_size(),
-            scale.a, src_desc.id_c(), src_data, *conv_config.filter_desc(), *conv_config.filter_data(),
-            scale.b, dest_desc.id_c(), dest_data
+            *self.id_c(),
+            *conv_config.forward_algo(), *conv_config.conv_desc().id_c(), *conv_config.forward_workspace().id_c() as *mut ::libc::c_void, *conv_config.forward_workspace_size(),
+            scale.a, *src_desc.id_c(), src_data, *conv_config.filter_desc().id_c(), *conv_config.filter_data().id_c() as *mut ::libc::c_void,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -256,10 +256,10 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::convolution_backward_data(
-            self.id_c(),
-            *conv_config.backward_algo(), *conv_config.conv_desc(), *conv_config.backward_workspace(), *conv_config.backward_workspace_size(),
-            scale.a, src_diff_desc.id_c(), src_diff_data, *conv_config.filter_desc(), *conv_config.filter_data(),
-            scale.b, dest_grad_desc.id_c(), dest_grad_data
+            *self.id_c(),
+            *conv_config.backward_algo(), *conv_config.conv_desc().id_c(), *conv_config.backward_workspace().id_c() as *mut ::libc::c_void, *conv_config.backward_workspace_size(),
+            scale.a, *src_diff_desc.id_c(), src_diff_data, *conv_config.filter_desc().id_c(), *conv_config.filter_data().id_c() as *mut ::libc::c_void,
+            scale.b, *dest_grad_desc.id_c(), dest_grad_data
         )
     }
 
@@ -275,9 +275,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::softmax_forward(
-            self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
-            scale.a, src_desc.id_c(), src_data,
-            scale.b, dest_desc.id_c(), dest_data
+            *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -295,9 +295,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::softmax_backward(
-            self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
-            scale.a, src_desc.id_c(), src_data, src_diff_desc.id_c(), src_diff_data,
-            scale.b, dest_diff_desc.id_c(), dest_diff_data
+            *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
@@ -314,9 +314,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::lrn_cross_channel_forward(
-            self.id_c(), *normalization_conf.lrn_desc(), CUDNN_LRN_CROSS_CHANNEL_DIM1,
-            scale.a, src_desc.id_c(), src_data,
-            scale.b, dest_desc.id_c(), dest_data
+            *self.id_c(), *normalization_conf.lrn_desc().id_c(), CUDNN_LRN_CROSS_CHANNEL_DIM1,
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -337,9 +337,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::lrn_cross_channel_backward(
-            self.id_c(), *normalization_conf.lrn_desc(), CUDNN_LRN_CROSS_CHANNEL_DIM1,
-            scale.a, src_desc.id_c(), src_data, src_diff_desc.id_c(), src_diff_data,
-            scale.b, dest_desc.id_c(), dest_data, dest_diff_desc.id_c(), dest_diff_data
+            *self.id_c(), *normalization_conf.lrn_desc().id_c(), CUDNN_LRN_CROSS_CHANNEL_DIM1,
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_desc.id_c(), dest_data, *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
@@ -356,9 +356,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::pooling_forward(
-            self.id_c(), *pooling_conf.pooling_avg_desc(),
-            scale.a, src_desc.id_c(), src_data,
-            scale.b, dest_desc.id_c(), dest_data
+            *self.id_c(), *pooling_conf.pooling_avg_desc().id_c(),
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -379,9 +379,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::pooling_backward(
-            self.id_c(), *pooling_conf.pooling_avg_desc(),
-            scale.a, src_desc.id_c(), src_data, src_diff_desc.id_c(), src_diff_data,
-            scale.b, dest_desc.id_c(), dest_data, dest_diff_desc.id_c(), dest_diff_data
+            *self.id_c(), *pooling_conf.pooling_avg_desc().id_c(),
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_desc.id_c(), dest_data, *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
@@ -398,9 +398,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::pooling_forward(
-            self.id_c(), *pooling_conf.pooling_max_desc(),
-            scale.a, src_desc.id_c(), src_data,
-            scale.b, dest_desc.id_c(), dest_data
+            *self.id_c(), *pooling_conf.pooling_max_desc().id_c(),
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
         )
     }
 
@@ -421,9 +421,9 @@ impl Cudnn {
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::pooling_backward(
-            self.id_c(), *pooling_conf.pooling_max_desc(),
-            scale.a, src_desc.id_c(), src_data, src_diff_desc.id_c(), src_diff_data,
-            scale.b, dest_desc.id_c(), dest_data, dest_diff_desc.id_c(), dest_diff_data
+            *self.id_c(), *pooling_conf.pooling_max_desc().id_c(),
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_desc.id_c(), dest_data, *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 }
