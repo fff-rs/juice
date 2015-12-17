@@ -66,6 +66,7 @@
 
 extern crate libc;
 extern crate cudnn_sys as ffi;
+extern crate collenchyma as co;
 
 pub use ffi::*;
 pub use self::cudnn::Cudnn;

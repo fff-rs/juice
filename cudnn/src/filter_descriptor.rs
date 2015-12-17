@@ -10,13 +10,13 @@ use ffi::*;
 #[derive(Debug, Clone)]
 /// Describes a Filter Descriptor.
 pub struct FilterDescriptor {
-    id: isize,
+    id: cudnnFilterDescriptor_t,
 }
 
 impl Drop for FilterDescriptor {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        API::destroy_filter_descriptor(self.id_c());
+        API::destroy_filter_descriptor(*self.id_c());
     }
 }
 
@@ -47,16 +47,11 @@ impl FilterDescriptor {
 
     /// Initializes a new CUDA cuDNN FilterDescriptor from its C type.
     pub fn from_c(id: cudnnFilterDescriptor_t) -> FilterDescriptor {
-        FilterDescriptor { id: id as isize }
-    }
-
-    /// Returns the id as isize.
-    pub fn id(&self) -> isize {
-        self.id
+        FilterDescriptor { id: id }
     }
 
     /// Returns the CUDA cuDNN FilterDescriptor as its C type.
-    pub fn id_c(&self) -> cudnnFilterDescriptor_t {
-        self.id as cudnnFilterDescriptor_t
+    pub fn id_c(&self) -> &cudnnFilterDescriptor_t {
+        &self.id
     }
 }
