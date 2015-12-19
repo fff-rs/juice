@@ -19,9 +19,9 @@ pub trait Vector<T> {
     /// The number of elements in the vector.
     fn len(&self) -> c_int;
     /// An unsafe pointer to a contiguous block of memory.
-    unsafe fn as_ptr(&self) -> *const T;
+    fn as_ptr(&self) -> *const T;
     /// An unsafe mutable pointer to a contiguous block of memory.
-    unsafe fn as_mut_ptr(&mut self) -> *mut T;
+    fn as_mut_ptr(&mut self) -> *mut T;
 }
 
 impl<'a, T> Into<Vec<T>> for &'a Vector<T>
@@ -86,10 +86,10 @@ impl<T> Vector<T> for Vec<T> {
     }
 
     #[inline]
-    unsafe fn as_ptr(&self) -> *const T { self[..].as_ptr() }
+    fn as_ptr(&self) -> *const T { self[..].as_ptr() }
 
     #[inline]
-    unsafe fn as_mut_ptr(&mut self) -> *mut T { (&mut self[..]).as_mut_ptr() }
+    fn as_mut_ptr(&mut self) -> *mut T { (&mut self[..]).as_mut_ptr() }
 }
 
 impl<T> Vector<T> for [T] {
@@ -104,10 +104,10 @@ impl<T> Vector<T> for [T] {
     }
 
     #[inline]
-    unsafe fn as_ptr(&self) -> *const T { <[T]>::as_ptr(self) }
+    fn as_ptr(&self) -> *const T { <[T]>::as_ptr(self) }
 
     #[inline]
-    unsafe fn as_mut_ptr(&mut self) -> *mut T { <[T]>::as_mut_ptr(self) }
+    fn as_mut_ptr(&mut self) -> *mut T { <[T]>::as_mut_ptr(self) }
 }
 
 macro_rules! operations_impl(
