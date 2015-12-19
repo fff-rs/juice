@@ -7,7 +7,7 @@ use std::{ptr, fmt};
 
 /// Defines a Cuda Memory.
 pub struct Memory {
-    id: isize,
+    id: DriverFFI::CUdeviceptr,
     /// Pointer to host memory that is used for pinned host memory.
     host_ptr: *mut u8,
 }
@@ -21,7 +21,7 @@ impl fmt::Debug for Memory {
 impl Drop for Memory {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        Driver::mem_free(self);
+        Driver::mem_free(*self.id_c());
     }
 }
 
@@ -35,19 +35,14 @@ impl Memory {
     /// Initializes a new Cuda memory from its C type.
     pub fn from_c(id: DriverFFI::CUdeviceptr) -> Memory {
         Memory {
-            id: id as isize,
+            id: id,
             host_ptr: ptr::null_mut(),
         }
     }
 
-    /// Returns the id as isize.
-    pub fn id(&self) -> isize {
-        self.id
-    }
-
     /// Returns the memory id as its C type.
-    pub fn id_c(&self) -> DriverFFI::CUdeviceptr {
-        self.id as DriverFFI::CUdeviceptr
+    pub fn id_c(&self) -> &DriverFFI::CUdeviceptr {
+        &self.id
     }
 }
 
