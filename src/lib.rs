@@ -31,29 +31,51 @@
 //! ```
 //!
 //! The next and final step is, bringing the crates and the important parts into the scope of your application module.
-//! This again is just plain Rust - nothing fancy about it. Example:
+//! This again is just plain Rust - nothing fancy about it. Now a complete example:
 //!
 //! ```rust
 //! extern crate collenchyma as co;
 //! extern crate collenchyma_nn as nn;
 //! use co::backend::{Backend, BackendConfig};
 //! use co::framework::IFramework;
-//! use co::frameworks::Cuda;
+//! use co::frameworks::{Cuda, Native};
+//! use co::memory::MemoryType;
 //! use co::tensor::SharedTensor;
 //! use nn::*;
+//!
+//! fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
+//!     if let &mut MemoryType::Native(ref mut mem) = mem {
+//!         let mut mem_buffer = mem.as_mut_slice::<T>();
+//!         for (index, datum) in data.iter().enumerate() {
+//!             mem_buffer[index] = *datum;
+//!         }
+//!     }
+//! }
+//!
 //! fn main() {
 //!     // Initialize a CUDA Backend.
-//!     // Usually you would not use CUDA but let it pick what is available on the machine.
+//!     // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
 //!     let framework = Cuda::new();
 //!     let hardwares = framework.hardwares();
 //!     let backend_config = BackendConfig::new(framework, hardwares);
 //!     let backend = Backend::new(backend_config).unwrap();
 //!     // Initialize two SharedTensors.
-//!     // Usually you would want also fill them with data.
 //!     let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
 //!     let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
-//!     // Use the operation provided by this Plugin.
-//!     backend.sigmoid(&mut x, &mut result);
+//!     // Fill `x` with some data.
+//!     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
+//!     let native = Native::new();
+//!     let cpu = native.new_device(native.hardwares()).unwrap();
+//!     x.add_device(&cpu).unwrap(); // Add native host memory
+//!     x.sync(&cpu).unwrap(); // Sync to native host memory
+//!     write_to_memory(x.get_mut(&cpu).unwrap(), payload); // Write to native host memory.
+//!     x.sync(backend.device()).unwrap(); // Sync the data to the CUDA device.
+//!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
+//!     backend.sigmoid(&mut x, &mut result).unwrap();
+//!     // See the result.
+//!     result.add_device(&cpu).unwrap(); // Add native host memory
+//!     result.sync(&cpu).unwrap(); // Sync the result to host memory.
+//!     println!("{:?}", result.get(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
 //! }
 //! ```
 //!

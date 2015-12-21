@@ -50,7 +50,7 @@ More information can be found in the [Documentation][docs-ops].
 If you're using Cargo, just add collenchyma-NN to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.6"
+    collenchyma = "0.0.7"
     collenchyma-nn = "0.1.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
