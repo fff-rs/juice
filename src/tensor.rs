@@ -287,7 +287,7 @@ impl<T> SharedTensor<T> {
     /// Synchronize memory from `source` device to `destination` device.
     fn sync_from_to(&mut self, source: &DeviceType, destination: &DeviceType) -> Result<(), Error> {
         if source != destination {
-            match self.aquire_copy(destination) {
+            match self.remove_copy(destination) {
                 Ok(mut destination_copy) => {
                     match destination {
                         #[cfg(feature = "native")]
@@ -322,15 +322,17 @@ impl<T> SharedTensor<T> {
         }
     }
 
-    /// Aquire ownership over a memory copy for synchronizing.
-    fn aquire_copy(&mut self, destination: &DeviceType) -> Result<(MemoryType), Error> {
-        let destination_copy: MemoryType;
-        match self.copies.remove(destination) {
-            Some(destination_cpy) => destination_copy = destination_cpy,
-            None => return Err(Error::MissingDestination("Tensor does not hold a copy on destination device."))
+    /// Removes Copy from SharedTensor and therefore aquires ownership over the removed memory copy for synchronizing.
+    pub fn remove_copy(&mut self, destination: &DeviceType) -> Result<(MemoryType), Error> {
+        // If `destination` holds the latest data, sync to another memory first, before removing it.
+        if &self.latest_location == destination {
+            let first = self.copies.keys().nth(0).unwrap().clone();
+            try!(self.sync(&first));
         }
-
-        Ok(destination_copy)
+        match self.copies.remove(destination) {
+            Some(destination_cpy) => Ok(destination_cpy),
+            None => Err(Error::MissingDestination("Tensor does not hold a copy on destination device."))
+        }
     }
 
     /// Return ownership over a memory copy after synchronizing.
@@ -379,7 +381,8 @@ impl<T> SharedTensor<T> {
         &self.desc
     }
 
-    fn mem_size(capacity: usize) -> usize {
+    /// Returns the allocated Memory size in bytes.
+    pub fn mem_size(capacity: usize) -> usize {
         mem::size_of::<T>() * capacity
     }
 }
@@ -395,6 +398,8 @@ pub enum Error {
     InvalidMemory(&'static str),
     /// No memory allocation on specified device happened.
     InvalidMemoryAllocation(&'static str),
+    /// Unable to remove Memory copy from SharedTensor.
+    InvalidRemove(&'static str),
     /// Framework error at memory allocation.
     MemoryAllocationError(::device::Error),
     /// Framework error at memory synchronization.
@@ -408,6 +413,7 @@ impl fmt::Display for Error {
             Error::MissingDestination(ref err) => write!(f, "{:?}", err),
             Error::InvalidMemory(ref err) => write!(f, "{:?}", err),
             Error::InvalidMemoryAllocation(ref err) => write!(f, "{:?}", err),
+            Error::InvalidRemove(ref err) => write!(f, "{:?}", err),
             Error::MemoryAllocationError(ref err) => write!(f, "{}", err),
             Error::MemorySynchronizationError(ref err) => write!(f, "{}", err),
         }
@@ -421,6 +427,7 @@ impl error::Error for Error {
             Error::MissingDestination(ref err) => err,
             Error::InvalidMemory(ref err) => err,
             Error::InvalidMemoryAllocation(ref err) => err,
+            Error::InvalidRemove(ref err) => err,
             Error::MemoryAllocationError(ref err) => err.description(),
             Error::MemorySynchronizationError(ref err) => err.description(),
         }
@@ -432,6 +439,7 @@ impl error::Error for Error {
             Error::MissingDestination(_) => None,
             Error::InvalidMemory(_) => None,
             Error::InvalidMemoryAllocation(_) => None,
+            Error::InvalidRemove(_) => None,
             Error::MemoryAllocationError(ref err) => Some(err),
             Error::MemorySynchronizationError(ref err) => Some(err),
         }
