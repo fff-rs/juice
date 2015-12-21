@@ -18,12 +18,12 @@ Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 * __Parallelizing Performance__<br/>
 Collenchyma makes it easy to parallelize computations on your machine, putting
 all the available cores of your CPUs/GPUs to use.
-Collenchyma also provides optimized operations, through Plugins, for popular libraries,
-such as BLAS, that you can use right away to speed up your application.
+Collenchyma provides optimized operations through Plugins,
+that you can use right away to speed up your application.
 
 * __Easily Extensible__<br/>
 Writing custom operations for GPU execution becomes easy with Collenchyma, as
-it already takes care of Framework peculiarities, memory management and other
+it already takes care of Framework peculiarities, memory management, safety and other
 overhead. Collenchyma provides Plugins (see examples below), that you can use to extend
 the Collenchyma backend with your own, business-specific operations.
 
@@ -53,7 +53,7 @@ For more information,
 If you're using Cargo, just add Collenchyma to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.6"
+    collenchyma = "0.0.7"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
@@ -63,79 +63,78 @@ If you're using [Cargo Edit][cargo-edit], you can call:
 
 ## Plugins
 
-You can extend the operations available for your the Collenchyma backend with Plugins.
-Plugins are a common set of related operations such as BLAS. Just add a Collenchyma Plugin,
-which is nothing but a Rust crate, with collenchyma to your Cargo.toml. Here are some
-available Collenchyma Plugins.
+You can easily extend Collenchyma's `Backend` with more backend-agnostic operations, through Plugins.
+Plugins provide a set of related operations - BLAS would be a good example. To extend Collenchyma's `Backend`
+with operations from a Plugin, just add a the desired Plugin crate to your Cargo.toml file.
+Here is a list of available Collenchyma Plugins, that you can use right away for your own application, or
+take as a starting point, if you would like to create your own Plugin.
 
 * [BLAS][collenchyma-blas] - Collenchyma plugin for backend-agnostic Basic Linear Algebra Subprogram Operations.
 * [NN][collenchyma-nn] - Collenchyma plugin for Neural Network related algorithms.
 
 You can easily write your own backend-agnostic, parallel operations and provide it for others,
-via a Plugin. We are happy to feature your Plugin here, just send us a PR.
+via a Plugin - we are happy to feature your Plugin here, just send us a PR.
 
 [collenchyma-blas]: http://github.com/autumnai/collenchyma-blas
 [collenchyma-nn]: http://github.com/autumnai/collenchyma-nn
 
 ## Examples
 
-Backend with custom defined Framework and Device.
+Collenchyma comes without any operations. The following examples therefore assumes,
+that you have added both `collenchyma` and the Collenchyma Plugin `collenchyma-nn`
+to your Cargo manifest.
 
-```
+```rust
 extern crate collenchyma as co;
-use co::framework::IFramework;
+extern crate collenchyma_nn as nn;
 use co::backend::{Backend, BackendConfig};
-use co::frameworks::Native;
-fn main() {
-   let framework = Native::new(); // Initialize the Framework
-   let hardwares = framework.hardwares(); // Now you can obtain a list of available hardware for that Framework.
-   // Create the custom Backend by providing a Framework and one or many Hardwares.
-   let backend_config = BackendConfig::new(framework, hardwares);
-   let backend = Backend::new(backend_config);
-   // You can now execute all the operations available, e.g.
-   // backend.dot(x, y);
- }
-```
-Machine-agnostic Backend.
+use co::framework::IFramework;
+use co::frameworks::{Cuda, Native};
+use co::memory::MemoryType;
+use co::tensor::SharedTensor;
+use nn::*;
 
-```
-extern crate collenchyma as co;
-use co::framework::IFramework;
-use co::backend::{Backend, BackendConfig};
-use co::frameworks::Native;
+fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
+    if let &mut MemoryType::Native(ref mut mem) = mem {
+        let mut mem_buffer = mem.as_mut_slice::<T>();
+        for (index, datum) in data.iter().enumerate() {
+            mem_buffer[index] = *datum;
+        }
+    }
+}
+
 fn main() {
-    // Not yet implemented.
-    // No need to provide a Backend Configuration.
-    let backend = Backend::new(None);
-    // You can now execute all the operations available, e.g.
-    // backend.dot(x, y);
+    // Initialize a CUDA Backend.
+    // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
+    let framework = Cuda::new();
+    let hardwares = framework.hardwares();
+    let backend_config = BackendConfig::new(framework, hardwares);
+    let backend = Backend::new(backend_config).unwrap();
+    // Initialize two SharedTensors.
+    let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+    let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+    // Fill `x` with some data.
+    let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
+    let native = Native::new();
+    let cpu = native.new_device(native.hardwares()).unwrap();
+    x.add_device(&cpu).unwrap(); // Add native host memory
+    x.sync(&cpu).unwrap(); // Sync to native host memory
+    write_to_memory(x.get_mut(&cpu).unwrap(), payload); // Write to native host memory.
+    x.sync(backend.device()).unwrap(); // Sync the data to the CUDA device.
+    // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
+    backend.sigmoid(&mut x, &mut result).unwrap();
+    // See the result.
+    result.add_device(&cpu).unwrap(); // Add native host memory
+    result.sync(&cpu).unwrap(); // Sync the result to host memory.
+    println!("{:?}", result.get(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
 }
 ```
-
-## Benchmarks
-
-The following benchmarks highlight the overhead of calling the underlying library implementations.
-
-Operation                                    | Collenchyma (Native backend) | rust-blas
--------------------------------------------- | ---------------------------- | ----------
-1000x Dot product of two vectors of size 100 | 48,870 ns (+/- 499)          | 15,226 ns (+/- 244)
-100x Dot product of two vectors of size 1000 | 9,997 ns (+/- 215)           | 6,920 ns (+/- 179)
-10x Dot product of two vectors of size 10000 | 10,958 ns (+/- 377)          | 10,333 ns (+/- 460)
-5x Dot product of two vectors of size 20000  | 10,784 ns (+/- 2,338)        | 10,533 ns (+/- 1,981)
-
-The overhead of Collenchyma becomes negligible when executing operations on vectors bigger than ~10000-20000 elements.  
-Reducing this overhead is a big priority and [you can help!](https://github.com/autumnai/collenchyma/issues/13)
 
 ## Contributing
 
 Want to contribute? Awesome! We have
 [instructions to help you get started contributing code or documentation][contributing].
 And high priority issues, that we could need your help with.
-
-* Finish the OpenCL implementation. [#2][issue-2]
-* Finish the Cuda implementation. [#4][issue-4]
-* Make the Backend machine-agnostic [#5][issue-5]
-* Finish BLAS library for Native, OpenCL, Cuda [#6][issue-6]
 
 We have a mostly real-time collaboration culture and happens here on Github and
 on the [Collenchyma Gitter Channel][gitter-collenchyma].
