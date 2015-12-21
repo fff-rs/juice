@@ -2,7 +2,7 @@ extern crate collenchyma_nn as co_nn;
 extern crate collenchyma as co;
 
 #[cfg(test)]
-mod tanh_spec {
+mod lrn_spec {
 
     use co::backend::{Backend, BackendConfig};
     use co::framework::IFramework;
@@ -78,16 +78,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_on_cuda_for_f32() {
+    fn it_computes_correct_lrn_on_cuda_for_f32() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut result) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
-        match backend.tanh(&mut x, &mut result) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn(&mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0.7615942f32, 0.7615942f32, 0.9640276f32], mem.as_slice::<f32>());
+                    assert_eq!(&[0.59458125f32, 0.59458125f32, 1.1890286f32], mem.as_slice::<f32>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -95,16 +96,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_on_cuda_for_f64() {
+    fn it_computes_correct_lrn_on_cuda_for_f64() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut result) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
-        match backend.tanh(&mut x, &mut result) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn(&mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0.7615941559557649f64, 0.7615941559557649f64, 0.9640275800758169f64], mem.as_slice::<f64>());
+                    assert_eq!(&[0.594581260843431f64, 0.594581260843431f64, 1.1890287651464355f64], mem.as_slice::<f64>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -112,16 +114,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_on_cuda_for_f32_plain() {
+    fn it_computes_correct_lrn_on_cuda_for_f32_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut result) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
-        match backend.tanh_plain(&mut x, &mut result) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn_plain(&mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0.7615942f32, 0.7615942f32, 0.9640276f32], mem.as_slice::<f32>());
+                    assert_eq!(&[0.59458125f32, 0.59458125f32, 1.1890286f32], mem.as_slice::<f32>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -129,16 +132,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_on_cuda_for_f64_plain() {
+    fn it_computes_correct_lrn_on_cuda_for_f64_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut result) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
-        match backend.tanh_plain(&mut x, &mut result) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn_plain(&mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0.7615941559557649f64, 0.7615941559557649f64, 0.9640275800758169f64], mem.as_slice::<f64>());
+                    assert_eq!(&[0.594581260843431f64, 0.594581260843431f64, 1.1890287651464355f64], mem.as_slice::<f64>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -146,16 +150,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_grad_on_cuda_for_f32() {
+    fn it_computes_correct_lrn_grad_on_cuda_for_f32() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
 
-        match backend.tanh_grad(&mut x, &mut x_diff, &mut result, &mut result_diff) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn_grad(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
             Ok(_) => {
                 result_diff.sync(native.device()).unwrap();
                 if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f32, 0f32, -6f32], mem.as_slice::<f32>());
+                    assert_eq!(&[0.59453666f32, 0.59453666f32, 1.188672f32], mem.as_slice::<f32>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -163,16 +168,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_grad_on_cuda_for_f64() {
+    fn it_computes_correct_lrn_grad_on_cuda_for_f64() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
 
-        match backend.tanh_grad(&mut x, &mut x_diff, &mut result, &mut result_diff) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn_grad(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
             Ok(_) => {
                 result_diff.sync(native.device()).unwrap();
                 if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f64, 0f64, -6f64], mem.as_slice::<f64>());
+                    assert_eq!(&[0.594536669478436f64, 0.594536669478436f64, 1.188672127844352f64], mem.as_slice::<f64>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -180,16 +186,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_grad_on_cuda_for_f32_plain() {
+    fn it_computes_correct_lrn_grad_on_cuda_for_f32_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
 
-        match backend.tanh_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
             Ok(_) => {
                 result_diff.sync(native.device()).unwrap();
                 if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f32, 0f32, -6f32], mem.as_slice::<f32>());
+                    assert_eq!(&[0.59453666f32, 0.59453666f32, 1.188672f32], mem.as_slice::<f32>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -197,16 +204,17 @@ mod tanh_spec {
     }
 
     #[test]
-    fn it_computes_correct_tanh_grad_on_cuda_for_f64_plain() {
+    fn it_computes_correct_lrn_grad_on_cuda_for_f64_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
 
-        match backend.tanh_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff) {
+        let conf = NN::<f64>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64).unwrap();
+        match backend.lrn_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
             Ok(_) => {
                 result_diff.sync(native.device()).unwrap();
                 if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f64, 0f64, -6f64], mem.as_slice::<f64>());
+                    assert_eq!(&[0.594536669478436f64, 0.594536669478436f64, 1.188672127844352f64], mem.as_slice::<f64>());
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
