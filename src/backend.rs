@@ -97,6 +97,9 @@ impl<F: IFramework + Clone> Backend<F> {
 pub trait IBackend {
     /// Represents the Framework of a Backend.
     type F: IFramework + Clone;
+
+    /// Returns the backend device.
+    fn device(&self) -> &DeviceType;
 }
 
 #[derive(Debug, Clone)]
