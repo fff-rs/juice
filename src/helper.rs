@@ -226,3 +226,64 @@ macro_rules! iblas_swap_for {
         }
     );
 }
+
+#[macro_export]
+macro_rules! iblas_gemm_for {
+    ($t:ident, $b:ty) => (
+        fn gemm(&self,
+            alpha: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            at: ::transpose::Transpose,
+            a: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            bt: ::transpose::Transpose,
+            b: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            beta: &mut ::collenchyma::tensor::SharedTensor<$t>,
+            c: &mut ::collenchyma::tensor::SharedTensor<$t>
+        ) -> Result<(), ::collenchyma::error::Error> {
+            match alpha.add_device(self.device()) { _ => try!(alpha.sync(self.device())) }
+            match a.add_device(self.device()) { _ => try!(a.sync(self.device())) }
+            match beta.add_device(self.device()) { _ => try!(beta.sync(self.device())) }
+            match b.add_device(self.device()) { _ => try!(b.sync(self.device())) }
+            match c.add_device(self.device()) { _ => try!(c.sync(self.device())) }
+
+            Ok(try!(
+                <$b as IOperationGemm<$t>>::compute(&self,
+                    try!(alpha.get_mut(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `alpha`"))),
+                    at,
+                    &a.desc().clone(),
+                    try!(a.get_mut(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `a`"))),
+                    bt,
+                    &b.desc().clone(),
+                    try!(b.get_mut(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `b`"))),
+                    try!(beta.get_mut(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `beta`"))),
+                    &c.desc().clone(),
+                    try!(c.get_mut(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `c`"))),
+                )
+            ))
+        }
+
+        fn gemm_plain(&self,
+            alpha: &::collenchyma::tensor::SharedTensor<$t>,
+            at: ::transpose::Transpose,
+            a: &::collenchyma::tensor::SharedTensor<$t>,
+            bt: ::transpose::Transpose,
+            b: &::collenchyma::tensor::SharedTensor<$t>,
+            beta: &::collenchyma::tensor::SharedTensor<$t>,
+            c: &mut ::collenchyma::tensor::SharedTensor<$t>
+        ) -> Result<(), ::collenchyma::error::Error> {
+            Ok(try!(
+                <$b as IOperationGemm<$t>>::compute(&self,
+                    try!(alpha.get(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `alpha`"))),
+                    at,
+                    &a.desc().clone(),
+                    try!(a.get(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `a`"))),
+                    bt,
+                    &b.desc().clone(),
+                    try!(b.get(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `b`"))),
+                    try!(beta.get(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `beta`"))),
+                    &c.desc().clone(),
+                    try!(c.get_mut(self.device()).ok_or(::collenchyma::plugin::Error::MissingMemoryForDevice("Unable to resolve memory for `c`"))),
+                )
+            ))
+        }
+    );
+}

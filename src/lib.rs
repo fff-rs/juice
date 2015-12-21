@@ -55,6 +55,7 @@ extern crate rblas;
 pub mod plugin;
 pub mod binary;
 pub mod operation;
+pub mod transpose;
 #[macro_use]
 pub mod helper;
 pub mod frameworks;

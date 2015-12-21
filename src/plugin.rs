@@ -2,6 +2,7 @@
 
 use super::binary::IBlasBinary;
 use super::operation::*;
+use super::transpose::*;
 use collenchyma::plugin::numeric_helpers::Float;
 use collenchyma::binary::IBinary;
 use collenchyma::tensor::SharedTensor;
@@ -137,8 +138,25 @@ pub trait IBlas<F: Float> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `swap`.
     fn swap_plain(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error>;
-}
 
+    /// Computes a matrix-matrix product with general matrices.
+    ///
+    /// Saves the result into `c`.
+    /// This is a Level 3 BLAS operation.
+    ///
+    /// For a no-memory managed version see `gemm_plain`.
+    fn gemm(&self, alpha: &mut SharedTensor<F>, at: Transpose, a: &mut SharedTensor<F>, bt: Transpose, b: &mut SharedTensor<F>, beta: &mut SharedTensor<F>, c: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error>;
+
+    /// Computes a matrix-matrix product with general matrices.
+    ///
+    /// Saves the result into `c`.
+    /// This is a Level 3 BLAS operation.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `gemm`.
+    fn gemm_plain(&self, alpha: &SharedTensor<F>, at: Transpose, a: &SharedTensor<F>, bt: Transpose, b: &SharedTensor<F>, beta: &SharedTensor<F>, c: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error>;
+}
 /// Allows a BlasBinary to be provided which is used for a IBlas implementation.
 pub trait BlasBinaryProvider<F: Float, B: IBlasBinary<F> + IBinary> {
     /// Returns the binary representation
@@ -292,5 +310,17 @@ impl<F: Float, B: IBlasBinary<F> + IBinary> IBlas<F> for BlasBinaryProvider<F, B
                 try!(y.get_mut(self.device()).ok_or(LibError::MissingMemoryForDevice("Unable to resolve memory for `y`"))),
             )
         ))
+    }
+
+    #[allow(unused_variables)]
+    fn gemm(&self, alpha: &mut SharedTensor<F>, at: Transpose, a: &mut SharedTensor<F>, bt: Transpose, b: &mut SharedTensor<F>, beta: &mut SharedTensor<F>, c: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
+        // UNIMPLEMENTED
+        unreachable!();
+    }
+
+    #[allow(unused_variables)]
+    fn gemm_plain(&self, alpha: &SharedTensor<F>, at: Transpose, a: &SharedTensor<F>, bt: Transpose, b: &SharedTensor<F>, beta: &SharedTensor<F>, c: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error> {
+        // UNIMPLEMENTED
+        unreachable!();
     }
 }

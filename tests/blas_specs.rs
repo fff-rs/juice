@@ -90,12 +90,35 @@ mod blas_spec {
         (x, y)
     }
 
+    pub fn get_gemm_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
+        let mut a = SharedTensor::<T>::new(backend.device(), &vec![2, 2]).unwrap();
+        write_to_memory(a.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap(), cast::<i32, T>(4).unwrap()]);
+
+        let mut b = SharedTensor::<T>::new(backend.device(), &vec![2, 2]).unwrap();
+        write_to_memory(b.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap()]);
+
+        let c = SharedTensor::<T>::new(backend.device(), &vec![2, 2]).unwrap();
+
+        (a, b, c)
+    }
+
+    pub fn get_scale_one_zero_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
+        let mut alpha = SharedTensor::<T>::new(backend.device(), &vec![1]).unwrap();
+        write_to_memory(alpha.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap()]);
+
+        let mut beta = SharedTensor::<T>::new(backend.device(), &vec![1]).unwrap();
+        write_to_memory(beta.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(0).unwrap()]);
+
+        (alpha, beta)
+    }
+
     #[cfg(feature = "native")]
     mod native {
         use co::backend::{Backend, BackendConfig};
         use co::framework::IFramework;
         use co::frameworks::Native;
         use co_blas::plugin::*;
+        use co_blas::transpose::Transpose;
         use super::*;
 
         fn get_native_backend() -> Backend<Native> {
@@ -267,5 +290,30 @@ mod blas_spec {
             backend.swap(&mut x, &mut y).unwrap();
         }
 
+        /// GEMM
+
+        #[test]
+        fn it_computes_correct_gemm_on_native_for_f32() {
+            let backend = get_native_backend();
+            let (mut a, mut b, mut c) = get_gemm_memory::<f32, Native>(&backend);
+            let (mut alpha, mut beta) = get_scale_one_zero_memory::<f32, Native>(&backend);
+
+            if let Ok(_) = backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c) {
+                if let Some(mem) = c.get(backend.device()).unwrap().as_native() { assert_eq!(&[6f32, 6f32, 14f32, 14f32], mem.as_slice::<f32>()) }
+            }
+            backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c).unwrap();
+        }
+
+        #[test]
+        fn it_computes_correct_gemm_on_native_for_f64() {
+            let backend = get_native_backend();
+            let (mut a, mut b, mut c) = get_gemm_memory::<f64, Native>(&backend);
+            let (mut alpha, mut beta) = get_scale_one_zero_memory::<f64, Native>(&backend);
+
+            if let Ok(_) = backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c) {
+                if let Some(mem) = c.get(backend.device()).unwrap().as_native() { assert_eq!(&[6f64, 6f64, 14f64, 14f64], mem.as_slice::<f64>()) }
+            }
+            backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c).unwrap();
+        }
     }
 }
