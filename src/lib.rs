@@ -1,31 +1,103 @@
-//! Provides backend-agnostic Neural Network operations for [Collenchyma][collenchyma].
+//! Provides a [Collenchyma][collenchyma] Plugin, to extend Collenchyma with Neural Network related
+//! operations such as convolutions, pooling, ReLU, etc. A full list of operations provided by this Plugin,
+//! can be found at the [provided Operations section](#operations).
 //!
 //! ## Overview
 //!
-//! A Collenchyma Plugin describes the functionality through three types of traits.
+//! This Collenchyma Plugin extends Collenchyma's Backend with NN related methods/operations. This allows
+//! you to run, these operations (and therefore your application) on your local machine as well as on servers,
+//! mobiles or any other machine (as if they were written for common CPU execution), while
+//! receiving the significant performance increases (usually one-to-two orders of magnitutde), by
+//! executing the operations on special purpose hardware such as GPUs - if they are available. Usage examples
+//! can be found in the next section.
 //!
-//! * __PluginTrait__ -> INn<br/>
-//! This trait provides 'provided methods', which already specify the exact, backend-agnostic
-//! behavior of an Operation. These come in two forms `operation()` and `operation_plain()`,
-//! where the first takes care of full memory management and the later one just provides the computation
-//! without any memory management. In some scenarios you would like to use the plain operation for faster
-//! exection.
+//! The architecture of a Plugin is quite easy. It defines one Plugin Trait, in this case the `NN`
+//! trait, that defines all the available methods, which will later be available through the Backend, as
+//! the Plugin Trait is implemented for the Collenchyma Backend. The operations take as arguments one or many
+//! SharedTensors, holding the data over which the operation should happen, and none or one Operation Configuration.
 //!
-//! * __BinaryTrait__ -> IBlasBinary<br>
-//! The binary trait provides the actual and potentially initialized Functions, which are able to compute
-//! the Operations (as they implement the OperationTrait).
+//! This Plugin trait is then implemented for the Backend, and specificially for each Computation Language, such as
+//! CUDA, OpenCL or common host CPU.
 //!
-//! * __OperationTrait__ -> e.g. IOperationSigmoid<br/>
-//! The PluginTrait can provide 'provided methods', thanks to the OperationTrait. The OperationTrait,
-//! has one required method `compute` which every Framework Function will implement on it's own way.
+//! ## Usage
 //!
-//! Beside these traits a Collenchyma Plugin might also use macros for faster
-//! implementation for various Collenchyma Frameworks such as CUDA, OpenCL or common host CPU.
+//! Using this Collenchyma Plugin is like using any other Rust crate - super easy. In your `Cargo.toml` define dependencies
+//! to both [Collenchyma][collenchyma] (if not yet happend) and the plugin. For example:
 //!
-//! Beside these generic functionality through traits, a Plugin also extends the Collenchyma Backend
-//! with implementations of the generic functionality for the Collenchyma Frameworks.
+//! ```toml
+//! [dependencies]
+//! collenchyma: "latest",
+//! collenchyma_nn: "latest"
+//! ```
 //!
-//! For more information, give the [Collenchyma docs][collenchyma-docs] a visit.
+//! The next and final step is, bringing the crates and the important parts into the scope of your application module.
+//! This again is just plain Rust - nothing fancy about it. Now a complete example:
+//!
+//! ```rust
+//! extern crate collenchyma as co;
+//! extern crate collenchyma_nn as nn;
+//! use co::backend::{Backend, BackendConfig};
+//! use co::framework::IFramework;
+//! use co::frameworks::{Cuda, Native};
+//! use co::memory::MemoryType;
+//! use co::tensor::SharedTensor;
+//! use nn::*;
+//!
+//! fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
+//!     if let &mut MemoryType::Native(ref mut mem) = mem {
+//!         let mut mem_buffer = mem.as_mut_slice::<T>();
+//!         for (index, datum) in data.iter().enumerate() {
+//!             mem_buffer[index] = *datum;
+//!         }
+//!     }
+//! }
+//!
+//! fn main() {
+//!     // Initialize a CUDA Backend.
+//!     // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
+//!     let framework = Cuda::new();
+//!     let hardwares = framework.hardwares();
+//!     let backend_config = BackendConfig::new(framework, hardwares);
+//!     let backend = Backend::new(backend_config).unwrap();
+//!     // Initialize two SharedTensors.
+//!     let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+//!     let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+//!     // Fill `x` with some data.
+//!     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
+//!     let native = Native::new();
+//!     let cpu = native.new_device(native.hardwares()).unwrap();
+//!     x.add_device(&cpu).unwrap(); // Add native host memory
+//!     x.sync(&cpu).unwrap(); // Sync to native host memory
+//!     write_to_memory(x.get_mut(&cpu).unwrap(), payload); // Write to native host memory.
+//!     x.sync(backend.device()).unwrap(); // Sync the data to the CUDA device.
+//!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
+//!     backend.sigmoid(&mut x, &mut result).unwrap();
+//!     // See the result.
+//!     result.add_device(&cpu).unwrap(); // Add native host memory
+//!     result.sync(&cpu).unwrap(); // Sync the result to host memory.
+//!     println!("{:?}", result.get(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
+//! }
+//! ```
+//!
+//! ## Provided Operations
+//!
+//! This Plugins provides the following operations. (Forward + Backward)
+//! A `-` means not yet implemented.
+//!
+//! | Operation            | CUDA       | OpenCL    | Native    |
+//! |---	               |---	        |---        |---        |
+//! | Sigmoid  	           | cuDNN v3  	| -  	    | -  	   	|
+//! | ReLU  	           | cuDNN v3   | -  	    | - 	    |
+//! | Tanh  	   	       | cudNN v3   | - 	    | -         |
+//! |   	   	           |  	        |  	        |           |
+//! | Normalization (LRN)  | cudNN v3   | - 	    | -         |
+//! |   	   	           |  	        |  	        |           |
+//! | Convolution          | cudNN v3   | - 	    | -         |
+//! |   	   	           |  	        |  	        |           |
+//! | Softmax              | cudNN v3   | - 	    | -         |
+//! |   	   	           |  	        |  	        |           |
+//! | Pooling Max          | cudNN v3   | - 	    | -         |
+//! | Pooling Avg          | cudNN v3   | - 	    | -         |
 //!
 //! [collenchyma]: https://github.com/autumnai/collenchyma
 //! [collenchyma-docs]: http://autumnai.github.io/collenchyma
@@ -45,9 +117,7 @@ extern crate libc;
 #[macro_use]
 extern crate lazy_static;
 
-pub mod plugin;
-pub mod binary;
-pub mod operation;
-#[cfg(feature = "cuda")]
-#[macro_use] pub mod helper;
-mod frameworks;
+pub use plugin::{NN, NNOperationConfig};
+
+mod plugin;
+pub mod frameworks;

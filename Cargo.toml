@@ -1,8 +1,8 @@
 [package]
 name            = "collenchyma-nn"
-description     = "Collenchyma plugin for full Neural Network algorithm support"
-version         = "0.0.1"
-authors         = ["MichaelHirn <michael.hirn@storeness.de>",
+description     = "collenchyma plugin providing Neural Network operations"
+version         = "0.1.0"
+authors         = ["Michael Hirn <mj@autumnai.com>",
                    "Maximilian Goisser <max@autumnai.com>"]
 
 repository      = "https://github.com/autumnai/collenchyma-nn"
@@ -14,9 +14,8 @@ keywords        = ["neural-network", "collenchyma", "computation", "hpc", "plugi
 license         = "MIT"
 
 [dependencies]
-collenchyma = { git = "https://github.com/autumnai/collenchyma.git", rev = "fdd030d", default-features = false }
-# cudnn = "0.1.3"
-cudnn = { git = "https://github.com/autumnai/rust-cudnn.git", rev = "6436d44", optional = true }
+collenchyma = { version = "0.0.7", default-features = false }
+cudnn = { version = "1.0.1", optional = true }
 libc = "0.2"
 lazy_static = "0.1"
 

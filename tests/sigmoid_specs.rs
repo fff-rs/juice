@@ -2,12 +2,12 @@ extern crate collenchyma_nn as co_nn;
 extern crate collenchyma as co;
 
 #[cfg(test)]
-mod nn_spec {
+mod sigmoid_spec {
 
     use co::backend::{Backend, BackendConfig};
     use co::framework::IFramework;
     use co::frameworks::{Cuda, Native};
-    use co_nn::plugin::*;
+    use co_nn::*;
     use co::memory::MemoryType;
     use co::tensor::SharedTensor;
     use co::plugin::numeric_helpers::{cast, Float};
@@ -35,7 +35,7 @@ mod nn_spec {
         }
     }
 
-    fn get_activation_memory<T: Float, B: IFramework + Clone, C: IFramework + Clone>(backend: &Backend<B>, native: &Backend<C>) -> (SharedTensor<T>, SharedTensor<T>){
+    fn get_memory<T: Float, B: IFramework + Clone, C: IFramework + Clone>(backend: &Backend<B>, native: &Backend<C>) -> (SharedTensor<T>, SharedTensor<T>){
         let val = cast::<f64, T>(1f64).unwrap();
         let val2 = cast::<f64, T>(2f64).unwrap();
         let mut x = SharedTensor::<T>::new(backend.device(), &(1, 1, 3)).unwrap();
@@ -50,7 +50,7 @@ mod nn_spec {
         (x, result)
     }
 
-    fn get_activation_grad_memory<T: Float, B: IFramework + Clone, C: IFramework + Clone>(backend: &Backend<B>, native: &Backend<C>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
+    fn get_grad_memory<T: Float, B: IFramework + Clone, C: IFramework + Clone>(backend: &Backend<B>, native: &Backend<C>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
         let val = cast::<f64, T>(1f64).unwrap();
         let val2 = cast::<f64, T>(2f64).unwrap();
         let mut x = SharedTensor::<T>::new(backend.device(), &(1, 1, 3)).unwrap();
@@ -81,8 +81,13 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_on_cuda_for_f32() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result) = get_activation_memory::<f32, Cuda, Native>(&backend, &native);
+        let (mut x, mut result) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
+        result.sync(native.device()).unwrap();
+        result.sync(backend.device()).unwrap();
+        result.sync(backend.device()).unwrap();
+        result.sync(native.device()).unwrap();
+        result.sync(backend.device()).unwrap();
         match backend.sigmoid(&mut x, &mut result) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
@@ -98,7 +103,7 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_on_cuda_for_f64() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result) = get_activation_memory::<f64, Cuda, Native>(&backend, &native);
+        let (mut x, mut result) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
         match backend.sigmoid(&mut x, &mut result) {
             Ok(_) => {
@@ -115,7 +120,7 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_on_cuda_for_f32_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result) = get_activation_memory::<f32, Cuda, Native>(&backend, &native);
+        let (mut x, mut result) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
         match backend.sigmoid_plain(&mut x, &mut result) {
             Ok(_) => {
@@ -132,7 +137,7 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_on_cuda_for_f64_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result) = get_activation_memory::<f64, Cuda, Native>(&backend, &native);
+        let (mut x, mut result) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
         match backend.sigmoid_plain(&mut x, &mut result) {
             Ok(_) => {
@@ -149,7 +154,7 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_grad_on_cuda_for_f32() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff) = get_activation_grad_memory::<f32, Cuda, Native>(&backend, &native);
+        let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
 
         match backend.sigmoid_grad(&mut x, &mut x_diff, &mut result, &mut result_diff) {
             Ok(_) => {
@@ -166,7 +171,7 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_grad_on_cuda_for_f64() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff) = get_activation_grad_memory::<f64, Cuda, Native>(&backend, &native);
+        let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
 
         match backend.sigmoid_grad(&mut x, &mut x_diff, &mut result, &mut result_diff) {
             Ok(_) => {
@@ -183,7 +188,7 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_grad_on_cuda_for_f32_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff) = get_activation_grad_memory::<f32, Cuda, Native>(&backend, &native);
+        let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
 
         match backend.sigmoid_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff) {
             Ok(_) => {
@@ -200,7 +205,7 @@ mod nn_spec {
     fn it_computes_correct_sigmoid_grad_on_cuda_for_f64_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff) = get_activation_grad_memory::<f64, Cuda, Native>(&backend, &native);
+        let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
 
         match backend.sigmoid_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff) {
             Ok(_) => {
