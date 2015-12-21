@@ -6,13 +6,13 @@ use ffi::*;
 #[derive(Debug, Clone)]
 /// Describes a LRN Descriptor.
 pub struct NormalizationDescriptor {
-    id: isize,
+    id: cudnnLRNDescriptor_t,
 }
 
 impl Drop for NormalizationDescriptor {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        API::destroy_lrn_descriptor(self.id_c());
+        API::destroy_lrn_descriptor(*self.id_c());
     }
 }
 
@@ -26,16 +26,11 @@ impl NormalizationDescriptor {
 
     /// Initializes a new CUDA cuDNN NormalizationDescriptor from its C type.
     pub fn from_c(id: cudnnLRNDescriptor_t) -> NormalizationDescriptor {
-        NormalizationDescriptor { id: id as isize }
-    }
-
-    /// Returns the id as isize.
-    pub fn id(&self) -> isize {
-        self.id
+        NormalizationDescriptor { id: id }
     }
 
     /// Returns the CUDA cuDNN NormalizationDescriptor as its C type.
-    pub fn id_c(&self) -> cudnnLRNDescriptor_t {
-        self.id as cudnnLRNDescriptor_t
+    pub fn id_c(&self) -> &cudnnLRNDescriptor_t {
+        &self.id
     }
 }

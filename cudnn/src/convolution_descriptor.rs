@@ -10,13 +10,13 @@ use ffi::*;
 #[derive(Debug, Clone)]
 /// Describes a Convolution Descriptor.
 pub struct ConvolutionDescriptor {
-    id: isize,
+    id: cudnnConvolutionDescriptor_t,
 }
 
 impl Drop for ConvolutionDescriptor {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        API::destroy_convolution_descriptor(self.id_c());
+        API::destroy_convolution_descriptor(*self.id_c());
     }
 }
 
@@ -30,16 +30,16 @@ impl ConvolutionDescriptor {
         match data_type {
             DataType::Float => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                try!(API::set_convolution_descriptor(generic_convolution_desc, d_type, cudnnConvolutionMode_t::CUDNN_CONVOLUTION, array_length, pad.as_ptr(), filter_stride.as_ptr(), upscale.as_ptr()));
+                try!(API::set_convolution_descriptor(generic_convolution_desc, d_type, cudnnConvolutionMode_t::CUDNN_CONVOLUTION, 2, pad.as_ptr(), filter_stride.as_ptr(), upscale.as_ptr()));
                 Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
             },
             DataType::Double => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_DOUBLE;
-                try!(API::set_convolution_descriptor(generic_convolution_desc, d_type, cudnnConvolutionMode_t::CUDNN_CONVOLUTION, array_length, pad.as_ptr(), filter_stride.as_ptr(), upscale.as_ptr()));
+                try!(API::set_convolution_descriptor(generic_convolution_desc, d_type, cudnnConvolutionMode_t::CUDNN_CONVOLUTION, 2, pad.as_ptr(), filter_stride.as_ptr(), upscale.as_ptr()));
                 Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
             },
             DataType::Half => {
-                let d_type = cudnnDataType_t::CUDNN_DATA_HALF;
+                let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
                 try!(API::set_convolution_descriptor(generic_convolution_desc, d_type, cudnnConvolutionMode_t::CUDNN_CONVOLUTION, array_length, pad.as_ptr(), filter_stride.as_ptr(), upscale.as_ptr()));
                 Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
             }
@@ -48,16 +48,11 @@ impl ConvolutionDescriptor {
 
     /// Initializes a new CUDA cuDNN ConvolutionDescriptor from its C type.
     pub fn from_c(id: cudnnConvolutionDescriptor_t) -> ConvolutionDescriptor {
-        ConvolutionDescriptor { id: id as isize }
-    }
-
-    /// Returns the id as isize.
-    pub fn id(&self) -> isize {
-        self.id
+        ConvolutionDescriptor { id: id }
     }
 
     /// Returns the CUDA cuDNN ConvolutionDescriptor as its C type.
-    pub fn id_c(&self) -> cudnnConvolutionDescriptor_t {
-        self.id as cudnnConvolutionDescriptor_t
+    pub fn id_c(&self) -> &cudnnConvolutionDescriptor_t {
+        &self.id
     }
 }

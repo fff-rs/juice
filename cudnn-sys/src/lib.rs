@@ -3,6 +3,26 @@
 
 extern crate libc;
 
+// CUDA types
+
+pub type size_t = ::libc::c_ulong;
+pub type Enum_cudaError = ::libc::c_uint;
+pub type Enum_cudaMemcpyKind = ::libc::c_uint;
+
+pub type cudaMemoryPtr = *mut ::libc::c_void;
+
+pub enum MemcpyKind {
+    cudaMemcpyHostToHost = 0,
+    cudaMemcpyHostToDevice = 1,
+    cudaMemcpyDeviceToHost = 2,
+    cudaMemcpyDeviceToDevice = 3,
+    cudaMemcpyDefault = 4,
+}
+
+pub type cudaError_t = Enum_cudaError;
+
+// CUDNN types
+
 pub enum Struct_CUstream_st { }
 pub type cudaStream_t = *mut Struct_CUstream_st;
 
@@ -855,4 +875,15 @@ extern "C" {
         destDataDiff: *mut ::libc::c_void,
         destMeansDiff: *mut ::libc::c_void
     ) -> cudnnStatus_t;
+
+    //pub fn cudaMalloc(devPtr: *mut cudaMemoryPtr, size: size_t) -> cudaError_t;
+
+    // pub fn cudaFree(devPtr: cudaMemoryPtr) -> cudaError_t;
+
+    // pub fn cudaMemcpy(
+    //     dst: *mut ::libc::c_void,
+    //     src: *const ::libc::c_void,
+    //     count: size_t,
+    //     kind: Enum_cudaMemcpyKind
+    // ) -> cudaError_t;
 }
