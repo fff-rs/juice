@@ -78,4 +78,8 @@ impl IFramework for Native {
 
 impl IBackend for Backend<Native> {
     type F = Native;
+
+    fn device(&self) -> &DeviceType {
+        &self.device()
+    }
 }

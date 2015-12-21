@@ -99,4 +99,8 @@ impl IFramework for OpenCL {
 
 impl IBackend for Backend<OpenCL> {
     type F = OpenCL;
+
+    fn device(&self) -> &DeviceType {
+        &self.device()
+    }
 }

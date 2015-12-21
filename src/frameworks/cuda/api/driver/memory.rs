@@ -17,20 +17,20 @@ impl API {
     }
 
     /// Releases allocated memory from the Cuda device.
-    pub fn mem_free(memory: &mut Memory) -> Result<(), Error> {
-        unsafe {API::ffi_mem_free(memory.id_c())}
+    pub fn mem_free(memory: CUdeviceptr) -> Result<(), Error> {
+        unsafe {API::ffi_mem_free(memory)}
     }
 
     /// Copies memory from the Host to the Cuda device.
     #[cfg(feature = "native")]
     pub fn mem_cpy_h_to_d(host_mem: &FlatBox, device_mem: &mut Memory) -> Result<(), Error> {
-        unsafe {API::ffi_mem_cpy_h_to_d(device_mem.id_c(), host_mem.as_slice().as_ptr(), host_mem.byte_size())}
+        unsafe {API::ffi_mem_cpy_h_to_d(*device_mem.id_c(), host_mem.as_slice().as_ptr(), host_mem.byte_size())}
     }
 
     /// Copies memory from the Cuda device to the Host.
     #[cfg(feature = "native")]
     pub fn mem_cpy_d_to_h(device_mem: &Memory, host_mem: &mut FlatBox) -> Result<(), Error> {
-        unsafe {API::ffi_mem_cpy_d_to_h(host_mem.as_mut_slice().as_mut_ptr(), device_mem.id_c(), host_mem.byte_size())}
+        unsafe {API::ffi_mem_cpy_d_to_h(host_mem.as_mut_slice().as_mut_ptr(), *device_mem.id_c(), host_mem.byte_size())}
     }
 
     unsafe fn ffi_mem_alloc(bytesize: size_t) -> Result<CUdeviceptr, Error> {
@@ -77,13 +77,14 @@ impl API {
         src_device: CUdeviceptr,
         byte_count: size_t,
     ) -> Result<(), Error> {
-        match cuMemcpyDtoH_v2(dst_host, src_device, byte_count) {
+        let status = cuMemcpyDtoH_v2(dst_host, src_device, byte_count);
+        match status {
             CUresult::CUDA_SUCCESS => Ok(()),
             CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => Err(Error::Unknown("Unable to copy memory from device to host.")),
+            _ => { println!("{:?}", status); Err(Error::Unknown("Unable to copy memory from device to host.")) },
         }
     }
 }

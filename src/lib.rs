@@ -69,35 +69,51 @@
 //!
 //! ## Examples
 //!
-//! Backend with custom defined Framework and Device.
+//! This example requires the Collenchyma NN Plugin, for Neural Network related operations, to work.
 //!
-//! ```
+//! ```ignore
 //! extern crate collenchyma as co;
-//! use co::framework::IFramework;
+//! extern crate collenchyma_nn as nn;
 //! use co::backend::{Backend, BackendConfig};
-//! use co::frameworks::Native;
-//! #[allow(unused_variables)]
-//! fn main() {
-//!     let framework = Native::new(); // Initialize the Framework
-//!     let hardwares = framework.hardwares(); // Now you can obtain a list of available hardware for that Framework.
-//!     // Create the custom Backend by providing a Framework and one or many Hardwares.
-//!     let backend_config = BackendConfig::new(framework, hardwares);
-//!     let backend = Backend::new(backend_config);
-//!     // You can now execute all the operations available, e.g.
-//!     // backend.dot(x, y);
+//! use co::framework::IFramework;
+//! use co::frameworks::{Cuda, Native};
+//! use co::memory::MemoryType;
+//! use co::tensor::SharedTensor;
+//! use nn::*;
+//!
+//! fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
+//!     if let &mut MemoryType::Native(ref mut mem) = mem {
+//!         let mut mem_buffer = mem.as_mut_slice::<T>();
+//!         for (index, datum) in data.iter().enumerate() {
+//!             mem_buffer[index] = *datum;
+//!         }
+//!     }
 //! }
-//! ```
 //!
-//! Machine-agnostic Backend.
-//!
-//! ```
-//! extern crate collenchyma as co;
 //! fn main() {
-//!     // Not yet implemented.
-//!     // No need to provide a Backend Configuration.
-//!     // let backend = Backend::new(None);
-//!     // You can now execute all the operations available, e.g.
-//!     // backend.dot(x, y);
+//!     // Initialize a CUDA Backend.
+//!     // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
+//!     let framework = Cuda::new();
+//!     let hardwares = framework.hardwares();
+//!     let backend_config = BackendConfig::new(framework, hardwares);
+//!     let backend = Backend::new(backend_config).unwrap();
+//!     // Initialize two SharedTensors.
+//!     let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+//!     let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+//!     // Fill `x` with some data.
+//!     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
+//!     let native = Native::new();
+//!     let cpu = native.new_device(native.hardwares()).unwrap();
+//!     x.add_device(&cpu).unwrap(); // Add native host memory
+//!     x.sync(&cpu).unwrap(); // Sync to native host memory
+//!     write_to_memory(x.get_mut(&cpu).unwrap(), payload); // Write to native host memory.
+//!     x.sync(backend.device()).unwrap(); // Sync the data to the CUDA device.
+//!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
+//!     backend.sigmoid(&mut x, &mut result).unwrap();
+//!     // See the result.
+//!     result.add_device(&cpu).unwrap(); // Add native host memory
+//!     result.sync(&cpu).unwrap(); // Sync the result to host memory.
+//!     println!("{:?}", result.get(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
 //! }
 //! ```
 //!

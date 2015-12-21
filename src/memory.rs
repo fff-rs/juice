@@ -52,6 +52,16 @@ impl MemoryType {
         }
     }
 
+    #[cfg(feature = "native")]
+    /// Consumes the Memory and returns an owned OpenCL Memory.
+    pub fn into_native(self) -> Option<FlatBox> {
+        match self {
+            MemoryType::Native(ret) => Some(ret),
+            #[cfg(any(feature = "cuda", feature = "opencl"))]
+            _ => None,
+        }
+    }
+
     /// Extract the OpenCL Memory if MemoryType is OpenCL.
     #[cfg(feature = "opencl")]
     pub fn as_opencl(&self) -> Option<&OpenCLMemory> {
@@ -72,6 +82,16 @@ impl MemoryType {
         }
     }
 
+    #[cfg(feature = "opencl")]
+    /// Consumes the Memory and returns an owned OpenCL Memory.
+    pub fn into_opencl(self) -> Option<OpenCLMemory> {
+        match self {
+            MemoryType::OpenCL(ret) => Some(ret),
+            #[cfg(any(feature = "cuda", feature = "native"))]
+            _ => None,
+        }
+    }
+
     #[cfg(feature = "cuda")]
     /// Extract the Cuda Memory if MemoryType is Cuda
     pub fn as_cuda(&self) -> Option<&CudaMemory> {
@@ -87,6 +107,16 @@ impl MemoryType {
     pub fn as_mut_cuda(&mut self) -> Option<&mut CudaMemory> {
         match *self {
             MemoryType::Cuda(ref mut ret) => Some(ret),
+            #[cfg(any(feature = "opencl", feature = "native"))]
+            _ => None,
+        }
+    }
+
+    #[cfg(feature = "cuda")]
+    /// Consumes the Memory and returns an owned Cuda Memory.
+    pub fn into_cuda(self) -> Option<CudaMemory> {
+        match self {
+            MemoryType::Cuda(ret) => Some(ret),
             #[cfg(any(feature = "opencl", feature = "native"))]
             _ => None,
         }
