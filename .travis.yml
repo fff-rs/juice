@@ -22,6 +22,7 @@ script:
 - |
   cd cudnn
   travis-cargo build -- --no-default-features &&
+  travis-cargo test -- --no-default-features --features "travis"
   travis-cargo doc -- --no-default-features
 addons:
   apt:
