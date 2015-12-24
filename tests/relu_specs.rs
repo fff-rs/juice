@@ -235,7 +235,7 @@ mod relu_spec_native {
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-    let &mut MemoryType::Native(ref mut mem) = mem;
+        let &mut MemoryType::Native(ref mut mem) = mem;
         let mut mem_buffer = mem.as_mut_slice::<T>();
         for (index, datum) in data.iter().enumerate() {
             mem_buffer[index] = *datum;

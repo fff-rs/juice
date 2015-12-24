@@ -1,5 +1,9 @@
 //! Provides NN for a Native backend.
 
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(unreachable_code)]
+
 use ::plugin::*;
 use co::device::DeviceType;
 use co::backend::Backend;
@@ -81,8 +85,8 @@ macro_rules! impl_ops_sigmoid_for {
 macro_rules! impl_ops_relu_for {
     ($t:ident, $b:ty) => (
         fn relu(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -90,8 +94,8 @@ macro_rules! impl_ops_relu_for {
         }
 
         fn relu_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -99,10 +103,10 @@ macro_rules! impl_ops_relu_for {
         }
 
         fn relu_grad(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            x_diff: &mut ::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            x_diff: &mut ::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -110,10 +114,10 @@ macro_rules! impl_ops_relu_for {
         }
 
         fn relu_grad_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            x_diff: &::co::tensor::SharedTensor<$t>, 
-            result: &::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            x_diff: &::co::tensor::SharedTensor<$t>,
+            result: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -125,26 +129,26 @@ macro_rules! impl_ops_relu_for {
 macro_rules! impl_ops_tanh_for {
     ($t:ident, $b:ty) => (
         fn tanh(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn tanh_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn tanh_grad(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            x_diff: &mut ::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            x_diff: &mut ::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -152,10 +156,10 @@ macro_rules! impl_ops_tanh_for {
         }
 
         fn tanh_grad_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            x_diff: &::co::tensor::SharedTensor<$t>, 
-            result: &::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            x_diff: &::co::tensor::SharedTensor<$t>,
+            result: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -167,40 +171,40 @@ macro_rules! impl_ops_tanh_for {
 macro_rules! impl_ops_convolution_for {
     ($t:ident, $b:ty) => (
         fn convolution(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn convolution_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn convolution_grad(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            x_diff: &mut ::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
-            result_diff: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            x_diff: &mut ::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
+            result_diff: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn convolution_grad_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            x_diff: &::co::tensor::SharedTensor<$t>, 
-            result: &::co::tensor::SharedTensor<$t>, 
-            result_diff: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            x_diff: &::co::tensor::SharedTensor<$t>,
+            result: &::co::tensor::SharedTensor<$t>,
+            result_diff: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -212,34 +216,34 @@ macro_rules! impl_ops_convolution_for {
 macro_rules! impl_ops_softmax_for {
     ($t:ident, $b:ty) => (
         fn softmax(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn softmax_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn softmax_grad(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            x_diff: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            x_diff: &mut ::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
             Ok(())
         }
         fn softmax_grad_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            x_diff: &::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            x_diff: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -251,10 +255,10 @@ macro_rules! impl_ops_softmax_for {
 macro_rules! impl_ops_lrn_for {
     ($t:ident, $b:ty) => (
         fn new_lrn_config(
-        &self, 
-        n: u32, 
-        alpha: f64, 
-        beta: f64, 
+        &self,
+        n: u32,
+        alpha: f64,
+        beta: f64,
         k: f64
         ) -> Result<Self::CLRN, ::co::error::Error> {
             unimplemented!();
@@ -262,9 +266,9 @@ macro_rules! impl_ops_lrn_for {
         }
 
         fn lrn(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CLRN
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -272,9 +276,9 @@ macro_rules! impl_ops_lrn_for {
         }
 
         fn lrn_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CLRN
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -282,11 +286,11 @@ macro_rules! impl_ops_lrn_for {
         }
 
         fn lrn_grad(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            x_diff: &mut ::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
-            result_diff: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            x_diff: &mut ::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
+            result_diff: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CLRN
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -294,11 +298,11 @@ macro_rules! impl_ops_lrn_for {
         }
 
         fn lrn_grad_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            x_diff: &::co::tensor::SharedTensor<$t>, 
-            result: &::co::tensor::SharedTensor<$t>, 
-            result_diff: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            x_diff: &::co::tensor::SharedTensor<$t>,
+            result: &::co::tensor::SharedTensor<$t>,
+            result_diff: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CLRN
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -310,9 +314,9 @@ macro_rules! impl_ops_lrn_for {
 macro_rules! impl_ops_pooling_for {
     ($t:ident, $b:ty) => (
         fn new_pooling_config(
-            &self, 
-            window: &[i32], 
-            padding: &[i32], 
+            &self,
+            window: &[i32],
+            padding: &[i32],
             stride: &[i32]
         ) -> Result<Self::CPOOL, ::co::error::Error> {
             unimplemented!();
@@ -320,9 +324,9 @@ macro_rules! impl_ops_pooling_for {
         }
 
         fn pooling_max(
-            &self, 
-            x: &mut ::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &mut ::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CPOOL
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -330,9 +334,9 @@ macro_rules! impl_ops_pooling_for {
         }
 
         fn pooling_max_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            result: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CPOOL
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -352,11 +356,11 @@ macro_rules! impl_ops_pooling_for {
         }
 
         fn pooling_max_grad_plain(
-            &self, 
-            x: &::co::tensor::SharedTensor<$t>, 
-            x_diff: &::co::tensor::SharedTensor<$t>, 
-            result: &::co::tensor::SharedTensor<$t>, 
-            result_diff: &mut ::co::tensor::SharedTensor<$t>, 
+            &self,
+            x: &::co::tensor::SharedTensor<$t>,
+            x_diff: &::co::tensor::SharedTensor<$t>,
+            result: &::co::tensor::SharedTensor<$t>,
+            result_diff: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CPOOL
         ) -> Result<(), ::co::error::Error> {
             unimplemented!();
@@ -386,11 +390,11 @@ impl NN<f32> for Backend<Native> {
     impl_ops_pooling_for!(f32, Backend<Native>);
 
     fn new_convolution_config(
-        &self, 
-        src: &::co::tensor::SharedTensor<f32>, 
-        dest: &::co::tensor::SharedTensor<f32>, 
-        filter: &mut ::co::tensor::SharedTensor<f32>, 
-        stride: &[i32], 
+        &self,
+        src: &::co::tensor::SharedTensor<f32>,
+        dest: &::co::tensor::SharedTensor<f32>,
+        filter: &mut ::co::tensor::SharedTensor<f32>,
+        stride: &[i32],
         zero_padding: &[i32]
     ) -> Result<Self::CC, ::co::error::Error> {
         unimplemented!();
@@ -416,16 +420,14 @@ impl NN<f64> for Backend<Native> {
     impl_ops_pooling_for!(f64, Backend<Native>);
 
     fn new_convolution_config(
-        &self, 
-        src: &::co::tensor::SharedTensor<f64>, 
-        dest: &::co::tensor::SharedTensor<f64>, 
-        filter: &mut ::co::tensor::SharedTensor<f64>, 
-        stride: &[i32], 
+        &self,
+        src: &::co::tensor::SharedTensor<f64>,
+        dest: &::co::tensor::SharedTensor<f64>,
+        filter: &mut ::co::tensor::SharedTensor<f64>,
+        stride: &[i32],
         zero_padding: &[i32]
     ) -> Result<Self::CC, ::co::error::Error> {
         unimplemented!();
         Ok(ConvolutionConfig{dummy: 5})
     }
 }
-
-
