@@ -1,8 +1,8 @@
 //! Provides the specific Framework implementations for the Library Operations.
 
-//#[cfg(feature = "native")]
-//mod native;
+#[cfg(feature = "native")]
+pub mod native;
 //#[cfg(feature = "opencl")]
-//mod opencl;
+//pub mod opencl;
 #[cfg(feature = "cuda")]
 pub mod cuda;

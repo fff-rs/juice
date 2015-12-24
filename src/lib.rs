@@ -34,6 +34,8 @@
 //! This again is just plain Rust - nothing fancy about it. Now a complete example:
 //!
 //! ```rust
+//! # #[cfg(feature = "cuda")]
+//! # mod cuda {
 //! extern crate collenchyma as co;
 //! extern crate collenchyma_nn as nn;
 //! use co::backend::{Backend, BackendConfig};
@@ -77,6 +79,13 @@
 //!     result.sync(&cpu).unwrap(); // Sync the result to host memory.
 //!     println!("{:?}", result.get(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
 //! }
+//! # }
+//! #
+//! # fn main() {
+//! #     if cfg!(feature = "cuda") {
+//! #         ::main();
+//! #    }
+//! # }
 //! ```
 //!
 //! ## Provided Operations
