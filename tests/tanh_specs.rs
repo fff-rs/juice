@@ -271,7 +271,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_on_native_for_f32() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f32, Native>(&backend);
@@ -287,7 +286,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_on_native_for_f64() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f64, Native>(&backend);
@@ -303,7 +301,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_on_native_for_f32_plain() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f32, Native>(&backend);
@@ -319,7 +316,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_on_native_for_f64_plain() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f64, Native>(&backend);
@@ -335,7 +331,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_grad_on_native_for_f32() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Native>(&backend);
@@ -351,7 +346,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_grad_on_native_for_f64() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Native>(&backend);
@@ -367,7 +361,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_grad_on_native_for_f32_plain() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Native>(&backend);
@@ -383,7 +376,6 @@ mod tanh_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_tanh_grad_on_native_for_f64_plain() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Native>(&backend);

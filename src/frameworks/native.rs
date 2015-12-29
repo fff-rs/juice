@@ -5,14 +5,68 @@
 #![allow(unreachable_code)]
 
 use ::plugin::*;
+use co::plugin::numeric_helpers::Float;
 use co::device::DeviceType;
 use co::backend::Backend;
 use co::memory::MemoryType;
 use co::frameworks::native::{Native, Function, Binary};
-use co::plugin::Error;
+use co::error::Error;
+use co::plugin::Error as PluginError;
 
 struct ConvolutionConfig { dummy: i32 }
 
+fn write_to_memory<T: Iterator>(mem: &mut MemoryType, data: T) 
+    where T::Item: Clone {
+    let &mut MemoryType::Native(ref mut mem) = mem;
+    let mut mem_buffer = mem.as_mut_slice::<T::Item>();
+    for (index, datum) in data.enumerate() {
+        mem_buffer[index] = datum;
+    }
+}
+
+#[inline]
+fn sigmoid<T: Float>(x: &T) -> T {
+    let x : T = x.clone();
+    (T::one()) / (T::one() + (-x).exp())
+}
+
+#[inline]
+fn sigmoid_grad<T: Float>(x: &T, dx: &T) -> T {
+    let x : T = x.clone();
+    let dx : T = dx.clone();
+    x * (T::one() -x) * dx
+}
+
+#[inline]
+fn relu<T: Float>(x: &T) -> T {
+    let x : T = x.clone();
+    x.max(T::zero())
+}
+
+#[inline]
+fn relu_grad<T: Float>(x: &T, dx: &T) -> T {
+    let x : T = x.clone();
+    let dx : T = dx.clone();
+    if x > T::zero() {
+        return dx
+    }
+    T::zero()
+}
+
+#[inline]
+fn tanh<T: Float>(x: &T) -> T {
+    let x : T = x.clone();
+    x.tanh()
+}
+
+#[inline]
+// d/dx tanh x = sech2 x = 1 + tanh2 x
+fn tanh_grad<T: Float>(x: &T, dx: &T) -> T {
+    let x : T = x.clone();
+    let dx : T = dx.clone();
+    (T::one() - x.powi(2)) * dx
+}
+ 
 #[macro_export]
 macro_rules! impl_oconf_for_cc(($($t: ident), +) => (
     $(
@@ -46,16 +100,23 @@ macro_rules! impl_ops_sigmoid_for {
             x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => () }
+            self.sigmoid_plain(x, result)
         }
+
         fn sigmoid_plain(
             &self,
             x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                let res = input.as_slice::<$t>().iter().map(sigmoid);
+                write_to_memory(result.get_mut(self.device()).unwrap(), res);
+                return Ok(());
+            }
+            Err(Error::Plugin(
+                    PluginError::Operation("Unable to execute Native sigmoid Forward.")))
         }
 
         fn sigmoid_grad(
@@ -65,8 +126,11 @@ macro_rules! impl_ops_sigmoid_for {
             result: &mut ::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result_diff.add_device(self.device()) { _ => () }
+            self.sigmoid_grad_plain(x, x_diff, result, result_diff)
         }
 
         fn sigmoid_grad_plain(
@@ -76,8 +140,18 @@ macro_rules! impl_ops_sigmoid_for {
             result: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+
+            if let Some(sig_data) = x.get(self.device()).unwrap().as_native() {
+                if let Some(sig_dx) = x.get(self.device()).unwrap().as_native() {
+                    let res = sig_data.as_slice::<$t>().iter()
+                        .zip(sig_dx.as_slice::<$t>().iter())
+                        .map(|(t, dt)| sigmoid_grad(t, dt));
+                    write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                    return Ok(());
+                }
+            }
+            Err(Error::Plugin(
+                        PluginError::Operation("Unable to execute Native sigmoid grad Forward.")))
         }
     );
 }
@@ -89,8 +163,9 @@ macro_rules! impl_ops_relu_for {
             x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => () }
+            self.relu_plain(x, result)
         }
 
         fn relu_plain(
@@ -98,8 +173,13 @@ macro_rules! impl_ops_relu_for {
             x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                let res = input.as_slice::<$t>().iter().map(relu);
+                write_to_memory(result.get_mut(self.device()).unwrap(), res);
+                return Ok(());
+            }
+            Err(Error::Plugin(
+                    PluginError::Operation("Unable to execute Native ReLU Forward.")))
         }
 
         fn relu_grad(
@@ -109,8 +189,10 @@ macro_rules! impl_ops_relu_for {
             result: &mut ::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            self.relu_grad_plain(x, x_diff, result, result_diff)
         }
 
         fn relu_grad_plain(
@@ -120,29 +202,47 @@ macro_rules! impl_ops_relu_for {
             result: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                if let Some(dx) = x_diff.get(self.device()).unwrap().as_native() {
+                    let res = input.as_slice::<$t>().iter()
+                        .zip(dx.as_slice::<$t>().iter())
+                        .map(|(x, dx)|relu_grad(x, dx));
+                    write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                    return Ok(());
+                }
+            }
+            Err(Error::Plugin(
+                    PluginError::Operation("Unable to execute Native ReLU grad Forward.")))
+
         }
     );
 }
 
 macro_rules! impl_ops_tanh_for {
     ($t:ident, $b:ty) => (
+        #[inline]
         fn tanh(
             &self,
             x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => () }
+            self.tanh_plain(x, result)
         }
+
         fn tanh_plain(
             &self,
             x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                let res = input.as_slice::<$t>().iter().map(tanh);
+                write_to_memory(result.get_mut(self.device()).unwrap(), res);
+                return Ok(());
+            }
+            Err(Error::Plugin(
+                    PluginError::Operation("Unable to execute Native tanh Forward.")))
         }
         fn tanh_grad(
             &self,
@@ -151,8 +251,10 @@ macro_rules! impl_ops_tanh_for {
             result: &mut ::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+            self.tanh_grad_plain(x, x_diff, result, result_diff)
         }
 
         fn tanh_grad_plain(
@@ -162,8 +264,17 @@ macro_rules! impl_ops_tanh_for {
             result: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>
         ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                if let Some(dx) = x_diff.get(self.device()).unwrap().as_native() {
+                    let res = input.as_slice::<$t>().iter()
+                        .zip(dx.as_slice::<$t>().iter())
+                        .map(|(x, dx)|tanh_grad(x, dx));
+                    write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                    return Ok(());
+                }
+            }
+            Err(Error::Plugin(
+                        PluginError::Operation("Unable to execute Native tanh_grad Forward.")))
         }
     );
 }
