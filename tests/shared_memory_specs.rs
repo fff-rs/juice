@@ -47,7 +47,7 @@ mod shared_memory_spec {
     #[cfg(feature = "cuda")]
     fn it_creates_new_shared_memory_for_cuda() {
         let ntv = Cuda::new();
-        let device = ntv.new_device(ntv.hardwares()[0..1].to_vec()).unwrap();
+        let device = ntv.new_device(&ntv.hardwares()[0..1]).unwrap();
         let shared_data = &mut SharedTensor::<f32>::new(&device, &10).unwrap();
         match shared_data.get(&device) {
             Some(&MemoryType::Cuda(_)) => assert!(true),
@@ -59,7 +59,7 @@ mod shared_memory_spec {
     #[cfg(feature = "opencl")]
     fn it_creates_new_shared_memory_for_opencl() {
         let ntv = OpenCL::new();
-        let device = ntv.new_device(ntv.hardwares()[0..1].to_vec()).unwrap();
+        let device = ntv.new_device(&ntv.hardwares()[0..1]).unwrap();
         let shared_data = &mut SharedTensor::<f32>::new(&device, &10).unwrap();
         match shared_data.get(&device) {
             Some(&MemoryType::OpenCL(_)) => assert!(true),
@@ -72,11 +72,11 @@ mod shared_memory_spec {
     fn it_syncs_from_native_to_cuda_and_back() {
         let cu = Cuda::new();
         let nt = Native::new();
-        let cu_device = cu.new_device(cu.hardwares()[0..1].to_vec()).unwrap();
+        let cu_device = cu.new_device(&cu.hardwares()[0..1]).unwrap();
         let nt_device = nt.new_device(nt.hardwares()).unwrap();
         let mem = &mut SharedTensor::<f64>::new(&nt_device, &3).unwrap();
         write_to_memory(mem.get_mut(&nt_device).unwrap(), &[1, 2, 3]);
-        mem.add_device(&cu_device);
+        mem.add_device(&cu_device).unwrap();
         match mem.sync(&cu_device) {
             Ok(_) => assert!(true),
             Err(err) => {
@@ -100,11 +100,11 @@ mod shared_memory_spec {
     fn it_syncs_from_native_to_opencl_and_back() {
         let cl = OpenCL::new();
         let nt = Native::new();
-        let cl_device = cl.new_device(cl.hardwares()[0..1].to_vec()).unwrap();
+        let cl_device = cl.new_device(&cl.hardwares()[0..1]).unwrap();
         let nt_device = nt.new_device(nt.hardwares()).unwrap();
         let mem = &mut SharedTensor::<f64>::new(&nt_device, &3).unwrap();
         write_to_memory(mem.get_mut(&nt_device).unwrap(), &[1, 2, 3]);
-        mem.add_device(&cl_device);
+        mem.add_device(&cl_device).unwrap();
         match mem.sync(&cl_device) {
             Ok(_) => assert!(true),
             Err(err) => {

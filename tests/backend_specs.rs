@@ -13,8 +13,8 @@ mod backend_spec {
     #[cfg(feature = "opencl")]
     fn it_works() {
         let framework = OpenCL::new();
-        let hardwares = framework.hardwares();
-        let backend_config = BackendConfig::new(framework, hardwares);
+        let hardwares = framework.hardwares().to_vec();
+        let backend_config = BackendConfig::new(framework, &hardwares);
         let backend = Backend::new(backend_config);
         println!("{:?}", backend);
     }

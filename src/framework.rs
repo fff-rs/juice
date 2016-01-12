@@ -53,13 +53,13 @@ pub trait IFramework {
     fn load_hardwares() -> Result<Vec<Self::H>, Error>;
 
     /// Returns the cached and available hardwares.
-    fn hardwares(&self) -> Vec<Self::H>;
+    fn hardwares(&self) -> &[Self::H];
 
     /// Returns the initialized binary.
     fn binary(&self) -> &Self::B;
 
     /// Initializes a new Device from the provided hardwares.
-    fn new_device(&self, Vec<Self::H>) -> Result<DeviceType, Error>;
+    fn new_device(&self, &[Self::H]) -> Result<DeviceType, Error>;
 }
 
 #[derive(Debug)]

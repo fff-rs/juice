@@ -61,8 +61,8 @@ impl IFramework for Cuda {
         Ok(try!(Driver::load_devices()))
     }
 
-    fn hardwares(&self) -> Vec<Device> {
-        self.hardwares.clone()
+    fn hardwares(&self) -> &[Device] {
+        &self.hardwares
     }
 
     fn binary(&self) -> &Self::B {
@@ -73,7 +73,7 @@ impl IFramework for Cuda {
     ///
     /// Cuda's context differs from OpenCL's context. Multi device support works different in Cuda.
     /// This function currently suppports only one device, but should be a wrapper for multi device support.
-    fn new_device(&self, hardwares: Vec<Device>) -> Result<DeviceType, ::framework::Error> {
+    fn new_device(&self, hardwares: &[Device]) -> Result<DeviceType, ::framework::Error> {
         let length = hardwares.len();
         match length {
             0 => Err(::framework::Error::Implementation(format!("No device for context specified."))),

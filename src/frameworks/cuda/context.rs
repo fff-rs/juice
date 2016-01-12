@@ -9,20 +9,22 @@ use super::memory::*;
 use frameworks::native::flatbox::FlatBox;
 use memory::MemoryType;
 use std::hash::{Hash, Hasher};
+use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 /// Defines a Cuda Context.
 pub struct Context {
-    id: isize,
+    id: Rc<isize>,
     devices: Vec<Device>,
 }
 
 impl Drop for Context {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        // Produces Segfaults at tests for 50% at a time.
-        // Maybe because CUDA context's are linked to a CPU thread?
-        //API::destroy_context(self);
+        let id_c = self.id_c().clone();
+        if let Some(_) = Rc::get_mut(&mut self.id) {
+            Driver::destroy_context(id_c);
+        }
     }
 }
 
@@ -39,17 +41,20 @@ impl Context {
 
     /// Initializes a new Cuda platform from its C type.
     pub fn from_c(id: DriverFFI::CUcontext, devices: Vec<Device>) -> Context {
-        Context { id: id as isize, devices: devices }
+        Context {
+            id: Rc::new(id as isize),
+            devices: devices
+        }
     }
 
     /// Returns the id as isize.
     pub fn id(&self) -> isize {
-        self.id
+        *self.id
     }
 
     /// Returns the id as its C type.
     pub fn id_c(&self) -> DriverFFI::CUcontext {
-        self.id as DriverFFI::CUcontext
+        *self.id as DriverFFI::CUcontext
     }
 }
 
@@ -93,7 +98,7 @@ impl IDevice for Context {
 
 impl PartialEq for Context {
     fn eq(&self, other: &Self) -> bool {
-        self.id() == other.id()
+        self.hardwares() == other.hardwares()
     }
 }
 

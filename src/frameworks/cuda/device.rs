@@ -111,6 +111,12 @@ impl IHardware for Device {
     }
 }
 
+impl PartialEq for Device {
+    fn eq(&self, other: &Self) -> bool {
+        self.id() == other.id()
+    }
+}
+
 #[derive(Debug, Clone)]
 /// Defines a generic DeviceInfo container.
 ///

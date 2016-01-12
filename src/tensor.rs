@@ -300,8 +300,8 @@ impl<T> SharedTensor<T> {
     /// Synchronize memory from `source` device to `destination` device.
     fn sync_from_to(&mut self, source: &DeviceType, destination: &DeviceType) -> Result<(), Error> {
         if source != destination {
-            match self.remove_copy(destination) {
-                Ok(mut destination_copy) => {
+            match self.copies.get_mut(destination) {
+                Some(mut destination_copy) => {
                     match destination {
                         #[cfg(feature = "native")]
                         &DeviceType::Native(ref cpu) => {
@@ -325,10 +325,9 @@ impl<T> SharedTensor<T> {
                             }
                         }
                     }
-                    self.return_copy(destination, destination_copy);
                     Ok(())
                 },
-                Err(err) => Err(err),
+                None => Err(Error::MissingDestination("Tensor does not hold a copy on destination device."))
             }
         } else {
             Ok(())

@@ -4,7 +4,6 @@
 
 use super::{API, Error};
 use frameworks::cuda::Device;
-use frameworks::cuda::Context;
 use super::ffi::*;
 use std::ptr;
 
@@ -22,8 +21,8 @@ impl API {
     /// Removes a created Cuda context from the device.
     ///
     /// Should be called when freeing a Cuda::Context to not trash up the Cuda device.
-    pub fn destroy_context(context: &mut Context) -> Result<(), Error> {
-        unsafe {API::ffi_destroy_context(context.id_c())}
+    pub fn destroy_context(context: CUcontext) -> Result<(), Error> {
+        unsafe {API::ffi_destroy_context(context)}
     }
 
     unsafe fn ffi_create_context(

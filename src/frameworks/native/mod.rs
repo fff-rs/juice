@@ -63,15 +63,15 @@ impl IFramework for Native {
         Ok(vec!(cpu))
     }
 
-    fn hardwares(&self) -> Vec<Hardware> {
-        self.hardwares.clone()
+    fn hardwares(&self) -> &[Hardware] {
+        &self.hardwares
     }
 
     fn binary(&self) -> &Binary {
         &self.binary
     }
 
-    fn new_device(&self, devices: Vec<Hardware>) -> Result<DeviceType, ::framework::Error> {
+    fn new_device(&self, devices: &[Hardware]) -> Result<DeviceType, ::framework::Error> {
         Ok(DeviceType::Native(Cpu::new(devices.to_vec())))
     }
 }
