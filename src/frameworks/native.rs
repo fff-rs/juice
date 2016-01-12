@@ -158,12 +158,13 @@ impl_iblas_for!(f64, Backend<Native>);
 /// Create a rblas-Matrix from a slice and dimensions.
 fn as_matrix<T: Clone + ::std::fmt::Debug>(slice: &[T], dims: &[usize]) -> Mat<T> {
     let n = dims[0];
-    let m = dims[1];
+    let m = dims.iter().skip(1).fold(1, |prod, i| prod * i);
     let mut mat = Mat::new(n, m);
     for i in 0..n {
         for j in 0..m {
+            let index = m * i + j;
             unsafe {
-                *mat.as_mut_ptr().offset((n*i + j) as isize) = slice[n*i + j].clone();
+                *mat.as_mut_ptr().offset(index as isize) = slice[index].clone();
             }
         }
     }
