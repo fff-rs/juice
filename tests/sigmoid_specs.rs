@@ -276,7 +276,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_on_native_for_f32() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f32, Native>(&backend);
@@ -285,6 +284,8 @@ mod sigmoid_spec_native {
             Ok(_) => {
                 if let Some(mem) = result.get(backend.device()).unwrap().as_native() {
                     assert_eq!(&[0.7310585786f32, 0.7310586f32, 0.880797f32], mem.as_slice::<f32>());
+                } else {
+                    println!("No result: {:?}", result); assert!(false);
                 }
             },
             Err(err) => { println!("{:?}", err); assert!(false) }
@@ -292,7 +293,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_on_native_for_f64() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f64, Native>(&backend);
@@ -308,7 +308,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_on_native_for_f32_plain() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f32, Native>(&backend);
@@ -324,7 +323,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_on_native_for_f64_plain() {
         let backend = get_native_backend();
         let (mut x, mut result) = get_memory::<f64, Native>(&backend);
@@ -340,7 +338,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_grad_on_native_for_f32() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Native>(&backend);
@@ -356,7 +353,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_grad_on_native_for_f64() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Native>(&backend);
@@ -372,7 +368,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_grad_on_native_for_f32_plain() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f32, Native>(&backend);
@@ -388,7 +383,6 @@ mod sigmoid_spec_native {
     }
 
     #[test]
-    #[ignore]
     fn it_computes_correct_sigmoid_grad_on_native_for_f64_plain() {
         let backend = get_native_backend();
         let (mut x, mut x_diff, mut result, mut result_diff) = get_grad_memory::<f64, Native>(&backend);
