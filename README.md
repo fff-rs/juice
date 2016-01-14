@@ -48,7 +48,7 @@ fn main() {
 }
 ```
 
-## Sugared Example
+## Sugared Example (Soon to be Deprecated)
 
 ```rust
 #[macro_use]
