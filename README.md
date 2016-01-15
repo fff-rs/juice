@@ -30,9 +30,9 @@ More information can be found in the [Documentation][docs-ops].
 
 | Operation            | CUDA       | OpenCL    | Native    |
 |---	                 |---	        |---        |---        |
-| Sigmoid  	           | cuDNN v3  	| -  	      | -  	   	  |
-| ReLU  	             | cuDNN v3   | -  	      | - 	      |
-| Tanh  	   	         | cudNN v3   | - 	      | -         |
+| Sigmoid  	           | cuDNN v3  	| -  	      | Rust	  	|
+| ReLU  	             | cuDNN v3   | -  	      | Rust      |
+| Tanh  	   	         | cudNN v3   | - 	      | Rust      |
 |   	   	             |  	        |  	        |           |
 | Normalization (LRN)  | cudNN v3   | - 	      | -         |
 |   	   	             |  	        |  	        |           |
@@ -43,7 +43,10 @@ More information can be found in the [Documentation][docs-ops].
 | Pooling Max          | cudNN v3   | - 	      | -         |
 | Pooling Avg          | cudNN v3   | - 	      | -         |
 
+Kudos to [ehiggs][ehiggs], for implementing the Rust activation operations.
+
 [docs-ops]: http://autumnai.github.io/collenchyma-nn/collenchyma_nn/trait.NN.html
+[ehiggs]: https://github.com/ehiggs
 
 ## Getting Started
 

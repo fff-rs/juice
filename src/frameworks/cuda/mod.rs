@@ -98,15 +98,9 @@ impl NN<f32> for Backend<Cuda> {
 
     fn init_nn() { let _ = CUDNN.id_c(); }
     fn device(&self) -> &DeviceType { self.device() }
+}
 
-    impl_ops_sigmoid_for!(f32, Backend<Cuda>);
-    impl_ops_relu_for!(f32, Backend<Cuda>);
-    impl_ops_tanh_for!(f32, Backend<Cuda>);
-    impl_ops_convolution_for!(f32, Backend<Cuda>);
-    impl_ops_softmax_for!(f32, Backend<Cuda>);
-    impl_ops_lrn_for!(f32, Backend<Cuda>);
-    impl_ops_pooling_for!(f32, Backend<Cuda>);
-
+impl Convolution<f32> for Backend<Cuda> {
     fn new_convolution_config(
         &self,
         src: &::co::tensor::SharedTensor<f32>,
@@ -159,7 +153,17 @@ impl NN<f32> for Backend<Cuda> {
             )
         )
     }
+
+    impl_ops_convolution_for!(f32, Backend<Cuda>);
 }
+
+impl_ops_sigmoid_for!(f32, Backend<Cuda>);
+impl_ops_relu_for!(f32, Backend<Cuda>);
+impl_ops_tanh_for!(f32, Backend<Cuda>);
+impl_ops_softmax_for!(f32, Backend<Cuda>);
+impl_ops_lrn_for!(f32, Backend<Cuda>);
+impl_ops_pooling_for!(f32, Backend<Cuda>);
+
 
 impl NN<f64> for Backend<Cuda> {
     type CC = utils::ConvolutionConfig;
@@ -168,15 +172,9 @@ impl NN<f64> for Backend<Cuda> {
 
     fn init_nn() { let _ = CUDNN.id_c(); }
     fn device(&self) -> &DeviceType { self.device() }
+}
 
-    impl_ops_sigmoid_for!(f64, Backend<Cuda>);
-    impl_ops_relu_for!(f64, Backend<Cuda>);
-    impl_ops_tanh_for!(f64, Backend<Cuda>);
-    impl_ops_convolution_for!(f64, Backend<Cuda>);
-    impl_ops_softmax_for!(f64, Backend<Cuda>);
-    impl_ops_lrn_for!(f64, Backend<Cuda>);
-    impl_ops_pooling_for!(f64, Backend<Cuda>);
-
+impl Convolution<f64> for Backend<Cuda> {
     fn new_convolution_config(
         &self,
         src: &::co::tensor::SharedTensor<f64>,
@@ -229,4 +227,13 @@ impl NN<f64> for Backend<Cuda> {
             )
         )
     }
+
+    impl_ops_convolution_for!(f64, Backend<Cuda>);
 }
+
+impl_ops_sigmoid_for!(f64, Backend<Cuda>);
+impl_ops_relu_for!(f64, Backend<Cuda>);
+impl_ops_tanh_for!(f64, Backend<Cuda>);
+impl_ops_softmax_for!(f64, Backend<Cuda>);
+impl_ops_lrn_for!(f64, Backend<Cuda>);
+impl_ops_pooling_for!(f64, Backend<Cuda>);

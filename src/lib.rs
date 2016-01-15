@@ -12,12 +12,10 @@
 //! can be found in the next section.
 //!
 //! The architecture of a Plugin is quite easy. It defines one Plugin Trait, in this case the `NN`
-//! trait, that defines all the available methods, which will later be available through the Backend, as
-//! the Plugin Trait is implemented for the Collenchyma Backend. The operations take as arguments one or many
+//! trait, which implements basic functionality for initialization and multiple Plugin Operation Traits which define the
+//! methods which are going to be available on the Backed, as the Plugin Trait as well as the Plugin Operations Traits
+//! are implemented for the Collenchyma Backends (CUDA, OpenCL, Native). The operations take as arguments one or many
 //! SharedTensors, holding the data over which the operation should happen, and none or one Operation Configuration.
-//!
-//! This Plugin trait is then implemented for the Backend, and specificially for each Computation Language, such as
-//! CUDA, OpenCL or common host CPU.
 //!
 //! ## Usage
 //!
@@ -95,9 +93,9 @@
 //!
 //! | Operation            | CUDA       | OpenCL    | Native    |
 //! |---	               |---	        |---        |---        |
-//! | Sigmoid  	           | cuDNN v3  	| -  	    | -  	   	|
-//! | ReLU  	           | cuDNN v3   | -  	    | - 	    |
-//! | Tanh  	   	       | cudNN v3   | - 	    | -         |
+//! | Sigmoid  	           | cuDNN v3  	| -  	    | Rust  	|
+//! | ReLU  	           | cuDNN v3   | -  	    | Rust 	    |
+//! | Tanh  	   	       | cudNN v3   | - 	    | Rust      |
 //! |   	   	           |  	        |  	        |           |
 //! | Normalization (LRN)  | cudNN v3   | - 	    | -         |
 //! |   	   	           |  	        |  	        |           |
@@ -126,7 +124,7 @@ extern crate libc;
 #[macro_use]
 extern crate lazy_static;
 
-pub use plugin::{NN, NNOperationConfig};
+pub use plugin::*;
 
 mod plugin;
 pub mod frameworks;
