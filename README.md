@@ -54,7 +54,7 @@ If you're using Cargo, just add collenchyma-NN to your Cargo.toml:
 
     [dependencies]
     collenchyma = "0.0.7"
-    collenchyma-nn = "0.1.0"
+    collenchyma-nn = "0.2.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
