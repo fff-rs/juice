@@ -98,60 +98,62 @@ macro_rules! impl_oconf_for_pooling(($($t: ident), +) => (
 #[macro_export]
 macro_rules! impl_ops_sigmoid_for {
     ($t:ident, $b:ty) => (
-        fn sigmoid(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result.add_device(self.device()) { _ => () }
-            self.sigmoid_plain(x, result)
-        }
-
-        fn sigmoid_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            if let Some(input) = x.get(self.device()).unwrap().as_native() {
-                let res = input.as_slice::<$t>().iter().map(::frameworks::native::helper::sigmoid);
-                ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
-                return Ok(());
+        impl ::plugin::Sigmoid<$t> for $b {
+            fn sigmoid(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => () }
+                self.sigmoid_plain(x, result)
             }
-            Err(Error::Plugin(PluginError::Operation("Unable to execute Native sigmoid Forward.")))
-        }
 
-        fn sigmoid_grad(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result_diff.add_device(self.device()) { _ => () }
-            self.sigmoid_grad_plain(x, x_diff, result, result_diff)
-        }
-
-        fn sigmoid_grad_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            x_diff: &::co::tensor::SharedTensor<$t>,
-            result: &::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            if let Some(sig_data) = x.get(self.device()).unwrap().as_native() {
-                if let Some(sig_dx) = x.get(self.device()).unwrap().as_native() {
-                    let res = sig_data.as_slice::<$t>().iter()
-                    .zip(sig_dx.as_slice::<$t>().iter())
-                    .map(|(t, dt)| ::frameworks::native::helper::sigmoid_grad(t, dt));
-                    ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+            fn sigmoid_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                    let res = input.as_slice::<$t>().iter().map(::frameworks::native::helper::sigmoid);
+                    ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
                     return Ok(());
                 }
+                Err(Error::Plugin(PluginError::Operation("Unable to execute Native sigmoid Forward.")))
             }
-            Err(Error::Plugin(PluginError::Operation("Unable to execute Native sigmoid grad Forward.")))
+
+            fn sigmoid_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result_diff.add_device(self.device()) { _ => () }
+                self.sigmoid_grad_plain(x, x_diff, result, result_diff)
+            }
+
+            fn sigmoid_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(sig_data) = x.get(self.device()).unwrap().as_native() {
+                    if let Some(sig_dx) = x.get(self.device()).unwrap().as_native() {
+                        let res = sig_data.as_slice::<$t>().iter()
+                        .zip(sig_dx.as_slice::<$t>().iter())
+                        .map(|(t, dt)| ::frameworks::native::helper::sigmoid_grad(t, dt));
+                        ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                        return Ok(());
+                    }
+                }
+                Err(Error::Plugin(PluginError::Operation("Unable to execute Native sigmoid grad Forward.")))
+            }
         }
     );
 }
@@ -159,59 +161,61 @@ macro_rules! impl_ops_sigmoid_for {
 #[macro_export]
 macro_rules! impl_ops_relu_for {
     ($t:ident, $b:ty) => (
-        fn relu(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result.add_device(self.device()) { _ => () }
-            self.relu_plain(x, result)
-        }
-
-        fn relu_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            if let Some(input) = x.get(self.device()).unwrap().as_native() {
-                let res = input.as_slice::<$t>().iter().map(::frameworks::native::helper::relu);
-                ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
-                return Ok(());
+        impl ::plugin::Relu<$t> for $b {
+            fn relu(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => () }
+                self.relu_plain(x, result)
             }
-            Err(Error::Plugin(PluginError::Operation("Unable to execute Native ReLU Forward.")))
-        }
 
-        fn relu_grad(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            self.relu_grad_plain(x, x_diff, result, result_diff)
-        }
-
-        fn relu_grad_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            x_diff: &::co::tensor::SharedTensor<$t>,
-            result: &::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            if let Some(input) = x.get(self.device()).unwrap().as_native() {
-                if let Some(dx) = x_diff.get(self.device()).unwrap().as_native() {
-                    let res = input.as_slice::<$t>().iter()
-                    .zip(dx.as_slice::<$t>().iter())
-                    .map(|(x, dx)| ::frameworks::native::helper::relu_grad(x, dx));
-                    ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+            fn relu_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                    let res = input.as_slice::<$t>().iter().map(::frameworks::native::helper::relu);
+                    ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
                     return Ok(());
                 }
+                Err(Error::Plugin(PluginError::Operation("Unable to execute Native ReLU Forward.")))
             }
-            Err(Error::Plugin(PluginError::Operation("Unable to execute Native ReLU grad Forward.")))
+
+            fn relu_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                self.relu_grad_plain(x, x_diff, result, result_diff)
+            }
+
+            fn relu_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                    if let Some(dx) = x_diff.get(self.device()).unwrap().as_native() {
+                        let res = input.as_slice::<$t>().iter()
+                        .zip(dx.as_slice::<$t>().iter())
+                        .map(|(x, dx)| ::frameworks::native::helper::relu_grad(x, dx));
+                        ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                        return Ok(());
+                    }
+                }
+                Err(Error::Plugin(PluginError::Operation("Unable to execute Native ReLU grad Forward.")))
+            }
         }
     );
 }
@@ -219,60 +223,62 @@ macro_rules! impl_ops_relu_for {
 #[macro_export]
 macro_rules! impl_ops_tanh_for {
     ($t:ident, $b:ty) => (
-        #[inline]
-        fn tanh(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result.add_device(self.device()) { _ => () }
-            self.tanh_plain(x, result)
-        }
-
-        fn tanh_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            if let Some(input) = x.get(self.device()).unwrap().as_native() {
-                let res = input.as_slice::<$t>().iter().map(::frameworks::native::helper::tanh);
-                ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
-                return Ok(());
+        impl ::plugin::Tanh<$t> for $b {
+            #[inline]
+            fn tanh(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => () }
+                self.tanh_plain(x, result)
             }
-            Err(Error::Plugin(PluginError::Operation("Unable to execute Native tanh Forward.")))
-        }
 
-        fn tanh_grad(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            self.tanh_grad_plain(x, x_diff, result, result_diff)
-        }
-
-        fn tanh_grad_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            x_diff: &::co::tensor::SharedTensor<$t>,
-            result: &::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            if let Some(input) = x.get(self.device()).unwrap().as_native() {
-                if let Some(dx) = x_diff.get(self.device()).unwrap().as_native() {
-                    let res = input.as_slice::<$t>().iter()
-                    .zip(dx.as_slice::<$t>().iter())
-                    .map(|(x, dx)| ::frameworks::native::helper::tanh_grad(x, dx));
-                    ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+            fn tanh_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                    let res = input.as_slice::<$t>().iter().map(::frameworks::native::helper::tanh);
+                    ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
                     return Ok(());
                 }
+                Err(Error::Plugin(PluginError::Operation("Unable to execute Native tanh Forward.")))
             }
-            Err(Error::Plugin(PluginError::Operation("Unable to execute Native tanh_grad Forward.")))
+
+            fn tanh_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                self.tanh_grad_plain(x, x_diff, result, result_diff)
+            }
+
+            fn tanh_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                    if let Some(dx) = x_diff.get(self.device()).unwrap().as_native() {
+                        let res = input.as_slice::<$t>().iter()
+                        .zip(dx.as_slice::<$t>().iter())
+                        .map(|(x, dx)| ::frameworks::native::helper::tanh_grad(x, dx));
+                        ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                        return Ok(());
+                    }
+                }
+                Err(Error::Plugin(PluginError::Operation("Unable to execute Native tanh_grad Forward.")))
+            }
         }
     );
 }
@@ -280,48 +286,61 @@ macro_rules! impl_ops_tanh_for {
 #[macro_export]
 macro_rules! impl_ops_convolution_for {
     ($t:ident, $b:ty) => (
-        fn convolution(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CC
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+        impl ::plugin::Convolution<$t> for $b {
+            fn new_convolution_config(
+                &self,
+                src: &::co::tensor::SharedTensor<$t>,
+                dest: &::co::tensor::SharedTensor<$t>,
+                filter: &mut ::co::tensor::SharedTensor<$t>,
+                stride: &[i32],
+                zero_padding: &[i32]
+            ) -> Result<Self::CC, ::co::error::Error> {
+                unimplemented!();
+                Ok(helper::ConvolutionConfig)
+            }
+            fn convolution(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CC
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn convolution_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CC
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+            fn convolution_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CC
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn convolution_grad(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CC
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+            fn convolution_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CC
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn convolution_grad_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            x_diff: &::co::tensor::SharedTensor<$t>,
-            result: &::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CC
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            fn convolution_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CC
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
         }
     );
 }
@@ -329,39 +348,41 @@ macro_rules! impl_ops_convolution_for {
 #[macro_export]
 macro_rules! impl_ops_softmax_for {
     ($t:ident, $b:ty) => (
-        fn softmax(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
-        fn softmax_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
-        fn softmax_grad(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
-        fn softmax_grad_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            x_diff: &::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+        impl ::plugin::Softmax<$t> for $b {
+            fn softmax(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
+            fn softmax_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
+            fn softmax_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
+            fn softmax_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
         }
     );
 }
@@ -369,59 +390,61 @@ macro_rules! impl_ops_softmax_for {
 #[macro_export]
 macro_rules! impl_ops_lrn_for {
     ($t:ident, $b:ty) => (
-        fn new_lrn_config(
-            &self,
-            n: u32,
-            alpha: f64,
-            beta: f64,
-            k: f64
-        ) -> Result<Self::CLRN, ::co::error::Error> {
-            unimplemented!();
-            Ok(::frameworks::native::helper::NormalizationConfig)
-        }
+        impl ::plugin::LRN<$t> for $b {
+            fn new_lrn_config(
+                &self,
+                n: u32,
+                alpha: f64,
+                beta: f64,
+                k: f64
+            ) -> Result<Self::CLRN, ::co::error::Error> {
+                unimplemented!();
+                Ok(::frameworks::native::helper::NormalizationConfig)
+            }
 
-        fn lrn(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CLRN
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+            fn lrn(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CLRN
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn lrn_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CLRN
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+            fn lrn_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CLRN
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn lrn_grad(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CLRN
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+            fn lrn_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CLRN
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn lrn_grad_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            x_diff: &::co::tensor::SharedTensor<$t>,
-            result: &::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CLRN
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            fn lrn_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CLRN
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
         }
     );
 }
@@ -429,58 +452,60 @@ macro_rules! impl_ops_lrn_for {
 #[macro_export]
 macro_rules! impl_ops_pooling_for {
     ($t:ident, $b:ty) => (
-        fn new_pooling_config(
-            &self,
-            window: &[i32],
-            padding: &[i32],
-            stride: &[i32]
-        ) -> Result<Self::CPOOL, ::co::error::Error> {
-            unimplemented!();
-            Ok(::frameworks::native::helper::PoolingConfig)
-        }
+        impl ::plugin::Pooling<$t> for $b {
+            fn new_pooling_config(
+                &self,
+                window: &[i32],
+                padding: &[i32],
+                stride: &[i32]
+            ) -> Result<Self::CPOOL, ::co::error::Error> {
+                unimplemented!();
+                Ok(::frameworks::native::helper::PoolingConfig)
+            }
 
-        fn pooling_max(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CPOOL
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+            fn pooling_max(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CPOOL
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn pooling_max_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CPOOL
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
-        #[allow(unused_variables)]
-        fn pooling_max_grad(
-            &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CPOOL
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
-        }
+            fn pooling_max_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CPOOL
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
+            #[allow(unused_variables)]
+            fn pooling_max_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CPOOL
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
 
-        fn pooling_max_grad_plain(
-            &self,
-            x: &::co::tensor::SharedTensor<$t>,
-            x_diff: &::co::tensor::SharedTensor<$t>,
-            result: &::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>,
-            config: &Self::CPOOL
-        ) -> Result<(), ::co::error::Error> {
-            unimplemented!();
-            Ok(())
+            fn pooling_max_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>,
+                config: &Self::CPOOL
+            ) -> Result<(), ::co::error::Error> {
+                unimplemented!();
+                Ok(())
+            }
         }
     );
 }

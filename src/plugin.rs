@@ -23,7 +23,10 @@ pub trait NN<F: Float> {
 
     /// Returns the device on which the Plugin operations will run.
     fn device(&self) -> &DeviceType;
+}
 
+/// Provides the functionality for a Backend to support Sigmoid operations.
+pub trait Sigmoid<F: Float> : NN<F> {
     /// Computes the [Sigmoid function][sigmoid] over the input Tensor `x` with complete memory management.
     /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
     ///
@@ -57,7 +60,10 @@ pub trait NN<F: Float> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `sigmoid_grad`.
     fn sigmoid_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
 
+/// Provides the functionality for a Backend to support ReLU operations.
+pub trait Relu<F: Float> : NN<F> {
     /// Computes the [Rectified linear units][relu] over the input Tensor `x` with complete memory management.
     /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
     ///
@@ -91,7 +97,10 @@ pub trait NN<F: Float> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `relu_grad`.
     fn relu_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
 
+/// Provides the functionality for a Backend to support TanH operations.
+pub trait Tanh<F: Float> : NN<F> {
     /// Computes the [hyperbolic Tangent][tanh] over the input Tensor `x` with complete memory management.
     /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
     ///
@@ -125,7 +134,10 @@ pub trait NN<F: Float> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `tanh_grad`.
     fn tanh_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
 
+/// Provides the functionality for a Backend to support Convolution operations.
+pub trait Convolution<F: Float> : NN<F> {
     /// Creates a new ConvolutionConfig, which needs to be passed to further convolution Operations.
     fn new_convolution_config(&self, src: &SharedTensor<F>, dest: &SharedTensor<F>, filter: &mut SharedTensor<F>, stride: &[i32], zero_padding: &[i32]) -> Result<Self::CC, ::co::error::Error>;
 
@@ -162,7 +174,10 @@ pub trait NN<F: Float> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `convolution_grad`.
     fn convolution_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+}
 
+/// Provides the functionality for a Backend to support Softmax operations.
+pub trait Softmax<F: Float> : NN<F> {
     /// Computes a [Softmax activation][softmax] over the input Tensor `x` with complete memory management.
     /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function
     ///
@@ -196,7 +211,10 @@ pub trait NN<F: Float> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `softmax_grad`.
     fn softmax_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
 
+/// Provides the functionality for a Backend to support Local Response Normalization operations.
+pub trait LRN<F: Float> : NN<F> {
     /// Creates a new (Local Response Normalization) LRNConfig, which needs to be passed to further LRN Operations.
     fn new_lrn_config(&self, n: u32, alpha: f64, beta: f64, k: f64) -> Result<Self::CLRN, ::co::error::Error>;
 
@@ -233,7 +251,10 @@ pub trait NN<F: Float> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `lrn_grad`.
     fn lrn_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CLRN) -> Result<(), ::co::error::Error>;
+}
 
+/// Provides the functionality for a Backend to support Pooling operations.
+pub trait Pooling<F: Float> : NN<F> {
     /// Creates a new PoolingConfig, which needs to be passed to further pooling Operations.
     fn new_pooling_config(&self, window: &[i32], padding: &[i32], stride: &[i32]) -> Result<Self::CPOOL, ::co::error::Error>;
 

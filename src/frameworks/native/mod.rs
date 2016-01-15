@@ -25,28 +25,15 @@ impl NN<f32> for Backend<Native> {
 
     fn init_nn() { }
     fn device(&self) -> &DeviceType { self.device() }
-
-    impl_ops_sigmoid_for!(f32, Backend<Native>);
-    impl_ops_relu_for!(f32, Backend<Native>);
-    impl_ops_tanh_for!(f32, Backend<Native>);
-    impl_ops_convolution_for!(f32, Backend<Native>);
-    impl_ops_softmax_for!(f32, Backend<Native>);
-    impl_ops_lrn_for!(f32, Backend<Native>);
-    impl_ops_pooling_for!(f32, Backend<Native>);
-
-    fn new_convolution_config(
-        &self,
-        src: &::co::tensor::SharedTensor<f32>,
-        dest: &::co::tensor::SharedTensor<f32>,
-        filter: &mut ::co::tensor::SharedTensor<f32>,
-        stride: &[i32],
-        zero_padding: &[i32]
-    ) -> Result<Self::CC, ::co::error::Error> {
-        unimplemented!();
-        Ok(helper::ConvolutionConfig)
-    }
-
 }
+
+impl_ops_sigmoid_for!(f32, Backend<Native>);
+impl_ops_relu_for!(f32, Backend<Native>);
+impl_ops_tanh_for!(f32, Backend<Native>);
+// impl_ops_convolution_for!(f32, Backend<Native>);
+// impl_ops_softmax_for!(f32, Backend<Native>);
+// impl_ops_lrn_for!(f32, Backend<Native>);
+// impl_ops_pooling_for!(f32, Backend<Native>);
 
 impl NN<f64> for Backend<Native> {
     type CC = helper::ConvolutionConfig;
@@ -55,24 +42,12 @@ impl NN<f64> for Backend<Native> {
 
     fn init_nn() { }
     fn device(&self) -> &DeviceType { self.device() }
-
-    impl_ops_sigmoid_for!(f64, Backend<Native>);
-    impl_ops_relu_for!(f64, Backend<Native>);
-    impl_ops_tanh_for!(f64, Backend<Native>);
-    impl_ops_convolution_for!(f64, Backend<Native>);
-    impl_ops_softmax_for!(f64, Backend<Native>);
-    impl_ops_lrn_for!(f64, Backend<Native>);
-    impl_ops_pooling_for!(f64, Backend<Native>);
-
-    fn new_convolution_config(
-        &self,
-        src: &::co::tensor::SharedTensor<f64>,
-        dest: &::co::tensor::SharedTensor<f64>,
-        filter: &mut ::co::tensor::SharedTensor<f64>,
-        stride: &[i32],
-        zero_padding: &[i32]
-    ) -> Result<Self::CC, ::co::error::Error> {
-        unimplemented!();
-        Ok(helper::ConvolutionConfig)
-    }
 }
+
+impl_ops_sigmoid_for!(f64, Backend<Native>);
+impl_ops_relu_for!(f64, Backend<Native>);
+impl_ops_tanh_for!(f64, Backend<Native>);
+// impl_ops_convolution_for!(f64, Backend<Native>);
+// impl_ops_softmax_for!(f64, Backend<Native>);
+// impl_ops_lrn_for!(f64, Backend<Native>);
+// impl_ops_pooling_for!(f64, Backend<Native>);
