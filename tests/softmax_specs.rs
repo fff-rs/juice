@@ -28,11 +28,15 @@ mod softmax_spec_cuda {
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        if let &mut MemoryType::Native(ref mut mem) = mem {
-            let mut mem_buffer = mem.as_mut_slice::<T>();
-            for (index, datum) in data.iter().enumerate() {
-                mem_buffer[index] = *datum;
-            }
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "opencl", feature = "cuda"))]
+            _ => {}
         }
     }
 
@@ -228,13 +232,17 @@ mod softmax_spec_native {
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        let &mut MemoryType::Native(ref mut mem) = mem;
-        let mut mem_buffer = mem.as_mut_slice::<T>();
-        for (index, datum) in data.iter().enumerate() {
-            mem_buffer[index] = *datum;
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "opencl", feature = "cuda"))]
+            _ => {}
         }
     }
-
 
     fn get_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>){
         let val = cast::<f64, T>(1f64).unwrap();
@@ -389,4 +397,3 @@ mod softmax_spec_native {
         }
     }
 }
-

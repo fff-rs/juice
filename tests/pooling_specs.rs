@@ -1,6 +1,6 @@
 extern crate collenchyma_nn as co_nn;
 extern crate collenchyma as co;
-#[cfg(feature = "cuda")] 
+#[cfg(feature = "cuda")]
 extern crate cudnn;
 extern crate libc;
 
@@ -29,11 +29,15 @@ mod pooling_spec_cuda {
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        if let &mut MemoryType::Native(ref mut mem) = mem {
-            let mut mem_buffer = mem.as_mut_slice::<T>();
-            for (index, datum) in data.iter().enumerate() {
-                mem_buffer[index] = *datum;
-            }
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "opencl", feature = "cuda"))]
+            _ => {}
         }
     }
 
@@ -264,10 +268,15 @@ mod pooling_spec_native {
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        let &mut MemoryType::Native(ref mut mem) = mem;
-        let mut mem_buffer = mem.as_mut_slice::<T>();
-        for (index, datum) in data.iter().enumerate() {
-            mem_buffer[index] = *datum;
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "opencl", feature = "cuda"))]
+            _ => {}
         }
     }
 

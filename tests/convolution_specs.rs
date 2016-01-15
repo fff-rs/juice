@@ -28,11 +28,15 @@ mod convolution_spec_cuda {
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        if let &mut MemoryType::Native(ref mut mem) = mem {
-            let mut mem_buffer = mem.as_mut_slice::<T>();
-            for (index, datum) in data.iter().enumerate() {
-                mem_buffer[index] = *datum;
-            }
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "opencl", feature = "cuda"))]
+            _ => {}
         }
     }
 
@@ -204,76 +208,76 @@ mod convolution_spec_cuda {
     /*
     #[test]
     fn it_computes_correct_convolution_grad_on_cuda_for_f32() {
-        let backend = get_cuda_backend();
-        let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff, mut filter) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
+    let backend = get_cuda_backend();
+    let native = get_native_backend();
+    let (mut x, mut x_diff, mut result, mut result_diff, mut filter) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &mut filter, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution_grad(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
-            Ok(_) => {
-                result_diff.sync(native.device()).unwrap();
-                if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f32, 0f32, -6f32], mem.as_slice::<f32>());
-                }
-            },
-            Err(err) => { println!("{:?}", err); assert!(false) }
-        }
-    }
+    let conf = backend.new_convolution_config(&x, &result, &mut filter, &vec!(1,1), &vec!(0,0)).unwrap();
+    match backend.convolution_grad(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
+    Ok(_) => {
+    result_diff.sync(native.device()).unwrap();
+    if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
+    assert_eq!(&[0f32, 0f32, -6f32], mem.as_slice::<f32>());
+}
+},
+Err(err) => { println!("{:?}", err); assert!(false) }
+}
+}
 
-    #[test]
-    fn it_computes_correct_convolution_grad_on_cuda_for_f64() {
-        let backend = get_cuda_backend();
-        let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff, filter, conv) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
+#[test]
+fn it_computes_correct_convolution_grad_on_cuda_for_f64() {
+let backend = get_cuda_backend();
+let native = get_native_backend();
+let (mut x, mut x_diff, mut result, mut result_diff, filter, conv) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &filter, &conv).unwrap();
-        match backend.convolution_grad(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
-            Ok(_) => {
-                result_diff.sync(native.device()).unwrap();
-                if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f64, 0f64, -6f64], mem.as_slice::<f64>());
-                }
-            },
-            Err(err) => { println!("{:?}", err); assert!(false) }
-        }
-    }
+let conf = backend.new_convolution_config(&x, &result, &filter, &conv).unwrap();
+match backend.convolution_grad(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
+Ok(_) => {
+result_diff.sync(native.device()).unwrap();
+if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
+assert_eq!(&[0f64, 0f64, -6f64], mem.as_slice::<f64>());
+}
+},
+Err(err) => { println!("{:?}", err); assert!(false) }
+}
+}
 
-    #[test]
-    fn it_computes_correct_convolution_grad_on_cuda_for_f32_plain() {
-        let backend = get_cuda_backend();
-        let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff, filter, conv) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
+#[test]
+fn it_computes_correct_convolution_grad_on_cuda_for_f32_plain() {
+let backend = get_cuda_backend();
+let native = get_native_backend();
+let (mut x, mut x_diff, mut result, mut result_diff, filter, conv) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &filter, &conv).unwrap();
-        match backend.convolution_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
-            Ok(_) => {
-                result_diff.sync(native.device()).unwrap();
-                if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f32, 0f32, -6f32], mem.as_slice::<f32>());
-                }
-            },
-            Err(err) => { println!("{:?}", err); assert!(false) }
-        }
-    }
+let conf = backend.new_convolution_config(&x, &result, &filter, &conv).unwrap();
+match backend.convolution_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
+Ok(_) => {
+result_diff.sync(native.device()).unwrap();
+if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
+assert_eq!(&[0f32, 0f32, -6f32], mem.as_slice::<f32>());
+}
+},
+Err(err) => { println!("{:?}", err); assert!(false) }
+}
+}
 
-    #[test]
-    fn it_computes_correct_convolution_grad_on_cuda_for_f64_plain() {
-        let backend = get_cuda_backend();
-        let native = get_native_backend();
-        let (mut x, mut x_diff, mut result, mut result_diff, filter, conv) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
+#[test]
+fn it_computes_correct_convolution_grad_on_cuda_for_f64_plain() {
+let backend = get_cuda_backend();
+let native = get_native_backend();
+let (mut x, mut x_diff, mut result, mut result_diff, filter, conv) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &filter, &conv).unwrap();
-        match backend.convolution_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
-            Ok(_) => {
-                result_diff.sync(native.device()).unwrap();
-                if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
-                    assert_eq!(&[0f64, 0f64, -6f64], mem.as_slice::<f64>());
-                }
-            },
-            Err(err) => { println!("{:?}", err); assert!(false) }
-        }
-    }
-    */
+let conf = backend.new_convolution_config(&x, &result, &filter, &conv).unwrap();
+match backend.convolution_grad_plain(&mut x, &mut x_diff, &mut result, &mut result_diff, &conf) {
+Ok(_) => {
+result_diff.sync(native.device()).unwrap();
+if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
+assert_eq!(&[0f64, 0f64, -6f64], mem.as_slice::<f64>());
+}
+},
+Err(err) => { println!("{:?}", err); assert!(false) }
+}
+}
+*/
 }
 
 #[cfg(test)]
@@ -296,10 +300,15 @@ mod convolution_spec_native{
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        let &mut MemoryType::Native(ref mut mem) = mem;
-        let mut mem_buffer = mem.as_mut_slice::<T>();
-        for (index, datum) in data.iter().enumerate() {
-            mem_buffer[index] = *datum;
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "opencl", feature = "cuda"))]
+            _ => {}
         }
     }
 
