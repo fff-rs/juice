@@ -1,5 +1,6 @@
 [package]
 name = "cublas-sys"
+description     = "FFI bindings to cuBLAS"
 version = "0.1.0"
 authors = ["Maximilian Goisser <maximilian.goisser@autumnai.com>"]
 
