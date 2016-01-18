@@ -52,17 +52,17 @@ This will not work in some situations, for example,
 
 Therefore the build script can be configured by exporting the following environment variables:
 
-* `CUDNN_LIB_DIR`<br/>
+* `CUBLAS_LIB_DIR`<br/>
 If specified, a directory that will be used to find cuBLAS runtime libraries.
 e.g. `/opt/cuda/lib`
 
-* `CUDNN_STATIC`<br/>
+* `CUBLAS_STATIC`<br/>
 If specified, cuBLAS libraries will be statically rather than dynamically linked.
 
-* `CUDNN_LIBS`<br/>
+* `CUBLAS_LIBS`<br/>
 If specified, will be used to find cuBLAS libraries under a different name.
 
-If either `CUDNN_LIB_DIR` or `CUDNN_INCLUDE_DIR` are specified, then the build script will skip the pkg-config step.
+If either `CUBLAS_LIB_DIR` or `CUBLAS_INCLUDE_DIR` are specified, then the build script will skip the pkg-config step.
 
 If your also need to run the compiled binaries yourself, make sure that they are available:
 ```sh
