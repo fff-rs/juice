@@ -1,5 +1,6 @@
 [package]
 name = "cublas"
+description = "safe Rust wrapper for CUDA's cuDNN"
 version = "0.1.0"
 authors = ["Maximilian Goisser <maximilian.goisser@autumnai.com>"]
 
