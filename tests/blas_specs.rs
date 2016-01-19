@@ -10,7 +10,7 @@ mod blas_spec {
     use co::tensor::SharedTensor;
     use co::plugin::numeric_helpers::{cast, Float};
 
-    fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
+    pub fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
         match mem {
             &mut MemoryType::Native(ref mut mem) => {
                 let mut mem_buffer = mem.as_mut_slice::<T>();
@@ -91,13 +91,18 @@ mod blas_spec {
     }
 
     pub fn get_gemm_memory<T: Float, B: IFramework + Clone>(backend: &Backend<B>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
-        let mut a = SharedTensor::<T>::new(backend.device(), &vec![2, 2]).unwrap();
-        write_to_memory(a.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(1).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(3).unwrap(), cast::<i32, T>(4).unwrap()]);
+        let mut a = SharedTensor::<T>::new(backend.device(), &vec![3, 2]).unwrap();
+        write_to_memory(a.get_mut(backend.device()).unwrap(),
+            &[cast::<i32, T>(2).unwrap(), cast::<i32, T>(5).unwrap(),
+              cast::<i32, T>(2).unwrap(), cast::<i32, T>(5).unwrap(),
+              cast::<i32, T>(2).unwrap(), cast::<i32, T>(5).unwrap()]);
 
-        let mut b = SharedTensor::<T>::new(backend.device(), &vec![2, 2]).unwrap();
-        write_to_memory(b.get_mut(backend.device()).unwrap(), &[cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap(), cast::<i32, T>(2).unwrap()]);
+        let mut b = SharedTensor::<T>::new(backend.device(), &vec![2, 3]).unwrap();
+        write_to_memory(b.get_mut(backend.device()).unwrap(),
+            &[cast::<i32, T>(4).unwrap(), cast::<i32, T>(1).unwrap(), cast::<i32, T>(1).unwrap(),
+              cast::<i32, T>(4).unwrap(), cast::<i32, T>(1).unwrap(), cast::<i32, T>(1).unwrap()]);
 
-        let c = SharedTensor::<T>::new(backend.device(), &vec![2, 2]).unwrap();
+        let c = SharedTensor::<T>::new(backend.device(), &vec![3, 3]).unwrap();
 
         (a, b, c)
     }
@@ -123,8 +128,8 @@ mod blas_spec {
 
         fn get_native_backend() -> Backend<Native> {
             let framework = Native::new();
-            let hardwares = framework.hardwares();
-            let backend_config = BackendConfig::new(framework, hardwares);
+            let hardwares = framework.hardwares().to_vec();
+            let backend_config = BackendConfig::new(framework, &hardwares);
             Backend::new(backend_config).unwrap()
         }
 
@@ -298,8 +303,10 @@ mod blas_spec {
             let (mut a, mut b, mut c) = get_gemm_memory::<f32, Native>(&backend);
             let (mut alpha, mut beta) = get_scale_one_zero_memory::<f32, Native>(&backend);
 
+            if let Some(mem) = a.get(backend.device()).unwrap().as_native() { assert_eq!(&[2f32, 5f32, 2f32, 5f32, 2f32, 5f32], mem.as_slice::<f32>()) }
+            if let Some(mem) = b.get(backend.device()).unwrap().as_native() { assert_eq!(&[4f32, 1f32, 1f32, 4f32, 1f32, 1f32], mem.as_slice::<f32>()) }
             if let Ok(_) = backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c) {
-                if let Some(mem) = c.get(backend.device()).unwrap().as_native() { assert_eq!(&[6f32, 6f32, 14f32, 14f32], mem.as_slice::<f32>()) }
+                if let Some(mem) = c.get(backend.device()).unwrap().as_native() { assert_eq!(&[28f32, 7f32, 7f32, 28f32, 7f32, 7f32, 28f32, 7f32, 7f32], mem.as_slice::<f32>()) }
             }
             backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c).unwrap();
         }
@@ -311,7 +318,7 @@ mod blas_spec {
             let (mut alpha, mut beta) = get_scale_one_zero_memory::<f64, Native>(&backend);
 
             if let Ok(_) = backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c) {
-                if let Some(mem) = c.get(backend.device()).unwrap().as_native() { assert_eq!(&[6f64, 6f64, 14f64, 14f64], mem.as_slice::<f64>()) }
+                if let Some(mem) = c.get(backend.device()).unwrap().as_native() { assert_eq!(&[28f64, 7f64, 7f64, 28f64, 7f64, 7f64, 28f64, 7f64, 7f64], mem.as_slice::<f64>()) }
             }
             backend.gemm(&mut alpha, Transpose::NoTrans, &mut a, Transpose::NoTrans, &mut b, &mut beta, &mut c).unwrap();
         }

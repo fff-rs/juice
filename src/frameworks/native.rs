@@ -159,7 +159,7 @@ impl_iblas_for!(f64, Backend<Native>);
 fn as_matrix<T: Clone + ::std::fmt::Debug>(slice: &[T], dims: &[usize]) -> Mat<T> {
     let n = dims[0];
     let m = dims.iter().skip(1).fold(1, |prod, i| prod * i);
-    let mut mat = Mat::new(n, m);
+    let mut mat: Mat<T> = Mat::new(n, m);
     for i in 0..n {
         for j in 0..m {
             let index = m * i + j;
@@ -177,7 +177,71 @@ fn read_from_matrix<T: Clone>(mat: &Mat<T>, slice: &mut [T]) {
     let m = mat.cols();
     for i in 0..n {
         for j in 0..m {
-            slice[n*i + j] = mat[i][j].clone();
+            let index = m * i + j;
+            slice[index] = mat[i][j].clone();
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use collenchyma::backend::{Backend, BackendConfig};
+    use collenchyma::framework::IFramework;
+    use collenchyma::frameworks::Native;
+    use collenchyma::tensor::SharedTensor;
+    use collenchyma::memory::MemoryType;
+    use super::as_matrix;
+
+    fn get_native_backend() -> Backend<Native> {
+        let framework = Native::new();
+        let hardwares = framework.hardwares().to_vec();
+        let backend_config = BackendConfig::new(framework, &hardwares);
+        Backend::new(backend_config).unwrap()
+    }
+
+    pub fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
+        match mem {
+            &mut MemoryType::Native(ref mut mem) => {
+                let mut mem_buffer = mem.as_mut_slice::<T>();
+                for (index, datum) in data.iter().enumerate() {
+                    mem_buffer[index] = *datum;
+                }
+            },
+            #[cfg(any(feature = "cuda", feature = "opencl"))]
+            _ => assert!(false)
+        }
+    }
+
+    /// UTIL: as_matrix and read_from_matrix
+    #[test]
+    fn it_converts_correctly_to_and_from_matrix() {
+        let backend = get_native_backend();
+        let mut a = SharedTensor::<f32>::new(backend.device(), &vec![3, 2]).unwrap();
+        write_to_memory(a.get_mut(backend.device()).unwrap(),
+            &[2f32, 5f32,
+              2f32, 5f32,
+              2f32, 5f32]);
+
+        // let mut b = SharedTensor::<f32>::new(backend.device(), &vec![2, 3]).unwrap();
+        // write_to_memory(b.get_mut(backend.device()).unwrap(),
+        //     &[4f32, 1f32, 1f32,
+        //       4f32, 1f32, 1f32]);
+
+        // let mut alpha = SharedTensor::<f32>::new(backend.device(), &vec![1]).unwrap();
+        // write_to_memory(alpha.get_mut(backend.device()).unwrap(), &[1f32]);
+        //
+        // let mut beta = SharedTensor::<f32>::new(backend.device(), &vec![1]).unwrap();
+        // write_to_memory(beta.get_mut(backend.device()).unwrap(), &[0f32]);
+        {
+            let a_slice_in = a.get(backend.device()).unwrap().as_native().unwrap().as_slice::<f32>();
+            let a_mat = as_matrix(a_slice_in, &[3, 2]);
+            // right
+            assert_eq!(a_mat[0][0], 2f32);
+            assert_eq!(a_mat[0][1], 5f32);
+            assert_eq!(a_mat[1][0], 2f32);
+            assert_eq!(a_mat[1][1], 5f32);
+            assert_eq!(a_mat[2][0], 2f32);
+            assert_eq!(a_mat[2][1], 5f32);
         }
     }
 }
