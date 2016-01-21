@@ -6,9 +6,8 @@ use ffi::*;
 impl API {
     /// Performs a general matrix-matrix multiplication.
     ///
-    /// Note: provided matrices a, b and their leading dimensions will be swapped before being provided to the underlying FFI interface.
-    /// This is done to make the operation work with row-major ordering (C-style).
-    pub fn gemm(context: Context,
+    /// Note: the matrices are expected to be ordered column-major (FORTRAN-style).
+    pub fn gemm(context: &Context,
                         transa: Operation, transb: Operation,
                         m: i32, n: i32, k: i32,
                         alpha: *mut f32,
@@ -16,7 +15,6 @@ impl API {
                         b: *mut f32, ldb: i32,
                         beta: *mut f32,
                         c: *mut f32, ldc: i32) -> Result<(), Error> {
-
         unsafe { Self::ffi_sgemm(*context.id_c(), transa.as_c(), transb.as_c(), m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) }
     }
 
