@@ -144,7 +144,7 @@ macro_rules! impl_ops_sigmoid_for {
                 result_diff: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
                 if let Some(sig_data) = x.get(self.device()).unwrap().as_native() {
-                    if let Some(sig_dx) = x.get(self.device()).unwrap().as_native() {
+                    if let Some(sig_dx) = x_diff.get(self.device()).unwrap().as_native() {
                         let res = sig_data.as_slice::<$t>().iter()
                         .zip(sig_dx.as_slice::<$t>().iter())
                         .map(|(t, dt)| ::frameworks::native::helper::sigmoid_grad(t, dt));
