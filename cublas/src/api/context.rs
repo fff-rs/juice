@@ -1,6 +1,6 @@
 use ffi::*;
 use ::{API, Error};
-use super::PointerMode;
+use super::{Operation, PointerMode};
 
 #[derive(Debug, Clone)]
 /// Provides a the low-level cuBLAS context.
@@ -42,6 +42,49 @@ impl Context {
 
     pub fn set_pointer_mode(&mut self, pointer_mode: PointerMode) -> Result<(), Error> {
         API::set_pointer_mode(self, pointer_mode)
+    }
+
+    // Level 1 operations
+
+    pub fn asum(&self, x: *mut f32, result: *mut f32, n: i32, stride: Option<i32>) -> Result<(), Error> {
+        API::asum(self, x, result, n, stride)
+    }
+
+    pub fn axpy(&self, alpha: *mut f32, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+        API::axpy(self, alpha, x, y, n, stride_x, stride_y)
+    }
+
+    pub fn copy(&self, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+        API::copy(self, x, y, n, stride_x, stride_y)
+    }
+
+    pub fn dot(&self, x: *mut f32, y: *mut f32, result: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+        API::dot(self, x, y, result, n, stride_x, stride_y)
+    }
+
+    pub fn nrm2(&self, x: *mut f32, result: *mut f32, n: i32, stride_x: Option<i32>) -> Result<(), Error> {
+        API::nrm2(self, x, result, n, stride_x)
+    }
+
+    pub fn scal(&self, alpha: *mut f32, x: *mut f32, n: i32, stride_x: Option<i32>) -> Result<(), Error> {
+        API::scal(self, alpha, x, n, stride_x)
+    }
+
+    pub fn swap(&self, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+        API::swap(self, x, y, n, stride_x, stride_y)
+    }
+
+    // Level 3 operations
+
+    pub fn gemm(&self,
+                transa: Operation, transb: Operation,
+                m: i32, n: i32, k: i32,
+                alpha: *mut f32,
+                a: *mut f32, lda: i32,
+                b: *mut f32, ldb: i32,
+                beta: *mut f32,
+                c: *mut f32, ldc: i32) -> Result<(), Error> {
+        API::gemm(self, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
     }
 }
 
