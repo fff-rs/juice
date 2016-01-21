@@ -101,7 +101,7 @@
 //! |   	   	           |  	        |  	        |           |
 //! | Convolution          | cudNN v3   | - 	    | -         |
 //! |   	   	           |  	        |  	        |           |
-//! | Softmax              | cudNN v3   | - 	    | -         |
+//! | Softmax              | cudNN v3   | - 	    | Rust      |
 //! |   	   	           |  	        |  	        |           |
 //! | Pooling Max          | cudNN v3   | - 	    | -         |
 //! | Pooling Avg          | cudNN v3   | - 	    | -         |
