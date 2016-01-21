@@ -31,16 +31,13 @@ where T::Item: Clone {
 #[inline]
 /// Computes the Sigmoid Function on the CPU
 pub fn sigmoid<T: Float>(x: &T) -> T {
-    let x : T = x.clone();
-    (T::one()) / (T::one() + (-x).exp())
+    (T::one()) / (T::one() + (-*x).exp())
 }
 
 #[inline]
 /// Computes the Sigmoid Gradient on the CPU
 pub fn sigmoid_grad<T: Float>(x: &T, dx: &T) -> T {
-    let x : T = x.clone();
-    let dx : T = dx.clone();
-    x * (T::one() -x) * dx
+    *x * (T::one() -*x) * *dx
 }
 
 #[inline]
@@ -53,10 +50,8 @@ pub fn relu<T: Float>(x: &T) -> T {
 #[inline]
 /// Computes the ReLU Gradient on the CPU
 pub fn relu_grad<T: Float>(x: &T, dx: &T) -> T {
-    let x : T = x.clone();
-    let dx : T = dx.clone();
-    if x > T::zero() {
-        return dx
+    if *x > T::zero() {
+        return *dx
     }
     T::zero()
 }
@@ -64,7 +59,6 @@ pub fn relu_grad<T: Float>(x: &T, dx: &T) -> T {
 #[inline]
 /// Computes the Tanh Function on the CPU
 pub fn tanh<T: Float>(x: &T) -> T {
-    let x : T = x.clone();
     x.tanh()
 }
 
@@ -72,9 +66,7 @@ pub fn tanh<T: Float>(x: &T) -> T {
 // d/dx tanh x = sech2 x = 1 + tanh2 x
 /// Computes the Tanh Gradient on the CPU
 pub fn tanh_grad<T: Float>(x: &T, dx: &T) -> T {
-    let x : T = x.clone();
-    let dx : T = dx.clone();
-    (T::one() - x.powi(2)) * dx
+    (T::one() - x.powi(2)) * *dx
 }
 
 macro_rules! impl_oconf_for_cc(($($t: ident), +) => (
@@ -195,6 +187,7 @@ macro_rules! impl_ops_relu_for {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
                 match result.add_device(self.device()) { _ => try!(result.sync(self.device())) }
+                match result_diff.add_device(self.device()) { _ => () }
                 self.relu_grad_plain(x, x_diff, result, result_diff)
             }
 
@@ -258,6 +251,7 @@ macro_rules! impl_ops_tanh_for {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
                 match result.add_device(self.device()) { _ => try!(result.sync(self.device())) }
+                match result_diff.add_device(self.device()) { _ => () }
                 self.tanh_grad_plain(x, x_diff, result, result_diff)
             }
 

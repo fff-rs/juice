@@ -38,12 +38,12 @@ More information can be found in the [Documentation][docs-ops].
 |   	   	             |  	        |  	        |           |
 | Convolution          | cudNN v3   | - 	      | -         |
 |   	   	             |  	        |  	        |           |
-| Softmax              | cudNN v3   | - 	      | -         |
+| Softmax              | cudNN v3   | - 	      | Rust      |
 |   	   	             |  	        |  	        |           |
 | Pooling Max          | cudNN v3   | - 	      | -         |
 | Pooling Avg          | cudNN v3   | - 	      | -         |
 
-Kudos to [ehiggs][ehiggs], for implementing the Rust activation operations.
+Kudos to [ehiggs][ehiggs], for implementing the native Rust operations.
 
 [docs-ops]: http://autumnai.github.io/collenchyma-nn/collenchyma_nn/trait.NN.html
 [ehiggs]: https://github.com/ehiggs
@@ -54,7 +54,7 @@ If you're using Cargo, just add collenchyma-NN to your Cargo.toml:
 
     [dependencies]
     collenchyma = "0.0.7"
-    collenchyma-nn = "0.2.0"
+    collenchyma-nn = "0.2.1"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
