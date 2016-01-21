@@ -14,7 +14,7 @@ impl API {
     /// `result`: pointer to output scalar.
     /// `n`: number of elements to compute sum over (should not be greater than `x`).
     /// `stride`: offset from one input element to the next. Defaults to `1`.
-    pub fn asum(context: Context, x: *mut f32, result: *mut f32, n: i32, stride: Option<i32>) -> Result<(), Error> {
+    pub fn asum(context: &Context, x: *mut f32, result: *mut f32, n: i32, stride: Option<i32>) -> Result<(), Error> {
         let stride_x = stride.unwrap_or(1);
         unsafe { Self::ffi_sasum(*context.id_c(), n, x, stride_x, result) }
     }
@@ -40,7 +40,7 @@ impl API {
     /// `n`: number of elements to use for operation (should not be greater than number of elements in `x` or `y`).
     /// `stride_x`: offset from one element in x to the next. Defaults to `1`.
     /// `stride_y`: offset from one element in y to the next. Defaults to `1`.
-    pub fn axpy(context: Context, alpha: *mut f32, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+    pub fn axpy(context: &Context, alpha: *mut f32, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
         let stride_x = stride_x.unwrap_or(1);
         let stride_y = stride_y.unwrap_or(1);
         unsafe { Self::ffi_saxpy(*context.id_c(), n, alpha, x, stride_x, y, stride_y) }
@@ -65,7 +65,7 @@ impl API {
     /// `n`: number of elements to use for operation (should not be greater than number of elements in `x` or `y`).
     /// `stride_x`: offset from one element in x to the next. Defaults to `1`.
     /// `stride_y`: offset from one element in y to the next. Defaults to `1`.
-    pub fn copy(context: Context, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+    pub fn copy(context: &Context, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
         let stride_x = stride_x.unwrap_or(1);
         let stride_y = stride_y.unwrap_or(1);
         unsafe { Self::ffi_scopy(*context.id_c(), n, x, stride_x, y, stride_y) }
@@ -84,7 +84,7 @@ impl API {
     // TODO: cublasSdot_v2 x 6
 
     /// TODO: DOC
-    pub fn dot(context: Context, x: *mut f32, y: *mut f32, result: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+    pub fn dot(context: &Context, x: *mut f32, y: *mut f32, result: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
         let stride_x = stride_x.unwrap_or(1);
         let stride_y = stride_y.unwrap_or(1);
         unsafe { Self::ffi_sdot(*context.id_c(), n, x, stride_x, y, stride_y, result) }
@@ -103,7 +103,7 @@ impl API {
     // TODO: cublasSnrm2_v2 x 4
 
     /// TODO: DOC
-    pub fn nrm2(context: Context, x: *mut f32, result: *mut f32, n: i32, stride_x: Option<i32>) -> Result<(), Error> {
+    pub fn nrm2(context: &Context, x: *mut f32, result: *mut f32, n: i32, stride_x: Option<i32>) -> Result<(), Error> {
         let stride_x = stride_x.unwrap_or(1);
         unsafe { Self::ffi_snrm2(*context.id_c(), n, x, stride_x, result) }
     }
@@ -126,7 +126,7 @@ impl API {
     // TODO: cublasSscal_v2 x 6
 
     /// TODO: DOC
-    pub fn scal(context: Context, alpha: *mut f32, x: *mut f32, n: i32, stride_x: Option<i32>) -> Result<(), Error> {
+    pub fn scal(context: &Context, alpha: *mut f32, x: *mut f32, n: i32, stride_x: Option<i32>) -> Result<(), Error> {
         let stride_x = stride_x.unwrap_or(1);
         unsafe { Self::ffi_sscal(*context.id_c(), n, alpha, x, stride_x) }
     }
@@ -144,7 +144,7 @@ impl API {
     // TODO: cublasSswap_v2 x 4
 
     /// TODO: DOC
-    pub fn swap(context: Context, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
+    pub fn swap(context: &Context, x: *mut f32, y: *mut f32, n: i32, stride_x: Option<i32>, stride_y: Option<i32>) -> Result<(), Error> {
         let stride_x = stride_x.unwrap_or(1);
         let stride_y = stride_y.unwrap_or(1);
         unsafe { Self::ffi_sswap(*context.id_c(), n, x, stride_x, y, stride_y) }
