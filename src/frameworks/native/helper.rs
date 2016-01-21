@@ -130,8 +130,8 @@ macro_rules! impl_ops_sigmoid_for {
                 result_diff: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-                match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
+                match result.add_device(self.device()) { _ => try!(result.sync(self.device())) }
                 match result_diff.add_device(self.device()) { _ => () }
                 self.sigmoid_grad_plain(x, x_diff, result, result_diff)
             }
@@ -193,8 +193,8 @@ macro_rules! impl_ops_relu_for {
                 result_diff: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-                match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
+                match result.add_device(self.device()) { _ => try!(result.sync(self.device())) }
                 self.relu_grad_plain(x, x_diff, result, result_diff)
             }
 
@@ -256,8 +256,8 @@ macro_rules! impl_ops_tanh_for {
                 result_diff: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-                match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
+                match result.add_device(self.device()) { _ => try!(result.sync(self.device())) }
                 self.tanh_grad_plain(x, x_diff, result, result_diff)
             }
 
@@ -354,16 +354,28 @@ macro_rules! impl_ops_softmax_for {
                 x: &mut ::co::tensor::SharedTensor<$t>,
                 result: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => () }
+                self.softmax_plain(x, result)
             }
             fn softmax_plain(
                 &self,
                 x: &::co::tensor::SharedTensor<$t>,
                 result: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
+                if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                    let mut exps = Vec::with_capacity(x.capacity());
+                    let mut sum : $t = 0 as $t;
+                    for exp in input.as_slice::<$t>().iter().map(|t|t.exp()) {
+                        exps.push(exp);
+                        sum += exp;
+                    }
+                    let res = exps.iter().map(|t| t / sum);
+                    ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
+                    return Ok(());
+                }
+                Err(Error::Plugin(
+                    PluginError::Operation("Unable to execute Native softmax Forward.")))
             }
             fn softmax_grad(
                 &self,
@@ -371,8 +383,10 @@ macro_rules! impl_ops_softmax_for {
                 x_diff: &mut ::co::tensor::SharedTensor<$t>,
                 result_diff: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
+                match result_diff.add_device(self.device()) { _ => () }
+                self.softmax_grad_plain(x, x_diff, result_diff)
             }
             fn softmax_grad_plain(
                 &self,
@@ -380,8 +394,24 @@ macro_rules! impl_ops_softmax_for {
                 x_diff: &::co::tensor::SharedTensor<$t>,
                 result_diff: &mut ::co::tensor::SharedTensor<$t>
             ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
+                if let Some(sig_data) = x.get(self.device()).unwrap().as_native() {
+                    if let Some(sig_dx) = x_diff.get(self.device()).unwrap().as_native() {
+                        let mut dot : $t = 0 as $t;
+                        let sig_data_slice = sig_data.as_slice::<$t>();
+                        let sig_dx_slice = sig_dx.as_slice::<$t>();
+                        for (t, dt) in sig_data_slice.iter().zip(sig_dx_slice.iter()) {
+                            dot += t * dt;
+                        }
+                        let res = sig_data_slice.iter()
+                            .zip(sig_dx_slice.iter())
+                            .map(|(t, dt)| t * (dt - dot));
+                        ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                        return Ok(());
+                    }
+                }
+                Err(Error::Plugin(
+                        PluginError::Operation("Unable to execute Native softmax Backward.")))
+
             }
         }
     );
