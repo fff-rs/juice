@@ -1,11 +1,13 @@
 # rust-cuBLAS • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/rust-cublas.svg?branch=master)](https://travis-ci.org/autumnai/rust-cublas) [![Coverage Status](https://coveralls.io/repos/autumnai/rust-cublas/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/rust-cublas?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/cublas)](https://crates.io/crates/cublas) [![License](https://img.shields.io/crates/l/cublas.svg)](LICENSE)
 
-rust-cuBLAS provides safe wrapper for [CUDA's cuBLAS][cublas] library, so you can use
-it comfortably and safely in your Rust application.
+rust-cuBLAS provides a safe wrapper for [CUDA's cuBLAS][cublas] library, so you
+can use cuBLAS comfortably and safely in your Rust application.
 
-As cuBLAS currently relies on CUDA to allocate memory on the GPU, you might also look into [rust-cuda][rust-cuda].
+As cuBLAS currently relies on CUDA to allocate memory on the GPU, you might also
+look into [rust-cuda][rust-cuda].
 
-rust-cublas was developed at [Autumn][autumn] for the Rust Machine Intelligence Framework [Leaf][leaf].
+rust-cublas was developed at [Autumn][autumn] for the Rust Machine Intelligence
+Framework [Leaf][leaf].
 
 rust-cublas is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the
 [BLAS Plugin][plugin]. For an easy, unified interface for BLAS operations, such as those provided by
@@ -85,6 +87,18 @@ You can also reach out to the Maintainers
 [gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
 [mj]: https://twitter.com/mjhirn
 [hobofan]: https://twitter.com/hobofan
+
+## Changelog
+
+You can find the release history in the root file [CHANGELOG.md][changelog].
+
+A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc. - [Wikipedia][changelog-quote]
+
+We are using [Clog][clog], the Rust tool for auto-generating CHANGELOG files.
+
+[changelog]: CHANGELOG.md
+[changelog-quote]: https://en.wikipedia.org/wiki/Changelog
+[Clog]: https://github.com/clog-tool/clog-cli
 
 ## License
 
