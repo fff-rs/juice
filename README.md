@@ -1,13 +1,8 @@
 # collenchyma-NN • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma-nn.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma-nn) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma-nn)](https://crates.io/crates/collenchyma-nn) [![License](https://img.shields.io/crates/l/collenchyma-nn.svg)](LICENSE)
 
-collenchyma-NN provides Neural Network related algorithms for [Collenchyma][collenchyma],
-so you can use NN operations on servers, desktops or mobiles with OpenCL, CUDA
-and common host CPU support.
-
-If you would like to write your own backend-agnostic, high-performance library, you can  
-* take this library as an example for basically copy&paste,
-* glance over the docs for a broader overview
-* and [notify us about your library][gitter-collenchyma] - we are happy to feature your Collenchyma library on the Collenchyma README.
+collenchyma-NN provides Neural Network related algorithms for [Collenchyma][collenchyma].
+Run NN operations on servers, desktops or mobiles, GPUs, FPGAs or CPUS, without
+carrying about OpenCL or CUDA support on the machine.
 
 collenchyma-NN was started at [Autumn][autumn] to support the Machine Intelligence
 Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
@@ -15,6 +10,7 @@ Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 For more information,
 
 * see collenchyma-NN's [Documentation](http://autumnai.github.io/collenchyma-nn)
+* visit [Collenchyma][collenchyma] for more information about portable operations and other Plugins.
 * or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
 
 [collenchyma]: https://github.com/autumnai/collenchyma
@@ -106,6 +102,19 @@ You can also reach out to the Maintainers
 [gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
 [mj]: https://twitter.com/mjhirn
 [hobofan]: https://twitter.com/hobofan
+
+## Changelog
+
+You can find the release history at the [CHANGELOG][changelog] file.
+
+> *A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc.* - [Wikipedia][changelog-quote]
+
+> We are using [Clog][clog], the Rust tool for auto generating CHANGELOG
+> files.
+
+[changelog]: CHANGELOG.md
+[changelog-quote]: https://en.wikipedia.org/wiki/Changelog
+[Clog]: https://github.com/clog-tool/clog-cli
 
 ## License
 
