@@ -121,7 +121,7 @@ impl Convolution<f32> for Backend<Cuda> {
         // };
         let algo_fwd = ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
         let (workspace_fwd, workspace_size_fwd) = match algo_fwd {
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => (::co::frameworks::cuda::Memory::new(1).unwrap(), 0),
+            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => (::co::frameworks::cuda::Memory::from_c(0), 0),
             _ => {
                 let workspace_size_fwd = API::get_convolution_forward_workspace_size(*CUDNN.id_c(), algo_fwd, *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()).unwrap();
                 let workspace_forward = ::co::frameworks::cuda::Memory::new(workspace_size_fwd).unwrap();
@@ -136,8 +136,8 @@ impl Convolution<f32> for Backend<Cuda> {
         // };
         let algo_bwd = ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0;
         let (workspace_bwd, workspace_size_bwd) = match algo_bwd {
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => (::co::frameworks::cuda::Memory::new(1).unwrap(), 0),
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => (::co::frameworks::cuda::Memory::new(1).unwrap(), 0),
+            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => (::co::frameworks::cuda::Memory::from_c(0), 0),
+            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => (::co::frameworks::cuda::Memory::from_c(0), 0),
             _ => {
                     let workspace_size_bwd = API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(), algo_bwd, *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()).unwrap();
                     let workspace_backward = ::co::frameworks::cuda::Memory::new(workspace_size_bwd).unwrap();
@@ -195,7 +195,7 @@ impl Convolution<f64> for Backend<Cuda> {
         // };
         let algo_fwd = ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
         let (workspace_fwd, workspace_size_fwd) = match algo_fwd {
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => (::co::frameworks::cuda::Memory::new(1).unwrap(), 0),
+            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => (::co::frameworks::cuda::Memory::from_c(0), 0),
             _ => {
                 let workspace_size_fwd = API::get_convolution_forward_workspace_size(*CUDNN.id_c(), algo_fwd, *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()).unwrap();
                 let workspace_forward = ::co::frameworks::cuda::Memory::new(workspace_size_fwd).unwrap();
@@ -210,8 +210,8 @@ impl Convolution<f64> for Backend<Cuda> {
         // };
         let algo_bwd = ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0;
         let (workspace_bwd, workspace_size_bwd) = match algo_bwd {
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => (::co::frameworks::cuda::Memory::new(1).unwrap(), 0),
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => (::co::frameworks::cuda::Memory::new(1).unwrap(), 0),
+            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => (::co::frameworks::cuda::Memory::from_c(0), 0),
+            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => (::co::frameworks::cuda::Memory::from_c(0), 0),
             _ => {
                     let workspace_size_bwd = API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(), algo_bwd, *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()).unwrap();
                     let workspace_backward = ::co::frameworks::cuda::Memory::new(workspace_size_bwd).unwrap();
