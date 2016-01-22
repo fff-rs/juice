@@ -1,21 +1,17 @@
 # collenchyma-BLAS • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma-blas.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma-blas) [![Coverage Status](https://coveralls.io/repos/autumnai/collenchyma-blas/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/collenchyma-blas?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma-blas)](https://crates.io/crates/collenchyma-blas) [![License](https://img.shields.io/crates/l/collenchyma-blas.svg)](LICENSE)
 
-collenchyma-BLAS provides full BLAS support for [Collenchyma][collenchyma],
-so you can use BLAS operations on servers, desktops or mobiles with OpenCL, CUDA
-and common host CPU support.
+collenchyma-NN provides full BLAS support for [Collenchyma][collenchyma],
+so you can use Basic Linear Algebra Subprograms on servers, desktops or mobiles,
+GPUs, FPGAs or CPUS, without carrying about OpenCL or CUDA support on the
+machine.
 
-If you would like to write your own backend-agnostic, high-performance library, you can  
-* take this library as an example for basically copy&paste,
-* glance over the docs for a broader overview
-* and [notify us about your library][gitter-collenchyma] - we are happy to feature your Collenchyma plugin
-on the Collenchyma README.
-
-collenchyma-BLAS was started at [Autumn][autumn] to support the Machine Intelligence
-Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
+collenchyma-NN was started at [Autumn][autumn] for the Rust Machine Intelligence
+Framework [Leaf][leaf].
 
 For more information,
 
-* see collenchyma-BLAS's [Documentation](http://autumnai.github.io/collenchyma-blas)
+* see collenchyma-NN's [Documentation](http://autumnai.github.io/collenchyma-nn)
+* visit [Collenchyma][collenchyma] for portable operations and other Plugins.
 * or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
 
 [collenchyma]: https://github.com/autumnai/collenchyma
@@ -52,6 +48,18 @@ You can also reach out to the Maintainers
 [gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
 [mj]: https://twitter.com/mjhirn
 [hobofan]: https://twitter.com/hobofan
+
+## Changelog
+
+You can find the release history in the root file [CHANGELOG.md][changelog].
+
+A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc. - [Wikipedia][changelog-quote]
+
+We are using [Clog][clog], the Rust tool for auto-generating CHANGELOG files.
+
+[changelog]: CHANGELOG.md
+[changelog-quote]: https://en.wikipedia.org/wiki/Changelog
+[Clog]: https://github.com/clog-tool/clog-cli
 
 ## License
 
