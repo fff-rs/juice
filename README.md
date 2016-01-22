@@ -150,6 +150,18 @@ You can also reach out to the Maintainers
 [mj]: https://twitter.com/mjhirn
 [hobofan]: https://twitter.com/hobofan
 
+## Changelog
+
+You can find the release history in the root file [CHANGELOG.md][changelog].
+
+A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc. - [Wikipedia][changelog-quote]
+
+We are using [Clog][clog], the Rust tool for auto-generating CHANGELOG files.
+
+[changelog]: CHANGELOG.md
+[changelog-quote]: https://en.wikipedia.org/wiki/Changelog
+[Clog]: https://github.com/clog-tool/clog-cli
+
 ## License
 
 Collenchyma is released under the [MIT License][license].
