@@ -1,5 +1,3 @@
-#![feature(test)]
-extern crate test;
 extern crate collenchyma as co;
 extern crate libc;
 
@@ -42,8 +40,7 @@ mod framework_cuda_spec {
     fn it_creates_a_lot_of_devices() {
         for _ in 0..256 {
             let cuda = Cuda::new();
-            let device = cuda.new_device(&cuda.hardwares()[0..1]).unwrap();
-            ::test::black_box(device);
+            let _ = cuda.new_device(&cuda.hardwares()[0..1]).unwrap();
         }
     }
 
@@ -54,8 +51,7 @@ mod framework_cuda_spec {
         let cuda = Cuda::new();
         let device = cuda.new_device(&cuda.hardwares()[0..1]).unwrap();
         for _ in 0..256 {
-            let shared_data = &mut SharedTensor::<f32>::new(&device, &vec![256, 1024, 128]).unwrap();
-            ::test::black_box(shared_data);
+            let _ = &mut SharedTensor::<f32>::new(&device, &vec![256, 1024, 128]).unwrap();
         }
     }
 }

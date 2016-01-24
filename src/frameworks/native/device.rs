@@ -6,6 +6,7 @@ use memory::MemoryType;
 use super::hardware::Hardware;
 use super::Error;
 use super::flatbox::FlatBox;
+use super::allocate_boxed_slice;
 use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
@@ -38,8 +39,7 @@ impl IDevice for Cpu {
     }
 
     fn alloc_memory(&self, size: usize) -> Result<FlatBox, DeviceError> {
-        let vec: Vec<u8> = vec![0; size];
-        let bx: Box<[u8]> = vec.into_boxed_slice();
+        let bx: Box<[u8]> = allocate_boxed_slice(size);
         Ok(FlatBox::from_box(bx))
     }
 

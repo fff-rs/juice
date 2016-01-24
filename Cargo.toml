@@ -34,6 +34,8 @@ native = []
 cuda = []
 opencl = []
 
+unstable_alloc = [] # faster but unstable memory allocation on native machines
+
 dev = []
 unstable = [] # for travis-cargo
 travis = ["native"]

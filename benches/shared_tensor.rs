@@ -28,8 +28,8 @@ use rand::{thread_rng, Rng};
 #[cfg(feature = "native")]
 fn native_backend() -> Backend<Native> {
     let framework = Native::new();
-    let hardwares = framework.hardwares();
-    let backend_config = BackendConfig::new(framework, hardwares);
+    let hardwares = framework.hardwares().to_vec();
+    let backend_config = BackendConfig::new(framework, &hardwares);
     Backend::new(backend_config).unwrap()
 }
 
@@ -37,7 +37,7 @@ fn native_backend() -> Backend<Native> {
 fn cuda_backend() -> Backend<Cuda> {
     let framework = Cuda::new();
     let hardwares = framework.hardwares()[0..1].to_vec();
-    let backend_config = BackendConfig::new(framework, hardwares);
+    let backend_config = BackendConfig::new(framework, &hardwares);
     Backend::new(backend_config).unwrap()
 }
 
@@ -45,7 +45,7 @@ fn cuda_backend() -> Backend<Cuda> {
 fn opencl_backend() -> Backend<OpenCL> {
     let framework = OpenCL::new();
     let hardwares = framework.hardwares()[1..2].to_vec();
-    let backend_config = BackendConfig::new(framework, hardwares);
+    let backend_config = BackendConfig::new(framework, &hardwares);
     Backend::new(backend_config).unwrap()
 }
 
