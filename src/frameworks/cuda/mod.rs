@@ -27,8 +27,7 @@ impl ICudnnDesc<f32> for SharedTensor<f32> {
     fn cudnn_tensor_desc(&self) -> Result<TensorDescriptor, PluginError> {
         match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), utils::DataType::Float) {
             Ok(desc) => Ok(desc),
-            Err(err) => {
-                println!("{:?}", err);
+            Err(_) => {
                 Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
             }
         }
@@ -37,8 +36,7 @@ impl ICudnnDesc<f32> for SharedTensor<f32> {
     fn cudnn_filter_desc(&self) -> Result<FilterDescriptor, PluginError> {
         match FilterDescriptor::new(&self.desc().dims_i32().clone(), utils::DataType::Float) {
             Ok(desc) => Ok(desc),
-            Err(err) => {
-                println!("{:?}", err);
+            Err(_) => {
                 Err(PluginError::Plugin("Unable to create CuDNN FilterDescriptor."))
             }
         }
@@ -47,8 +45,7 @@ impl ICudnnDesc<f32> for SharedTensor<f32> {
     fn cudnn_convolution_desc(&self, filter: &SharedTensor<f32>) -> Result<ConvolutionDescriptor, PluginError> {
         match ConvolutionDescriptor::new(&self.desc().dims_i32().clone(), &filter.desc().default_stride_i32().clone(), utils::DataType::Float) {
             Ok(desc) => Ok(desc),
-            Err(err) => {
-                println!("{:?}", err);
+            Err(_) => {
                 Err(PluginError::Plugin("Unable to create CuDNN ConvolutionDescriptor."))
             }
         }
@@ -59,8 +56,7 @@ impl ICudnnDesc<f64> for SharedTensor<f64> {
     fn cudnn_tensor_desc(&self) -> Result<TensorDescriptor, PluginError> {
         match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), utils::DataType::Double) {
             Ok(desc) => Ok(desc),
-            Err(err) => {
-                println!("{:?}", err);
+            Err(_) => {
                 Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
             }
         }
@@ -69,8 +65,7 @@ impl ICudnnDesc<f64> for SharedTensor<f64> {
     fn cudnn_filter_desc(&self) -> Result<FilterDescriptor, PluginError> {
         match FilterDescriptor::new(&self.desc().dims_i32().clone(), utils::DataType::Double) {
             Ok(desc) => Ok(desc),
-            Err(err) => {
-                println!("{:?}", err);
+            Err(_) => {
                 Err(PluginError::Plugin("Unable to create CuDNN FilterDescriptor."))
             }
         }
@@ -79,8 +74,7 @@ impl ICudnnDesc<f64> for SharedTensor<f64> {
     fn cudnn_convolution_desc(&self, filter: &SharedTensor<f64>) -> Result<ConvolutionDescriptor, PluginError> {
         match ConvolutionDescriptor::new(&self.desc().dims_i32().clone(), &filter.desc().default_stride_i32().clone(), utils::DataType::Double) {
             Ok(desc) => Ok(desc),
-            Err(err) => {
-                println!("{:?}", err);
+            Err(_) => {
                 Err(PluginError::Plugin("Unable to create CuDNN ConvolutionDescriptor."))
             }
         }
