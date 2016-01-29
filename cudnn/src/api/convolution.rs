@@ -74,7 +74,7 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_desc: cudnnTensorDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionFwdAlgoPerf_t>, Error> {
-        unsafe { API::ffi_find_convolution_forward_algorithm(handle, filter_desc, src_desc, conv_desc, dest_desc) }
+        unsafe { API::ffi_find_convolution_forward_algorithm(handle, src_desc, filter_desc, conv_desc, dest_desc) }
     }
 
     /// Returns the workspace size in byte, which are needed for the given convolutional algorithm.
@@ -86,7 +86,30 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_desc: cudnnTensorDescriptor_t,
     ) -> Result<usize, Error> {
-        unsafe { API::ffi_get_convolution_forward_workspace_size(handle, algo, filter_desc, src_desc, conv_desc, dest_desc) }
+        unsafe { API::ffi_get_convolution_forward_workspace_size(handle, algo, src_desc, filter_desc, conv_desc, dest_desc) }
+    }
+
+    /// Returns the most performant convolutional backward data algorithm, for the given scenario.
+    pub fn find_convolution_backward_filter_algorithm(
+        handle: cudnnHandle_t,
+        filter_desc: cudnnFilterDescriptor_t,
+        src_desc: cudnnTensorDescriptor_t,
+        diff_desc: cudnnTensorDescriptor_t,
+        conv_desc: cudnnConvolutionDescriptor_t,
+    ) -> Result<Vec<cudnnConvolutionBwdFilterAlgoPerf_t>, Error> {
+        unsafe { API::ffi_find_convolution_backward_filter_algorithm(handle, src_desc, diff_desc, conv_desc, filter_desc) }
+    }
+
+    /// Returns the workspace size in byte, which are needed for the given convolutional algorithm.
+    pub fn get_convolution_backward_filter_workspace_size(
+        handle: cudnnHandle_t,
+        algo: cudnnConvolutionBwdFilterAlgo_t,
+        filter_desc: cudnnFilterDescriptor_t,
+        src_desc: cudnnTensorDescriptor_t,
+        diff_desc: cudnnTensorDescriptor_t,
+        conv_desc: cudnnConvolutionDescriptor_t,
+    ) -> Result<usize, Error> {
+        unsafe { API::ffi_get_convolution_backward_filter_workspace_size(handle, algo, src_desc, diff_desc, conv_desc, filter_desc) }
     }
 
     /// Returns the most performant convolutional backward data algorithm, for the given scenario.
@@ -114,8 +137,8 @@ impl API {
 
     unsafe fn ffi_find_convolution_forward_algorithm(
         handle: cudnnHandle_t,
-        filter_desc: cudnnFilterDescriptor_t,
         src_desc: cudnnTensorDescriptor_t,
+        filter_desc: cudnnFilterDescriptor_t,
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_desc: cudnnTensorDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionFwdAlgoPerf_t>, Error> {
@@ -131,8 +154,8 @@ impl API {
     unsafe fn ffi_get_convolution_forward_workspace_size(
         handle: cudnnHandle_t,
         algo: cudnnConvolutionFwdAlgo_t,
-        filter_desc: cudnnFilterDescriptor_t,
         src_desc: cudnnTensorDescriptor_t,
+        filter_desc: cudnnFilterDescriptor_t,
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_desc: cudnnTensorDescriptor_t,
     ) -> Result<::libc::size_t, Error> {
@@ -141,19 +164,20 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(*size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Forward Worksapce size.")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Forward Workspace size.")),
         }
     }
 
     unsafe fn ffi_find_convolution_backward_data_algorithm(
         handle: cudnnHandle_t,
         filter_desc: cudnnFilterDescriptor_t,
-        src_diff_desc: cudnnTensorDescriptor_t,
+        diff_desc: cudnnTensorDescriptor_t,
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_grad_desc: cudnnTensorDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionBwdDataAlgoPerf_t>, Error> {
+        println!("FINDING BACKWARD");
         let mut perf_results: Vec<cudnnConvolutionBwdDataAlgoPerf_t> = vec![Struct_Unnamed20::default(), Struct_Unnamed20::default()];
-        match cudnnFindConvolutionBackwardDataAlgorithm(handle, filter_desc, src_diff_desc, conv_desc, dest_grad_desc, 2, &mut 0, perf_results.as_mut_ptr()) {
+        match cudnnFindConvolutionBackwardDataAlgorithm(handle, filter_desc, diff_desc, conv_desc, dest_grad_desc, 2, &mut 0, perf_results.as_mut_ptr()) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")),
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
@@ -169,12 +193,45 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_grad_desc: cudnnTensorDescriptor_t,
     ) -> Result<::libc::size_t, Error> {
+        println!("FINDING BACKWARD WORKSPACE SIZE");
         let size: *mut ::libc::size_t = vec![0].as_mut_ptr();
         match cudnnGetConvolutionBackwardDataWorkspaceSize(handle, filter_desc, src_diff_desc, conv_desc, dest_grad_desc, algo, size) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(*size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Data Worksapce size.")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Data Workspace size.")),
+        }
+    }
+
+    unsafe fn ffi_find_convolution_backward_filter_algorithm(
+        handle: cudnnHandle_t,
+        src_desc: cudnnTensorDescriptor_t,
+        diff_desc: cudnnTensorDescriptor_t,
+        conv_desc: cudnnConvolutionDescriptor_t,
+        dest_grad_desc: cudnnFilterDescriptor_t,
+    ) -> Result<Vec<cudnnConvolutionBwdFilterAlgoPerf_t>, Error> {
+        println!("FINDING BACKWARD");
+        let mut perf_results: Vec<cudnnConvolutionBwdFilterAlgoPerf_t> = vec![Struct_Unnamed17::default(), Struct_Unnamed17::default()];
+        match cudnnFindConvolutionBackwardFilterAlgorithm(handle, src_desc, diff_desc, conv_desc, dest_grad_desc, 2, &mut 0, perf_results.as_mut_ptr()) { cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results), cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")), cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
+            _ => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Backward Filter Algorithm.")),
+        }
+    }
+
+    unsafe fn ffi_get_convolution_backward_filter_workspace_size(
+        handle: cudnnHandle_t,
+        algo: cudnnConvolutionBwdFilterAlgo_t,
+        src_desc: cudnnTensorDescriptor_t,
+        diff_desc: cudnnTensorDescriptor_t,
+        conv_desc: cudnnConvolutionDescriptor_t,
+        dest_grad_desc: cudnnFilterDescriptor_t,
+    ) -> Result<::libc::size_t, Error> {
+        println!("FINDING BACKWARD WORKSPACE SIZE");
+        let size: *mut ::libc::size_t = vec![0].as_mut_ptr();
+        match cudnnGetConvolutionBackwardFilterWorkspaceSize(handle, src_desc, diff_desc, conv_desc, dest_grad_desc, algo, size) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(*size),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Filter Workspace size.")),
         }
     }
 
@@ -266,10 +323,10 @@ impl API {
         work_space: *mut ::libc::c_void,
         work_size_in_bytes: ::libc::size_t,
         alpha: *const ::libc::c_void,
-        diff_desc: cudnnTensorDescriptor_t,
-        diff_data: *const ::libc::c_void,
         filter_desc: cudnnFilterDescriptor_t,
         filter_data: *const ::libc::c_void,
+        diff_desc: cudnnTensorDescriptor_t,
+        diff_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         grad_desc: cudnnTensorDescriptor_t,
         grad_data: *mut ::libc::c_void,
@@ -278,6 +335,7 @@ impl API {
     }
 
     unsafe fn ffi_create_convolution_descriptor() -> Result<cudnnConvolutionDescriptor_t, Error> {
+        println!("CREATING CONVOLUTION DESCRIPTOR");
         let mut desc: cudnnConvolutionDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateConvolutionDescriptor(&mut desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(desc),
@@ -302,6 +360,7 @@ impl API {
         filter_stride_a: *const ::libc::c_int,
         upscale_a: *const ::libc::c_int,
     ) -> Result<(), Error> {
+        println!("SETTING CONV DESCRIPTO");
         match cudnnSetConvolutionNdDescriptor_v3(desc, array_length, pad_a, filter_stride_a, upscale_a, mode, data_type) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: `desc` is NULL. `array_length` is negative, `mode` or `data_type` is invalid, element of `pad_a` is negative, element of `stride_a` is negative or zero.")),
@@ -343,6 +402,7 @@ impl API {
         dest_desc: cudnnTensorDescriptor_t,
         dest_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
+        println!("CONV BACKWARD BIAS");
         match cudnnConvolutionBackwardBias(handle, alpha, src_desc, src_data, beta, dest_desc, dest_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters  n,h,w of the output tensor is not 1. The numbers of feature maps of the input tensor and output tensor differ. The  dataType of the two tensor descriptors are different.")),
@@ -365,6 +425,7 @@ impl API {
         grad_desc: cudnnFilterDescriptor_t,
         grad_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
+        println!("CONV BACKWARD FILTER");
         match cudnnConvolutionBackwardFilter_v3(handle, alpha, src_desc, src_data, diff_desc, diff_data, conv_desc, algo, work_space, work_size_in_bytes, beta, grad_desc, grad_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: At least one of the following is NULL: `handle`, `src_desc`, `diff_desc`, `conv_desc`, `grad_desc`, `src_data`, `diff_data`, `grad_data`, `alpha`, `beta`. `src_desc` and `diff_desc` have a non-matching number of dimensions. `src_desc` and `grad_desc` have a non-matching number of dimensions. `src_desc` has fewer than three number of dimensions. `src_desc`, `diff_desc` and `grad_desc` have a non-matching data type. `src_desc` and `grad_desc` have a non-matching number of input feature maps per image.")),
@@ -390,6 +451,7 @@ impl API {
         grad_desc: cudnnTensorDescriptor_t,
         grad_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
+        println!("CONV BACKWARD DATA");
         match cudnnConvolutionBackwardData_v3(handle, alpha, filter_desc, filter_data, diff_desc, diff_data, conv_desc, algo, work_space, work_size_in_bytes, beta, grad_desc, grad_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: At least one of the following is NULL: `handle`, `diff_desc`, `filter_desc`, `conv_desc`, `grad_desc`, `diff_data`, `filter_data`, `grad_data`, `alpha`, `beta`. `filter_desc` and `diff_desc` have a non-matching number of dimensions. `filter_desc` and `grad_desc` have a non-matching number of dimensions. `filter_desc has fewer than three number of dimensions. `filter_desc`, `grad_desc` and `diff_desc` have a non-matching data type. `filter_desc` and `grad_desc` have a non-matching number of input feature maps per image. `diff_desc`s spatial sizes do not match with the expected size as determined by `cudnnGetConvolutionNdForwardOutputDim()`.")),

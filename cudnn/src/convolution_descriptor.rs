@@ -30,7 +30,7 @@ impl ConvolutionDescriptor {
         match data_type {
             DataType::Float => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                try!(API::set_convolution_descriptor(generic_convolution_desc, d_type, cudnnConvolutionMode_t::CUDNN_CONVOLUTION, 2, pad.as_ptr(), filter_stride.as_ptr(), upscale.as_ptr()));
+                try!(API::set_convolution_descriptor(generic_convolution_desc, d_type, cudnnConvolutionMode_t::CUDNN_CONVOLUTION, array_length, pad.as_ptr(), filter_stride.as_ptr(), upscale.as_ptr()));
                 Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
             },
             DataType::Double => {
