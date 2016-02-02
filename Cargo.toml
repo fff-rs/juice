@@ -11,7 +11,7 @@ documentation = "http://autumnai.github.io/collenchyma"
 readme        = "README.md"
 
 keywords      = ["backend", "computation", "opencl", "cuda", "hpc"]
-license       = "MIT"
+license       = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"

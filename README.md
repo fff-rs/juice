@@ -141,6 +141,11 @@ on the [Collenchyma Gitter Channel][gitter-collenchyma].
 You can also reach out to the Maintainers
 {[@MJ][mj], [@hobofan][hobofan]}.
 
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in the work by you, as defined in the Apache-2.0
+license, shall be dual licensed as below, without any additional terms or
+conditions.
+
 [issue-2]: https://github.com/autumnai/collenchyma/issues/2
 [issue-4]: https://github.com/autumnai/collenchyma/issues/4
 [issue-5]: https://github.com/autumnai/collenchyma/issues/5
@@ -154,7 +159,7 @@ You can also reach out to the Maintainers
 
 You can find the release history in the root file [CHANGELOG.md][changelog].
 
-A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc. - [Wikipedia][changelog-quote]
+> A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc. - [Wikipedia][changelog-quote]
 
 We are using [Clog][clog], the Rust tool for auto-generating CHANGELOG files.
 
@@ -164,6 +169,9 @@ We are using [Clog][clog], the Rust tool for auto-generating CHANGELOG files.
 
 ## License
 
-Collenchyma is released under the [MIT License][license].
+Licensed under either of
 
-[license]: LICENSE
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
