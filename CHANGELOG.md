@@ -1,5 +1,5 @@
-<a name="1.1.0 Unreleased"></a>
-## 1.1.0 Unreleased (2016-02-02)
+<a name="1.1.0"></a>
+## 1.1.0 (2016-02-02)
 
 #### Breaking Changes
 
