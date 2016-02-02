@@ -13,6 +13,10 @@ pub use self::device::Cpu;
 pub use self::function::Function;
 pub use self::binary::Binary;
 pub use self::error::Error;
+#[cfg(not(feature = "unstable_alloc"))]
+pub use self::stable_alloc::allocate_boxed_slice;
+#[cfg(feature = "unstable_alloc")]
+pub use self::unstable_alloc::allocate_boxed_slice;
 
 pub mod device;
 pub mod flatbox;
@@ -20,6 +24,10 @@ pub mod hardware;
 pub mod function;
 pub mod binary;
 mod error;
+#[cfg(not(feature = "unstable_alloc"))]
+mod stable_alloc;
+#[cfg(feature = "unstable_alloc")]
+mod unstable_alloc;
 
 #[derive(Debug, Clone)]
 /// Provides the Native framework.
@@ -63,15 +71,15 @@ impl IFramework for Native {
         Ok(vec!(cpu))
     }
 
-    fn hardwares(&self) -> Vec<Hardware> {
-        self.hardwares.clone()
+    fn hardwares(&self) -> &[Hardware] {
+        &self.hardwares
     }
 
     fn binary(&self) -> &Binary {
         &self.binary
     }
 
-    fn new_device(&self, devices: Vec<Hardware>) -> Result<DeviceType, ::framework::Error> {
+    fn new_device(&self, devices: &[Hardware]) -> Result<DeviceType, ::framework::Error> {
         Ok(DeviceType::Native(Cpu::new(devices.to_vec())))
     }
 }

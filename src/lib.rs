@@ -153,6 +153,10 @@
         trivial_casts, trivial_numeric_casts,
         unused_import_braces, unused_qualifications)]
 
+#![cfg_attr(feature = "unstable_alloc", feature(alloc))]
+#[cfg(feature = "unstable_alloc")]
+extern crate alloc;
+
 extern crate libc;
 #[macro_use]
 extern crate bitflags;

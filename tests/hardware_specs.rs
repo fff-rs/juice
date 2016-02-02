@@ -40,9 +40,8 @@ mod hardware_spec {
             .set_name(Some(String::from("Test Hardware")))
             .build();
 
-        let string = String::from("Test Hardware");
         assert!(match hardware.name() {
-            Some(string) => true,
+            Some(_) => true,
             _ => false
         });
     }

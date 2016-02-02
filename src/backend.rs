@@ -30,7 +30,7 @@
 //!     // Initialize a new Framewok.
 //!     let framework = Native::new();
 //!     // After initialization, the available hardware through the Framework can be obtained.
-//!     let hardwares = framework.hardwares();
+//!     let hardwares = &framework.hardwares().to_vec();
 //!     // Create a Backend configuration with
 //!     // - a Framework and
 //!     // - the available hardwares you would like to use for computation (turn into a device).
@@ -76,7 +76,7 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the available hardware.
-    pub fn hardwares(&self) -> Vec<F::H> {
+    pub fn hardwares(&self) -> &[F::H] {
         self.framework.hardwares()
     }
 
@@ -100,20 +100,23 @@ pub trait IBackend {
 
     /// Returns the backend device.
     fn device(&self) -> &DeviceType;
+
+    /// Synchronize backend.
+    fn synchronize(&self) -> Result<(), ::framework::Error> { Ok(()) }
 }
 
 #[derive(Debug, Clone)]
 /// Provides Backend Configuration.
 ///
 /// Use it to initialize a new Backend.
-pub struct BackendConfig<F: IFramework> {
+pub struct BackendConfig<'a, F: IFramework + 'a> {
     framework: F,
-    hardwares: Vec<F::H>,
+    hardwares: &'a [F::H],
 }
 
-impl<F: IFramework + Clone> BackendConfig<F> {
+impl<'a, F: IFramework + Clone> BackendConfig<'a, F> {
     /// Creates a new BackendConfig.
-    pub fn new(framework: F, hardwares: Vec<F::H>) -> BackendConfig<F> {
+    pub fn new(framework: F, hardwares: &'a [F::H]) -> BackendConfig<'a, F> {
         BackendConfig {
             framework: framework.clone(),
             hardwares: hardwares,

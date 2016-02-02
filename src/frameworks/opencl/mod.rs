@@ -4,7 +4,7 @@
 //!
 //! ## Ontology
 //!
-//! OpenCL device -> Hardware  
+//! OpenCL device -> Hardware
 //! OpenCL context -> Device
 
 #[link(name = "OpenCL")]
@@ -79,8 +79,8 @@ impl IFramework for OpenCL {
         Ok(hardware_container)
     }
 
-    fn hardwares(&self) -> Vec<Device> {
-        self.hardwares.clone()
+    fn hardwares(&self) -> &[Device] {
+        &self.hardwares
     }
 
     fn binary(&self) -> &Self::B {
@@ -92,8 +92,8 @@ impl IFramework for OpenCL {
     /// Contexts are used by the OpenCL runtime for managing objects such as command-queues,
     /// memory, program and kernel objects and for executing kernels on one or more hardwares
     /// specified in the context.
-    fn new_device(&self, hardwares: Vec<Device>) -> Result<DeviceType, ::framework::Error> {
-        Ok(DeviceType::OpenCL(try!(Context::new(hardwares))))
+    fn new_device(&self, hardwares: &[Device]) -> Result<DeviceType, ::framework::Error> {
+        Ok(DeviceType::OpenCL(try!(Context::new(hardwares.to_vec()))))
     }
 }
 

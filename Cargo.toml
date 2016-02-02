@@ -11,7 +11,7 @@ documentation = "http://autumnai.github.io/collenchyma"
 readme        = "README.md"
 
 keywords      = ["backend", "computation", "opencl", "cuda", "hpc"]
-license       = "MIT"
+license       = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"
@@ -33,6 +33,8 @@ default = ["native", "cuda", "opencl"]
 native = []
 cuda = []
 opencl = []
+
+unstable_alloc = [] # faster but unstable memory allocation on native machines
 
 dev = []
 unstable = [] # for travis-cargo

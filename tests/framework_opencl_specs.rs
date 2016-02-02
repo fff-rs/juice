@@ -20,7 +20,7 @@ mod framework_opencl_spec {
     #[test]
     fn it_creates_context() {
         let frm = OpenCL::new();
-        let hardwares = frm.hardwares()[0..1].to_vec();
+        let hardwares = &frm.hardwares()[0..1];
         println!("{:?}", frm.new_device(hardwares));
     }
 
@@ -28,7 +28,7 @@ mod framework_opencl_spec {
     #[allow(unused_must_use)]
     fn it_creates_memory() {
         let frm = OpenCL::new();
-        if let DeviceType::OpenCL(ref ctx) = frm.new_device(frm.hardwares()[0..1].to_vec()).unwrap() {
+        if let DeviceType::OpenCL(ref ctx) = frm.new_device(&frm.hardwares()[0..1]).unwrap() {
             Memory::new(ctx, 8);
         }
     }
@@ -36,7 +36,7 @@ mod framework_opencl_spec {
     #[test]
     fn it_creates_queue() {
         let frm = OpenCL::new();
-        if let DeviceType::OpenCL(ref ctx) = frm.new_device(frm.hardwares()[0..1].to_vec()).unwrap() {
+        if let DeviceType::OpenCL(ref ctx) = frm.new_device(&frm.hardwares()[0..1]).unwrap() {
             assert!(Queue::new(ctx, &frm.hardwares()[0..1][0], None).is_ok());
         }
     }
