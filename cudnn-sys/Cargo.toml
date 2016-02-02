@@ -9,7 +9,7 @@ homepage        = "https://github.com/autumnai/rust-cudnn"
 documentation   = "https://autumnai.github.io/rust-cudnn"
 
 keywords        = ["cudnn", "cuda", "nvidia", "sys"]
-license         = "MIT"
+license         = "MIT OR Apache-2.0"
 
 links = "cudnn"
 build = "build.rs"
