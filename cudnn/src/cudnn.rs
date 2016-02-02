@@ -57,14 +57,14 @@ impl Cudnn {
         filter_desc: FilterDescriptor,
         dest_desc: &TensorDescriptor,
     ) -> Result<ConvolutionConfig, Error> {
-        let algos_fwd = try!(API::find_convolution_forward_algorithm(*self.id_c(), *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()));
-        let workspace_size_fwd = try!(API::get_convolution_forward_workspace_size(*self.id_c(), algos_fwd[0].algo, *filter_desc.id_c(), *src_desc.id_c(), *conv_desc.id_c(), *dest_desc.id_c()));
+        let algos_fwd = try!(API::find_convolution_forward_algorithm(*self.id_c(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()));
+        let workspace_size_fwd = try!(API::get_convolution_forward_workspace_size(*self.id_c(), algos_fwd[0].algo, *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()));
 
-        let algos_filter_bwd = try!(API::find_convolution_backward_filter_algorithm(*self.id_c(), *filter_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c(), *conv_desc.id_c()));
-        let workspace_filter_size_bwd = try!(API::get_convolution_backward_filter_workspace_size(*self.id_c(), algos_filter_bwd[0].algo, *filter_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c(), *conv_desc.id_c()));
+        let algos_filter_bwd = try!(API::find_convolution_backward_filter_algorithm(*self.id_c(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()));
+        let workspace_filter_size_bwd = try!(API::get_convolution_backward_filter_workspace_size(*self.id_c(), algos_filter_bwd[0].algo, *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()));
 
-        let algos_data_bwd = try!(API::find_convolution_backward_data_algorithm(*self.id_c(), *filter_desc.id_c(), *dest_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c()));
-        let workspace_data_size_bwd = try!(API::get_convolution_backward_data_workspace_size(*self.id_c(), algos_data_bwd[0].algo, *filter_desc.id_c(), *dest_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c()));
+        let algos_data_bwd = try!(API::find_convolution_backward_data_algorithm(*self.id_c(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()));
+        let workspace_data_size_bwd = try!(API::get_convolution_backward_data_workspace_size(*self.id_c(), algos_data_bwd[0].algo, *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()));
 
         Ok(
             ConvolutionConfig::new(
@@ -249,19 +249,19 @@ impl Cudnn {
 
     /// Computes the backward Convolution function w.r.t the bias.
     ///
-    /// Writes the result of the computation to `bias_data`.
+    /// Writes the result of the computation to `bias_grad_data`.
     pub fn convolution_backward_bias<T>(
         &self,
         dest_grad_desc: &TensorDescriptor,
         dest_grad_data: *const ::libc::c_void,
-        bias_desc: &TensorDescriptor,
-        bias_data: *mut ::libc::c_void,
+        bias_grad_desc: &TensorDescriptor,
+        bias_grad_data: *mut ::libc::c_void,
         scale: ScalParams<T>,
     ) -> Result<(), Error> {
         API::convolution_backward_bias(
             *self.id_c(),
             scale.a, *dest_grad_desc.id_c(), dest_grad_data,
-            scale.b, *bias_desc.id_c(), bias_data
+            scale.b, *bias_grad_desc.id_c(), bias_grad_data
         )
     }
 
