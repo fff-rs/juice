@@ -100,6 +100,9 @@ pub trait IBackend {
 
     /// Returns the backend device.
     fn device(&self) -> &DeviceType;
+
+    /// Synchronize backend.
+    fn synchronize(&self) -> Result<(), ::framework::Error> { Ok(()) }
 }
 
 #[derive(Debug, Clone)]

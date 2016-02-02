@@ -25,11 +25,19 @@ impl API {
         unsafe {API::ffi_destroy_context(context)}
     }
 
+    /// Synchronize the CUDA context associated with the current CPU thread.
+    ///
+    /// Should be called when you want to make sure that previous asynchronous operations
+    /// have been executed.
+    pub fn synchronize_context() -> Result<(), Error> {
+        unsafe {API::ffi_synchronize_context()}
+    }
+
     unsafe fn ffi_create_context(
         dev: CUdevice,
     ) -> Result<CUcontext, Error> {
         let mut context: CUcontext = ptr::null_mut();
-        match cuCtxCreate_v2(&mut context, CU_CTX_SCHED_AUTO, dev) {
+        match cuCtxCreate_v2(&mut context, CU_CTX_SCHED_BLOCKING_SYNC, dev) {
             CUresult::CUDA_SUCCESS => Ok(context),
             CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
@@ -52,6 +60,17 @@ impl API {
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
             _ => Err(Error::Unknown("Unable to destroy Cuda context.")),
+        }
+    }
+
+    unsafe fn ffi_synchronize_context () -> Result<(), Error> {
+        match cuCtxSynchronize() {
+            CUresult::CUDA_SUCCESS => Ok(()),
+            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
+            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
+            _ => Err(Error::Unknown("Unable to synchronize CUDA context.")),
         }
     }
 }

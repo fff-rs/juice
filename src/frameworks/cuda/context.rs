@@ -56,6 +56,11 @@ impl Context {
     pub fn id_c(&self) -> DriverFFI::CUcontext {
         *self.id as DriverFFI::CUcontext
     }
+
+    /// Synchronize this Context.
+    pub fn synchronize(&self) -> Result<(), DriverError> {
+        Driver::synchronize_context()
+    }
 }
 
 #[cfg(feature = "native")]

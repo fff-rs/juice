@@ -89,4 +89,12 @@ impl IBackend for Backend<Cuda> {
     fn device(&self) -> &DeviceType {
         &self.device()
     }
+
+    fn synchronize(&self) -> Result<(), ::framework::Error> {
+        if let &DeviceType::Cuda(ref ctx) = self.device() {
+            Ok(try!(ctx.synchronize()))
+        } else {
+            Err(::framework::Error::Implementation(format!("CUDA backend does not have a CUDA context.")))
+        }
+    }
 }
