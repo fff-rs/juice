@@ -22,14 +22,16 @@ pub enum DataType {
 /// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_convolution()`.
 pub struct ConvolutionConfig {
     forward_algo: cudnnConvolutionFwdAlgo_t,
-    backward_algo: cudnnConvolutionBwdDataAlgo_t,
+    backward_filter_algo: cudnnConvolutionBwdFilterAlgo_t,
+    backward_data_algo: cudnnConvolutionBwdDataAlgo_t,
     forward_workspace: Memory,
     forward_workspace_size: usize,
-    backward_workspace: Memory,
-    backward_workspace_size: usize,
+    backward_filter_workspace: Memory,
+    backward_filter_workspace_size: usize,
+    backward_data_workspace: Memory,
+    backward_data_workspace_size: usize,
     conv_desc: ConvolutionDescriptor,
     filter_desc: FilterDescriptor,
-    filter_data: Memory,
 }
 
 impl ConvolutionConfig {
@@ -38,23 +40,27 @@ impl ConvolutionConfig {
         algo_fwd: cudnnConvolutionFwdAlgo_t,
         workspace_fwd: Memory,
         workspace_size_fwd: usize,
-        algo_bwd: cudnnConvolutionBwdDataAlgo_t,
-        workspace_bwd: Memory,
-        workspace_size_bwd: usize,
+        algo_filter_bwd: cudnnConvolutionBwdFilterAlgo_t,
+        workspace_filter_bwd: Memory,
+        workspace_filter_size_bwd: usize,
+        algo_data_bwd: cudnnConvolutionBwdDataAlgo_t,
+        workspace_data_bwd: Memory,
+        workspace_data_size_bwd: usize,
         conv_desc: ConvolutionDescriptor,
         filter_desc: FilterDescriptor,
-        filter_data: Memory,
     ) -> ConvolutionConfig {
         ConvolutionConfig {
             forward_algo: algo_fwd,
-            backward_algo: algo_bwd,
             forward_workspace: workspace_fwd,
             forward_workspace_size: workspace_size_fwd,
-            backward_workspace: workspace_bwd,
-            backward_workspace_size: workspace_size_bwd,
+            backward_filter_algo: algo_filter_bwd,
+            backward_filter_workspace: workspace_filter_bwd,
+            backward_filter_workspace_size: workspace_filter_size_bwd,
+            backward_data_algo: algo_data_bwd,
+            backward_data_workspace: workspace_data_bwd,
+            backward_data_workspace_size: workspace_data_size_bwd,
             conv_desc: conv_desc,
             filter_desc: filter_desc,
-            filter_data: filter_data,
         }
     }
 
@@ -73,19 +79,34 @@ impl ConvolutionConfig {
         &self.forward_workspace_size
     }
 
-    /// Returns `backward_algo`.
-    pub fn backward_algo(&self) -> &cudnnConvolutionBwdDataAlgo_t {
-        &self.backward_algo
+    /// Returns `backward_filter_algo`.
+    pub fn backward_filter_algo(&self) -> &cudnnConvolutionBwdFilterAlgo_t {
+        &self.backward_filter_algo
     }
 
-    /// Returns `backward_workspace`.
-    pub fn backward_workspace(&self) -> &Memory {
-        &self.backward_workspace
+    /// Returns `backward_filter_workspace`.
+    pub fn backward_filter_workspace(&self) -> &Memory {
+        &self.backward_filter_workspace
     }
 
-    /// Returns `backward_workspace_size`.
-    pub fn backward_workspace_size(&self) -> &usize {
-        &self.backward_workspace_size
+    /// Returns `backward_filter_workspace_size`.
+    pub fn backward_filter_workspace_size(&self) -> &usize {
+        &self.backward_filter_workspace_size
+    }
+
+    /// Returns `backward_data_algo`.
+    pub fn backward_data_algo(&self) -> &cudnnConvolutionBwdDataAlgo_t {
+        &self.backward_data_algo
+    }
+
+    /// Returns `backward_data_workspace`.
+    pub fn backward_data_workspace(&self) -> &Memory {
+        &self.backward_data_workspace
+    }
+
+    /// Returns `backward_data_workspace_size`.
+    pub fn backward_data_workspace_size(&self) -> &usize {
+        &self.backward_data_workspace_size
     }
 
     /// Returns `conv_desc`.
@@ -96,11 +117,6 @@ impl ConvolutionConfig {
     /// Returns `filter_desc`.
     pub fn filter_desc(&self) -> &FilterDescriptor {
         &self.filter_desc
-    }
-
-    /// Returns `filter_data`.
-    pub fn filter_data(&self) -> &Memory {
-        &self.filter_data
     }
 }
 

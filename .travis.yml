@@ -5,8 +5,6 @@ rust:
 - stable
 matrix:
   allow_failures:
-  - rust: beta
-  - rust: stable
   - rust: nightly
     env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
   exclude:
@@ -41,6 +39,3 @@ env:
   matrix:
   - TRAVIS_CARGO_NIGHTLY_FEATURE=travis
   - TRAVIS_CARGO_NIGHTLY_FEATURE=lint
-before_install:
-  - wget https://packagecloud.io/github/git-lfs/packages/debian/jessie/git-lfs_1.0.2_amd64.deb/download -O git-lfs_1.0.2_amd64.deb
-  - sudo dpkg -i git-lfs_1.0.2_amd64.deb && sudo apt-get install -f

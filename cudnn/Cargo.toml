@@ -10,7 +10,7 @@ documentation   = "https://autumnai.github.io/rust-cudnn"
 readme          = "../README.md"
 
 keywords        = ["cudnn", "cuda", "nvidia", "neural-network"]
-license         = "MIT"
+license         = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"
