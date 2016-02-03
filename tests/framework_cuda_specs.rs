@@ -4,7 +4,7 @@ extern crate libc;
 #[cfg(test)]
 #[cfg(feature = "cuda")]
 mod framework_cuda_spec {
-    use co::backend::{IBackend, Backend, BackendConfig};
+    use co::backend::{IBackend, Backend};
     use co::framework::IFramework;
     use co::frameworks::Cuda;
     use co::device::DeviceType;
@@ -58,10 +58,7 @@ mod framework_cuda_spec {
 
     #[test]
     fn it_can_synchronize_context() {
-        let framework = Cuda::new();
-        let hardwares = &framework.hardwares().to_vec();
-        let backend_config = BackendConfig::new(framework, hardwares);
-        let backend = Backend::new(backend_config).unwrap();
+        let backend = Backend::<Cuda>::default().unwrap();
         backend.synchronize().unwrap();
     }
 }
