@@ -74,11 +74,7 @@
 //! ```ignore
 //! extern crate collenchyma as co;
 //! extern crate collenchyma_nn as nn;
-//! use co::backend::Backend;
-//! use co::framework::IFramework;
-//! use co::frameworks::{Cuda, Native};
-//! use co::memory::MemoryType;
-//! use co::tensor::SharedTensor;
+//! use co::*;
 //! use nn::*;
 //!
 //! fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
@@ -174,3 +170,16 @@ pub mod operation;
 pub mod binary;
 pub mod error;
 pub mod plugin;
+
+pub use backend::*;
+pub use device::{IDevice, DeviceType};
+pub use hardware::{IHardware, HardwareType};
+pub use framework::IFramework;
+pub use memory::{IMemory, MemoryType};
+pub use tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
+#[cfg(feature = "native")]
+pub use frameworks::Native;
+#[cfg(feature = "cuda")]
+pub use frameworks::Cuda;
+#[cfg(feature = "opencl")]
+pub use frameworks::OpenCL;

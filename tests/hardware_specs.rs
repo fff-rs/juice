@@ -4,7 +4,7 @@ extern crate libc;
 #[cfg(test)]
 #[cfg(feature = "opencl")]
 mod hardware_spec {
-    use co::hardware::{IHardware, HardwareType};
+    use co::*;
     use co::frameworks::opencl::Device;
 
     #[test]

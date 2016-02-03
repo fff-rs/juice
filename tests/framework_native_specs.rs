@@ -3,9 +3,7 @@ extern crate collenchyma as co;
 #[cfg(test)]
 #[cfg(feature = "native")]
 mod framework_native_spec {
-
-    use co::framework::IFramework;
-    use co::frameworks::Native;
+    use co::*;
 
     #[test]
     fn it_works() {

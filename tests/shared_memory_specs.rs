@@ -3,16 +3,7 @@ extern crate libc;
 
 #[cfg(test)]
 mod shared_memory_spec {
-
-    use co::framework::IFramework;
-    #[cfg(feature = "native")]
-    use co::frameworks::Native;
-    #[cfg(feature = "cuda")]
-    use co::frameworks::Cuda;
-    #[cfg(feature = "opencl")]
-    use co::frameworks::OpenCL;
-    use co::memory::MemoryType;
-    use co::tensor::*;
+    use co::*;
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
         match mem {

@@ -4,10 +4,7 @@ extern crate libc;
 #[cfg(test)]
 #[cfg(feature = "opencl")]
 mod framework_opencl_spec {
-
-    use co::device::DeviceType;
-    use co::framework::IFramework;
-    use co::frameworks::OpenCL;
+    use co::*;
     use co::frameworks::opencl::memory::*;
     use co::frameworks::opencl::queue::*;
 
