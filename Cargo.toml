@@ -11,11 +11,11 @@ documentation   = "https://autumnai.github.io/collenchyma-nn"
 readme          = "README.md"
 
 keywords        = ["neural-network", "collenchyma", "computation", "hpc", "plugin"]
-license         = "MIT"
+license         = "MIT OR Apache-2.0"
 
 [dependencies]
 collenchyma = { version = "0.0.7", default-features = false }
-cudnn = { version = "1.0.1", optional = true }
+cudnn = { version = "1.1.0", optional = true }
 libc = "0.2"
 lazy_static = "0.1"
 

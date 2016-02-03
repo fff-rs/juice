@@ -54,21 +54,8 @@ macro_rules! impl_ops_sigmoid_for {
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.sigmoid_forward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation Sigmoid Forward."))
-                    }
-                }))
+                self.sigmoid_plain(x, result)
             }
 
             fn sigmoid_plain(
@@ -86,8 +73,7 @@ macro_rules! impl_ops_sigmoid_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation Sigmoid Forward."))
                     }
                 }))
@@ -104,25 +90,8 @@ macro_rules! impl_ops_sigmoid_for {
                 match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result_diff.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.sigmoid_backward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation Sigmoid Backward."))
-                    }
-                }))
+                self.sigmoid_grad_plain(x, x_diff, result, result_diff)
             }
 
             fn sigmoid_grad_plain(
@@ -146,8 +115,7 @@ macro_rules! impl_ops_sigmoid_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation Sigmoid Backward."))
                     }
                 }))
@@ -167,21 +135,8 @@ macro_rules! impl_ops_relu_for {
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.relu_forward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation relu Forward."))
-                    }
-                }))
+                self.relu_plain(x, result)
             }
 
             fn relu_plain(
@@ -199,8 +154,7 @@ macro_rules! impl_ops_relu_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation relu Forward."))
                     }
                 }))
@@ -217,25 +171,8 @@ macro_rules! impl_ops_relu_for {
                 match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result_diff.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.relu_backward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation relu Backward."))
-                    }
-                }))
+                self.relu_grad_plain(x, x_diff, result, result_diff)
             }
 
             fn relu_grad_plain(
@@ -259,8 +196,7 @@ macro_rules! impl_ops_relu_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation relu Backward."))
                     }
                 }))
@@ -280,21 +216,8 @@ macro_rules! impl_ops_tanh_for {
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.tanh_forward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation tanh Forward."))
-                    }
-                }))
+                self.tanh_plain(x, result)
             }
 
             fn tanh_plain(
@@ -312,8 +235,7 @@ macro_rules! impl_ops_tanh_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation tanh Forward."))
                     }
                 }))
@@ -330,25 +252,8 @@ macro_rules! impl_ops_tanh_for {
                 match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result_diff.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.tanh_backward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation tanh Backward."))
-                    }
-                }))
+                self.tanh_grad_plain(x, x_diff, result, result_diff)
             }
 
             fn tanh_grad_plain(
@@ -372,8 +277,7 @@ macro_rules! impl_ops_tanh_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation tanh Backward."))
                     }
                 }))
@@ -384,35 +288,23 @@ macro_rules! impl_ops_tanh_for {
 
 #[macro_export]
 macro_rules! impl_ops_convolution_for {
-    ($t:ident, $b:ty) => (
+    ($t:ty, $b:ty) => (
         fn convolution(
             &self,
+            filter: &mut ::co::tensor::SharedTensor<$t>,
             x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC //::frameworks::cuda::CC
         ) -> Result<(), ::co::error::Error> {
             match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
             match result.add_device(self.device()) { _ => () }
-            let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-            Ok(try!(match CUDNN.convolution_forward(
-                config,
-                &try!(x.cudnn_tensor_desc()), // src_desc
-                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                &try!(result.cudnn_tensor_desc()), // dest_desc
-                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
-                scal_params
-            ) {
-                Ok(_) => Ok(()),
-                Err(err) => {
-                    println!("{:?}", err);
-                    Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation convolution Forward."))
-                }
-            }))
+            self.convolution_plain(filter, x, result, config)
         }
 
         fn convolution_plain(
             &self,
+            filter: &::co::tensor::SharedTensor<$t>,
             x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC
@@ -421,6 +313,7 @@ macro_rules! impl_ops_convolution_for {
 
             Ok(try!(match CUDNN.convolution_forward(
                 config,
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(filter, self.device()) }),
                 &try!(x.cudnn_tensor_desc()), // src_desc
                 try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
                 &try!(result.cudnn_tensor_desc()), // dest_desc
@@ -428,64 +321,89 @@ macro_rules! impl_ops_convolution_for {
                 scal_params
             ) {
                 Ok(_) => Ok(()),
-                Err(err) => {
-                    println!("{:?}", err);
+                Err(_) => {
                     Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation convolution Forward."))
                 }
             }))
         }
 
         #[allow(unused_variables)]
-        fn convolution_grad(
+        fn convolution_grad_filter(
             &self,
-            x: &mut ::co::tensor::SharedTensor<$t>,
-            x_diff: &mut ::co::tensor::SharedTensor<$t>,
-            result: &mut ::co::tensor::SharedTensor<$t>,
-            result_diff: &mut ::co::tensor::SharedTensor<$t>,
+            src_data: &mut ::co::tensor::SharedTensor<$t>,
+            dest_diff: &mut ::co::tensor::SharedTensor<$t>,
+            filter_diff: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
-            match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
-            match result_diff.add_device(self.device()) { _ => () }
+            match src_data.add_device(self.device()) { _ => try!(src_data.sync(self.device())) }
+            match dest_diff.add_device(self.device()) { _ => try!(dest_diff.sync(self.device())) }
+            match filter_diff.add_device(self.device()) { _ => try!(filter_diff.sync(self.device())) }
+
+            self.convolution_grad_filter_plain(src_data, dest_diff, filter_diff, config)
+        }
+
+        #[allow(unused_variables)]
+        fn convolution_grad_filter_plain(
+            &self,
+            src_data: &::co::tensor::SharedTensor<$t>,
+            dest_diff: &::co::tensor::SharedTensor<$t>,
+            filter_diff: &mut ::co::tensor::SharedTensor<$t>,
+            config: &Self::CC
+        ) -> Result<(), ::co::error::Error> {
             let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-            Ok(try!(match CUDNN.convolution_backward(
+            Ok(try!(match CUDNN.convolution_backward_filter(
                 config,
-                &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
+                &try!(src_data.cudnn_tensor_desc()),
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(src_data, self.device()) }),
+                &try!(dest_diff.cudnn_tensor_desc()),
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(dest_diff, self.device()) }),
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(filter_diff, self.device()) }),
                 scal_params
             ) {
                 Ok(_) => Ok(()),
-                Err(err) => {
-                    println!("{:?}", err);
+                Err(_) => {
                     Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation convolution Backward."))
                 }
             }))
         }
 
         #[allow(unused_variables)]
-        fn convolution_grad_plain(
+        fn convolution_grad_data(
             &self,
-            x: &::co::tensor::SharedTensor<$t>,
+            filter: &mut ::co::tensor::SharedTensor<$t>,
+            x_diff: &mut ::co::tensor::SharedTensor<$t>,
+            result_diff: &mut ::co::tensor::SharedTensor<$t>,
+            config: &Self::CC
+        ) -> Result<(), ::co::error::Error> {
+            match filter.add_device(self.device()) { _ => try!(filter.sync(self.device())) }
+            match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
+            match result_diff.add_device(self.device()) { _ => try!(result_diff.sync(self.device())) }
+
+            self.convolution_grad_data_plain(filter, x_diff, result_diff, config)
+        }
+
+        #[allow(unused_variables)]
+        fn convolution_grad_data_plain(
+            &self,
+            filter: &::co::tensor::SharedTensor<$t>,
             x_diff: &::co::tensor::SharedTensor<$t>,
-            result: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-            Ok(try!(match CUDNN.convolution_backward(
+            Ok(try!(match CUDNN.convolution_backward_data(
                 config,
-                &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(filter, self.device()) }),
+                &try!(x_diff.cudnn_tensor_desc()),
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }),
+                &try!(result_diff.cudnn_tensor_desc()),
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }),
                 scal_params
             ) {
                 Ok(_) => Ok(()),
-                Err(err) => {
-                    println!("{:?}", err);
+                Err(_) => {
                     Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation convolution Backward."))
                 }
             }))
@@ -504,21 +422,8 @@ macro_rules! impl_ops_softmax_for {
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.softmax_forward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation softmax Forward."))
-                    }
-                }))
+                self.softmax_plain(x, result)
             }
 
             fn softmax_plain(
@@ -536,8 +441,7 @@ macro_rules! impl_ops_softmax_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation softmax Forward."))
                     }
                 }))
@@ -552,23 +456,8 @@ macro_rules! impl_ops_softmax_for {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result_diff.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.softmax_backward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation softmax Backward."))
-                    }
-                }))
+                self.softmax_grad_plain(x, x_diff, result_diff)
             }
 
             fn softmax_grad_plain(
@@ -589,8 +478,7 @@ macro_rules! impl_ops_softmax_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation softmax Backward."))
                     }
                 }))
@@ -621,22 +509,8 @@ macro_rules! impl_ops_lrn_for {
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.lrn_forward(
-                    config,
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation lrn Forward."))
-                    }
-                }))
+                self.lrn_plain(x, result, config)
             }
 
             fn lrn_plain(
@@ -656,8 +530,7 @@ macro_rules! impl_ops_lrn_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation lrn Forward."))
                     }
                 }))
@@ -676,26 +549,8 @@ macro_rules! impl_ops_lrn_for {
                 match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result_diff.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.lrn_backward(
-                    config,
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation lrn Backward."))
-                    }
-                }))
+                self.lrn_grad_plain(x, x_diff, result, result_diff, config)
             }
 
             #[allow(unused_variables)]
@@ -722,8 +577,7 @@ macro_rules! impl_ops_lrn_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation lrn Backward."))
                     }
                 }))
@@ -755,22 +609,8 @@ macro_rules! impl_ops_pooling_for {
             ) -> Result<(), ::co::error::Error> {
                 match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.pooling_max_forward(
-                    config,
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation pooling Forward."))
-                    }
-                }))
+                self.pooling_max_plain(x, result, config)
             }
 
             fn pooling_max_plain(
@@ -790,8 +630,7 @@ macro_rules! impl_ops_pooling_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation pooling Forward."))
                     }
                 }))
@@ -810,26 +649,8 @@ macro_rules! impl_ops_pooling_for {
                 match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
                 match result_diff.add_device(self.device()) { _ => () }
-                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
-                Ok(try!(match CUDNN.pooling_max_backward(
-                    config,
-                    &try!(x.cudnn_tensor_desc()), // src_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
-                    scal_params
-                ) {
-                    Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation pooling Backward."))
-                    }
-                }))
+                self.pooling_max_grad_plain(x, x_diff, result, result_diff, config)
             }
 
             #[allow(unused_variables)]
@@ -856,8 +677,7 @@ macro_rules! impl_ops_pooling_for {
                     scal_params
                 ) {
                     Ok(_) => Ok(()),
-                    Err(err) => {
-                        println!("{:?}", err);
+                    Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation pooling Backward."))
                     }
                 }))

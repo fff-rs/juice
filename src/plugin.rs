@@ -4,6 +4,115 @@ use co::plugin::numeric_helpers::Float;
 use co::tensor::SharedTensor;
 use co::device::DeviceType;
 
+#[derive(Debug, Copy, Clone)]
+/// Different algorithms to compute the convolution forward algorithm.
+pub enum ConvForwardAlgo {
+    /// Attempt to automatically find the best algorithm of all the other available ones.
+    Auto,
+    /// Compute the convolution as explicit matrix product.
+    ///
+    /// Needs a significant memory workspace.
+    GEMM,
+    /// Compute the convolution as matrix product without forming the matrix that holds the input data.
+    ///
+    /// Does not need any memory workspace.
+    ImplicitGEMM,
+    /// Similar to `ImplicitGEMM` but needs some workspace to precompile the implicit indices.
+    ImplicitPrecompiledGEMM,
+    /// Compute the convolution as Fast-Fourier Transform.
+    ///
+    /// Needs a significant memory workspace.
+    FFT,
+    /// Compute the convolution without implicit or explicit matrix-multiplication. **Do not try to use this**.
+    ///
+    /// Listed in cuDNN docs but cuDNN does not provide a implementation.
+    Direct,
+}
+
+impl ConvForwardAlgo {
+    /// Check if algorithim should be chosen automatically.
+    pub fn is_auto(&self) -> bool {
+        match *self {
+            ConvForwardAlgo::Auto => true,
+            _ => false
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Different algorithms to compute the gradient with respect to the filter.
+pub enum ConvBackwardFilterAlgo {
+    /// Attempt to automatically find the best algorithm of all the other available ones.
+    Auto,
+    /// Compute the convolution as matrix product without forming the matrix that holds the input data.
+    ///
+    /// Does not need any memory workspace.
+    ///
+    /// The results are deterministic.
+    ImplicitGEMM,
+    /// Compute the convolution as sum of matrix product without forming the matrix that holds the input data.
+    ///
+    /// Does not need any memory workspace.
+    ///
+    /// The results are non-deterministic.
+    ImplicitGEMMSum,
+    /// Similar to `ImplicitGEMMSum` but needs some workspace to precompile the implicit indices.
+    ///
+    /// The results are non-deterministic.
+    ImplicitPrecompiledGEMMSum,
+    /// Compute the convolution as Fast-Fourier Transform.
+    ///
+    /// Needs a significant memory workspace.
+    ///
+    /// The results are deterministic.
+    FFT,
+}
+
+impl ConvBackwardFilterAlgo {
+    /// Check if algorithim should be chosen automatically.
+    pub fn is_auto(&self) -> bool {
+        match *self {
+            ConvBackwardFilterAlgo::Auto => true,
+            _ => false
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Different algorithms to compute the gradient with respect to the filter.
+pub enum ConvBackwardDataAlgo {
+    /// Attempt to automatically find the best algorithm of all the other available ones.
+    Auto,
+    /// Compute the convolution as matrix product without forming the matrix that holds the input data.
+    ///
+    /// Does not need any memory workspace.
+    ///
+    /// The results are deterministic.
+    ImplicitGEMM,
+    /// Compute the convolution as sum of matrix product without forming the matrix that holds the input data.
+    ///
+    /// Does not need any memory workspace.
+    ///
+    /// The results are non-deterministic.
+    ImplicitGEMMSum,
+    /// Compute the convolution as Fast-Fourier Transform.
+    ///
+    /// Needs a significant memory workspace.
+    ///
+    /// The results are deterministic.
+    FFT,
+}
+
+impl ConvBackwardDataAlgo {
+    /// Check if algorithim should be chosen automatically.
+    pub fn is_auto(&self) -> bool {
+        match *self {
+            ConvBackwardDataAlgo::Auto => true,
+            _ => false
+        }
+    }
+}
+
 /// Provides generic NN Operation Config functionality.
 ///
 /// Needs to be implemented for Operation specific configurations.
@@ -139,7 +248,9 @@ pub trait Tanh<F: Float> : NN<F> {
 /// Provides the functionality for a Backend to support Convolution operations.
 pub trait Convolution<F: Float> : NN<F> {
     /// Creates a new ConvolutionConfig, which needs to be passed to further convolution Operations.
-    fn new_convolution_config(&self, src: &SharedTensor<F>, dest: &SharedTensor<F>, filter: &mut SharedTensor<F>, stride: &[i32], zero_padding: &[i32]) -> Result<Self::CC, ::co::error::Error>;
+    fn new_convolution_config(&self, src: &SharedTensor<F>, dest: &SharedTensor<F>, filter: &mut SharedTensor<F>,
+                            algo_fwd: ConvForwardAlgo, algo_bwd_filter: ConvBackwardFilterAlgo, algo_bwd_data: ConvBackwardDataAlgo,
+                            stride: &[i32], zero_padding: &[i32]) -> Result<Self::CC, ::co::error::Error>;
 
     /// Computes a [CNN convolution][convolution] over the input Tensor `x` with complete memory management.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
@@ -147,7 +258,7 @@ pub trait Convolution<F: Float> : NN<F> {
     /// Saves the result to `result`.
     ///
     /// For a no-memory managed version see `convolution_plain`.
-    fn convolution(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution(&self, filter: &mut SharedTensor<F>, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
     /// Computes the convolution over the input Tensor `x` without any memory management.
     ///
@@ -156,25 +267,68 @@ pub trait Convolution<F: Float> : NN<F> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `convolution`.
-    fn convolution_plain(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution_plain(&self, filter: &SharedTensor<F>, x: &SharedTensor<F>, result: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
-    /// Computes the gradient of a [CNN convolution][convolution] over the input Tensor `x` with complete memory management.
+    /// Computes the gradient of a [CNN convolution][convolution] with respect to the filter and complete memory management.
+    /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
+    ///
+    /// Saves the result to `filter_diff`.
+    ///
+    /// For a no-memory managed version see `convolution_grad_filter_plain`.
+    fn convolution_grad_filter(&self, src_data: &mut SharedTensor<F>, dest_diff: &mut SharedTensor<F>, filter_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of a convolution with respect to the filter and without any memory management.
+    ///
+    /// Saves the result to `filter_diff`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `convolution_grad_filter`.
+    fn convolution_grad_filter_plain(&self, src_data: &SharedTensor<F>, dest_diff: &SharedTensor<F>, filter_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of a [CNN convolution][convolution] over the input Tensor `x` with respect to the data and complete memory management.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
     ///
     /// Saves the result to `result_diff`.
     ///
-    /// For a no-memory managed version see `convolution_grad_plain`.
-    fn convolution_grad(&self, x: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>, result: &mut SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    /// For a no-memory managed version see `convolution_grad_data_plain`.
+    fn convolution_grad_data(&self, filter: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
-    /// Computes the gradient of a convolution over the input Tensor `x` without any memory management.
+    /// Computes the gradient of a convolution over the input Tensor `x` with respect to the data and without any memory management.
     ///
     /// Saves the result to `result_diff`.
     ///
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
-    /// For a memory managed version see `convolution_grad`.
-    fn convolution_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    /// For a memory managed version see `convolution_grad_data`.
+    fn convolution_grad_data_plain(&self, filter: &SharedTensor<F>, x_diff: &SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 }
+
+    // /// Computes the backward Convolution function w.r.t the bias.
+    // ///
+    // /// Writes the result of the computation to `bias_data`.
+    // pub fn convolution_backward_bias<T>(
+    //     &self,
+    //     dest_grad_desc: &TensorDescriptor,
+    //     dest_grad_data: *const ::libc::c_void,
+    //     bias_desc: &TensorDescriptor,
+    //     bias_data: *mut ::libc::c_void,
+    //     scale: ScalParams<T>,
+    // }
+    //
+    // /// Computes the backward Convolution function w.r.t the filter.
+    // ///
+    // /// Writes the result of the computation to `filter_data`.
+    // pub fn convolution_backward_filter<T>(
+    //     &self,
+    //     conv_config: &ConvolutionConfig,
+    //     src_desc: &TensorDescriptor,
+    //     src_data: *const ::libc::c_void,
+    //     dest_grad_desc: &TensorDescriptor,
+    //     dest_grad_data: *const ::libc::c_void,
+    //     filter_data: *mut ::libc::c_void,
+    //     scale: ScalParams<T>,
+    // }
 
 /// Provides the functionality for a Backend to support Softmax operations.
 pub trait Softmax<F: Float> : NN<F> {
