@@ -5,8 +5,6 @@ rust:
 - stable
 matrix:
   allow_failures:
-  - rust: beta
-  - rust: stable
   - rust: nightly
     env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
   exclude:
@@ -21,9 +19,9 @@ before_script:
 script:
 - |
   cd cudnn
-  travis-cargo build -- --no-default-features &&
+  travis-cargo build -- --no-default-feature --features "travis"s &&
   travis-cargo test -- --no-default-features --features "travis"
-  travis-cargo doc -- --no-default-features
+  travis-cargo doc -- --no-default-features --features "travis"
 addons:
   apt:
     packages:
