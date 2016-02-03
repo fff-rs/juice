@@ -4,7 +4,6 @@ extern crate collenchyma as co;
 #[cfg(test)]
 #[cfg(feature = "cuda")]
 mod convolution_spec_cuda {
-
     use co::backend::{Backend, BackendConfig};
     use co::framework::IFramework;
     use co::frameworks::{Cuda, Native};
@@ -131,8 +130,8 @@ mod convolution_spec_cuda {
         let native = get_native_backend();
         let (mut x, mut result, mut filter) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &mut filter, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution(&mut x, &mut result, &conf) {
+        let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
+        match backend.convolution(&mut filter, &mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
@@ -151,8 +150,8 @@ mod convolution_spec_cuda {
         let native = get_native_backend();
         let (mut x, mut result, mut filter) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &mut filter, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution(&mut x, &mut result, &conf) {
+        let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
+        match backend.convolution(&mut filter, &mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
@@ -171,8 +170,8 @@ mod convolution_spec_cuda {
         let native = get_native_backend();
         let (mut x, mut result, mut filter) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &mut filter, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution_plain(&mut x, &mut result, &conf) {
+        let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
+        match backend.convolution_plain(&mut filter, &mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
@@ -191,8 +190,8 @@ mod convolution_spec_cuda {
         let native = get_native_backend();
         let (mut x, mut result, mut filter) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
-        let conf = backend.new_convolution_config(&x, &result, &mut filter, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution_plain(&mut x, &mut result, &conf) {
+        let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
+        match backend.convolution_plain(&mut filter, &mut x, &mut result, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {

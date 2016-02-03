@@ -32,10 +32,11 @@
 //! This again is just plain Rust - nothing fancy about it. Now a complete example:
 //!
 //! ```rust
-//! # #[cfg(feature = "cuda")]
-//! # mod cuda {
+//! # #![allow(dead_code)]
 //! extern crate collenchyma as co;
 //! extern crate collenchyma_nn as nn;
+//! # #[cfg(feature = "cuda")]
+//! # mod cuda {
 //! use co::backend::{Backend, BackendConfig};
 //! use co::framework::IFramework;
 //! use co::frameworks::{Cuda, Native};
@@ -52,7 +53,7 @@
 //!     }
 //! }
 //!
-//! fn main() {
+//! pub fn main() {
 //!     // Initialize a CUDA Backend.
 //!     // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
 //!     let framework = Cuda::new();
@@ -78,10 +79,14 @@
 //!     println!("{:?}", result.get(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
 //! }
 //! # }
+//! # #[cfg(not(feature = "cuda"))]
+//! # mod cuda {
+//! # pub fn main() {}
+//! # }
 //! #
 //! # fn main() {
 //! #     if cfg!(feature = "cuda") {
-//! #         ::main();
+//! #         ::cuda::main();
 //! #    }
 //! # }
 //! ```
