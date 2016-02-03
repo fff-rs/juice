@@ -101,6 +101,15 @@ pub trait IBackend {
     /// Returns the backend device.
     fn device(&self) -> &DeviceType;
 
+    /// Try to create a default backend.
+    fn default() -> Result<Backend<Self::F>, Error> {
+        let hw_framework = Self::F::new();
+        let hardwares = hw_framework.hardwares();
+        let framework = Self::F::new(); // dirty dirty hack to get around borrowing
+        let backend_config = BackendConfig::new(framework, hardwares);
+        Backend::new(backend_config)
+    }
+
     /// Synchronize backend.
     fn synchronize(&self) -> Result<(), ::framework::Error> { Ok(()) }
 }
