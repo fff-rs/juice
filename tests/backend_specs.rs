@@ -6,7 +6,7 @@ mod backend_spec {
     #[cfg(feature = "native")]
     mod native {
         use std::rc::Rc;
-        use co::*;
+        use co::prelude::*;
 
         #[test]
         fn it_can_create_default_backend() {

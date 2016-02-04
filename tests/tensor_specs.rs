@@ -2,7 +2,7 @@ extern crate collenchyma as co;
 
 #[cfg(test)]
 mod tensor_spec {
-    use co::*;
+    use co::prelude::*;
 
     #[test]
     fn it_returns_correct_tensor_desc_stride() {
