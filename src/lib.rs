@@ -74,7 +74,7 @@
 //! ```ignore
 //! extern crate collenchyma as co;
 //! extern crate collenchyma_nn as nn;
-//! use co::*;
+//! use co::prelude::*;
 //! use nn::*;
 //!
 //! fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
@@ -171,6 +171,7 @@ pub mod binary;
 pub mod error;
 pub mod plugin;
 
+// These will be exported with the prelude.
 pub use backend::*;
 pub use device::{IDevice, DeviceType};
 pub use hardware::{IHardware, HardwareType};
@@ -183,3 +184,34 @@ pub use frameworks::Native;
 pub use frameworks::Cuda;
 #[cfg(feature = "opencl")]
 pub use frameworks::OpenCL;
+
+// These should only be imported with caution, since they are likely
+// to create a namespace collision.
+pub use error::Error;
+
+/// A module meant to be glob imported when using Collenchyma.
+///
+/// For instance:
+///
+/// ```
+/// use collenchyma::prelude::*;
+/// ```
+///
+/// This module contains several important traits that provide many
+/// of the convenience methods in Collenchyma, as well as most important types.
+/// Another type that is often needed but is likely to cause a name collision
+/// when imported is `collenchyma::Error`.
+pub mod prelude {
+    pub use backend::*;
+    pub use device::{IDevice, DeviceType};
+    pub use hardware::{IHardware, HardwareType};
+    pub use framework::IFramework;
+    pub use memory::{IMemory, MemoryType};
+    pub use tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
+    #[cfg(feature = "native")]
+    pub use frameworks::Native;
+    #[cfg(feature = "cuda")]
+    pub use frameworks::Cuda;
+    #[cfg(feature = "opencl")]
+    pub use frameworks::OpenCL;
+}

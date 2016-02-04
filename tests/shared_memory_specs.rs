@@ -3,7 +3,7 @@ extern crate libc;
 
 #[cfg(test)]
 mod shared_memory_spec {
-    use co::*;
+    use co::prelude::*;
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
         match mem {
