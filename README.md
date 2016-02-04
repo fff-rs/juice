@@ -31,7 +31,7 @@ For more information,
 If you're using Cargo, just add rust-cuBLAS to your Cargo.toml:
 
     [dependencies]
-    cublas = "0.1.0"
+    cublas = "0.2.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
