@@ -87,11 +87,7 @@ to your Cargo manifest.
 ```rust
 extern crate collenchyma as co;
 extern crate collenchyma_nn as nn;
-use co::backend::Backend;
-use co::framework::IFramework;
-use co::frameworks::{Cuda, Native};
-use co::memory::MemoryType;
-use co::tensor::SharedTensor;
+use co::*;
 use nn::*;
 
 fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {

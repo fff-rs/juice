@@ -3,12 +3,9 @@ extern crate libc;
 
 #[cfg(test)]
 mod backend_spec {
-
-
     #[cfg(feature = "native")]
     mod native {
-        use co::backend::{IBackend, Backend};
-        use co::frameworks::Native;
+        use co::*;
 
         #[test]
         fn it_can_create_default_backend() {
@@ -18,8 +15,7 @@ mod backend_spec {
 
     #[cfg(feature = "cuda")]
     mod cuda {
-        use co::backend::{IBackend, Backend};
-        use co::frameworks::Cuda;
+        use co::*;
 
         #[test]
         fn it_can_create_default_backend() {
@@ -29,9 +25,7 @@ mod backend_spec {
 
     #[cfg(feature = "opencl")]
     mod opencl {
-        use co::backend::{IBackend, Backend, BackendConfig};
-        use co::frameworks::OpenCL;
-        use co::framework::IFramework;
+        use co::*;
 
         #[test]
         fn it_can_create_default_backend() {

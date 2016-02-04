@@ -4,12 +4,8 @@ extern crate libc;
 #[cfg(test)]
 #[cfg(feature = "cuda")]
 mod framework_cuda_spec {
-    use co::backend::{IBackend, Backend};
-    use co::framework::IFramework;
-    use co::frameworks::Cuda;
-    use co::device::DeviceType;
+    use co::*;
     use co::frameworks::cuda::memory::*;
-    use co::tensor::*;
 
     #[test]
     fn it_works() {
