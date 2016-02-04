@@ -1,3 +1,10 @@
+<a name="0.2.0"></a>
+## 0.2.0 (2016-02-04)
+
+#### Features
+
+* **context:**  expose operations as methods of Context ([3abfbc60](https://github.com/autumnai/rust-cublas/commit/3abfbc6090f632879dd6dfdfda0015fd0a392ee9))
+
 <a name="0.1.0"></a>
 ## 0.1.0 (2016-01-18)
 
