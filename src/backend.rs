@@ -102,7 +102,7 @@ pub trait IBackend {
     fn device(&self) -> &DeviceType;
 
     /// Try to create a default backend.
-    fn default() -> Result<Backend<Self::F>, Error> {
+    fn default() -> Result<Backend<Self::F>, Error> where Self: Sized {
         let hw_framework = Self::F::new();
         let hardwares = hw_framework.hardwares();
         let framework = Self::F::new(); // dirty dirty hack to get around borrowing

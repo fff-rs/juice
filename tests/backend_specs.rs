@@ -5,11 +5,26 @@ extern crate libc;
 mod backend_spec {
     #[cfg(feature = "native")]
     mod native {
+        use std::rc::Rc;
         use co::*;
 
         #[test]
         fn it_can_create_default_backend() {
             assert!(Backend::<Native>::default().is_ok());
+        }
+
+        #[test]
+        fn it_can_use_ibackend_trait_object() {
+            let framework = Native::new();
+            let hardwares = framework.hardwares().to_vec();
+            let backend_config = BackendConfig::new(framework, &hardwares);
+            let backend = Rc::new(Backend::new(backend_config).unwrap());
+            use_ibackend(backend);
+        }
+
+        fn use_ibackend<B: IBackend>(backend: Rc<B>) {
+            let backend: Rc<IBackend<F=B::F>> = backend.clone();
+            backend.device();
         }
     }
 
