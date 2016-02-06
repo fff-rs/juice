@@ -107,7 +107,6 @@
 //! [issue-common]: https://github.com/autumnai/leaf/issues/20
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
-#![feature(augmented_assignments)]
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![deny(missing_docs,
@@ -117,12 +116,18 @@
         unused_import_braces, unused_qualifications)]
 
 #[macro_use]
+extern crate timeit;
+#[macro_use]
 extern crate log;
-extern crate phloem;
 extern crate collenchyma as co;
+extern crate collenchyma_blas as coblas;
+extern crate collenchyma_nn as conn;
 pub mod shared_memory;
 pub mod layer;
 pub mod layers;
 pub mod solver;
 pub mod solvers;
 pub mod network;
+pub mod weight;
+
+pub mod util;

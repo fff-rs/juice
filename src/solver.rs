@@ -1,18 +1,18 @@
 //! Provides the generics and interfaces for the specific [Solvers][solvers].
 //! [solvers]: ../solvers/index.html
-use co::backend::*;
-use co::framework::*;
-use co::frameworks::Native;
-use co::libraries::blas::IBlas;
+use co::prelude::*;
 use shared_memory::*;
 use network::*;
 use solvers::*;
+use util::{LayerOps, SolverOps};
 use std::rc::Rc;
+use std::sync::{Arc, RwLock};
+use std::marker::PhantomData;
 
 #[derive(Debug)]
 /// Solver that optimizes a [Network][1].
 /// [1]: ../network/struct.Network.html
-pub struct Solver<S, B: IBackend + IBlas<f32>> {
+pub struct Solver<S, SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32>> {
     net: Network<B>,
     /// The implementation of the Solver
     pub worker: S,
@@ -20,9 +20,11 @@ pub struct Solver<S, B: IBackend + IBlas<f32>> {
     config: SolverConfig,
     /// The current iteration / number of times weights have been updated
     iter: usize,
+
+    solver_backend: PhantomData<SolverB>,
 }
 
-impl<S, B: IBackend + IBlas<f32>> Solver<S, B> {
+impl<S, SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32>> Solver<S, SolverB, B> {
     /// Create Solver from [SolverConfig][1]
     /// [1]: ./struct.SolverConfig.html
     ///
@@ -44,25 +46,31 @@ impl<S, B: IBackend + IBlas<f32>> Solver<S, B> {
     /// let solver = Solver::<Box<ISolver<Backend<Native>>>, Backend<Native>>::from_config(&cfg);
     /// # }
     /// ```
-    pub fn from_config(config: &SolverConfig) -> Solver<Box<ISolver<Backend<Native>>>, Backend<Native>> {
+    pub fn from_config(config: &SolverConfig) -> Solver<Box<ISolver<Backend<Native>, Backend<Cuda>>>, Backend<Native>, Backend<Cuda>> {
         let framework = Native::new();
-        let hardwares = framework.hardwares();
+        let hardwares = &framework.hardwares().to_vec();
         let backend_config = BackendConfig::new(framework, hardwares);
         let backend = Rc::new(Backend::new(backend_config).unwrap());
+
+        let cuda_framework = Cuda::new();
+        let cuda_hardwares = &cuda_framework.hardwares().to_vec();
+        let cuda_backend_config = BackendConfig::new(cuda_framework, cuda_hardwares);
+        let cuda_backend = Rc::new(Backend::new(cuda_backend_config).unwrap());
 
         let worker = config.solver.with_config(backend.clone(), &config);
         Solver {
             worker: worker,
-            net: Network::from_config(backend, &config.train_net),
+            net: Network::from_config(cuda_backend, &config.train_net),
             iter: 0,
 
             config: config.clone(),
+            solver_backend: PhantomData::<Backend<Native>>,
         }
     }
 
 }
 
-impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
+impl<S: ISolver<SolverB, B>, SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32> + 'static> Solver<S, SolverB, B>{
     fn init(&mut self, backend: Rc<B>, config: SolverConfig) {
         // Caffe
         //   CHECK(Caffe::root_solver() || root_solver_)
@@ -75,7 +83,7 @@ impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
         //     Caffe::set_random_seed(param_.random_seed());
         //   }
 
-        Solver::<S, _>::init_train_net(backend, &mut self.config, &mut self.net);
+        Solver::<S, SolverB, B>::init_train_net(backend, &mut self.config, &mut self.net);
         // if (Caffe::root_solver()) {
         {
             // self.init_test_nets();
@@ -108,8 +116,6 @@ impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
         //     net_.reset(new Net<Dtype>(net_param, root_solver_->net_.get()));
         // }
         *net = Network::from_config(backend, &param.train_net);
-
-        unimplemented!();
     }
 
     // might take a solver state as argument in the future to resume a stopped
@@ -126,7 +132,7 @@ impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
         let stop_iter = start_iter + iters;
         // int average_loss = this->param_.average_loss(); // Caffe
         let mut losses = Vec::<f32>::new();
-        let mut smoothed_loss = 0f32;
+        let smoothed_loss = 0f32;
 
         while self.iter < stop_iter {
             let mut loss = 0f32;
@@ -157,9 +163,11 @@ impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
             // const bool display = param_.display() && iter_ % param_.display() == 0;
             // net_->set_debug_info(display && param_.debug_info());
 
-            let noop_bottom = vec![new_shared_heapblob()];
-            for _ in 0..self.config.minibatch_size - 1 {
-                loss += self.net.forward_backward(&noop_bottom);
+            // let noop_bottom = vec![Blob::from_data(SharedTensor::new(self.net.backend.device(), ()).unwrap())];
+            // let minibatch = self.minibatch();
+            let minibatch: Vec<SharedTensor<f32>> = unimplemented!();
+            for batch_element in minibatch {
+                loss += self.net.forward_backward(&[Arc::new(RwLock::new(batch_element))]);
             }
             // average the loss across iterations of minibatch
             loss /= self.config.minibatch_size as f32;
@@ -168,11 +176,11 @@ impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
             if losses.len() < self.config.average_loss {
                 losses.push(loss);
                 let size = losses.len() as f32;
-                smoothed_loss = (smoothed_loss * (size - 1f32) + loss) / size;
+                let _ = (smoothed_loss * (size - 1f32) + loss) / size;
             } else {
                 let idx = (self.iter - start_iter) % self.config.average_loss;
                 smoothed_loss += (loss - losses[idx]) / self.config.average_loss as f32;
-                losses[idx] = loss;
+                losses[idx] = smoothed_loss;
             }
 
             // Caffe
@@ -203,33 +211,33 @@ impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
             //   callbacks_[i]->on_gradients_ready();
             // }
 
-            // Caffe / Display
-            //   if (this->param_.display() && this->iter_ % this->param_.display() == 0) {
-            //     LOG(INFO) << "Iteration " << this->iter_ << ", lr = " << rate;
-            //   }
             self.worker.apply_update(&self.config, &mut self.net, self.iter);
 
             // Increment the internal iter counter -- its value should always indicate
             // the number of times the weights have been updated.
             self.iter += 1;
-
-            // Caffe
-            // SolverAction::Enum request = GetRequestedAction();
-            //
-            // // Save a snapshot if needed.
-            // if ((param_.snapshot()
-            //      && iter_ % param_.snapshot() == 0
-            //      && Caffe::root_solver()) ||
-            //      (request == SolverAction::SNAPSHOT)) {
-            //   Snapshot();
-            // }
-            // if (SolverAction::STOP == request) {
-            //   requested_early_exit_ = true;
-            //   // Break out of training loop.
-            //   break;
-            // }
-
         }
+    }
+
+    fn minibatch(&self) -> &Vec<HeapBlob> {
+        unimplemented!();
+    }
+
+    /// Returns the network trained by the solver.
+    ///
+    /// This is the recommended method to get a usable trained network.
+    pub fn network(&self) -> &Network<B> {
+        &self.net
+    }
+
+    /// Returns the network trained by the solver.
+    ///
+    /// This is the recommended method to get a trained network,
+    /// if you want to alter the network. Keep in mind that altering the network
+    /// might render the solver unusable and continuing training the network with it will yield
+    /// unexpected results.
+    pub fn mut_network(&mut self) -> &mut Network<B> {
+        &mut self.net
     }
 }
 
@@ -237,7 +245,7 @@ impl<S: ISolver<B>, B: IBackend + IBlas<f32>> Solver<S, B>{
 ///
 /// See [Solvers][1]
 /// [1]: ../solvers/index.html
-pub trait ISolver<B> {
+pub trait ISolver<SolverB, B: IBackend + LayerOps<f32>> {
     /// Update the weights of the net with part of the gradient.
     ///
     /// The [second phase of backpropagation learning][1].
@@ -255,7 +263,7 @@ pub trait ISolver<B> {
     fn apply_update(&mut self, param: &SolverConfig, network: &mut Network<B>, iter: usize);
 
     /// TODO: [DOC]
-    fn backend(&self) -> &B;
+    fn backend(&self) -> &SolverB;
 }
 
 #[derive(Debug, Clone)]
@@ -483,7 +491,7 @@ pub enum SolverKind {
 
 impl SolverKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + IBlas<f32> + 'static>(&self, backend: Rc<B>, config: &SolverConfig) -> Box<ISolver<B>> {
+    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32>>(&self, backend: Rc<B>, config: &SolverConfig) -> Box<ISolver<B, NetB>> {
         match *self {
             SolverKind::SGD(sgd) => {
                 sgd.with_config(backend, config)
@@ -502,7 +510,8 @@ pub enum SGDKind {
 
 impl SGDKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + IBlas<f32> + 'static>(&self, backend: Rc<B>, config: &SolverConfig) -> Box<ISolver<B>> {
+    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32>>(&self, backend: Rc<B>, config: &SolverConfig) -> Box<ISolver<B, NetB>> {
+    // pub fn with_config<B: IBackend + IBlas<f32> + 'static>(&self, backend: Rc<B>, config: &SolverConfig) -> Box<ISolver<B>> {
         match *self {
             SGDKind::Momentum => {
                 Box::new(Momentum::<B>::new(backend))

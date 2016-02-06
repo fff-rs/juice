@@ -1,0 +1,50 @@
+[package]
+name          = "collenchyma"
+description   = "high-performance computation on any hardware"
+version       = "0.0.7"
+authors       = ["Michael Hirn <mj@autumnai.com>",
+                 "Maximilian Goisser <max@autumnai.com>"]
+
+repository    = "https://github.com/autumnai/collenchyma"
+homepage      = "https://github.com/autumnai/collenchyma"
+documentation = "http://autumnai.github.io/collenchyma"
+readme        = "README.md"
+
+keywords      = ["backend", "computation", "opencl", "cuda", "hpc"]
+license       = "MIT OR Apache-2.0"
+
+[dependencies]
+libc = "0.2"
+bitflags = "0.3"
+enum_primitive = "0.1.0"
+byteorder = "0.4"
+num = "0.1"
+lazy_static = "0.1.15"
+linear-map = "0.0.4"
+
+clippy = { version = "0.0.27", optional = true }
+
+[dev-dependencies]
+
+rand = "0.3"
+
+[features]
+default = ["native", "cuda", "opencl"]
+native = []
+cuda = []
+opencl = []
+
+unstable_alloc = [] # faster but unstable memory allocation on native machines
+
+dev = []
+unstable = [] # for travis-cargo
+travis = ["native"]
+lint = ["clippy"]
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = false
+debug-assertions = false
+codegen-units = 1

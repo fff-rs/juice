@@ -1,0 +1,1 @@
+paths = ["vendor/collenchyma", "vendor/collenchyma-blas", "vendor/collenchyma-nn"]

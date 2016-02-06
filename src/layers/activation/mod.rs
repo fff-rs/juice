@@ -15,6 +15,16 @@
 //! results.
 //!
 //! The activation function is also sometimes called transfer function.
+#[macro_export]
+macro_rules! impl_ilayer_activation {
+    () => (
+        fn exact_num_top_blobs(&self) -> usize { 1 }
+        fn exact_num_bottom_blobs(&self) -> usize { 1 }
+    )
+}
+
+pub use self::relu::ReLU;
 pub use self::sigmoid::Sigmoid;
 
+pub mod relu;
 pub mod sigmoid;

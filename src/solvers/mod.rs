@@ -32,13 +32,16 @@ pub use self::sgd::{Momentum};
 pub mod sgd;
 
 use co::backend::IBackend;
-use co::shared_memory::SharedMemory;
-use co::libraries::blas::IBlas;
+use co::memory::MemoryType;
+use co::tensor::SharedTensor;
+// use coblas::plugin::IBlas;
+use conn::NN;
 use shared_memory::*;
 use solver::*;
 use network::Network;
+use util::{native_backend, LayerOps, SolverOps};
 
-trait SGDSolver<B: IBackend + IBlas<f32>> : ISolver<B> {
+trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32>> : ISolver<SolverB, NetB> {
     fn compute_update_value(&mut self,
                             config: &SolverConfig,
                             weight_blob: &ArcLock<HeapBlob>,
@@ -58,22 +61,30 @@ trait SGDSolver<B: IBackend + IBlas<f32>> : ISolver<B> {
     ///
     /// [3]: https://en.wikipedia.org/wiki/Recurrent_neural_network
     /// [4]: https://en.wikipedia.org/wiki/Norm_(mathematics)#Euclidean_norm
-    fn clip_gradients(&self, config: &SolverConfig, net: &mut Network<B>) {
+    #[allow(unused_must_use)]
+    fn clip_gradients<B: IBackend + LayerOps<f32>>(&self, config: &SolverConfig, net: &mut Network<B>) {
         // skip clipping gradients if SolverConfig.clip_gradients is set to None
         if let Some(clip_threshold) = config.clip_gradients {
+            let native = native_backend();
+
             let net_weights = net.learnable_weights();
             let mut sumsq_diff = 0f32;
             let backend = self.backend();
-            let mut result = SharedMemory::<f32>::new(backend.device(), 1);
             for weight_blob in net_weights {
-                let mut blob = weight_blob.write().unwrap();
-                // self.backend().nrm2(blob.mut_diff(), &mut result);
-                // TODO
-                // let blob_sumsq_diff = leaf_cpu_dot(blob.cpu_diff(), blob.cpu_diff());
-                // sumsq_diff += blob_sumsq_diff;
+                let blob = weight_blob.read().unwrap();
+                let mut result = SharedTensor::<f32>::new(backend.device(), &1).unwrap();
+                blob.sumsq_diff(self.backend(), &mut result);
+
+                let mut result = SharedTensor::<f32>::new(backend.device(), &1).unwrap();
+                match result.add_device(native.device()) { _ => result.sync(native.device()).unwrap() }
+                if let &MemoryType::Native(ref sumsq_result) = result.get(native.device()).unwrap() {
+                    let sumsq_diff_slice = sumsq_result.as_slice::<f32>();
+                    sumsq_diff += sumsq_diff_slice[0];
+                } else {
+                    panic!();
+                }
             }
             let l2norm_diff = sumsq_diff.sqrt();
-            unimplemented!(); // needs either simple devision or similar
             if l2norm_diff > clip_threshold {
                 let scale_factor = clip_threshold / l2norm_diff;
                 info!("Gradient clipping: scaling down gradients (L2 norm {} > {})
@@ -82,11 +93,18 @@ trait SGDSolver<B: IBackend + IBlas<f32>> : ISolver<B> {
                       clip_threshold,
                       scale_factor);
 
+                let mut scale_shared = SharedTensor::<f32>::new(native.device(), &1).unwrap();
+                if let &mut MemoryType::Native(ref mut scale) = scale_shared.get_mut(native.device()).unwrap() {
+                    let scale_slice = scale.as_mut_slice::<f32>();
+                    scale_slice[0] = scale_factor;
+                } else {
+                    panic!();
+                }
+
                 for weight_blob in net_weights {
                     let mut blob = weight_blob.write().unwrap();
                     let diff = blob.mut_diff();
-                    // TODO
-                    // leaf_cpu_scal(&scale_factor, diff);
+                    backend.scal(&mut scale_shared, diff);
                 }
             }
         }
@@ -102,9 +120,15 @@ trait SGDSolver<B: IBackend + IBlas<f32>> : ISolver<B> {
         if config.minibatch_size > 1 {
             let scale_factor = 1f32 / config.minibatch_size as f32;
             let mut write_blob = weight_blob.write().unwrap();
-            let mut shared_scale_factor = SharedMemory::<f32>::new(self.backend().device(), 1);
-            // let _ = self.backend().scale(&mut shared_scale_factor, write_blob.mut_diff());
-            unimplemented!();
+            let native = native_backend();
+            let mut scale_factor_shared = SharedTensor::<f32>::new(native.device(), &1).unwrap();
+            if let &mut MemoryType::Native(ref mut scale) = scale_factor_shared.get_mut(native.device()).unwrap() {
+                let scale_slice = scale.as_mut_slice::<f32>();
+                scale_slice[0] = scale_factor;
+            } else {
+                panic!();
+            }
+            let _ = self.backend().scal_plain(&scale_factor_shared, write_blob.mut_diff());
         }
     }
 
@@ -119,10 +143,16 @@ trait SGDSolver<B: IBackend + IBlas<f32>> : ISolver<B> {
                         let local_decay = global_weight_decay * weight_decay_mult;
                         match regularization_method {
                             RegularizationMethod::L2 => {
-                                // TODO
-                                // leaf_cpu_axpy(&local_decay,
-                                //               weight_blob.read().unwrap().cpu_data(),
-                                //               weight_blob.write().unwrap().mutable_cpu_diff());
+                                let native = native_backend();
+                                let mut decay_shared = SharedTensor::<f32>::new(native.device(), &1).unwrap();
+                                if let &mut MemoryType::Native(ref mut decay) = decay_shared.get_mut(native.device()).unwrap() {
+                                    let decay_slice = decay.as_mut_slice::<f32>();
+                                    decay_slice[0] = local_decay;
+                                } else {
+                                    panic!();
+                                }
+                                let blob = &mut weight_blob.write().unwrap();
+                                blob.regularize_l2(self.backend(), &decay_shared);
                             }
                         }
                     }

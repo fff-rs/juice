@@ -55,22 +55,21 @@
 /// Implement [ILayer][1] for [activation layers][2].
 /// [1]: ./layer/trait.ILayer.html
 /// [2]: ./layers/activation/index.html
-#[macro_export]
-macro_rules! impl_ilayer_activation {
-    () => (
-        fn exact_num_top_blobs(&self) -> usize { 1 }
-        fn exact_num_bottom_blobs(&self) -> usize { 1 }
-    )
-}
 
 #[allow(unused_import_braces)]
-pub use self::activation::{Sigmoid};
+pub use self::activation::{
+    ReLU,
+    Sigmoid};
 
 #[allow(unused_import_braces)]
-pub use self::common::{Convolution};
+pub use self::common::{
+    Convolution, ConvolutionConfig,
+    FullyConnected, FullyConnectedConfig,
+    Pooling, PoolingConfig, PoolingMode,
+    Softmax};
 
 #[allow(unused_import_braces)]
-pub use self::loss::{Softmax};
+pub use self::loss::{SoftmaxLoss};
 
 #[allow(unused_import_braces)]
 pub use self::utility::{Flatten};

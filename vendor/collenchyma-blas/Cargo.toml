@@ -1,0 +1,40 @@
+[package]
+name            = "collenchyma-blas"
+description     = "Collenchyma library for full BLAS support"
+version         = "0.1.0"
+authors         = ["Michael Hirn <mj@autumnai.com>",
+                   "Maximilian Goisser <max@autumnai.com>"]
+
+repository      = "https://github.com/autumnai/collenchyma-blas"
+homepage        = "https://github.com/autumnai/collenchyma-blas"
+documentation   = "https://autumnai.github.io/collenchyma-blas"
+readme          = "README.md"
+
+keywords        = ["blas", "collenchyma", "computation", "hpc", "plugin"]
+license         = "MIT"
+
+[dependencies]
+collenchyma = { version = "0.0.7", default-features = false }
+lazy_static = "0.1"
+
+# native
+rblas = { version = "0.0.11", optional = true }
+
+# cuda
+cublas = { version = "0.2.0", optional = true }
+
+clippy = { version = "0.0.27", optional = true }
+
+[dev-dependencies]
+
+rand = "0.3"
+
+[features]
+default = ["native", "cuda", "opencl"]
+native = ["collenchyma/native", "rblas"]
+cuda = ["collenchyma/cuda", "cublas"]
+opencl = ["collenchyma/opencl"]
+
+travis = ["native"]
+dev = []
+lint = ["clippy"]

@@ -12,52 +12,51 @@
 //! * can be computed faster
 //! * is therefore the most popular activation function in DNNs as of this
 //! writing (2015).
+use co::{IBackend, SharedTensor};
+use conn;
 use layer::*;
+use shared_memory::*;
 
 #[derive(Debug, Copy, Clone)]
 /// Sigmoid Activation Layer
 pub struct Sigmoid;
 
-impl ILayer for Sigmoid {
+impl<B: IBackend + conn::Sigmoid<f32>> ILayer<B> for Sigmoid {
     impl_ilayer_activation!();
 
-    fn forward_layer(&self, bottom: &[ReadBlob], top: &mut Vec<&mut WriteBlob>) {
-        let bottom_data = bottom[0].data();
-        let top_data = top[0].mut_data();
-
-        // TODO
-        // for (i, _) in bottom_data.iter().enumerate() {
-        //     top_data[i] = Sigmoid::sigmoid(bottom_data[i])
-        // }
-    }
-
-    fn backward_layer(&self, top: &[ReadBlob], propagate_down: &[bool], bottom: &mut Vec<&mut WriteBlob>) {
-        if propagate_down[0] {
-            let top_data = top[0].data();
-            let top_diff = top[0].diff();
-            let count = bottom[0].capacity();
-            let bottom_diff = bottom[0].mut_diff();
-
-
-            // for i in 0..count {
-                // TODO
-                // let sigmoid_x = top_data[i];
-                // bottom_diff[i] = top_diff[i] * Sigmoid::sigmoid_prime_precalc(sigmoid_x)
-            // }
-        }
+    fn reshape(&mut self,
+               backend: ::std::rc::Rc<B>,
+               bottom_data: &[ArcLock<SharedTensor<f32>>],
+               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+               top_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+               top_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+        let btm = bottom_data[0].read().unwrap();
+        top_data[0].write().unwrap().resize(btm.desc()).unwrap();
+        top_gradient[0].write().unwrap().resize(btm.desc()).unwrap();
     }
 }
 
-impl Sigmoid {
-    fn sigmoid(z: f32) -> f32 {
-        1f32 / (1f32 + (-z).exp())
-    }
-
-    fn sigmoid_prime(z: f32) -> f32 {
-        Sigmoid::sigmoid_prime_precalc(Sigmoid::sigmoid(z))
-    }
-
-    fn sigmoid_prime_precalc(sigmoid_z: f32) -> f32 {
-        sigmoid_z * (1f32 - sigmoid_z)
+impl<B: IBackend + conn::Sigmoid<f32>> ComputeOutput<f32, B> for Sigmoid {
+    fn compute_output(&self,
+                      backend: &B,
+                      _weights: &[&SharedTensor<f32>],
+                      input_data: &[&SharedTensor<f32>],
+                      output_data: &mut [&mut SharedTensor<f32>]) {
+        backend.sigmoid_plain(input_data[0], output_data[0]).unwrap();
     }
 }
+
+impl<B: IBackend + conn::Sigmoid<f32>> ComputeInputGradient<f32, B> for Sigmoid {
+    fn compute_input_gradient(&self,
+                              backend: &B,
+                              _weights: &[&SharedTensor<f32>],
+                              output_data: &[&SharedTensor<f32>],
+                              output_gradients: &[&SharedTensor<f32>],
+                              input_data: &[&SharedTensor<f32>],
+                              input_gradients: &mut [&mut SharedTensor<f32>]) {
+        backend.sigmoid_grad_plain(output_data[0], output_gradients[0], input_data[0], input_gradients[0]).unwrap();
+    }
+}
+
+impl<B: IBackend + conn::Sigmoid<f32>> ComputeParametersGradient<f32, B> for Sigmoid {}
