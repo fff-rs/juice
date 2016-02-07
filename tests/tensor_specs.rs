@@ -28,4 +28,13 @@ mod tensor_spec {
         let tensor_desc_r0_into = <() as IntoTensorDesc>::into(&());
         assert_eq!(1, tensor_desc_r0_into.size());
     }
+
+    #[test]
+    fn it_resizes_tensor() {
+        let native = Backend::<Native>::default().unwrap();
+        let mut tensor = SharedTensor::<f32>::new(native.device(), &(10, 20, 30)).unwrap();
+        assert_eq!(tensor.desc(), &[10, 20, 30]);
+        tensor.resize(&(2, 3, 4, 5)).unwrap();
+        assert_eq!(tensor.desc(), &[2, 3, 4, 5]);
+    }
 }
