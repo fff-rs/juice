@@ -227,17 +227,8 @@ impl<T> SharedTensor<T> {
     /// [1]: ../memory/index.html
     pub fn new<D: IntoTensorDesc>(dev: &DeviceType, desc: &D) -> Result<SharedTensor<T>, Error> {
         let copies = LinearMap::<DeviceType, MemoryType>::new();
+        let copy = try!(Self::alloc_on_device(dev, desc));
         let tensor_desc: TensorDesc = desc.into();
-        let copy: MemoryType;
-        let alloc_size = Self::mem_size(tensor_desc.size());
-        match *dev {
-            #[cfg(feature = "native")]
-            DeviceType::Native(ref cpu) => copy = MemoryType::Native(try!(cpu.alloc_memory(alloc_size))),
-            #[cfg(feature = "opencl")]
-            DeviceType::OpenCL(ref context) => copy = MemoryType::OpenCL(try!(context.alloc_memory(alloc_size))),
-            #[cfg(feature = "cuda")]
-            DeviceType::Cuda(ref context) => copy = MemoryType::Cuda(try!(context.alloc_memory(alloc_size))),
-        }
         Ok(SharedTensor {
             desc: tensor_desc,
             latest_location: dev.clone(),
@@ -250,6 +241,7 @@ impl<T> SharedTensor<T> {
     /// Change the shape of the Tensor.
     ///
     /// Will return an Error if size of new shape is not equal to the old shape.
+    /// If you want to change the shape to one of a different size, use `resize`.
     pub fn reshape<D: IntoTensorDesc>(&mut self, desc: &D) -> Result<(), Error> {
         let new_desc: TensorDesc = desc.into();
         if new_desc.size() == self.desc().size() {
@@ -258,6 +250,35 @@ impl<T> SharedTensor<T> {
         } else {
             Err(Error::InvalidShape("Size of the provided shape is not equal to the old shape."))
         }
+    }
+
+    /// Change the size and shape of the Tensor.
+    ///
+    /// **Caution**: Drops all copies which are not on the current device.
+    ///
+    /// 'reshape' is preffered over this method if the size of the old and new shape
+    /// are identical because it will not reallocate memory.
+    pub fn resize<D: IntoTensorDesc>(&mut self, desc: &D) -> Result<(), Error> {
+        self.copies.clear();
+        self.latest_copy = try!(Self::alloc_on_device(self.latest_device(), desc));
+        let new_desc: TensorDesc = desc.into();
+        self.desc = new_desc;
+        Ok(())
+    }
+
+    /// Allocate memory on the provided DeviceType.
+    fn alloc_on_device<D: IntoTensorDesc>(dev: &DeviceType, desc: &D) -> Result<MemoryType, Error> {
+        let tensor_desc: TensorDesc = desc.into();
+        let alloc_size = Self::mem_size(tensor_desc.size());
+        let copy = match *dev {
+            #[cfg(feature = "native")]
+            DeviceType::Native(ref cpu) => MemoryType::Native(try!(cpu.alloc_memory(alloc_size))),
+            #[cfg(feature = "opencl")]
+            DeviceType::OpenCL(ref context) => MemoryType::OpenCL(try!(context.alloc_memory(alloc_size))),
+            #[cfg(feature = "cuda")]
+            DeviceType::Cuda(ref context) => MemoryType::Cuda(try!(context.alloc_memory(alloc_size))),
+        };
+        Ok(copy)
     }
 
     /// Synchronize memory from latest location to `destination`.
