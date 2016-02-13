@@ -23,63 +23,41 @@ pub trait ICudnnDesc<T> {
     fn cudnn_convolution_desc(&self, filter: &SharedTensor<T>) -> Result<ConvolutionDescriptor, PluginError>;
 }
 
-impl ICudnnDesc<f32> for SharedTensor<f32> {
-    fn cudnn_tensor_desc(&self) -> Result<TensorDescriptor, PluginError> {
-        match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), utils::DataType::Float) {
-            Ok(desc) => Ok(desc),
-            Err(_) => {
-                Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
+macro_rules! impl_icudnndesc_for_sharedtensor {
+    ($t:ty, $cutype:path) => (
+        impl ICudnnDesc<$t> for SharedTensor<$t> {
+            fn cudnn_tensor_desc(&self) -> Result<TensorDescriptor, PluginError> {
+                match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), $cutype) {
+                    Ok(desc) => Ok(desc),
+                    Err(_) => {
+                        Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
+                    }
+                }
             }
-        }
-    }
 
-    fn cudnn_filter_desc(&self) -> Result<FilterDescriptor, PluginError> {
-        match FilterDescriptor::new(&self.desc().dims_i32().clone(), utils::DataType::Float) {
-            Ok(desc) => Ok(desc),
-            Err(_) => {
-                Err(PluginError::Plugin("Unable to create CuDNN FilterDescriptor."))
+            fn cudnn_filter_desc(&self) -> Result<FilterDescriptor, PluginError> {
+                match FilterDescriptor::new(&self.desc().dims_i32().clone(), $cutype) {
+                    Ok(desc) => Ok(desc),
+                    Err(_) => {
+                        Err(PluginError::Plugin("Unable to create CuDNN FilterDescriptor."))
+                    }
+                }
             }
-        }
-    }
 
-    fn cudnn_convolution_desc(&self, filter: &SharedTensor<f32>) -> Result<ConvolutionDescriptor, PluginError> {
-        match ConvolutionDescriptor::new(&self.desc().dims_i32().clone(), &filter.desc().default_stride_i32().clone(), utils::DataType::Float) {
-            Ok(desc) => Ok(desc),
-            Err(_) => {
-                Err(PluginError::Plugin("Unable to create CuDNN ConvolutionDescriptor."))
+            fn cudnn_convolution_desc(&self, filter: &SharedTensor<$t>) -> Result<ConvolutionDescriptor, PluginError> {
+                match ConvolutionDescriptor::new(&self.desc().dims_i32().clone(), &filter.desc().default_stride_i32().clone(), $cutype) {
+                    Ok(desc) => Ok(desc),
+                    Err(_) => {
+                        Err(PluginError::Plugin("Unable to create CuDNN ConvolutionDescriptor."))
+                    }
+                }
             }
         }
-    }
+    )
 }
 
-impl ICudnnDesc<f64> for SharedTensor<f64> {
-    fn cudnn_tensor_desc(&self) -> Result<TensorDescriptor, PluginError> {
-        match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), utils::DataType::Double) {
-            Ok(desc) => Ok(desc),
-            Err(_) => {
-                Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
-            }
-        }
-    }
-
-    fn cudnn_filter_desc(&self) -> Result<FilterDescriptor, PluginError> {
-        match FilterDescriptor::new(&self.desc().dims_i32().clone(), utils::DataType::Double) {
-            Ok(desc) => Ok(desc),
-            Err(_) => {
-                Err(PluginError::Plugin("Unable to create CuDNN FilterDescriptor."))
-            }
-        }
-    }
-
-    fn cudnn_convolution_desc(&self, filter: &SharedTensor<f64>) -> Result<ConvolutionDescriptor, PluginError> {
-        match ConvolutionDescriptor::new(&self.desc().dims_i32().clone(), &filter.desc().default_stride_i32().clone(), utils::DataType::Double) {
-            Ok(desc) => Ok(desc),
-            Err(_) => {
-                Err(PluginError::Plugin("Unable to create CuDNN ConvolutionDescriptor."))
-            }
-        }
-    }
-}
+impl_icudnndesc_for_sharedtensor!(f32, ::cudnn::utils::DataType::Float);
+impl_icudnndesc_for_sharedtensor!(f64, ::cudnn::utils::DataType::Double);
 
 impl_oconf_for_cc!(f32, f64);
 impl_oconf_for_clrn!(f32, f64);
