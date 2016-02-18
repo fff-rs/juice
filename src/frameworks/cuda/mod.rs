@@ -20,6 +20,12 @@ pub trait ICudnnDesc<T> {
     /// Creates a TensorDescriptor similar to `cudnn_tensor_desc`,
     /// but will create a fitting 4D tensor if the actual tensor would be 1D-3D.
     fn cudnn_tensor_desc_softmax(&self) -> Result<TensorDescriptor, PluginError>;
+    /// Creates a TensorDescriptor similar to `cudnn_tensor_desc`,
+    /// but will create a fitting 3D tensor if the actual tensor would be 1D/2D.
+    ///
+    /// This should be used in operations where the shape doesn't really matter
+    /// e.g. activation like ReLU.
+    fn cudnn_tensor_desc_flat(&self) -> Result<TensorDescriptor, PluginError>;
 
     fn cudnn_filter_desc(&self) -> Result<FilterDescriptor, PluginError>;
 
@@ -49,6 +55,26 @@ macro_rules! impl_icudnndesc_for_sharedtensor {
                     3 => vec![1, actual_desc[0], actual_desc[1], actual_desc[2]],
                     _ => actual_desc
                 };
+                match TensorDescriptor::new(&override_desc.dims_i32().clone(),
+                                            &override_desc.default_stride_i32().clone(),
+                                            $cutype) {
+                    Ok(desc) => Ok(desc),
+                    Err(_) => {
+                        Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
+                    }
+                }
+            }
+
+            fn cudnn_tensor_desc_flat(&self) -> Result<TensorDescriptor, PluginError> {
+                let actual_desc = self.desc().clone();
+                let mut override_desc = match actual_desc.len() {
+                    1 => vec![1, 1],
+                    2 => vec![1],
+                    _ => vec![]
+                };
+                for dim in actual_desc {
+                    override_desc.push(dim);
+                }
                 match TensorDescriptor::new(&override_desc.dims_i32().clone(),
                                             &override_desc.default_stride_i32().clone(),
                                             $cutype) {

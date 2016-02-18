@@ -66,9 +66,9 @@ macro_rules! impl_ops_sigmoid_for {
                 let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
                 Ok(try!(match CUDNN.sigmoid_forward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
+                    &try!(result.cudnn_tensor_desc_flat()), // dest_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
                     scal_params
                 ) {
@@ -104,13 +104,13 @@ macro_rules! impl_ops_sigmoid_for {
                 let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
                 Ok(try!(match CUDNN.sigmoid_backward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // src_diff_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
+                    &try!(result.cudnn_tensor_desc_flat()), // dest_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
+                    &try!(result_diff.cudnn_tensor_desc_flat()), // dest_diff_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
                     scal_params
                 ) {
@@ -147,9 +147,9 @@ macro_rules! impl_ops_relu_for {
                 let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
                 Ok(try!(match CUDNN.relu_forward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
+                    &try!(result.cudnn_tensor_desc_flat()), // dest_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
                     scal_params
                 ) {
@@ -185,13 +185,13 @@ macro_rules! impl_ops_relu_for {
                 let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
                 Ok(try!(match CUDNN.relu_backward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // src_diff_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
+                    &try!(result.cudnn_tensor_desc_flat()), // dest_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
+                    &try!(result_diff.cudnn_tensor_desc_flat()), // dest_diff_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
                     scal_params
                 ) {
@@ -228,9 +228,9 @@ macro_rules! impl_ops_tanh_for {
                 let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
                 Ok(try!(match CUDNN.tanh_forward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
+                    &try!(result.cudnn_tensor_desc_flat()), // dest_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
                     scal_params
                 ) {
@@ -266,13 +266,13 @@ macro_rules! impl_ops_tanh_for {
                 let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
                 Ok(try!(match CUDNN.tanh_backward(
-                    &try!(x.cudnn_tensor_desc()), // src_desc
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
-                    &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // src_diff_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
-                    &try!(result.cudnn_tensor_desc()), // dest_desc
+                    &try!(result.cudnn_tensor_desc_flat()), // dest_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
-                    &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
+                    &try!(result_diff.cudnn_tensor_desc_flat()), // dest_diff_desc
                     try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
                     scal_params
                 ) {
