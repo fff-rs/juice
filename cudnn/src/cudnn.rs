@@ -307,7 +307,7 @@ impl Cudnn {
         )
     }
 
-    /// Computes the forward softmax activation function.
+    /// Computes the forward softmax function.
     ///
     /// Writes the result of the computation to `dest_data`.
     pub fn softmax_forward<T>(
@@ -325,7 +325,7 @@ impl Cudnn {
         )
     }
 
-    /// Computes the backward softmax activation function.
+    /// Computes the backward softmax function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
     pub fn softmax_backward<T>(
@@ -340,6 +340,44 @@ impl Cudnn {
     ) -> Result<(), Error> {
         API::softmax_backward(
             *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
+            scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
+            scale.b, *dest_diff_desc.id_c(), dest_diff_data
+        )
+    }
+
+    /// Computes the forward logarithmic softmax function.
+    ///
+    /// Writes the result of the computation to `dest_data`.
+    pub fn log_softmax_forward<T>(
+        &self,
+        src_desc: &TensorDescriptor,
+        src_data: *const ::libc::c_void,
+        dest_desc: &TensorDescriptor,
+        dest_data: *mut ::libc::c_void,
+        scale: ScalParams<T>,
+    ) -> Result<(), Error> {
+        API::softmax_forward(
+            *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
+            scale.a, *src_desc.id_c(), src_data,
+            scale.b, *dest_desc.id_c(), dest_data
+        )
+    }
+
+    /// Computes the backward logarithmic softmax function.
+    ///
+    /// Writes the result of the computation to `dest_diff_data`.
+    pub fn log_softmax_backward<T>(
+        &self,
+        src_desc: &TensorDescriptor,
+        src_data: *const ::libc::c_void,
+        src_diff_desc: &TensorDescriptor,
+        src_diff_data: *const ::libc::c_void,
+        dest_diff_desc: &TensorDescriptor,
+        dest_diff_data: *mut ::libc::c_void,
+        scale: ScalParams<T>,
+    ) -> Result<(), Error> {
+        API::softmax_backward(
+            *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
             scale.a, *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
             scale.b, *dest_diff_desc.id_c(), dest_diff_data
         )
