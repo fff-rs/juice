@@ -53,7 +53,7 @@ mod cudnn_spec {
         let filter = FilterDescriptor::new(&[1, 1, 1], DataType::Float).unwrap();
         let conv = ConvolutionDescriptor::new(&[1, 1, 1], &[1, 1, 1], DataType::Float).unwrap();
         let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-        match API::find_convolution_forward_algorithm(*cudnn.id_c(), *filter.id_c(), *src.id_c(), *conv.id_c(), *dest.id_c()) {
+        match API::find_convolution_forward_algorithm(*cudnn.id_c(), *filter.id_c(), *conv.id_c(), *src.id_c(), *dest.id_c()) {
             Ok(algos) => { assert_eq!(2, algos.len())},
             Err(err) => { println!("{:?}", err); assert!(false) }
         }
@@ -66,7 +66,7 @@ mod cudnn_spec {
         let filter = FilterDescriptor::new(&[1, 1, 1], DataType::Float).unwrap();
         let conv = ConvolutionDescriptor::new(&[1, 1, 1], &[1, 1, 1], DataType::Float).unwrap();
         let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-        match API::find_convolution_backward_data_algorithm(*cudnn.id_c(), *filter.id_c(), *src.id_c(), *conv.id_c(), *dest.id_c()) {
+        match API::find_convolution_backward_data_algorithm(*cudnn.id_c(), *filter.id_c(), *conv.id_c(), *src.id_c(), *dest.id_c()) {
             Ok(algos) => { assert_eq!(2, algos.len())},
             Err(err) => { println!("{:?}", err); assert!(false) }
         }
