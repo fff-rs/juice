@@ -1,3 +1,11 @@
+<a name="1.2.0"></a>
+## 1.2.0 (2016-02-21)
+
+#### Features
+
+* **log_softmax:**  add logarithmic softmax (`log_softmax`) ([2147ccec](https://github.com/autumnai/rust-cudnn/commit/2147ccec328f79662f9662ce0659f228964c2533))
+
+
 <a name="1.1.0"></a>
 ## 1.1.0 (2016-02-02)
 
