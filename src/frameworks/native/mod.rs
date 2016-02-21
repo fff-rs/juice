@@ -32,6 +32,7 @@ impl_ops_relu_for!(f32, Backend<Native>);
 impl_ops_tanh_for!(f32, Backend<Native>);
 // impl_ops_convolution_for!(f32, Backend<Native>);
  impl_ops_softmax_for!(f32, Backend<Native>);
+ impl_ops_log_softmax_for!(f32, Backend<Native>);
 // impl_ops_lrn_for!(f32, Backend<Native>);
 // impl_ops_pooling_for!(f32, Backend<Native>);
 
@@ -49,5 +50,6 @@ impl_ops_relu_for!(f64, Backend<Native>);
 impl_ops_tanh_for!(f64, Backend<Native>);
 // impl_ops_convolution_for!(f64, Backend<Native>);
  impl_ops_softmax_for!(f64, Backend<Native>);
+ impl_ops_log_softmax_for!(f64, Backend<Native>);
 // impl_ops_lrn_for!(f64, Backend<Native>);
 // impl_ops_pooling_for!(f64, Backend<Native>);
