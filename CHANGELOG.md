@@ -1,3 +1,21 @@
+<a name="0.0.8"></a>
+## 0.0.8 (2016-02-21)
+
+#### Features
+
+* **backend:**
+  *  implement Backend::default() ([0d4f0cc2](https://github.com/autumnai/collenchyma/commit/0d4f0cc2061ba09bf17ba90a6ae5845150df0bb5))
+  *  add ability to synchronize a backend ([e1bf0147](https://github.com/autumnai/collenchyma/commit/e1bf01476cf159d627de33962a3d02d92dbf25c9))
+* **tensor:**  add `resize` to SharedTensor ([f3bb3b44](https://github.com/autumnai/collenchyma/commit/f3bb3b44992ca721adb1c59369d3729522592b34))
+* **feature_flag:**  add alternative unstable method to allocate native memory (usable via `unstable_alloc` feature flag) ([ebaf3dac](https://github.com/autumnai/collenchyma/commit/ebaf3dace462303c8c88f61a2ab388cffb6a9af5))
+* **export:**  add prelude module (import most of collenchyma via `use collenchyma::prelude::*;`) ([4aea78df](https://github.com/autumnai/collenchyma/commit/4aea78df867761c5963858856fd74ea7b5ea4661), [60c1a395](https://github.com/autumnai/collenchyma/commit/60c1a395e500b57cf66a5cb6bb02f912a14484de))
+* **license:**  change license to dual MIT/Apache-2.0 ([af5c08a0](https://github.com/autumnai/collenchyma/commit/af5c08a0fa2b7eb4bf5d84592d83f1b447161a69))
+
+#### Bug Fixes
+
+* **cuda_context:**  fix repeating CUDA context creation ([0bf616f8](https://github.com/autumnai/collenchyma/commit/0bf616f8538de917b4ec2e2fdae154ee37bc26e0))
+
+
 <a name="0.0.7"></a>
 ## 0.0.7 (2015-12-21)
 
@@ -116,7 +134,3 @@
 #### Bug Fixes
 
 * **ci:**  change clippy to be optional ([db13da29](https://github.com/autumnai/collenchyma/commit/db13da299ee635a4201ff66015a6df2e65314e73))
-
-
-
-
