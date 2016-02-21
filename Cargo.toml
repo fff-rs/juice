@@ -1,7 +1,7 @@
 [package]
 name          = "collenchyma"
 description   = "high-performance computation on any hardware"
-version       = "0.0.7"
+version       = "0.0.8"
 authors       = ["Michael Hirn <mj@autumnai.com>",
                  "Maximilian Goisser <max@autumnai.com>"]
 
