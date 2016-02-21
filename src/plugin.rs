@@ -1,6 +1,5 @@
 //! Provides the INn Plugin trait for Collenchyma implementation.
 
-use co::plugin::numeric_helpers::Float;
 use co::tensor::SharedTensor;
 use co::device::DeviceType;
 
@@ -119,7 +118,7 @@ impl ConvBackwardDataAlgo {
 pub trait NNOperationConfig<F> {}
 
 /// Provides the functionality for a backend to support Neural Network related operations.
-pub trait NN<F: Float> {
+pub trait NN<F> {
     /// The Convolution Operation Config representation for this Plugin.
     type CC: NNOperationConfig<F>;
     /// The LRN Operation Config representation for this Plugin.
@@ -135,7 +134,7 @@ pub trait NN<F: Float> {
 }
 
 /// Provides the functionality for a Backend to support Sigmoid operations.
-pub trait Sigmoid<F: Float> : NN<F> {
+pub trait Sigmoid<F> : NN<F> {
     /// Computes the [Sigmoid function][sigmoid] over the input Tensor `x` with complete memory management.
     /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
     ///
@@ -172,7 +171,7 @@ pub trait Sigmoid<F: Float> : NN<F> {
 }
 
 /// Provides the functionality for a Backend to support ReLU operations.
-pub trait Relu<F: Float> : NN<F> {
+pub trait Relu<F> : NN<F> {
     /// Computes the [Rectified linear units][relu] over the input Tensor `x` with complete memory management.
     /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
     ///
@@ -209,7 +208,7 @@ pub trait Relu<F: Float> : NN<F> {
 }
 
 /// Provides the functionality for a Backend to support TanH operations.
-pub trait Tanh<F: Float> : NN<F> {
+pub trait Tanh<F> : NN<F> {
     /// Computes the [hyperbolic Tangent][tanh] over the input Tensor `x` with complete memory management.
     /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
     ///
@@ -246,7 +245,7 @@ pub trait Tanh<F: Float> : NN<F> {
 }
 
 /// Provides the functionality for a Backend to support Convolution operations.
-pub trait Convolution<F: Float> : NN<F> {
+pub trait Convolution<F> : NN<F> {
     /// Creates a new ConvolutionConfig, which needs to be passed to further convolution Operations.
     fn new_convolution_config(&self, src: &SharedTensor<F>, dest: &SharedTensor<F>, filter: &mut SharedTensor<F>,
                             algo_fwd: ConvForwardAlgo, algo_bwd_filter: ConvBackwardFilterAlgo, algo_bwd_data: ConvBackwardDataAlgo,
@@ -331,7 +330,7 @@ pub trait Convolution<F: Float> : NN<F> {
     // }
 
 /// Provides the functionality for a Backend to support Softmax operations.
-pub trait Softmax<F: Float> : NN<F> {
+pub trait Softmax<F> : NN<F> {
     /// Computes a [Softmax][softmax] over the input Tensor `x` with complete memory management.
     /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function
     ///
@@ -368,7 +367,7 @@ pub trait Softmax<F: Float> : NN<F> {
 }
 
 /// Provides the functionality for a Backend to support LogSoftmax operations.
-pub trait LogSoftmax<F: Float> : NN<F> {
+pub trait LogSoftmax<F> : NN<F> {
     /// Computes a logarithmic softmax over the input Tensor `x` with complete memory management.
     ///
     /// Saves the result to `result`.
@@ -403,7 +402,7 @@ pub trait LogSoftmax<F: Float> : NN<F> {
 }
 
 /// Provides the functionality for a Backend to support Local Response Normalization operations.
-pub trait LRN<F: Float> : NN<F> {
+pub trait LRN<F> : NN<F> {
     /// Creates a new (Local Response Normalization) LRNConfig, which needs to be passed to further LRN Operations.
     fn new_lrn_config(&self, n: u32, alpha: f64, beta: f64, k: f64) -> Result<Self::CLRN, ::co::error::Error>;
 
@@ -443,7 +442,7 @@ pub trait LRN<F: Float> : NN<F> {
 }
 
 /// Provides the functionality for a Backend to support Pooling operations.
-pub trait Pooling<F: Float> : NN<F> {
+pub trait Pooling<F> : NN<F> {
     /// Creates a new PoolingConfig, which needs to be passed to further pooling Operations.
     fn new_pooling_config(&self, window: &[i32], padding: &[i32], stride: &[i32]) -> Result<Self::CPOOL, ::co::error::Error>;
 
