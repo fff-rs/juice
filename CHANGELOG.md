@@ -1,3 +1,11 @@
+<a name="1.2.1"></a>
+## 1.2.1 (2016-02-21)
+
+#### Fix
+
+* **dependeny:**  bump collenchyma to 0.0.8 ([00559f63](https://github.com/autumnai/rust-cudnn/commit/00559f63faaa178d2bfe221fa074c905cf3b07e6))
+
+
 <a name="1.2.0"></a>
 ## 1.2.0 (2016-02-21)
 
