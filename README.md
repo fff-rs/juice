@@ -35,6 +35,7 @@ More information can be found in the [Documentation][docs-ops].
 | Convolution          | cudNN v3   | - 	      | -         |
 |   	   	             |  	        |  	        |           |
 | Softmax              | cudNN v3   | - 	      | Rust      |
+| LogSoftmax           | cudNN v3   | - 	      | Rust      |
 |   	   	             |  	        |  	        |           |
 | Pooling Max          | cudNN v3   | - 	      | -         |
 | Pooling Avg          | cudNN v3   | - 	      | -         |

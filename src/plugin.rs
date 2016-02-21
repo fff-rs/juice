@@ -332,7 +332,7 @@ pub trait Convolution<F: Float> : NN<F> {
 
 /// Provides the functionality for a Backend to support Softmax operations.
 pub trait Softmax<F: Float> : NN<F> {
-    /// Computes a [Softmax activation][softmax] over the input Tensor `x` with complete memory management.
+    /// Computes a [Softmax][softmax] over the input Tensor `x` with complete memory management.
     /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function
     ///
     /// Saves the result to `result`.
@@ -349,7 +349,7 @@ pub trait Softmax<F: Float> : NN<F> {
     /// For a memory managed version see `softmax`.
     fn softmax_plain(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
 
-    /// Computes the gradient of a [Softmax activation][softmax] over the input Tensor `x` with complete memory management.
+    /// Computes the gradient of a [Softmax][softmax] over the input Tensor `x` with complete memory management.
     /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function
     ///
     /// Saves the result to `result_diff`.
@@ -365,6 +365,41 @@ pub trait Softmax<F: Float> : NN<F> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `softmax_grad`.
     fn softmax_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
+
+/// Provides the functionality for a Backend to support LogSoftmax operations.
+pub trait LogSoftmax<F: Float> : NN<F> {
+    /// Computes a logarithmic softmax over the input Tensor `x` with complete memory management.
+    ///
+    /// Saves the result to `result`.
+    ///
+    /// For a no-memory managed version see `log_softmax_plain`.
+    fn log_softmax(&self, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the logarithmic softmax over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result to `result`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `log_softmax`.
+    fn log_softmax_plain(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of a logarithmic softmax over the input Tensor `x` with complete memory management.
+    ///
+    /// Saves the result to `result_diff`.
+    ///
+    /// For a no-memory managed version see `log_softmax_grad_plain`.
+    fn log_softmax_grad(&self, x: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of a logarithmic softmax over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result to `result_diff`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `log_softmax_grad`.
+    fn log_softmax_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support Local Response Normalization operations.

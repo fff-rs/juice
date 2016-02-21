@@ -210,6 +210,77 @@ mod softmax_spec_cuda {
             Err(err) => { println!("{:?}", err); assert!(false) }
         }
     }
+
+    #[test]
+    fn it_computes_correct_log_softmax_on_cuda_for_f32_plain() {
+        let backend = get_cuda_backend();
+        let native = get_native_backend();
+        let (mut x, mut result) = get_memory::<f32, Cuda, Native>(&backend, &native);
+
+        match backend.log_softmax_plain(&mut x, &mut result) {
+            Ok(_) => {
+                result.sync(native.device()).unwrap();
+                if let Some(mem) = result.get(native.device()).unwrap().as_native() {
+                    assert_eq!(&[-1.3862944f32, -1.3862944f32, -1.3862944f32, -1.3862944f32], mem.as_slice::<f32>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
+    #[test]
+    fn it_computes_correct_log_softmax_on_cuda_for_f64_plain() {
+        let backend = get_cuda_backend();
+        let native = get_native_backend();
+        let (mut x, mut result) = get_memory::<f64, Cuda, Native>(&backend, &native);
+
+        match backend.log_softmax_plain(&mut x, &mut result) {
+            Ok(_) => {
+                result.sync(native.device()).unwrap();
+                if let Some(mem) = result.get(native.device()).unwrap().as_native() {
+                    assert_eq!(&[-1.3862943611198908f64,
+                                 -1.3862943611198908f64,
+                                 -1.3862943611198908f64,
+                                 -1.3862943611198908f64], mem.as_slice::<f64>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
+    #[test]
+    fn it_computes_correct_log_softmax_grad_on_cuda_for_f32_plain() {
+        let backend = get_cuda_backend();
+        let native = get_native_backend();
+        let (mut x, mut x_diff, mut result_diff) = get_grad_memory::<f32, Cuda, Native>(&backend, &native);
+
+        match backend.log_softmax_grad_plain(&mut x, &mut x_diff, &mut result_diff) {
+            Ok(_) => {
+                result_diff.sync(native.device()).unwrap();
+                if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
+                    assert_eq!(&[-9.873127f32, -9.873127f32, -27.556225f32], mem.as_slice::<f32>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
+    #[test]
+    fn it_computes_correct_log_softmax_grad_on_cuda_for_f64_plain() {
+        let backend = get_cuda_backend();
+        let native = get_native_backend();
+        let (mut x, mut x_diff, mut result_diff) = get_grad_memory::<f64, Cuda, Native>(&backend, &native);
+
+        match backend.log_softmax_grad_plain(&mut x, &mut x_diff, &mut result_diff) {
+            Ok(_) => {
+                result_diff.sync(native.device()).unwrap();
+                if let Some(mem) = result_diff.get(native.device()).unwrap().as_native() {
+                    assert_eq!(&[-9.87312731383618f64, -9.87312731383618f64, -27.5562243957226f64], mem.as_slice::<f64>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -268,7 +339,6 @@ mod softmax_spec_native {
 
         (x, x_diff, result_diff)
     }
-
 
     #[test]
     fn it_computes_correct_softmax_on_native_for_f32() {
@@ -389,4 +459,68 @@ mod softmax_spec_native {
             Err(err) => { println!("{:?}", err); assert!(false) }
         }
     }
+
+    #[test]
+    fn it_computes_correct_log_softmax_on_native_for_f32_plain() {
+        let backend = get_native_backend();
+        let (mut x, mut result) = get_memory::<f32, Native>(&backend);
+
+        match backend.log_softmax_plain(&mut x, &mut result) {
+            Ok(_) => {
+                if let Some(mem) = result.get(backend.device()).unwrap().as_native() {
+                    assert_eq!(&[-1.3862944f32, -1.3862944f32, -1.3862944f32, -1.3862944f32], mem.as_slice::<f32>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
+    #[test]
+    fn it_computes_correct_log_softmax_on_native_for_f64_plain() {
+        let backend = get_native_backend();
+        let (mut x, mut result) = get_memory::<f64, Native>(&backend);
+
+        match backend.log_softmax_plain(&mut x, &mut result) {
+            Ok(_) => {
+                if let Some(mem) = result.get(backend.device()).unwrap().as_native() {
+                    assert_eq!(&[-1.3862943611198908f64,
+                                 -1.3862943611198908f64,
+                                 -1.3862943611198908f64,
+                                 -1.3862943611198908f64], mem.as_slice::<f64>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
+    #[test]
+    fn it_computes_correct_log_softmax_grad_on_native_for_f32_plain() {
+        let backend = get_native_backend();
+        let (mut x, mut x_diff, mut result_diff) = get_grad_memory::<f32, Native>(&backend);
+
+        match backend.log_softmax_grad_plain(&mut x, &mut x_diff, &mut result_diff) {
+            Ok(_) => {
+                if let Some(mem) = result_diff.get(backend.device()).unwrap().as_native() {
+                    assert_eq!(&[-9.873127f32, -9.873127f32, -27.556225f32], mem.as_slice::<f32>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
+    #[test]
+    fn it_computes_correct_log_softmax_grad_on_native_for_f64_plain() {
+        let backend = get_native_backend();
+        let (mut x, mut x_diff, mut result_diff) = get_grad_memory::<f64, Native>(&backend);
+
+        match backend.log_softmax_grad_plain(&mut x, &mut x_diff, &mut result_diff) {
+            Ok(_) => {
+                if let Some(mem) = result_diff.get(backend.device()).unwrap().as_native() {
+                    assert_eq!(&[-9.87312731383618f64, -9.87312731383618f64, -27.5562243957226f64], mem.as_slice::<f64>());
+                }
+            },
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
 }

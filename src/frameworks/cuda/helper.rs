@@ -442,7 +442,7 @@ macro_rules! impl_ops_softmax_for {
                 ) {
                     Ok(_) => Ok(()),
                     Err(_) => {
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation softmax Forward."))
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN softmax Forward."))
                     }
                 }))
             }
@@ -479,7 +479,83 @@ macro_rules! impl_ops_softmax_for {
                 ) {
                     Ok(_) => Ok(()),
                     Err(_) => {
-                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation softmax Backward."))
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN softmax Backward."))
+                    }
+                }))
+            }
+        }
+    )
+}
+
+#[macro_export]
+macro_rules! impl_ops_log_softmax_for {
+    ($t:ident, $b:ty) => (
+        impl ::plugin::LogSoftmax<$t> for $b {
+            fn log_softmax(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => () }
+
+                self.log_softmax_plain(x, result)
+            }
+
+            fn log_softmax_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.log_softmax_forward(
+                    &try!(x.cudnn_tensor_desc_softmax()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(result.cudnn_tensor_desc_softmax()), // dest_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN logarithmic softmax Forward."))
+                    }
+                }))
+            }
+
+            fn log_softmax_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result_diff.add_device(self.device()) { _ => () }
+
+                self.log_softmax_grad_plain(x, x_diff, result_diff)
+            }
+
+            fn log_softmax_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.log_softmax_backward(
+                    &try!(x.cudnn_tensor_desc_softmax()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(x_diff.cudnn_tensor_desc_softmax()), // src_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
+                    &try!(result_diff.cudnn_tensor_desc_softmax()), // dest_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN logarithmic softmax Backward."))
                     }
                 }))
             }

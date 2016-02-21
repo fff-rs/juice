@@ -412,6 +412,85 @@ macro_rules! impl_ops_softmax_for {
 }
 
 #[macro_export]
+macro_rules! impl_ops_log_softmax_for {
+    ($t:ident, $b:ty) => (
+        impl ::plugin::LogSoftmax<$t> for $b {
+            fn log_softmax(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match result.add_device(self.device()) { _ => () }
+                self.log_softmax_plain(x, result)
+            }
+            fn log_softmax_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                result: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(input) = x.get(self.device()).unwrap().as_native() {
+                    let mut max_input = ::std::$t::NEG_INFINITY;
+                    for &input_val in input.as_slice::<$t>() {
+                        max_input = max_input.max(input_val);
+                    }
+
+                    let mut logsum : $t = 0 as $t;
+                    for exp in input.as_slice::<$t>().iter().map(|t| (-(max_input - t)).exp()) {
+                        logsum += exp;
+                    }
+                    logsum = max_input + logsum.ln();
+
+                    let res = input.as_slice::<$t>().iter().map(|t| t - logsum);
+
+                    ::frameworks::native::helper::write_to_memory(result.get_mut(self.device()).unwrap(), res);
+                    return Ok(());
+                }
+                Err(Error::Plugin(
+                    PluginError::Operation("Unable to execute Native softmax Forward.")))
+            }
+            fn log_softmax_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
+                match result_diff.add_device(self.device()) { _ => () }
+                self.log_softmax_grad_plain(x, x_diff, result_diff)
+            }
+            fn log_softmax_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &::co::tensor::SharedTensor<$t>,
+                result_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                if let Some(sig_data) = x.get(self.device()).unwrap().as_native() {
+                    if let Some(sig_dx) = x_diff.get(self.device()).unwrap().as_native() {
+                        let x_slice = sig_data.as_slice::<$t>();
+                        let x_diff_slice = sig_dx.as_slice::<$t>();
+                        let mut sum = 0 as $t;
+                        for &grad_val in x_diff_slice.iter() {
+                            sum += grad_val;
+                        }
+                        let res = x_slice.iter().zip(x_diff_slice.iter()).map(|(x_val, x_diff_val)| {
+                            x_diff_val - x_val.exp() * sum
+                        });
+
+                        ::frameworks::native::helper::write_to_memory(result_diff.get_mut(self.device()).unwrap(), res);
+                        return Ok(());
+                    }
+                }
+                Err(Error::Plugin(
+                        PluginError::Operation("Unable to execute Native softmax Backward.")))
+
+            }
+        }
+    );
+}
+
+#[macro_export]
 macro_rules! impl_ops_lrn_for {
     ($t:ident, $b:ty) => (
         impl ::plugin::LRN<$t> for $b {
