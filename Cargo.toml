@@ -11,7 +11,7 @@ documentation   = "https://autumnai.github.io/collenchyma-blas"
 readme          = "README.md"
 
 keywords        = ["blas", "collenchyma", "computation", "hpc", "plugin"]
-license         = "MIT"
+license         = "MIT OR Apache-2.0"
 
 [dependencies]
 collenchyma = { version = "0.0.8", default-features = false }

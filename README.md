@@ -24,7 +24,7 @@ For more information,
 If you're using Cargo, just add collenchyma-BLAS to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.5"
+    collenchyma = "0.0.8"
     collenchyma-blas = "0.1.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
@@ -44,6 +44,11 @@ on the [Collenchyma Gitter Channel][gitter-collenchyma].
 You can also reach out to the Maintainers
 {[@MJ][mj], [@hobofan][hobofan]}.
 
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in the work by you, as defined in the Apache-2.0
+license, shall be dual licensed as below, without any additional terms or
+conditions.
+
 [contributing]: CONTRIBUTING.md
 [gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
 [mj]: https://twitter.com/mjhirn
@@ -53,7 +58,7 @@ You can also reach out to the Maintainers
 
 You can find the release history in the root file [CHANGELOG.md][changelog].
 
-A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc. - [Wikipedia][changelog-quote]
+> A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc. - [Wikipedia][changelog-quote]
 
 We are using [Clog][clog], the Rust tool for auto-generating CHANGELOG files.
 
@@ -63,6 +68,9 @@ We are using [Clog][clog], the Rust tool for auto-generating CHANGELOG files.
 
 ## License
 
-collenchyma-BLAS is released under the [MIT License][license].
+Licensed under either of
 
-[license]: LICENSE
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
