@@ -2,16 +2,15 @@
 
 use super::binary::IBlasBinary;
 use super::transpose::*;
-use collenchyma::plugin::numeric_helpers::Float;
 use collenchyma::binary::IBinary;
 use collenchyma::tensor::SharedTensor;
 use collenchyma::device::DeviceType;
 
 /// Provides the functionality for a backend to support Basic Linear Algebra Subprogram operations.
-pub trait IBlas<F: Float> { }
+pub trait IBlas<F> { }
 
 /// Provides the asum operation.
-pub trait Asum<F: Float> {
+pub trait Asum<F> {
     /// Computes the absolute sum of vector `x` with complete memory management.
     ///
     /// Saves the result to `result`.
@@ -32,7 +31,7 @@ pub trait Asum<F: Float> {
 }
 
 /// Provides the axpy operation.
-pub trait Axpy<F: Float> {
+pub trait Axpy<F> {
     /// Computes a vector `x` times a constant `a` plus a vector `y` aka. `a * x + y` with complete memory management.
     ///
     /// Saves the resulting vector back into `y`.
@@ -53,7 +52,7 @@ pub trait Axpy<F: Float> {
 }
 
 /// Provides the copy operation.
-pub trait Copy<F: Float> {
+pub trait Copy<F> {
     /// Copies `x.len()` elements of vector `x` into vector `y` with complete memory management.
     ///
     /// Saves the result to `y`.
@@ -74,7 +73,7 @@ pub trait Copy<F: Float> {
 }
 
 /// Provides the dot operation.
-pub trait Dot<F: Float> {
+pub trait Dot<F> {
     /// Computes the [dot product][dot-product] over x and y with complete memory management.
     /// [dot-product]: https://en.wikipedia.org/wiki/Dot_product
     ///
@@ -97,7 +96,7 @@ pub trait Dot<F: Float> {
 }
 
 /// Provides the nrm2 operation.
-pub trait Nrm2<F: Float> {
+pub trait Nrm2<F> {
     /// Computes the L2 norm aka. euclidean length of vector `x` with complete memory management.
     ///
     /// Saves the result to `result`.
@@ -118,7 +117,7 @@ pub trait Nrm2<F: Float> {
 }
 
 /// Provides the scal operation.
-pub trait Scal<F: Float> {
+pub trait Scal<F> {
     /// Scales a vector `x` by a constant `a` aka. `a * x` with complete memory management.
     ///
     /// Saves the resulting vector back into `x`.
@@ -139,7 +138,7 @@ pub trait Scal<F: Float> {
 }
 
 /// Provides the swap operation.
-pub trait Swap<F: Float> {
+pub trait Swap<F> {
     /// Swaps the content of vector `x` and vector `y` with complete memory management.
     ///
     /// Saves the resulting vector back into `x`.
@@ -160,7 +159,7 @@ pub trait Swap<F: Float> {
 }
 
 /// Provides the gemm operation.
-pub trait Gemm<F: Float> {
+pub trait Gemm<F> {
     /// Computes a matrix-matrix product with general matrices.
     ///
     /// Saves the result into `c`.
@@ -181,11 +180,11 @@ pub trait Gemm<F: Float> {
 }
 
 /// Allows a BlasBinary to be provided which is used for a IBlas implementation.
-pub trait BlasBinaryProvider<F: Float, B: IBlasBinary<F> + IBinary> {
+pub trait BlasBinaryProvider<F, B: IBlasBinary<F> + IBinary> {
     /// Returns the binary representation
     fn binary(&self) -> &B;
     /// Returns the device representation
     fn device(&self) -> &DeviceType;
 }
 
-impl<F: Float, B: IBlasBinary<F> + IBinary> IBlas<F> for BlasBinaryProvider<F, B> { }
+impl<F, B: IBlasBinary<F> + IBinary> IBlas<F> for BlasBinaryProvider<F, B> { }

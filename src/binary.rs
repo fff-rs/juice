@@ -1,10 +1,9 @@
 //! Provides the IBlasBinary binary trait for Collenchyma's Framework implementation.
 
 use super::operation::*;
-use collenchyma::plugin::numeric_helpers::Float;
 
 /// Describes the operation binding for a Blas Binary implementation.
-pub trait IBlasBinary<F: Float> {
+pub trait IBlasBinary<F> {
     /// Describes the Asum Operation.
     type Asum: IOperationAsum<F>;
     /// Describes the Axpy Operation.
