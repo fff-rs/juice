@@ -50,8 +50,8 @@ Kudos to [ehiggs][ehiggs], for implementing the native Rust operations.
 If you're using Cargo, just add collenchyma-NN to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.7"
-    collenchyma-nn = "0.2.1"
+    collenchyma = "0.0.8"
+    collenchyma-nn = "0.3.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
