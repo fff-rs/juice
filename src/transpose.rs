@@ -1,4 +1,8 @@
 //! Provides the Transpose functionality for Matrix operations.
+#[cfg(feature = "cuda")]
+use std::convert::From;
+#[cfg(feature = "cuda")]
+use cublas::api::Operation;
 
 #[derive(Debug, Copy, Clone)]
 /// Possible transpose operations that can be applied in Level 2 and Level 3 BLAS operations.
@@ -18,6 +22,28 @@ impl Transpose {
             Transpose::NoTrans => ::rblas::attribute::Transpose::NoTrans,
             Transpose::Trans => ::rblas::attribute::Transpose::Trans,
             Transpose::ConjTrans => ::rblas::attribute::Transpose::ConjTrans,
+        }
+    }
+}
+
+#[cfg(feature = "cuda")]
+impl From<Operation> for Transpose {
+    fn from(op: Operation) -> Self {
+        match op {
+            Operation::NoTrans => Transpose::NoTrans,
+            Operation::Trans => Transpose::Trans,
+            Operation::ConjTrans => Transpose::ConjTrans,
+        }
+    }
+}
+
+#[cfg(feature = "cuda")]
+impl From<Transpose> for Operation {
+    fn from(op: Transpose) -> Self {
+        match op {
+            Transpose::NoTrans => Operation::NoTrans,
+            Transpose::Trans => Operation::Trans,
+            Transpose::ConjTrans => Operation::ConjTrans,
         }
     }
 }

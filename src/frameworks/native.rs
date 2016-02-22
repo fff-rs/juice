@@ -9,8 +9,7 @@ use collenchyma::frameworks::native::Native;
 use collenchyma::plugin::Error;
 use rblas::math::mat::Mat;
 use rblas::matrix::Matrix;
-use rblas::{Asum, Axpy, Copy, Dot, Nrm2, Scal, Swap}; // Level 1
-use rblas::Gemm; // Level 3
+use rblas;
 
 macro_rules! impl_asum_for {
     ($t:ident, $b:ty) => (
@@ -18,7 +17,7 @@ macro_rules! impl_asum_for {
             fn compute(&self, x: &MemoryType, result: &mut MemoryType) -> Result<(), Error> {
                 let x_slice = try!(x.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `x`."))).as_slice::<$t>();
                 let mut r_slice = try!(result.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `result`."))).as_mut_slice::<$t>();
-                r_slice[0] = Asum::asum(x_slice);
+                r_slice[0] = rblas::Asum::asum(x_slice);
                 Ok(())
             }
         }
@@ -32,7 +31,7 @@ macro_rules! impl_axpy_for {
                 let a_slice = try!(a.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `a`."))).as_slice::<$t>();
                 let x_slice = try!(x.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `x`."))).as_slice::<$t>();
                 let y_slice = try!(y.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `y`."))).as_mut_slice::<$t>();
-                Axpy::axpy(&a_slice[0], x_slice, y_slice);
+                rblas::Axpy::axpy(&a_slice[0], x_slice, y_slice);
                 Ok(())
             }
         }
@@ -45,7 +44,7 @@ macro_rules! impl_copy_for {
             fn compute(&self, x: &MemoryType, y: &mut MemoryType) -> Result<(), Error> {
                 let x_slice = try!(x.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `x`."))).as_slice::<$t>();
                 let y_slice = try!(y.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `y`."))).as_mut_slice::<$t>();
-                Copy::copy(x_slice, y_slice);
+                rblas::Copy::copy(x_slice, y_slice);
                 Ok(())
             }
         }
@@ -59,7 +58,7 @@ macro_rules! impl_dot_for {
                 let x_slice = try!(x.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `x`."))).as_slice::<$t>();
                 let y_slice = try!(y.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `y`."))).as_slice::<$t>();
                 let mut r_slice = try!(result.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `result`."))).as_mut_slice::<$t>();
-                r_slice[0] = Dot::dot(x_slice, y_slice);
+                r_slice[0] = rblas::Dot::dot(x_slice, y_slice);
                 Ok(())
             }
         }
@@ -72,7 +71,7 @@ macro_rules! impl_nrm2_for {
             fn compute(&self, x: &MemoryType, result: &mut MemoryType) -> Result<(), Error> {
                 let x_slice = try!(x.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `x`."))).as_slice::<$t>();
                 let mut r_slice = try!(result.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `result`."))).as_mut_slice::<$t>();
-                r_slice[0] = Nrm2::nrm2(x_slice);
+                r_slice[0] = rblas::Nrm2::nrm2(x_slice);
                 Ok(())
             }
         }
@@ -85,7 +84,7 @@ macro_rules! impl_scale_for {
             fn compute(&self, a: &MemoryType, x: &mut MemoryType) -> Result<(), Error> {
                 let a_slice = try!(a.as_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `a`."))).as_slice::<$t>();
                 let mut x_slice = try!(x.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `x`."))).as_mut_slice::<$t>();
-                Scal::scal(&a_slice[0], x_slice);
+                rblas::Scal::scal(&a_slice[0], x_slice);
                 Ok(())
             }
         }
@@ -98,7 +97,7 @@ macro_rules! impl_swap_for {
             fn compute(&self, x: &mut MemoryType, y: &mut MemoryType) -> Result<(), Error> {
                 let mut x_slice = try!(x.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `x`."))).as_mut_slice::<$t>();
                 let mut y_slice = try!(y.as_mut_native().ok_or(Error::MissingMemoryForDevice("Unable to receive native memory for `y`."))).as_mut_slice::<$t>();
-                Swap::swap(x_slice, y_slice);
+                rblas::Swap::swap(x_slice, y_slice);
                 Ok(())
             }
         }
@@ -118,7 +117,7 @@ macro_rules! impl_gemm_for {
                 let a_matrix = as_matrix(a_slice, a_dims);
                 let b_matrix = as_matrix(b_slice, b_dims);
                 let mut c_matrix = as_matrix(c_slice, c_dims);
-                Gemm::gemm(&alpha_slice[0], at.to_rblas(), &a_matrix, bt.to_rblas(), &b_matrix, &beta_slice[0], &mut c_matrix);
+                rblas::Gemm::gemm(&alpha_slice[0], at.to_rblas(), &a_matrix, bt.to_rblas(), &b_matrix, &beta_slice[0], &mut c_matrix);
                 read_from_matrix(&c_matrix, c_slice);
                 Ok(())
             }
@@ -138,15 +137,39 @@ macro_rules! impl_iblas_for {
 
         impl_gemm_for!($t, $b);
 
-        impl IBlas<$t> for $b {
-            iblas_asum_for!($t, $b);
-            iblas_axpy_for!($t, $b);
-            iblas_copy_for!($t, $b);
-            iblas_dot_for!($t, $b);
-            iblas_nrm2_for!($t, $b);
-            iblas_scale_for!($t, $b);
-            iblas_swap_for!($t, $b);
+        impl IBlas<$t> for $b { }
 
+        // Level 1
+
+        impl Asum<$t> for $b {
+            iblas_asum_for!($t, $b);
+        }
+
+        impl Axpy<$t> for $b {
+            iblas_axpy_for!($t, $b);
+        }
+
+        impl Copy<$t> for $b {
+            iblas_copy_for!($t, $b);
+        }
+
+        impl Dot<$t> for $b {
+            iblas_dot_for!($t, $b);
+        }
+
+        impl Nrm2<$t> for $b {
+            iblas_nrm2_for!($t, $b);
+        }
+
+        impl Scal<$t> for $b {
+            iblas_scale_for!($t, $b);
+        }
+
+        impl Swap<$t> for $b {
+            iblas_swap_for!($t, $b);
+        }
+
+        impl Gemm<$t> for $b {
             iblas_gemm_for!($t, $b);
         }
     );
@@ -222,16 +245,6 @@ mod test {
               2f32, 5f32,
               2f32, 5f32]);
 
-        // let mut b = SharedTensor::<f32>::new(backend.device(), &vec![2, 3]).unwrap();
-        // write_to_memory(b.get_mut(backend.device()).unwrap(),
-        //     &[4f32, 1f32, 1f32,
-        //       4f32, 1f32, 1f32]);
-
-        // let mut alpha = SharedTensor::<f32>::new(backend.device(), &vec![1]).unwrap();
-        // write_to_memory(alpha.get_mut(backend.device()).unwrap(), &[1f32]);
-        //
-        // let mut beta = SharedTensor::<f32>::new(backend.device(), &vec![1]).unwrap();
-        // write_to_memory(beta.get_mut(backend.device()).unwrap(), &[0f32]);
         {
             let a_slice_in = a.get(backend.device()).unwrap().as_native().unwrap().as_slice::<f32>();
             let a_mat = as_matrix(a_slice_in, &[3, 2]);

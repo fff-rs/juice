@@ -1,5 +1,4 @@
 #![feature(test)]
-#![feature(clone_from_slice)]
 
 extern crate test;
 extern crate collenchyma as co;
@@ -8,20 +7,13 @@ extern crate rblas;
 extern crate rand;
 
 use test::Bencher;
-use co::backend::{Backend, BackendConfig};
-use co::frameworks::Native;
-use co::framework::IFramework;
-use co::tensor::SharedTensor;
+use co::prelude::*;
 use co_blas::plugin::*;
-use rblas::Dot;
 
 use rand::{thread_rng, Rng};
 
 fn backend() -> Backend<Native> {
-    let framework = Native::new();
-    let hardwares = framework.hardwares();
-    let backend_config = BackendConfig::new(framework, hardwares);
-    Backend::new(backend_config).unwrap()
+    Backend::<Native>::default().unwrap()
 }
 
 #[bench]
@@ -32,7 +24,7 @@ fn bench_1000_dot_100_rblas(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..1000 {
-            let res = Dot::dot(&slice_a, &slice_b);
+            let res = rblas::Dot::dot(&slice_a, &slice_b);
             test::black_box(res);
         }
     });
@@ -108,7 +100,7 @@ fn bench_100_dot_1000_rblas(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..100 {
-            let res = Dot::dot(&slice_a, &slice_b);
+            let res = rblas::Dot::dot(&slice_a, &slice_b);
             test::black_box(res);
         }
     });
@@ -184,7 +176,7 @@ fn bench_10_dot_10000_rblas(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..10 {
-            let res = Dot::dot(&slice_a, &slice_b);
+            let res = rblas::Dot::dot(&slice_a, &slice_b);
             test::black_box(res);
         }
     });
@@ -229,7 +221,7 @@ fn bench_5_dot_20000_rblas(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..5 {
-            let res = Dot::dot(&slice_a, &slice_b);
+            let res = rblas::Dot::dot(&slice_a, &slice_b);
             test::black_box(res);
         }
     });
