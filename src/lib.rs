@@ -48,13 +48,19 @@
         trivial_casts, trivial_numeric_casts,
         unused_import_braces, unused_qualifications)]
 
+#[macro_use]
+extern crate lazy_static;
+
 extern crate collenchyma;
 #[cfg(feature = "native")]
 extern crate rblas;
+#[cfg(feature = "cuda")]
+extern crate cublas;
 
 pub mod plugin;
 pub mod binary;
 pub mod operation;
+pub mod transpose;
 #[macro_use]
 pub mod helper;
 pub mod frameworks;
