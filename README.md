@@ -33,6 +33,22 @@ If you're using [Cargo Edit][cargo-edit], you can call:
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
 
+## Provided Operations
+
+This Plugins provides the following operations to the Collenchyma Backend.
+A `-` means not yet implemented.
+More information can be found in the [Documentation][docs-ops].
+
+| Operation            | CUDA       | OpenCL    | Native    |
+|---                   |---         |---        |---        |
+| **Full Level 1**     | cuBLAS     | -         | rblas     |
+| Level 2              | -          | -         | -         |
+| Level 3              |            |           |           |
+| GEMM                 | cuBLAS     | -         | rblas     |
+
+
+[docs-ops]: http://autumnai.github.io/collenchyma-blas/collenchyma_blas/plugin/trait.IBlas.html
+
 ## Contributing
 
 Want to contribute? Awesome! We have
