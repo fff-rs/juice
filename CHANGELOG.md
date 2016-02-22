@@ -1,3 +1,26 @@
+<a name="0.3.0"></a>
+## 0.3.0 (2016-02-22)
+
+
+#### Features
+
+* **log_softmax:**  add LogSoftmax operations ([86a8ae67](https://github.com/autumnai/collenchyma-nn/commit/86a8ae67727e0a5d28c901a7a32940fd7e2250f2))
+* **cuda:**
+  * share workspace between CUDA convolution operations ([7f5f3207](https://github.com/autumnai/collenchyma-nn/commit/7f5f3207873874accb7a5a16d637e2701161ac04))
+  * allow CUDA activations to work with 1D/2D tensors ([f4effe7d](https://github.com/autumnai/collenchyma-nn/commit/f4effe7d66d96537251d86bf24968b521a951121))
+  * allow CUDA softmax to work with 1-3D tensors ([f74f72b6](https://github.com/autumnai/collenchyma-nn/commit/f74f72b6207505f4c29c7c44a9748d83972e7f72))
+* **nn_trait:**  remove trait bounds for NN ([9ad08d9f](https://github.com/autumnai/collenchyma-nn/commit/9ad08d9f97cc382699c78c1397b52509d2e98969))
+* **license:**  change license to dual MIT/Apache-2.0 ([8a940690](https://github.com/autumnai/collenchyma-nn/commit/8a940690e21bae269c44b9501e956bbf066cdcc1))
+
+#### Breaking Changes
+
+* **convolution:**  implement convolutions correctly ([24b164b5](https://github.com/autumnai/collenchyma-nn/commit/24b164b55a913f522d79832308cf2e4a7996612a))
+
+#### Performance
+
+* **convolution:**  don't do a memAlloc for a zero size workspace ([73612bb5](https://github.com/autumnai/collenchyma-nn/commit/73612bb56ab70500b4670b7a9a12390e2facee37))
+
+
 <a name="0.2.1"></a>
 ## 0.2.1 (2016-01-21)
 
@@ -40,6 +63,3 @@
 * **sigmoid:**
   *  add full sigmoid CUDA implementation ([8ea1a290](https://github.com/autumnai/collenchyma-nn/commit/8ea1a29016c364536755e2fb5d13a52352b059ab))
   *  add CUDA Sigmoid ([6aceb957](https://github.com/autumnai/collenchyma-nn/commit/6aceb957d05a0ee625b48bab38693b99c9e09f01))
-
-
-
