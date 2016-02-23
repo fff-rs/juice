@@ -1,3 +1,13 @@
+<a name="0.3.1"></a>
+## 0.3.1 (2016-02-23)
+
+
+#### Features
+
+* **pointwise:**  add pointwise activation functions (cuDNN) ([d74821b5](https://github.com/autumnai/collenchyma-nn/commit/d74821b582056f9acd3bdb4acd98f72668d070f8))
+
+
+
 <a name="0.3.0"></a>
 ## 0.3.0 (2016-02-22)
 
