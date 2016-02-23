@@ -20,7 +20,7 @@ target/release/leaf-examples load-dataset mnist
 # run the MNIST linear example
 target/release/leaf-examples mnist linear --batch-size 10
 # run the MNIST MLP (Multilayer Perceptron) example
-target/release/leaf-examples mnist mlp --batch-size 5
+target/release/leaf-examples mnist mlp --batch-size 5 --learning-rate 0.001
 # run the MNIST Convolutional Neural Network example
-target/release/leaf-examples mnist conv --batch-size 10 
+target/release/leaf-examples mnist conv --batch-size 10 --learning-rate 0.002
 ```
