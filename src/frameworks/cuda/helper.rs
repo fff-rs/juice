@@ -125,6 +125,78 @@ macro_rules! impl_ops_sigmoid_for {
 }
 
 #[macro_export]
+macro_rules! impl_ops_sigmoid_pointwise_for {
+    ($t:ident, $b:ty) => (
+        impl ::plugin::SigmoidPointwise<$t> for $b {
+            fn sigmoid_pointwise(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+
+                self.sigmoid_pointwise_plain(x)
+            }
+
+            fn sigmoid_pointwise_plain(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.sigmoid_forward(
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(x.cudnn_tensor_desc_flat()), // dest_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(x, self.device()) }), // dest_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Sigmoid Pointwise forward."))
+                    }
+                }))
+            }
+
+            fn sigmoid_pointwise_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+
+                self.sigmoid_pointwise_grad_plain(x, x_diff)
+            }
+
+            fn sigmoid_pointwise_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>,
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.sigmoid_backward(
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // src_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
+                    &try!(x.cudnn_tensor_desc_flat()), // dest_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), // dest_data
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // dest_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(x_diff, self.device()) }), // dest_diff_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Sigmoid Pointwise backward."))
+                    }
+                }))
+            }
+        }
+    )
+}
+
+#[macro_export]
 macro_rules! impl_ops_relu_for {
     ($t:ident, $b:ty) => (
         impl ::plugin::Relu<$t> for $b {
@@ -206,6 +278,78 @@ macro_rules! impl_ops_relu_for {
 }
 
 #[macro_export]
+macro_rules! impl_ops_relu_pointwise_for {
+    ($t:ident, $b:ty) => (
+        impl ::plugin::ReluPointwise<$t> for $b {
+            fn relu_pointwise(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+
+                self.relu_pointwise_plain(x)
+            }
+
+            fn relu_pointwise_plain(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.relu_forward(
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(x.cudnn_tensor_desc_flat()), // dest_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(x, self.device()) }), // dest_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN ReLU Pointwise forward."))
+                    }
+                }))
+            }
+
+            fn relu_pointwise_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+
+                self.relu_pointwise_grad_plain(x, x_diff)
+            }
+
+            fn relu_pointwise_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.relu_backward(
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // src_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
+                    &try!(x.cudnn_tensor_desc_flat()), // dest_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), // dest_data
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // dest_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(x_diff, self.device()) }), // dest_diff_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN ReLU Pointwise backward."))
+                    }
+                }))
+            }
+        }
+    )
+}
+
+#[macro_export]
 macro_rules! impl_ops_tanh_for {
     ($t:ident, $b:ty) => (
         impl ::plugin::Tanh<$t> for $b {
@@ -279,6 +423,78 @@ macro_rules! impl_ops_tanh_for {
                     Ok(_) => Ok(()),
                     Err(_) => {
                         Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Activation tanh Backward."))
+                    }
+                }))
+            }
+        }
+    )
+}
+
+#[macro_export]
+macro_rules! impl_ops_tanh_pointwise_for {
+    ($t:ident, $b:ty) => (
+        impl ::plugin::TanhPointwise<$t> for $b {
+            fn tanh_pointwise(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+
+                self.tanh_pointwise_plain(x)
+            }
+
+            fn tanh_pointwise_plain(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.tanh_forward(
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(x.cudnn_tensor_desc_flat()), // dest_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(x, self.device()) }), // dest_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Tanh Pointwise forward."))
+                    }
+                }))
+            }
+
+            fn tanh_pointwise_grad(
+                &self,
+                x: &mut ::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+                match x_diff.add_device(self.device()) { _ => try!(x.sync(self.device())) }
+
+                self.tanh_pointwise_grad_plain(x, x_diff)
+            }
+
+            fn tanh_pointwise_grad_plain(
+                &self,
+                x: &::co::tensor::SharedTensor<$t>,
+                x_diff: &mut ::co::tensor::SharedTensor<$t>
+            ) -> Result<(), ::co::error::Error> {
+                let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
+
+                Ok(try!(match CUDNN.tanh_backward(
+                    &try!(x.cudnn_tensor_desc_flat()), // src_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // src_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
+                    &try!(x.cudnn_tensor_desc_flat()), // dest_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), // dest_data
+                    &try!(x_diff.cudnn_tensor_desc_flat()), // dest_diff_desc
+                    try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(x_diff, self.device()) }), // dest_diff_data
+                    scal_params
+                ) {
+                    Ok(_) => Ok(()),
+                    Err(_) => {
+                        Err(::co::plugin::Error::Operation("Unable to execute CUDA cuDNN Tanh Pointwise backward."))
                     }
                 }))
             }
