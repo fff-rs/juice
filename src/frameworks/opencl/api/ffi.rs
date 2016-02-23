@@ -5,7 +5,8 @@
 use libc;
 use super::types as cl;
 
-#[link(name = "OpenCL")]
+#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
+#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
 extern
 {
     /* Platform APIs */
