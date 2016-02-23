@@ -99,14 +99,18 @@
 //! | Operation            | CUDA       | OpenCL    | Native    |
 //! |---	               |---	        |---        |---        |
 //! | Sigmoid  	           | cuDNN v3  	| -  	    | Rust  	|
+//! | SigmoidPointwise     | cuDNN v3  	| -  	    |   	    |
 //! | ReLU  	           | cuDNN v3   | -  	    | Rust 	    |
+//! | ReLUPointwise        | cuDNN v3  	| -  	    |   	    |
 //! | Tanh  	   	       | cudNN v3   | - 	    | Rust      |
+//! | TanhPointwise        | cuDNN v3  	| -  	    |   	    |
 //! |   	   	           |  	        |  	        |           |
 //! | Normalization (LRN)  | cudNN v3   | - 	    | -         |
 //! |   	   	           |  	        |  	        |           |
 //! | Convolution          | cudNN v3   | - 	    | -         |
 //! |   	   	           |  	        |  	        |           |
 //! | Softmax              | cudNN v3   | - 	    | Rust      |
+//! | LogSoftmax           | cudNN v3   | - 	    | Rust      |
 //! |   	   	           |  	        |  	        |           |
 //! | Pooling Max          | cudNN v3   | - 	    | -         |
 //! | Pooling Avg          | cudNN v3   | - 	    | -         |

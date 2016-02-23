@@ -27,8 +27,11 @@ More information can be found in the [Documentation][docs-ops].
 | Operation            | CUDA       | OpenCL    | Native    |
 |---	                 |---	        |---        |---        |
 | Sigmoid  	           | cuDNN v3  	| -  	      | Rust	  	|
+| SigmoidPointwise     | cuDNN v3  	| -  	      |   	      |
 | ReLU  	             | cuDNN v3   | -  	      | Rust      |
+| ReLUPointwise        | cuDNN v3   | -  	      |           |
 | Tanh  	   	         | cudNN v3   | - 	      | Rust      |
+| TanhPointwise  	   	 | cudNN v3   | - 	      |           |
 |   	   	             |  	        |  	        |           |
 | Normalization (LRN)  | cudNN v3   | - 	      | -         |
 |   	   	             |  	        |  	        |           |

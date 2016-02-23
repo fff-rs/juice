@@ -331,13 +331,13 @@ macro_rules! impl_convolution_for_cuda_backend {
                     workspace = workspace_fwd;
                 }
 
-                let workspace_bwd_fiter = ::co::frameworks::cuda::Memory::from_c(*workspace.id_c());
+                let workspace_bwd_filter = ::co::frameworks::cuda::Memory::from_c(*workspace.id_c());
                 let workspace_fwd = ::co::frameworks::cuda::Memory::from_c(*workspace.id_c());
 
                 Ok(
                     ::cudnn::utils::ConvolutionConfig::new(
                         useable_algo_fwd.as_cudnn().unwrap(), workspace_fwd, workspace_size_fwd,
-                        useable_algo_bwd_filter.as_cudnn().unwrap(), workspace_bwd_fiter, workspace_size_bwd_filter,
+                        useable_algo_bwd_filter.as_cudnn().unwrap(), workspace_bwd_filter, workspace_size_bwd_filter,
                         useable_algo_bwd_data.as_cudnn().unwrap(), workspace, workspace_size_bwd_data,
                         conv_desc, filter_desc
                     )
@@ -367,6 +367,10 @@ impl_ops_log_softmax_for!(f32, Backend<Cuda>);
 impl_ops_lrn_for!(f32, Backend<Cuda>);
 impl_ops_pooling_for!(f32, Backend<Cuda>);
 
+impl_ops_sigmoid_pointwise_for!(f32, Backend<Cuda>);
+impl_ops_relu_pointwise_for!(f32, Backend<Cuda>);
+impl_ops_tanh_pointwise_for!(f32, Backend<Cuda>);
+
 impl NN<f64> for Backend<Cuda> {
     type CC = utils::ConvolutionConfig;
     type CLRN = utils::NormalizationConfig;
@@ -384,3 +388,7 @@ impl_ops_softmax_for!(f64, Backend<Cuda>);
 impl_ops_log_softmax_for!(f64, Backend<Cuda>);
 impl_ops_lrn_for!(f64, Backend<Cuda>);
 impl_ops_pooling_for!(f64, Backend<Cuda>);
+
+impl_ops_sigmoid_pointwise_for!(f64, Backend<Cuda>);
+impl_ops_relu_pointwise_for!(f64, Backend<Cuda>);
+impl_ops_tanh_pointwise_for!(f64, Backend<Cuda>);

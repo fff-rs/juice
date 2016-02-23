@@ -5,26 +5,16 @@ extern crate collenchyma as co;
 #[cfg(feature = "cuda")]
 mod softmax_spec_cuda {
 
-    use co::backend::{Backend, BackendConfig};
-    use co::framework::IFramework;
-    use co::frameworks::{Cuda, Native};
+    use co::prelude::*;
     use co_nn::*;
-    use co::memory::MemoryType;
-    use co::tensor::SharedTensor;
     use co::plugin::numeric_helpers::{cast, Float};
 
     fn get_native_backend() -> Backend<Native> {
-        let framework = Native::new();
-        let hardwares = framework.hardwares();
-        let backend_config = BackendConfig::new(framework, hardwares);
-        Backend::new(backend_config).unwrap()
+        Backend::<Native>::default().unwrap()
     }
 
     fn get_cuda_backend() -> Backend<Cuda> {
-        let framework = Cuda::new();
-        let hardwares = framework.hardwares();
-        let backend_config = BackendConfig::new(framework, hardwares);
-        Backend::new(backend_config).unwrap()
+        Backend::<Cuda>::default().unwrap()
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
@@ -286,20 +276,13 @@ mod softmax_spec_cuda {
 #[cfg(test)]
 #[cfg(feature = "native")]
 mod softmax_spec_native {
-    use co::backend::{Backend, BackendConfig};
-    use co::framework::IFramework;
-    use co::frameworks::Native;
+
+    use co::prelude::*;
     use co_nn::*;
-    use co::memory::MemoryType;
-    use co::tensor::SharedTensor;
     use co::plugin::numeric_helpers::{cast, Float};
 
-
     fn get_native_backend() -> Backend<Native> {
-        let framework = Native::new();
-        let hardwares = framework.hardwares();
-        let backend_config = BackendConfig::new(framework, hardwares);
-        Backend::new(backend_config).unwrap()
+        Backend::<Native>::default().unwrap()
     }
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {

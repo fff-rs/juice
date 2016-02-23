@@ -170,6 +170,43 @@ pub trait Sigmoid<F> : NN<F> {
     fn sigmoid_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
 }
 
+/// Provides the functionality for pointwise Sigmoid operations (overwrites the input with the result of the operation).
+pub trait SigmoidPointwise<F> : NN<F> {
+    /// Computes the [Sigmoid function][sigmoid] over the input Tensor `x` with complete memory management.
+    /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
+    ///
+    /// Saves the result back to `x`.
+    ///
+    /// For a no-memory managed version see `sigmoid_pointwise_plain`.
+    fn sigmoid_pointwise(&self, x: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the Sigmoid function over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result back to `x`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `sigmoid_pointwise`.
+    fn sigmoid_pointwise_plain(&self, x: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of a [Sigmoid function][sigmoid] over the input Tensor `x` with complete memory management.
+    /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
+    ///
+    /// Saves the result back to `x_diff`.
+    ///
+    /// For a no-memory managed version see `sigmoid_pointwise_grad_plain`.
+    fn sigmoid_pointwise_grad(&self, x: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of a Sigmoid function over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result back to `x_diff`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `sigmoid_pointwise_grad`.
+    fn sigmoid_pointwise_grad_plain(&self, x: &SharedTensor<F>, x_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
+
 /// Provides the functionality for a Backend to support ReLU operations.
 pub trait Relu<F> : NN<F> {
     /// Computes the [Rectified linear units][relu] over the input Tensor `x` with complete memory management.
@@ -207,6 +244,43 @@ pub trait Relu<F> : NN<F> {
     fn relu_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
 }
 
+/// Provides the functionality for pointwise ReLU operations (overwrites the input with the result of the operation).
+pub trait ReluPointwise<F> : NN<F> {
+    /// Computes the [Rectified linear units][relu] over the input Tensor `x` with complete memory management.
+    /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+    ///
+    /// Saves the result back to `x`.
+    ///
+    /// For a no-memory managed version see `relu_pointwise_plain`.
+    fn relu_pointwise(&self, x: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the ReLU over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result back to `x`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `relu_pointwise`.
+    fn relu_pointwise_plain(&self, x: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of [ReLU][relu] over the input Tensor `x` with complete memory management.
+    /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
+    ///
+    /// Saves the result back to `x_diff`.
+    ///
+    /// For a no-memory managed version see `relu_pointwise_grad_plain`.
+    fn relu_pointwise_grad(&self, x: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of ReLU over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result back to `x_diff`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `relu_pointwise_grad`.
+    fn relu_pointwise_grad_plain(&self, x: &SharedTensor<F>, x_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
+
 /// Provides the functionality for a Backend to support TanH operations.
 pub trait Tanh<F> : NN<F> {
     /// Computes the [hyperbolic Tangent][tanh] over the input Tensor `x` with complete memory management.
@@ -242,6 +316,43 @@ pub trait Tanh<F> : NN<F> {
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `tanh_grad`.
     fn tanh_grad_plain(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>, result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+}
+
+/// Provides the functionality for pointwise ReLU operations (overwrites the input with the result of the operation).
+pub trait TanhPointwise<F> : NN<F> {
+    /// Computes the [hyperbolic Tangent][tanh] over the input Tensor `x` with complete memory management.
+    /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
+    ///
+    /// Saves the result back to `x`.
+    ///
+    /// For a no-memory managed version see `tanh_pointwise_plain`.
+    fn tanh_pointwise(&self, x: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the tanh over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result back to `x`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `tanh_pointwise`.
+    fn tanh_pointwise_plain(&self, x: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of [tanh][tanh] over the input Tensor `x` with complete memory management.
+    /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
+    ///
+    /// Saves the result back to `x_diff`.
+    ///
+    /// For a no-memory managed version see `tanh_pointwise_grad_plain`.
+    fn tanh_pointwise_grad(&self, x: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of tanh over the input Tensor `x` without any memory management.
+    ///
+    /// Saves the result back to `x_diff`.
+    ///
+    /// *Attention*:<br/>
+    /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
+    /// For a memory managed version see `tanh_pointwise_grad`.
+    fn tanh_pointwise_grad_plain(&self, x: &SharedTensor<F>, x_diff: &mut SharedTensor<F>) -> Result<(), ::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support Convolution operations.
