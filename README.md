@@ -54,7 +54,7 @@ If you're using Cargo, just add collenchyma-NN to your Cargo.toml:
 
     [dependencies]
     collenchyma = "0.0.8"
-    collenchyma-nn = "0.3.0"
+    collenchyma-nn = "0.3.1"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
@@ -78,12 +78,10 @@ use nn::*;
 fn main() {
     // Initialize a CUDA Backend.
     // Usually you would not use CUDA but let it pick what is available on the machine.
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares();
-    let backend_config = BackendConfig::new(framework, hardwares);
-    let backend = Backend::new(backend_config).unwrap();
+    let backend = Backend::<Cuda>::default().unwrap();
     // Initialize two SharedTensors.
     // Usually you would want also fill them with data.
+    // More infos about that in the Collenchyma README.md
     let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
     let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
     // Use the operation provided by this Plugin.
@@ -114,9 +112,9 @@ conditions.
 
 ## Changelog
 
-You can find the release history at the [CHANGELOG][changelog] file.
-
 > *A changelog is a log or record of all the changes made to a project, such as a website or software project, usually including such records as bug fixes, new features, etc.* - [Wikipedia][changelog-quote]
+
+You can find the release history at the [CHANGELOG][changelog] file.
 
 We are using [Clog][clog], the Rust tool for auto generating CHANGELOG files.
 
