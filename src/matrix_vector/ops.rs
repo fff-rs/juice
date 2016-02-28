@@ -12,6 +12,9 @@ use pointer::CPtr;
 use scalar::Scalar;
 use vector::Vector;
 
+/// General multiply with vector
+///
+/// A ← αA<sup>OP</sup>x + βy
 pub trait Gemv: Sized {
     fn gemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
@@ -86,10 +89,16 @@ mod gemv_tests {
     }
 }
 
+/// Symmetric multiply with vector
+///
+/// A ← αAx + βy
 pub trait Symv: Sized {
     fn symv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
+/// Hermitian multiply with vector
+///
+/// A ← αAx + βy
 pub trait Hemv: Sized {
     fn hemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
@@ -158,10 +167,16 @@ mod symv_tests {
     }
 }
 
+/// General rank-1 update
+///
+/// A ← A + αxy<sup>T</sup>
 pub trait Ger: Sized {
     fn ger<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
 }
 
+/// General rank-1 update (using hermitian conjugate)
+///
+/// A ← A + αxy<sup>H</sup>
 pub trait Gerc: Ger {
     fn gerc<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>) {
         Ger::ger(alpha, x, y, a);
@@ -214,10 +229,16 @@ mod ger_tests {
     }
 }
 
+/// Symmetric rank-1 update
+///
+/// A ← A + αxx<sup>T</sup>
 pub trait Syr: Sized {
     fn syr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Self>);
 }
 
+/// Hermitian rank-1 update
+///
+/// A ← A + αxx<sup>H</sup>
 pub trait Her: Sized {
     fn her<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Complex<Self>>);
 }
@@ -258,10 +279,16 @@ macro_rules! syr_impl(($($t: ident), +) => (
 
 syr_impl!(f32, f64);
 
+/// Symmetric rank-2 update
+///
+/// A ← A + αxy<sup>T</sup> + αyx<sup>T</sup>
 pub trait Syr2: Sized {
     fn syr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
 }
 
+/// Hermitian rank-2 update
+///
+/// A ← A + αxy<sup>H</sup> + y(αx)<sup>H</sup>
 pub trait Her2: Sized {
     fn her2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
 }
@@ -286,6 +313,9 @@ macro_rules! syr2_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 syr2_impl!(Syr2, syr2, f32, f64);
 syr2_impl!(Her2, her2, Complex32, Complex64);
 
+/// General band matrix multiply with vector.
+///
+/// A ← αA<sup>OP</sup>x + βy
 pub trait Gbmv: Sized {
     fn gbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &Self, a: &BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
@@ -311,10 +341,16 @@ macro_rules! gbmv_impl(($($t: ident), +) => (
 
 gbmv_impl!(f32, f64, Complex32, Complex64);
 
+/// Symmetric band matrix multiply with vector
+///
+/// A ← αAx + βy
 pub trait Sbmv: Sized {
     fn sbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
+/// Hermitian band matrix multiply with vector
+///
+/// A ← αAx + βy
 pub trait Hbmv: Sized {
     fn hbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
@@ -340,10 +376,16 @@ macro_rules! sbmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 sbmv_impl!(Sbmv, sbmv, f32, f64);
 sbmv_impl!(Hbmv, hbmv, Complex32, Complex64);
 
+/// Triangular band matrix multiply with vector
+///
+/// A ← A<sup>OP</sup>x
 pub trait Tbmv: Sized {
     fn tbmv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut V);
 }
 
+/// Solve triangular band matrix system
+///
+/// A ← A<sup>-1 OP</sup>x
 pub trait Tbsv: Sized {
     fn tbsv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut V);
 }
@@ -367,10 +409,16 @@ macro_rules! tbmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 tbmv_impl!(Tbmv, tbmv, f32, f64, Complex32, Complex64);
 tbmv_impl!(Tbsv, tbsv, f32, f64, Complex32, Complex64);
 
+/// Symmetric packed matrix multiply with vector
+///
+/// A ← αAx + βy
 pub trait Spmv: Sized {
     fn spmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
+/// Hermitian packed matrix multiply with vector
+///
+/// A ← αAx + βy
 pub trait Hpmv: Sized {
     fn hpmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
@@ -396,10 +444,16 @@ macro_rules! spmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 spmv_impl!(Spmv, spmv, f32, f64);
 spmv_impl!(Hpmv, hpmv, Complex32, Complex64);
 
+/// Triangular packed matrix multiply with vector
+///
+/// A ← A<sup>OP</sup>x
 pub trait Tpmv: Sized {
     fn tpmv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut V);
 }
 
+/// Solve triangular packed matrix system
+///
+/// A ← A<sup>-1 OP</sup>x
 pub trait Tpsv: Sized {
     fn tpsv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut V);
 }
@@ -423,6 +477,9 @@ macro_rules! tpmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) =>
 tpmv_impl!(Tpmv, tpmv, f32, f64, Complex32, Complex64);
 tpmv_impl!(Tpsv, tpsv, f32, f64, Complex32, Complex64);
 
+/// Hermitian packed matrix rank-1 update
+///
+/// A ← A + αxx<sup>H</sup>
 pub trait Hpr: Sized {
     fn hpr<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Complex<Self>>);
 }
@@ -445,6 +502,9 @@ macro_rules! hpr_impl(($($t: ident), +) => (
 
 hpr_impl!(f32, f64);
 
+/// Symmetric packed matrix rank-1 update
+///
+/// A ← A + αxx<sup>T</sup>
 pub trait Spr: Sized {
     fn spr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Self>);
 }
@@ -467,10 +527,16 @@ macro_rules! spr_impl(($($t: ident), +) => (
 
 spr_impl!(f32, f64);
 
+/// Symmetric packed matrix rank-2 update
+///
+/// A ← A + αxy<sup>T</sup> + αyx<sup>T</sup>
 pub trait Spr2: Sized {
     fn spr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
 }
 
+/// Hermitian packed matrix rank-2 update
+///
+/// A ← A + αxy<sup>H</sup> + y(αx)<sup>H</sup>
 pub trait Hpr2: Sized {
     fn hpr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
 }
