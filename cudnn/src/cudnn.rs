@@ -6,7 +6,6 @@
 
 use super::*;
 use super::utils::{ConvolutionConfig, NormalizationConfig, PoolingConfig, ScalParams};
-use co::frameworks::cuda::Memory;
 
 #[derive(Debug, Clone)]
 /// Provides a the high-level interface to CUDA's cuDNN.
@@ -68,9 +67,9 @@ impl Cudnn {
 
         Ok(
             ConvolutionConfig::new(
-                algos_fwd[0].algo, Memory::new(workspace_size_fwd).unwrap(), workspace_size_fwd,
-                algos_filter_bwd[0].algo, Memory::new(workspace_filter_size_bwd).unwrap(), workspace_filter_size_bwd,
-                algos_data_bwd[0].algo, Memory::new(workspace_data_size_bwd).unwrap(), workspace_data_size_bwd,
+                algos_fwd[0].algo, workspace_size_fwd,
+                algos_filter_bwd[0].algo, workspace_filter_size_bwd,
+                algos_data_bwd[0].algo, workspace_data_size_bwd,
                 conv_desc, filter_desc
             )
         )
@@ -232,6 +231,7 @@ impl Cudnn {
     pub fn convolution_forward<T>(
         &self,
         conv_config: &ConvolutionConfig,
+        workspace: *mut ::libc::c_void,
         filter_data: *const ::libc::c_void,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
@@ -241,7 +241,7 @@ impl Cudnn {
     ) -> Result<(), Error> {
         API::convolution_forward(
             *self.id_c(),
-            *conv_config.forward_algo(), *conv_config.conv_desc().id_c(), *conv_config.forward_workspace().id_c() as *mut ::libc::c_void, *conv_config.forward_workspace_size(),
+            *conv_config.forward_algo(), *conv_config.conv_desc().id_c(), workspace, *conv_config.forward_workspace_size(),
             scale.a, *src_desc.id_c(), src_data, *conv_config.filter_desc().id_c(), filter_data,
             scale.b, *dest_desc.id_c(), dest_data
         )
@@ -271,6 +271,7 @@ impl Cudnn {
     pub fn convolution_backward_filter<T>(
         &self,
         conv_config: &ConvolutionConfig,
+        workspace: *mut ::libc::c_void,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_grad_desc: &TensorDescriptor,
@@ -280,7 +281,7 @@ impl Cudnn {
     ) -> Result<(), Error> {
         API::convolution_backward_filter(
             *self.id_c(),
-            *conv_config.backward_filter_algo(), *conv_config.conv_desc().id_c(), *conv_config.backward_filter_workspace().id_c() as *mut ::libc::c_void, *conv_config.backward_filter_workspace_size(),
+            *conv_config.backward_filter_algo(), *conv_config.conv_desc().id_c(), workspace, *conv_config.backward_filter_workspace_size(),
             scale.a, *src_desc.id_c(), src_data, *dest_grad_desc.id_c(), dest_grad_data,
             scale.b, *conv_config.filter_desc().id_c(), filter_data
         )
@@ -292,6 +293,7 @@ impl Cudnn {
     pub fn convolution_backward_data<T>(
         &self,
         conv_config: &ConvolutionConfig,
+        workspace: *mut ::libc::c_void,
         filter_data: *const ::libc::c_void,
         dest_grad_desc: &TensorDescriptor,
         dest_grad_data: *const ::libc::c_void,
@@ -301,7 +303,7 @@ impl Cudnn {
     ) -> Result<(), Error> {
         API::convolution_backward_data(
             *self.id_c(),
-            *conv_config.backward_data_algo(), *conv_config.conv_desc().id_c(), *conv_config.backward_data_workspace().id_c() as *mut ::libc::c_void, *conv_config.backward_data_workspace_size(),
+            *conv_config.backward_data_algo(), *conv_config.conv_desc().id_c(), workspace, *conv_config.backward_data_workspace_size(),
             scale.a, *conv_config.filter_desc().id_c(), filter_data, *dest_grad_desc.id_c(), dest_grad_data,
             scale.b, *src_grad_desc.id_c(), src_grad_data
         )

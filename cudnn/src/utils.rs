@@ -2,7 +2,6 @@
 use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor};
 use ffi::*;
 use std::marker::PhantomData;
-use co::frameworks::cuda::Memory;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the available data types for the CUDA cuDNN data representation.
@@ -24,11 +23,8 @@ pub struct ConvolutionConfig {
     forward_algo: cudnnConvolutionFwdAlgo_t,
     backward_filter_algo: cudnnConvolutionBwdFilterAlgo_t,
     backward_data_algo: cudnnConvolutionBwdDataAlgo_t,
-    forward_workspace: Memory,
     forward_workspace_size: usize,
-    backward_filter_workspace: Memory,
     backward_filter_workspace_size: usize,
-    backward_data_workspace: Memory,
     backward_data_workspace_size: usize,
     conv_desc: ConvolutionDescriptor,
     filter_desc: FilterDescriptor,
@@ -38,40 +34,42 @@ impl ConvolutionConfig {
     /// Returns a new ConvolutionConfig
     pub fn new(
         algo_fwd: cudnnConvolutionFwdAlgo_t,
-        workspace_fwd: Memory,
         workspace_size_fwd: usize,
         algo_filter_bwd: cudnnConvolutionBwdFilterAlgo_t,
-        workspace_filter_bwd: Memory,
         workspace_filter_size_bwd: usize,
         algo_data_bwd: cudnnConvolutionBwdDataAlgo_t,
-        workspace_data_bwd: Memory,
         workspace_data_size_bwd: usize,
         conv_desc: ConvolutionDescriptor,
         filter_desc: FilterDescriptor,
     ) -> ConvolutionConfig {
         ConvolutionConfig {
             forward_algo: algo_fwd,
-            forward_workspace: workspace_fwd,
             forward_workspace_size: workspace_size_fwd,
             backward_filter_algo: algo_filter_bwd,
-            backward_filter_workspace: workspace_filter_bwd,
             backward_filter_workspace_size: workspace_filter_size_bwd,
             backward_data_algo: algo_data_bwd,
-            backward_data_workspace: workspace_data_bwd,
             backward_data_workspace_size: workspace_data_size_bwd,
             conv_desc: conv_desc,
             filter_desc: filter_desc,
         }
     }
 
+    /// Returns the largest workspace size out of the three.
+    ///
+    /// Useful for creating a shared workspace.
+    pub fn largest_workspace_size(&self) -> &usize {
+        if self.backward_data_workspace_size() >= self.backward_filter_workspace_size() && self.backward_data_workspace_size() >= self.forward_workspace_size() {
+            self.backward_data_workspace_size()
+        } else if self.backward_filter_workspace_size() >= self.backward_data_workspace_size() && self.backward_filter_workspace_size() >= self.forward_workspace_size() {
+            self.backward_filter_workspace_size()
+        } else {
+            self.forward_workspace_size()
+        }
+    }
+
     /// Returns `forward_algo`.
     pub fn forward_algo(&self) -> &cudnnConvolutionFwdAlgo_t {
         &self.forward_algo
-    }
-
-    /// Returns `forward_workspace`.
-    pub fn forward_workspace(&self) -> &Memory {
-        &self.forward_workspace
     }
 
     /// Returns `forward_workspace_size`.
@@ -84,11 +82,6 @@ impl ConvolutionConfig {
         &self.backward_filter_algo
     }
 
-    /// Returns `backward_filter_workspace`.
-    pub fn backward_filter_workspace(&self) -> &Memory {
-        &self.backward_filter_workspace
-    }
-
     /// Returns `backward_filter_workspace_size`.
     pub fn backward_filter_workspace_size(&self) -> &usize {
         &self.backward_filter_workspace_size
@@ -97,11 +90,6 @@ impl ConvolutionConfig {
     /// Returns `backward_data_algo`.
     pub fn backward_data_algo(&self) -> &cudnnConvolutionBwdDataAlgo_t {
         &self.backward_data_algo
-    }
-
-    /// Returns `backward_data_workspace`.
-    pub fn backward_data_workspace(&self) -> &Memory {
-        &self.backward_data_workspace
     }
 
     /// Returns `backward_data_workspace_size`.
