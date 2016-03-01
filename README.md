@@ -28,7 +28,7 @@ For more information,
 If you're using Cargo, just add rust-cuDNN to your Cargo.toml:
 
     [dependencies]
-    cudnn = "1.2.1"
+    cudnn = "1.3.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
