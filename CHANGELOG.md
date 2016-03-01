@@ -1,3 +1,12 @@
+<a name="1.3.0"></a>
+## 1.3.0 (2016-03-01)
+
+#### Breaking Changes
+
+* **convolution:**
+  * remove workspace from the ConvolutionConfig, changing its constructor([d1e106cc](https://github.com/autumnai/rust-cudnn/commit/d1e106ccb28ae7727dc42235f2d6d34927c1532f))
+  * convolution operations now require a workspace pointer to be passed; allows shared workspace ([d1e106cc](https://github.com/autumnai/rust-cudnn/commit/d1e106ccb28ae7727dc42235f2d6d34927c1532f))
+
 <a name="1.2.1"></a>
 ## 1.2.1 (2016-02-21)
 
