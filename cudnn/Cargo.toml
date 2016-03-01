@@ -15,7 +15,6 @@ license         = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"
-collenchyma = "0.0.8"
 cudnn-sys = { version = "0.0.2", path = "../cudnn-sys" }
 
 clippy = { version = "0.0.27", optional = true }
