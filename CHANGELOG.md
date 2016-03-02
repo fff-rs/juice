@@ -1,3 +1,13 @@
+<a name="0.3.2"></a>
+## 0.3.2 (2016-03-02)
+
+
+#### Breaking Changes
+
+* **convolution:**  change convolution functions to require workspace ([f9d40136](https://github.com/autumnai/collenchyma-nn/commit/f9d401360c54bac6a253925d90625b0a1393ea17)
+
+
+
 <a name="0.3.1"></a>
 ## 0.3.1 (2016-02-23)
 
