@@ -1,3 +1,12 @@
+<a name="1.3.1"></a>
+## 1.3.1 (2016-03-02)
+
+`cudnn-sys` was bumped to `0.0.3`
+
+#### Features
+
+* **cudnnv4:**  add passive cuDNNv4 support ([de6ced69](https://github.com/autumnai/rust-cudnn/commit/de6ced6922213619cff97b0258d4bf24bdbfcc77))
+
 <a name="1.3.0"></a>
 ## 1.3.0 (2016-03-01)
 

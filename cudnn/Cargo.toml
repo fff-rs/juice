@@ -1,7 +1,7 @@
 [package]
 name            = "cudnn"
 description     = "safe Rust wrapper for CUDA's cuDNN"
-version         = "1.3.0"
+version         = "1.3.1"
 authors         = ["MichaelHirn <mj@autumnai.com>",
                    "Maximilian Goisser <max@autumnai.com>"]
 
@@ -15,7 +15,7 @@ license         = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"
-cudnn-sys = { version = "0.0.2", path = "../cudnn-sys" }
+cudnn-sys = { version = "0.0.3", path = "../cudnn-sys" }
 
 clippy = { version = "0.0.27", optional = true }
 
