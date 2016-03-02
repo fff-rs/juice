@@ -1,11 +1,8 @@
 //! Provides NN for a CUDA backend.
 #![allow(missing_docs)]
 use ::plugin::*;
-use co::backend::Backend;
-use co::device::DeviceType;
-use co::tensor::{SharedTensor, ITensorDesc};
+use co::prelude::*;
 use co::plugin::Error as PluginError;
-use co::frameworks::cuda::Cuda;
 use cudnn::*;
 
 #[macro_use]

@@ -1,5 +1,4 @@
 #![feature(test)]
-#![feature(clone_from_slice)]
 
 extern crate test;
 extern crate collenchyma as co;
@@ -7,19 +6,13 @@ extern crate collenchyma_nn as co_nn;
 extern crate rand;
 
 use test::Bencher;
-use co::backend::{Backend, BackendConfig};
-use co::frameworks::Native;
-use co::framework::IFramework;
-use co::tensor::SharedTensor;
+use co::prelude::*;
 use co_nn::*;
 
 use rand::{thread_rng, Rng};
 
 fn backend() -> Backend<Native> {
-    let framework = Native::new();
-    let hardwares = framework.hardwares();
-    let backend_config = BackendConfig::new(framework, hardwares);
-    Backend::new(backend_config).unwrap()
+    Backend::<Native>::default().unwrap()
 }
 
 fn arguments<T: IFramework + Clone>(backend: &Backend<T>, size: usize) -> (SharedTensor<f32>, SharedTensor<f32>) {

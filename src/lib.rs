@@ -19,17 +19,8 @@
 //!
 //! ## Usage
 //!
-//! Using this Collenchyma Plugin is like using any other Rust crate - super easy. In your `Cargo.toml` define dependencies
-//! to both [Collenchyma][collenchyma] (if not yet happend) and the plugin. For example:
-//!
-//! ```toml
-//! [dependencies]
-//! collenchyma: "latest",
-//! collenchyma_nn: "latest"
-//! ```
-//!
-//! The next and final step is, bringing the crates and the important parts into the scope of your application module.
-//! This again is just plain Rust - nothing fancy about it. Now a complete example:
+//! An example on how to write some data into a SharedTensor and compute the result of the
+//! sigmoid function for each value:
 //!
 //! ```rust
 //! # #![allow(dead_code)]
@@ -37,11 +28,7 @@
 //! extern crate collenchyma_nn as nn;
 //! # #[cfg(feature = "cuda")]
 //! # mod cuda {
-//! use co::backend::{Backend, BackendConfig, IBackend};
-//! use co::framework::IFramework;
-//! use co::frameworks::{Cuda, Native};
-//! use co::memory::MemoryType;
-//! use co::tensor::SharedTensor;
+//! use co::prelude::*;
 //! use nn::*;
 //!
 //! fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {

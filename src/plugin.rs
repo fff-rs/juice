@@ -117,7 +117,7 @@ impl ConvBackwardDataAlgo {
 /// Needs to be implemented for Operation specific configurations.
 pub trait NNOperationConfig<F> {}
 
-/// Provides Convlution Config functionality.
+/// Provides Convolution Config functionality.
 ///
 /// Needs to be implemented for Operation specific configurations.
 pub trait ConvolutionConfig<F> {

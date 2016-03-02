@@ -3,11 +3,8 @@
 use ::operation::*;
 use ::binary::*;
 use ::plugin::*;
-use co::backend::Backend;
-use co::device::DeviceType;
-use co::memory::MemoryType;
-use co::plugin::Error;
-use co::frameworks::opencl::{Kernel, Program, OpenCL};
+use co::prelude::*;
+use co::Error;
 
 impl INnBinary<f32> for Program {
     type Sigmoid = Kernel;
