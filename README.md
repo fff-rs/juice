@@ -70,14 +70,10 @@ you will be able to execute the here provided operations on your Collenchyma Bac
 ```rust
 extern crate collenchyma as co;
 extern crate collenchyma_nn as nn;
-use co::backend::{Backend, BackendConfig};
-use co::framework::IFramework;
-use co::frameworks::Cuda;
-use co::tensor::SharedTensor;
+use co::prelude::*;
 use nn::*;
 fn main() {
     // Initialize a CUDA Backend.
-    // Usually you would not use CUDA but let it pick what is available on the machine.
     let backend = Backend::<Cuda>::default().unwrap();
     // Initialize two SharedTensors.
     // Usually you would want also fill them with data.

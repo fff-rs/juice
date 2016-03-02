@@ -72,6 +72,7 @@ pub fn tanh_grad<T: Float>(x: &T, dx: &T) -> T {
 macro_rules! impl_oconf_for_cc(($($t: ident), +) => (
     $(
         impl<'a> NNOperationConfig<$t> for ::frameworks::native::helper::ConvolutionConfig { }
+        impl<'a> ConvolutionConfig<$t> for ::frameworks::native::helper::ConvolutionConfig { }
     )+
 ));
 

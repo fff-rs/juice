@@ -117,10 +117,21 @@ impl ConvBackwardDataAlgo {
 /// Needs to be implemented for Operation specific configurations.
 pub trait NNOperationConfig<F> {}
 
+/// Provides Convolution Config functionality.
+///
+/// Needs to be implemented for Operation specific configurations.
+pub trait ConvolutionConfig<F> {
+    /// Returns the largest workspace size in bytes needed
+    /// for any of the convolution operations.
+    fn workspace_size(&self) -> usize {
+        0
+    }
+}
+
 /// Provides the functionality for a backend to support Neural Network related operations.
 pub trait NN<F> {
     /// The Convolution Operation Config representation for this Plugin.
-    type CC: NNOperationConfig<F>;
+    type CC: NNOperationConfig<F> + ConvolutionConfig<F>;
     /// The LRN Operation Config representation for this Plugin.
     type CLRN: NNOperationConfig<F>;
     /// The Pooling Operation Config representation for this Plugin.
@@ -368,7 +379,7 @@ pub trait Convolution<F> : NN<F> {
     /// Saves the result to `result`.
     ///
     /// For a no-memory managed version see `convolution_plain`.
-    fn convolution(&self, filter: &mut SharedTensor<F>, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution(&self, filter: &mut SharedTensor<F>, x: &mut SharedTensor<F>, result: &mut SharedTensor<F>, workspace: &mut SharedTensor<u8>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
     /// Computes the convolution over the input Tensor `x` without any memory management.
     ///
@@ -377,7 +388,7 @@ pub trait Convolution<F> : NN<F> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `convolution`.
-    fn convolution_plain(&self, filter: &SharedTensor<F>, x: &SharedTensor<F>, result: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution_plain(&self, filter: &SharedTensor<F>, x: &SharedTensor<F>, result: &mut SharedTensor<F>, workspace: &mut SharedTensor<u8>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] with respect to the filter and complete memory management.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
@@ -385,7 +396,7 @@ pub trait Convolution<F> : NN<F> {
     /// Saves the result to `filter_diff`.
     ///
     /// For a no-memory managed version see `convolution_grad_filter_plain`.
-    fn convolution_grad_filter(&self, src_data: &mut SharedTensor<F>, dest_diff: &mut SharedTensor<F>, filter_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution_grad_filter(&self, src_data: &mut SharedTensor<F>, dest_diff: &mut SharedTensor<F>, filter_diff: &mut SharedTensor<F>, workspace: &mut SharedTensor<u8>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
     /// Computes the gradient of a convolution with respect to the filter and without any memory management.
     ///
@@ -394,7 +405,7 @@ pub trait Convolution<F> : NN<F> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `convolution_grad_filter`.
-    fn convolution_grad_filter_plain(&self, src_data: &SharedTensor<F>, dest_diff: &SharedTensor<F>, filter_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution_grad_filter_plain(&self, src_data: &SharedTensor<F>, dest_diff: &SharedTensor<F>, filter_diff: &mut SharedTensor<F>, workspace: &mut SharedTensor<u8>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] over the input Tensor `x` with respect to the data and complete memory management.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
@@ -402,7 +413,7 @@ pub trait Convolution<F> : NN<F> {
     /// Saves the result to `result_diff`.
     ///
     /// For a no-memory managed version see `convolution_grad_data_plain`.
-    fn convolution_grad_data(&self, filter: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution_grad_data(&self, filter: &mut SharedTensor<F>, x_diff: &mut SharedTensor<F>, result_diff: &mut SharedTensor<F>, workspace: &mut SharedTensor<u8>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 
     /// Computes the gradient of a convolution over the input Tensor `x` with respect to the data and without any memory management.
     ///
@@ -411,7 +422,7 @@ pub trait Convolution<F> : NN<F> {
     /// *Attention*:<br/>
     /// For a correct computation result, you need to manage the memory allocation and synchronization yourself.<br/>
     /// For a memory managed version see `convolution_grad_data`.
-    fn convolution_grad_data_plain(&self, filter: &SharedTensor<F>, x_diff: &SharedTensor<F>, result_diff: &mut SharedTensor<F>, config: &Self::CC) -> Result<(), ::co::error::Error>;
+    fn convolution_grad_data_plain(&self, filter: &SharedTensor<F>, x_diff: &SharedTensor<F>, result_diff: &mut SharedTensor<F>, workspace: &mut SharedTensor<u8>, config: &Self::CC) -> Result<(), ::co::error::Error>;
 }
 
     // /// Computes the backward Convolution function w.r.t the bias.
