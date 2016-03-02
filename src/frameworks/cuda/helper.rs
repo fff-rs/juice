@@ -510,12 +510,14 @@ macro_rules! impl_ops_convolution_for {
             filter: &mut ::co::tensor::SharedTensor<$t>,
             x: &mut ::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>,
+            workspace: &mut ::co::tensor::SharedTensor<u8>,
             config: &Self::CC //::frameworks::cuda::CC
         ) -> Result<(), ::co::error::Error> {
             match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
             match result.add_device(self.device()) { _ => () }
+            match workspace.add_device(self.device()) { _ => () }
 
-            self.convolution_plain(filter, x, result, config)
+            self.convolution_plain(filter, x, result, workspace, config)
         }
 
         fn convolution_plain(
@@ -523,12 +525,14 @@ macro_rules! impl_ops_convolution_for {
             filter: &::co::tensor::SharedTensor<$t>,
             x: &::co::tensor::SharedTensor<$t>,
             result: &mut ::co::tensor::SharedTensor<$t>,
+            workspace: &mut ::co::tensor::SharedTensor<u8>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
             Ok(try!(match CUDNN.convolution_forward(
                 config,
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(workspace, self.device()) }),
                 try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(filter, self.device()) }),
                 &try!(x.cudnn_tensor_desc()), // src_desc
                 try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
@@ -549,13 +553,15 @@ macro_rules! impl_ops_convolution_for {
             src_data: &mut ::co::tensor::SharedTensor<$t>,
             dest_diff: &mut ::co::tensor::SharedTensor<$t>,
             filter_diff: &mut ::co::tensor::SharedTensor<$t>,
+            workspace: &mut ::co::tensor::SharedTensor<u8>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             match src_data.add_device(self.device()) { _ => try!(src_data.sync(self.device())) }
             match dest_diff.add_device(self.device()) { _ => try!(dest_diff.sync(self.device())) }
             match filter_diff.add_device(self.device()) { _ => try!(filter_diff.sync(self.device())) }
+            match workspace.add_device(self.device()) { _ => () }
 
-            self.convolution_grad_filter_plain(src_data, dest_diff, filter_diff, config)
+            self.convolution_grad_filter_plain(src_data, dest_diff, filter_diff, workspace, config)
         }
 
         #[allow(unused_variables)]
@@ -564,12 +570,14 @@ macro_rules! impl_ops_convolution_for {
             src_data: &::co::tensor::SharedTensor<$t>,
             dest_diff: &::co::tensor::SharedTensor<$t>,
             filter_diff: &mut ::co::tensor::SharedTensor<$t>,
+            workspace: &mut ::co::tensor::SharedTensor<u8>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
             Ok(try!(match CUDNN.convolution_backward_filter(
                 config,
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(workspace, self.device()) }),
                 &try!(src_data.cudnn_tensor_desc()),
                 try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(src_data, self.device()) }),
                 &try!(dest_diff.cudnn_tensor_desc()),
@@ -590,13 +598,15 @@ macro_rules! impl_ops_convolution_for {
             filter: &mut ::co::tensor::SharedTensor<$t>,
             x_diff: &mut ::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>,
+            workspace: &mut ::co::tensor::SharedTensor<u8>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             match filter.add_device(self.device()) { _ => try!(filter.sync(self.device())) }
             match x_diff.add_device(self.device()) { _ => try!(x_diff.sync(self.device())) }
             match result_diff.add_device(self.device()) { _ => try!(result_diff.sync(self.device())) }
+            match workspace.add_device(self.device()) { _ => () }
 
-            self.convolution_grad_data_plain(filter, x_diff, result_diff, config)
+            self.convolution_grad_data_plain(filter, x_diff, result_diff, workspace, config)
         }
 
         #[allow(unused_variables)]
@@ -605,12 +615,14 @@ macro_rules! impl_ops_convolution_for {
             filter: &::co::tensor::SharedTensor<$t>,
             x_diff: &::co::tensor::SharedTensor<$t>,
             result_diff: &mut ::co::tensor::SharedTensor<$t>,
+            workspace: &mut ::co::tensor::SharedTensor<u8>,
             config: &Self::CC
         ) -> Result<(), ::co::error::Error> {
             let scal_params: ::cudnn::utils::ScalParams<$t> = ::cudnn::utils::ScalParams::default();
 
             Ok(try!(match CUDNN.convolution_backward_data(
                 config,
+                try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(workspace, self.device()) }),
                 try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(filter, self.device()) }),
                 &try!(x_diff.cudnn_tensor_desc()),
                 try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }),

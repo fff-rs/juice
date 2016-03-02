@@ -30,7 +30,7 @@ mod convolution_spec_cuda {
         }
     }
 
-    fn get_memory<T: Float, B: IFramework + Clone, C: IFramework + Clone>(backend: &Backend<B>, native: &Backend<C>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>){
+    fn get_memory<T: Float, B: IFramework + Clone, C: IFramework + Clone>(backend: &Backend<B>, native: &Backend<C>) -> (SharedTensor<T>, SharedTensor<T>, SharedTensor<T>, SharedTensor<u8>){
         let val = cast::<f64, T>(1f64).unwrap();
         let val2 = cast::<f64, T>(2f64).unwrap();
         let batch = 4;
@@ -63,7 +63,9 @@ mod convolution_spec_cuda {
         write_to_memory(result.get_mut(native.device()).unwrap(), payload);
         result.sync(backend.device()).unwrap();
 
-        (x, result, filter)
+        let workspace = SharedTensor::<u8>::new(backend.device(), &(4)).unwrap();
+
+        (x, result, filter, workspace)
     }
 
     #[allow(dead_code)]
@@ -119,10 +121,10 @@ mod convolution_spec_cuda {
     fn it_computes_correct_convolution_on_cuda_for_f32() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result, mut filter) = get_memory::<f32, Cuda, Native>(&backend, &native);
+        let (mut x, mut result, mut filter, mut workspace) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
         let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution(&mut filter, &mut x, &mut result, &conf) {
+        match backend.convolution(&mut filter, &mut x, &mut result, &mut workspace, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
@@ -139,10 +141,10 @@ mod convolution_spec_cuda {
     fn it_computes_correct_convolution_on_cuda_for_f64() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result, mut filter) = get_memory::<f64, Cuda, Native>(&backend, &native);
+        let (mut x, mut result, mut filter, mut workspace) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
         let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution(&mut filter, &mut x, &mut result, &conf) {
+        match backend.convolution(&mut filter, &mut x, &mut result, &mut workspace, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
@@ -159,10 +161,10 @@ mod convolution_spec_cuda {
     fn it_computes_correct_convolution_on_cuda_for_f32_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result, mut filter) = get_memory::<f32, Cuda, Native>(&backend, &native);
+        let (mut x, mut result, mut filter, mut workspace) = get_memory::<f32, Cuda, Native>(&backend, &native);
 
         let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution_plain(&mut filter, &mut x, &mut result, &conf) {
+        match backend.convolution_plain(&mut filter, &mut x, &mut result, &mut workspace, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {
@@ -179,10 +181,10 @@ mod convolution_spec_cuda {
     fn it_computes_correct_convolution_on_cuda_for_f64_plain() {
         let backend = get_cuda_backend();
         let native = get_native_backend();
-        let (mut x, mut result, mut filter) = get_memory::<f64, Cuda, Native>(&backend, &native);
+        let (mut x, mut result, mut filter, mut workspace) = get_memory::<f64, Cuda, Native>(&backend, &native);
 
         let conf = backend.new_convolution_config(&x, &result, &mut filter, ConvForwardAlgo::ImplicitGEMM, ConvBackwardFilterAlgo::ImplicitGEMM, ConvBackwardDataAlgo::ImplicitGEMM, &vec!(1,1), &vec!(0,0)).unwrap();
-        match backend.convolution_plain(&mut filter, &mut x, &mut result, &conf) {
+        match backend.convolution_plain(&mut filter, &mut x, &mut result, &mut workspace, &conf) {
             Ok(_) => {
                 result.sync(native.device()).unwrap();
                 if let Some(mem) = result.get(native.device()).unwrap().as_native() {

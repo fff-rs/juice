@@ -37,7 +37,7 @@
 //! extern crate collenchyma_nn as nn;
 //! # #[cfg(feature = "cuda")]
 //! # mod cuda {
-//! use co::backend::{Backend, BackendConfig};
+//! use co::backend::{Backend, BackendConfig, IBackend};
 //! use co::framework::IFramework;
 //! use co::frameworks::{Cuda, Native};
 //! use co::memory::MemoryType;
@@ -56,10 +56,7 @@
 //! pub fn main() {
 //!     // Initialize a CUDA Backend.
 //!     // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
-//!     let framework = Cuda::new();
-//!     let hardwares = framework.hardwares();
-//!     let backend_config = BackendConfig::new(framework, hardwares);
-//!     let backend = Backend::new(backend_config).unwrap();
+//!     let backend = Backend::<Cuda>::default().unwrap();
 //!     // Initialize two SharedTensors.
 //!     let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
 //!     let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
@@ -132,6 +129,8 @@ extern crate cudnn;
 extern crate libc;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate log;
 
 pub use plugin::*;
 

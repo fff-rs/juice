@@ -274,6 +274,12 @@ impl ConvBackwardDataAlgo {
 
 macro_rules! impl_convolution_for_cuda_backend {
     ($t:ty, $cutype:path) => (
+        impl ConvolutionConfig<$t> for ::cudnn::utils::ConvolutionConfig {
+            fn workspace_size(&self) -> usize {
+                *self.largest_workspace_size()
+            }
+        }
+
         impl Convolution<$t> for Backend<Cuda> {
             fn new_convolution_config(
                 &self,
@@ -292,53 +298,29 @@ macro_rules! impl_convolution_for_cuda_backend {
                 let conv_desc = ::cudnn::ConvolutionDescriptor::new(zero_padding, stride, $cutype).unwrap();
 
                 let useable_algo_fwd = try!(algo_fwd.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
-                let (workspace_fwd, workspace_size_fwd) = match try!(useable_algo_fwd.needs_cudnn_workspace()) {
-                    false => (::co::frameworks::cuda::Memory::from_c(0), 0),
-                    true => {
-                        let workspace_size_fwd = API::get_convolution_forward_workspace_size(*CUDNN.id_c(), useable_algo_fwd.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
-                        let workspace_forward = ::co::frameworks::cuda::Memory::new(workspace_size_fwd).unwrap();
-                        (workspace_forward, workspace_size_fwd)
-                    }
-                };
-
                 let useable_algo_bwd_filter = try!(algo_bwd_filter.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
-                let (workspace_bwd_filter, workspace_size_bwd_filter) = match try!(useable_algo_bwd_filter.needs_cudnn_workspace()) {
-                    false => (::co::frameworks::cuda::Memory::from_c(0), 0),
-                    true => {
-                            let workspace_size_bwd_filter = API::get_convolution_backward_filter_workspace_size(*CUDNN.id_c(), useable_algo_bwd_filter.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
-                            let workspace_backward = ::co::frameworks::cuda::Memory::new(workspace_size_bwd_filter).unwrap();
-                            (workspace_backward, workspace_size_bwd_filter)
-                    }
-                };
-
                 let useable_algo_bwd_data = try!(algo_bwd_data.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
-                let (workspace_bwd_data, workspace_size_bwd_data) = match try!(useable_algo_bwd_data.needs_cudnn_workspace()) {
-                    false => (::co::frameworks::cuda::Memory::from_c(0), 0),
-                    true => {
-                            let workspace_size_bwd_data = API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(), useable_algo_bwd_data.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
-                            let workspace_backward = ::co::frameworks::cuda::Memory::new(workspace_size_bwd_data).unwrap();
-                            (workspace_backward, workspace_size_bwd_data)
-                    }
+
+                let workspace_size_fwd = match try!(useable_algo_fwd.needs_cudnn_workspace()) {
+                    false => 0,
+                    true => API::get_convolution_forward_workspace_size(*CUDNN.id_c(), useable_algo_fwd.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap(),
                 };
 
-                // share one workspace to reduce memory
-                let workspace: ::co::frameworks::cuda::Memory;
-                if workspace_size_bwd_data >= workspace_size_bwd_filter && workspace_size_bwd_data >= workspace_size_fwd {
-                    workspace = workspace_bwd_data;
-                } else if workspace_size_bwd_filter >= workspace_size_bwd_data && workspace_size_bwd_filter >= workspace_size_fwd {
-                    workspace = workspace_bwd_filter;
-                } else {
-                    workspace = workspace_fwd;
-                }
+                let workspace_size_bwd_filter = match try!(useable_algo_bwd_filter.needs_cudnn_workspace()) {
+                    false => 0,
+                    true => API::get_convolution_backward_filter_workspace_size(*CUDNN.id_c(), useable_algo_bwd_filter.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap(),
+                };
 
-                let workspace_bwd_filter = ::co::frameworks::cuda::Memory::from_c(*workspace.id_c());
-                let workspace_fwd = ::co::frameworks::cuda::Memory::from_c(*workspace.id_c());
+                let workspace_size_bwd_data = match try!(useable_algo_bwd_data.needs_cudnn_workspace()) {
+                    false => 0,
+                    true => API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(), useable_algo_bwd_data.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap(),
+                };
 
                 Ok(
                     ::cudnn::utils::ConvolutionConfig::new(
-                        useable_algo_fwd.as_cudnn().unwrap(), workspace_fwd, workspace_size_fwd,
-                        useable_algo_bwd_filter.as_cudnn().unwrap(), workspace_bwd_filter, workspace_size_bwd_filter,
-                        useable_algo_bwd_data.as_cudnn().unwrap(), workspace, workspace_size_bwd_data,
+                        useable_algo_fwd.as_cudnn().unwrap(), workspace_size_fwd,
+                        useable_algo_bwd_filter.as_cudnn().unwrap(), workspace_size_bwd_filter,
+                        useable_algo_bwd_data.as_cudnn().unwrap(), workspace_size_bwd_data,
                         conv_desc, filter_desc
                     )
                 )
