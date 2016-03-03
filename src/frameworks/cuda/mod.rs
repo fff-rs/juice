@@ -119,6 +119,7 @@ impl ConvForwardAlgo {
             ConvForwardAlgo::ImplicitGEMM => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
             ConvForwardAlgo::ImplicitPrecompiledGEMM => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM,
             ConvForwardAlgo::FFT => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT,
+            ConvForwardAlgo::FFTTiling => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
             ConvForwardAlgo::Direct => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
         })
     }
@@ -130,6 +131,7 @@ impl ConvForwardAlgo {
             ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => ConvForwardAlgo::ImplicitGEMM,
             ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM => ConvForwardAlgo::ImplicitPrecompiledGEMM,
             ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT => ConvForwardAlgo::FFT,
+            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING => ConvForwardAlgo::FFTTiling,
             ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => ConvForwardAlgo::Direct,
         }
     }
@@ -161,6 +163,7 @@ impl ConvForwardAlgo {
             ConvForwardAlgo::ImplicitGEMM => false,
             ConvForwardAlgo::ImplicitPrecompiledGEMM => true,
             ConvForwardAlgo::FFT => true,
+            ConvForwardAlgo::FFTTiling => true,
             ConvForwardAlgo::Direct => true,
         })
     }
@@ -212,7 +215,7 @@ impl ConvBackwardFilterAlgo {
         Ok(match *self {
             ConvBackwardFilterAlgo::Auto => return Err(::co::error::Error::Plugin(::co::plugin::Error::Plugin("Can't check necessary workspace size for ConvBackwardFilterAlgo::Auto. Use `find_cudnn_algo` to find an algorithm."))),
             ConvBackwardFilterAlgo::ImplicitGEMM => false,
-            ConvBackwardFilterAlgo::ImplicitGEMMSum => false,
+            ConvBackwardFilterAlgo::ImplicitGEMMSum => true,
             ConvBackwardFilterAlgo::ImplicitPrecompiledGEMMSum => true,
             ConvBackwardFilterAlgo::FFT => true,
         })
@@ -227,6 +230,7 @@ impl ConvBackwardDataAlgo {
             ConvBackwardDataAlgo::ImplicitGEMM => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1,
             ConvBackwardDataAlgo::ImplicitGEMMSum => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
             ConvBackwardDataAlgo::FFT => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT,
+            ConvBackwardDataAlgo::FFTTiling => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING,
         })
     }
 
@@ -236,6 +240,7 @@ impl ConvBackwardDataAlgo {
             ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => ConvBackwardDataAlgo::ImplicitGEMMSum,
             ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => ConvBackwardDataAlgo::ImplicitGEMM,
             ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT => ConvBackwardDataAlgo::FFT,
+            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING => ConvBackwardDataAlgo::FFTTiling,
         }
     }
 
@@ -265,6 +270,7 @@ impl ConvBackwardDataAlgo {
             ConvBackwardDataAlgo::ImplicitGEMM => false,
             ConvBackwardDataAlgo::ImplicitGEMMSum => false,
             ConvBackwardDataAlgo::FFT => true,
+            ConvBackwardDataAlgo::FFTTiling => true,
         })
     }
 }
@@ -298,18 +304,11 @@ macro_rules! impl_convolution_for_cuda_backend {
                 let useable_algo_bwd_filter = try!(algo_bwd_filter.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
                 let useable_algo_bwd_data = try!(algo_bwd_data.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
 
-                let workspace_size_fwd = match try!(useable_algo_fwd.needs_cudnn_workspace()) {
-                    false => 0,
-                    true => API::get_convolution_forward_workspace_size(*CUDNN.id_c(), useable_algo_fwd.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap(),
-                };
-
-                let workspace_size_bwd_filter = match try!(useable_algo_bwd_filter.needs_cudnn_workspace()) {
-                    false => 0,
-                    true => API::get_convolution_backward_filter_workspace_size(*CUDNN.id_c(), useable_algo_bwd_filter.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap(),
-                };
-
+                let workspace_size_fwd = API::get_convolution_forward_workspace_size(*CUDNN.id_c(), useable_algo_fwd.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
+                let workspace_size_bwd_filter = API::get_convolution_backward_filter_workspace_size(*CUDNN.id_c(), useable_algo_bwd_filter.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
+                // let workspace_size_bwd_data = API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(), useable_algo_bwd_data.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
                 let workspace_size_bwd_data = match try!(useable_algo_bwd_data.needs_cudnn_workspace()) {
-                    false => 0,
+                    false => 1,
                     true => API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(), useable_algo_bwd_data.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap(),
                 };
 
