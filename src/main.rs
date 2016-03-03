@@ -2,6 +2,9 @@ extern crate rustc_serialize;
 extern crate docopt;
 extern crate csv;
 extern crate hyper;
+#[macro_use]
+extern crate log;
+extern crate env_logger;
 extern crate leaf;
 extern crate collenchyma as co;
 extern crate collenchyma_blas as coblas;
@@ -14,8 +17,7 @@ use hyper::Client;
 
 use docopt::Docopt;
 use csv::{Reader};
-use leaf::network::{Network, NetworkConfig};
-use leaf::layer::{LayerConfig, LayerType};
+use leaf::layer::*;
 use leaf::layers::*;
 use co::prelude::*;
 use coblas::plugin::Copy;
@@ -49,6 +51,7 @@ struct MainArgs {
 #[cfg(not(test))]
 #[allow(unused_must_use)]
 fn main() {
+    env_logger::init().unwrap();
     // Parse Arguments
     let args: MainArgs = Docopt::new(MAIN_USAGE)
                             .and_then(|d| d.decode())
@@ -110,106 +113,55 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
 
     let batch_size = batch_size.unwrap_or(1);
     let learning_rate = learning_rate.unwrap_or(0.001f32);
-    let mut net_cfg = NetworkConfig::default();
-    net_cfg.name = "Simple MNIST".to_owned();
-    // set up inputs
-    net_cfg.add_input("data", &vec![batch_size, 1, 28, 28]);
-    net_cfg.add_input("label", &vec![batch_size, 1]);
+    let momentum = 0.9f32;
+
+    let mut net_cfg = SequentialConfig::default();
+    net_cfg.add_input("data", &vec![batch_size, 28, 28]);
     net_cfg.force_backward = true;
 
     match &*model_name.unwrap_or("none".to_owned()) {
         "conv" => {
-            // set up reshape layer
-            let mut reshape_cfg = LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&vec![batch_size, 1, 28, 28])));
-            reshape_cfg.add_input("data"); // provide the layer we want to reshape as bottom
-            // reshape_cfg.add_output("data"); // provide the layer we want to reshape as bottom
+            let reshape_cfg = LayerConfig::new("reshape", ReshapeConfig::of_shape(&vec![batch_size, 1, 28, 28]));
             net_cfg.add_layer(reshape_cfg);
-            // set up conv layer
-            let conv_cfg = ConvolutionConfig { num_output: 20, filter_shape: vec![5], stride: vec![1], padding: vec![0], axis: None };
-            let mut conv_cfg = LayerConfig::new("conv", LayerType::Convolution(conv_cfg));
-            conv_cfg.add_input("data");
-            conv_cfg.add_output("conv_out");
-            net_cfg.add_layer(conv_cfg);
-            // set up pooling layer
+            let conv_cfg = ConvolutionConfig { num_output: 20, filter_shape: vec![5], stride: vec![1], padding: vec![0] };
+            net_cfg.add_layer(LayerConfig::new("conv", conv_cfg));
             let pool_cfg = PoolingConfig { mode: PoolingMode::Max, filter_shape: vec![2], stride: vec![2], padding: vec![0] };
-            let mut pool_cfg = LayerConfig::new("pooling", LayerType::Pooling(pool_cfg));
-            pool_cfg.add_input("conv_out");
-            pool_cfg.add_output("pool_out");
-            net_cfg.add_layer(pool_cfg);
-            // set up linear1 layer
-            let linear1_cfg = LinearConfig { output_size: 500 };
-            let mut lnr1_cfg = LayerConfig::new("linear1", LayerType::Linear(linear1_cfg));
-            lnr1_cfg.add_input("pool_out");
-            lnr1_cfg.add_output("linear1_out");
-            net_cfg.add_layer(lnr1_cfg);
-            // set up relu layer
-            let mut relu_cfg = LayerConfig::new("relu", LayerType::Sigmoid);
-            relu_cfg.add_input("linear1_out");
-            relu_cfg.add_output("relu_out");
-            net_cfg.add_layer(relu_cfg);
-            // set up linear2 layer
-            let linear2_cfg = LinearConfig { output_size: 10 };
-            let mut lnr2_cfg = LayerConfig::new("linear2", LayerType::Linear(linear2_cfg));
-            lnr2_cfg.add_input("relu_out");
-            lnr2_cfg.add_output("final_out");
-            net_cfg.add_layer(lnr2_cfg);
+            net_cfg.add_layer(LayerConfig::new("pooling", pool_cfg));
+            net_cfg.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 500 }));
+            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+            net_cfg.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
         },
         "mlp" => {
-            // set up reshape layer
-            let mut reshape_cfg = LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&vec![batch_size, 784])));
-            reshape_cfg.add_input("data"); // provide the layer we want to reshape as bottom
+            let reshape_cfg = LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&vec![batch_size, 784])));
             net_cfg.add_layer(reshape_cfg);
-            // // set up linear1 layer
-            let linear1_cfg = LinearConfig { output_size: 1568 };
-            let mut lnr1_cfg = LayerConfig::new("linear1", LayerType::Linear(linear1_cfg));
-            lnr1_cfg.add_input("data");
-            lnr1_cfg.add_output("linear1_out");
-            net_cfg.add_layer(lnr1_cfg);
-            // set up sigmoid layer
-            let mut sigmoid_cfg = LayerConfig::new("sigmoid", LayerType::Sigmoid);
-            sigmoid_cfg.add_input("linear1_out");
-            sigmoid_cfg.add_output("sigmoid_out");
-            net_cfg.add_layer(sigmoid_cfg);
-            // set up linear2 layer
-            let linear2_cfg = LinearConfig { output_size: 10 };
-            let mut lnr2_cfg = LayerConfig::new("linear2", LayerType::Linear(linear2_cfg));
-            lnr2_cfg.add_input("sigmoid_out");
-            lnr2_cfg.add_output("final_out");
-            net_cfg.add_layer(lnr2_cfg);
+            net_cfg.add_layer(LayerConfig::new("linear1", LayerType::Linear(LinearConfig { output_size: 1568 })));
+            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+            net_cfg.add_layer(LayerConfig::new("linear2", LayerType::Linear(LinearConfig { output_size: 10 })));
         },
         "linear" => {
-            // set up reshape layer
-            let mut reshape_cfg = LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&vec![batch_size, 784])));
-            reshape_cfg.add_input("data"); // provide the layer we want to reshape as bottom
-            net_cfg.add_layer(reshape_cfg);
-            // set up linear layer
-            let linear_cfg = LinearConfig { output_size: 10 };
-            let mut lnr_cfg = LayerConfig::new("linear", LayerType::Linear(linear_cfg));
-            lnr_cfg.add_input("data");
-            lnr_cfg.add_output("final_out");
-            net_cfg.add_layer(lnr_cfg);
+            net_cfg.add_layer(LayerConfig::new("linear", LayerType::Linear(LinearConfig { output_size: 10 })));
         }
         _ => { panic!("Unknown model. Try one of [linear, mlp, conv]")}
     }
-    // set up log_softmax
-    let mut softmax_cfg = LayerConfig::new("log_softmax", LayerType::LogSoftmax);
-    softmax_cfg.add_input("final_out");
-    softmax_cfg.add_output("softmax_out");
-    net_cfg.add_layer(softmax_cfg);
+    net_cfg.add_layer(LayerConfig::new("log_softmax", LayerType::LogSoftmax));
+
+    let mut classifier_cfg = SequentialConfig::default();
+    classifier_cfg.add_input("network_out", &vec![batch_size, 10]);
+    classifier_cfg.add_input("label", &vec![batch_size, 1]);
     // set up nll loss
     let nll_layer_cfg = NegativeLogLikelihoodConfig { num_classes: 10 };
-    let mut nll_cfg = LayerConfig::new("nll", LayerType::NegativeLogLikelihood(nll_layer_cfg));
-    nll_cfg.add_input("softmax_out");
-    nll_cfg.add_input("label");
-    net_cfg.add_layer(nll_cfg);
+    let nll_cfg = LayerConfig::new("nll", LayerType::NegativeLogLikelihood(nll_layer_cfg));
+    classifier_cfg.add_layer(nll_cfg);
 
+    // set up backends
     let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
     let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
-    let mut network = Network::from_config(backend.clone(), &net_cfg);
-    // let mut network = Network::from_config(native_backend.clone(), &net_cfg);
+    // set up model and classifier
+    let mut network = Layer::from_config(backend.clone(), &LayerConfig::new("mnist_model", LayerType::Sequential(net_cfg)));
+    let mut classifier = Layer::from_config(backend.clone(), &LayerConfig::new("classifier", LayerType::Sequential(classifier_cfg)));
 
     let mut inp = SharedTensor::<f32>::new(backend.device(), &vec![batch_size, 1, 28, 28]).unwrap();
-    let label = SharedTensor::<f32>::new(native_backend.device(), &vec![batch_size]).unwrap();
+    let label = SharedTensor::<f32>::new(native_backend.device(), &vec![batch_size, 1]).unwrap();
     inp.add_device(native_backend.device()).unwrap();
 
     let inp_lock = Arc::new(RwLock::new(inp));
@@ -219,7 +171,7 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     for _ in 0..(60000 / batch_size) {
         // set up history; belongs in momentum
         let mut history = vec![];
-        for weight_gradient in network.learnable_weight_gradients() {
+        for weight_gradient in network.learnable_weights_gradients() {
             let shape = weight_gradient.read().unwrap().desc().clone();
             let history_tensor = Arc::new(RwLock::new(SharedTensor::<f32>::new(native_backend.device(), &shape).unwrap()));
             history.push(history_tensor);
@@ -228,11 +180,10 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
         let mut lr_shared = SharedTensor::<f32>::new(native_backend.device(), &1).unwrap();
         write_to_memory_f32(lr_shared.get_mut(native_backend.device()).unwrap(), &vec![learning_rate], 0);
         // set up momentum
-        let momentum = 0.9f32;
         let mut momentum_shared = SharedTensor::<f32>::new(native_backend.device(), &1).unwrap();
         write_to_memory_f32(momentum_shared.get_mut(native_backend.device()).unwrap(), &vec![momentum], 0);
-        // clear weight gradients
-        network.clear_weight_diffs();
+        // clear weight gradients after every mini-batch
+        network.clear_weights_gradients();
         // write input
         let mut targets = Vec::new();
         for (batch_n, (label_val, input)) in decoded_images.by_ref().take(batch_size).enumerate() {
@@ -250,22 +201,23 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
                 targets.push(label_val);
             }
         }
-        let _ = network.forward_backward(&[inp_lock.clone(), label_lock.clone()]);
+        let softmax_out = network.forward(&[inp_lock.clone()])[0].clone();
+        let _ = classifier.forward(&[softmax_out.clone(), label_lock.clone()]);
 
-        let softmax_out = network.get_data("softmax_out");
-        let sftmax_out = softmax_out.read().unwrap();
+        let classifier_gradient = classifier.backward(&[]);
+        network.backward(&classifier_gradient[0 .. 1]);
+
+        let sftmax_out = softmax_out.write().unwrap();
         let native_softmax_out = sftmax_out.get(native_backend.device()).unwrap().as_native().unwrap();
-        // let mut enumerated_predictions = native_softmax_out.as_slice::<f32>().iter().enumerate().collect::<Vec<_>>();
         let predictions_slice = native_softmax_out.as_slice::<f32>();
         let mut predictions = Vec::new();
         for batch_predictions in predictions_slice.chunks(10) {
             let mut enumerated_predictions = batch_predictions.iter().enumerate().collect::<Vec<_>>();
             enumerated_predictions.sort_by(|&(_, one), &(_, two)| one.partial_cmp(two).unwrap_or(::std::cmp::Ordering::Equal)); // find index of prediction
             predictions.push(enumerated_predictions.last().unwrap().0)
-            // let prediction = batch_predictions.last().unwrap().0;
         }
 
-        for ((weight_gradient, history_tensor), weight_data) in network.learnable_weight_gradients().iter().zip(history).zip(network.learnable_weight_data()) {
+        for ((weight_gradient, history_tensor), weight_data) in network.learnable_weights_gradients().iter().zip(history).zip(network.learnable_weights_data()) {
             weight_gradient.write().unwrap().sync(native_backend.device()).unwrap();
             ::leaf::util::Axpby::<f32>::axpby_plain(&*native_backend,
                                                    &lr_shared,
@@ -282,7 +234,6 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
             let _ = weight_data.write().unwrap().add_device(native_backend.device());
             weight_data.write().unwrap().sync(native_backend.device()).unwrap();
         }
-        // network.update_weights(&*backend);
         network.update_weights(&*native_backend);
 
         for (&prediction, &target) in predictions.iter().zip(targets.iter()) {

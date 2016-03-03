@@ -9,10 +9,11 @@ authors = ["Michael Hirn <mj@autumnai.com>",
 csv = "0.14"
 # cuticula = "0.1.4"
 collenchyma = "0.0.8"
-# leaf = { git = "https://github.com/autumnai/leaf.git" }
-leaf = { git = "https://github.com/autumnai/leaf.git", rev = "38d5f48a5e8a875879661f7a792c9eab25295b65" }
+leaf = { git = "https://github.com/autumnai/leaf.git", rev = "9f0f128596ba1adbe37cc23847cad5f8c7796709" }
 collenchyma-blas = "0.2.0"
 hyper = "0.6"
+log = "0.3"
+env_logger = "0.3"
 
 # CLI tooling
 docopt = "0.6.75"
