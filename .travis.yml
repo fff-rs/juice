@@ -1,3 +1,4 @@
+sudo: false
 language: rust
 rust:
 - nightly
@@ -12,6 +13,9 @@ matrix:
     env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
   - rust: stable
     env: TRAVIS_CARGO_NIGHTLY_FEATURE=lint
+branches:
+  only:
+    - master
 before_script:
 - |
   pip install 'travis-cargo<0.2' --user &&
