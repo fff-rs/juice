@@ -1,3 +1,13 @@
+<a name="0.3.3"></a>
+## 0.3.3 (2016-03-03)
+
+
+#### Features
+
+* **cudnnv4:**  passive support for cuDNNv4 ([0dc46301](https://github.com/autumnai/collenchyma-nn/commit/0dc463011c0ae261baee201e1b9cb540309349c5))
+
+
+
 <a name="0.3.2"></a>
 ## 0.3.2 (2016-03-02)
 

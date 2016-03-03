@@ -1,7 +1,7 @@
 [package]
 name            = "collenchyma-nn"
 description     = "collenchyma plugin providing Neural Network operations"
-version         = "0.3.2"
+version         = "0.3.3"
 authors         = ["Michael Hirn <mj@autumnai.com>",
                    "Maximilian Goisser <max@autumnai.com>"]
 
