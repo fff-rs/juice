@@ -1,3 +1,13 @@
+<a name="0.3.4"></a>
+## 0.3.4 (2016-03-03)
+
+
+#### Bug Fixes
+
+* **cuda/convolution:**  workaround for 0 memory allocation ([e30b59de](https://github.com/autumnai/collenchyma-nn/commit/e30b59decfe7ca6663a42fd27e19e55fcee83552))
+
+
+
 <a name="0.3.3"></a>
 ## 0.3.3 (2016-03-03)
 
