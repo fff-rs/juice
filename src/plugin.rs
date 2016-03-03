@@ -22,6 +22,10 @@ pub enum ConvForwardAlgo {
     ///
     /// Needs a significant memory workspace.
     FFT,
+    /// Compute the convolution as Fast-Fourier Transform with 32x32 tiles.
+    ///
+    /// Needs a significant memory workspace.
+    FFTTiling,
     /// Compute the convolution without implicit or explicit matrix-multiplication. **Do not try to use this**.
     ///
     /// Listed in cuDNN docs but cuDNN does not provide a implementation.
@@ -100,6 +104,12 @@ pub enum ConvBackwardDataAlgo {
     ///
     /// The results are deterministic.
     FFT,
+    /// Compute the convolution as Fast-Fourier Transform with 32x32 tiles.
+    ///
+    /// Needs a significant memory workspace.
+    ///
+    /// The results are deterministic.
+    FFTTiling,
 }
 
 impl ConvBackwardDataAlgo {
