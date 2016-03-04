@@ -19,15 +19,16 @@ use docopt::Docopt;
 use csv::{Reader};
 use leaf::layer::*;
 use leaf::layers::*;
+use leaf::solver::*;
+use leaf::util::*;
 use co::prelude::*;
-use coblas::plugin::Copy;
 
 const MAIN_USAGE: &'static str = "
 Leaf Examples
 
 Usage:
     leaf-examples load-dataset <dataset-name>
-    leaf-examples mnist <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>]
+    leaf-examples mnist <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
     leaf-examples (-h | --help)
     leaf-examples --version
 
@@ -44,6 +45,7 @@ struct MainArgs {
     arg_model_name: Option<String>,
     arg_batch_size: Option<usize>,
     arg_learning_rate: Option<f32>,
+    arg_momentum: Option<f32>,
     cmd_load_dataset: bool,
     cmd_mnist: bool,
 }
@@ -73,17 +75,17 @@ fn main() {
                         .unwrap()
                         .write_all(&body.into_bytes());
                 }
-                println!("{}", "awesome".to_string())
+                println!("{}", "MNIST dataset downloaded".to_string())
             },
-            _ => println!("{}", "fail".to_string())
+            _ => println!("{}", "Failed to download MNIST dataset!".to_string())
         }
     } else if args.cmd_mnist {
-        run_mnist(args.arg_model_name, args.arg_batch_size, args.arg_learning_rate);
+        run_mnist(args.arg_model_name, args.arg_batch_size, args.arg_learning_rate, args.arg_momentum);
     }
 }
 
 #[allow(dead_code)]
-fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rate: Option<f32>) {
+fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rate: Option<f32>, momentum: Option<f32>) {
     let mut rdr = Reader::from_file("assets/mnist_train.csv").unwrap();
     let mut decoded_images = rdr.decode().map(|row|
         match row {
@@ -113,7 +115,7 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
 
     let batch_size = batch_size.unwrap_or(1);
     let learning_rate = learning_rate.unwrap_or(0.001f32);
-    let momentum = 0.9f32;
+    let momentum = momentum.unwrap_or(0f32);
 
     let mut net_cfg = SequentialConfig::default();
     net_cfg.add_input("data", &vec![batch_size, 28, 28]);
@@ -156,9 +158,16 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     // set up backends
     let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
     let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
-    // set up model and classifier
-    let mut network = Layer::from_config(backend.clone(), &LayerConfig::new("mnist_model", LayerType::Sequential(net_cfg)));
-    let mut classifier = Layer::from_config(backend.clone(), &LayerConfig::new("classifier", LayerType::Sequential(classifier_cfg)));
+
+    // set up solver
+    let mut solver_cfg = SolverConfig { minibatch_size: batch_size, base_lr: learning_rate, momentum: momentum, .. SolverConfig::default() };
+    solver_cfg.network = LayerConfig::new("network", net_cfg);
+    solver_cfg.objective = LayerConfig::new("classifier", classifier_cfg);
+    let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_cfg);
+
+    // set up confusion matrix
+    let mut confusion = ::leaf::solver::ConfusionMatrix::new(10);
+    confusion.set_capacity(Some(1000));
 
     let mut inp = SharedTensor::<f32>::new(backend.device(), &vec![batch_size, 1, 28, 28]).unwrap();
     let label = SharedTensor::<f32>::new(native_backend.device(), &vec![batch_size, 1]).unwrap();
@@ -167,98 +176,24 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     let inp_lock = Arc::new(RwLock::new(inp));
     let label_lock = Arc::new(RwLock::new(label));
 
-    let mut prediction_score = Vec::new();
     for _ in 0..(60000 / batch_size) {
-        // set up history; belongs in momentum
-        let mut history = vec![];
-        for weight_gradient in network.learnable_weights_gradients() {
-            let shape = weight_gradient.read().unwrap().desc().clone();
-            let history_tensor = Arc::new(RwLock::new(SharedTensor::<f32>::new(native_backend.device(), &shape).unwrap()));
-            history.push(history_tensor);
-        }
-        // set up lr
-        let mut lr_shared = SharedTensor::<f32>::new(native_backend.device(), &1).unwrap();
-        write_to_memory_f32(lr_shared.get_mut(native_backend.device()).unwrap(), &vec![learning_rate], 0);
-        // set up momentum
-        let mut momentum_shared = SharedTensor::<f32>::new(native_backend.device(), &1).unwrap();
-        write_to_memory_f32(momentum_shared.get_mut(native_backend.device()).unwrap(), &vec![momentum], 0);
-        // clear weight gradients after every mini-batch
-        network.clear_weights_gradients();
         // write input
         let mut targets = Vec::new();
         for (batch_n, (label_val, input)) in decoded_images.by_ref().take(batch_size).enumerate() {
-            {
-                let inp_lock_cl = inp_lock.clone();
-                let mut inp = inp_lock_cl.write().unwrap();
-                inp.sync(native_backend.device()).unwrap();
-                write_to_memory(inp.get_mut(native_backend.device()).unwrap(), &input, batch_n * 784);
+            let mut inp = inp_lock.write().unwrap();
+            let mut label = label_lock.write().unwrap();
+            write_batch_sample(&mut inp, &input, batch_n);
+            write_batch_sample(&mut label, &[label_val], batch_n);
 
-                let label_lock_cl = label_lock.clone();
-                let mut label = label_lock_cl.write().unwrap();
-                label.sync(native_backend.device()).unwrap();
-                write_to_memory(label.get_mut(native_backend.device()).unwrap(), &[label_val], batch_n);
-
-                targets.push(label_val);
-            }
+            targets.push(label_val as usize);
         }
-        let softmax_out = network.forward(&[inp_lock.clone()])[0].clone();
-        let _ = classifier.forward(&[softmax_out.clone(), label_lock.clone()]);
+        // train the network!
+        let infered_out = solver.train_minibatch(inp_lock.clone(), label_lock.clone());
 
-        let classifier_gradient = classifier.backward(&[]);
-        network.backward(&classifier_gradient[0 .. 1]);
+        let mut infered = infered_out.write().unwrap();
+        let predictions = confusion.get_predictions(&mut infered);
 
-        let sftmax_out = softmax_out.write().unwrap();
-        let native_softmax_out = sftmax_out.get(native_backend.device()).unwrap().as_native().unwrap();
-        let predictions_slice = native_softmax_out.as_slice::<f32>();
-        let mut predictions = Vec::new();
-        for batch_predictions in predictions_slice.chunks(10) {
-            let mut enumerated_predictions = batch_predictions.iter().enumerate().collect::<Vec<_>>();
-            enumerated_predictions.sort_by(|&(_, one), &(_, two)| one.partial_cmp(two).unwrap_or(::std::cmp::Ordering::Equal)); // find index of prediction
-            predictions.push(enumerated_predictions.last().unwrap().0)
-        }
-
-        for ((weight_gradient, history_tensor), weight_data) in network.learnable_weights_gradients().iter().zip(history).zip(network.learnable_weights_data()) {
-            weight_gradient.write().unwrap().sync(native_backend.device()).unwrap();
-            ::leaf::util::Axpby::<f32>::axpby_plain(&*native_backend,
-                                                   &lr_shared,
-                                                   &weight_gradient.read().unwrap(),
-                                                   &momentum_shared,
-                                                   &mut history_tensor.write().unwrap()).unwrap();
-            native_backend.copy_plain(
-                &history_tensor.read().unwrap(), &mut weight_gradient.write().unwrap()).unwrap();
-
-            let _ = weight_gradient.write().unwrap().add_device(native_backend.device());
-            weight_gradient.write().unwrap().sync(native_backend.device()).unwrap();
-            let _ = history_tensor.write().unwrap().add_device(native_backend.device());
-            history_tensor.write().unwrap().sync(native_backend.device()).unwrap();
-            let _ = weight_data.write().unwrap().add_device(native_backend.device());
-            weight_data.write().unwrap().sync(native_backend.device()).unwrap();
-        }
-        network.update_weights(&*native_backend);
-
-        for (&prediction, &target) in predictions.iter().zip(targets.iter()) {
-            prediction_score.push(prediction == target as usize);
-            let correct_predictions = prediction_score.iter().filter(|&&v| v == true).count();
-            let accuracy = (correct_predictions as f32) / (prediction_score.len() as f32) * 100f32;
-            println!("Prediction: {:?}, Target: {:?} | Accuracy {:?} / {:?} , {:.2?}%", prediction, target, correct_predictions, prediction_score.len(), accuracy);
-        }
-    }
-}
-
-fn write_to_memory(mem: &mut MemoryType, data: &[u8], offset: usize) {
-    if let &mut MemoryType::Native(ref mut mem) = mem {
-        let mut mem_buffer = mem.as_mut_slice::<f32>();
-        for (index, datum) in data.iter().enumerate() {
-            mem_buffer[index + offset] = *datum as f32;
-        }
-    }
-}
-
-fn write_to_memory_f32(mem: &mut MemoryType, data: &[f32], offset: usize) {
-    if let &mut MemoryType::Native(ref mut mem) = mem {
-        let mut mem_buffer = mem.as_mut_slice::<f32>();
-        for (index, datum) in data.iter().enumerate() {
-            mem_buffer[index + offset] = *datum as f32;
-        }
+        confusion.add_samples(&predictions, &targets);
+        println!("Last sample: {} | Accuracy {}", confusion.samples().iter().last().unwrap(), confusion.accuracy());
     }
 }
