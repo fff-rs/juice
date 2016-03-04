@@ -10,7 +10,7 @@ Framework [Leaf][leaf].
 
 For more information,
 
-* see collenchyma-NN's [Documentation](http://autumnai.github.io/collenchyma-nn)
+* see collenchyma-NN's [Documentation](http://autumnai.github.io/collenchyma-blas)
 * visit [Collenchyma][collenchyma] for portable operations and other Plugins.
 * or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
 
