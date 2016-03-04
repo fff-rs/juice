@@ -26,8 +26,8 @@
 //!
 //! But writing code for devices would often be a good choice as these devices can execute many
 //! operations a lot faster than the native CPUs. GPUs for example can execute operations roughly
-//! one to two orders of magnitudes faster, thanks to better support of parallising operations.
-//! OpenCL and CUDA make parallising operations super easy.
+//! one to two orders of magnitudes faster, thanks to better support of parallelizing operations.
+//! OpenCL and CUDA make parallelizing operations super easy.
 //!
 //! With Collenchyma we eleminate the pain points of writing device code, so you can run your code
 //! like any other Rust code, don't need to learn about kernels, events, or memory
@@ -43,29 +43,29 @@
 //! language. The Framework is important, as it provides us with the interface to turn Hardware into Devices and
 //! therefore, among other things, execute Operations on the created Device. With a Framework, we get access to Hardware
 //! as long as the Hardware supports the Framework. As different vendors of Hardware use different
-//! Frameworks, it becomes important that the Backend is agnostic over the Framework, which allows us, that we can
-//! really run computations on any machine such as servers, desktops and mobiles without the need to worry about what
+//! Frameworks, it becomes important that the Backend is agnostic over the Framework. This allows us to
+//! run computations on any machine such as servers, desktops and mobiles without the need to worry about what
 //! Hardware is available on the machine. That gives us the freedom to write code once and deploy it on different
 //! machines where it will execute on the most potent Hardware by default.
 //!
 //! Operations get introduced by a [Plugin][plugin]. A Plugin extends your Backend with ready-to-execute Operations.
-//! All you need to do is, providing these Collenchyma Plugin crates alongside the Collenchyma crate in your Cargo
-//! file. Your Backend will than be extend with the operations provided by the Plugin. The interface is just common
+//! All you need to do is provide these Collenchyma Plugin crates alongside the Collenchyma crate in your Cargo
+//! file. Your Backend will then be extended with the operations provided by the Plugin. The interface is just common
 //! Rust e.g. to execute the dot product operation of the [Collenchyma-BLAS][collenchyma-blas] Plugin,
-//! we can simply call `backend.dot(...)`. If the dot Operation is executed on e.g.
-//! one or many GPUs or CPUs depends solely on how you configured the Backend or if you did not further specify which
-//! Framework and Hardware to use, solely on the machine you execute the dot Operation on. In the field of Operations
-//! is one more component - the [Binary][binary]. As - different to executing code on the native CPU - devices need
-//! to compile and build the Operation manually at run-time, which makes a significant part of a Framework, we need
-//! an initlizable instance for holding the state and compiled Operations, wich the Binary is good for.
+//! we can simply call `backend.dot(...)`. Whether or not the dot Operation is executed on, e.g.
+//! one or many GPUs or CPUs, depends solely on how you configured the Backend. If you did not further specify which
+//! Framework and Hardware to use, it depends solely on the machine you execute the dot Operation on. The concept of Operations
+//! has one more component - the [Binary][binary]. As opposed to executing code on the native CPU - devices need
+//! to compile and build the Operation manually at run-time, which makes up a significant part of a Framework. We need
+//! an initializable instance for holding the state and compiled Operations, wich the Binary is good for.
 //!
-//! The last peace of Collenchyma is the [Memory][memory]. A Operation happens over data, but this data needs to be
-//! accessable by the device on which the Operation is executed. The process is therefore often, that memory space needs
+//! The last piece of Collenchyma is the [Memory][memory]. A Operation happens over data, but this data needs to be
+//! accessable by the device on which the Operation is executed. The process is occurs often, that memory space needs
 //! to be allocated on the device and then in a later step, synced from the host to the device or from
-//! the device back to the host. Thanks to the [Tensor][tensor] we do not have to care about memory management
+//! the device back to the host. Thanks to [Tensor][tensor] we do not have to care about memory management
 //! between devices for the execution of Operations. Tensor tracks and automatically manages data and it's memory
 //! accross devices, which is often the host and the Device. But it can also be passed around to different Backends.
-//! Operations take as arguments Tensors and handle the synchronization and allocation for you.
+//! Operations take Tensors as arguments and handle the synchronization and allocation for you.
 //!
 //! ## Examples
 //!

@@ -2,10 +2,10 @@
 //! [library][libraries].
 //! [libraries]: ../libraries/index.html
 //!
-//! A binary defines one or usually many operations, sharing related functionalities, which are
+//! A binary defines one or (more often) many operations, which share related functionalities and are
 //! provided by a specific [library][libraries] such as [Blas][blas].
 //!
-//! A binary needs to be 'build', which is handled at the specific framework implementation of a
+//! A binary needs to be 'built', which is handled by the specific framework implementation of a
 //! binary representation, and returns initialized operations based on a [library][libraries].
 //!
 //! You are ususally not interacting with a binary itself, but rather use it to construct the
@@ -14,9 +14,9 @@
 //!
 //! ## Development
 //!
-//! The here provided funcionality is used to construct specific Collenchyma binaries, which are
-//! used to construct the basic computation behavior that come shipped with Collenchyma, but should
-//! allows you to define and run your own backend-agnostic programs as well.
+//! The funcionality provided here is used to construct specific Collenchyma binaries, which are
+//! used to construct the basic computation behavior that come shipped with Collenchyma. However, it should
+//! allow you to define and run your own backend-agnostic programs as well.
 //!
 //! [blas]: ../libraries/blas/index.html
 

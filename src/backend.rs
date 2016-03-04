@@ -1,7 +1,7 @@
 //! Provides the interface for running parallel computations on one ore many devices.
 //!
 //! This is the abstraction over which you are interacting with your devices. You can create a
-//! backend for computation by first choosing a specifc [Framework][frameworks] such as OpenCL and
+//! backend for computation by first choosing a specific [Framework][frameworks] such as OpenCL and
 //! afterwards selecting one or many available hardwares to create a backend.
 //!
 //! A backend provides you with the functionality of managing the memory of the devices and copying

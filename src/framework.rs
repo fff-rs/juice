@@ -2,12 +2,12 @@
 //! CUDA, etc..
 //! [hardware]: ../hardware/index.html
 //!
-//! The default Framework would be plain host CPU for common computation. To make use of other
+//! The default Framework would be a plain host CPU for common computation. To make use of other
 //! computation hardwares such as GPUs you would choose other computation Frameworks such as OpenCL
 //! or CUDA, which provide the access to those hardwares for computation.
 //!
-//! To start backend-agnostic and highly parallel computation, you start by initializing on of the
-//! Framework implementations, resulting in an initialized Framework, that contains among
+//! To start backend-agnostic and highly parallel computation, you start by initializing one of the
+//! Framework implementations, resulting in an initialized Framework, that contains, among
 //! other things, a list of all available hardwares through that framework.
 //!
 //! ## Examples
