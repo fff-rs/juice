@@ -7,6 +7,7 @@ Compile and call the build.
 $ cargo build
 $ target/debug/leaf-examples --help
 ```
+*Note for OSX El Capitan users: `openssl` no longer ships with OSX by default. `brew link --force openssl` should fix the problem. If not, [see this Github issue](https://github.com/sfackler/rust-openssl/issues/255) for more details.*
 
 ## Datasets
 
