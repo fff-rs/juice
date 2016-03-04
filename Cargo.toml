@@ -2,13 +2,29 @@
 name = "leaf-examples"
 description = "Examples for the Machine Learning Framework 'Leaf'"
 version = "0.1.0"
-authors = ["Michael Hirn <mj@autumnai.com>"]
+authors = ["Michael Hirn <mj@autumnai.com>",
+           "Maximilian Goisser <max@autumnai.com>"]
 
 [dependencies]
 csv = "0.14"
-cuticula = "0.1.4"
+# cuticula = "0.1.4"
+collenchyma = "0.0.8"
+leaf = "0.2.0"
+collenchyma-blas = "0.2.0"
 hyper = "0.6"
+log = "0.3"
+env_logger = "0.3"
+
 # CLI tooling
 docopt = "0.6.75"
-docopt_macros = "0.6.75"
 rustc-serialize = "0.3"
+
+clippy = { version = "0.0.23", optional = true }
+
+[profile.dev]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 2
