@@ -1,7 +1,7 @@
 //! Provides a representation for one or many ready to use hardwares.
 //!
-//! Devices are a set of hardwares, which got initialized from the framework, in order that they
-//! are ready to receive kernel executions, event processing, memory synchronization, etc. You can
+//! Devices are a set of hardwares, which were initialized by the framework, in the order that they
+//! were ready to receive kernel executions, event processing, memory synchronization, etc. You can
 //! turn available hardware into a device, through the [backend][backend].
 //!
 //! [backend]: ../backend/index.html

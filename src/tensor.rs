@@ -1,6 +1,6 @@
 //! Provides the functionality for memory management across devices.
 //!
-//! A Tensor is a potentially multi-dimensional matrix containing information about the actual data and it's structure.
+//! A Tensor is a potentially multi-dimensional matrix containing information about the actual data and its structure.
 //! A Collenchyma Tensor tracks the memory copies of the numeric data of an Tensor across the devices of the Backend
 //! and manages
 //!
@@ -11,15 +11,15 @@
 //! This is important, as this provides a unified data interface for exectuing Tensor operations on CUDA, OpenCL and
 //! common host CPU.
 //!
-//! A [memory copy][mem] represents one logical unit of data, which might me located at the host. The
+//! A [memory copy][mem] represents one logical unit of data, which might be located at the host. The
 //! Tensor, tracks the location of the data blob across the various devices that the backend might
 //! consist of. This allows us to run operations on various backends with the same data blob.
 //!
 //! ## Terminology
 //!
 //! A Tensor is a homogeneous multi-dimensional array - a table of elements (usually numeric elements) of the same type,
-//! indexed by tuples of positive integers. In Collenchyma `dimensions` of a Tensor describe what axis are for a
-//! coordinate system. The numbers of dimensions is the `rank`. A scala value like `3` has the rank 0, and a Rust array
+//! indexed by tuples of positive integers. In Collenchyma, `dimensions` of a Tensor describe the axis for a
+//! coordinate system. The numbers of dimensions is known as the `rank`. A scalar value like `3` has the rank 0, and a Rust array
 //! like `[1, 2, 3]` has a rank of 1 as it has one dimension. A array of arrays like `[[1, 2, 3], [2, 3]]` has a rank
 //! of 2 as it has two dimensions. The number of elements for a dimension is called `length`.
 //! And the number of all elements for each dimension summed up is the `size`. These meta data about a Tensor is called

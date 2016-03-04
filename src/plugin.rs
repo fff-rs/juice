@@ -15,12 +15,12 @@
 //! of these traits for one or (even better) all available Collenchyma Frameworks - common host CPU, OpenCL,
 //! CUDA.
 //!
-//! The structure of Plugin is pretty easy with as less overhead as possible. Macros make implementations
-//! even easier. If you would like to use specific Plugins for you Backend, all you need to do is,
-//! setting them as dependencies in your Cargo file in addition to the Collenchyma crate. The Plugin
+//! The structure of Plugin is pretty simple with as little overhead as possible. Macros make implementations
+//! even easier. If you would like to use specific Plugins for you Backend, all you need to do is
+//! set them as dependencies in your Cargo file in addition to the Collenchyma crate. The Plugin
 //! then automatically extends the Backend provided by Collenchyma.
 //!
-//! If you would like to extend the Backend with your own Plugin, than this is a straight forward process.
+//! Extending the Backend with your own Plugin is a straight forward process.
 //! For now we recommend that you take a look at the general code structure of [Collenchyma-BLAS][collenchyma-blas]
 //! or its documentation. Let us now about your Plugin on the Gitter chat, we are happy to feature
 //! your Collenchyma Plugin on the README.
@@ -80,4 +80,3 @@ impl From<Error> for ::error::Error {
         ::error::Error::Plugin(err)
     }
 }
-

@@ -5,13 +5,12 @@
 //! devices. An Operation is a very similar to a usual function and defines usually one or many
 //! arguments over which the operation then will happen.
 //!
-//! You are usually not interaction with an operation directly. To execute an operation you would
-//! use the [backend][backend]. Also you usually will not initialize your operations directly,
-//! this happens usually automatically at the initialization of a [binary][binary].
+//! You are usually not interacting with an operation directly. To execute an operation you would
+//! use the [backend][backend]. Also you will rarely initialize your operations directly,
+//! as this happens automatically at the initialization of a [binary][binary].
 //!
 //! ## Development
 //!
-//! The here provided functionality is used to construct specific Collenchyma operations, which are
 //! The functionality provided by this module is used to construct the basic operations that come
 //! shipped with Collenchyma, but should also allow you to define and run your own backend-agnostic
 //! operations as well.
