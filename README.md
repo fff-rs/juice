@@ -1,16 +1,16 @@
 # collenchyma-BLAS • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma-blas.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma-blas) [![Coverage Status](https://coveralls.io/repos/autumnai/collenchyma-blas/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/collenchyma-blas?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma-blas)](https://crates.io/crates/collenchyma-blas) [![License](https://img.shields.io/crates/l/collenchyma-blas.svg)](LICENSE)
 
-collenchyma-NN provides full BLAS support for [Collenchyma][collenchyma],
+collenchyma-BLAS provides full BLAS support for [Collenchyma][collenchyma],
 so you can use Basic Linear Algebra Subprograms on servers, desktops or mobiles,
 GPUs, FPGAs or CPUS, without carrying about OpenCL or CUDA support on the
 machine.
 
-collenchyma-NN was started at [Autumn][autumn] for the Rust Machine Intelligence
+collenchyma-BLAS was started at [Autumn][autumn] for the Rust Machine Intelligence
 Framework [Leaf][leaf].
 
 For more information,
 
-* see collenchyma-NN's [Documentation](http://autumnai.github.io/collenchyma-nn)
+* see collenchyma-BLAS's [Documentation](http://autumnai.github.io/collenchyma-blas)
 * visit [Collenchyma][collenchyma] for portable operations and other Plugins.
 * or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
 
