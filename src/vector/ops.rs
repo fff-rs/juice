@@ -388,6 +388,8 @@ mod dotc_tests {
 }
 
 /// Computes the sum of the absolute values of elements in a vector.
+///
+/// Complex vectors use `||Re(x)||_1 + ||Im(x)||_1`
 pub trait Asum: Sized {
     fn asum<V: ?Sized + Vector<Self>>(x: &V) -> Self;
 }
@@ -492,7 +494,11 @@ mod nrm2_tests {
     }
 }
 
-/// Finds the index of the maximum element in a vector.
+/// Finds the index of the element with maximum absolute value in a vector.
+///
+/// Complex vectors maximize the value `|Re(x_k)| + |Im(x_k)|`.
+///
+/// The first index with a maximum is returned.
 pub trait Iamax: Sized {
     fn iamax<V: ?Sized + Vector<Self>>(x: &V) -> usize;
 }
