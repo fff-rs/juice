@@ -4,6 +4,8 @@ CLI for running [leaf](https://github.com/autumnai/leaf) examples. More examples
 
 ## Install CLI
 
+**DISCLAIMER: Currently both CUDA and cuDNN are required for the examples to build.**
+
 Compile and call the build.
 ```bash
 # install rust, if you need to
