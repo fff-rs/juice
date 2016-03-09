@@ -4,7 +4,6 @@ version = "0.1.0"
 dependencies = [
  "clippy 0.0.23 (registry+https://github.com/rust-lang/crates.io-index)",
  "collenchyma 0.0.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "collenchyma-blas 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "csv 0.14.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt 0.6.78 (registry+https://github.com/rust-lang/crates.io-index)",
  "env_logger 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",

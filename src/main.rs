@@ -7,7 +7,6 @@ extern crate log;
 extern crate env_logger;
 extern crate leaf;
 extern crate collenchyma as co;
-extern crate collenchyma_blas as coblas;
 
 use std::io::prelude::*;
 use std::fs::File;

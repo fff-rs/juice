@@ -6,12 +6,13 @@ authors = ["Michael Hirn <mj@autumnai.com>",
            "Maximilian Goisser <max@autumnai.com>"]
 
 [dependencies]
-csv = "0.14"
 # cuticula = "0.1.4"
-collenchyma = "0.0.8"
-leaf = "0.2.0"
-collenchyma-blas = "0.2.0"
+leaf = { version = "0.2.0", default-features = false }
+collenchyma = { version = "0.0.8", default-features = false }
+
+csv = "0.14"
 hyper = "0.6"
+
 log = "0.3"
 env_logger = "0.3"
 
@@ -20,6 +21,12 @@ docopt = "0.6.75"
 rustc-serialize = "0.3"
 
 clippy = { version = "0.0.23", optional = true }
+
+[features]
+default = ["native", "opencl", "cuda"]
+native = ["leaf/native", "collenchyma/native"]
+opencl = ["leaf/opencl", "collenchyma/opencl"]
+cuda = ["leaf/cuda", "collenchyma/cuda"]
 
 [profile.dev]
 opt-level = 0
