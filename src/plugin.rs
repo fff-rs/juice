@@ -9,7 +9,7 @@
 //!
 //! So extending the Backend with operations is easy. In Collenchyma we call crates, which provide
 //! operations for the Backend, Plugins. Plugins are usually a group of related operations of a common
-//! field. Two examples for Collenchyma Plugins are [BLAS][collenchyma-blas] and [NN][ollenchyma-nn].
+//! field. Two examples for Collenchyma Plugins are [BLAS][collenchyma-blas] and [NN][collenchyma-nn].
 //!
 //! A Plugin does roughly two important things. It provides generic traits and the explicit implementation
 //! of these traits for one or (even better) all available Collenchyma Frameworks - common host CPU, OpenCL,
@@ -39,7 +39,7 @@ pub mod numeric_helpers {
 #[derive(Debug, Copy, Clone)]
 /// Defines a high-level Plugin Error.
 pub enum Error {
-    /// Failure at receiving the correct device memory from the SharedMemory.
+    /// Failure at receiving the correct device memory from the SharedTensor.
     MissingMemoryForDevice(&'static str),
     /// Failure at the execution of the Operation.
     Operation(&'static str),
