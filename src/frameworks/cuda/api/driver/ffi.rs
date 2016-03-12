@@ -593,6 +593,8 @@ pub type __compar_fn_t =
                               -> ::libc::c_int>;
 pub type CUdeviceptr = ::libc::c_ulonglong;
 pub type CUdevice = ::libc::c_int;
+#[allow(missing_copy_implementations)]
+#[derive(Debug)]
 pub enum Struct_CUctx_st { }
 pub type CUcontext = *mut Struct_CUctx_st;
 pub enum Struct_CUmod_st { }
@@ -704,7 +706,7 @@ pub type Enum_CUfilter_mode_enum = ::libc::c_uint;
 pub const CU_TR_FILTER_MODE_POINT: ::libc::c_uint = 0;
 pub const CU_TR_FILTER_MODE_LINEAR: ::libc::c_uint = 1;
 pub type CUfilter_mode = Enum_CUfilter_mode_enum;
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 #[repr(C)]
 pub enum CUdevice_attribute {
     CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK = 1,
