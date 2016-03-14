@@ -2,10 +2,10 @@
 //!
 //! Memory is allocated by a device in a way that it is accessible for its computations.
 //!
-//! Normally you will want to use [SharedMemory][shared_mem] which handles synchronization
+//! Normally you will want to use [SharedTensor][tensor] which handles synchronization
 //! of the latest memory copy to the required device.
 //!
-//! [shared_mem]: ../shared_mem/index.html
+//! [tensor]: ../tensor/index.html
 
 #[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
