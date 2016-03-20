@@ -168,7 +168,7 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     let mut confusion = ::leaf::solver::ConfusionMatrix::new(10);
     confusion.set_capacity(Some(1000));
 
-    let mut inp = SharedTensor::<f32>::new(backend.device(), &vec![batch_size, 1, 28, 28]).unwrap();
+    let mut inp = SharedTensor::<f32>::new(backend.device(), &vec![batch_size, 28, 28]).unwrap();
     let label = SharedTensor::<f32>::new(native_backend.device(), &vec![batch_size, 1]).unwrap();
     inp.add_device(native_backend.device()).unwrap();
 
