@@ -201,6 +201,20 @@ impl IntoTensorDesc for (usize, usize, usize, usize, usize, usize) {
     }
 }
 
+macro_rules! impl_array_into_tensor_desc {
+    ($($N:expr)+) => {
+        $(
+            impl IntoTensorDesc for [usize; $N] {
+                fn into(&self) -> TensorDesc {
+                    let slice: &[_] = self;
+                    From::from(slice)
+                }
+            }
+        )+
+    }
+}
+impl_array_into_tensor_desc!(1 2 3 4 5 6);
+
 impl ITensorDesc for TensorDesc {
     fn rank(&self) -> usize {
         self.len()
