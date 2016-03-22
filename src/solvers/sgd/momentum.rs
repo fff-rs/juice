@@ -21,7 +21,7 @@ use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 use util::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 /// Stochastic Gradient Descent with Momentum.
 ///
 /// See [module description][1] for more information.
@@ -31,6 +31,9 @@ pub struct Momentum<SolverB: IBackend + SolverOps<f32>> {
     history: Vec<ArcLock<SharedTensor<f32>>>,
     /// The backend used for computing the gradient.
     backend: Rc<SolverB>,
+
+    lr_xx: Option<SharedTensor<f32>>,
+    // momentum: SharedTensor<f32>,
 }
 
 impl<SolverB: IBackend + SolverOps<f32>> Momentum<SolverB> {
@@ -41,12 +44,30 @@ impl<SolverB: IBackend + SolverOps<f32>> Momentum<SolverB> {
     ///
     /// [2]: ../../../solver/struct.Solver.html#method.from_config
     pub fn new(backend: Rc<SolverB>) -> Momentum<SolverB> {
+        // println!("create solver");
+        // let cuda = cuda_backend();
+        // let lr = SharedTensor::<f32>::new(cuda.device(), &[1]).unwrap();
+        // let mut momentum = SharedTensor::<f32>::new(cuda.device(), &[1]).unwrap();
+        // println!("lr = {:?}", lr);
+        // lr.add_device(cuda.device()).unwrap();
+        // momentum.add_device(cuda.device()).unwrap();
+
         Momentum {
             history: Vec::new(),
-            backend: backend
+            backend: backend,
+
+            lr_xx: None,
+            // momentum: momentum,
         }
     }
 
+}
+
+fn cuda_backend() -> Backend<Cuda> {
+    let framework = Cuda::new();
+    let hardwares = &framework.hardwares().to_vec();
+    let backend_config = BackendConfig::new(framework, hardwares);
+    Backend::new(backend_config).unwrap()
 }
 
 impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGDSolver<B, NetB> for Momentum<B> {
@@ -56,28 +77,49 @@ impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGD
                             history_blob_id: usize,
                             global_lr: &f32,
                             blob_lr: &f32) {
+        let op_backend = cuda_backend();
+
+        if self.lr_xx.is_none() {
+            let lr_xx = SharedTensor::<f32>::new(op_backend.device(), &[1]).unwrap();
+            self.lr_xx = Some(lr_xx);
+        }
+
+        // let op_backend = native_backend();
+
+        // println!("before: {:?}", self.lr);
+        // let _ = self.lr.add_device(op_backend.device());
+        // // self.lr.sync(op_backend.device()).unwrap();
+        // println!("after: {:?}", self.lr);
+
         let history_blob = &self.history[history_blob_id];
         let local_momentum = config.momentum;
         let local_lr = global_lr * blob_lr;
 
-        let native_backend = native_backend();
+        // let op_backend = native_backend();
         let backend = ISolver::<B, NetB>::backend(self);
         let device = IBackend::device(backend);
 
-        let lr_shared = native_scalar(local_lr);
-        let momentum_shared = native_scalar(local_momentum);
+        println!("local_lr {}", local_lr);
+        let mut lr_shared = native_scalar(local_lr);
+        let _ = lr_shared.add_device(op_backend.device());
+        lr_shared.sync(op_backend.device()).unwrap();
 
-        let _ = weight_gradient.write().unwrap().add_device(native_backend.device());
-        weight_gradient.write().unwrap().sync(native_backend.device()).unwrap();
-        let _ = history_blob.write().unwrap().add_device(native_backend.device());
-        history_blob.write().unwrap().sync(native_backend.device()).unwrap();
-        Axpby::<f32>::axpby_plain(&native_backend,
+        let mut momentum_shared = native_scalar(local_momentum);
+        let _ = momentum_shared.add_device(op_backend.device());
+        momentum_shared.sync(op_backend.device()).unwrap();
+
+
+        let _ = weight_gradient.write().unwrap().add_device(op_backend.device());
+        weight_gradient.write().unwrap().sync(op_backend.device()).unwrap();
+        let _ = history_blob.write().unwrap().add_device(op_backend.device());
+        history_blob.write().unwrap().sync(op_backend.device()).unwrap();
+        Axpby::<f32>::axpby_plain(&op_backend,
                                                &lr_shared,
                                                &weight_gradient.read().unwrap(),
                                                &momentum_shared,
                                                &mut history_blob.write().unwrap()).unwrap();
 
-        native_backend.copy_plain(
+        op_backend.copy_plain(
             &history_blob.read().unwrap(), &mut weight_gradient.write().unwrap()).unwrap();
     }
 }
