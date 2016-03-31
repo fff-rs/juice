@@ -25,7 +25,6 @@ linear-map = "0.0.4"
 clippy = { version = "0.0.27", optional = true }
 
 [dev-dependencies]
-
 rand = "0.3"
 
 [features]
