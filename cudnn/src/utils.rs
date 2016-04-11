@@ -1,7 +1,8 @@
 //! Describes utility functionality for CUDA cuDNN.
 use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor};
 use ffi::*;
-use std::marker::PhantomData;
+
+use num::traits::*;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the available data types for the CUDA cuDNN data representation.
@@ -13,6 +14,23 @@ pub enum DataType {
     /// F16 (no native Rust support yet)
     Half,
 }
+
+/// CuDnn type info for generic use.
+pub trait DataTypeInfo {
+    /// Mostly internal.
+    fn cudnn_data_type() -> DataType;
+}
+impl DataTypeInfo for f32 {
+    fn cudnn_data_type() -> DataType {
+        DataType::Float
+    }
+}
+impl DataTypeInfo for f64 {
+    fn cudnn_data_type() -> DataType {
+        DataType::Double
+    }
+}
+// TODO f16
 
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 /// Provides a convenient interface to access cuDNN's convolution parameters,
@@ -173,36 +191,23 @@ impl PoolingConfig {
 ///
 /// For improved performance it is advised to use beta[0] = 0.0. Use a non-zero value for
 /// beta[0] only when blending with prior values stored in the output tensor is needed.
-pub struct ScalParams<T> {
+pub struct ScalParams<T>
+    where T: Float + DataTypeInfo,
+{
     /// Alpha
-    pub a: *const ::libc::c_void,
+    pub a: T,
     /// Beta
-    pub b: *const ::libc::c_void,
-    scal_type: PhantomData<T>,
+    pub b: T,
 }
 
-impl Default for ScalParams<f32> {
+impl<T> Default for ScalParams<T>
+    where T: Float + Zero + One + DataTypeInfo,
+{
     /// Provides default values for ScalParams<f32>.
-    fn default() -> ScalParams<f32> {
-        let alpha_ptr: *const ::libc::c_void = *&[1.0f32].as_ptr() as *const ::libc::c_void;
-        let beta_ptr: *const ::libc::c_void = *&[0.0f32].as_ptr() as *const ::libc::c_void;
+    fn default() -> ScalParams<T> {
         ScalParams {
-            a: alpha_ptr,
-            b: beta_ptr,
-            scal_type: PhantomData,
-        }
-    }
-}
-
-impl Default for ScalParams<f64> {
-    /// Provides default values for ScalParams<f64>.
-    fn default() -> ScalParams<f64> {
-        let alpha_ptr: *const ::libc::c_void = *&[1.0f64].as_ptr() as *const ::libc::c_void;
-        let beta_ptr: *const ::libc::c_void = *&[0.0f64].as_ptr() as *const ::libc::c_void;
-        ScalParams {
-            a: alpha_ptr,
-            b: beta_ptr,
-            scal_type: PhantomData,
+            a: One::one(),
+            b: Zero::zero(),
         }
     }
 }
