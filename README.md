@@ -24,24 +24,24 @@ This Plugins provides the following operations to the Collenchyma Backend.
 Every Operation includes forward + backward. A `-` means not yet implemented.
 More information can be found in the [Documentation][docs-ops].
 
-| Operation            | CUDA       | OpenCL    | Native    |
-|---	                 |---	        |---        |---        |
-| Sigmoid  	           | cuDNN v3  	| -  	      | Rust	  	|
-| SigmoidPointwise     | cuDNN v3  	| -  	      |   	      |
-| ReLU  	             | cuDNN v3   | -  	      | Rust      |
-| ReLUPointwise        | cuDNN v3   | -  	      |           |
-| Tanh  	   	         | cudNN v3   | - 	      | Rust      |
-| TanhPointwise  	   	 | cudNN v3   | - 	      |           |
-|   	   	             |  	        |  	        |           |
-| Normalization (LRN)  | cudNN v3   | - 	      | -         |
-|   	   	             |  	        |  	        |           |
-| Convolution          | cudNN v3   | - 	      | -         |
-|   	   	             |  	        |  	        |           |
-| Softmax              | cudNN v3   | - 	      | Rust      |
-| LogSoftmax           | cudNN v3   | - 	      | Rust      |
-|   	   	             |  	        |  	        |           |
-| Pooling Max          | cudNN v3   | - 	      | -         |
-| Pooling Avg          | cudNN v3   | - 	      | -         |
+| Operation            | CUDA                 | OpenCL    | Native    |
+|---	                 |---	                  |---        |---        |
+| Sigmoid  	           | { cuDNN v3, v4 }     | -  	      | Rust	  	|
+| SigmoidPointwise     | { cuDNN v3, v4 }  	  | -  	      |   	      |
+| ReLU  	             | { cuDNN v3, v4 }     | -  	      | Rust      |
+| ReLUPointwise        | { cuDNN v3, v4 }     | -  	      |           |
+| Tanh  	   	         | { cuDNN v3, v4 }     | - 	      | Rust      |
+| TanhPointwise  	   	 | { cuDNN v3, v4 }     | - 	      |           |
+|   	   	             |  	                  |  	        |           |
+| Normalization (LRN)  | { cuDNN v3, v4 }     | - 	      | -         |
+|   	   	             |  	                  |  	        |           |
+| Convolution          | { cuDNN v3, v4 }     | - 	      | -         |
+|   	   	             |  	                  |  	        |           |
+| Softmax              | { cuDNN v3, v4 }     | - 	      | Rust      |
+| LogSoftmax           | { cuDNN v3, v4 }     | - 	      | Rust      |
+|   	   	             |  	                  |  	        |           |
+| Pooling Max          | { cuDNN v3, v4 }     | - 	      | -         |
+| Pooling Avg          | { cuDNN v3, v4 }     | - 	      | -         |
 
 Kudos to [ehiggs][ehiggs], for implementing the native Rust operations.
 
