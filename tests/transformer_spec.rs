@@ -1,4 +1,5 @@
 extern crate cuticula;
+extern crate collenchyma;
 
 #[cfg(test)]
 mod transformer_spec {
@@ -6,6 +7,7 @@ mod transformer_spec {
     use cuticula::{Set, Transformer, Image};
     use cuticula::image::{Crop};
     use cuticula::transformer::TransformerError;
+    use collenchyma::prelude::*;
     use std::path::Path;
 
     fn expected_result() -> Vec<f32> {
@@ -16,39 +18,23 @@ mod transformer_spec {
     fn transform_returns_a_valid_result() {
         let path = Path::new("tests/assets/test_image.png");
         let img = Image::from_path(&path);
-        match img.transform(vec![2, 2, 3]) {
+        match img.transform(&vec![2, 2, 3]) {
             Ok(_) => assert!(true),
             _ => assert!(false)
         }
     }
 
     #[test]
-    fn transform_returns_a_blob_with_data() {
+    fn transform_returns_a_tensor() {
         let path = Path::new("tests/assets/test_image.png");
         let img = Image::from_path(&path);
-        match img.transform(vec![2, 2, 3]) {
-            Ok(blob) => {
-                let blob_data = blob.cpu_data();
-                assert_eq!(expected_result(), *blob_data);
+        match img.transform(&vec![2, 2, 3]) {
+            Ok(tensor) => {
+                let native_backend = Backend::<Native>::default().unwrap();
+                let data = tensor.get(native_backend.device()).unwrap().as_native().unwrap().as_slice();
+                assert_eq!(expected_result(), data);
             },
             _ => assert!(false)
-        }
-    }
-
-    #[test]
-    fn transform_writs_correctly_to_blob_data() {
-        let path = Path::new("tests/assets/test_image.png");
-        let img = Image::from_path(&path);
-        for i in 0..2 {
-            match img.transform(vec![2, 2, 3]) {
-                Ok(blob) => {
-                    let blob_data = blob.cpu_data();
-                    if i > 1 {
-                        assert_eq!(expected_result(), *blob_data);
-                    }
-                },
-                _ => assert!(false)
-            }
         }
     }
 
@@ -56,7 +42,7 @@ mod transformer_spec {
     fn transform_returns_an_error_when_different_shape() {
         let path = Path::new("tests/assets/test_image.png");
         let img = Image::from_path(&path);
-        match img.transform(vec![3, 3, 3]) {
+        match img.transform(&vec![3, 3, 3]) {
             Err(TransformerError::InvalidShape) => assert!(true),
             _ => assert!(false)
         }
@@ -67,7 +53,7 @@ mod transformer_spec {
         let path = Path::new("tests/assets/test_image.png");
         let img = Image::from_path(&path);
         let crop = Crop { x: 0, y: 0, width: 1, height: 1 };
-        match img.set(crop).transform(vec![1, 1, 3]) {
+        match img.set(crop).transform(&vec![1, 1, 3]) {
             Ok(_) => assert!(true),
             _ => assert!(false)
         }

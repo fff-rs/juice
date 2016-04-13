@@ -12,12 +12,20 @@ keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
 license = "MIT"
 
 [dependencies]
-phloem = "0.2.4"
-image = "0.4.0"
+collenchyma = { version = "0.0.8", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+
+image = "0.7.0"
 murmurhash3 = "0.0.5"
 modifier = "0.1"
-clippy = "0.0.23"
+
+clippy = { version = "0.0.54", optional = true }
 
 [features]
-default = []
-dev = [] # possibly for clippy
+default = ["native"]
+native = []
+cuda = ["collenchyma/cuda"]
+opencl = ["collenchyma/opencl"]
+
+dev = []
+lint = ["clippy"]
+travis = []

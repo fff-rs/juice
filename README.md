@@ -4,7 +4,7 @@ Cuticula tries to provide a smart and customizable pipeline for preprocessing
 data for machine learning tasks. Clean preprocessing methods for the most
 common type of data, makes preprocessing easy. Cuticula offers a pipeline of
 Modifiers and Transformers to turn non-numeric data into a safe and consistent
-numeric output - known as [`Blobs`](https://github.com/autumnai/phloem). For
+numeric output in the form of Collenchyma's [`SharedTensor`](https://github.com/autumnai/collenchyma). For
 putting your preprocessed data to use, you might like to use the Machine
 Learning Framework [`Leaf`](https://github.com/autumnai/leaf).
 
@@ -38,12 +38,12 @@ image.set(Resize(20, 20))
 ```
 
 After one, none or many modifications through Modifiers, the Data Type can then
-finally be transformed into a [`Blob`](https://github.com/autumnai/phloem)
+finally be transformed into a [`SharedTensor`](https://github.com/autumnai/collenchyma)
 (numeric Vector). Taking `data_type` from the above example:
 
 ```
-// the Vector secures the correct shape and capacity of the final Blob
-let final_blob = data_type.transform(vec![20, 20, 3]).unwrap();
+// the Vector secures the correct shape and capacity of the final SharedTensor
+let final_tensor = data_type.transform(vec![20, 20, 3]).unwrap();
 ```
 
 ## Transformable Data Types
