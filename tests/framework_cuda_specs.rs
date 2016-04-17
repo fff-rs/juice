@@ -48,7 +48,8 @@ mod framework_cuda_spec {
         let cuda = Cuda::new();
         let device = cuda.new_device(&cuda.hardwares()[0..1]).unwrap();
         for _ in 0..256 {
-            let _ = &mut SharedTensor::<f32>::new(&device, &vec![256, 1024, 128]).unwrap();
+            let x = &mut SharedTensor::<f32>::new(&vec![256, 1024, 128]).unwrap();
+            x.write_only(&device).unwrap();
         }
     }
 

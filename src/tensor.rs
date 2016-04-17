@@ -40,10 +40,10 @@
 //! // allocate memory
 //! let native = Native::new();
 //! let device = native.new_device(native.hardwares()).unwrap();
-//! let shared_data = &mut SharedTensor::<i32>::new(&device, &5).unwrap();
+//! let shared_data = &mut SharedTensor::<i32>::new(&5).unwrap();
 //! // fill memory with some numbers
-//! let local_data = [0, 1, 2, 3, 4];
-//! let data = shared_data.get_mut(&device).unwrap().as_mut_native().unwrap();
+//! let mut mem = shared_data.write_only(&device).unwrap().as_mut_native().unwrap();
+//! mem.as_mut_slice::<i32>().clone_from_slice(&[0, 1, 2, 3, 4]);
 //! # }
 //! ```
 

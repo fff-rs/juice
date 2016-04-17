@@ -31,8 +31,7 @@ mod tensor_spec {
 
     #[test]
     fn it_resizes_tensor() {
-        let native = Backend::<Native>::default().unwrap();
-        let mut tensor = SharedTensor::<f32>::new(native.device(), &(10, 20, 30)).unwrap();
+        let mut tensor = SharedTensor::<f32>::new(&(10, 20, 30)).unwrap();
         assert_eq!(tensor.desc(), &[10, 20, 30]);
         tensor.resize(&(2, 3, 4, 5)).unwrap();
         assert_eq!(tensor.desc(), &[2, 3, 4, 5]);
