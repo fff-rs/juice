@@ -11,6 +11,12 @@ pub struct Resize {
     pub height: u32,
 }
 
+impl Modifier<Image> for Resize {
+    fn modify(self, image: &mut Image) {
+        image.value = image.value.resize(self.width, self.height, FilterType::Nearest)
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 /// Crop Modifier for `Image`
 pub struct Crop {
@@ -24,14 +30,18 @@ pub struct Crop {
     pub height: u32,
 }
 
-impl Modifier<Image> for Resize {
-    fn modify(self, image: &mut Image) {
-        image.value = image.value.resize(self.width, self.height, FilterType::Nearest)
-    }
-}
-
 impl Modifier<Image> for Crop {
     fn modify(self, image: &mut Image) {
         image.value = image.value.crop(self.x, self.y, self.width, self.height)
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+/// Grayscale Modifier for `Image`
+pub struct Grayscale;
+
+impl Modifier<Image> for Grayscale {
+    fn modify(self, image: &mut Image) {
+        image.value = image.value.grayscale();
     }
 }
