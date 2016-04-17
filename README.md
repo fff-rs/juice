@@ -10,17 +10,6 @@ Learning Framework [`Leaf`](https://github.com/autumnai/leaf).
 
 For more information see the [Documentation](http://autumnai.github.io/cuticula).
 
-
-## Contributing
-
-Want to contribute? Awesome! We have [instructions to help you get started contributing code or documentation](CONTRIBUTING.md).
-
-Autumn has a mostly real-time collaboration culture and happens on the [Autumn
-Gitter Channels](https://gitter.im/autumnai/autumn). Or you reach out to the
-Maintainers. e.g.
-{[@MJ](https://twitter.com/mjhirn), [@hobofan](https://twitter.com/hobofan)}.
-
-
 ## Architecture
 
 Cuticula exposes several standard data types, which might need a numeric
@@ -78,3 +67,26 @@ impl Modifier<Image> for CustomModifier {
     }
 }
 ```
+
+## Contributing
+
+Want to contribute? Awesome! We have [instructions to help you get started contributing code or documentation](CONTRIBUTING.md).
+
+Autumn has a mostly real-time collaboration culture and happens on the [Autumn
+Gitter Channels](https://gitter.im/autumnai/autumn). Or you reach out to the
+Maintainers. e.g.
+{[@MJ](https://twitter.com/mjhirn), [@hobofan](https://twitter.com/hobofan)}.
+
+Unless you explicitly state otherwise, any contribution intentionally
+submitted for inclusion in the work by you, as defined in the Apache-2.0
+license, shall be dual licensed as below, without any additional terms or
+conditions.
+
+## License
+
+Licensed under either of
+
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
