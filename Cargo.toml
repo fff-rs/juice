@@ -9,7 +9,7 @@ documentation = "http://autumnai.github.io/cuticula"
 readme = "README.md"
 keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
 "machine-learning"]
-license = "MIT"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 collenchyma = { version = "0.0.8", default-features = false, features = ["native"] } # native feature to read/write data into tensors
