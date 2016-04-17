@@ -157,7 +157,6 @@ extern crate enum_primitive;
 extern crate lazy_static;
 extern crate num;
 extern crate byteorder;
-extern crate linear_map;
 
 pub mod backend;
 pub mod device;

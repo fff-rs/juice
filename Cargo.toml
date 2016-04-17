@@ -20,7 +20,6 @@ enum_primitive = "0.1.0"
 byteorder = "0.4"
 num = "0.1"
 lazy_static = "0.1.15"
-linear-map = "0.0.4"
 
 clippy = { version = "0.0.27", optional = true }
 
