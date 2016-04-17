@@ -2,7 +2,7 @@
 
 use std::{fmt, error};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Defines OpenCL errors.
 pub enum Error {
     /// Failure with provided platform.

@@ -2,7 +2,7 @@
 
 use std::{fmt, error};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Defines the Native Error.
 pub enum Error {
     /// Failure related to allocation, syncing memory

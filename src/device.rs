@@ -64,7 +64,7 @@ pub enum DeviceType {
     Cuda(CudaContext),
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Defines a generic set of Memory Errors.
 pub enum Error {
     /// Failures related to the Native framework implementation.

@@ -4,6 +4,7 @@ extern crate libc;
 #[cfg(test)]
 mod shared_memory_spec {
     use co::prelude::*;
+    use co::tensor::Error;
 
     fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
         match mem {
@@ -57,6 +58,24 @@ mod shared_memory_spec {
             Ok(&mut MemoryType::OpenCL(_)) => {},
             _ => assert!(false),
         }
+    }
+
+    #[test]
+    #[cfg(feature = "native")]
+    fn it_fails_on_initialized_memory_read() {
+        let ntv = Native::new();
+        let cpu = ntv.new_device(ntv.hardwares()).unwrap();
+        let shared_data = &mut SharedTensor::<f32>::new(&10).unwrap();
+        assert_eq!(shared_data.read(&cpu).unwrap_err(),
+                   Error::UninitializedMemory);
+        assert_eq!(shared_data.read_write(&cpu).unwrap_err(),
+                   Error::UninitializedMemory);
+
+        shared_data.write_only(&cpu).unwrap();
+        shared_data.drop_device(&cpu).unwrap();
+
+        assert_eq!(shared_data.read(&cpu).unwrap_err(),
+                   Error::UninitializedMemory);
     }
 
     #[test]
