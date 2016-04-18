@@ -495,14 +495,6 @@ impl<T> SharedTensor<T> {
 /// Errors than can occur when synchronizing memory.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Error {
-    /// No copy on source device.
-    MissingSource(&'static str),
-    /// No copy on destination device.
-    MissingDestination(&'static str),
-    /// No valid MemoryType provided. Other than expected.
-    InvalidMemory(&'static str),
-    /// No memory allocation on specified device happened.
-    InvalidMemoryAllocation(&'static str),
     /// Unable to remove Memory copy from SharedTensor.
     InvalidRemove(&'static str),
     /// Framework error at memory allocation.
@@ -526,10 +518,6 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::MissingSource(ref err) => err,
-            Error::MissingDestination(ref err) => err,
-            Error::InvalidMemory(ref err) => err,
-            Error::InvalidMemoryAllocation(ref err) => err,
             Error::InvalidRemove(ref err) => err,
             Error::MemoryAllocationError(ref err) => err.description(),
             Error::MemorySynchronizationError(ref err) => err.description(),
@@ -543,10 +531,6 @@ impl error::Error for Error {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
-            Error::MissingSource(_) => None,
-            Error::MissingDestination(_) => None,
-            Error::InvalidMemory(_) => None,
-            Error::InvalidMemoryAllocation(_) => None,
             Error::InvalidRemove(_) => None,
             Error::MemoryAllocationError(ref err) => Some(err),
             Error::MemorySynchronizationError(ref err) => Some(err),
