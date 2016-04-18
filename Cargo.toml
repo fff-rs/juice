@@ -22,6 +22,7 @@ num = "0.1"
 lazy_static = "0.1.15"
 
 clippy = { version = "0.0.27", optional = true }
+compiletest_rs = { version = "0.1", optional = true }
 
 [dev-dependencies]
 rand = "0.3"
@@ -35,7 +36,7 @@ opencl = []
 unstable_alloc = [] # faster but unstable memory allocation on native machines
 
 dev = []
-unstable = [] # for travis-cargo
+unstable = ["compiletest_rs"] # for travis-cargo
 travis = ["native"]
 lint = ["clippy"]
 
