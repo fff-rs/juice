@@ -59,14 +59,14 @@ fn sync_back_and_forth(
 ) {
     b.iter(|| {
         for _ in 0..n {
-            match mem.sync(&cl_device) {
+            match mem.read_write(&cl_device) {
                 Ok(_) => assert!(true),
                 Err(err) => {
                     println!("{:?}", err);
                     assert!(false);
                 }
             }
-            match mem.sync(&nt_device) {
+            match mem.read_write(&nt_device) {
                 Ok(_) => assert!(true),
                 Err(err) => {
                     println!("{:?}", err);
@@ -112,8 +112,8 @@ fn bench_256_sync_1mb_native_opencl(b: &mut Bencher) {
     // if let &DeviceType::OpenCL(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedTensor::<u8>::new(nt_device, &1_048_576).unwrap();
-    mem.add_device(&cl_device);
+    let mem = &mut SharedTensor::<u8>::new(&1_048_576).unwrap();
+    mem.write_only(&cl_device);
     bench_256_sync_1mb_native_opencl_profile(b, nt_device, cl_device, mem);
 }
 
@@ -133,8 +133,8 @@ fn bench_256_sync_1mb_native_cuda(b: &mut Bencher) {
     // if let &DeviceType::Cuda(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedTensor::<u8>::new(nt_device, &1_048_576).unwrap();
-    mem.add_device(&cl_device);
+    let mem = &mut SharedTensor::<u8>::new(&1_048_576).unwrap();
+    mem.write_only(&cl_device);
     bench_256_sync_1mb_native_cuda_profile(b, nt_device, cl_device, mem);
 }
 
@@ -154,8 +154,8 @@ fn bench_2_sync_128mb_native_cuda(b: &mut Bencher) {
     // if let &DeviceType::Cuda(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedTensor::<u8>::new(nt_device, &(128 * 1_048_576)).unwrap();
-    mem.add_device(&cl_device);
+    let mem = &mut SharedTensor::<u8>::new(&(128 * 1_048_576)).unwrap();
+    mem.write_only(&cl_device);
     bench_2_sync_128mb_native_cuda_profile(b, nt_device, cl_device, mem);
 }
 
