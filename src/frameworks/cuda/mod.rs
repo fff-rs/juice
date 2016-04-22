@@ -1,11 +1,12 @@
 //! Provides BLAS for a CUDA backend.
 #![allow(missing_docs)]
-use ::plugin::*;
 use collenchyma::backend::Backend;
-use collenchyma::tensor::ITensorDesc;
+use collenchyma::tensor::{SharedTensor, ITensorDesc};
 use collenchyma::plugin::Error as PluginError;
 use collenchyma::frameworks::cuda::Cuda;
 use cublas;
+use ::plugin::*;
+use ::transpose::Transpose;
 
 #[macro_use]
 pub mod helper;
