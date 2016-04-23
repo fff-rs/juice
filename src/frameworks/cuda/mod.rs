@@ -1,9 +1,11 @@
 //! Provides NN for a CUDA backend.
 #![allow(missing_docs)]
 use ::plugin::*;
+use co::Error as CoError;
 use co::prelude::*;
 use co::plugin::Error as PluginError;
 use cudnn::*;
+use cudnn::utils::ScalParams;
 
 #[macro_use]
 pub mod helper;
@@ -316,10 +318,6 @@ impl_ops_log_softmax_for!(f32, Backend<Cuda>);
 impl_ops_lrn_for!(f32, Backend<Cuda>);
 impl_ops_pooling_for!(f32, Backend<Cuda>);
 
-impl_ops_sigmoid_pointwise_for!(f32, Backend<Cuda>);
-impl_ops_relu_pointwise_for!(f32, Backend<Cuda>);
-impl_ops_tanh_pointwise_for!(f32, Backend<Cuda>);
-
 impl NN<f64> for Backend<Cuda> {
     type CC = utils::ConvolutionConfig;
     type CLRN = utils::NormalizationConfig;
@@ -337,7 +335,3 @@ impl_ops_softmax_for!(f64, Backend<Cuda>);
 impl_ops_log_softmax_for!(f64, Backend<Cuda>);
 impl_ops_lrn_for!(f64, Backend<Cuda>);
 impl_ops_pooling_for!(f64, Backend<Cuda>);
-
-impl_ops_sigmoid_pointwise_for!(f64, Backend<Cuda>);
-impl_ops_relu_pointwise_for!(f64, Backend<Cuda>);
-impl_ops_tanh_pointwise_for!(f64, Backend<Cuda>);
