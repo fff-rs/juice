@@ -24,7 +24,7 @@ mod shared_memory_spec {
     fn it_creates_new_shared_memory_for_native() {
         let ntv = Native::new();
         let cpu = ntv.new_device(ntv.hardwares()).unwrap();
-        let shared_data = &mut SharedTensor::<f32>::new(&10).unwrap();
+        let mut shared_data = SharedTensor::<f32>::new(&10);
         match shared_data.write_only(&cpu).unwrap() {
             &mut MemoryType::Native(ref dat) => {
                 let data = dat.as_slice::<f32>();
@@ -40,7 +40,7 @@ mod shared_memory_spec {
     fn it_creates_new_shared_memory_for_cuda() {
         let ntv = Cuda::new();
         let device = ntv.new_device(&ntv.hardwares()[0..1]).unwrap();
-        let shared_data = &mut SharedTensor::<f32>::new(&10).unwrap();
+        let mut shared_data = SharedTensor::<f32>::new(&10);
         match shared_data.write_only(&device) {
             Ok(&mut MemoryType::Cuda(_)) => {},
             #[cfg(any(feature = "cuda", feature = "opencl"))]
@@ -53,7 +53,7 @@ mod shared_memory_spec {
     fn it_creates_new_shared_memory_for_opencl() {
         let ntv = OpenCL::new();
         let device = ntv.new_device(&ntv.hardwares()[0..1]).unwrap();
-        let shared_data = &mut SharedTensor::<f32>::new(&10).unwrap();
+        let mut shared_data = SharedTensor::<f32>::new(&10);
         match shared_data.write_only(&device) {
             Ok(&mut MemoryType::OpenCL(_)) => {},
             _ => assert!(false),
@@ -65,7 +65,7 @@ mod shared_memory_spec {
     fn it_fails_on_initialized_memory_read() {
         let ntv = Native::new();
         let cpu = ntv.new_device(ntv.hardwares()).unwrap();
-        let shared_data = &mut SharedTensor::<f32>::new(&10).unwrap();
+        let mut shared_data = SharedTensor::<f32>::new(&10);
         assert_eq!(shared_data.read(&cpu).unwrap_err(),
                    Error::UninitializedMemory);
         assert_eq!(shared_data.read_write(&cpu).unwrap_err(),
@@ -85,7 +85,7 @@ mod shared_memory_spec {
         let nt = Native::new();
         let cu_device = cu.new_device(&cu.hardwares()[0..1]).unwrap();
         let nt_device = nt.new_device(nt.hardwares()).unwrap();
-        let mem = &mut SharedTensor::<f64>::new(&3).unwrap();
+        let mut mem = SharedTensor::<f64>::new(&3);
         write_to_memory(mem.write_only(&nt_device).unwrap(),
                         &[1.0f64, 2.0, 123.456]);
         match mem.read(&cu_device) {
@@ -115,7 +115,7 @@ mod shared_memory_spec {
         let nt = Native::new();
         let cl_device = cl.new_device(&cl.hardwares()[0..1]).unwrap();
         let nt_device = nt.new_device(nt.hardwares()).unwrap();
-        let mem = &mut SharedTensor::<f64>::new(&3).unwrap();
+        let mut mem = SharedTensor::<f64>::new(&3);
         write_to_memory(mem.write_only(&nt_device).unwrap(),
                         &[1.0f64, 2.0, 123.456]);
         match mem.read(&cl_device) {
@@ -127,7 +127,7 @@ mod shared_memory_spec {
         }
         // It has not successfully synced to the device.
         // Not the other way around.
-        mem.drop_device(&nt_device);
+        mem.drop_device(&nt_device).unwrap();
         match mem.read(&nt_device) {
             Ok(m) => assert_eq!(m.as_native().unwrap().as_slice::<f64>(),
                                 [1.0, 2.0, 123.456]),
@@ -140,13 +140,13 @@ mod shared_memory_spec {
 
     #[test]
     fn it_reshapes_correctly() {
-        let mut shared_data = &mut SharedTensor::<f32>::new(&10).unwrap();
+        let mut shared_data = SharedTensor::<f32>::new(&10);
         assert!(shared_data.reshape(&vec![5, 2]).is_ok());
     }
 
     #[test]
     fn it_returns_err_for_invalid_size_reshape() {
-        let mut shared_data = &mut SharedTensor::<f32>::new(&10).unwrap();
+        let mut shared_data = SharedTensor::<f32>::new(&10);
         assert!(shared_data.reshape(&vec![10, 2]).is_err());
     }
 }

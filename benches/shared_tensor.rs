@@ -112,7 +112,7 @@ fn bench_256_sync_1mb_native_opencl(b: &mut Bencher) {
     // if let &DeviceType::OpenCL(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedTensor::<u8>::new(&1_048_576).unwrap();
+    let mem = &mut SharedTensor::<u8>::new(&1_048_576);
     mem.write_only(&cl_device);
     bench_256_sync_1mb_native_opencl_profile(b, nt_device, cl_device, mem);
 }
@@ -133,7 +133,7 @@ fn bench_256_sync_1mb_native_cuda(b: &mut Bencher) {
     // if let &DeviceType::Cuda(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedTensor::<u8>::new(&1_048_576).unwrap();
+    let mem = &mut SharedTensor::<u8>::new(&1_048_576);
     mem.write_only(&cl_device);
     bench_256_sync_1mb_native_cuda_profile(b, nt_device, cl_device, mem);
 }
@@ -154,7 +154,7 @@ fn bench_2_sync_128mb_native_cuda(b: &mut Bencher) {
     // if let &DeviceType::Cuda(ref cl_d) = cl_device {
     //     println!("{:?}", cl_d.hardwares()[0].clone().load_name());
     // }
-    let mem = &mut SharedTensor::<u8>::new(&(128 * 1_048_576)).unwrap();
+    let mem = &mut SharedTensor::<u8>::new(&(128 * 1_048_576));
     mem.write_only(&cl_device);
     bench_2_sync_128mb_native_cuda_profile(b, nt_device, cl_device, mem);
 }

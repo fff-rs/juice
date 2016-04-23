@@ -40,7 +40,7 @@
 //! // allocate memory
 //! let native = Native::new();
 //! let device = native.new_device(native.hardwares()).unwrap();
-//! let shared_data = &mut SharedTensor::<i32>::new(&5).unwrap();
+//! let shared_data = &mut SharedTensor::<i32>::new(&5);
 //! // fill memory with some numbers
 //! let mut mem = shared_data.write_only(&device).unwrap().as_mut_native().unwrap();
 //! mem.as_mut_slice::<i32>().clone_from_slice(&[0, 1, 2, 3, 4]);
@@ -266,13 +266,13 @@ impl <T> fmt::Debug for SharedTensor<T> {
 impl<T> SharedTensor<T> {
     /// Create new Tensor by allocating [Memory][1] on a Device.
     /// [1]: ../memory/index.html
-    pub fn new<D: IntoTensorDesc>(desc: &D) -> Result<SharedTensor<T>, Error> {
-        Ok(SharedTensor {
+    pub fn new<D: IntoTensorDesc>(desc: &D) -> SharedTensor<T> {
+        SharedTensor {
             desc: desc.into(),
             locations: RefCell::new(Vec::new()),
             up_to_date: Cell::new(0),
             phantom: PhantomData,
-        })
+        }
     }
 
     /// Change the shape of the Tensor.
