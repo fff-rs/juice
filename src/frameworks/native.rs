@@ -254,7 +254,7 @@ mod test {
     #[test]
     fn it_converts_correctly_to_and_from_matrix() {
         let backend = get_native_backend();
-        let mut a = SharedTensor::<f32>::new(&vec![3, 2]).unwrap();
+        let mut a = SharedTensor::<f32>::new(&vec![3, 2]);
         write_to_memory(a.write_only(backend.device()).unwrap(),
             &[2f32, 5f32,
               2f32, 5f32,
