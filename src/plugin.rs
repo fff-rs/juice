@@ -30,6 +30,7 @@
 //! [collenchyma-nn]: https://github.com/autumnai/collenchyma-nn
 
 pub use self::numeric_helpers::Float;
+use tensor;
 
 /// Describes numeric types and traits for a Plugin.
 pub mod numeric_helpers {
@@ -39,8 +40,9 @@ pub mod numeric_helpers {
 #[derive(Debug, Copy, Clone)]
 /// Defines a high-level Plugin Error.
 pub enum Error {
-    /// Failure at receiving the correct device memory from the SharedTensor.
-    MissingMemoryForDevice(&'static str),
+    /// Failure related to `SharedTensor`: use of uninitialized memory,
+    /// synchronization error or memory allocation failure.
+    SharedTensor(tensor::Error),
     /// Failure at the execution of the Operation.
     Operation(&'static str),
     /// Failure at the Plugin.
@@ -50,7 +52,7 @@ pub enum Error {
 impl ::std::fmt::Display for Error {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match *self {
-            Error::MissingMemoryForDevice(ref err) => write!(f, "MissingMemoryForDevice error: {}", err),
+            Error::SharedTensor(ref err) => write!(f, "SharedTensor error: {}", err),
             Error::Operation(ref err) => write!(f, "Operation error: {}", err),
             Error::Plugin(ref err) => write!(f, "Plugin error: {}", err),
         }
@@ -60,7 +62,7 @@ impl ::std::fmt::Display for Error {
 impl ::std::error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::MissingMemoryForDevice(ref err) => err,
+            Error::SharedTensor(ref err) => err.description(),
             Error::Operation(ref err) => err,
             Error::Plugin(ref err) => err,
         }
@@ -68,7 +70,7 @@ impl ::std::error::Error for Error {
 
     fn cause(&self) -> Option<&::std::error::Error> {
         match *self {
-            Error::MissingMemoryForDevice(_) => None,
+            Error::SharedTensor(ref err) => err.cause(),
             Error::Operation(_) => None,
             Error::Plugin(_) => None,
         }
@@ -78,5 +80,11 @@ impl ::std::error::Error for Error {
 impl From<Error> for ::error::Error {
     fn from(err: Error) -> ::error::Error {
         ::error::Error::Plugin(err)
+    }
+}
+
+impl From<tensor::Error> for Error {
+    fn from(err: tensor::Error) -> Error {
+        Error::SharedTensor(err)
     }
 }
