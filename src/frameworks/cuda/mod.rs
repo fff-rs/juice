@@ -35,12 +35,11 @@ macro_rules! impl_icudnndesc_for_sharedtensor {
     ($t:ty, $cutype:path) => (
         impl ICudnnDesc<$t> for SharedTensor<$t> {
             fn cudnn_tensor_desc(&self) -> Result<TensorDescriptor, PluginError> {
-                match TensorDescriptor::new(&self.desc().dims_i32().clone(), &self.desc().default_stride_i32().clone(), $cutype) {
-                    Ok(desc) => Ok(desc),
-                    Err(_) => {
-                        Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
-                    }
-                }
+                TensorDescriptor::new(&self.desc().dims_i32().clone(),
+                                      &self.desc().default_stride_i32().clone(),
+                                      $cutype)
+                    .map_err(|_| PluginError::Plugin(
+                        "Unable to create CuDNN TensorDescriptor."))
             }
 
             fn cudnn_tensor_desc_softmax(&self) -> Result<TensorDescriptor, PluginError> {
@@ -54,14 +53,11 @@ macro_rules! impl_icudnndesc_for_sharedtensor {
                     3 => vec![1, actual_desc[0], actual_desc[1], actual_desc[2]],
                     _ => actual_desc
                 };
-                match TensorDescriptor::new(&override_desc.dims_i32().clone(),
-                                            &override_desc.default_stride_i32().clone(),
-                                            $cutype) {
-                    Ok(desc) => Ok(desc),
-                    Err(_) => {
-                        Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
-                    }
-                }
+                TensorDescriptor::new(&override_desc.dims_i32().clone(),
+                                      &override_desc.default_stride_i32().clone(),
+                                      $cutype)
+                    .map_err(|_| PluginError::Plugin(
+                        "Unable to create CuDNN TensorDescriptor."))
             }
 
             fn cudnn_tensor_desc_flat(&self) -> Result<TensorDescriptor, PluginError> {
@@ -74,32 +70,26 @@ macro_rules! impl_icudnndesc_for_sharedtensor {
                 for dim in actual_desc {
                     override_desc.push(dim);
                 }
-                match TensorDescriptor::new(&override_desc.dims_i32().clone(),
-                                            &override_desc.default_stride_i32().clone(),
-                                            $cutype) {
-                    Ok(desc) => Ok(desc),
-                    Err(_) => {
-                        Err(PluginError::Plugin("Unable to create CuDNN TensorDescriptor."))
-                    }
-                }
+                TensorDescriptor::new(&override_desc.dims_i32().clone(),
+                                      &override_desc.default_stride_i32().clone(),
+                                      $cutype)
+                    .map_err(|_| PluginError::Plugin(
+                        "Unable to create CuDNN TensorDescriptor."))
             }
 
             fn cudnn_filter_desc(&self) -> Result<FilterDescriptor, PluginError> {
-                match FilterDescriptor::new(&self.desc().dims_i32().clone(), $cutype) {
-                    Ok(desc) => Ok(desc),
-                    Err(_) => {
-                        Err(PluginError::Plugin("Unable to create CuDNN FilterDescriptor."))
-                    }
-                }
+                FilterDescriptor::new(&self.desc().dims_i32().clone(), $cutype)
+                    .map_err(|_| PluginError::Plugin(
+                        "Unable to create CuDNN FilterDescriptor."))
             }
 
-            fn cudnn_convolution_desc(&self, filter: &SharedTensor<$t>) -> Result<ConvolutionDescriptor, PluginError> {
-                match ConvolutionDescriptor::new(&self.desc().dims_i32().clone(), &filter.desc().default_stride_i32().clone(), $cutype) {
-                    Ok(desc) => Ok(desc),
-                    Err(_) => {
-                        Err(PluginError::Plugin("Unable to create CuDNN ConvolutionDescriptor."))
-                    }
-                }
+            fn cudnn_convolution_desc(&self, filter: &SharedTensor<$t>)
+                                      -> Result<ConvolutionDescriptor, PluginError> {
+                ConvolutionDescriptor::new(&self.desc().dims_i32().clone(),
+                                           &filter.desc().default_stride_i32().clone(),
+                                           $cutype)
+                    .map_err(|_| PluginError::Plugin(
+                        "Unable to create CuDNN ConvolutionDescriptor."))
             }
         }
     )
@@ -114,27 +104,33 @@ impl_oconf_for_pooling!(f32, f64);
 
 impl ConvForwardAlgo {
     /// Tries to return the matching cuDNN type for the enum value.
-    fn as_cudnn(&self) -> Result<cudnnConvolutionFwdAlgo_t, ::co::error::Error> {
+    fn as_cudnn(&self) -> Result<cudnnConvolutionFwdAlgo_t, CoError> {
+        use ConvForwardAlgo::*;
+        use ::cudnn::cudnnConvolutionFwdAlgo_t::*;
         Ok(match *self {
-            ConvForwardAlgo::Auto => return Err(::co::error::Error::Plugin(::co::plugin::Error::Plugin("Can't create cuDNN convolution forward algorithm from ConvForwardAlgo::Auto. Use `find_cudnn_algo` to find an algorithm."))),
-            ConvForwardAlgo::GEMM => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_GEMM,
-            ConvForwardAlgo::ImplicitGEMM => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
-            ConvForwardAlgo::ImplicitPrecompiledGEMM => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM,
-            ConvForwardAlgo::FFT => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT,
-            ConvForwardAlgo::FFTTiling => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
-            ConvForwardAlgo::Direct => ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
+            Auto => return Err(CoError::Plugin(PluginError::Plugin(
+                "Can't create cuDNN convolution forward algorithm from \
+                 ConvForwardAlgo::Auto. Use `find_cudnn_algo` to find an algorithm."))),
+            GEMM => CUDNN_CONVOLUTION_FWD_ALGO_GEMM,
+            ImplicitGEMM => CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
+            ImplicitPrecompiledGEMM => CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM,
+            FFT => CUDNN_CONVOLUTION_FWD_ALGO_FFT,
+            FFTTiling => CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
+            Direct => CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
         })
     }
 
     /// Returns the matching enum value for a cuDNN algo.
     fn from_cudnn(algo: &cudnnConvolutionFwdAlgo_t) -> ConvForwardAlgo {
+        use ConvForwardAlgo::*;
+        use ::cudnn::cudnnConvolutionFwdAlgo_t::*;
         match *algo {
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_GEMM => ConvForwardAlgo::GEMM,
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => ConvForwardAlgo::ImplicitGEMM,
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM => ConvForwardAlgo::ImplicitPrecompiledGEMM,
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT => ConvForwardAlgo::FFT,
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING => ConvForwardAlgo::FFTTiling,
-            ::cudnn::cudnnConvolutionFwdAlgo_t::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => ConvForwardAlgo::Direct,
+            CUDNN_CONVOLUTION_FWD_ALGO_GEMM => GEMM,
+            CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => ImplicitGEMM,
+            CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM => ImplicitPrecompiledGEMM,
+            CUDNN_CONVOLUTION_FWD_ALGO_FFT => FFT,
+            CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING => FFTTiling,
+            CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => Direct,
         }
     }
 
@@ -145,13 +141,16 @@ impl ConvForwardAlgo {
         conv_desc: &ConvolutionDescriptor,
         src_desc: &TensorDescriptor,
         dest_desc: &TensorDescriptor,
-    ) -> Result<ConvForwardAlgo, ::co::error::Error> {
+    ) -> Result<ConvForwardAlgo, CoError> {
         if !self.is_auto() {
             return Ok(*self);
         }
-        let algos = API::find_convolution_forward_algorithm(*CUDNN.id_c(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
+        let algos = API::find_convolution_forward_algorithm(
+            *CUDNN.id_c(), *filter_desc.id_c(), *conv_desc.id_c(),
+            *src_desc.id_c(), *dest_desc.id_c()).unwrap();
         let algo = match algos.len() {
-            0 => return Err(::co::error::Error::Plugin(::co::plugin::Error::Operation("Unable to find CUDA cuDNN convolution forward algorithm."))),
+            0 => return Err(CoError::Plugin(PluginError::Operation(
+                "Unable to find CUDA cuDNN convolution forward algorithm."))),
             _ => algos[0].algo
         };
         Ok(ConvForwardAlgo::from_cudnn(&algo))
@@ -160,23 +159,30 @@ impl ConvForwardAlgo {
 
 impl ConvBackwardFilterAlgo {
     /// Tries to return the matching cuDNN type for the enum value.
-    fn as_cudnn(&self) -> Result<cudnnConvolutionBwdFilterAlgo_t, ::co::error::Error> {
+    fn as_cudnn(&self) -> Result<cudnnConvolutionBwdFilterAlgo_t, CoError> {
+        use ConvBackwardFilterAlgo::*;
+        use ::cudnn::cudnnConvolutionBwdFilterAlgo_t::*;
         Ok(match *self {
-            ConvBackwardFilterAlgo::Auto => return Err(::co::error::Error::Plugin(::co::plugin::Error::Plugin("Can't create cuDNN convolution backward filter algorithm from ConvBackwardFilterAlgo::Auto. Use `find_cudnn_algo` to find an algorithm."))),
-            ConvBackwardFilterAlgo::ImplicitGEMM => ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1,
-            ConvBackwardFilterAlgo::ImplicitGEMMSum => ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0,
-            ConvBackwardFilterAlgo::ImplicitPrecompiledGEMMSum => ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3,
-            ConvBackwardFilterAlgo::FFT => ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT,
+            Auto => return Err(CoError::Plugin(PluginError::Plugin(
+                "Can't create cuDNN convolution backward filter algorithm from \
+                 ConvBackwardFilterAlgo::Auto. Use `find_cudnn_algo` to find an \
+                 algorithm."))),
+            ImplicitGEMM => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1,
+            ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0,
+            ImplicitPrecompiledGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3,
+            FFT => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT,
         })
     }
 
     /// Returns the matching enum value for a cuDNN algo.
     fn from_cudnn(algo: &cudnnConvolutionBwdFilterAlgo_t) -> ConvBackwardFilterAlgo {
+        use ConvBackwardFilterAlgo::*;
+        use ::cudnn::cudnnConvolutionBwdFilterAlgo_t::*;
         match *algo {
-            ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0 => ConvBackwardFilterAlgo::ImplicitGEMMSum,
-            ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 => ConvBackwardFilterAlgo::ImplicitGEMM,
-            ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT => ConvBackwardFilterAlgo::FFT,
-            ::cudnn::cudnnConvolutionBwdFilterAlgo_t::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 => ConvBackwardFilterAlgo::ImplicitPrecompiledGEMMSum,
+            CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0 => ImplicitGEMMSum,
+            CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 => ImplicitGEMM,
+            CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT => FFT,
+            CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 => ImplicitPrecompiledGEMMSum,
         }
     }
 
@@ -187,13 +193,16 @@ impl ConvBackwardFilterAlgo {
         conv_desc: &ConvolutionDescriptor,
         src_desc: &TensorDescriptor,
         dest_desc: &TensorDescriptor,
-    ) -> Result<ConvBackwardFilterAlgo, ::co::error::Error> {
+    ) -> Result<ConvBackwardFilterAlgo, CoError> {
         if !self.is_auto() {
             return Ok(*self);
         }
-        let algos = API::find_convolution_backward_filter_algorithm(*CUDNN.id_c(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
+        let algos = API::find_convolution_backward_filter_algorithm(
+            *CUDNN.id_c(), *filter_desc.id_c(), *conv_desc.id_c(),
+            *src_desc.id_c(), *dest_desc.id_c()).unwrap();
         let algo = match algos.len() {
-            0 => return Err(::co::error::Error::Plugin(::co::plugin::Error::Operation("Unable to find CUDA cuDNN convolution backward filter algorithm."))),
+            0 => return Err(CoError::Plugin(PluginError::Operation(
+                "Unable to find CUDA cuDNN convolution backward filter algorithm."))),
             _ => algos[0].algo
         };
         Ok(ConvBackwardFilterAlgo::from_cudnn(&algo))
@@ -202,23 +211,30 @@ impl ConvBackwardFilterAlgo {
 
 impl ConvBackwardDataAlgo {
     /// Tries to return the matching cuDNN type for the enum value.
-    fn as_cudnn(&self) -> Result<cudnnConvolutionBwdDataAlgo_t, ::co::error::Error> {
+    fn as_cudnn(&self) -> Result<cudnnConvolutionBwdDataAlgo_t, CoError> {
+        use ConvBackwardDataAlgo::*;
+        use ::cudnn::cudnnConvolutionBwdDataAlgo_t::*;
         Ok(match *self {
-            ConvBackwardDataAlgo::Auto => return Err(::co::error::Error::Plugin(::co::plugin::Error::Plugin("Can't create cuDNN convolution backward data algorithm from ConvBackwardDataAlgo::Auto. Use `find_cudnn_algo` to find an algorithm."))),
-            ConvBackwardDataAlgo::ImplicitGEMM => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1,
-            ConvBackwardDataAlgo::ImplicitGEMMSum => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
-            ConvBackwardDataAlgo::FFT => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT,
-            ConvBackwardDataAlgo::FFTTiling => ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING,
+            Auto => return Err(CoError::Plugin(PluginError::Plugin(
+                "Can't create cuDNN convolution backward data algorithm from \
+                 ConvBackwardDataAlgo::Auto. Use `find_cudnn_algo` to find \
+                 an algorithm."))),
+            ImplicitGEMM => CUDNN_CONVOLUTION_BWD_DATA_ALGO_1,
+            ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
+            FFT => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT,
+            FFTTiling => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING,
         })
     }
 
     /// Returns the matching enum value for a cuDNN algo.
     fn from_cudnn(algo: &cudnnConvolutionBwdDataAlgo_t) -> ConvBackwardDataAlgo {
+        use ConvBackwardDataAlgo::*;
+        use ::cudnn::cudnnConvolutionBwdDataAlgo_t::*;
         match *algo {
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => ConvBackwardDataAlgo::ImplicitGEMMSum,
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => ConvBackwardDataAlgo::ImplicitGEMM,
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT => ConvBackwardDataAlgo::FFT,
-            ::cudnn::cudnnConvolutionBwdDataAlgo_t::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING => ConvBackwardDataAlgo::FFTTiling,
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => ImplicitGEMMSum,
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => ImplicitGEMM,
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT => FFT,
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING => FFTTiling,
         }
     }
 
@@ -229,13 +245,17 @@ impl ConvBackwardDataAlgo {
         conv_desc: &ConvolutionDescriptor,
         src_desc: &TensorDescriptor,
         dest_desc: &TensorDescriptor,
-    ) -> Result<ConvBackwardDataAlgo, ::co::error::Error> {
+    ) -> Result<ConvBackwardDataAlgo, CoError> {
         if !self.is_auto() {
             return Ok(*self);
         }
-        let algos = API::find_convolution_backward_data_algorithm(*CUDNN.id_c(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
+        let algos = API::find_convolution_backward_data_algorithm(
+            *CUDNN.id_c(), *filter_desc.id_c(), *conv_desc.id_c(),
+            *src_desc.id_c(), *dest_desc.id_c()).unwrap();
+
         let algo = match algos.len() {
-            0 => return Err(::co::error::Error::Plugin(::co::plugin::Error::Operation("Unable to find CUDA cuDNN convolution backward data algorithm."))),
+            0 => return Err(CoError::Plugin(PluginError::Operation(
+                "Unable to find CUDA cuDNN convolution backward data algorithm."))),
             _ => algos[0].algo
         };
         Ok(ConvBackwardDataAlgo::from_cudnn(&algo))
@@ -253,27 +273,43 @@ macro_rules! impl_convolution_for_cuda_backend {
         impl Convolution<$t> for Backend<Cuda> {
             fn new_convolution_config(
                 &self,
-                src: &::co::tensor::SharedTensor<$t>,
-                dest: &::co::tensor::SharedTensor<$t>,
-                filter: &mut ::co::tensor::SharedTensor<$t>,
+                src: &SharedTensor<$t>,
+                dest: &SharedTensor<$t>,
+                filter: &SharedTensor<$t>,
                 algo_fwd: ConvForwardAlgo,
                 algo_bwd_filter: ConvBackwardFilterAlgo,
                 algo_bwd_data: ConvBackwardDataAlgo,
                 stride: &[i32],
                 zero_padding: &[i32],
-            ) -> Result<Self::CC, ::co::error::Error> {
+            ) -> Result<Self::CC, CoError> {
                 let src_desc = try!(src.cudnn_tensor_desc());
                 let dest_desc = try!(dest.cudnn_tensor_desc());
                 let filter_desc = try!(filter.cudnn_filter_desc());
-                let conv_desc = ::cudnn::ConvolutionDescriptor::new(zero_padding, stride, $cutype).unwrap();
+                let conv_desc = ConvolutionDescriptor::new(
+                    zero_padding, stride, $cutype).unwrap();
 
-                let useable_algo_fwd = try!(algo_fwd.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
-                let useable_algo_bwd_filter = try!(algo_bwd_filter.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
-                let useable_algo_bwd_data = try!(algo_bwd_data.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
+                let useable_algo_fwd = try!(algo_fwd.find_cudnn_algo(
+                    &filter_desc, &conv_desc, &src_desc, &dest_desc));
+                let useable_algo_bwd_filter = try!(algo_bwd_filter.find_cudnn_algo(
+                    &filter_desc, &conv_desc, &src_desc, &dest_desc));
+                let useable_algo_bwd_data = try!(algo_bwd_data.find_cudnn_algo(
+                    &filter_desc, &conv_desc, &src_desc, &dest_desc));
 
-                let mut workspace_size_fwd = API::get_convolution_forward_workspace_size(*CUDNN.id_c(), useable_algo_fwd.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
-                let mut workspace_size_bwd_filter = API::get_convolution_backward_filter_workspace_size(*CUDNN.id_c(), useable_algo_bwd_filter.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
-                let mut workspace_size_bwd_data = API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(), useable_algo_bwd_data.as_cudnn().unwrap(), *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(), *dest_desc.id_c()).unwrap();
+                let mut workspace_size_fwd =
+                    API::get_convolution_forward_workspace_size(
+                        *CUDNN.id_c(), useable_algo_fwd.as_cudnn().unwrap(),
+                        *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(),
+                        *dest_desc.id_c()).unwrap();
+                let mut workspace_size_bwd_filter =
+                    API::get_convolution_backward_filter_workspace_size(
+                        *CUDNN.id_c(), useable_algo_bwd_filter.as_cudnn().unwrap(),
+                        *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(),
+                        *dest_desc.id_c()).unwrap();
+                let mut workspace_size_bwd_data =
+                    API::get_convolution_backward_data_workspace_size(
+                        *CUDNN.id_c(), useable_algo_bwd_data.as_cudnn().unwrap(),
+                        *filter_desc.id_c(), *conv_desc.id_c(), *src_desc.id_c(),
+                        *dest_desc.id_c()).unwrap();
 
                 if workspace_size_fwd == 0 {
                     workspace_size_fwd = 8;
@@ -285,13 +321,11 @@ macro_rules! impl_convolution_for_cuda_backend {
                     workspace_size_bwd_data = 8;
                 }
 
-                Ok(
-                    ::cudnn::utils::ConvolutionConfig::new(
-                        useable_algo_fwd.as_cudnn().unwrap(), workspace_size_fwd,
-                        useable_algo_bwd_filter.as_cudnn().unwrap(), workspace_size_bwd_filter,
-                        useable_algo_bwd_data.as_cudnn().unwrap(), workspace_size_bwd_data,
-                        conv_desc, filter_desc
-                    )
+                Ok(::cudnn::utils::ConvolutionConfig::new(
+                    useable_algo_fwd.as_cudnn().unwrap(), workspace_size_fwd,
+                    useable_algo_bwd_filter.as_cudnn().unwrap(), workspace_size_bwd_filter,
+                    useable_algo_bwd_data.as_cudnn().unwrap(), workspace_size_bwd_data,
+                    conv_desc, filter_desc)
                 )
             }
 
