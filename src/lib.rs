@@ -45,22 +45,17 @@
 //!     // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
 //!     let backend = Backend::<Cuda>::default().unwrap();
 //!     // Initialize two SharedTensors.
-//!     let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
-//!     let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+//!     let mut x = SharedTensor::<f32>::new(&(1, 1, 3));
+//!     let mut result = SharedTensor::<f32>::new(&(1, 1, 3));
 //!     // Fill `x` with some data.
 //!     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
 //!     let native = Native::new();
 //!     let cpu = native.new_device(native.hardwares()).unwrap();
-//!     x.add_device(&cpu).unwrap(); // Add native host memory
-//!     x.sync(&cpu).unwrap(); // Sync to native host memory
-//!     write_to_memory(x.get_mut(&cpu).unwrap(), payload); // Write to native host memory.
-//!     x.sync(backend.device()).unwrap(); // Sync the data to the CUDA device.
+//!     write_to_memory(x.write_only(&cpu).unwrap(), payload); // Write to native host memory.
 //!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
 //!     backend.sigmoid(&mut x, &mut result).unwrap();
 //!     // See the result.
-//!     result.add_device(&cpu).unwrap(); // Add native host memory
-//!     result.sync(&cpu).unwrap(); // Sync the result to host memory.
-//!     println!("{:?}", result.get(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
+//!     println!("{:?}", result.read(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
 //! }
 //! # }
 //! # #[cfg(not(feature = "cuda"))]
@@ -120,7 +115,13 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
+#[cfg(test)]
+extern crate rand;
+
 pub use plugin::*;
 
 mod plugin;
 pub mod frameworks;
+
+#[cfg(test)]
+mod tests;
