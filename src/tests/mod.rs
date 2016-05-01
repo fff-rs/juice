@@ -65,19 +65,23 @@ pub fn filled_tensor<T>(dims: &[usize], data: &[f64]) -> SharedTensor<T>
 // verification or cross tests (Native <-> Cuda), but they aren't implemented
 // yet.
 #[cfg(feature = "native")]
-pub fn uniform_random_fill<T>(xs: &mut SharedTensor<T>, low: T, high: T)
-    where T: Copy + PartialEq + PartialOrd +
-          fmt::Debug + NumCast + range::SampleRange {
+pub fn uniformly_random_tensor<T>(dims: &[usize], low: T, high: T) -> SharedTensor<T>
+    where T: Copy + PartialEq + PartialOrd + range::SampleRange {
 
-    let native = get_native_backend();
-    let mut mem = xs.write_only(native.device()).unwrap().as_mut_native().unwrap();
-    let mem_slice = mem.as_mut_slice::<T>();
+    let mut xs = SharedTensor::new(&dims);
 
-    let mut rng = thread_rng();
-    let distr = Range::new(low, high);
-    for x in mem_slice {
-        *x = distr.ind_sample(&mut rng);
+    {
+        let native = get_native_backend();
+        let mut mem = xs.write_only(native.device()).unwrap().as_mut_native().unwrap();
+        let mem_slice = mem.as_mut_slice::<T>();
+
+        let mut rng = thread_rng();
+        let distr = Range::new(low, high);
+        for x in mem_slice {
+            *x = distr.ind_sample(&mut rng);
+        }
     }
+    xs
 }
 
 /// This function tests that contents of `xs` and `data` don't differ too much.
@@ -146,3 +150,4 @@ mod activation;
 mod convolutional;
 mod softmax;
 
+mod bench_all;

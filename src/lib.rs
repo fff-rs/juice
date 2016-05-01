@@ -98,6 +98,7 @@
 //! [collenchyma]: https://github.com/autumnai/collenchyma
 //! [collenchyma-docs]: http://autumnai.github.io/collenchyma
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
+#![cfg_attr(feature = "unstable", feature(test))]
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]

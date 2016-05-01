@@ -31,6 +31,7 @@ default = ["native", "cuda", "opencl"]
 native = ["collenchyma/native"]
 cuda = ["collenchyma/cuda", "cudnn"]
 opencl = ["collenchyma/opencl"]
+unstable = []
 
 travis = ["native"]
 dev = []
