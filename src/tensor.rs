@@ -42,16 +42,19 @@
 //! let device = native.new_device(native.hardwares()).unwrap();
 //! let shared_data = &mut SharedTensor::<i32>::new(&5);
 //! // fill memory with some numbers
-//! let mut mem = shared_data.write_only(&device).unwrap().as_mut_native().unwrap();
+//! let mut mem = shared_data.write_only(&device).unwrap();
 //! mem.as_mut_slice::<i32>().clone_from_slice(&[0, 1, 2, 3, 4]);
 //! # }
 //! ```
 
-use device::{IDevice, DeviceType};
-use memory::MemoryType;
+use device::{IDevice, MemorySync};
+use device::Error as DeviceError;
+
+use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::marker::PhantomData;
 use std::{fmt, mem, error};
+use std::ops::Deref;
 use std::error::Error as StdError;
 
 /// Describes the Descriptor of a SharedTensor.
@@ -69,12 +72,19 @@ type BitMap = u64;
 const BIT_MAP_SIZE: usize = 64;
 
 struct TensorLocation {
-    device: DeviceType,
+    // TODO: both .device and .mem_transfer contain the same device object.
+    // `device` acts as recipient for memory transfers, and `mem_transfer`
+    // acts as initiator. It would be nice to use `Box<Any + MemorySync>,
+    // but that requires boxing two vtable pointers and isn't currently
+    // possible (E0225). Using `Box<Device>` is impossible too, as this requires
+    // specifying associated type `Device::M`.
+    // It may be possible to manually store device in a box and keep two fat
+    // pointers to its contents, but it's not obvious how to erase type of
+    // the box to store it uniformly.
+    device: Box<Any>,
+    mem_transfer: Box<MemorySync>,
 
-    // Box is required to keep references to MemoryType alive if
-    // SharedTensor::locations vec reallocates storage and moves elements.
-    // See also comment on `unsafe` near `SharedTensor::read()` impl.
-    mem: Box<MemoryType>,
+    mem: Box<Any>,
 }
 
 /// Container that handles synchronization of [Memory][1] of type `T`.
@@ -302,10 +312,11 @@ impl<T> SharedTensor<T> {
         Ok(())
     }
 
-    fn get_location_index(&self, device: &DeviceType) -> Option<usize> {
+    fn get_location_index<D: IDevice>(&self, device: &D) -> Option<usize> {
         for (i, loc) in self.locations.borrow().iter().enumerate() {
-            if loc.device == *device {
-                return Some(i);
+            match loc.device.deref().downcast_ref::<D>() {
+                Some(ref d) if *d == device => return Some(i),
+                _ => {}
             }
         }
         None
@@ -313,8 +324,8 @@ impl<T> SharedTensor<T> {
 
     /// Looks up `device` in self.locations and returns its index. If lookup
     /// fails then new location is created and its index is returned.
-    fn get_or_create_location_index(&self, device: &DeviceType)
-                                    -> Result<usize, Error> {
+    fn get_or_create_location_index<D: IDevice>(&self, device: &D)
+                                                -> Result<usize, Error> {
         if let Some(i) = self.get_location_index(device) {
             return Ok(i);
         }
@@ -323,11 +334,14 @@ impl<T> SharedTensor<T> {
             return Err(Error::CapacityExceeded);
         }
 
-        let mem = try!(Self::alloc_on_device(device, self.desc().size()));
+        let bytes_n = Self::mem_size(self.desc().size());
+
         self.locations.borrow_mut().push(TensorLocation {
-            device: device.clone(),
-            mem: Box::new(mem),
+            device: Box::new(device.clone()),
+            mem_transfer: Box::new(device.clone()),
+            mem: Box::new(try!(D::alloc_memory(device, bytes_n))),
         });
+
         Ok(self.locations.borrow().len() - 1)
     }
 
@@ -358,42 +372,20 @@ impl<T> SharedTensor<T> {
             (&right[0], &mut left[dst_i])
         };
 
-        match &dst_loc.device {
-            #[cfg(feature = "native")]
-            &DeviceType::Native(ref cpu) => {
-                let mem = dst_loc.mem.as_mut_native()
-                    .expect("Broken invariant: expected Native Memory");
-                try!(cpu.sync_in(&src_loc.device, &src_loc.mem, mem));
-            },
-            #[cfg(feature = "cuda")]
-            &DeviceType::Cuda(ref context) => {
-                let mem = dst_loc.mem.as_mut_cuda()
-                    .expect("Broken invariant: expected Cuda Memory");
-                try!(context.sync_in(&src_loc.device, &src_loc.mem, mem));
-            },
-            #[cfg(feature = "opencl")]
-            &DeviceType::OpenCL(ref context) => {
-                let mem = dst_loc.mem.as_mut_opencl()
-                    .expect("Broken invariant: expected OpenCL Memory");
-                try!(context.sync_in(&src_loc.device, &src_loc.mem, mem));
-            }
+        // Backends may define transfers asymmetrically. E. g. CUDA may know how
+        // to transfer to and from Native backend, while Native may know nothing
+        // about CUDA at all. So if first attempt fails we change order and
+        // try again.
+        match src_loc.mem_transfer.sync_out(
+            src_loc.mem.deref(), dst_loc.device.deref(), dst_loc.mem.as_mut()) {
+            Err(DeviceError::NoMemorySyncRoute) => {},
+            x => return x.map_err(|e| e.into()),
         }
 
-        Ok(())
-    }
+        dst_loc.mem_transfer.sync_in(dst_loc.mem.as_mut(), src_loc.device.deref(),
+                                     src_loc.mem.deref()).map_err(|e| e.into())
 
-    /// Allocate memory on the provided DeviceType for `n` elements.
-    fn alloc_on_device(dev: &DeviceType, n: usize) -> Result<MemoryType, Error> {
-        let alloc_size = Self::mem_size(n);
-        let copy = match *dev {
-            #[cfg(feature = "native")]
-            DeviceType::Native(ref cpu) => MemoryType::Native(try!(cpu.alloc_memory(alloc_size))),
-            #[cfg(feature = "opencl")]
-            DeviceType::OpenCL(ref context) => MemoryType::OpenCL(try!(context.alloc_memory(alloc_size))),
-            #[cfg(feature = "cuda")]
-            DeviceType::Cuda(ref context) => MemoryType::Cuda(try!(context.alloc_memory(alloc_size))),
-        };
-        Ok(copy)
+        // TODO: try transfer indirectly via Native backend
     }
 
     // Functions `read()`, `read_write()`, `write_only()` use `unsafe` to
@@ -402,13 +394,12 @@ impl<T> SharedTensor<T> {
     // there is only one mutable borrow. So we only need to make sure that
     // memory locations won't be dropped or moved while there are live Tensors.
     // It's quite easy to do: by convention we only allow to remove elements from
-    // `self.locations` in methods with `&mut self`. Since we store `MemoryType`
-    // inside `Vec` in a `Box`, reference to it won't change during Vec
-    // reallocations.
+    // `self.locations` in methods with `&mut self`. Since we store device's memory
+    // objects in a Box, reference to it won't change during Vec reallocations.
 
     /// Get memory for reading on the specified `device`.
     /// Can fail if memory allocation fails, or if tensor wasn't initialized yet.
-    pub fn read<'a>(&'a self, device: &DeviceType) -> Result<&'a MemoryType, Error> {
+    pub fn read<'a, D: IDevice>(&'a self, device: &D) -> Result<&'a D::M, Error> {
         if self.up_to_date.get() == 0 {
             return Err(Error::UninitializedMemory);
         }
@@ -417,15 +408,16 @@ impl<T> SharedTensor<T> {
         self.up_to_date.set(self.up_to_date.get() | (1 << i));
 
         let locs = self.locations.borrow();
-        let mem: &MemoryType = &locs[i].mem;
-        let mem_a: &'a MemoryType = unsafe { ::std::mem::transmute(mem) };
+        let mem: &D::M = &locs[i].mem.deref().downcast_ref()
+            .expect("Broken invariant: wrong memory type");
+        let mem_a: &'a D::M = unsafe { ::std::mem::transmute(mem) };
         Ok(mem_a)
     }
 
     /// Get memory for reading and writing on the specified `device`.
     /// Can fail if memory allocation fails, or if tensor wasn't initialized yet.
-    pub fn read_write<'a>(&'a mut self, device: &DeviceType)
-                          -> Result<&'a mut MemoryType, Error> {
+    pub fn read_write<'a, D: IDevice>(&'a mut self, device: &D)
+                          -> Result<&'a mut D::M, Error> {
         if self.up_to_date.get() == 0 {
             return Err(Error::UninitializedMemory);
         }
@@ -434,8 +426,9 @@ impl<T> SharedTensor<T> {
         self.up_to_date.set(1 << i);
 
         let mut locs = self.locations.borrow_mut();
-        let mem: &mut MemoryType = &mut locs[i].mem;
-        let mem_a: &'a mut  MemoryType = unsafe { ::std::mem::transmute(mem) };
+        let mem: &mut D::M = &mut locs[i].mem.as_mut().downcast_mut()
+            .expect("Broken invariant: wrong memory type");
+        let mem_a: &'a mut D::M = unsafe { ::std::mem::transmute(mem) };
         Ok(mem_a)
     }
 
@@ -446,20 +439,22 @@ impl<T> SharedTensor<T> {
     /// uninitialized data later. If caller has failed to overwrite memory,
     /// for some reason, it must call `invalidate()` to return vector to
     /// uninitialized state.
-    pub fn write_only<'a>(&'a mut self, device: &DeviceType)
-                          -> Result<&'a mut MemoryType, Error> {
+    pub fn write_only<'a, D: IDevice>(&'a mut self, device: &D)
+                          -> Result<&'a mut D::M, Error> {
         let i = try!(self.get_or_create_location_index(device));
         self.up_to_date.set(1 << i);
 
         let mut locs = self.locations.borrow_mut();
-        let mem: &mut MemoryType = &mut locs[i].mem;
-        let mem_a: &'a mut  MemoryType = unsafe { ::std::mem::transmute(mem) };
+        let mem: &mut D::M = &mut locs[i].mem.as_mut().downcast_mut()
+            .expect("Broken invariant: wrong memory type");
+        let mem_a: &'a mut D::M = unsafe { ::std::mem::transmute(mem) };
         Ok(mem_a)
     }
 
+    // FIXME: syncronize memory elsewhere if possible?
     /// Drops memory allocation on the specified device. Returns error if
     /// no memory has been allocated on this device.
-    pub fn drop_device(&mut self, device: &DeviceType) -> Result<(), Error> {
+    pub fn drop_device<D: IDevice>(&mut self, device: &D) -> Result<(), Error> {
         match self.get_location_index(device) {
             Some(i) => {
                 self.locations.borrow_mut().remove(i);
@@ -495,12 +490,10 @@ impl<T> SharedTensor<T> {
 /// Errors than can occur when synchronizing memory.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Error {
+    /// Error caused by operations with device: allocation, memory synchronization, etc.
+    DeviceError(DeviceError),
     /// Unable to remove Memory copy from SharedTensor.
     InvalidRemove(&'static str),
-    /// Framework error at memory allocation.
-    MemoryAllocationError(::device::Error),
-    /// Framework error at memory synchronization.
-    MemorySynchronizationError(::device::Error),
     /// Shape provided for reshaping is not compatible with old shape.
     InvalidShape(&'static str),
     /// Maximal number of backing memories has been reached.
@@ -518,9 +511,8 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
+            Error::DeviceError(ref err) => err.description(),
             Error::InvalidRemove(ref err) => err,
-            Error::MemoryAllocationError(ref err) => err.description(),
-            Error::MemorySynchronizationError(ref err) => err.description(),
             Error::InvalidShape(ref err) => err,
             Error::CapacityExceeded =>
                 "Max number of backing memories has been reached",
@@ -531,13 +523,18 @@ impl error::Error for Error {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
+            Error::DeviceError(ref err) => Some(err),
             Error::InvalidRemove(_) => None,
-            Error::MemoryAllocationError(ref err) => Some(err),
-            Error::MemorySynchronizationError(ref err) => Some(err),
             Error::InvalidShape(_) => None,
             Error::CapacityExceeded => None,
             Error::UninitializedMemory => None,
         }
+    }
+}
+
+impl From<DeviceError> for Error {
+    fn from(err: DeviceError) -> Error {
+        Error::DeviceError(err)
     }
 }
 

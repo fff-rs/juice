@@ -11,7 +11,6 @@ extern { }
 
 use backend::{Backend, IBackend};
 use framework::IFramework;
-use device::DeviceType;
 pub use self::memory::Memory;
 pub use self::context::Context;
 pub use self::function::Function;
@@ -73,11 +72,11 @@ impl IFramework for Cuda {
     ///
     /// Cuda's context differs from OpenCL's context. Multi device support works different in Cuda.
     /// This function currently suppports only one device, but should be a wrapper for multi device support.
-    fn new_device(&self, hardwares: &[Device]) -> Result<DeviceType, ::framework::Error> {
+    fn new_device(&self, hardwares: &[Device]) -> Result<Self::D, ::framework::Error> {
         let length = hardwares.len();
         match length {
             0 => Err(::framework::Error::Implementation(format!("No device for context specified."))),
-            1 => Ok(DeviceType::Cuda(try!(Context::new(hardwares[0].clone())))),
+            1 => Ok(try!(Context::new(hardwares[0].clone()))),
             _ => Err(::framework::Error::Implementation(format!("Cuda's `new_device` method currently supports only one Harware for Device creation.")))
         }
     }
@@ -86,15 +85,11 @@ impl IFramework for Cuda {
 impl IBackend for Backend<Cuda> {
     type F = Cuda;
 
-    fn device(&self) -> &DeviceType {
+    fn device(&self) -> &Context {
         &self.device()
     }
 
     fn synchronize(&self) -> Result<(), ::framework::Error> {
-        if let &DeviceType::Cuda(ref ctx) = self.device() {
-            Ok(try!(ctx.synchronize()))
-        } else {
-            Err(::framework::Error::Implementation(format!("CUDA backend does not have a CUDA context.")))
-        }
+        Ok(try!(self.device().synchronize()))
     }
 }

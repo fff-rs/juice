@@ -42,7 +42,7 @@
 
 use error::Error;
 use framework::IFramework;
-use device::{IDevice, DeviceType};
+use device::IDevice;
 
 #[derive(Debug, Clone)]
 /// Defines the main and highest struct of Collenchyma.
@@ -59,7 +59,7 @@ pub struct Backend<F: IFramework> {
     framework: Box<F>,
     /// Provides a device, created from one or many hardwares, which are ready to execute kernel
     /// methods and synchronize memory.
-    device: DeviceType,
+    device: F::D,
 }
 
 /// Defines the functionality of the Backend.
@@ -86,7 +86,7 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the backend device.
-    pub fn device(&self) -> &DeviceType {
+    pub fn device(&self) -> &F::D {
         &self.device
     }
 }
@@ -94,12 +94,14 @@ impl<F: IFramework + Clone> Backend<F> {
 /// Describes a Backend.
 ///
 /// Serves as a marker trait and helps for extern implementation.
-pub trait IBackend {
+pub trait IBackend
+    where <<Self as IBackend>::F as IFramework>::D : IDevice {
+
     /// Represents the Framework of a Backend.
     type F: IFramework + Clone;
 
     /// Returns the backend device.
-    fn device(&self) -> &DeviceType;
+    fn device(&self) -> &<<Self as IBackend>::F as IFramework>::D;
 
     /// Try to create a default backend.
     fn default() -> Result<Backend<Self::F>, Error> where Self: Sized {

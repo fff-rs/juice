@@ -19,7 +19,7 @@
 //! ```
 
 use hardware::IHardware;
-use device::{IDevice, DeviceType};
+use device::IDevice;
 use binary::IBinary;
 #[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
@@ -59,7 +59,7 @@ pub trait IFramework {
     fn binary(&self) -> &Self::B;
 
     /// Initializes a new Device from the provided hardwares.
-    fn new_device(&self, &[Self::H]) -> Result<DeviceType, Error>;
+    fn new_device(&self, &[Self::H]) -> Result<Self::D, Error>;
 }
 
 #[derive(Debug)]

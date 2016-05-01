@@ -52,14 +52,14 @@ fn sync_back_and_forth<F1, F2>(b: &mut Bencher,
 
     let mem = &mut SharedTensor::<u8>::new(&mem_size);
     /* initialize and warm-up */
-    mem.write_only(&dev2).unwrap();
-    mem.read_write(&dev1).unwrap();
-    mem.read_write(&dev2).unwrap();
+    mem.write_only(dev2).unwrap();
+    mem.read_write(dev1).unwrap();
+    mem.read_write(dev2).unwrap();
 
     b.bytes = mem_size as u64 * 2; // we do two transfers per iteration
     b.iter(|| {
-        mem.read_write(&dev1).unwrap();
-        mem.read_write(&dev2).unwrap();
+        mem.read_write(dev1).unwrap();
+        mem.read_write(dev2).unwrap();
     });
 }
 
@@ -74,13 +74,13 @@ fn unidirectional_sync<F1, F2>(b: &mut Bencher,
 
     let mem = &mut SharedTensor::<u8>::new(&mem_size);
     /* initialize and warm-up */
-    mem.write_only(&src_dev).unwrap();
-    mem.read(&dst_dev).unwrap();
+    mem.write_only(src_dev).unwrap();
+    mem.read(dst_dev).unwrap();
 
     b.bytes = mem_size as u64;
     b.iter(|| {
-        mem.write_only(&src_dev).unwrap();
-        mem.read(&dst_dev).unwrap();
+        mem.write_only(src_dev).unwrap();
+        mem.read(dst_dev).unwrap();
     });
 }
 
@@ -88,7 +88,7 @@ fn unidirectional_sync<F1, F2>(b: &mut Bencher,
 #[cfg(feature = "opencl")]
 mod opencl_and_native {
     use test::Bencher;
-    use co::device::{IDevice, DeviceType};
+    use co::device::{IDevice};
     use co::frameworks::opencl;
     use super::{native_backend, opencl_backend,
                 sync_back_and_forth, unidirectional_sync};
@@ -109,11 +109,8 @@ mod opencl_and_native {
     #[bench]
     fn bench_256_alloc_1mb_opencl(b: &mut Bencher) {
         let opencl_backend = opencl_backend();
-        if let &DeviceType::OpenCL(ref cl_device) = opencl_backend.device() {
-            bench_256_alloc_1mb_opencl_profile(b, cl_device, 1_048_576);
-        } else {
-            assert!(false);
-        }
+        let cl_device = opencl_backend.device();
+        bench_256_alloc_1mb_opencl_profile(b, cl_device, 1_048_576);
     }
 
     #[bench]
@@ -227,9 +224,9 @@ fn bench_shared_tensor_access_time_first(b: &mut Bencher) {
     let mut x = SharedTensor::<f32>::new(&[128]);
     x.write_only(nt_device).unwrap();
     x.write_only(cu_device).unwrap();
-    x.read(&nt_device).unwrap();
+    x.read(nt_device).unwrap();
 
-    b.iter(|| x.read(&nt_device).unwrap().as_native().unwrap())
+    b.iter(|| x.read(nt_device).unwrap())
 }
 
 #[bench]
@@ -244,5 +241,5 @@ fn bench_shared_tensor_access_time_second(b: &mut Bencher) {
     x.write_only(cu_device).unwrap();
     x.write_only(nt_device).unwrap();
 
-    b.iter(|| x.read(&nt_device).unwrap().as_native().unwrap())
+    b.iter(|| x.read(nt_device).unwrap())
 }

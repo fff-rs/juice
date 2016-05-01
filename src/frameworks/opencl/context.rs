@@ -1,13 +1,14 @@
 //! Provides a Rust wrapper around OpenCL's context.
 
-use device::{IDevice, DeviceType, IDeviceSyncOut};
+use device::{IDevice, MemorySync};
 use device::Error as DeviceError;
 use super::api::types as cl;
 use super::{API, Error, Device, Queue};
 use super::memory::*;
-use memory::MemoryType;
 #[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
+use frameworks::native::device::Cpu;
+use std::any::Any;
 use std::{ptr, mem};
 use std::hash::{Hash, Hasher};
 
@@ -62,15 +63,6 @@ impl Context {
     }
 }
 
-#[cfg(feature = "native")]
-impl IDeviceSyncOut<FlatBox> for Context {
-    type M = Memory;
-    fn sync_out(&self, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
-        try!(API::read_from_memory(self.queue().unwrap(), source_data, true, 0, dest_data.byte_size(), dest_data.as_mut_slice().as_mut_ptr(), &[]));
-        Ok(())
-    }
-}
-
 impl IDevice for Context {
     type H = Device;
     type M = Memory;
@@ -86,23 +78,40 @@ impl IDevice for Context {
     fn alloc_memory(&self, size: usize) -> Result<Memory, DeviceError> {
         Ok(try!(Memory::new(self, size)))
     }
+}
 
-    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {
-        match source {
-            #[cfg(feature = "native")]
-            &DeviceType::Native(_) => {
-                match source_data.as_native() {
-                    Some(h_mem) => {
-                        try!(API::write_to_memory(self.queue().unwrap(), dest_data, true, 0, h_mem.byte_size(), h_mem.as_slice().as_ptr(), &[]));
-                        Ok(())
-                    }
-                    None => unimplemented!()
-                }
-            },
-            _ => unimplemented!()
+impl MemorySync for Context {
+    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
+               -> Result<(), DeviceError> {
+        if let Some(_) = src_device.downcast_ref::<Cpu>() {
+            let mut my_mem = my_memory.downcast_mut::<Memory>().unwrap();
+            let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
+
+            try!(API::write_to_memory(
+                self.queue().unwrap(), my_mem, true, 0,
+                src_mem.byte_size(), src_mem.as_slice().as_ptr(), &[]));
+            Ok(())
+        } else {
+            Err(DeviceError::NoMemorySyncRoute)
+        }
+    }
+
+    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
+                -> Result<(), DeviceError> {
+        if let Some(_) = dst_device.downcast_ref::<Cpu>() {
+            let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
+            let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
+
+            try!(API::read_from_memory(
+                self.queue().unwrap(), my_mem, true, 0,
+                dst_mem.byte_size(), dst_mem.as_mut_slice().as_mut_ptr(), &[]));
+            Ok(())
+        } else {
+            Err(DeviceError::NoMemorySyncRoute)
         }
     }
 }
+
 
 impl PartialEq for Context {
     fn eq(&self, other: &Self) -> bool {
