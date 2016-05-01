@@ -164,3 +164,34 @@ fn bench_2_sync_128mb_native_cuda(b: &mut Bencher) {
 fn bench_2_sync_128mb_native_cuda_profile(b: &mut Bencher, nt_device: &DeviceType, cl_device: &DeviceType, mem: &mut SharedTensor<u8>) {
     sync_back_and_forth(b, 2, nt_device, cl_device, mem)
 }
+
+#[bench]
+#[cfg(feature = "cuda")]
+fn bench_shared_tensor_access_time_first(b: &mut Bencher) {
+    let cuda_backend = cuda_backend();
+    let cu_device = cuda_backend.device();
+    let native_backend = native_backend();
+    let nt_device = native_backend.device();
+
+    let mut x = SharedTensor::<f32>::new(&[128]);
+    x.write_only(nt_device).unwrap();
+    x.write_only(cu_device).unwrap();
+    x.read(&nt_device).unwrap();
+
+    b.iter(|| x.read(&nt_device).unwrap().as_native().unwrap())
+}
+
+#[bench]
+#[cfg(feature = "cuda")]
+fn bench_shared_tensor_access_time_second(b: &mut Bencher) {
+    let cuda_backend = cuda_backend();
+    let cu_device = cuda_backend.device();
+    let native_backend = native_backend();
+    let nt_device = native_backend.device();
+
+    let mut x = SharedTensor::<f32>::new(&[128]);
+    x.write_only(cu_device).unwrap();
+    x.write_only(nt_device).unwrap();
+
+    b.iter(|| x.read(&nt_device).unwrap().as_native().unwrap())
+}
