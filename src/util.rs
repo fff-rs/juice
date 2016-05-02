@@ -65,6 +65,19 @@ pub fn native_scalar<T: NumCast + ::std::marker::Copy>(scalar: T) -> SharedTenso
     shared_scalar
 }
 
+/// Writes a new value `v` into scalar only if contents of `x` differ from `v`.
+/// Conditional write may help to omit costly synchronization.
+pub fn update_scalar<T: PartialEq>(x: &mut SharedTensor<T>, v: T)
+{
+    let native = native_backend();
+    if x.read(native.device()).unwrap().as_native().unwrap().as_slice::<T>()[0] == v {
+        return
+    }
+    x.write_only(native.device()).unwrap().as_mut_native().unwrap()
+        .as_mut_slice::<T>()[0] = v;
+}
+
+
 /// Casts a Vec<usize> to as Vec<i32>
 pub fn cast_vec_usize_to_i32(input: Vec<usize>) -> Vec<i32> {
     let mut out = Vec::new();

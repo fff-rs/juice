@@ -50,8 +50,8 @@ impl<SolverB: IBackend + SolverOps<f32>> Momentum<SolverB> {
             history: Vec::new(),
             backend: backend,
 
-            lr: SharedTensor::<f32>::new(&[1]),
-            momentum: SharedTensor::<f32>::new(&[1]),
+            lr: native_scalar(0.0),
+            momentum: native_scalar(0.0),
         }
     }
 
@@ -64,14 +64,9 @@ impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGD
                             history_blob_id: usize,
                             global_lr: &f32,
                             blob_lr: &f32) {
-        // PERF: check if value is changed before writing it
-        ::weight::FillerType::Constant {
-            value: global_lr * blob_lr
-        }.fill(&mut self.lr);
 
-        ::weight::FillerType::Constant {
-            value: config.momentum
-        }.fill(&mut self.momentum);
+        update_scalar(&mut self.lr, global_lr * blob_lr);
+        update_scalar(&mut self.momentum, config.momentum);
 
         let backend = ISolver::<B, NetB>::backend(self);
         let device = IBackend::device(backend);

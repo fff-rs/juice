@@ -5,7 +5,7 @@
 use co::prelude::*;
 use layers::*;
 use weight::WeightConfig;
-use util::{ArcLock, native_backend, LayerOps};
+use util::{ArcLock, LayerOps, native_backend, native_scalar};
 use std::fmt;
 use std::cmp;
 use std::collections::{HashMap, HashSet};
@@ -86,6 +86,9 @@ pub struct Layer<B: IBackend> {
     ///
     /// Does not contain anonymous blobs.
     pub blob_names: HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>,
+
+    /// Preallocated scalar with value `-1.0` used in weight updates.
+    weight_update_scalar: SharedTensor<f32>,
 }
 
 impl<B: IBackend> Layer<B> {
@@ -538,10 +541,8 @@ impl<B: IBackend> Layer<B> {
     ///
     /// [3]: ../solver/enum.LRPolicy.html
     pub fn update_weights<SolverB: IBackend + ::util::SolverOps<f32>>(&mut self, backend: &SolverB) {
-        // PERF: allocate this scalar once
-        let shared_a = ::util::native_scalar(-1f32);
         for (weight_gradient, weight_data) in self.learnable_weights_gradients().iter().zip(&mut self.learnable_weights_data()) {
-            backend.axpy(&shared_a, &weight_gradient.read().unwrap(),
+            backend.axpy(&self.weight_update_scalar, &weight_gradient.read().unwrap(),
                          &mut weight_data.write().unwrap()).unwrap();
         }
     }
@@ -853,6 +854,8 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
 
             worker: Layer::<B>::worker_from_config(backend, &cfg),
             config: cfg,
+
+            weight_update_scalar: native_scalar(-1.0),
         };
         layer.expose_inputs();
         layer.expose_outputs();
