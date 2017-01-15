@@ -16,9 +16,9 @@ license = "MIT OR Apache-2.0"
 build = "build.rs"
 
 [dependencies]
-collenchyma = { version = "0.0.8", default-features = false, features = ["native"] } # native feature to read/write data into tensors
-collenchyma-blas = { version = "0.2.0", default-features = false, features = ["native"] } # only compiles with native feature
-collenchyma-nn = { version = "0.3.2", default-features = false }
+collenchyma = { git = "https://github.com/alexandermorozov/collenchyma", default-features = false }
+collenchyma-blas = { git = "https://github.com/alexandermorozov/collenchyma-blas", default-features = false }
+collenchyma-nn = { git = "https://github.com/alexandermorozov/collenchyma-nn", default-features = false }
 
 log = "0.3.2"
 rand = "0.3.0"
