@@ -16,244 +16,63 @@ fn backend() -> Backend<Native> {
     Backend::<Native>::default().unwrap()
 }
 
-#[bench]
-fn bench_1000_dot_100_rblas(b: &mut Bencher) {
+fn bench_dot_rblas(b: &mut Bencher, n: usize) {
     let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(100).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(100).collect::<Vec<f32>>();
+    let slice_a = rng.gen_iter::<f32>().take(n).collect::<Vec<f32>>();
+    let slice_b = rng.gen_iter::<f32>().take(n).collect::<Vec<f32>>();
 
     b.iter(|| {
-        for _ in 0..1000 {
-            let res = rblas::Dot::dot(&slice_a, &slice_b);
-            test::black_box(res);
-        }
+        let res = rblas::Dot::dot(&slice_a, &slice_b);
+        test::black_box(res);
     });
 }
 
-#[bench]
-fn bench_1000_dot_100_collenchyma(b: &mut Bencher) {
+fn bench_dot_collenchyma(b: &mut Bencher, n: usize) {
     let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(100).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(100).collect::<Vec<f32>>();
+    let slice_a = rng.gen_iter::<f32>().take(n).collect::<Vec<f32>>();
+    let slice_b = rng.gen_iter::<f32>().take(n).collect::<Vec<f32>>();
 
     let backend = backend();
-    let shared_a = &mut SharedTensor::<f32>::new(backend.device(), &100).unwrap();
-    let shared_b = &mut SharedTensor::<f32>::new(backend.device(), &100).unwrap();
-    let shared_res = &mut SharedTensor::<f32>::new(backend.device(), &()).unwrap();
-    shared_a.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_a);
-    shared_b.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_b);
+    let shared_a = &mut SharedTensor::<f32>::new(&[n]);
+    let shared_b = &mut SharedTensor::<f32>::new(&[n]);
+    let shared_res = &mut SharedTensor::<f32>::new(&[1]);
+    shared_a.write_only(backend.device()).unwrap().as_mut_native().unwrap()
+        .as_mut_slice().clone_from_slice(&slice_a);
+    shared_b.write_only(backend.device()).unwrap().as_mut_native().unwrap()
+        .as_mut_slice().clone_from_slice(&slice_b);
     let _ = backend.dot(shared_a, shared_b, shared_res);
-    bench_1000_dot_100_collenchyma_profile(b, &backend, shared_a, shared_b, shared_res);
+
+    b.iter(|| backend.dot(shared_a, shared_b, shared_res).unwrap());
 }
 
-#[inline(never)]
-fn bench_1000_dot_100_collenchyma_profile(
-    b: &mut Bencher,
-    backend: &Backend<Native>,
-    shared_a: &mut SharedTensor<f32>,
-    shared_b: &mut SharedTensor<f32>,
-    shared_res: &mut SharedTensor<f32>
-) {
-    b.iter(|| {
-        for _ in 0..1000 {
-            let _ = backend.dot(shared_a, shared_b, shared_res);
-        }
-    });
-}
+
 
 #[bench]
-fn bench_1000_dot_100_collenchyma_plain(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(100).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(100).collect::<Vec<f32>>();
-
-    let backend = backend();
-    let shared_a = &mut SharedTensor::<f32>::new(backend.device(), &100).unwrap();
-    let shared_b = &mut SharedTensor::<f32>::new(backend.device(), &100).unwrap();
-    let shared_res = &mut SharedTensor::<f32>::new(backend.device(), &()).unwrap();
-    shared_a.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_a);
-    shared_b.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_b);
-    let _ = backend.dot(shared_a, shared_b, shared_res);
-    bench_1000_dot_100_collenchyma_plain_profile(b, &backend, shared_a, shared_b, shared_res);
-}
-
-#[inline(never)]
-fn bench_1000_dot_100_collenchyma_plain_profile(
-    b: &mut Bencher,
-    backend: &Backend<Native>,
-    shared_a: &mut SharedTensor<f32>,
-    shared_b: &mut SharedTensor<f32>,
-    shared_res: &mut SharedTensor<f32>
-) {
-    b.iter(|| {
-        for _ in 0..1000 {
-            let _ = backend.dot_plain(shared_a, shared_b, shared_res);
-        }
-    });
-}
+fn bench_dot_100_rblas(b: &mut Bencher) { bench_dot_rblas(b, 100); }
 
 #[bench]
-fn bench_100_dot_1000_rblas(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(1000).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(1000).collect::<Vec<f32>>();
-
-    b.iter(|| {
-        for _ in 0..100 {
-            let res = rblas::Dot::dot(&slice_a, &slice_b);
-            test::black_box(res);
-        }
-    });
-}
+fn bench_dot_100_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 100); }
 
 #[bench]
-fn bench_100_dot_1000_collenchyma(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(1000).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(1000).collect::<Vec<f32>>();
-
-    let backend = backend();
-    let shared_a = &mut SharedTensor::<f32>::new(backend.device(), &1000).unwrap();
-    let shared_b = &mut SharedTensor::<f32>::new(backend.device(), &1000).unwrap();
-    let shared_res = &mut SharedTensor::<f32>::new(backend.device(), &()).unwrap();
-    shared_a.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_a);
-    shared_b.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_b);
-    let _ = backend.dot(shared_a, shared_b, shared_res);
-    bench_100_dot_1000_collenchyma_profile(b, &backend, shared_a, shared_b, shared_res);
-}
-
-#[inline(never)]
-fn bench_100_dot_1000_collenchyma_profile(
-    b: &mut Bencher,
-    backend: &Backend<Native>,
-    shared_a: &mut SharedTensor<f32>,
-    shared_b: &mut SharedTensor<f32>,
-    shared_res: &mut SharedTensor<f32>
-) {
-    b.iter(|| {
-        for _ in 0..100 {
-            let _ = backend.dot(shared_a, shared_b, shared_res);
-        }
-    });
-}
+fn bench_dot_1000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 1000); }
 
 #[bench]
-fn bench_50_dot_2000_collenchyma(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(2000).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(2000).collect::<Vec<f32>>();
-
-    let backend = backend();
-    let shared_a = &mut SharedTensor::<f32>::new(backend.device(), &2000).unwrap();
-    let shared_b = &mut SharedTensor::<f32>::new(backend.device(), &2000).unwrap();
-    let shared_res = &mut SharedTensor::<f32>::new(backend.device(), &()).unwrap();
-    shared_a.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_a);
-    shared_b.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_b);
-    let _ = backend.dot(shared_a, shared_b, shared_res);
-    bench_50_dot_2000_collenchyma_profile(b, &backend, shared_a, shared_b, shared_res);
-}
-
-#[inline(never)]
-fn bench_50_dot_2000_collenchyma_profile(
-    b: &mut Bencher,
-    backend: &Backend<Native>,
-    shared_a: &mut SharedTensor<f32>,
-    shared_b: &mut SharedTensor<f32>,
-    shared_res: &mut SharedTensor<f32>
-) {
-    b.iter(|| {
-        for _ in 0..50 {
-            let _ = backend.dot(shared_a, shared_b, shared_res);
-        }
-    });
-}
+fn bench_dot_1000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 1000); }
 
 #[bench]
-fn bench_10_dot_10000_rblas(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(10000).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(10000).collect::<Vec<f32>>();
-
-    b.iter(|| {
-        for _ in 0..10 {
-            let res = rblas::Dot::dot(&slice_a, &slice_b);
-            test::black_box(res);
-        }
-    });
-}
+fn bench_dot_2000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 2000); }
 
 #[bench]
-fn bench_10_dot_10000_collenchyma(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(10000).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(10000).collect::<Vec<f32>>();
-
-    let backend = backend();
-    let shared_a = &mut SharedTensor::<f32>::new(backend.device(), &10000).unwrap();
-    let shared_b = &mut SharedTensor::<f32>::new(backend.device(), &10000).unwrap();
-    let shared_res = &mut SharedTensor::<f32>::new(backend.device(), &()).unwrap();
-    shared_a.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_a);
-    shared_b.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_b);
-    let _ = backend.dot(shared_a, shared_b, shared_res);
-    bench_10_dot_10000_collenchyma_profile(b, &backend, shared_a, shared_b, shared_res);
-}
-
-#[inline(never)]
-fn bench_10_dot_10000_collenchyma_profile(
-    b: &mut Bencher,
-    backend: &Backend<Native>,
-    shared_a: &mut SharedTensor<f32>,
-    shared_b: &mut SharedTensor<f32>,
-    shared_res: &mut SharedTensor<f32>
-) {
-    b.iter(|| {
-        for _ in 0..10 {
-            let _ = backend.dot(shared_a, shared_b, shared_res);
-        }
-    });
-}
+fn bench_dot_2000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 2000); }
 
 #[bench]
-fn bench_5_dot_20000_rblas(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(20000).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(20000).collect::<Vec<f32>>();
-
-    b.iter(|| {
-        for _ in 0..5 {
-            let res = rblas::Dot::dot(&slice_a, &slice_b);
-            test::black_box(res);
-        }
-    });
-}
+fn bench_dot_10000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 10000); }
 
 #[bench]
-fn bench_5_dot_20000_collenchyma(b: &mut Bencher) {
-    let mut rng = thread_rng();
-    let slice_a = rng.gen_iter::<f32>().take(20000).collect::<Vec<f32>>();
-    let slice_b = rng.gen_iter::<f32>().take(20000).collect::<Vec<f32>>();
+fn bench_dot_10000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 10000); }
 
-    let backend = backend();
-    let shared_a = &mut SharedTensor::<f32>::new(backend.device(), &20000).unwrap();
-    let shared_b = &mut SharedTensor::<f32>::new(backend.device(), &20000).unwrap();
-    let shared_res = &mut SharedTensor::<f32>::new(backend.device(), &()).unwrap();
-    shared_a.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_a);
-    shared_b.get_mut(backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice().clone_from_slice(&slice_b);
-    let _ = backend.dot(shared_a, shared_b, shared_res);
-    bench_5_dot_20000_collenchyma_profile(b, &backend, shared_a, shared_b, shared_res);
-}
+#[bench]
+fn bench_dot_20000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 20000); }
 
-#[inline(never)]
-fn bench_5_dot_20000_collenchyma_profile(
-    b: &mut Bencher,
-    backend: &Backend<Native>,
-    shared_a: &mut SharedTensor<f32>,
-    shared_b: &mut SharedTensor<f32>,
-    shared_res: &mut SharedTensor<f32>
-) {
-    b.iter(|| {
-        for _ in 0..5 {
-            let _ = backend.dot(shared_a, shared_b, shared_res);
-        }
-    });
-}
+#[bench]
+fn bench_dot_20000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 20000); }

@@ -1,7 +1,6 @@
 // Those macros should be removed when read()/read_only()/write() are refactored
 // to return typed memory. For now they remove a lot of visual clutter and
 // lessen probability of stupid mistakes.
-#[macro_export]
 macro_rules! read {
     ($x:ident, $slf:ident) => (
         try!($x.read($slf.device())).as_cuda()
@@ -95,8 +94,8 @@ macro_rules! iblas_copy_for_cuda {
 macro_rules! iblas_dot_for_cuda {
     ($t:ident) => (
         fn dot(&self, x: &SharedTensor<$t>, y: &SharedTensor<$t>,
-                     result: &mut SharedTensor<$t>
-        ) -> Result<(), ::collenchyma::error::Error> {
+               result: &mut SharedTensor<$t>)
+               -> Result<(), ::collenchyma::error::Error> {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let y_mem = read!(y, self);
@@ -129,10 +128,8 @@ macro_rules! iblas_nrm2_for_cuda {
 #[macro_export]
 macro_rules! iblas_scal_for_cuda {
     ($t:ident) => (
-        fn scal(&self,
-            a: &SharedTensor<$t>,
-            x: &mut SharedTensor<$t>
-        ) -> Result<(), ::collenchyma::error::Error> {
+        fn scal(&self, a: &SharedTensor<$t>, x: &mut SharedTensor<$t>)
+                -> Result<(), ::collenchyma::error::Error> {
             let n = x.desc().size() as i32;
             let a_mem = read!(a, self);
             let x_mem = read_write!(x, self);
