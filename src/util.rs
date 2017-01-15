@@ -61,7 +61,6 @@ pub fn native_scalar<T: NumCast + ::std::marker::Copy>(scalar: T) -> SharedTenso
     let native = native_backend();
     let mut shared_scalar = SharedTensor::<T>::new(&[1]);
     write_to_memory(shared_scalar.write_only(native.device()).unwrap(), &[scalar]);
-
     shared_scalar
 }
 
