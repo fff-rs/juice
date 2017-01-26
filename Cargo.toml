@@ -18,7 +18,7 @@ collenchyma = { path = "../collenchyma", default-features = false }
 lazy_static = "0.1"
 
 # native
-rblas = { version = "0.0.11", optional = true }
+rblas = { version = "0.0.13", optional = true }
 
 # cuda
 cublas = { git = "https://github.com/alexandermorozov/rust-cublas", optional = true }
