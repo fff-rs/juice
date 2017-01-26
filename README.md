@@ -49,6 +49,8 @@ More information can be found in the [Documentation][docs-ops].
 
 [docs-ops]: http://autumnai.github.io/collenchyma-blas/collenchyma_blas/plugin/trait.IBlas.html
 
+Note that `blas` does not have all methods and thus fails to link, use `CARGO_BLAS=openblas` to compile for `native`
+
 ## Contributing
 
 Want to contribute? Awesome! We have
