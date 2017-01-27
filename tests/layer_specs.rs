@@ -51,6 +51,30 @@ mod layer_spec {
             LayerConfig::new("network", net_cfg)
         }
 
+	#[test]
+	fn xor_forward() {
+		// let _ = env_logger::init();
+		let mut cfg = SequentialConfig::default();
+		// Layer: data
+		cfg.add_input("data", &[2]);
+		// Layer: fc1
+		let fc1_layer_cfg = LinearConfig { output_size: 2 };
+		let mut fc1_cfg = LayerConfig::new("fc1", LayerType::Linear(fc1_layer_cfg));
+		fc1_cfg.add_input("data");
+		fc1_cfg.add_output("fc1_out");
+		cfg.add_layer(fc1_cfg);
+		// Layer: fc2/output
+		let fc2_layer_cfg = LinearConfig { output_size: 1 };
+		let mut fc2_cfg = LayerConfig::new("fc2", LayerType::Linear(fc2_layer_cfg));
+		fc2_cfg.add_input("fc1_out");
+		fc2_cfg.add_output("fc2_out");
+		cfg.add_layer(fc2_cfg);
+
+		let backend = native_backend();
+		let mut network = Layer::from_config(
+		    backend.clone(), &LayerConfig::new("network", LayerType::Sequential(cfg)));
+	}
+
         #[test]
         fn save_and_load_layer() {
             let cfg = simple_network();
