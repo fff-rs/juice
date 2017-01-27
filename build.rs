@@ -1,5 +1,5 @@
 extern crate capnpc;
 
 fn main() {
-    ::capnpc::compile("capnp", &["capnp/leaf.capnp"]).unwrap();
+    ::capnpc::CompilerCommand::new().src_prefix("capnp").file("capnp/leaf.capnp").run().expect("compiling schema");
 }
