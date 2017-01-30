@@ -3,10 +3,12 @@ name            = "collenchyma-nn"
 description     = "collenchyma plugin providing Neural Network operations"
 version         = "0.3.4"
 authors         = ["Michael Hirn <mj@autumnai.com>",
-                   "Maximilian Goisser <max@autumnai.com>"]
+                   "Maximilian Goisser <max@autumnai.com>",
+		    "Bernhard Schuster <bernhard@ratpoison.io>"
+]
 
-repository      = "https://github.com/autumnai/collenchyma-nn"
-homepage        = "https://github.com/autumnai/collenchyma-nn"
+repository      = "https://github.com/ratpoison-io/collenchyma-nn"
+homepage        = "https://ratpoison.io/collenchyma-nn"
 documentation   = "https://autumnai.github.io/collenchyma-nn"
 readme          = "README.md"
 
@@ -14,8 +16,8 @@ keywords        = ["neural-network", "collenchyma", "computation", "hpc", "plugi
 license         = "MIT OR Apache-2.0"
 
 [dependencies]
-collenchyma = { version = "0.0.8", default-features = false }
-cudnn = { version = "1.3.1", optional = true }
+collenchyma = { path = "../collenchyma", default-features = false }
+cudnn = { path = "../rust-cudnn", optional = true }
 libc = "0.2"
 lazy_static = "0.1"
 log = "0.3.2"
