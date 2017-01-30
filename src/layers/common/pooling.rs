@@ -125,8 +125,9 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeOutput<f32, B> for Pooling<f32, B>
         match self.mode {
             PoolingMode::Max => backend.pooling_max(input_data[0], output_data[0],
                                                     &*config).unwrap(),
-            // TODO: implement average pooling
-            // PoolingMode::Average => unimplemented!(),
+            PoolingMode::Average => backend.pooling_avg(input_data[0], output_data[0],
+                                                    &*config).unwrap(),
+			_ => panic!("Unknown Parameter {} for PoolingMode", self.mode),
         }
     }
 }
@@ -143,7 +144,11 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeInputGradient<f32, B> for Pooling<
         match self.mode {
             PoolingMode::Max => backend.pooling_max_grad(
                 output_data[0], output_gradients[0],
-                input_data[0], input_gradients[0], config).unwrap()
+                input_data[0], input_gradients[0], config).unwrap(),
+            PoolingMode::Average => backend.pooling_avg_grad(
+                output_data[0], output_gradients[0],
+                input_data[0], input_gradients[0], config).unwrap(),
+            _ => panic!("Unknown parameter {} for PoolingMode", self.mode)
         }
     }
 }
