@@ -458,6 +458,48 @@ macro_rules! impl_ops_pooling_for {
                     trans_mut!(dr_mem),
                     ScalParams::<$t>::default()))
             }
+
+
+            fn pooling_avg(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>,
+                           config: &Self::CPOOL) -> Result<(), CoError> {
+                let r_desc = try!(result.cudnn_tensor_desc());
+                let x_mem = read!(x, self);
+                let r_mem = write_only!(result, self);
+                exec!(pooling_avg_forward, CUDNN.pooling_avg_forward(
+                    config,
+                    &try!(x.cudnn_tensor_desc()),
+                    trans!(x_mem),
+                    &r_desc,
+                    trans_mut!(r_mem),
+                    ScalParams::<$t>::default()))
+            }
+
+            #[allow(unused_variables)]
+            fn pooling_avg_grad(
+                &self,
+                x: &SharedTensor<$t>,
+                x_diff: &SharedTensor<$t>,
+                result: &SharedTensor<$t>,
+                result_diff: &mut SharedTensor<$t>,
+                config: &Self::CPOOL) -> Result<(), CoError> {
+
+                let dr_desc = try!(result_diff.cudnn_tensor_desc());
+                let x_mem = read!(x, self);
+                let dx_mem = read!(x_diff, self);
+                let r_mem = read!(result, self);
+                let dr_mem = write_only!(result_diff, self);
+                exec!(pooling_avg_backward, CUDNN.pooling_avg_backward(
+                    config,
+                    &try!(x.cudnn_tensor_desc()),
+                    trans!(x_mem),
+                    &try!(x_diff.cudnn_tensor_desc()),
+                    trans!(dx_mem),
+                    &try!(result.cudnn_tensor_desc()),
+                    trans!(r_mem),
+                    &dr_desc,
+                    trans_mut!(dr_mem),
+                    ScalParams::<$t>::default()))
+            }
         }
     )
 }

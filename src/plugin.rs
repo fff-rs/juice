@@ -415,4 +415,20 @@ pub trait Pooling<F> : NN<F> {
     fn pooling_max_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
                         result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
                         config: &Self::CPOOL) -> Result<(), ::co::error::Error>;
+
+
+    /// Computes non-linear down-sampling ([average Pooling][pooling]) over the input Tensor `x`.
+    /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
+    ///
+    /// Saves the result to `result`.
+    fn pooling_avg(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>,
+                   config: &Self::CPOOL) -> Result<(), ::co::error::Error>;
+
+    /// Computes the gradient of [average Pooling][pooling] over the input Tensor `x`.
+    /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
+    ///
+    /// Saves the result to `result_diff`.
+    fn pooling_avg_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
+                        result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
+                        config: &Self::CPOOL) -> Result<(), ::co::error::Error>;
 }

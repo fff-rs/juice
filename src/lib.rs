@@ -77,21 +77,21 @@
 //!
 
 //! | Operation            | CUDA               | OpenCL    | Native    |
-//! |---	               |---	                |---        |---        |
+//! |---	           |---	                |---        |---        |
 //! | Sigmoid  	           | { cuDNN v3, v4 }  	| -  	    | Rust  	|
-//! | SigmoidPointwise     | { cuDNN v3, v4 }  	| -  	    |   	    |
-//! | ReLU  	           | { cuDNN v3, v4 }   | -  	    | Rust 	    |
-//! | ReLUPointwise        | { cuDNN v3, v4 }  	| -  	    |   	    |
-//! | Tanh  	   	       | { cuDNN v3, v4 }   | - 	    | Rust      |
-//! | TanhPointwise        | { cuDNN v3, v4 }  	| -  	    |   	    |
-//! |   	   	           |  	                |  	        |           |
+//! | SigmoidPointwise     | { cuDNN v3, v4 }  	| -  	    |   	|
+//! | ReLU  	           | { cuDNN v3, v4 }   | -  	    | Rust 	|
+//! | ReLUPointwise        | { cuDNN v3, v4 }  	| -  	    |   	|
+//! | Tanh  	   	   | { cuDNN v3, v4 }   | - 	    | Rust      |
+//! | TanhPointwise        | { cuDNN v3, v4 }  	| -  	    |   	|
+//! |   	   	   |  	                |  	    |           |
 //! | Normalization (LRN)  | { cuDNN v3, v4 }   | - 	    | -         |
-//! |   	   	           |  	                |  	        |           |
+//! |   	   	   |  	                |  	    |           |
 //! | Convolution          | { cuDNN v3, v4 }   | - 	    | -         |
-//! |   	   	           |  	                |  	        |           |
+//! |   	   	   |  	                |  	    |           |
 //! | Softmax              | { cuDNN v3, v4 }   | - 	    | Rust      |
 //! | LogSoftmax           | { cuDNN v3, v4 }   | - 	    | Rust      |
-//! |   	   	           |  	                |  	        |           |
+//! |   	   	   |  	                |  	    |           |
 //! | Pooling Max          | { cuDNN v3, v4 }   | - 	    | -         |
 //! | Pooling Avg          | { cuDNN v3, v4 }   | - 	    | -         |
 //!
