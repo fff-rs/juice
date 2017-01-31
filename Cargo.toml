@@ -10,7 +10,7 @@ homepage        = "https://ratpoison.io/collenchyma-blas"
 documentation   = "https://autumnai.github.io/collenchyma-blas"
 readme          = "README.md"
 
-keywords        = ["blas", "collenchyma", "computation", "hpc", "plugin"]
+keywords        = ["blas", "openblas", "collenchyma", "computation", "hpc", "plugin"]
 license         = "MIT OR Apache-2.0"
 
 [dependencies]
@@ -18,10 +18,10 @@ collenchyma = { path = "../collenchyma", default-features = false }
 lazy_static = "0.1"
 
 # native
-rblas = { version = "0.0.13", optional = true }
+rblas = { path = "../rust-blas", optional = true }
 
 # cuda
-cublas = { git = "https://github.com/alexandermorozov/rust-cublas", optional = true }
+cublas = { path = "../rust-cublas/cublas", optional = true }
 
 clippy = { version = "0.0.27", optional = true }
 
