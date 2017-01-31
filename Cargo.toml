@@ -3,14 +3,16 @@ name          = "collenchyma"
 description   = "high-performance computation on any hardware"
 version       = "0.0.8"
 authors       = ["Michael Hirn <mj@autumnai.com>",
-                 "Maximilian Goisser <max@autumnai.com>"]
+                 "Maximilian Goisser <max@autumnai.com>",
+		  "Bernhard Schsuter <bernhard@ratpoison.io>"
+]
 
-repository    = "https://github.com/autumnai/collenchyma"
-homepage      = "https://github.com/autumnai/collenchyma"
+repository    = "https://github.com/ratpoison-io/collenchyma"
+homepage      = "https://ratpoison.io/collenchyma"
 documentation = "http://autumnai.github.io/collenchyma"
 readme        = "README.md"
 
-keywords      = ["backend", "computation", "opencl", "cuda", "hpc"]
+keywords      = ["backend", "computation", "opencl", "cuda", "hpc", "fpga"]
 license       = "MIT OR Apache-2.0"
 
 [dependencies]
