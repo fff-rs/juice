@@ -354,8 +354,8 @@ macro_rules! impl_ops_lrn_for {
         impl ::plugin::LRN<$t> for $b {
             fn new_lrn_config(&self, n: u32, alpha: f64, beta: f64, k: f64)
                               -> Result<Self::CLRN, CoError> {
-                // FIXME: unwrap()
-                Ok(CUDNN.init_normalization(n, alpha, beta, k).unwrap())
+                Ok(CUDNN.init_normalization(n, alpha, beta, k)
+                .map_err(|_| PluginError::Operation("Failed to create cuDNN PoolingConfig"))?)
             }
 
             fn lrn(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>,
@@ -408,13 +408,15 @@ macro_rules! impl_ops_pooling_for {
         impl ::plugin::Pooling<$t> for $b {
             fn new_pooling_config(&self, window: &[i32], padding: &[i32],
                                   stride: &[i32]) -> Result<Self::CPOOL, CoError> {
-                // FIXME: unwraps
                 let pooling_avg = PoolingDescriptor::new(
                     cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING,
-                    window, padding, stride).unwrap();
+                    window, padding, stride)
+                    .map_err(|_| PluginError::Operation("Failed to create cuDNN avg PoolingConfig"))?;
+
                 let pooling_max = PoolingDescriptor::new(
                     cudnnPoolingMode_t::CUDNN_POOLING_MAX,
-                    window, padding, stride).unwrap();
+                    window, padding, stride)
+                    .map_err(|_| PluginError::Operation("Failed to create cuDNN max PoolingConfig"))?;
                 Ok(utils::PoolingConfig::new(pooling_avg, pooling_max))
             }
 
@@ -458,7 +460,6 @@ macro_rules! impl_ops_pooling_for {
                     trans_mut!(dr_mem),
                     ScalParams::<$t>::default()))
             }
-
 
             fn pooling_avg(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>,
                            config: &Self::CPOOL) -> Result<(), CoError> {
