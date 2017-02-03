@@ -32,7 +32,6 @@ pub use self::sgd::{Momentum};
 pub mod sgd;
 
 use co::{IBackend, MemoryType, SharedTensor};
-use conn::NN;
 use solver::*;
 use layer::*;
 use util::*;

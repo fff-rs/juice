@@ -103,8 +103,8 @@ mod cuda {
         });
         // b.iter(|| {
         //     for _ in 0..1 {
-        //         let inp = Blob::from_data(SharedTensor::<f32>::new(backend.device(), &vec![1, 30, 30]).unwrap());
-        //         let label = Blob::from_data(SharedTensor::<f32>::new(native_backend.device(), &vec![1, 1, 10]).unwrap());
+        //         let inp = Blob::from_data(SharedTensor::<f32>::new(backend.device(), &[1, 30, 30]).unwrap());
+        //         let label = Blob::from_data(SharedTensor::<f32>::new(native_backend.device(), &[1, 1, 10]).unwrap());
         //
         //         let inp_lock = Arc::new(RwLock::new(inp));
         //         let label_lock = Arc::new(RwLock::new(label));

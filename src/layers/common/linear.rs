@@ -21,7 +21,6 @@
 use co::backend::IBackend;
 use co::tensor::SharedTensor;
 use coblas::transpose::Transpose;
-use coblas::plugin::*;
 use layer::*;
 use util::{ArcLock, native_scalar, LayerOps};
 use weight::FillerType;
@@ -115,16 +114,16 @@ impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
                      Transpose::Trans, weights[0],
                      &self.zero,
                      output_data[0]).unwrap();
-        let has_bias_term = false; // TODO: implement bias term
-        if has_bias_term {
-            let bias_multiplier = unimplemented!();
-            let bias_data = unimplemented!();
-            backend.gemm(&self.one,
-                         Transpose::NoTrans, bias_multiplier,
-                         Transpose::NoTrans, bias_data,
-                         &self.one,
-                         output_data[0]).unwrap();
-        }
+        // let has_bias_term = false; // TODO: implement bias term
+        // if has_bias_term {
+        //     let bias_multiplier = unimplemented!();
+        //     let bias_data = unimplemented!();
+        //     backend.gemm(&self.one,
+        //                  Transpose::NoTrans, bias_multiplier,
+        //                  Transpose::NoTrans, bias_data,
+        //                  &self.one,
+        //                  output_data[0]).unwrap();
+        // }
     }
 }
 

@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate timeit;
 extern crate env_logger;
 extern crate collenchyma as co;
@@ -6,9 +5,6 @@ extern crate leaf;
 
 use co::prelude::*;
 
-use std::sync::{Arc, RwLock};
-use leaf::layers::*;
-use leaf::layer::*;
 use std::rc::Rc;
 use std::env;
 
@@ -64,6 +60,8 @@ fn opencl_backend() -> Rc<Backend<OpenCL>> {
 }
 
 #[inline(never)]
+// only cuda uses this as of today
+#[allow(dead_code)]
 fn bench_profile<F: FnMut() -> ()>(
     name: &str,
     mut bench_func: F,
@@ -82,11 +80,13 @@ fn bench_profile<F: FnMut() -> ()>(
     println!("");
 }
 
+#[allow(dead_code)]
 fn autoscale_time(sec: f64) -> String {
     let (div, unit_str) = get_time_scale(sec);
     format!("{:.5} {}", sec / div, unit_str)
 }
 
+#[allow(dead_code)]
 fn scale_time(sec: f64, unit: &str) -> String {
     // let (div, unit_str) = get_time_scale(sec);
     let div = match unit {

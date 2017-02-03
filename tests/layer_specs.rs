@@ -5,8 +5,9 @@ extern crate collenchyma as co;
 mod layer_spec {
     use std::rc::Rc;
     use co::prelude::*;
-    use leaf::layer::*;
 
+    // only used by cuda right now
+    #[allow(dead_code)]
     fn new_layer_config() -> LayerConfig {
         LayerConfig::new("foo", LayerType::Sigmoid)
     }
@@ -81,7 +82,7 @@ mod layer_spec {
             let mut original_layer = Layer::from_config(native_backend(), &cfg);
 
             original_layer.save("target/testnetwork").unwrap();
-            let mut loaded_layer = Layer::<Backend<Native>>::load(native_backend(), "target/testnetwork").unwrap();
+            let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), "target/testnetwork").unwrap();
 
             assert_eq!(original_layer.input_blob_names(), loaded_layer.input_blob_names());
 

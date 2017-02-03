@@ -13,7 +13,6 @@
 //! into the same direction you will reach the optimum faster.
 //! It also makes solving more stable.
 use co::prelude::*;
-use coblas::plugin::Copy;
 use layer::*;
 use solver::*;
 use solvers::SGDSolver;

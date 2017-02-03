@@ -5,7 +5,7 @@
 use co::prelude::*;
 use layers::*;
 use weight::WeightConfig;
-use util::{ArcLock, native_backend, LayerOps};
+use util::{ArcLock, LayerOps};
 use std::fmt;
 use std::cmp;
 use std::collections::{HashMap, HashSet};
