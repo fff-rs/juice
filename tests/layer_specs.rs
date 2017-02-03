@@ -59,20 +59,14 @@ mod layer_spec {
 		// Layer: data
 		cfg.add_input("data", &[2]);
 		// Layer: fc1
-		let fc1_layer_cfg = LinearConfig { output_size: 2 };
-		let mut fc1_cfg = LayerConfig::new("fc1", LayerType::Linear(fc1_layer_cfg));
-		fc1_cfg.add_input("data");
-		fc1_cfg.add_output("fc1_out");
-		cfg.add_layer(fc1_cfg);
-		// Layer: fc2/output
-		let fc2_layer_cfg = LinearConfig { output_size: 1 };
-		let mut fc2_cfg = LayerConfig::new("fc2", LayerType::Linear(fc2_layer_cfg));
-		fc2_cfg.add_input("fc1_out");
-		fc2_cfg.add_output("fc2_out");
-		cfg.add_layer(fc2_cfg);
+		cfg.add_layer(LayerConfig::new("fc1", LayerType::Linear(LinearConfig { output_size: 2 })));
+		cfg.add_layer(LayerConfig::new("fc1_out/sigmoid", LayerType::Sigmoid));
+		// Layer: fc2 equiv. output
+		cfg.add_layer(LayerConfig::new("fc2", LayerType::Linear(LinearConfig { output_size: 1 })));
+		cfg.add_layer(LayerConfig::new("fc2_out/sigmoid", LayerType::Sigmoid));
 
 		let backend = native_backend();
-		let mut network = Layer::from_config(
+		let _ = Layer::from_config(
 		    backend.clone(), &LayerConfig::new("network", LayerType::Sequential(cfg)));
 	}
 
