@@ -149,5 +149,6 @@ macro_rules! test_native {
 mod activation;
 mod convolutional;
 mod softmax;
+mod pooling;
 
 mod bench_all;

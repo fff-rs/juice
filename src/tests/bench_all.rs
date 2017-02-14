@@ -131,6 +131,16 @@ macro_rules! define_benches { ($b:ident, $t:ident) => {
                    log_softmax_1k, log_softmax_grad_1k, 1000);
     bench_softmax!($b, $t, log_softmax, log_softmax_grad,
                    log_softmax_10k, log_softmax_grad_10k, 10_000);
+
+    bench_pooling!($b, $t, pooling_avg, pooling_avg_10, pooling_avg_grad_10, 10)
+    bench_pooling!($b, $t, pooling_avg, pooling_avg_100, pooling_avg_grad_100, 100)
+    bench_pooling!($b, $t, pooling_avg, pooling_avg_1k, pooling_avg_grad_1k, 1000)
+    bench_pooling!($b, $t, pooling_avg, pooling_avg_10k, pooling_avg_grad_10k, 10_000)
+
+    bench_pooling!($b, $t, pooling_max, pooling_max_10, pooling_max_grad_10, 10)
+    bench_pooling!($b, $t, pooling_max, pooling_max_100, pooling_max_grad_100, 100)
+    bench_pooling!($b, $t, pooling_max, pooling_max_1k, pooling_max_grad_1k, 1000)
+    bench_pooling!($b, $t, pooling_max, pooling_max_10k, pooling_max_grad_10k, 10_000)
 }}
 
 
