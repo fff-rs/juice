@@ -5,7 +5,7 @@ extern crate collenchyma as co;
 mod layer_spec {
     use std::rc::Rc;
     use co::prelude::*;
-
+    use leaf::layer::*;
     // only used by cuda right now
     #[allow(dead_code)]
     fn new_layer_config() -> LayerConfig {
