@@ -1,4 +1,6 @@
+#[macro_use]
 extern crate timeit;
+
 extern crate env_logger;
 extern crate collenchyma as co;
 extern crate leaf;
