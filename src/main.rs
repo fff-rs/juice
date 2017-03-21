@@ -4,9 +4,6 @@ extern crate csv;
 extern crate hyper;
 #[macro_use]
 extern crate log;
-extern crate env_logger;
-extern crate leaf;
-extern crate collenchyma as co;
 
 use std::io::prelude::*;
 use std::fs::File;
@@ -16,11 +13,23 @@ use hyper::Client;
 
 use docopt::Docopt;
 use csv::{Reader};
+
+
+extern crate env_logger;
+extern crate collenchyma as co;
+extern crate leaf;
+
+use co::prelude::*;
+
 use leaf::layer::*;
 use leaf::layers::*;
 use leaf::solver::*;
 use leaf::util::*;
-use co::prelude::*;
+
+
+use std::rc::Rc;
+use std::env;
+
 
 const MAIN_USAGE: &'static str = "
 Leaf Examples
@@ -79,11 +88,13 @@ fn main() {
             _ => println!("{}", "Failed to download MNIST dataset!".to_string())
         }
     } else if args.cmd_mnist {
+        #[cfg(all(feature="cuda"))]
         run_mnist(args.arg_model_name, args.arg_batch_size, args.arg_learning_rate, args.arg_momentum);
     }
 }
 
-#[allow(dead_code)]
+
+#[cfg(all(feature="cuda"))]
 fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rate: Option<f32>, momentum: Option<f32>) {
     let mut rdr = Reader::from_file("assets/mnist_train.csv").unwrap();
     let mut decoded_images = rdr.decode().map(|row|
@@ -117,24 +128,20 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     let momentum = momentum.unwrap_or(0f32);
 
     let mut net_cfg = SequentialConfig::default();
-    net_cfg.add_input("data", &vec![batch_size, 28, 28]);
+    net_cfg.add_input("data", &[batch_size, 28, 28]);
     net_cfg.force_backward = true;
 
     match &*model_name.unwrap_or("none".to_owned()) {
         "conv" => {
-            let reshape_cfg = LayerConfig::new("reshape", ReshapeConfig::of_shape(&vec![batch_size, 1, 28, 28]));
-            net_cfg.add_layer(reshape_cfg);
-            let conv_cfg = ConvolutionConfig { num_output: 20, filter_shape: vec![5], stride: vec![1], padding: vec![0] };
-            net_cfg.add_layer(LayerConfig::new("conv", conv_cfg));
-            let pool_cfg = PoolingConfig { mode: PoolingMode::Max, filter_shape: vec![2], stride: vec![2], padding: vec![0] };
-            net_cfg.add_layer(LayerConfig::new("pooling", pool_cfg));
+            net_cfg.add_layer(LayerConfig::new("reshape", ReshapeConfig::of_shape(&[batch_size, 1, 28, 28])));
+            net_cfg.add_layer(LayerConfig::new("conv", ConvolutionConfig { num_output: 20, filter_shape: vec![5], padding: vec![0], stride: vec![1] }));
+            net_cfg.add_layer(LayerConfig::new("pooling", PoolingConfig { mode: PoolingMode::Max, filter_shape: vec![2], padding: vec![0], stride: vec![2] }));
             net_cfg.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 500 }));
             net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             net_cfg.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
         },
         "mlp" => {
-            let reshape_cfg = LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&vec![batch_size, 784])));
-            net_cfg.add_layer(reshape_cfg);
+            net_cfg.add_layer(LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, 784]))));
             net_cfg.add_layer(LayerConfig::new("linear1", LayerType::Linear(LinearConfig { output_size: 1568 })));
             net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             net_cfg.add_layer(LayerConfig::new("linear2", LayerType::Linear(LinearConfig { output_size: 10 })));
@@ -147,8 +154,8 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     net_cfg.add_layer(LayerConfig::new("log_softmax", LayerType::LogSoftmax));
 
     let mut classifier_cfg = SequentialConfig::default();
-    classifier_cfg.add_input("network_out", &vec![batch_size, 10]);
-    classifier_cfg.add_input("label", &vec![batch_size, 1]);
+    classifier_cfg.add_input("network_out", &[batch_size, 10]);
+    classifier_cfg.add_input("label", &[batch_size, 1]);
     // set up nll loss
     let nll_layer_cfg = NegativeLogLikelihoodConfig { num_classes: 10 };
     let nll_cfg = LayerConfig::new("nll", LayerType::NegativeLogLikelihood(nll_layer_cfg));
@@ -168,9 +175,8 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     let mut confusion = ::leaf::solver::ConfusionMatrix::new(10);
     confusion.set_capacity(Some(1000));
 
-    let mut inp = SharedTensor::<f32>::new(backend.device(), &vec![batch_size, 28, 28]).unwrap();
-    let label = SharedTensor::<f32>::new(native_backend.device(), &vec![batch_size, 1]).unwrap();
-    inp.add_device(native_backend.device()).unwrap();
+    let mut inp = SharedTensor::<f32>::new(&[batch_size, 28, 28]);
+    let label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     let inp_lock = Arc::new(RwLock::new(inp));
     let label_lock = Arc::new(RwLock::new(label));
