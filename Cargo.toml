@@ -7,8 +7,9 @@ authors = ["Michael Hirn <mj@autumnai.com>",
 
 [dependencies]
 # cuticula = "0.1.4"
-leaf = { version = "0.2.0", default-features = false }
-collenchyma = { version = "0.0.8", default-features = false }
+leaf = { path = "../leaf", default-features = false }
+collenchyma = { path = "../collenchyma", default-features = false }
+
 
 csv = "0.14"
 hyper = "0.6"
