@@ -7,9 +7,6 @@ use co::plugin::Error as PluginError;
 
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
-pub struct ConvolutionConfig;
-#[derive(Debug, Copy, Clone)]
-#[allow(missing_docs)]
 pub struct NormalizationConfig;
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
@@ -249,45 +246,12 @@ macro_rules! impl_ops_tanh_for {
     );
 }
 
-#[macro_export]
-macro_rules! impl_ops_convolution_for {
-    ($t:ident, $b:ty) => (
-        impl ::plugin::Convolution<$t> for $b {
-            fn new_convolution_config(
-                &self,
-                src: &SharedTensor<$t>,
-                dest: &SharedTensor<$t>,
-                filter: &mut SharedTensor<$t>,
-                stride: &[i32],
-                zero_padding: &[i32]
-            ) -> Result<Self::CC, ::co::error::Error> {
-                unimplemented!();
-                Ok(helper::ConvolutionConfig)
-            }
-
-            fn convolution(
-                &self,
-                x: &SharedTensor<$t>,
-                result: &mut SharedTensor<$t>,
-                config: &Self::CC
-            ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
-            }
-
-            fn convolution_grad(
-                &self,
-                x: &SharedTensor<$t>,
-                x_diff: &SharedTensor<$t>,
-                result: &SharedTensor<$t>,
-                result_diff: &mut SharedTensor<$t>,
-                config: &Self::CC
-            ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
-            }
-        }
-    );
+#[derive(Debug, Clone)]
+#[allow(missing_docs)]
+pub struct ConvolutionConfig {
+    pub filter_shape: Vec<usize>,
+    pub stride: Vec<i32>,
+    pub padding: Vec<i32>,
 }
 
 #[macro_export]
