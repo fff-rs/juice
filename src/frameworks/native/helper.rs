@@ -138,6 +138,25 @@ macro_rules! impl_ops_sigmoid_for {
                      ::frameworks::native::helper::sigmoid_grad)
             }
         }
+
+        impl SigmoidPointwise<$t> for $b {
+            fn sigmoid_pointwise(&self, x: &mut SharedTensor<$t>)
+                       -> Result<(), ::co::error::Error> {
+                map1_inplace(read_write!(x, $t, self),
+                     ::frameworks::native::helper::sigmoid)
+            }
+
+            fn sigmoid_pointwise_grad(
+                &self,
+                x: &SharedTensor<$t>,
+                x_diff: &mut SharedTensor<$t>)
+                -> Result<(),  ::co::error::Error> {
+                    return
+                map2_inplace(read!(x, $t, self),
+                     read_write!(x_diff, $t, self),
+                     ::frameworks::native::helper::sigmoid_grad)
+            }
+        }
     );
 }
 
@@ -165,6 +184,24 @@ macro_rules! impl_ops_relu_for {
                      ::frameworks::native::helper::relu_grad)
             }
         }
+        impl ReluPointwise<$t> for $b {
+
+            fn relu_pointwise(&self, x: &mut SharedTensor<$t>)
+                    -> Result<(), ::co::error::Error> {
+                map1_inplace(read_write!(x, $t, self),
+                     ::frameworks::native::helper::relu)
+            }
+
+            fn relu_pointwise_grad(
+                &self,
+                x: &SharedTensor<$t>,
+                x_diff: &mut SharedTensor<$t>)
+                -> Result<(), ::co::error::Error> {
+                map2_inplace(read!(x, $t, self),
+                     read_write!(x_diff, $t, self),
+                     ::frameworks::native::helper::relu_grad)
+            }
+        }
     );
 }
 
@@ -189,6 +226,23 @@ macro_rules! impl_ops_tanh_for {
                 map2(read!(x, $t, self),
                      read!(x_diff, $t, self),
                      write_only!(result_diff, $t, self),
+                     ::frameworks::native::helper::tanh_grad)
+            }
+        }
+        impl ::plugin::TanhPointwise<$t> for $b {
+            fn tanh_pointwise(&self, x: &mut SharedTensor<$t>)
+                    -> Result<(), ::co::error::Error> {
+                map1_inplace(read_write!(x, $t, self),
+                     ::frameworks::native::helper::tanh)
+            }
+
+            fn tanh_pointwise_grad(
+                &self,
+                x: &SharedTensor<$t>,
+                x_diff: &mut SharedTensor<$t>)
+                -> Result<(), Error> {
+                map2_inplace(read!(x, $t, self),
+                     read_write!(x_diff, $t, self),
                      ::frameworks::native::helper::tanh_grad)
             }
         }

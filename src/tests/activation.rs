@@ -198,12 +198,21 @@ mod native {
     use super::*;
     test_native!(test_relu, relu_f32, relu_f64);
     test_native!(test_relu_grad, relu_grad_f32, relu_grad_f64);
+    test_native!(test_relu_pointwise, relu_pointwise_f32, relu_pointwise_f64);
+    test_native!(test_relu_pointwise_grad,
+               relu_pointwise_grad_f32, relu_pointwise_grad_f64);
 
     test_native!(test_sigmoid, sigmoid_f32, sigmoid_f64);
     test_native!(test_sigmoid_grad, sigmoid_grad_f32, sigmoid_grad_f64);
+    test_native!(test_sigmoid_pointwise, sigmoid_pointwise_f32, sigmoid_pointwise_f64);
+    test_native!(test_sigmoid_pointwise_grad,
+               sigmoid_pointwise_grad_f32, sigmoid_pointwise_grad_f64);
 
     test_native!(test_tanh, tanh_f32, tanh_f64);
     test_native!(test_tanh_grad, tanh_grad_f32, tanh_grad_f64);
+    test_native!(test_tanh_pointwise, tanh_pointwise_f32, tanh_pointwise_f64);
+    test_native!(test_tanh_pointwise_grad,
+               tanh_pointwise_grad_f32, tanh_pointwise_grad_f64);
 }
 
 mod cuda {

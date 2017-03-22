@@ -22,6 +22,26 @@ fn lens_eq<T>(xs: &[T], ys: &[T]) -> Result<(), Error> {
     Ok(())
 }
 
+
+fn map1_inplace<T, F>(src: &mut [T], f: F) -> Result<(), Error>
+    where T: Float,
+          F: Fn(T) -> T {
+    for i in 0..src.len() {
+        src[i] = f(src[i]);
+    }
+    Ok(())
+}
+
+fn map2_inplace<T, F>(src1: &[T], src2: &mut [T], f: F) -> Result<(), Error>
+    where T: Float,
+          F: Fn(T, T) -> T {
+    try!(lens_eq(src1, src2));
+    for i in 0..src2.len() {
+        src2[i] = f(src1[i], src2[i]);
+    }
+    Ok(())
+}
+
 fn map1<T, F>(src: &[T], dst: &mut [T], f: F) -> Result<(), Error>
     where T: Float,
           F: Fn(T) -> T {
@@ -61,8 +81,8 @@ impl_ops_sigmoid_for!(f32, Backend<Native>);
 impl_ops_relu_for!(f32, Backend<Native>);
 impl_ops_tanh_for!(f32, Backend<Native>);
 // impl_ops_convolution_for!(f32, Backend<Native>);
- impl_ops_softmax_for!(f32, Backend<Native>);
- impl_ops_log_softmax_for!(f32, Backend<Native>);
+impl_ops_softmax_for!(f32, Backend<Native>);
+impl_ops_log_softmax_for!(f32, Backend<Native>);
 // impl_ops_lrn_for!(f32, Backend<Native>);
 // impl_ops_pooling_for!(f32, Backend<Native>);
 
@@ -79,7 +99,7 @@ impl_ops_sigmoid_for!(f64, Backend<Native>);
 impl_ops_relu_for!(f64, Backend<Native>);
 impl_ops_tanh_for!(f64, Backend<Native>);
 // impl_ops_convolution_for!(f64, Backend<Native>);
- impl_ops_softmax_for!(f64, Backend<Native>);
- impl_ops_log_softmax_for!(f64, Backend<Native>);
+impl_ops_softmax_for!(f64, Backend<Native>);
+impl_ops_log_softmax_for!(f64, Backend<Native>);
 // impl_ops_lrn_for!(f64, Backend<Native>);
 // impl_ops_pooling_for!(f64, Backend<Native>);
