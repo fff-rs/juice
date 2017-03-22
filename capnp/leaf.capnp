@@ -32,6 +32,7 @@ struct LayerConfig {
     # Activation layers
     relu @7 :Void;
     sigmoid @8 :Void;
+    tanh @15 :Void;
     # Loss layers
     negativeLogLikelihood @9 :NegativeLogLikelihoodConfig;
     # Utility layers

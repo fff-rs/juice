@@ -24,9 +24,7 @@ pub struct Sigmoid;
 
 //
 // Sigmoid + SigmoidPointwise
-// Only on CUDA
 //
-#[cfg(all(feature="cuda", not(feature="native")))]
 impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ILayer<B> for Sigmoid {
     impl_ilayer_activation!();
 
@@ -52,7 +50,6 @@ impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ILayer<B> f
     }
 }
 
-#[cfg(all(feature="cuda", not(feature="native")))]
 impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeOutput<f32, B> for Sigmoid {
     fn compute_output(&self,
                       backend: &B,
@@ -66,7 +63,6 @@ impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeOutp
     }
 }
 
-#[cfg(all(feature="cuda", not(feature="native")))]
 impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeInputGradient<f32, B> for Sigmoid {
     fn compute_input_gradient(&self,
                               backend: &B,
@@ -83,65 +79,4 @@ impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeInpu
     }
 }
 
-#[cfg(all(feature="cuda", not(feature="native")))]
 impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeParametersGradient<f32, B> for Sigmoid {}
-
-//
-// Sigmoid without SigmoidPointwise
-// Only on CUDA
-//
-#[cfg(feature="native")]
-impl<B: IBackend + conn::Sigmoid<f32>> ILayer<B> for Sigmoid {
-    impl_ilayer_activation!();
-
-    fn reshape(&mut self,
-               backend: ::std::rc::Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
-        if let Some(inp) = input_data.get(0) {
-            let read_inp = inp.read().unwrap();
-            let input_desc = read_inp.desc();
-            input_gradient[0].write().unwrap().resize(input_desc).unwrap();
-            output_data[0].write().unwrap().resize(input_desc).unwrap();
-            output_gradient[0].write().unwrap().resize(input_desc).unwrap();
-        }
-    }
-}
-
-#[cfg(feature="native")]
-impl<B: IBackend + conn::Sigmoid<f32>> ComputeOutput<f32, B> for Sigmoid {
-    fn compute_output(&self,
-                      backend: &B,
-                      _weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
-        match input_data.get(0) {
-            Some(input) => backend.sigmoid(input, output_data[0]).unwrap(),
-            None => panic!("No input provided for Sigmoid layer."),
-        }
-    }
-}
-
-#[cfg(feature="native")]
-impl<B: IBackend + conn::Sigmoid<f32>> ComputeInputGradient<f32, B> for Sigmoid {
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              weights_data: &[&SharedTensor<f32>],
-                              output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
-        match output_data.get(0) {
-            Some(_) => backend.sigmoid_grad(output_data[0], output_gradients[0],
-                                            input_data[0], input_gradients[0]).unwrap(),
-            None => panic!("No output_data provided for Sigmoid layer backward."),
-        }
-    }
-}
-
-#[cfg(feature="native")]
-impl<B: IBackend + conn::Sigmoid<f32>> ComputeParametersGradient<f32, B> for Sigmoid {}

@@ -33,7 +33,6 @@ fn main() {
     }
 }
 
-#[cfg(feature = "native")]
 #[allow(dead_code)]
 fn native_backend() -> Rc<Backend<Native>> {
     let framework = Native::new();

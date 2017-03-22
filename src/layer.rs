@@ -875,6 +875,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
             LayerType::Sequential(layer_config) => Box::new(Sequential::from_config(backend, &layer_config)),
             LayerType::Softmax => Box::new(Softmax::default()),
             LayerType::ReLU => Box::new(ReLU),
+            LayerType::TanH => Box::new(TanH),
             LayerType::Sigmoid => Box::new(Sigmoid),
             LayerType::NegativeLogLikelihood(layer_config) => Box::new(NegativeLogLikelihood::from_config(&layer_config)),
             LayerType::Reshape(layer_config) => Box::new(Reshape::from_config(&layer_config)),
@@ -1240,6 +1241,8 @@ pub enum LayerType {
     // Activation layers
     /// ReLU Layer
     ReLU,
+    /// TanH Layer
+    TanH,
     /// Sigmoid Layer
     Sigmoid,
     // Loss layers
@@ -1250,28 +1253,26 @@ pub enum LayerType {
     Reshape(ReshapeConfig),
 }
 
+
+// TODO get rid of this, each implementation has to state if this
+// TODO an in place operation or not, this thing here makes no sense whatsoever
 impl LayerType {
     /// Returns wether the LayerType supports in-place operations.
     pub fn supports_in_place(&self) -> bool {
         match *self {
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            LayerType::Convolution(_) => false,
             LayerType::Linear(_) => false,
             LayerType::LogSoftmax => false,
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            LayerType::Pooling(_) => false,
             LayerType::Sequential(_) => false,
             LayerType::Softmax => false,
-            #[cfg(all(feature="cuda", not(feature="native")))]
             LayerType::ReLU => true,
-            #[cfg(feature="native")]
-            LayerType::ReLU => false,
-            #[cfg(all(feature="cuda", not(feature="native")))]
+            LayerType::TanH => true,
             LayerType::Sigmoid => true,
-            #[cfg(feature="native")]
-            LayerType::Sigmoid => false,
             LayerType::NegativeLogLikelihood(_) => false,
             LayerType::Reshape(_) => true,
+            #[cfg(all(feature="cuda", not(feature="native")))]
+            LayerType::Convolution(_) => false,
+            #[cfg(all(feature="cuda", not(feature="native")))]
+            LayerType::Pooling(_) => false,
         }
     }
 
@@ -1283,24 +1284,19 @@ impl<'a> CapnpWrite<'a> for LayerType {
     /// Write the LayerType into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
         match self {
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            &LayerType::Convolution(ref cfg) => { let ref mut config = builder.borrow().init_convolution(); cfg.write_capnp(config); },
             &LayerType::Linear(ref cfg) => { let ref mut config = builder.borrow().init_linear(); cfg.write_capnp(config); },
             &LayerType::LogSoftmax => { builder.set_log_softmax(()) },
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            &LayerType::Pooling(ref cfg) => { let ref mut config = builder.borrow().init_pooling(); cfg.write_capnp(config); },
             &LayerType::Sequential(ref cfg) => { let ref mut config = builder.borrow().init_sequential(); cfg.write_capnp(config); },
             &LayerType::Softmax => { builder.set_softmax(()) },
-            #[cfg(all(feature="cuda", not(feature="native")))]
             &LayerType::ReLU => { builder.set_relu(()) },
-            #[cfg(feature="native")]
-            &LayerType::ReLU => { builder.set_relu(()) },
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            &LayerType::Sigmoid => { builder.set_sigmoid(()) },
-            #[cfg(feature="native")]
+            &LayerType::TanH => { builder.set_tanh(()) },
             &LayerType::Sigmoid => { builder.set_sigmoid(()) },
             &LayerType::NegativeLogLikelihood(ref cfg) => { let ref mut config = builder.borrow().init_negative_log_likelihood(); cfg.write_capnp(config); },
             &LayerType::Reshape(ref cfg) => { let ref mut config = builder.borrow().init_reshape(); cfg.write_capnp(config); },
+            #[cfg(all(feature="cuda", not(feature="native")))]
+            &LayerType::Convolution(ref cfg) => { let ref mut config = builder.borrow().init_convolution(); cfg.write_capnp(config); },
+            #[cfg(all(feature="cuda", not(feature="native")))]
+            &LayerType::Pooling(ref cfg) => { let ref mut config = builder.borrow().init_pooling(); cfg.write_capnp(config); },
         }
     }
 }
@@ -1310,22 +1306,23 @@ impl<'a> CapnpRead<'a> for LayerType {
 
     fn read_capnp(reader: Self::Reader) -> Self {
         match reader.which().unwrap() {
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            capnp_layer_type::Which::Convolution(read_config) => { let config = ConvolutionConfig::read_capnp(read_config.unwrap()); LayerType::Convolution(config) },
-            #[cfg(not(all(feature="cuda", not(feature="native"))))]
-            capnp_layer_type::Which::Convolution(_) => { panic!("Can not load Network because Convolution layer is not supported with the used feature flags.") },
             capnp_layer_type::Which::Linear(read_config) => { let config = LinearConfig::read_capnp(read_config.unwrap()); LayerType::Linear(config) },
             capnp_layer_type::Which::LogSoftmax(read_config) => { LayerType::LogSoftmax },
+            capnp_layer_type::Which::Sequential(read_config) => { let config = SequentialConfig::read_capnp(read_config.unwrap()); LayerType::Sequential(config) },
+            capnp_layer_type::Which::Softmax(_) => { LayerType::Softmax },
+            capnp_layer_type::Which::Relu(_) => { LayerType::ReLU },
+            capnp_layer_type::Which::Tanh(_) => { LayerType::TanH },
+            capnp_layer_type::Which::Sigmoid(_) => { LayerType::Sigmoid },
+            capnp_layer_type::Which::NegativeLogLikelihood(read_config) => { let config = NegativeLogLikelihoodConfig::read_capnp(read_config.unwrap()); LayerType::NegativeLogLikelihood(config) },
+            capnp_layer_type::Which::Reshape(read_config) => { let config = ReshapeConfig::read_capnp(read_config.unwrap()); LayerType::Reshape(config) },
             #[cfg(all(feature="cuda", not(feature="native")))]
             capnp_layer_type::Which::Pooling(read_config) => { let config = PoolingConfig::read_capnp(read_config.unwrap()); LayerType::Pooling(config) },
             #[cfg(not(all(feature="cuda", not(feature="native"))))]
             capnp_layer_type::Which::Pooling(_) => { panic!("Can not load Network because Pooling layer is not supported with the used feature flags.") },
-            capnp_layer_type::Which::Sequential(read_config) => { let config = SequentialConfig::read_capnp(read_config.unwrap()); LayerType::Sequential(config) },
-            capnp_layer_type::Which::Softmax(_) => { LayerType::Softmax },
-            capnp_layer_type::Which::Relu(_) => { LayerType::ReLU },
-            capnp_layer_type::Which::Sigmoid(_) => { LayerType::Sigmoid },
-            capnp_layer_type::Which::NegativeLogLikelihood(read_config) => { let config = NegativeLogLikelihoodConfig::read_capnp(read_config.unwrap()); LayerType::NegativeLogLikelihood(config) },
-            capnp_layer_type::Which::Reshape(read_config) => { let config = ReshapeConfig::read_capnp(read_config.unwrap()); LayerType::Reshape(config) },
+#[cfg(all(feature="cuda", not(feature="native")))]
+            capnp_layer_type::Which::Convolution(read_config) => { let config = ConvolutionConfig::read_capnp(read_config.unwrap()); LayerType::Convolution(config) },
+            #[cfg(not(all(feature="cuda", not(feature="native"))))]
+            capnp_layer_type::Which::Convolution(_) => { panic!("Can not load Network because Convolution layer is not supported with the used feature flags.") },
         }
     }
 }
