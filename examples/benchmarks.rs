@@ -6,9 +6,13 @@ extern crate collenchyma as co;
 extern crate leaf;
 
 use co::prelude::*;
+use leaf::layer::{LayerType};
+use leaf::layer::*;
+use leaf::layers::*;
 
 use std::rc::Rc;
 use std::env;
+use std::sync::{Arc, RwLock};
 
 fn main() {
     env_logger::init().unwrap();

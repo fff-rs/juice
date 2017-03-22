@@ -10,7 +10,6 @@ macro_rules! impl_ilayer_common {
     )
 }
 
-#[cfg(all(feature="cuda", not(feature="native")))]
 pub use self::convolution::{Convolution, ConvolutionConfig};
 pub use self::linear::{Linear, LinearConfig};
 pub use self::log_softmax::LogSoftmax;
@@ -18,7 +17,6 @@ pub use self::log_softmax::LogSoftmax;
 pub use self::pooling::{Pooling, PoolingConfig, PoolingMode};
 pub use self::softmax::Softmax;
 
-#[cfg(all(feature="cuda", not(feature="native")))]
 pub mod convolution;
 pub mod linear;
 pub mod log_softmax;

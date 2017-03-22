@@ -866,7 +866,6 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
     /// [3]: ../layers/index.html
     fn worker_from_config(backend: Rc<B>, config: &LayerConfig) -> Box<ILayer<B>> {
         match config.layer_type.clone() {
-            #[cfg(all(feature="cuda", not(feature="native")))]
             LayerType::Convolution(layer_config) => Box::new(Convolution::from_config(&layer_config)),
             LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
             LayerType::LogSoftmax => Box::new(LogSoftmax::default()),
@@ -1224,7 +1223,6 @@ pub struct LayerConfig {
 pub enum LayerType {
     // Common layers
     /// Convolution Layer
-    #[cfg(all(feature="cuda", not(feature="native")))]
     Convolution(ConvolutionConfig),
     /// Linear Layer
     Linear(LinearConfig),
@@ -1254,7 +1252,6 @@ impl LayerType {
     /// Returns wether the LayerType supports in-place operations.
     pub fn supports_in_place(&self) -> bool {
         match *self {
-            #[cfg(all(feature="cuda", not(feature="native")))]
             LayerType::Convolution(_) => false,
             LayerType::Linear(_) => false,
             LayerType::LogSoftmax => false,
@@ -1283,7 +1280,6 @@ impl<'a> CapnpWrite<'a> for LayerType {
     /// Write the LayerType into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
         match self {
-            #[cfg(all(feature="cuda", not(feature="native")))]
             &LayerType::Convolution(ref cfg) => { let ref mut config = builder.borrow().init_convolution(); cfg.write_capnp(config); },
             &LayerType::Linear(ref cfg) => { let ref mut config = builder.borrow().init_linear(); cfg.write_capnp(config); },
             &LayerType::LogSoftmax => { builder.set_log_softmax(()) },
@@ -1310,10 +1306,7 @@ impl<'a> CapnpRead<'a> for LayerType {
 
     fn read_capnp(reader: Self::Reader) -> Self {
         match reader.which().unwrap() {
-            #[cfg(all(feature="cuda", not(feature="native")))]
             capnp_layer_type::Which::Convolution(read_config) => { let config = ConvolutionConfig::read_capnp(read_config.unwrap()); LayerType::Convolution(config) },
-            #[cfg(not(all(feature="cuda", not(feature="native"))))]
-            capnp_layer_type::Which::Convolution(_) => { panic!("Can not load Network because Convolution layer is not supported with the used feature flags.") },
             capnp_layer_type::Which::Linear(read_config) => { let config = LinearConfig::read_capnp(read_config.unwrap()); LayerType::Linear(config) },
             capnp_layer_type::Which::LogSoftmax(read_config) => { LayerType::LogSoftmax },
             #[cfg(all(feature="cuda", not(feature="native")))]

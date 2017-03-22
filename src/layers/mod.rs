@@ -60,11 +60,11 @@ pub use self::activation::{
 
 #[cfg(all(feature="cuda", not(feature="native")))]
 pub use self::common::{
-    Convolution, ConvolutionConfig,
     Pooling, PoolingConfig, PoolingMode,
 };
 
 pub use self::common::{
+    Convolution, ConvolutionConfig,
     Linear, LinearConfig,
     LogSoftmax,
     Softmax,
