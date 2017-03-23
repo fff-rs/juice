@@ -194,6 +194,52 @@ fn bench_alexnet() {
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc3", LinearConfig { output_size: 1000 }));
 
+
+//     cfg.add_framework(OPENCL).gpuset([0..2])
+//     cfg.add_framework()
+//     cfg.add_layer(fc1).framework(CUDA).config(LinearConfig().output_size(4096))
+//     cfg.add_layer(fc1).framework(AUTOSELECT).config(PoolingConfig().stride(2).output_size(4096))
+
+
+// impl Config {
+//     fn add_layer(self, name : String) -> LayerConfig<> {
+//         self.lc = LayerConfig<>::new(name);
+//         &self.lc
+//     }
+// }
+
+// impl Layer {
+//     fn new() -> LayerConfig {
+//     }
+//     fn config(self, lc : LayerConfig) -> Self {
+//         self.layerconfig = lc;
+//         self
+//     }
+// }
+
+
+//     trait MyBuilder {
+//     }
+
+//     FuckBuilder
+//     YadaBuilder
+
+//     impl Config  (
+
+//         fn new() -: Config
+//         (
+//             Config
+//         )
+
+//         fn add_rely_lazer(self, value) -:
+//         (
+//         )
+//         config.addlaz)=
+//     )
+
+//     cfg.add_layer("fc1").set(output_size(4096)
+//         .addlzaer
+
     let backend = cuda_backend();
     // let native_backend = native_backend();
     let mut network = Layer::from_config(backend.clone(),
