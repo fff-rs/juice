@@ -188,13 +188,9 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
         assert!(input_dim[0] == output_dim[0]);
         assert!(filter_dim[0] == output_dim[1]);
         assert!(input_dim[1] == filter_dim[1]);
- 
-        println!("input_dim  = `{:?}`", input_dim);
-        println!("filter_dim = `{:?}`", filter_dim);
-        println!("output_dim = `{:?}`", output_dim);
- 
-        // TODO: specializations for spatial input.
- 
+
+        // TODO: specializations for spatial input
+
         // recursively sum up elementwise multiplication of the hyperplanes.
         fn filter_<T>(input: &[T], input_stride: &[usize], input_dim: &[usize],
                       input_offset: usize, input_idx_base: &[usize],
@@ -351,17 +347,7 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
     {
         unimplemented!()
     }
- 
-    //fn convolution_grad_filter_plain(&self, src_data: &SharedTensor<T>,
-                                     //dest_diff: &SharedTensor<T>,
-                                     //filter_diff: &mut SharedTensor<T>,
-                                     //workspace: &mut SharedTensor<u8>,
-                                     //config: &Self::CC) ->
-        //Result<(), ::co::error::Error>
-    //{
-        //unimplemented!()
-    //}
- 
+
     fn convolution_grad_data(&self, filter: &SharedTensor<T>,
                              x_diff: &SharedTensor<T>,
                              result_diff: &mut SharedTensor<T>,
@@ -371,22 +357,13 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
     {
         unimplemented!()
     }
- 
-    //fn convolution_grad_data_plain(&self, filter: &SharedTensor<T>,
-                                   //x_diff: &SharedTensor<T>,
-                                   //result_diff: &mut SharedTensor<T>,
-                                   //workspace: &mut SharedTensor<u8>,
-                                   //config: &Self::CC) ->
-        //Result<(), ::co::error::Error>
-    //{
-        //unimplemented!()
-    //}
+
  }
 
+// convolution is not needed here, it is well implemented without the macro madness
 impl_ops_sigmoid_for!(f32, Backend<Native>);
 impl_ops_relu_for!(f32, Backend<Native>);
 impl_ops_tanh_for!(f32, Backend<Native>);
-// impl_ops_convolution_for!(f32, Backend<Native>);
 impl_ops_softmax_for!(f32, Backend<Native>);
 impl_ops_log_softmax_for!(f32, Backend<Native>);
 // impl_ops_lrn_for!(f32, Backend<Native>);
@@ -404,7 +381,6 @@ impl_ops_log_softmax_for!(f32, Backend<Native>);
 impl_ops_sigmoid_for!(f64, Backend<Native>);
 impl_ops_relu_for!(f64, Backend<Native>);
 impl_ops_tanh_for!(f64, Backend<Native>);
-// impl_ops_convolution_for!(f64, Backend<Native>);
 impl_ops_softmax_for!(f64, Backend<Native>);
 impl_ops_log_softmax_for!(f64, Backend<Native>);
 // impl_ops_lrn_for!(f64, Backend<Native>);
