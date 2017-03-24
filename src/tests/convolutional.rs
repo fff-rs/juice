@@ -150,3 +150,7 @@ mod cuda {
     test_cuda!(test_convolution, convolution_f32, convolution_f64);
 }
 
+mod native {
+    use super::*;
+    test_native!(test_convolution, convolution_f32, convolution_f64);
+}

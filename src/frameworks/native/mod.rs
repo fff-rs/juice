@@ -165,7 +165,8 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
         let input_stride = input_dim.default_stride();
  
         let output_dim = result.desc().clone();
-        let output = result.read_write(dev).unwrap()
+        // this is ok, we only read parts we already wrote
+        let output = result.write_only(dev).unwrap()
             .as_mut_native().unwrap()
             .as_mut_slice::<T>();
         let output_stride = output_dim.default_stride();
