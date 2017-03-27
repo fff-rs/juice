@@ -35,32 +35,32 @@ impl API {
         norm_desc: cudnnLRNDescriptor_t,
         mode: cudnnLRNMode_t,
         alpha: *const ::libc::c_void,
-        src_desc: cudnnTensorDescriptor_t,
-        src_data: *const ::libc::c_void,
+        x_desc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
         beta: *const ::libc::c_void,
-        dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
+        y_desc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void
     ) -> Result<(), Error> {
-        unsafe { API::ffi_lrn_cross_channel_forward(handle, norm_desc, mode, alpha, src_desc, src_data, beta, dest_desc, dest_data) }
+        unsafe { API::ffi_lrn_cross_channel_forward(handle, norm_desc, mode, alpha, x_desc, x, beta, y_desc, y) }
     }
 
     /// Computes an LRN cross channel backward function.
     pub fn lrn_cross_channel_backward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
-        mode: cudnnDivNormMode_t,
+        mode: cudnnLRNMode_t,
         alpha: *const ::libc::c_void,
-        src_desc: cudnnTensorDescriptor_t,
-        src_data: *const ::libc::c_void,
-        src_diff_desc: cudnnTensorDescriptor_t,
-        src_diff_data: *const ::libc::c_void,
+        x_desc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        dx_desc: cudnnTensorDescriptor_t,
+        dx: *const ::libc::c_void,
         beta: *const ::libc::c_void,
-        dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *const ::libc::c_void,
-        dest_diff_desc: cudnnTensorDescriptor_t,
-        dest_diff_data: *mut ::libc::c_void
+        y_desc: cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        dy_desc: cudnnTensorDescriptor_t,
+        dy: *mut ::libc::c_void
     ) -> Result<(), Error> {
-        unsafe { API::ffi_lrn_cross_channel_backward(handle, norm_desc, mode, alpha, src_desc, src_data, src_diff_desc, src_diff_data, beta, dest_desc, dest_data, dest_diff_desc, dest_diff_data) }
+        unsafe { API::ffi_lrn_cross_channel_backward(handle, norm_desc, mode, alpha, x_desc, x, dx_desc, dx, beta, y_desc, y, dy_desc, dy) }
     }
 
     /// Computes an devisive normalization forward function.
@@ -69,16 +69,17 @@ impl API {
         norm_desc: cudnnLRNDescriptor_t,
         mode: cudnnDivNormMode_t,
         alpha: *const ::libc::c_void,
-        src_desc: cudnnTensorDescriptor_t,
-        src_data: *const ::libc::c_void,
-        src_means_data: *const ::libc::c_void,
-        temp_data: *mut ::libc::c_void,
-        temp_data2: *mut ::libc::c_void,
+        x_desc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        means: *const ::libc::c_void,
+        temp: *mut ::libc::c_void,
+        temp2: *mut ::libc::c_void,
         beta: *const ::libc::c_void,
-        dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
+        y_desc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void
     ) -> Result<(), Error> {
-        unsafe { API::ffi_divisive_normalization_forward(handle, norm_desc, mode, alpha, src_desc, src_data, src_means_data, temp_data, temp_data2, beta, dest_desc, dest_data) }
+        unsafe { API::ffi_divisive_normalization_forward(
+        handle, norm_desc, mode, alpha, x_desc, x, means, temp, temp2, beta, y_desc, y) }
     }
 
     /// Computes an devisive normalization backward function.
@@ -87,18 +88,18 @@ impl API {
         norm_desc: cudnnLRNDescriptor_t,
         mode: cudnnDivNormMode_t,
         alpha: *const ::libc::c_void,
-        src_desc: cudnnTensorDescriptor_t,
-        src_data: *const ::libc::c_void,
-        src_means_data: *const ::libc::c_void,
-        src_diff_data: *const ::libc::c_void,
-        temp_data: *mut ::libc::c_void,
-        temp_data2: *mut ::libc::c_void,
+        x_desc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        means: *const ::libc::c_void,
+        dy: *const ::libc::c_void,
+        temp: *mut ::libc::c_void,
+        temp2: *mut ::libc::c_void,
         beta: *const ::libc::c_void,
-        dest_data_desc: cudnnTensorDescriptor_t,
-        dest_data_diff: *mut ::libc::c_void,
-        dest_means_diff: *mut ::libc::c_void
+        dx_dmeans_desc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        dmeans: *mut ::libc::c_void
     ) -> Result<(), Error> {
-        unsafe { API::ffi_divisive_normalization_backward(handle, norm_desc, mode, alpha, src_desc, src_data, src_means_data, src_diff_data, temp_data, temp_data2, beta, dest_data_desc, dest_data_diff, dest_means_diff) }
+        unsafe { API::ffi_divisive_normalization_backward(handle, norm_desc, mode, alpha, x_desc, x, means, dy, temp, temp2, beta, dx_dmeans_desc, dx, dmeans) }
     }
 
     unsafe fn ffi_create_lrn_descriptor() -> Result<cudnnLRNDescriptor_t, Error> {
@@ -154,7 +155,7 @@ impl API {
     unsafe fn ffi_lrn_cross_channel_backward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
-        mode: cudnnDivNormMode_t,
+        mode: cudnnLRNMode_t,
         alpha: *const ::libc::c_void,
         src_desc: cudnnTensorDescriptor_t,
         src_data: *const ::libc::c_void,
@@ -180,16 +181,16 @@ impl API {
         norm_desc: cudnnLRNDescriptor_t,
         mode: cudnnDivNormMode_t,
         alpha: *const ::libc::c_void,
-        src_desc: cudnnTensorDescriptor_t,
-        src_data: *const ::libc::c_void,
-        src_means_data: *const ::libc::c_void,
-        temp_data: *mut ::libc::c_void,
-        temp_data2: *mut ::libc::c_void,
+        x_desc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        means: *const ::libc::c_void,
+        temp: *mut ::libc::c_void,
+        temp2: *mut ::libc::c_void,
         beta: *const ::libc::c_void,
-        dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
+        y_desc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void
     ) -> Result<(), Error> {
-        match cudnnDivisiveNormalizationForward(handle, norm_desc, mode, alpha, src_desc, src_data, src_means_data, temp_data, temp_data2, beta, dest_desc, dest_data) {
+        match cudnnDivisiveNormalizationForward(handle, norm_desc, mode, alpha, x_desc, x, means, temp, temp2, beta, y_desc, y) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the tensor pointers  `src_data`, `dest_data`, `tmp_data`, `tmp_data2` is NULL. Number of input tensor or output tensor dimensions is outside of [4,5] range. A mismatch in dimensions between any two of the input or output tensors. For in-place computation (`src_data` == `dest_data`), a mismatch in strides between the input data and output data tensors. Alpha or beta pointer is NULL. LRN descriptor parameters are outside or their valid ranges. Any of the tensor strides are negative.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("stried of the input and output tensors mismatch.")),
