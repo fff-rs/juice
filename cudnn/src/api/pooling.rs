@@ -22,12 +22,13 @@ impl API {
     pub fn set_pooling_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: cudnnPoolingMode_t,
+        maxpoolingNanOpt: cudnnNanPropagation_t,
         nb_dims: ::libc::c_int,
         window: *const ::libc::c_int,
         padding: *const ::libc::c_int,
         stride: *const ::libc::c_int
     ) -> Result<(), Error> {
-        unsafe { API::ffi_set_pooling_nd_descriptor(desc, mode, nb_dims, window, padding, stride) }
+        unsafe { API::ffi_set_pooling_nd_descriptor(desc, mode, maxpoolingNanOpt, nb_dims, window, padding, stride) }
     }
 
     /// Return information about a generic CUDA cuDNN Pooling Descriptor.
@@ -35,18 +36,20 @@ impl API {
         desc: cudnnPoolingDescriptor_t,
         nb_dims_requested: ::libc::c_int,
         mode: *mut cudnnPoolingMode_t,
+        maxpoolingNanOpt: *mut cudnnNanPropagation_t,
         nb_dims: *mut ::libc::c_int,
         window: *mut ::libc::c_int,
         padding: *mut ::libc::c_int,
         stride: *mut ::libc::c_int
     ) -> Result<(), Error> {
-        unsafe { API::ffi_get_pooling_nd_descriptor(desc, nb_dims_requested, mode, nb_dims, window, padding, stride) }
+        unsafe { API::ffi_get_pooling_nd_descriptor(desc, nb_dims_requested, mode, maxpoolingNanOpt, nb_dims, window, padding, stride) }
     }
 
     /// Initializes a generic CUDA cuDNN Pooling Descriptor with specific properties.
     pub fn set_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: cudnnPoolingMode_t,
+        nan_propagation: cudnnNanPropagation_t,
         window_height: ::libc::c_int,
         window_width: ::libc::c_int,
         vertical_padding: ::libc::c_int,
@@ -54,13 +57,14 @@ impl API {
         vertical_stride: ::libc::c_int,
         horizontal_stride: ::libc::c_int
     ) -> Result<(), Error> {
-        unsafe { API::ffi_set_pooling_2d_descriptor(desc, mode, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) }
+        unsafe { API::ffi_set_pooling_2d_descriptor(desc, mode, nan_propagation, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) }
     }
 
     /// Return information about a generic CUDA cuDNN Pooling Descriptor.
     pub fn get_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: *mut cudnnPoolingMode_t,
+        nan_propagation: *mut cudnnNanPropagation_t,
         window_height: *mut ::libc::c_int,
         window_width: *mut ::libc::c_int,
         vertical_padding: *mut ::libc::c_int,
@@ -68,7 +72,7 @@ impl API {
         vertical_stride: *mut ::libc::c_int,
         horizontal_stride: *mut ::libc::c_int
     ) -> Result<(), Error> {
-        unsafe { API::ffi_get_pooling_2d_descriptor(desc, mode, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) }
+        unsafe { API::ffi_get_pooling_2d_descriptor(desc, mode, nan_propagation, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) }
     }
 
     /// Initializes a generic CUDA cuDNN Pooling Descriptor with specific properties.
@@ -132,12 +136,13 @@ impl API {
     unsafe fn ffi_set_pooling_nd_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: cudnnPoolingMode_t,
+        maxpooling_nan_opt: cudnnNanPropagation_t,
         nb_dims: ::libc::c_int,
         window_dim_a: *const ::libc::c_int,
         padding_a: *const ::libc::c_int,
         stride_a: *const ::libc::c_int,
     ) -> Result<(), Error> {
-        match cudnnSetPoolingNdDescriptor(desc, mode, nb_dims, window_dim_a, padding_a, stride_a) {
+        match cudnnSetPoolingNdDescriptor(desc, mode, maxpooling_nan_opt, nb_dims, window_dim_a, padding_a, stride_a) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")),
             _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.")),
@@ -148,12 +153,13 @@ impl API {
         desc: cudnnPoolingDescriptor_t,
         nb_dims_requested: ::libc::c_int,
         mode: *mut cudnnPoolingMode_t,
+        maxpooling_nan_opt: *mut cudnnNanPropagation_t,
         nb_dims: *mut ::libc::c_int,
         window_dim_a: *mut ::libc::c_int,
         padding_a: *mut ::libc::c_int,
         stride_a: *mut ::libc::c_int,
     ) -> Result<(), Error> {
-        match cudnnGetPoolingNdDescriptor(desc, nb_dims_requested, mode, nb_dims, window_dim_a, padding_a, stride_a) {
+        match cudnnGetPoolingNdDescriptor(desc, nb_dims_requested, mode, maxpooling_nan_opt, nb_dims, window_dim_a, padding_a, stride_a) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")),
             _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.")),
@@ -163,6 +169,7 @@ impl API {
     unsafe fn ffi_set_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: cudnnPoolingMode_t,
+        maxpooling_nan_opt: cudnnNanPropagation_t,
         window_height: ::libc::c_int,
         window_width: ::libc::c_int,
         vertical_padding: ::libc::c_int,
@@ -170,7 +177,7 @@ impl API {
         vertical_stride: ::libc::c_int,
         horizontal_stride: ::libc::c_int
     ) -> Result<(), Error> {
-        match cudnnSetPooling2dDescriptor(desc, mode, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) {
+        match cudnnSetPooling2dDescriptor(desc, mode, maxpooling_nan_opt, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")),
             _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.")),
@@ -180,6 +187,7 @@ impl API {
     unsafe fn ffi_get_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: *mut cudnnPoolingMode_t,
+        maxpooling_nan_opt: *mut cudnnNanPropagation_t,
         window_height: *mut ::libc::c_int,
         window_width: *mut ::libc::c_int,
         vertical_padding: *mut ::libc::c_int,
@@ -187,7 +195,7 @@ impl API {
         vertical_stride: *mut ::libc::c_int,
         horizontal_stride: *mut ::libc::c_int
     ) -> Result<(), Error> {
-        match cudnnGetPooling2dDescriptor(desc, mode, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) {
+        match cudnnGetPooling2dDescriptor(desc, mode, maxpooling_nan_opt, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")),
             _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.")),
