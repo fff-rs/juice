@@ -26,16 +26,16 @@ More information can be found in the [Documentation][docs-ops].
 
 | Operation            | CUDA                 | OpenCL    | Native    |
 |---	                 |---	                  |---        |---        |
-| Sigmoid  	           | { cuDNN v3, v4 }     | -  	      | Rust	  	|
-| SigmoidPointwise     | { cuDNN v3, v4 }  	  | -  	      |   	      |
+| Sigmoid  	           | { cuDNN v3, v4 }     | -  	      | Rust |
+| SigmoidPointwise     | { cuDNN v3, v4 }  	  | -  	      | Rust |
 | ReLU  	             | { cuDNN v3, v4 }     | -  	      | Rust      |
-| ReLUPointwise        | { cuDNN v3, v4 }     | -  	      |           |
+| ReLUPointwise        | { cuDNN v3, v4 }     | -  	      | Rust |
 | Tanh  	   	         | { cuDNN v3, v4 }     | - 	      | Rust      |
-| TanhPointwise  	   	 | { cuDNN v3, v4 }     | - 	      |           |
+| TanhPointwise  	   	 | { cuDNN v3, v4 }     | - 	      | Rust      |
 |   	   	             |  	                  |  	        |           |
 | Normalization (LRN)  | { cuDNN v3, v4 }     | - 	      | -         |
 |   	   	             |  	                  |  	        |           |
-| Convolution          | { cuDNN v3, v4 }     | - 	      | -         |
+| Convolution          | { cuDNN v3, v4 }     | - 	      | Rust      |
 |   	   	             |  	                  |  	        |           |
 | Softmax              | { cuDNN v3, v4 }     | - 	      | Rust      |
 | LogSoftmax           | { cuDNN v3, v4 }     | - 	      | Rust      |
