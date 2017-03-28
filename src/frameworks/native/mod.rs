@@ -214,7 +214,7 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
                 let i_offset = input_offset + (input_idx - p) * input_stride[0];
                 let f_offset = filter_offset + filter_idx * filter_stride[0];
  
-                let v = if input_idx < p || input_idx + 1 > input_idx_end {
+                let v = if input_idx < p || input_idx + 1 > input_idx_end - p {
                     Default::default()
                 } else if depth + 1 >= depth_end {
                     input[i_offset] * filter[f_offset]
