@@ -15,7 +15,7 @@ pub struct PoolingConfig;
 macro_rules! read {
     ($x:ident, $t:ident, $slf:ident) => (
         try!($x.read($slf.device())).as_native()
-            .expect("Broken invariant: not a CUDA memory")
+            .expect("Broken invariant: not a native memory")
             .as_slice::<$t>()
     )
 }
@@ -23,7 +23,7 @@ macro_rules! read {
 macro_rules! read_write {
     ($x:ident, $t: ident, $slf:ident) => (
         try!($x.read_write($slf.device())).as_mut_native()
-            .expect("Broken invariant: not a CUDA memory")
+            .expect("Broken invariant: not a native memory")
             .as_mut_slice::<$t>()
     )
 }
@@ -31,7 +31,7 @@ macro_rules! read_write {
 macro_rules! write_only {
     ($x:ident, $t: ident, $slf:ident) => (
         try!($x.write_only($slf.device())).as_mut_native()
-            .expect("Broken invariant: not a CUDA memory")
+            .expect("Broken invariant: not a native memory")
             .as_mut_slice::<$t>()
     )
 }
