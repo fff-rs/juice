@@ -35,12 +35,12 @@ More information can be found in the [Documentation][docs-ops].
 |   	   	             |  	                  |  	        |           |
 | Normalization (LRN)  | { cuDNN v3, v4 }     | - 	      | -         |
 |   	   	             |  	                  |  	        |           |
-| Convolution          | { cuDNN v3, v4 }     | - 	      | Rust      |
+| Convolution          | { cuDNN v3, v4 }     | - 	      | Rust(forward) |
 |   	   	             |  	                  |  	        |           |
 | Softmax              | { cuDNN v3, v4 }     | - 	      | Rust      |
 | LogSoftmax           | { cuDNN v3, v4 }     | - 	      | Rust      |
 |   	   	             |  	                  |  	        |           |
-| Pooling Max          | { cuDNN v3, v4 }     | - 	      | -         |
+| Pooling Max          | { cuDNN v3, v4 }     | - 	      | Rust(forward) |
 | Pooling Avg          | { cuDNN v3, v4 }     | - 	      | -         |
 
 Kudos to [ehiggs][ehiggs], for implementing the native Rust operations.
