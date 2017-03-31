@@ -13,7 +13,7 @@ pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
 
     let test = |inp_dims: &[usize], out_dims: &[usize], window: &[i32], padding: &[i32], stride: &[i32] | {
         let inp_size = (0..inp_dims.len()).fold(1, |mpy, x| mpy * inp_dims[x]);
-        let out_size = 1;
+        let out_size = (0..out_dims.len()).fold(1, |mpy, x| mpy * out_dims[x]);
         let mut inp = vec![1.0; inp_size];
         inp[0] = 2.0;
 
@@ -25,7 +25,7 @@ pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
 
         backend.pooling_max(&x, &mut r, &conf).unwrap();
 
-        let mut r_test = vec![1.0; out_size as usize];
+        let mut r_test = vec![1.0; out_size];
         r_test[0] = 2.0;
         tensor_assert_eq(&r, &r_test, 1.0);
     };
@@ -33,6 +33,11 @@ pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
     //       input dims   , output dims  ,  window, padding, stride
     test(&[1, 1, 3, 3], &[1, 1, 2, 2], &[2, 2], &[0,0], &[1,1]);
     test(&[1, 1, 10, 10], &[1, 1, 2, 2], &[9, 9], &[0,0], &[1,1]);
+    test(&[1, 1, 49, 49], &[1, 1, 7, 7], &[7, 7], &[0,0], &[7,7]);
+    // TODO test padding
+    test(&[1, 1, 4, 4], &[1, 1, 2, 2], &[2, 2], &[0,0], &[2,2]);
+    test(&[4, 1, 4, 4], &[4, 1, 2, 2], &[2, 2], &[0,0], &[2,2]);
+    test(&[1, 4, 4, 4], &[1, 4, 2, 2], &[2, 2], &[0,0], &[2,2]);
 }
 
 pub fn test_pooling_max_grad<T, F: IFramework>(backend: Backend<F>)

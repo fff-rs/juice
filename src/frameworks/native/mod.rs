@@ -477,65 +477,41 @@ where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd,
             }
         }
 
-        fn conv_k_d1<T>(_batch: usize,
-                        input: &[T],
-                        input_stride: &[usize],
-                        input_dim: &[usize],
-                        input_offset: usize,
-                        input_idx_base: &mut [usize],
-                        window: &[i32],
-                        padding: &[i32],
-                        stride: &[i32],
-                        output: &mut [T],
-                        output_stride: &[usize],
-                        output_dim: &[usize],
-                        output_offset: usize)
-            where T: Add<T, Output = T> + Mul<T, Output = T> + PartialOrd + Default + Copy,
-        {
-            for d1 in 0..input_dim[0] { // iterate over the chanels
-                let input_offset = input_offset + d1 * input_stride[0];
-                recurse(
-                    input,
-                    &input_stride[1..],
-                    &input_dim[1..],
-                    input_offset,
-                    input_offset,
-                    input_idx_base,
-                    window,
-                    0,
-                    padding,
-                    stride,
-                    output,
-                    &output_stride[1..],
-                    &output_dim[1..],
-                    0);
-            }
-
-        }
 
         let mut input_idx = Vec::new();
         input_idx.resize(input_dim.len() - 2, 0);
         let mut output_idx = Vec::new();
         output_idx.resize(output_dim.len(), 0);
 
+        let window = &config.window[..];
+        let padding = &config.padding[..];
+        let stride = &config.stride[..];
+        // do everything for each batch
         for batch in 0..input_dim[0] { // iterate over the batches!
             let input_offset = batch * input_stride[0];
             let output_offset = batch * output_stride[0];
 
-            // compute the conversion for this batch
-            conv_k_d1(batch,
-                        input,
-                        &input_stride[1..],
-                        &input_dim[1..],
-                        input_offset,
-                        &mut input_idx[..],
-                        &config.window[..],
-                        &config.padding[..],
-                        &config.stride[..],
-                        output,
-                        &output_stride[1..],
-                        &output_dim[1..],
-                        output_offset);
+            // iterate over the chanels
+            for d1 in 0..input_dim[1] {
+                let input_offset = input_offset + d1 * input_stride[1];
+                let output_offset = output_offset + d1 * output_stride[1];
+                // pass on the remaining dimensions (no batches, no channels, thus [2..]
+                recurse(
+                    input,
+                    &input_stride[2..],
+                    &input_dim[2..],
+                    input_offset,
+                    input_offset,
+                    &mut input_idx,
+                    &window,
+                    0,
+                    &padding,
+                    &stride,
+                    output,
+                    &output_stride[2..],
+                    &output_dim[2..],
+                    output_offset);
+            }
         }
 
         Ok(())
