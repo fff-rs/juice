@@ -385,14 +385,15 @@ where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd,
 
             for window_idx in 0..window[0] {
                 let input_idx = input_idx_base[0] + window_idx as usize;
-                let i_mem_offset = input_offset + (input_idx - p) * input_stride[0];
 
                 let v = if input_idx < p || input_idx + 1 > input_idx_end - p {
                     Default::default()
-                } else if depth + 1 >= depth_end {
-                    input[i_mem_offset]
                 } else {
-                    max_pooling_(
+                    let i_mem_offset = input_offset + (input_idx - p) * input_stride[0];
+                     if depth + 1 >= depth_end {
+                        input[i_mem_offset]
+                    } else {
+                        max_pooling_(
                             input,
                             &input_stride[1..],
                             &input_dim[1..],
@@ -403,6 +404,7 @@ where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd,
                             depth + 1,
                             depth_end,
                             None)
+                    }
                 };
                 // TODO: Handle NAN, inf and so on
                 current_max = if current_max >= v {
