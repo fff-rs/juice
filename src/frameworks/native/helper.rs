@@ -8,9 +8,15 @@ use co::plugin::Error as PluginError;
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
 pub struct NormalizationConfig;
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 #[allow(missing_docs)]
-pub struct PoolingConfig;
+pub struct PoolingConfig {
+    pub window: Vec<i32>, 
+    pub padding: Vec<i32>, //TODO: check datatype
+    pub stride: Vec<i32>,
+}
+
+
 
 macro_rules! read {
     ($x:ident, $t:ident, $slf:ident) => (
@@ -389,67 +395,6 @@ macro_rules! impl_ops_lrn_for {
                 result: &SharedTensor<$t>,
                 result_diff: &mut SharedTensor<$t>,
                 config: &Self::CLRN
-            ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
-            }
-        }
-    );
-}
-
-#[macro_export]
-macro_rules! impl_ops_pooling_for {
-    ($t:ident, $b:ty) => (
-        impl ::plugin::Pooling<$t> for $b {
-            fn new_pooling_config(
-                &self,
-                window: &[i32],
-                padding: &[i32],
-                stride: &[i32]
-            ) -> Result<Self::CPOOL, ::co::error::Error> {
-                unimplemented!();
-                Ok(::frameworks::native::helper::PoolingConfig)
-            }
-
-            fn pooling_max(
-                &self,
-                x: &mut SharedTensor<$t>,
-                result: &mut SharedTensor<$t>,
-                config: &Self::CPOOL
-            ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
-            }
-
-            fn pooling_max_plain(
-                &self,
-                x: &SharedTensor<$t>,
-                result: &mut SharedTensor<$t>,
-                config: &Self::CPOOL
-            ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
-            }
-            #[allow(unused_variables)]
-            fn pooling_max_grad(
-                &self,
-                x: &mut SharedTensor<$t>,
-                x_diff: &mut SharedTensor<$t>,
-                result: &mut SharedTensor<$t>,
-                result_diff: &mut SharedTensor<$t>,
-                config: &Self::CPOOL
-            ) -> Result<(), ::co::error::Error> {
-                unimplemented!();
-                Ok(())
-            }
-
-            fn pooling_max_grad_plain(
-                &self,
-                x: &SharedTensor<$t>,
-                x_diff: &SharedTensor<$t>,
-                result: &SharedTensor<$t>,
-                result_diff: &mut SharedTensor<$t>,
-                config: &Self::CPOOL
             ) -> Result<(), ::co::error::Error> {
                 unimplemented!();
                 Ok(())
