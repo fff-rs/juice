@@ -303,10 +303,10 @@ impl<T> Sigmoid<T> for Backend<Cuda>
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
 
-        self.sigmoid_plain(x, result)
+        self.sigmoid_pointwise(x, result)
     }
 
-    fn sigmoid_plain(
+    fn sigmoid_pointwise(
         &self,
         x: &::co::tensor::SharedTensor<T>,
         result: &mut ::co::tensor::SharedTensor<T>
@@ -339,10 +339,10 @@ impl<T> Sigmoid<T> for Backend<Cuda>
         match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result_diff.add_device(self.device()) { _ => () }
 
-        self.sigmoid_grad_plain(x, x_diff, result, result_diff)
+        self.sigmoid_grad_pointwise(x, x_diff, result, result_diff)
     }
 
-    fn sigmoid_grad_plain(
+    fn sigmoid_grad_pointwise(
         &self,
         x: &::co::tensor::SharedTensor<T>,
         x_diff: &::co::tensor::SharedTensor<T>,
@@ -1205,10 +1205,10 @@ impl<T> Pooling<T> for Backend<Cuda>
         match x.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result.add_device(self.device()) { _ => () }
 
-        self.pooling_max_plain(x, result, config)
+        self.pooling_max_pointwise(x, result, config)
     }
 
-    fn pooling_max_plain(
+    fn pooling_max_pointwise(
         &self,
         x: &::co::tensor::SharedTensor<T>,
         result: &mut ::co::tensor::SharedTensor<T>,
@@ -1219,9 +1219,9 @@ impl<T> Pooling<T> for Backend<Cuda>
         Ok(try!(match CUDNN.pooling_max_forward(
             config,
             &try!(x.cudnn_tensor_desc()), // src_desc
-            try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+            read!(x, self), //src_data
             &try!(result.cudnn_tensor_desc()), // dest_desc
-            try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result, self.device()) }), // dest_data
+            write_only!(result, self), // dest_data
             scal_params
         ) {
             Ok(_) => Ok(()),
@@ -1245,11 +1245,11 @@ impl<T> Pooling<T> for Backend<Cuda>
         match result.add_device(self.device()) { _ => try!(x.sync(self.device())) }
         match result_diff.add_device(self.device()) { _ => () }
 
-        self.pooling_max_grad_plain(x, x_diff, result, result_diff, config)
+        self.pooling_max_grad_pointwise(x, x_diff, result, result_diff, config)
     }
 
     #[allow(unused_variables)]
-    fn pooling_max_grad_plain(
+    fn pooling_max_grad_pointwise(
         &self,
         x: &::co::tensor::SharedTensor<T>,
         x_diff: &::co::tensor::SharedTensor<T>,
@@ -1262,13 +1262,13 @@ impl<T> Pooling<T> for Backend<Cuda>
         Ok(try!(match CUDNN.pooling_max_backward(
             config,
             &try!(x.cudnn_tensor_desc()), // src_desc
-            try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x, self.device()) }), //src_data
+            read!(x, self), //src_data
             &try!(x_diff.cudnn_tensor_desc()), // src_diff_desc
-            try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(x_diff, self.device()) }), //src_diff_data
+            read!(x_diff, self), //src_diff_data
             &try!(result.cudnn_tensor_desc()), // dest_desc
-            try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr(result, self.device()) }), // dest_data
+            write_only!(result, self), // dest_data
             &try!(result_diff.cudnn_tensor_desc()), // dest_diff_desc
-            try!(unsafe { ::frameworks::cuda::helper::receive_memory_ptr_mut(result_diff, self.device()) }), // dest_diff_data
+            write_only!(result_diff, self), // dest_diff_data
             scal_params
         ) {
             Ok(_) => Ok(()),
