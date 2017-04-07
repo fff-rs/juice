@@ -76,6 +76,7 @@ pub use self::convolution_descriptor::ConvolutionDescriptor;
 pub use self::filter_descriptor::FilterDescriptor;
 pub use self::normalization_descriptor::NormalizationDescriptor;
 pub use self::pooling_descriptor::PoolingDescriptor;
+pub use self::activation_descriptor::ActivationDescriptor;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the Cuda cuDNN API.
@@ -89,4 +90,5 @@ mod filter_descriptor;
 mod normalization_descriptor;
 mod pooling_descriptor;
 mod convolution_descriptor;
+mod activation_descriptor;
 mod api;

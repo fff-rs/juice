@@ -1,5 +1,5 @@
 //! Describes utility functionality for CUDA cuDNN.
-use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor};
+use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor, ActivationDescriptor};
 use ffi::*;
 
 use num::traits::*;
@@ -177,6 +177,51 @@ impl PoolingConfig {
     /// Returns `pooling_max_desc`.
     pub fn pooling_max_desc(&self) -> &PoolingDescriptor {
         &self.pooling_max_desc
+    }
+}
+
+#[allow(missing_debug_implementations, missing_copy_implementations)]
+/// Provides a convenient interface to access cuDNN's Activation Descriptor.
+///
+/// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_activation()`.
+pub struct ActivationConfig {
+    activation_sigmoid_desc: ActivationDescriptor,
+    activation_relu_desc: ActivationDescriptor,
+    activation_clipped_relu_desc: ActivationDescriptor,
+    activation_tanh_desc: ActivationDescriptor,
+}
+
+impl ActivationConfig {
+    /// Returns a new ActivationConfig.
+    pub fn new(
+        activation_sigmoid_desc: ActivationDescriptor,
+        activation_relu_desc: ActivationDescriptor,
+        activation_clipped_relu_desc: ActivationDescriptor,
+        activation_tanh_desc: ActivationDescriptor,
+    ) -> ActivationConfig {
+        ActivationConfig {
+            activation_sigmoid_desc: activation_sigmoid_desc,
+            activation_relu_desc: activation_relu_desc,
+            activation_clipped_relu_desc: activation_clipped_relu_desc,
+            activation_tanh_desc: activation_tanh_desc,
+        }
+    }
+
+    /// Returns `activation_sigmoid_desc`.
+    pub fn activation_sigmoid_desc(&self) -> &ActivationDescriptor {
+        &self.activation_sigmoid_desc
+    }
+    /// Returns `activation_relu_desc`.
+    pub fn activation_relu_desc(&self) -> &ActivationDescriptor {
+        &self.activation_relu_desc
+    }
+    /// Returns `activation_clipped_relu_desc`.
+    pub fn activation_clipped_relu_desc(&self) -> &ActivationDescriptor {
+        &self.activation_clipped_relu_desc
+    }
+    /// Returns `activation_tanh_desc`.
+    pub fn activation_tanh_desc(&self) -> &ActivationDescriptor {
+        &self.activation_tanh_desc
     }
 }
 
