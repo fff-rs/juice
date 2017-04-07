@@ -6,7 +6,7 @@
 
 use super::*;
 use super::utils::{ConvolutionConfig, DataTypeInfo,
-                   NormalizationConfig, PoolingConfig, ScalParams};
+                   NormalizationConfig, PoolingConfig, ActivationConfig, ScalParams};
 use num::traits::Float;
 use std::mem::transmute_copy;
 
@@ -102,11 +102,23 @@ impl Cudnn {
         Ok(PoolingConfig::new(avg, max))
     }
 
+    /// Initializes the parameters and configurations for running CUDA cuDNN Activation operations.
+    pub fn init_activation(
+        &self,
+        ) -> Result<ActivationConfig, Error> {
+        let sigmoid = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID));
+        let relu = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_RELU));
+        let clipped_relu = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_CLIPPED_RELU));
+        let tanh = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_TANH));
+        Ok(ActivationConfig::new(sigmoid, relu, clipped_relu, tanh))
+    }
+
     /// Computes the forward Sigmoid Activation function.
     ///
     /// Writes the result of the computation to `dest_data`.
     pub fn sigmoid_forward<T>(
         &self,
+        activation_conf: &ActivationConfig,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_desc: &TensorDescriptor,
@@ -117,7 +129,7 @@ impl Cudnn {
     {
         API::activation_forward(
             *self.id_c(),
-            cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID,
+            *activation_conf.activation_sigmoid_desc().id_c(),
             unsafe { transmute_copy(&&scale.a) }, *src_desc.id_c(), src_data,
             unsafe { transmute_copy(&&scale.b) }, *dest_desc.id_c(), dest_data
         )
@@ -128,6 +140,7 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_diff_data`.
     pub fn sigmoid_backward<T>(
         &self,
+        activation_conf: &ActivationConfig,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         src_diff_desc: &TensorDescriptor,
@@ -142,7 +155,7 @@ impl Cudnn {
     {
         API::activation_backward(
             *self.id_c(),
-            cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID,
+            *activation_conf.activation_sigmoid_desc().id_c(),
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
             unsafe { transmute_copy(&&scale.b) },
@@ -155,6 +168,7 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_data`.
     pub fn relu_forward<T>(
         &self,
+        activation_conf: &ActivationConfig,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_desc: &TensorDescriptor,
@@ -165,7 +179,7 @@ impl Cudnn {
     {
         API::activation_forward(
             *self.id_c(),
-            cudnnActivationMode_t::CUDNN_ACTIVATION_RELU,
+            *activation_conf.activation_relu_desc().id_c(),
             unsafe { transmute_copy(&&scale.a) }, *src_desc.id_c(), src_data,
             unsafe { transmute_copy(&&scale.b) }, *dest_desc.id_c(), dest_data
         )
@@ -176,6 +190,7 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_diff_data`.
     pub fn relu_backward<T>(
         &self,
+        activation_conf: &ActivationConfig,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         src_diff_desc: &TensorDescriptor,
@@ -190,7 +205,7 @@ impl Cudnn {
     {
         API::activation_backward(
             *self.id_c(),
-            cudnnActivationMode_t::CUDNN_ACTIVATION_RELU,
+            *activation_conf.activation_relu_desc().id_c(),
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
             unsafe { transmute_copy(&&scale.b) },
@@ -203,6 +218,7 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_data`.
     pub fn tanh_forward<T>(
         &self,
+        activation_conf: &ActivationConfig,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_desc: &TensorDescriptor,
@@ -213,7 +229,7 @@ impl Cudnn {
     {
         API::activation_forward(
             *self.id_c(),
-            cudnnActivationMode_t::CUDNN_ACTIVATION_TANH,
+            *activation_conf.activation_tanh_desc().id_c(),
             unsafe { transmute_copy(&&scale.a) }, *src_desc.id_c(), src_data,
             unsafe { transmute_copy(&&scale.b) }, *dest_desc.id_c(), dest_data
         )
@@ -224,6 +240,7 @@ impl Cudnn {
     /// Writes the result of the computation to `dest_diff_data`.
     pub fn tanh_backward<T>(
         &self,
+        activation_conf: &ActivationConfig,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         src_diff_desc: &TensorDescriptor,
@@ -238,7 +255,7 @@ impl Cudnn {
     {
         API::activation_backward(
             *self.id_c(),
-            cudnnActivationMode_t::CUDNN_ACTIVATION_TANH,
+            *activation_conf.activation_tanh_desc().id_c(),
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
             unsafe { transmute_copy(&&scale.b) },

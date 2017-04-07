@@ -20,7 +20,14 @@ impl PoolingDescriptor {
     /// Initializes a new CUDA cuDNN Pooling Descriptor.
     pub fn new(mode: cudnnPoolingMode_t, window: &[i32], padding: &[i32], stride: &[i32]) -> Result<PoolingDescriptor, Error> {
         let generic_pooling_desc = try!(API::create_pooling_descriptor());
-        try!(API::set_pooling_descriptor(generic_pooling_desc, mode, window.len() as i32, window.as_ptr(), padding.as_ptr(), stride.as_ptr()));
+        try!(API::set_pooling_descriptor(generic_pooling_desc,
+                                        mode,
+                                        CUDNN_NOT_PROPAGATE_NAN, // TODO check if this is sane to do
+                                        window.len() as i32,
+                                        window.as_ptr(),
+                                        padding.as_ptr(),
+                                        stride.as_ptr()));
+
         Ok(PoolingDescriptor::from_c(generic_pooling_desc))
     }
 
