@@ -4,6 +4,26 @@ use ::{API, Error};
 use ffi::*;
 
 impl API {
+    /// Create a generic CUDA cuDNN ActivationDescriptor.
+    pub fn create_activation_descriptor() -> Result<cudnnActivationDescriptor_t, Error> {
+        unsafe { API::ffi_create_activation_descriptor() }
+    }
+
+    /// Destroys a CUDA cuDNN Activation Descriptor.
+    ///
+    /// Should be called when freeing a CUDA::Descriptor to not trash up the CUDA device.
+    pub fn destroy_activation_descriptor(desc: cudnnActivationDescriptor_t) -> Result<(), Error>{
+        unsafe { API::ffi_destroy_activation_descriptor(desc) }
+    }
+
+    /// Initializes a generic CUDA cuDNN Activation Descriptor with specific properties.
+    pub fn set_activation_descriptor(desc: cudnnActivationDescriptor_t,
+                                     mode: cudnnActivationMode_t,
+                                     reluNanOpt: cudnnNanPropagation_t,
+                                     reluCeiling: f64) -> Result<(), Error> {
+        unsafe { API::ffi_set_activation_descriptor(desc, mode, reluNanOpt, reluCeiling) }
+    }
+
     /// Computes an activation forward function.
     pub fn activation_forward(
         handle: cudnnHandle_t,
@@ -27,9 +47,9 @@ impl API {
         y: *const ::libc::c_void,
         dy_desc: cudnnTensorDescriptor_t,
         dy: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
         x_desc: cudnnTensorDescriptor_t,
         x: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
         dx_desc: cudnnTensorDescriptor_t,
         dx: *mut ::libc::c_void
     ) -> Result<(), Error> {
@@ -74,6 +94,34 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`mode` is invalid or dimensions of input and output tensor differ or `data_type` or strides of the tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
             _ => Err(Error::Unknown("Unable to compute activation backward.")),
+        }
+    }
+
+
+    unsafe fn ffi_create_activation_descriptor() -> Result<cudnnActivationDescriptor_t, Error> {
+        let mut desc: cudnnActivationDescriptor_t = ::std::ptr::null_mut();
+        match cudnnCreateActivationDescriptor(&mut desc) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(desc),
+            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
+            _ => Err(Error::Unknown("Unable to create generic CUDA cuDNN Activation Descriptor.")),
+        }
+    }
+
+    unsafe fn ffi_destroy_activation_descriptor(desc: cudnnActivationDescriptor_t) -> Result<(), Error> {
+        match cudnnDestroyActivationDescriptor(desc) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
+            _ => Err(Error::Unknown("Unable to destroy CUDA cuDNN Activation Descriptor.")),
+        }
+    }
+
+    unsafe fn ffi_set_activation_descriptor(desc: cudnnActivationDescriptor_t,
+                                            mode: cudnnActivationMode_t,
+                                            reluNanOpt: cudnnNanPropagation_t,
+                                            reluCeiling: f64) -> Result<(), Error>{
+        match cudnnSetActivationDescriptor(desc, mode, reluNanOpt, reluCeiling) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")), // FIXME
+            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Activation Descriptor.")),
         }
     }
 }
