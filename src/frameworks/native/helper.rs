@@ -11,7 +11,7 @@ pub struct NormalizationConfig;
 #[derive(Debug, Clone)]
 #[allow(missing_docs)]
 pub struct PoolingConfig {
-    pub window: Vec<i32>, 
+    pub window: Vec<i32>,
     pub padding: Vec<i32>, //TODO: check datatype
     pub stride: Vec<i32>,
 }
