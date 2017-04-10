@@ -1,9 +1,9 @@
 //! Provides useful macros for easier NN implementation for native.
 
 use co;
-use co::plugin::numeric_helpers::Float;
 use co::memory::MemoryType;
 use co::plugin::Error as PluginError;
+use co::plugin::numeric_helpers::Float;
 
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
@@ -44,14 +44,15 @@ macro_rules! write_only {
 
 /// Just a helper function until SharedTensor has a nice interface for writing data
 pub fn write_to_memory<T: Iterator>(mem: &mut MemoryType, data: T)
-where T::Item: Clone {
+    where T::Item: Clone
+{
     match mem {
         &mut MemoryType::Native(ref mut mem) => {
             let mut mem_buffer = mem.as_mut_slice::<T::Item>();
             for (index, datum) in data.enumerate() {
                 mem_buffer[index] = datum;
             }
-        },
+        }
         #[cfg(any(feature = "opencl", feature = "cuda"))]
         _ => {}
     }
@@ -72,7 +73,7 @@ pub fn sigmoid_grad<T: Float>(x: T, dx: T) -> T {
 #[inline]
 /// Computes the ReLU Function on the CPU
 pub fn relu<T: Float>(x: T) -> T {
-    let x : T = x.clone();
+    let x: T = x.clone();
     x.max(T::zero())
 }
 
@@ -80,7 +81,7 @@ pub fn relu<T: Float>(x: T) -> T {
 /// Computes the ReLU Gradient on the CPU
 pub fn relu_grad<T: Float>(x: T, dx: T) -> T {
     if x > T::zero() {
-        return dx
+        return dx;
     }
     T::zero()
 }

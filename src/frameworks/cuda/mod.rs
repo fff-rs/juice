@@ -839,7 +839,7 @@ impl<T> LRN<T> for Backend<Cuda>
     fn lrn(&self,
            x: &::co::tensor::SharedTensor<T>,
            result: &mut ::co::tensor::SharedTensor<T>,
-           config: &Self::CLRN) //::frameworks::cuda::CC)
+           config: &Self::CLRN)
            -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
         let r_desc = try!(result.cudnn_tensor_desc());
