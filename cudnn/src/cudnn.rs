@@ -378,10 +378,14 @@ impl Cudnn {
         where T: Float + DataTypeInfo,
     {
         API::softmax_backward(
-            *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
+            *self.id_c(),
+            cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST,
+            cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
             unsafe { transmute_copy(&&scale.a) },
-            *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
-            unsafe { transmute_copy(&&scale.b) }, *dest_diff_desc.id_c(), dest_diff_data
+            *src_desc.id_c(), src_data,
+            *src_diff_desc.id_c(), src_diff_data,
+            unsafe { transmute_copy(&&scale.b) },
+            *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
@@ -399,9 +403,13 @@ impl Cudnn {
         where T: Float + DataTypeInfo,
     {
         API::softmax_forward(
-            *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
-            unsafe { transmute_copy(&&scale.a) }, *src_desc.id_c(), src_data,
-            unsafe { transmute_copy(&&scale.b) }, *dest_desc.id_c(), dest_data
+            *self.id_c(),
+            cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG,
+            cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
+            unsafe { transmute_copy(&&scale.a) },
+            *src_desc.id_c(), src_data,
+            unsafe { transmute_copy(&&scale.b) },
+            *dest_desc.id_c(), dest_data
         )
     }
 
@@ -421,10 +429,14 @@ impl Cudnn {
         where T: Float + DataTypeInfo,
     {
         API::softmax_backward(
-            *self.id_c(), cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG, cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
+            *self.id_c(),
+            cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG,
+            cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE,
             unsafe { transmute_copy(&&scale.a) },
-            *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
-            unsafe { transmute_copy(&&scale.b) }, *dest_diff_desc.id_c(), dest_diff_data
+            *src_desc.id_c(), src_data,
+            *src_diff_desc.id_c(), src_diff_data,
+            unsafe { transmute_copy(&&scale.b) },
+            *dest_diff_desc.id_c(), dest_diff_data
         )
     }
 
