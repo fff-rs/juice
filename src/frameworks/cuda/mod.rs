@@ -90,11 +90,11 @@ impl IBackend for Backend<Cuda> {
         &self.device()
     }
 
-    fn synchronize(&self) -> Result<(), ::framework::Error> {
-        if let &DeviceType::Cuda(ref ctx) = self.device() {
-            Ok(try!(ctx.synchronize()))
-        } else {
-            Err(::framework::Error::Implementation(format!("CUDA backend does not have a CUDA context.")))
+     fn synchronize(&self) -> Result<(), ::framework::Error> {
+        match self.device() {
+        	&DeviceType::Cuda(ref ctx) => Ok(try!(ctx.synchronize())),
+			#[cfg(any(feature = "native", feature = "opencl"))]
+        	_ => Err(::framework::Error::Implementation(format!("CUDA backend does not have a CUDA context."))),
         }
     }
 }
