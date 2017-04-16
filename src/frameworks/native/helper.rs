@@ -292,7 +292,7 @@ macro_rules! impl_ops_softmax_for {
                 let dxs = read!(x_diff, $t, self);
                 let drs = write_only!(result_diff, $t, self);
 
-                let mut dot: $t = 0 as $t;
+                let mut dot: $t = 0.0;
                 for (t, dt) in xs.iter().zip(dxs.iter()) {
                     dot += t * dt;
                 }
@@ -315,7 +315,7 @@ macro_rules! impl_ops_log_softmax_for {
                 let max_x = xs.iter().fold(::std::$t::NEG_INFINITY,
                                            |acc, &t| acc.max(t));
 
-                let mut logsum : $t = 0 as $t;
+                let mut logsum : $t = 0.0;
                 for t in xs {
                     logsum += (-(max_x - t)).exp();
                 }
@@ -331,7 +331,7 @@ macro_rules! impl_ops_log_softmax_for {
                 let dxs = read!(x_diff, $t, self);
                 let drs = write_only!(result_diff, $t, self);
 
-                let mut sum = 0 as $t;
+                let mut sum : $t = 0.0;
                 for &grad_val in dxs.iter() {
                     sum += grad_val;
                 }
