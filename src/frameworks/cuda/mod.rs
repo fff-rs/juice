@@ -785,43 +785,40 @@ impl<T> LogSoftmax<T> for Backend<Cuda>
                    result: &mut ::co::tensor::SharedTensor<T>)
                    -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
-        let x_mem = read_write!(x, self);
-
-        match CUDNN.log_softmax_forward(&x_desc,
-                                        trans!(x_mem),
-                                        &x_desc,
-                                        trans_mut!(x_mem),
-                                        scal_params) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN logarithmic softmax Forward."))),
-        }
-    }
-
-    fn log_softmax_grad(&self,
-                        x: &::co::tensor::SharedTensor<T>,
-                        x_diff: &::co::tensor::SharedTensor<T>,
-                        result_diff: &mut ::co::tensor::SharedTensor<T>)
-                        -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
-        let dx_desc = try!(x_diff.cudnn_tensor_desc_flat());
+        let r_desc = try!(result.cudnn_tensor_desc_softmax());
         let x_mem = read!(x, self);
-        let dx_mem = read_write!(x_diff, self);
-        // FIXME arg number not matching anymore
-        match CUDNN.log_softmax_backward(&x_desc,
-                                         trans!(x_mem),
-                                         &dx_desc,
-                                         trans!(dx_mem),
-                                         &x_desc,
-                                         trans!(x_mem),
-                                         &dx_desc,
-                                         trans_mut!(dx_mem),
-                                         scal_params) {
+        let r_mem = write_only!(result, self);
+        match CUDNN.log_softmax_forward(&try!(x.cudnn_tensor_desc_softmax()),
+                                    trans!(x_mem),
+                                    &r_desc,
+                                    trans_mut!(r_mem),
+                                    scal_params) {
             Ok(_) => Ok(()),
-            Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN logarithmic softmax Backward."))),
+            Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN softmax Forward."))),
         }
     }
+    fn log_softmax_grad(&self,
+                    x: &::co::tensor::SharedTensor<T>,
+                    x_diff: &::co::tensor::SharedTensor<T>,
+                    result_diff: &mut ::co::tensor::SharedTensor<T>)
+                    -> Result<(), ::co::error::Error> {
+        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+        let dr_desc = try!(result_diff.cudnn_tensor_desc_softmax());
+        let x_mem = read!(x, self);
+        let dx_mem = read!(x_diff, self);
+        let dr_mem = write_only!(result_diff, self);
+        match CUDNN.log_softmax_backward(&try!(x.cudnn_tensor_desc_softmax()),
+                                     trans!(x_mem),
+                                     &try!(x_diff.cudnn_tensor_desc_softmax()),
+                                     trans!(dx_mem),
+                                     &dr_desc,
+                                     trans_mut!(dr_mem),
+                                     scal_params) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN log softmax Backward."))),
+        }
+    }
+
 }
 
 impl<T> LRN<T> for Backend<Cuda>
