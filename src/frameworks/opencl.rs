@@ -1,10 +1,10 @@
 //! Provides NN for a OpenCL backend.
 
-use ::operation::*;
-use ::binary::*;
-use ::plugin::*;
-use co::prelude::*;
+use binary::*;
 use co::Error;
+use co::prelude::*;
+use operation::*;
+use plugin::*;
 
 impl INnBinary<f32> for Program {
     type Sigmoid = Kernel;
