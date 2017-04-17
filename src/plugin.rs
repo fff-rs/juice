@@ -146,6 +146,7 @@ pub trait NN<F> {
     type CLRN: NNOperationConfig<F>;
     /// The Pooling Operation Config representation for this Plugin.
     type CPOOL: NNOperationConfig<F>;
+    /// The Activation Operation Config representation for this Plugin.
 
     /// Initializes the Plugin.
     fn init_nn();
