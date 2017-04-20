@@ -42,64 +42,23 @@ pub fn test_lrn_grad<T, F: IFramework>(backend: Backend<F>)
 }
 
 
-pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
-    where T: Float + Epsilon + fmt::Debug,
-          Backend<F>: Pooling<T> + IBackend {
-    let mut inp = vec![1.0; 256];
-    inp[0] = 2.0;
-
-    let x  = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
-    let mut r = SharedTensor::<T>::new(&[4, 4, 2, 2]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 1])
-        .unwrap();
-
-    backend.pooling_max(&x, &mut r, &conf).unwrap();
-
-    let mut r_test = vec![1.0; 64];
-    r_test[0] = 2.0;
-    tensor_assert_eq(&backend, &r, &r_test, 3.0);
-}
-
-pub fn test_pooling_max_grad<T, F: IFramework>(backend: Backend<F>)
-    where T: Float + Epsilon + fmt::Debug,
-          Backend<F>: Pooling<T> + IBackend {
-    let mut inp = vec![1.0; 256];
-    inp[0] = 2.0;
-
-    let x  = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
-    let dx = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
-    let r  = filled_tensor(&backend,&[4, 4, 2, 2], &inp[0..64]);
-    let mut dr = SharedTensor::<T>::new(&[4, 4, 2, 2]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 1])
-        .unwrap();
-
-    backend.pooling_max_grad(&x, &dx, &r, &mut dr, &conf).unwrap();
-
-    let dr_test = [
-        2.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0];
-    tensor_assert_eq(&backend, &dr, &dr_test, 3.0);
-}
-
 pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Convolution<T> + IBackend {
 
-    let test = |batch: usize, w1 : usize, h1: usize, d1: usize, k: usize, f: usize |
+    let test = |batch: usize, width1 : usize, height1: usize, depth1: usize, filter_count: usize, filter_size: usize |
     {
         // TODO add stride and padding
         // TODO use a slice for filtersize and k_filters
-        let w2 = (w1 - f + 0) / 1;
-        let h2 = (h1 - f + 0) / 1;
+        let result_width = (width1 - filter_size + 0) / 1;
+        let result_height = (height1 - filter_size + 0) / 1;
 
-        let x_val = vec![1.0; batch * d1 * h1 * w1];
-        let f_val = vec![1.0; k * d1 * f * f];
+        let x_val = vec![1.0; batch * depth1 * height1 * width1];
+        let f_val = vec![1.0; filter_count * depth1 * filter_size * filter_size];
 
-        let x  = filled_tensor(&backend,&[batch, d1, h1, w1], &x_val);
-        let f  = filled_tensor(&backend,&[k, d1, f,  f], &f_val);
-        let mut r  = SharedTensor::<T>::new(&[batch, k, h2, w2]);
+        let x  = filled_tensor(&backend,&[batch, depth1, height1, width1], &x_val);
+        let f  = filled_tensor(&backend,&[filter_count, depth1, filter_size,  filter_size], &f_val);
+        let mut r  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
         let mut ws = SharedTensor::<u8>::new(&[4]);
 
         let conf = backend.new_convolution_config(
@@ -154,8 +113,6 @@ mod cuda {
     use super::*;
     test_cuda!(test_lrn, lrn_f32, lrn_f64);
     test_cuda!(test_lrn_grad, lrn_grad_f32, lrn_grad_f64);
-    test_cuda!(test_pooling_max, pooling_max_f32, pooling_max_f64);
-    test_cuda!(test_pooling_max_grad, pooling_max_grad_f32, pooling_max_grad_f64);
     test_cuda!(test_convolution, convolution_f32, convolution_f64);
 }
 
@@ -163,7 +120,5 @@ mod native {
     use super::*;
     //test_native!(test_lrn, lrn_f32, lrn_f64);
     //test_native!(test_lrn_grad, lrn_grad_f32, lrn_grad_f64);
-    //test_native!(test_pooling_max, pooling_max_f32, pooling_max_f64);
-    //test_native!(test_pooling_max_grad, pooling_max_grad_f32, pooling_max_grad_f64);
     test_native!(test_convolution, convolution_f32, convolution_f64);
 }
