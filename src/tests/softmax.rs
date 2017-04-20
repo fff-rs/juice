@@ -49,46 +49,46 @@ pub fn test_softmax<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Softmax<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &IN);
     let mut r = SharedTensor::<T>::new(&DIMS);
 
     backend.softmax(&x, &mut r).unwrap();
-    tensor_assert_eq(&r, &SOFTMAX_OUT, 3.0);
+    tensor_assert_eq(&backend, &r, &SOFTMAX_OUT, 3.0);
 }
 
 pub fn test_softmax_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Softmax<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &SOFTMAX_OUT);
-    let dx = filled_tensor(&DIMS, &OUT_GRAD);
+    let x  = filled_tensor(&backend, &DIMS, &SOFTMAX_OUT);
+    let dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
     let mut dr = SharedTensor::new(&DIMS);
 
     backend.softmax_grad(&x, &dx, &mut dr).unwrap();
-    tensor_assert_eq(&dr, &SOFTMAX_IN_GRAD, 10.0);
+    tensor_assert_eq(&backend, &dr, &SOFTMAX_IN_GRAD, 10.0);
 }
 
 pub fn test_log_softmax<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: LogSoftmax<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &IN);
     let mut r = SharedTensor::<T>::new(&DIMS);
 
     backend.log_softmax(&x, &mut r).unwrap();
-    tensor_assert_eq(&r, &LOG_SOFTMAX_OUT, 3.0);
+    tensor_assert_eq(&backend, &r, &LOG_SOFTMAX_OUT, 3.0);
 }
 
 pub fn test_log_softmax_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: LogSoftmax<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &LOG_SOFTMAX_OUT);
-    let dx = filled_tensor(&DIMS, &OUT_GRAD);
+    let x  = filled_tensor(&backend, &DIMS, &LOG_SOFTMAX_OUT);
+    let dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
     let mut dr = SharedTensor::new(&DIMS);
 
     backend.log_softmax_grad(&x, &dx, &mut dr).unwrap();
-    tensor_assert_eq(&dr, &LOG_SOFTMAX_IN_GRAD, 10.0);
+    tensor_assert_eq(&backend, &dr, &LOG_SOFTMAX_IN_GRAD, 10.0);
 }
 
 mod native {
