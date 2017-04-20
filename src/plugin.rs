@@ -30,6 +30,10 @@ pub enum ConvForwardAlgo {
     ///
     /// Listed in cuDNN docs but cuDNN does not provide a implementation.
     Direct,
+    /// Winograd  Transform
+    Winograd,
+    /// Winograd  Transform Non-Fused
+    WinogradNonFused,
 }
 
 impl ConvForwardAlgo {
@@ -69,6 +73,8 @@ pub enum ConvBackwardFilterAlgo {
     ///
     /// The results are deterministic.
     FFT,
+    /// Winograd  Transform Non-Fused
+    WinogradNonFused,
 }
 
 impl ConvBackwardFilterAlgo {
@@ -110,6 +116,10 @@ pub enum ConvBackwardDataAlgo {
     ///
     /// The results are deterministic.
     FFTTiling,
+    /// Winograd  Transform
+    Winograd,
+    /// Winograd  Transform Non-Fused
+    WinogradNonFused,
 }
 
 impl ConvBackwardDataAlgo {

@@ -53,6 +53,8 @@ impl ConvForwardAlgo {
                FFT => CUDNN_CONVOLUTION_FWD_ALGO_FFT,
                FFTTiling => CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
                Direct => CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
+               Winograd => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD,
+               WinogradNonFused => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED,
            })
     }
 
@@ -67,8 +69,8 @@ impl ConvForwardAlgo {
             CUDNN_CONVOLUTION_FWD_ALGO_FFT => FFT,
             CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING => FFTTiling,
             CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => Direct,
-            CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD => FFT, // FIXME mapping is plain wrong
-            CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED => FFT, // FIXME mapping is plain wrong
+            CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD => Winograd,
+            CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
         }
     }
 
@@ -111,6 +113,7 @@ impl ConvBackwardFilterAlgo {
                ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0,
                ImplicitPrecompiledGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3,
                FFT => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT,
+               WinogradNonFused => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED,
            })
     }
 
@@ -123,7 +126,7 @@ impl ConvBackwardFilterAlgo {
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 => ImplicitGEMM,
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT => FFT,
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 => ImplicitPrecompiledGEMMSum,
-            CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED => FFT, // FIXME mapping is plain wrong
+            CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
         }
     }
 
@@ -166,6 +169,8 @@ impl ConvBackwardDataAlgo {
                ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
                FFT => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT,
                FFTTiling => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING,
+               Winograd => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD,
+               WinogradNonFused => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED,
            })
     }
 
@@ -178,8 +183,8 @@ impl ConvBackwardDataAlgo {
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => ImplicitGEMM,
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT => FFT,
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING => FFTTiling,
-            CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD => FFT, // FIXME mapping is plain wrong
-            CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED => FFT, // FIXME mapping is plain wrong
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD => Winograd,
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
         }
     }
 
