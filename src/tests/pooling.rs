@@ -3,8 +3,7 @@ use std::fmt;
 use co::prelude::*;
 use co::plugin::numeric_helpers::Float;
 
-use plugin::{Convolution, LRN, Pooling,
-             ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo};
+use plugin::Pooling;
 use tests::{Epsilon, filled_tensor, tensor_assert_eq};
 
 // TODO re-enable this over the stupid version below

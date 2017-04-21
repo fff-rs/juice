@@ -3,8 +3,7 @@ use std::fmt;
 use co::prelude::*;
 use co::plugin::numeric_helpers::Float;
 
-use plugin::{Convolution, LRN, Pooling,
-             ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo};
+use plugin::{Convolution, LRN, ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo};
 use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
 
 
@@ -117,12 +116,12 @@ fn cross_test_convolution<T, F: IFramework, G: IFramework>(backend_a: Backend<F>
 
     // TODO add stride and padding
     // TODO use a slice for filtersize and k_filters
-    let width1 = 1024;
-    let height1 = 1024;
-    let batch = 2;
+    let batch = 4;
+    let width1 = 9;
+    let height1 = 9;
     let depth1 = 3;
-    let filter_size = 5;
-    let filter_count = 10;
+    let filter_size = 6;
+    let filter_count = 3;
 
     let result_width = (width1 - filter_size + 0) / 1;
     let result_height = (height1 - filter_size + 0) / 1;

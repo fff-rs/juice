@@ -8,7 +8,6 @@ use co::prelude::*;
 use cudnn::*;
 
 pub use cudnn::utils::DataTypeInfo;
-use cudnn::utils::ScalParams;
 use plugin::*;
 
 #[macro_use]
