@@ -118,21 +118,13 @@ pub fn uniformly_random_tensor<T,F>(backend: &Backend<F>, dims: &[usize], low: T
 /// They are allowed to differ by no more than `x * T::epsilon() * epsilon_mul`.
 /// Of course if there were inevitable substantial rounding errors during
 /// calculations of `xs` there may be false positives.
-pub fn tensor_assert_eq<T,F>(backend: &Backend<F>, xs: &SharedTensor<T>, data: &[f64], epsilon_mul: f64)
-    where T: Copy + fmt::Debug + PartialEq + NumCast + Epsilon,
-          F: IFramework ,
-          Backend<F>: IBackend {
+pub fn tensor_assert_eq<T>(xs: &SharedTensor<T>, data: &[f64], epsilon_mul: f64)
+    where T: Copy + fmt::Debug + PartialEq + NumCast + Epsilon {
 
     let e = cast::<_, f64>(T::epsilon()).unwrap() * epsilon_mul;
 
     let native = get_native_backend();
     let native_dev = native.device();
-    let other_dev = backend.device();
-
-    match other_dev {
-        &DeviceType::Native(_) => {}
-        _ => { xs.read(&native_dev).unwrap(); }
-    }
 
     let mem = xs.read(&native_dev).unwrap().as_native().unwrap();
     let mem_slice = mem.as_slice::<T>();
@@ -145,6 +137,35 @@ pub fn tensor_assert_eq<T,F>(backend: &Backend<F>, xs: &SharedTensor<T>, data: &
         if (x1_t - x2).abs() > e * (x1_t.abs() + x2.abs()) * 0.5 {
             println!("Results differ: {:?} != {:?} ({:.2?} in {:?} and {:?}",
                      x1_t, x2, diff / max_diff, mem_slice, data);
+            assert!(false);
+        }
+    }
+}
+
+pub fn tensor_assert_eq_tensor<T,U>(xa: &SharedTensor<T>, xb: &SharedTensor<U>, epsilon_mul: f64)
+    where T: Copy + fmt::Debug + PartialEq + NumCast + Epsilon,
+          U: Copy + fmt::Debug + PartialEq + NumCast + Epsilon {
+
+    let e = cast::<_, f64>(T::epsilon()).unwrap() * epsilon_mul;
+
+    let native = get_native_backend();
+    let native_dev = native.device();
+
+    let mem_a = xa.read(&native_dev).unwrap().as_native().unwrap();
+    let mem_slice_a = mem_a.as_slice::<T>();
+
+    let mem_b = xb.read(&native_dev).unwrap().as_native().unwrap();
+    let mem_slice_b = mem_b.as_slice::<U>();
+
+    assert_eq!(mem_slice_a.len(), mem_slice_b.len());
+    for (x1, x2) in mem_slice_a.iter().zip(mem_slice_b.iter()) {
+        let x1_t = cast::<_, f64>(*x1).unwrap();
+        let x2_t = cast::<_, f64>(*x2).unwrap();
+        let diff = (x1_t - x2_t).abs();
+        let max_diff = e * (x1_t.abs() + x2_t.abs()) * 0.5;
+        if (x1_t - x2_t).abs() > e * (x1_t.abs() + x2_t.abs()) * 0.5 {
+            println!("Results differ: {:?} != {:?} ({:.2?} in {:?} and {:?}",
+                     x1_t, x2_t, diff / max_diff, mem_slice_a, mem_slice_b);
             assert!(false);
         }
     }
@@ -184,6 +205,16 @@ macro_rules! test_native {
         #[test]
         fn $f64_name() {
             $test_name::<f64, _>(::tests::get_native_backend())
+        }
+    }
+}
+
+macro_rules! test_cross {
+    ($test_name:ident, $f32_name:ident) => {
+        #[cfg(all(feature = "native",feature = "cuda"))]
+        #[test]
+        fn $f32_name() {
+            $test_name::<f32, _, _>(::tests::get_native_backend(), ::tests::get_cuda_backend())
         }
     }
 }

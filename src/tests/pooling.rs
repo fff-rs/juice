@@ -29,7 +29,7 @@ use tests::{Epsilon, filled_tensor, tensor_assert_eq};
 
 //         let mut r_test = vec![1.0; out_size];
 //         r_test[0] = 2.0;
-//         tensor_assert_eq(&backend, &r, &r_test, 1.0);
+//         tensor_assert_eq(&r, &r_test, 1.0);
 //     };
 
     //       input dims   , output dims  ,  window, padding, stride
@@ -57,7 +57,7 @@ pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
 
     let mut r_test = vec![1.0; 128];
     r_test[0] = 2.0;
-    tensor_assert_eq(&backend, &r, &r_test, 3.0);
+    tensor_assert_eq(&r, &r_test, 3.0);
 }
 
 pub fn test_pooling_max_grad<T, F: IFramework>(backend: Backend<F>)
@@ -80,7 +80,7 @@ pub fn test_pooling_max_grad<T, F: IFramework>(backend: Backend<F>)
         1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
         1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
         1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0];
-    tensor_assert_eq(&backend, &dr, &dr_test, 3.0);
+    tensor_assert_eq(&dr, &dr_test, 3.0);
 }
 
 pub fn test_pooling_avg<T, F: IFramework>(backend: Backend<F>)
@@ -98,7 +98,7 @@ pub fn test_pooling_avg<T, F: IFramework>(backend: Backend<F>)
 
     let mut r_test = vec![1.0; 64];
     r_test[0] = 2.0;
-    tensor_assert_eq(&backend, &r, &r_test, 3.0);
+    tensor_assert_eq(&r, &r_test, 3.0);
 }
 
 
@@ -122,7 +122,7 @@ pub fn test_pooling_avg_grad<T, F: IFramework>(backend: Backend<F>)
     dr_test[1] = 0.5;
     dr_test[2] = 0.5;
     dr_test[3] = 0.5;
-    tensor_assert_eq(&backend, &dr, &dr_test, 1.0);
+    tensor_assert_eq(&dr, &dr_test, 1.0);
 }
 
 mod cuda {

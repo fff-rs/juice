@@ -5,7 +5,7 @@ use co::plugin::numeric_helpers::Float;
 
 use plugin::{Convolution, LRN, Pooling,
              ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo};
-use tests::{Epsilon, filled_tensor, tensor_assert_eq};
+use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
 
 
 pub fn test_lrn<T, F: IFramework>(backend: Backend<F>)
@@ -20,7 +20,7 @@ pub fn test_lrn<T, F: IFramework>(backend: Backend<F>)
     backend.lrn(&x, &mut r, &conf).unwrap();
 
     let r_test = [0.594581260843431, 0.594581260843431, 1.1890287651464355];
-    tensor_assert_eq(&backend, &r, &r_test, 3.0);
+    tensor_assert_eq(&r, &r_test, 3.0);
 }
 
 pub fn test_lrn_grad<T, F: IFramework>(backend: Backend<F>)
@@ -38,7 +38,7 @@ pub fn test_lrn_grad<T, F: IFramework>(backend: Backend<F>)
     backend.lrn_grad(&x, &dx, &r, &mut dr, &conf).unwrap();
 
     let dr_test = [0.594536669478436, 0.594536669478436, 1.188672127844352];
-    tensor_assert_eq(&backend, &dr, &dr_test, 3.0);
+    tensor_assert_eq(&dr, &dr_test, 3.0);
 }
 
 
@@ -109,6 +109,53 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
 //     let mut dr  = SharedTensor::<T>::new(&[batch, k, h2, w2]);
 // }
 
+
+fn cross_test_convolution<T, F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
+    where T: Float + Epsilon + fmt::Debug,
+          Backend<F>: Convolution<T> + IBackend,
+          Backend<G>: Convolution<T> + IBackend {
+
+    // TODO add stride and padding
+    // TODO use a slice for filtersize and k_filters
+    let width1 = 1024;
+    let height1 = 1024;
+    let batch = 2;
+    let depth1 = 3;
+    let filter_size = 5;
+    let filter_count = 10;
+
+    let result_width = (width1 - filter_size + 0) / 1;
+    let result_height = (height1 - filter_size + 0) / 1;
+
+    let x_val = vec![1.0; batch * depth1 * height1 * width1];
+    let f_val = vec![1.0; filter_count * depth1 * filter_size * filter_size];
+
+    let x  = filled_tensor(&backend_a, &[batch, depth1, height1, width1], &x_val);
+    let f  = filled_tensor(&backend_a, &[filter_count, depth1, filter_size,  filter_size], &f_val);
+    let mut result_a  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
+    let mut result_b  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
+    let mut ws = SharedTensor::<u8>::new(&[4]);
+
+    let conf_a = backend_a.new_convolution_config(
+        &x, &result_a, &f,
+        ConvForwardAlgo::ImplicitGEMM,
+        ConvBackwardFilterAlgo::ImplicitGEMM,
+        ConvBackwardDataAlgo::ImplicitGEMM,
+        &[1,1], &[0,0]).unwrap();
+    backend_a.convolution(&f, &x, &mut result_a, &mut ws, &conf_a).unwrap();
+
+    let conf_b = backend_b.new_convolution_config(
+        &x, &result_b, &f,
+        ConvForwardAlgo::ImplicitGEMM,
+        ConvBackwardFilterAlgo::ImplicitGEMM,
+        ConvBackwardDataAlgo::ImplicitGEMM,
+        &[1,1], &[0,0]).unwrap();
+
+    backend_b.convolution(&f, &x, &mut result_b, &mut ws, &conf_b).unwrap();
+
+    tensor_assert_eq_tensor(&result_a, &result_b, 3.0);
+}
+
 mod cuda {
     use super::*;
     test_cuda!(test_lrn, lrn_f32, lrn_f64);
@@ -121,4 +168,9 @@ mod native {
     //test_native!(test_lrn, lrn_f32, lrn_f64);
     //test_native!(test_lrn_grad, lrn_grad_f32, lrn_grad_f64);
     test_native!(test_convolution, convolution_f32, convolution_f64);
+}
+
+mod cross {
+    use super::*;
+    test_cross!(cross_test_convolution, cross_test_convolution_f32);
 }
