@@ -24,7 +24,7 @@ impl FilterDescriptor {
     /// Initializes a new CUDA cuDNN FilterDescriptor.
     pub fn new(filter_dim: &[i32], data_type: DataType) -> Result<FilterDescriptor, Error> {
         let nb_dims = filter_dim.len() as i32;
-        let tensor_format = CUDNN_TENSOR_NCHW; // TODO verify this is correct
+        let tensor_format = CUDNN_TENSOR_NCHW;
         let generic_filter_desc = try!(API::create_filter_descriptor());
         match data_type {
             DataType::Float => {
