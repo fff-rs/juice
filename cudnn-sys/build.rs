@@ -8,6 +8,20 @@ fn main() {
     let include_dir = env::var("CUDNN_INCLUDE_DIR").ok();
 
     if lib_dir.is_none() && include_dir.is_none() {
+        if let Ok(info) = pkg_config::find_library("cudart") {
+            // avoid empty include paths as they are not supported by GCC
+            if info.include_paths.len() > 0 {
+                let paths = env::join_paths(info.include_paths).unwrap();
+                println!("cargo:include={}", paths.to_str().unwrap());
+            }
+        }
+        if let Ok(info) = pkg_config::find_library("cuda") {
+            // avoid empty include paths as they are not supported by GCC
+            if info.include_paths.len() > 0 {
+                let paths = env::join_paths(info.include_paths).unwrap();
+                println!("cargo:include={}", paths.to_str().unwrap());
+            }
+        }
         if let Ok(info) = pkg_config::find_library("cudnn") {
             // avoid empty include paths as they are not supported by GCC
             if info.include_paths.len() > 0 {
@@ -50,7 +64,6 @@ fn main() {
             .no_unstable_rust()
             .clang_arg("-I")
             .clang_arg(include_dir.unwrap_or(String::from("/usr/include/cuda")).as_str())
-            //.clang_arg("/usr/include/cuda")
             // The input header we would like to generate
             // bindings for.
             .header("wrapper.h")
