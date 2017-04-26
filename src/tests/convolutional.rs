@@ -62,9 +62,9 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
 
         let conf = backend.new_convolution_config(
             &x, &r, &f,
-            ConvForwardAlgo::ImplicitGEMM,
-            ConvBackwardFilterAlgo::ImplicitGEMM,
-            ConvBackwardDataAlgo::ImplicitGEMM,
+            ConvForwardAlgo::Auto,
+            ConvBackwardFilterAlgo::Auto,
+            ConvBackwardDataAlgo::Auto,
             &[1,1], &[0,0]).unwrap();
 
         backend.convolution(&f, &x, &mut r, &mut ws, &conf).unwrap();
@@ -109,10 +109,9 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
 // }
 
 
-fn cross_test_convolution<T, F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
-    where T: Float + Epsilon + fmt::Debug,
-          Backend<F>: Convolution<T> + IBackend,
-          Backend<G>: Convolution<T> + IBackend {
+fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
+    where Backend<F>: Convolution<f32> + IBackend,
+          Backend<G>: Convolution<f32> + IBackend {
 
     // TODO add stride and padding
     // TODO use a slice for filtersize and k_filters
@@ -131,23 +130,23 @@ fn cross_test_convolution<T, F: IFramework, G: IFramework>(backend_a: Backend<F>
 
     let x  = filled_tensor(&backend_a, &[batch, depth1, height1, width1], &x_val);
     let f  = filled_tensor(&backend_a, &[filter_count, depth1, filter_size,  filter_size], &f_val);
-    let mut result_a  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
-    let mut result_b  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
+    let mut result_a  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
+    let mut result_b  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
     let mut ws = SharedTensor::<u8>::new(&[4]);
 
     let conf_a = backend_a.new_convolution_config(
         &x, &result_a, &f,
-        ConvForwardAlgo::ImplicitGEMM,
-        ConvBackwardFilterAlgo::ImplicitGEMM,
-        ConvBackwardDataAlgo::ImplicitGEMM,
+        ConvForwardAlgo::Auto,
+        ConvBackwardFilterAlgo::Auto,
+        ConvBackwardDataAlgo::Auto,
         &[1,1], &[0,0]).unwrap();
     backend_a.convolution(&f, &x, &mut result_a, &mut ws, &conf_a).unwrap();
 
     let conf_b = backend_b.new_convolution_config(
         &x, &result_b, &f,
-        ConvForwardAlgo::ImplicitGEMM,
-        ConvBackwardFilterAlgo::ImplicitGEMM,
-        ConvBackwardDataAlgo::ImplicitGEMM,
+        ConvForwardAlgo::Auto,
+        ConvBackwardFilterAlgo::Auto,
+        ConvBackwardDataAlgo::Auto,
         &[1,1], &[0,0]).unwrap();
 
     backend_b.convolution(&f, &x, &mut result_b, &mut ws, &conf_b).unwrap();

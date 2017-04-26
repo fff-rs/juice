@@ -4,7 +4,8 @@ use co::prelude::*;
 use co::plugin::numeric_helpers::Float;
 
 use plugin::Pooling;
-use tests::{Epsilon, filled_tensor, tensor_assert_eq};
+use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, uniformly_random_tensor};
+use rand::distributions::{range, IndependentSample, Range};
 
 // TODO re-enable this over the stupid version below
 // TODO cuda verification for this one necessary

@@ -214,7 +214,7 @@ macro_rules! test_cross {
         #[cfg(all(feature = "native",feature = "cuda"))]
         #[test]
         fn $f32_name() {
-            $test_name::<f32, _, _>(::tests::get_native_backend(), ::tests::get_cuda_backend())
+            $test_name::<_, _>(::tests::get_native_backend(), ::tests::get_cuda_backend())
         }
     }
 }
