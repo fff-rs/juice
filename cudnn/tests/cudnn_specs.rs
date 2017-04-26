@@ -2,10 +2,13 @@ extern crate cudnn;
 extern crate collenchyma as co;
 extern crate libc;
 
+extern crate cudnn_sys as ffi;
+use ffi::*;
+
 #[cfg(test)]
 mod cudnn_spec {
 
-    use cudnn::{Cudnn, API, TensorDescriptor, FilterDescriptor, ConvolutionDescriptor};
+    use cudnn::{Cudnn, API, TensorDescriptor, ActivationDescriptor, FilterDescriptor, ConvolutionDescriptor};
     use cudnn::utils::DataType;
     use co::frameworks::Cuda;
     use co::framework::IFramework;
@@ -33,18 +36,38 @@ mod cudnn_spec {
      * Might be due to the strange and totally not actually working memory pointers
      * `unsafe { transmute::<u64, *const ::libc::c_void>(1u64) }`.
      *
+     * Since then this has been rewritten to not use transmute but a sequence of unsafe optimizations.
+     */
     #[test]
     fn it_computes_sigmoid() {
-        let cuda = Cudnn::new().unwrap();
+        let cudnn = Cudnn::new().unwrap();
         let desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-        match cuda.sigmoid_forward(
-            &desc, unsafe { transmute::<u64, *const ::libc::c_void>(1u64) }, &desc, unsafe { transmute::<u64, *mut ::libc::c_void>(1u64) }, ScalParams::<f32>::default()
-        ) {
-            Ok(_) => assert!(true),
-            Err(err) => { println!("{:?}", err); assert!(false) }
+        let acti = ActivationDescriptor::new(::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID).unwrap();
+
+        let mut a : u64 = 1;
+        let a_ptr : *mut u64 = &mut a;
+        let mut b : u64 = 1;
+        let b_ptr : *mut u64 = &mut b;
+        unsafe {
+            let mut x : *mut ::libc::c_void = ::std::ptr::null_mut();;
+            ::cudaHostAlloc(&mut x, 2*2*2, 0);
+            match API::activation_forward(
+                *cudnn.id_c(),
+                *acti.id_c(),
+                a_ptr as *mut ::libc::c_void,
+                *desc.id_c(),
+                x,
+                b_ptr as *mut ::libc::c_void,
+                *desc.id_c(),
+                x,
+            ) {
+                Ok(_) => assert!(true),
+                Err(err) => { println!("{:?}", err); assert!(false) }
+            }
+            ::cudaFreeHost(x);
         }
     }
-    */
+
 
     #[test]
     fn it_finds_correct_convolution_algorithm_forward() {
