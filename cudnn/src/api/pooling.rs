@@ -22,13 +22,13 @@ impl API {
     pub fn set_pooling_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: cudnnPoolingMode_t,
-        maxpoolingNanOpt: cudnnNanPropagation_t,
+        maxpooling_nan_opt: cudnnNanPropagation_t,
         nb_dims: ::libc::c_int,
         window: *const ::libc::c_int,
         padding: *const ::libc::c_int,
         stride: *const ::libc::c_int
     ) -> Result<(), Error> {
-        unsafe { API::ffi_set_pooling_nd_descriptor(desc, mode, maxpoolingNanOpt, nb_dims, window, padding, stride) }
+        unsafe { API::ffi_set_pooling_nd_descriptor(desc, mode, maxpooling_nan_opt, nb_dims, window, padding, stride) }
     }
 
     /// Return information about a generic CUDA cuDNN Pooling Descriptor.
@@ -36,13 +36,13 @@ impl API {
         desc: cudnnPoolingDescriptor_t,
         nb_dims_requested: ::libc::c_int,
         mode: *mut cudnnPoolingMode_t,
-        maxpoolingNanOpt: *mut cudnnNanPropagation_t,
+        maxpooling_nan_opt: *mut cudnnNanPropagation_t,
         nb_dims: *mut ::libc::c_int,
         window: *mut ::libc::c_int,
         padding: *mut ::libc::c_int,
         stride: *mut ::libc::c_int
     ) -> Result<(), Error> {
-        unsafe { API::ffi_get_pooling_nd_descriptor(desc, nb_dims_requested, mode, maxpoolingNanOpt, nb_dims, window, padding, stride) }
+        unsafe { API::ffi_get_pooling_nd_descriptor(desc, nb_dims_requested, mode, maxpooling_nan_opt, nb_dims, window, padding, stride) }
     }
 
     /// Initializes a generic CUDA cuDNN Pooling Descriptor with specific properties.
