@@ -19,9 +19,9 @@ impl API {
     /// Initializes a generic CUDA cuDNN Activation Descriptor with specific properties.
     pub fn set_activation_descriptor(desc: cudnnActivationDescriptor_t,
                                      mode: cudnnActivationMode_t,
-                                     reluNanOpt: cudnnNanPropagation_t,
-                                     reluCeiling: f64) -> Result<(), Error> {
-        unsafe { API::ffi_set_activation_descriptor(desc, mode, reluNanOpt, reluCeiling) }
+                                     relu_nan_opt: cudnnNanPropagation_t,
+                                     relu_ceiling: f64) -> Result<(), Error> {
+        unsafe { API::ffi_set_activation_descriptor(desc, mode, relu_nan_opt, relu_ceiling) }
     }
 
     /// Computes an activation forward function.
@@ -116,9 +116,9 @@ impl API {
 
     unsafe fn ffi_set_activation_descriptor(desc: cudnnActivationDescriptor_t,
                                             mode: cudnnActivationMode_t,
-                                            reluNanOpt: cudnnNanPropagation_t,
-                                            reluCeiling: f64) -> Result<(), Error>{
-        match cudnnSetActivationDescriptor(desc, mode, reluNanOpt, reluCeiling) {
+                                            relu_nan_opt: cudnnNanPropagation_t,
+                                            relu_ceiling: f64) -> Result<(), Error>{
+        match cudnnSetActivationDescriptor(desc, mode, relu_nan_opt, relu_ceiling) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")), // FIXME
             _ => Err(Error::Unknown("Unable to set CUDA cuDNN Activation Descriptor.")),
