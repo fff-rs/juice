@@ -911,8 +911,8 @@ impl<T> Pooling<T> for Backend<Cuda>
 {
     fn new_pooling_config(&self,
                           window: &[i32],
-                          padding: &[i32],
-                          stride: &[i32])
+                          stride: &[i32],
+                          padding: &[i32])
                           -> Result<Self::CPOOL, ::co::error::Error> {
         let pooling_avg = ::cudnn::PoolingDescriptor::new(::cudnn::cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING, window, padding, stride).unwrap();
         let pooling_max =

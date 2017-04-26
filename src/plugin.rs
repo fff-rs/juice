@@ -409,7 +409,7 @@ pub trait LRN<F> : NN<F> {
 /// Provides the functionality for a Backend to support Pooling operations.
 pub trait Pooling<F> : NN<F> {
     /// Creates a new PoolingConfig, which needs to be passed to further pooling Operations.
-    fn new_pooling_config(&self, window: &[i32], padding: &[i32], stride: &[i32])
+    fn new_pooling_config(&self, window: &[i32], stride: &[i32], padding: &[i32])
                           -> Result<Self::CPOOL, ::co::error::Error>;
 
     /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.

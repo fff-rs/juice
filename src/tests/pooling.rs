@@ -49,7 +49,7 @@ pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
 
     let x  = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
     let mut r = SharedTensor::<T>::new(&[4, 4, 2, 4]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 1])
+    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[2, 1], &[0, 0])
         .unwrap();
 
     backend.pooling_max(&x, &mut r, &conf).unwrap();
@@ -69,7 +69,7 @@ pub fn test_pooling_max_grad<T, F: IFramework>(backend: Backend<F>)
     let dx = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
     let r  = filled_tensor(&backend,&[4, 4, 2, 2], &inp[0..64]);
     let mut dr = SharedTensor::<T>::new(&[4, 4, 2, 2]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 2])
+    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[2, 2], &[0, 0])
         .unwrap();
 
     backend.pooling_max_grad(&x, &dx, &r, &mut dr, &conf).unwrap();
@@ -90,7 +90,7 @@ pub fn test_pooling_avg<T, F: IFramework>(backend: Backend<F>)
 
     let x  = filled_tensor(&backend, &[4, 4, 4, 4], &inp);
     let mut r = SharedTensor::<T>::new(&[4, 4, 2, 2]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 2])
+    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[2, 2], &[0, 0])
         .unwrap();
 
     backend.pooling_avg(&x, &mut r, &conf).unwrap();
@@ -111,7 +111,7 @@ pub fn test_pooling_avg_grad<T, F: IFramework>(backend: Backend<F>)
     let dx = filled_tensor(&backend, &[8, 4, 4, 4], &inp);
     let r  = filled_tensor(&backend, &[8, 4, 2, 2], &inp[0..128]);
     let mut dr = SharedTensor::<T>::new(&[8, 4, 2, 2]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 2])
+    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[2, 2], &[0, 0])
         .unwrap();
 
     backend.pooling_avg_grad(&x, &dx, &r, &mut dr, &conf).unwrap();
@@ -122,6 +122,36 @@ pub fn test_pooling_avg_grad<T, F: IFramework>(backend: Backend<F>)
     dr_test[2] = 0.5;
     dr_test[3] = 0.5;
     tensor_assert_eq(&dr, &dr_test, 1.0);
+}
+
+pub fn cross_test_pooling_max<F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
+        where
+          Backend<F>: Pooling<f32> + IBackend,
+          Backend<G>: Pooling<f32> + IBackend {
+
+    let mut inp = vec![1.0; 256];
+    inp[0] = 2.0;
+
+    let lower : f32 = -128.;
+    let upper : f32 = 127.;
+    let x = uniformly_random_tensor(&backend_a, &[4, 4, 4, 4], lower, upper);
+
+    let mut r_a = SharedTensor::<f32>::new(&[4, 4, 2, 4]);
+    let mut r_b = SharedTensor::<f32>::new(&[4, 4, 2, 4]);
+
+    let conf_a = Pooling::<f32>::new_pooling_config(&backend_a, &[2, 2], &[2, 1], &[0, 0])
+        .unwrap();
+    let conf_b = Pooling::<f32>::new_pooling_config(&backend_b, &[2, 2], &[2, 1], &[0, 0])
+        .unwrap();
+
+    backend_a.pooling_max(&x, &mut r_a, &conf_a).unwrap();
+    backend_b.pooling_max(&x, &mut r_b, &conf_b).unwrap();
+    tensor_assert_eq_tensor(&r_a, &r_b, 3.0);
+}
+
+mod cross {
+    use super::*;
+    test_cross!(cross_test_pooling_max, cross_test_pooling_max_f32);
 }
 
 mod cuda {
