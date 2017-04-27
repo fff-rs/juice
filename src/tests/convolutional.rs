@@ -45,18 +45,19 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Convolution<T> + IBackend {
 
-    let test = |batch: usize, width1 : usize, height1: usize, depth1: usize, filter_count: usize, filter_size: usize |
+    let test = |batch: usize, width : usize, height: usize, depth: usize, filter_count: usize, filter_size: usize |
     {
         // TODO add stride and padding
         // TODO use a slice for filtersize and k_filters
-        let result_width = (width1 - filter_size + 0) / 1;
-        let result_height = (height1 - filter_size + 0) / 1;
+        let stride = 1;
+        let result_width = (width - filter_size ) / stride + 1;
+        let result_height = (height - filter_size) / stride + 1;
 
-        let x_val = vec![1.0; batch * depth1 * height1 * width1];
-        let f_val = vec![1.0; filter_count * depth1 * filter_size * filter_size];
+        let x_val = vec![1.0; batch * depth * height * width];
+        let f_val = vec![1.0; filter_count * depth * filter_size * filter_size];
 
-        let x  = filled_tensor(&backend,&[batch, depth1, height1, width1], &x_val);
-        let f  = filled_tensor(&backend,&[filter_count, depth1, filter_size,  filter_size], &f_val);
+        let x  = filled_tensor(&backend,&[batch, depth, height, width], &x_val);
+        let f  = filled_tensor(&backend,&[filter_count, depth, filter_size,  filter_size], &f_val);
         let mut r  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
         let mut ws = SharedTensor::<u8>::new(&[4]);
 
