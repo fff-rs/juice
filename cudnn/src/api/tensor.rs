@@ -175,7 +175,7 @@ impl API {
         src_dest_desc: cudnnTensorDescriptor_t,
         src_dest_data: *mut ::libc::c_void
     ) -> Result<(), Error> {
-        match cudnnAddTensor_v3(handle, alpha, bias_desc, bias_data, beta, src_dest_desc, src_dest_data) {
+        match cudnnAddTensor(handle, alpha, bias_desc, bias_data, beta, src_dest_desc, src_dest_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("The dimensions of the bias tensor refer to an amount of data that is incompatible the output tensor dimensions or the  data type of the two tensor descriptors are different.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The dimensions of the bias tensor and the output tensor dimensions are above 5.")),

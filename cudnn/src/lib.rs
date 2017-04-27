@@ -29,17 +29,18 @@
 //! use cudnn::{Cudnn, TensorDescriptor};
 //! use cudnn::utils::{ScalParams, DataType};
 //! fn main() {
-//!     // Initialize a new cuDNN context and allocates resources.
+//! //  Initialize a new cuDNN context and allocates resources.
 //!     let cudnn = Cudnn::new().unwrap();
-//!     // Create a cuDNN Tensor Descriptor for `src` and `dest` memory.
+//! //  Create a cuDNN Tensor Descriptor for `src` and `dest` memory.
 //!     let src_desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
 //!     let dest_desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-//!     // Obtain the `src` and memory pointer on the GPU.
-//!     // NOTE: You wouldn't do it like that. You need to really allocate memory on the GPU with e.g. CUDA or Collenchyma.
+//!     let acti = cudnn.init_activation().unwrap();
+//! //  Obtain the `src` and memory pointer on the GPU.
+//! //  NOTE: You wouldn't do it like that. You need to really allocate memory on the GPU with e.g. CUDA or Collenchyma.
 //!     let src_data: *const ::libc::c_void = ::std::ptr::null();
 //!     let dest_data: *mut ::libc::c_void = ::std::ptr::null_mut();
-//!     // Now you can compute the forward sigmoid activation on your GPU.
-//!     cudnn.sigmoid_forward::<f32>(&src_desc, src_data, &dest_desc, dest_data, ScalParams::default());
+//! //  Now you can compute the forward sigmoid activation on your GPU.
+//!     cudnn.sigmoid_forward::<f32>(&acti, &src_desc, src_data, &dest_desc, dest_data, ScalParams::default());
 //! }
 //! ```
 //!
@@ -76,6 +77,7 @@ pub use self::convolution_descriptor::ConvolutionDescriptor;
 pub use self::filter_descriptor::FilterDescriptor;
 pub use self::normalization_descriptor::NormalizationDescriptor;
 pub use self::pooling_descriptor::PoolingDescriptor;
+pub use self::activation_descriptor::ActivationDescriptor;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the Cuda cuDNN API.
@@ -89,4 +91,5 @@ mod filter_descriptor;
 mod normalization_descriptor;
 mod pooling_descriptor;
 mod convolution_descriptor;
+mod activation_descriptor;
 mod api;

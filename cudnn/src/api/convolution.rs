@@ -26,10 +26,11 @@ impl API {
     pub fn set_filter_descriptor(
         desc: cudnnFilterDescriptor_t,
         data_type: cudnnDataType_t,
+        tensor_format: cudnnTensorFormat_t,
         nb_dims: ::libc::c_int,
         filter_dim_a: *const ::libc::c_int,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_set_filter_nd_descriptor(desc, data_type, nb_dims, filter_dim_a) }
+        unsafe { API::ffi_set_filter_nd_descriptor(desc, data_type, tensor_format, nb_dims, filter_dim_a) }
     }
 
     unsafe fn ffi_create_filter_descriptor() -> Result<cudnnFilterDescriptor_t, Error> {
@@ -51,10 +52,11 @@ impl API {
     unsafe fn ffi_set_filter_nd_descriptor(
         desc: cudnnFilterDescriptor_t,
         data_type: cudnnDataType_t,
+        tensor_format: cudnnTensorFormat_t,
         nb_dims: ::libc::c_int,
         filter_dim_a: *const ::libc::c_int,
     ) -> Result<(), Error> {
-        match cudnnSetFilterNdDescriptor(desc, data_type, nb_dims, filter_dim_a) {
+        match cudnnSetFilterNdDescriptor(desc, data_type, tensor_format, nb_dims, filter_dim_a) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`filter_dim_a` has a negative element or invalid `data_type` provided.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`nb_dims` exceeds CUDNN_DIM_MAX.")),
@@ -142,7 +144,7 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_desc: cudnnTensorDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionFwdAlgoPerf_t>, Error> {
-        let mut perf_results: Vec<cudnnConvolutionFwdAlgoPerf_t> = vec![Struct_Unnamed14::default(), Struct_Unnamed14::default()];
+        let mut perf_results : Vec<cudnnConvolutionFwdAlgoPerf_t> = vec![cudnnConvolutionFwdAlgoPerf_t::default(), cudnnConvolutionFwdAlgoPerf_t::default()];
         match cudnnFindConvolutionForwardAlgorithm(handle, src_desc, filter_desc, conv_desc, dest_desc, 2, &mut 0, perf_results.as_mut_ptr()) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")),
@@ -175,7 +177,7 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         filter_desc: cudnnFilterDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionBwdFilterAlgoPerf_t>, Error> {
-        let mut perf_results: Vec<cudnnConvolutionBwdFilterAlgoPerf_t> = vec![Struct_Unnamed17::default(), Struct_Unnamed17::default()];
+        let mut perf_results : Vec<cudnnConvolutionBwdFilterAlgoPerf_t> = vec![cudnnConvolutionBwdFilterAlgoPerf_t::default(), cudnnConvolutionBwdFilterAlgoPerf_t::default()];
         match cudnnFindConvolutionBackwardFilterAlgorithm(handle, src_desc, dest_desc, conv_desc, filter_desc, 2, &mut 0, perf_results.as_mut_ptr()) { cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results), cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")), cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
             _ => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Backward Filter Algorithm.")),
         }
@@ -205,7 +207,7 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         src_desc: cudnnTensorDescriptor_t,
     ) -> Result<Vec<cudnnConvolutionBwdDataAlgoPerf_t>, Error> {
-        let mut perf_results: Vec<cudnnConvolutionBwdDataAlgoPerf_t> = vec![Struct_Unnamed20::default(), Struct_Unnamed20::default()];
+        let mut perf_results : Vec<cudnnConvolutionBwdDataAlgoPerf_t> = vec![cudnnConvolutionBwdDataAlgoPerf_t::default(), cudnnConvolutionBwdDataAlgoPerf_t::default()];
         match cudnnFindConvolutionBackwardDataAlgorithm(handle, filter_desc, dest_desc, conv_desc, src_desc, 2, &mut 0, perf_results.as_mut_ptr()) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")),
@@ -355,7 +357,7 @@ impl API {
         filter_stride_a: *const ::libc::c_int,
         upscale_a: *const ::libc::c_int,
     ) -> Result<(), Error> {
-        match cudnnSetConvolutionNdDescriptor_v3(desc, array_length, pad_a, filter_stride_a, upscale_a, mode, data_type) {
+        match cudnnSetConvolutionNdDescriptor(desc, array_length, pad_a, filter_stride_a, upscale_a, mode, data_type) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: `desc` is NULL. `array_length` is negative, `mode` or `data_type` is invalid, element of `pad_a` is negative, element of `stride_a` is negative or zero.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `array_length` is greater than CUDNN_DIM_MAX. `upscale_a` contains an element different from 1.")),
@@ -418,7 +420,7 @@ impl API {
         grad_desc: cudnnFilterDescriptor_t,
         grad_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
-        match cudnnConvolutionBackwardFilter_v3(handle, alpha, src_desc, src_data, diff_desc, diff_data, conv_desc, algo, work_space, work_size_in_bytes, beta, grad_desc, grad_data) {
+        match cudnnConvolutionBackwardFilter(handle, alpha, src_desc, src_data, diff_desc, diff_data, conv_desc, algo, work_space, work_size_in_bytes, beta, grad_desc, grad_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: At least one of the following is NULL: `handle`, `src_desc`, `diff_desc`, `conv_desc`, `grad_desc`, `src_data`, `diff_data`, `grad_data`, `alpha`, `beta`. `src_desc` and `diff_desc` have a non-matching number of dimensions. `src_desc` and `grad_desc` have a non-matching number of dimensions. `src_desc` has fewer than three number of dimensions. `src_desc`, `diff_desc` and `grad_desc` have a non-matching data type. `src_desc` and `grad_desc` have a non-matching number of input feature maps per image.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `src_desc` or `diff_desc` have negative tensor striding. `src_desc`, `diff_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
@@ -443,7 +445,7 @@ impl API {
         grad_desc: cudnnTensorDescriptor_t,
         grad_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
-        match cudnnConvolutionBackwardData_v3(handle, alpha, filter_desc, filter_data, diff_desc, diff_data, conv_desc, algo, work_space, work_size_in_bytes, beta, grad_desc, grad_data) {
+        match cudnnConvolutionBackwardData(handle, alpha, filter_desc, filter_data, diff_desc, diff_data, conv_desc, algo, work_space, work_size_in_bytes, beta, grad_desc, grad_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: At least one of the following is NULL: `handle`, `diff_desc`, `filter_desc`, `conv_desc`, `grad_desc`, `diff_data`, `filter_data`, `grad_data`, `alpha`, `beta`. `filter_desc` and `diff_desc` have a non-matching number of dimensions. `filter_desc` and `grad_desc` have a non-matching number of dimensions. `filter_desc has fewer than three number of dimensions. `filter_desc`, `grad_desc` and `diff_desc` have a non-matching data type. `filter_desc` and `grad_desc` have a non-matching number of input feature maps per image. `diff_desc`s spatial sizes do not match with the expected size as determined by `cudnnGetConvolutionNdForwardOutputDim()`.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met:  `diff_desc` or `grad_desc` have negative tensor striding. `diff_desc`, `filter_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
