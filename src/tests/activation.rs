@@ -67,7 +67,7 @@ pub fn test_relu<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Relu<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &IN);
     let mut r = SharedTensor::<T>::new(&DIMS);
 
     backend.relu(&x, &mut r).unwrap();
@@ -78,9 +78,9 @@ pub fn test_relu_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Relu<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &RELU_OUT);
-    let dx = filled_tensor(&DIMS, &OUT_GRAD);
-    let r  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &RELU_OUT);
+    let dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
+    let r  = filled_tensor(&backend, &DIMS, &IN);
     let mut dr = SharedTensor::new(&DIMS);
 
     backend.relu_grad(&x, &dx, &r, &mut dr).unwrap();
@@ -91,7 +91,7 @@ pub fn test_relu_pointwise<T, F: IFramework>(backend: Backend<F>)
     where T: Float + fmt::Debug + Epsilon,
           Backend<F>: ReluPointwise<T> + IBackend {
 
-    let mut x = filled_tensor(&DIMS, &IN);
+    let mut x = filled_tensor(&backend, &DIMS, &IN);
     backend.relu_pointwise(&mut x).unwrap();
     tensor_assert_eq(&x, &RELU_OUT, 3.0);
 }
@@ -99,8 +99,8 @@ pub fn test_relu_pointwise<T, F: IFramework>(backend: Backend<F>)
 pub fn test_relu_pointwise_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + fmt::Debug + Epsilon,
           Backend<F>: ReluPointwise<T> + IBackend {
-    let      x = filled_tensor(&DIMS, &RELU_OUT);
-    let mut dx = filled_tensor(&DIMS, &OUT_GRAD);
+    let      x = filled_tensor(&backend, &DIMS, &RELU_OUT);
+    let mut dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
     backend.relu_pointwise_grad(&x, &mut dx).unwrap();
     tensor_assert_eq(&dx, &RELU_IN_GRAD, 3.0);
 }
@@ -111,7 +111,7 @@ pub fn test_sigmoid<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Sigmoid<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &IN);
     let mut r = SharedTensor::<T>::new(&DIMS);
 
     backend.sigmoid(&x, &mut r).unwrap();
@@ -122,9 +122,9 @@ pub fn test_sigmoid_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Sigmoid<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &SIGMOID_OUT);
-    let dx = filled_tensor(&DIMS, &OUT_GRAD);
-    let r  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &SIGMOID_OUT);
+    let dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
+    let r  = filled_tensor(&backend, &DIMS, &IN);
     let mut dr = SharedTensor::new(&DIMS);
 
     backend.sigmoid_grad(&x, &dx, &r, &mut dr).unwrap();
@@ -135,7 +135,7 @@ pub fn test_sigmoid_pointwise<T, F: IFramework>(backend: Backend<F>)
     where T: Float + fmt::Debug + Epsilon,
           Backend<F>: SigmoidPointwise<T> + IBackend {
 
-    let mut x = filled_tensor(&DIMS, &IN);
+    let mut x = filled_tensor(&backend, &DIMS, &IN);
     backend.sigmoid_pointwise(&mut x).unwrap();
     tensor_assert_eq(&x, &SIGMOID_OUT, 3.0);
 }
@@ -143,8 +143,8 @@ pub fn test_sigmoid_pointwise<T, F: IFramework>(backend: Backend<F>)
 pub fn test_sigmoid_pointwise_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + fmt::Debug + Epsilon,
           Backend<F>: SigmoidPointwise<T> + IBackend {
-    let      x = filled_tensor(&DIMS, &SIGMOID_OUT);
-    let mut dx = filled_tensor(&DIMS, &OUT_GRAD);
+    let      x = filled_tensor(&backend, &DIMS, &SIGMOID_OUT);
+    let mut dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
     backend.sigmoid_pointwise_grad(&x, &mut dx).unwrap();
     tensor_assert_eq(&dx, &SIGMOID_IN_GRAD, 3.0);
 }
@@ -155,7 +155,7 @@ pub fn test_tanh<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Tanh<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &IN);
     let mut r = SharedTensor::<T>::new(&DIMS);
 
     backend.tanh(&x, &mut r).unwrap();
@@ -166,9 +166,9 @@ pub fn test_tanh_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Tanh<T> + IBackend {
 
-    let x  = filled_tensor(&DIMS, &TANH_OUT);
-    let dx = filled_tensor(&DIMS, &OUT_GRAD);
-    let r  = filled_tensor(&DIMS, &IN);
+    let x  = filled_tensor(&backend, &DIMS, &TANH_OUT);
+    let dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
+    let r  = filled_tensor(&backend, &DIMS, &IN);
     let mut dr = SharedTensor::new(&DIMS);
 
     backend.tanh_grad(&x, &dx, &r, &mut dr).unwrap();
@@ -179,7 +179,7 @@ pub fn test_tanh_pointwise<T, F: IFramework>(backend: Backend<F>)
     where T: Float + fmt::Debug + Epsilon,
           Backend<F>: TanhPointwise<T> + IBackend {
 
-    let mut x = filled_tensor(&DIMS, &IN);
+    let mut x = filled_tensor(&backend, &DIMS, &IN);
     backend.tanh_pointwise(&mut x).unwrap();
     tensor_assert_eq(&x, &TANH_OUT, 3.0);
 }
@@ -187,8 +187,8 @@ pub fn test_tanh_pointwise<T, F: IFramework>(backend: Backend<F>)
 pub fn test_tanh_pointwise_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + fmt::Debug + Epsilon,
           Backend<F>: TanhPointwise<T> + IBackend {
-    let      x = filled_tensor(&DIMS, &TANH_OUT);
-    let mut dx = filled_tensor(&DIMS, &OUT_GRAD);
+    let      x = filled_tensor(&backend, &DIMS, &TANH_OUT);
+    let mut dx = filled_tensor(&backend, &DIMS, &OUT_GRAD);
     backend.tanh_pointwise_grad(&x, &mut dx).unwrap();
     tensor_assert_eq(&dx, &TANH_IN_GRAD, 10.0);
 }

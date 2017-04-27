@@ -30,6 +30,10 @@ pub enum ConvForwardAlgo {
     ///
     /// Listed in cuDNN docs but cuDNN does not provide a implementation.
     Direct,
+    /// Winograd  Transform
+    Winograd,
+    /// Winograd  Transform Non-Fused
+    WinogradNonFused,
 }
 
 impl ConvForwardAlgo {
@@ -69,6 +73,8 @@ pub enum ConvBackwardFilterAlgo {
     ///
     /// The results are deterministic.
     FFT,
+    /// Winograd  Transform Non-Fused
+    WinogradNonFused,
 }
 
 impl ConvBackwardFilterAlgo {
@@ -110,6 +116,10 @@ pub enum ConvBackwardDataAlgo {
     ///
     /// The results are deterministic.
     FFTTiling,
+    /// Winograd  Transform
+    Winograd,
+    /// Winograd  Transform Non-Fused
+    WinogradNonFused,
 }
 
 impl ConvBackwardDataAlgo {
@@ -146,6 +156,7 @@ pub trait NN<F> {
     type CLRN: NNOperationConfig<F>;
     /// The Pooling Operation Config representation for this Plugin.
     type CPOOL: NNOperationConfig<F>;
+    /// The Activation Operation Config representation for this Plugin.
 
     /// Initializes the Plugin.
     fn init_nn();
@@ -398,7 +409,7 @@ pub trait LRN<F> : NN<F> {
 /// Provides the functionality for a Backend to support Pooling operations.
 pub trait Pooling<F> : NN<F> {
     /// Creates a new PoolingConfig, which needs to be passed to further pooling Operations.
-    fn new_pooling_config(&self, window: &[i32], padding: &[i32], stride: &[i32])
+    fn new_pooling_config(&self, window: &[i32], stride: &[i32], padding: &[i32])
                           -> Result<Self::CPOOL, ::co::error::Error>;
 
     /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.

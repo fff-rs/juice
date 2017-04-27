@@ -3,16 +3,15 @@ use std::fmt;
 use co::prelude::*;
 use co::plugin::numeric_helpers::Float;
 
-use plugin::{Convolution, LRN, Pooling,
-             ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo};
-use tests::{Epsilon, filled_tensor, tensor_assert_eq};
+use plugin::{Convolution, LRN, ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo};
+use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
 
 
 pub fn test_lrn<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: LRN<T> + IBackend {
 
-    let x  = filled_tensor(&[1, 1, 3], &[1.0, 1.0, 2.0]);
+    let x  = filled_tensor(&backend,&[1, 1, 3], &[1.0, 1.0, 2.0]);
     let mut r = SharedTensor::<T>::new(&[1, 1, 3]);
     let conf = LRN::<T>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64)
         .unwrap();
@@ -27,9 +26,9 @@ pub fn test_lrn_grad<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: LRN<T> + IBackend {
 
-    let x  = filled_tensor(&[1, 1, 3], &[1.0, 1.0, 2.0]);
-    let dx = filled_tensor(&[1, 1, 3], &[1.0, 1.0, 2.0]);
-    let r  = filled_tensor(&[1, 1, 3], &[1.0, 1.0, 2.0]);
+    let x  = filled_tensor(&backend,&[1, 1, 3], &[1.0, 1.0, 2.0]);
+    let dx = filled_tensor(&backend,&[1, 1, 3], &[1.0, 1.0, 2.0]);
+    let r  = filled_tensor(&backend,&[1, 1, 3], &[1.0, 1.0, 2.0]);
     let mut dr = SharedTensor::<T>::new(&[1, 1, 3]);
 
     let conf = LRN::<T>::new_lrn_config(&backend, 1u32, 1e-4f64, 0.75f64, 2f64)
@@ -42,75 +41,35 @@ pub fn test_lrn_grad<T, F: IFramework>(backend: Backend<F>)
 }
 
 
-pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
-    where T: Float + Epsilon + fmt::Debug,
-          Backend<F>: Pooling<T> + IBackend {
-    let mut inp = vec![1.0; 256];
-    inp[0] = 2.0;
-
-    let x  = filled_tensor(&[4, 4, 4, 4], &inp);
-    let mut r = SharedTensor::<T>::new(&[4, 4, 2, 2]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 1])
-        .unwrap();
-
-    backend.pooling_max(&x, &mut r, &conf).unwrap();
-
-    let mut r_test = vec![1.0; 64];
-    r_test[0] = 2.0;
-    tensor_assert_eq(&r, &r_test, 3.0);
-}
-
-pub fn test_pooling_max_grad<T, F: IFramework>(backend: Backend<F>)
-    where T: Float + Epsilon + fmt::Debug,
-          Backend<F>: Pooling<T> + IBackend {
-    let mut inp = vec![1.0; 256];
-    inp[0] = 2.0;
-
-    let x  = filled_tensor(&[4, 4, 4, 4], &inp);
-    let dx = filled_tensor(&[4, 4, 4, 4], &inp);
-    let r  = filled_tensor(&[4, 4, 2, 2], &inp[0..64]);
-    let mut dr = SharedTensor::<T>::new(&[4, 4, 2, 2]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[0, 0], &[2, 1])
-        .unwrap();
-
-    backend.pooling_max_grad(&x, &dx, &r, &mut dr, &conf).unwrap();
-
-    let dr_test = [
-        2.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0];
-    tensor_assert_eq(&dr, &dr_test, 3.0);
-}
-
 pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Convolution<T> + IBackend {
 
-    let test = |batch: usize, w1 : usize, h1: usize, d1: usize, k: usize, f: usize |
+    let test = |batch: usize, width : usize, height: usize, depth: usize, filter_count: usize, filter_size: usize |
     {
         // TODO add stride and padding
         // TODO use a slice for filtersize and k_filters
-        let w2 = (w1 - f + 0) / 1;
-        let h2 = (h1 - f + 0) / 1;
+        let stride = 1;
+        let result_width = (width - filter_size ) / stride + 1;
+        let result_height = (height - filter_size) / stride + 1;
 
-        let x_val = vec![1.0; batch * d1 * h1 * w1];
-        let f_val = vec![1.0; k * d1 * f * f];
+        let x_val = vec![1.0; batch * depth * height * width];
+        let f_val = vec![1.0; filter_count * depth * filter_size * filter_size];
 
-        let x  = filled_tensor(&[batch, d1, h1, w1], &x_val);
-        let f  = filled_tensor(&[k, d1, f,  f], &f_val);
-        let mut r  = SharedTensor::<T>::new(&[batch, k, h2, w2]);
+        let x  = filled_tensor(&backend,&[batch, depth, height, width], &x_val);
+        let f  = filled_tensor(&backend,&[filter_count, depth, filter_size,  filter_size], &f_val);
+        let mut r  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
         let mut ws = SharedTensor::<u8>::new(&[4]);
 
         let conf = backend.new_convolution_config(
             &x, &r, &f,
-            ConvForwardAlgo::ImplicitGEMM,
-            ConvBackwardFilterAlgo::ImplicitGEMM,
-            ConvBackwardDataAlgo::ImplicitGEMM,
+            ConvForwardAlgo::Auto,
+            ConvBackwardFilterAlgo::Auto,
+            ConvBackwardDataAlgo::Auto,
             &[1,1], &[0,0]).unwrap();
 
         backend.convolution(&f, &x, &mut r, &mut ws, &conf).unwrap();
-        match r.read(backend.device()) {
+        match r.read(&backend.device()) {
             Ok(v) => println!("{:?}", v),
             Err(_) => {},
         }
@@ -143,19 +102,63 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
 //     x_val[0] = 2.0;
 //     f_val[0] = 2.0;
 //
-//     let x  = filled_tensor(&[batch, d1, h1, w1], &x_val);
-//     let dx = filled_tensor(&[batch,  k, h2, w2], &x_val);
-//     let f  = filled_tensor(&[k, d1, f,  f], &f_val);
-//     let r  = filled_tensor(&[batch,  k, h2, w2], &f_val);
+//     let x  = filled_tensor(&backend,&[batch, d1, h1, w1], &x_val);
+//     let dx = filled_tensor(&backend,&[batch,  k, h2, w2], &x_val);
+//     let f  = filled_tensor(&backend,&[k, d1, f,  f], &f_val);
+//     let r  = filled_tensor(&backend,&[batch,  k, h2, w2], &f_val);
 //     let mut dr  = SharedTensor::<T>::new(&[batch, k, h2, w2]);
 // }
+
+
+fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
+    where Backend<F>: Convolution<f32> + IBackend,
+          Backend<G>: Convolution<f32> + IBackend {
+
+    // TODO add stride and padding
+    // TODO use a slice for filtersize and k_filters
+    let batch = 4;
+    let width1 = 9;
+    let height1 = 9;
+    let depth1 = 3;
+    let filter_size = 6;
+    let filter_count = 3;
+
+    let result_width = (width1 - filter_size + 0) / 1;
+    let result_height = (height1 - filter_size + 0) / 1;
+
+    let x_val = vec![1.0; batch * depth1 * height1 * width1];
+    let f_val = vec![1.0; filter_count * depth1 * filter_size * filter_size];
+
+    let x  = filled_tensor(&backend_a, &[batch, depth1, height1, width1], &x_val);
+    let f  = filled_tensor(&backend_a, &[filter_count, depth1, filter_size,  filter_size], &f_val);
+    let mut result_a  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
+    let mut result_b  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
+    let mut ws = SharedTensor::<u8>::new(&[4]);
+
+    let conf_a = backend_a.new_convolution_config(
+        &x, &result_a, &f,
+        ConvForwardAlgo::Auto,
+        ConvBackwardFilterAlgo::Auto,
+        ConvBackwardDataAlgo::Auto,
+        &[1,1], &[0,0]).unwrap();
+    backend_a.convolution(&f, &x, &mut result_a, &mut ws, &conf_a).unwrap();
+
+    let conf_b = backend_b.new_convolution_config(
+        &x, &result_b, &f,
+        ConvForwardAlgo::Auto,
+        ConvBackwardFilterAlgo::Auto,
+        ConvBackwardDataAlgo::Auto,
+        &[1,1], &[0,0]).unwrap();
+
+    backend_b.convolution(&f, &x, &mut result_b, &mut ws, &conf_b).unwrap();
+
+    tensor_assert_eq_tensor(&result_a, &result_b, 3.0);
+}
 
 mod cuda {
     use super::*;
     test_cuda!(test_lrn, lrn_f32, lrn_f64);
     test_cuda!(test_lrn_grad, lrn_grad_f32, lrn_grad_f64);
-    test_cuda!(test_pooling_max, pooling_max_f32, pooling_max_f64);
-    test_cuda!(test_pooling_max_grad, pooling_max_grad_f32, pooling_max_grad_f64);
     test_cuda!(test_convolution, convolution_f32, convolution_f64);
 }
 
@@ -163,7 +166,10 @@ mod native {
     use super::*;
     //test_native!(test_lrn, lrn_f32, lrn_f64);
     //test_native!(test_lrn_grad, lrn_grad_f32, lrn_grad_f64);
-    //test_native!(test_pooling_max, pooling_max_f32, pooling_max_f64);
-    //test_native!(test_pooling_max_grad, pooling_max_grad_f32, pooling_max_grad_f64);
     test_native!(test_convolution, convolution_f32, convolution_f64);
+}
+
+mod cross {
+    use super::*;
+    test_cross!(cross_test_convolution, cross_test_convolution_f32);
 }

@@ -412,13 +412,13 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
 {
     fn new_pooling_config(&self,
                           window: &[i32],
-                          padding: &[i32],
-                          stride: &[i32])
+                          stride: &[i32],
+                          padding: &[i32])
                           -> Result<Self::CPOOL, ::co::error::Error> {
         Ok(helper::PoolingConfig {
                window: window.to_vec(),
-               padding: padding.to_vec(),
                stride: stride.to_vec(),
+               padding: padding.to_vec(),
            })
     }
 
@@ -513,8 +513,8 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                       input_idx_base: &mut [usize],
                       window: &[i32],
                       depth: usize,
-                      padding: &[i32],
                       stride: &[i32],
+                      padding: &[i32],
                       output: &mut [T],
                       output_stride: &[usize],
                       output_dim: &[usize],
@@ -541,8 +541,8 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                             input_idx_base,
                             window,
                             depth + 1,
-                            padding,
                             &stride[1..],
+                            padding,
                             output,
                             &output_stride[1..],
                             &output_dim[1..],
@@ -570,8 +570,8 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
         output_idx.resize(output_dim.len(), 0);
 
         let window = &config.window[..];
-        let padding = &config.padding[..];
         let stride = &config.stride[..];
+        let padding = &config.padding[..];
         // do everything for each batch
         for batch in 0..input_dim[0] {
             // iterate over the batches!
@@ -591,8 +591,8 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                         &mut input_idx,
                         &window,
                         0,
-                        &padding,
                         &stride,
+                        &padding,
                         output,
                         &output_stride[2..],
                         &output_dim[2..],

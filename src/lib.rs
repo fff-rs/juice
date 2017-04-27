@@ -76,24 +76,24 @@
 //! A `-` means not yet implemented.
 //!
 
-//! | Operation            | CUDA               | OpenCL    | Native    |
-//! |---	           |---	                |---        |---        |
-//! | Sigmoid  	           | { cuDNN v3, v4 }  	| -  	    | Rust  	|
-//! | SigmoidPointwise     | { cuDNN v3, v4 }  	| -  	    |   	|
-//! | ReLU  	           | { cuDNN v3, v4 }   | -  	    | Rust 	|
-//! | ReLUPointwise        | { cuDNN v3, v4 }  	| -  	    |   	|
-//! | Tanh  	   	   | { cuDNN v3, v4 }   | - 	    | Rust      |
-//! | TanhPointwise        | { cuDNN v3, v4 }  	| -  	    |   	|
-//! |   	   	   |  	                |  	    |           |
-//! | Normalization (LRN)  | { cuDNN v3, v4 }   | - 	    | -         |
-//! |   	   	   |  	                |  	    |           |
-//! | Convolution          | { cuDNN v3, v4 }   | - 	    | -         |
-//! |   	   	   |  	                |  	    |           |
-//! | Softmax              | { cuDNN v3, v4 }   | - 	    | Rust      |
-//! | LogSoftmax           | { cuDNN v3, v4 }   | - 	    | Rust      |
-//! |   	   	   |  	                |  	    |           |
-//! | Pooling Max          | { cuDNN v3, v4 }   | - 	    | -         |
-//! | Pooling Avg          | { cuDNN v3, v4 }   | - 	    | -         |
+//! | Operation            | CUDA           | OpenCL    | Native    |
+//! |---                   |---             |---        |---        |
+//! | Sigmoid              | cuDNN v5.1     | -         | Rust      |
+//! | SigmoidPointwise     | cuDNN v5.1     | -         | Rust      |
+//! | ReLU                 | cuDNN v5.1     | -         | Rust      |
+//! | ReLUPointwise        | cuDNN v5.1     | -         | Rust      |
+//! | Tanh                 | cuDNN v5.1     | -         | Rust      |
+//! | TanhPointwise        | cuDNN v5.1     | -         | Rust      |
+//! |                      |                |           |           |
+//! | Normalization (LRN)  | cuDNN v5.1     | -         | -         |
+//! |                      |                |           |           |
+//! | Convolution          | cuDNN v5.1     | -         | Rust(fwd) |
+//! |                      |                |           |           |
+//! | Softmax              | cuDNN v5.1     | -         | Rust      |
+//! | LogSoftmax           | cuDNN v5.1     | -         | Rust      |
+//! |                      |                |           |           |
+//! | Pooling Max          | cuDNN v5.1     | -         | Rust(fwd) |
+//! | Pooling Avg          | cuDNN v5.1     | -         | -         |
 //!
 //! [collenchyma]: https://github.com/autumnai/collenchyma
 //! [collenchyma-docs]: http://autumnai.github.io/collenchyma

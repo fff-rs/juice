@@ -8,7 +8,6 @@ use co::prelude::*;
 use cudnn::*;
 
 pub use cudnn::utils::DataTypeInfo;
-use cudnn::utils::ScalParams;
 use plugin::*;
 
 #[macro_use]
@@ -53,6 +52,8 @@ impl ConvForwardAlgo {
                FFT => CUDNN_CONVOLUTION_FWD_ALGO_FFT,
                FFTTiling => CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
                Direct => CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
+               Winograd => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD,
+               WinogradNonFused => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED,
            })
     }
 
@@ -67,6 +68,8 @@ impl ConvForwardAlgo {
             CUDNN_CONVOLUTION_FWD_ALGO_FFT => FFT,
             CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING => FFTTiling,
             CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => Direct,
+            CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD => Winograd,
+            CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
         }
     }
 
@@ -109,6 +112,7 @@ impl ConvBackwardFilterAlgo {
                ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0,
                ImplicitPrecompiledGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3,
                FFT => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT,
+               WinogradNonFused => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED,
            })
     }
 
@@ -121,6 +125,7 @@ impl ConvBackwardFilterAlgo {
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 => ImplicitGEMM,
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT => FFT,
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 => ImplicitPrecompiledGEMMSum,
+            CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
         }
     }
 
@@ -163,6 +168,8 @@ impl ConvBackwardDataAlgo {
                ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
                FFT => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT,
                FFTTiling => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING,
+               Winograd => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD,
+               WinogradNonFused => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED,
            })
     }
 
@@ -175,6 +182,8 @@ impl ConvBackwardDataAlgo {
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => ImplicitGEMM,
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT => FFT,
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING => FFTTiling,
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD => Winograd,
+            CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
         }
     }
 
@@ -302,7 +311,9 @@ impl<T> Sigmoid<T> for Backend<Cuda>
         let r_desc = try!(result.cudnn_tensor_desc_flat());
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.sigmoid_forward(&try!(x.cudnn_tensor_desc_flat()),
+        match CUDNN.sigmoid_forward(&CUDNN.init_activation().unwrap(),
+
+        							&try!(x.cudnn_tensor_desc_flat()),
                                     trans!(x_mem),
                                     &r_desc,
                                     trans_mut!(r_mem),
@@ -324,7 +335,8 @@ impl<T> Sigmoid<T> for Backend<Cuda>
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.sigmoid_backward(&try!(x.cudnn_tensor_desc_flat()),
+        match CUDNN.sigmoid_backward(&CUDNN.init_activation().unwrap(),
+        						&try!(x.cudnn_tensor_desc_flat()),
                                      trans!(x_mem),
                                      &try!(x_diff.cudnn_tensor_desc_flat()),
                                      trans!(dx_mem),
@@ -514,7 +526,8 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
         let x_desc = try!(x.cudnn_tensor_desc_flat());
         let x_mem = read_write!(x, self);
 
-        match CUDNN.sigmoid_forward(&x_desc,
+        match CUDNN.sigmoid_forward(&CUDNN.init_activation().unwrap(),
+        							&x_desc,
                                     trans!(x_mem),
                                     &x_desc,
                                     trans_mut!(x_mem),
@@ -533,7 +546,9 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
         let dx_desc = try!(x_diff.cudnn_tensor_desc_flat());
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
-        match CUDNN.sigmoid_backward(&x_desc,
+        // TODO move config one level up
+        match CUDNN.sigmoid_backward(&CUDNN.init_activation().unwrap(),
+        							 &x_desc,
                                      trans!(x_mem),
                                      &dx_desc,
                                      trans!(dx_mem),
@@ -559,7 +574,8 @@ impl<T> Relu<T> for Backend<Cuda>
         let r_desc = try!(result.cudnn_tensor_desc_flat());
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.relu_forward(&try!(x.cudnn_tensor_desc_flat()),
+        match CUDNN.relu_forward(&CUDNN.init_activation().unwrap(),
+        						&try!(x.cudnn_tensor_desc_flat()),
                                  trans!(x_mem),
                                  &r_desc,
                                  trans_mut!(r_mem),
@@ -582,7 +598,8 @@ impl<T> Relu<T> for Backend<Cuda>
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
 
-        match CUDNN.relu_backward(&try!(x.cudnn_tensor_desc_flat()),
+        match CUDNN.relu_backward(&CUDNN.init_activation().unwrap(),
+        						&try!(x.cudnn_tensor_desc_flat()),
                                   trans!(x_mem),
                                   &try!(x_diff.cudnn_tensor_desc_flat()),
                                   trans!(dx_mem),
@@ -607,7 +624,8 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
         let x_desc = try!(x.cudnn_tensor_desc_flat());
         let x_mem = read_write!(x, self);
 
-        match CUDNN.relu_forward(&x_desc,
+        match CUDNN.relu_forward(&CUDNN.init_activation().unwrap(),
+        						&x_desc,
                                  trans!(x_mem),
                                  &x_desc,
                                  trans_mut!(x_mem),
@@ -627,7 +645,8 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
 
-        match CUDNN.relu_backward(&x_desc,
+        match CUDNN.relu_backward(&CUDNN.init_activation().unwrap(),
+        						&x_desc,
                                   trans!(x_mem),
                                   &dx_desc,
                                   trans!(dx_mem),
@@ -653,7 +672,8 @@ impl<T> Tanh<T> for Backend<Cuda>
         let r_desc = try!(result.cudnn_tensor_desc_flat());
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.tanh_forward(&try!(x.cudnn_tensor_desc_flat()),
+        match CUDNN.tanh_forward(&CUDNN.init_activation().unwrap(),
+        						&try!(x.cudnn_tensor_desc_flat()),
                                  trans!(x_mem),
                                  &r_desc,
                                  trans_mut!(r_mem),
@@ -675,7 +695,8 @@ impl<T> Tanh<T> for Backend<Cuda>
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.tanh_backward(&try!(x.cudnn_tensor_desc_flat()),
+        match CUDNN.tanh_backward(&CUDNN.init_activation().unwrap(),
+        						&try!(x.cudnn_tensor_desc_flat()),
                                   trans!(x_mem),
                                   &try!(x_diff.cudnn_tensor_desc_flat()),
                                   trans!(dx_mem),
@@ -699,7 +720,8 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
         let x_desc = try!(x.cudnn_tensor_desc_flat());
         let x_mem = read_write!(x, self);
-        match CUDNN.tanh_forward(&x_desc,
+        match CUDNN.tanh_forward(&CUDNN.init_activation().unwrap(),
+        						&x_desc,
                                  trans!(x_mem),
                                  &x_desc,
                                  trans_mut!(x_mem),
@@ -718,7 +740,8 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
         let dx_desc = try!(x_diff.cudnn_tensor_desc_flat());
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
-        match CUDNN.tanh_backward(&x_desc,
+        match CUDNN.tanh_backward(&CUDNN.init_activation().unwrap(),
+        						&x_desc,
                                   trans!(x_mem),
                                   &dx_desc,
                                   trans!(dx_mem),
@@ -888,8 +911,8 @@ impl<T> Pooling<T> for Backend<Cuda>
 {
     fn new_pooling_config(&self,
                           window: &[i32],
-                          padding: &[i32],
-                          stride: &[i32])
+                          stride: &[i32],
+                          padding: &[i32])
                           -> Result<Self::CPOOL, ::co::error::Error> {
         let pooling_avg = ::cudnn::PoolingDescriptor::new(::cudnn::cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING, window, padding, stride).unwrap();
         let pooling_max =
