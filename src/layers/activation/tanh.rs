@@ -10,6 +10,7 @@
 //! * increases the likelyhood of a more beneficial sparse representation
 //! * can be computed faster
 //! * is therefore the most popular activation function in DNNs as of this writing (2016).
+
 use co::{IBackend, SharedTensor};
 use conn;
 use layer::*;
@@ -70,8 +71,13 @@ impl<B: IBackend + conn::Tanh<f32> + conn::TanhPointwise<f32>> ComputeInputGradi
                               input_data: &[&SharedTensor<f32>],
                               input_gradients: &mut [&mut SharedTensor<f32>]) {
         match output_data.get(0) {
-            Some(_) => backend.tanh_grad(output_data[0], output_gradients[0],
-                                         input_data[0], input_gradients[0]).unwrap(),
+            Some(_) => {
+                backend.tanh_grad(output_data[0],
+                               output_gradients[0],
+                               input_data[0],
+                               input_gradients[0])
+                    .unwrap()
+            }
             None => backend.tanh_pointwise_grad(input_data[0], input_gradients[0]).unwrap(),
         }
     }

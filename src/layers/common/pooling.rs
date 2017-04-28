@@ -10,15 +10,16 @@
 //!
 //! The layer expects the input to be in either 4D NCHW (2 spatial dimensions)
 //! or 5D NCDHW (3 spatial dimensions) format.
-use std::rc::Rc;
+
+use super::FilterLayer;
+use capnp_util::*;
 use co::{IBackend, SharedTensor};
 use conn;
 use layer::*;
-use util::{ArcLock, cast_vec_usize_to_i32};
-use super::FilterLayer;
-use leaf_capnp::pooling_config as capnp_config;
 use leaf_capnp::PoolingMode as CapnpPoolingMode;
-use capnp_util::*;
+use leaf_capnp::pooling_config as capnp_config;
+use std::rc::Rc;
+use util::{ArcLock, cast_vec_usize_to_i32};
 
 #[derive(Debug, Clone)]
 /// [Pooling](./index.html) Layer
@@ -53,7 +54,7 @@ impl<T, B: conn::Pooling<T>> FilterLayer for Pooling<T, B> {
         match input_shape.len() {
             4 => 2,
             5 => 3,
-            _ => panic!("A pooling layer currently only supports 4D or 5D input.")
+            _ => panic!("A pooling layer currently only supports 4D or 5D input."),
         }
     }
 
@@ -131,7 +132,11 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeOutput<f32, B> for Pooling<f32, B>
                 backend.pooling_avg(input_data[0], output_data[0], &*config)
                     .unwrap()
             }
+<<<<<<< HEAD
             _ => panic!("Unknown Parameter {:?} for PoolingMode", self.mode),
+=======
+            _ => panic!("Unknown Parameter {} for PoolingMode", self.mode),
+>>>>>>> ff95bb3... chore/format: use rustfmt to re-format the whole codebase
         }
     }
 }
@@ -167,7 +172,7 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeInputGradient<f32, B> for Pooling<
     }
 }
 
-impl<B: IBackend + conn::Pooling<f32>> ComputeParametersGradient<f32, B> for Pooling<f32, B> { }
+impl<B: IBackend + conn::Pooling<f32>> ComputeParametersGradient<f32, B> for Pooling<f32, B> {}
 
 #[derive(Debug, Clone)]
 /// Specifies configuration parameters for a Pooling Layer.

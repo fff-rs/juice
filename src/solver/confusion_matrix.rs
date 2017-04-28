@@ -1,8 +1,9 @@
 //! TODO: DOC
-use std::collections::VecDeque;
-use std::fmt;
+
 
 use co::SharedTensor;
+use std::collections::VecDeque;
+use std::fmt;
 use util::native_backend;
 /// A [ConfusionMatrix][wiki].
 ///
@@ -31,7 +32,10 @@ impl ConfusionMatrix {
         if self.capacity.is_some() && self.samples.len() >= self.capacity.unwrap() {
             self.samples.pop_front();
         }
-        self.samples.push_back(Sample { prediction: prediction, target: target });
+        self.samples.push_back(Sample {
+            prediction: prediction,
+            target: target,
+        });
     }
 
     /// Add a batch of samples.
@@ -48,8 +52,10 @@ impl ConfusionMatrix {
     /// The prediction for each sample of the batch is found by
     /// determining which output value had the smallest loss.
     pub fn get_predictions(&self, network_out: &mut SharedTensor<f32>) -> Vec<usize> {
-        let native_infered = network_out.read(native_backend().device()).unwrap()
-            .as_native().unwrap();
+        let native_infered = network_out.read(native_backend().device())
+            .unwrap()
+            .as_native()
+            .unwrap();
         let predictions_slice = native_infered.as_slice::<f32>();
 
         let mut predictions = Vec::<usize>::new();
@@ -76,7 +82,10 @@ impl ConfusionMatrix {
     pub fn accuracy(&self) -> Accuracy {
         let num_samples = self.samples.len();
         let num_correct = self.samples.iter().filter(|&&s| s.correct()).count();
-        Accuracy { num_samples: num_samples, num_correct: num_correct }
+        Accuracy {
+            num_samples: num_samples,
+            num_correct: num_correct,
+        }
     }
 }
 
@@ -96,7 +105,10 @@ impl Sample {
 
 impl fmt::Display for Sample {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Prediction: {:?}, Target: {:?}", self.prediction, self.target)
+        write!(f,
+               "Prediction: {:?}, Target: {:?}",
+               self.prediction,
+               self.target)
     }
 }
 
@@ -117,6 +129,10 @@ impl Accuracy {
 
 impl fmt::Display for Accuracy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}/{:?} = {:.2?}%", self.num_correct, self.num_samples, self.ratio())
+        write!(f,
+               "{:?}/{:?} = {:.2?}%",
+               self.num_correct,
+               self.num_samples,
+               self.ratio())
     }
 }

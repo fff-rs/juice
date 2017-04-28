@@ -1,9 +1,10 @@
 //! Provides common utility functions
-use std::sync::{Arc, RwLock};
+
 use co::prelude::*;
 use coblas::plugin::*;
 use conn;
 use num::traits::{NumCast, cast};
+use std::sync::{Arc, RwLock};
 
 /// Shared Lock used for our tensors
 pub type ArcLock<T> = Arc<RwLock<T>>;
@@ -32,7 +33,7 @@ pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut Memory
                 // mem_buffer[index + offset] = *datum;
                 mem_buffer[index + offset] = cast(*datum).unwrap();
             }
-        },
+        }
         #[cfg(any(feature = "opencl", feature = "cuda"))]
         _ => {}
     }
@@ -60,7 +61,8 @@ pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedT
 pub fn native_scalar<T: NumCast + ::std::marker::Copy>(scalar: T) -> SharedTensor<T> {
     let native = native_backend();
     let mut shared_scalar = SharedTensor::<T>::new(&[1]);
-    write_to_memory(shared_scalar.write_only(native.device()).unwrap(), &[scalar]);
+    write_to_memory(shared_scalar.write_only(native.device()).unwrap(),
+                    &[scalar]);
     shared_scalar
 }
 
@@ -74,12 +76,16 @@ pub fn cast_vec_usize_to_i32(input: Vec<usize>) -> Vec<i32> {
 }
 
 /// Extends IBlas with Axpby
-pub trait Axpby<F> : Axpy<F> + Scal<F> {
+pub trait Axpby<F>: Axpy<F> + Scal<F> {
     /// Performs the operation y := a*x + b*y .
     ///
     /// Consists of a scal(b, y) followed by a axpby(a,x,y).
-    fn axpby(&self, a: &SharedTensor<F>, x: &SharedTensor<F>, b: &SharedTensor<F>,
-             y: &mut SharedTensor<F>) -> Result<(), ::co::error::Error> {
+    fn axpby(&self,
+             a: &SharedTensor<F>,
+             x: &SharedTensor<F>,
+             b: &SharedTensor<F>,
+             y: &mut SharedTensor<F>)
+             -> Result<(), ::co::error::Error> {
         try!(self.scal(b, y));
         try!(self.axpy(a, x, y));
         Ok(())
@@ -92,7 +98,7 @@ impl<T: Axpy<f32> + Scal<f32>> Axpby<f32> for T {}
 // pub trait SolverOps<F> : Axpby<F> + Dot<F> + Copy<F> {}
 //
 // impl<T: Axpby<f32> + Dot<f32> + Copy<f32>> SolverOps<f32> for T {}
-pub trait SolverOps<F> : LayerOps<F> + Axpby<F> + Dot<F> + Copy<F> {}
+pub trait SolverOps<F>: LayerOps<F> + Axpby<F> + Dot<F> + Copy<F> {}
 
 impl<T: LayerOps<f32> + Axpby<f32> + Dot<f32> + Copy<f32>> SolverOps<f32> for T {}
 

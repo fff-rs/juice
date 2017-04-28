@@ -2,22 +2,23 @@
 //!
 //! See [Layers][layers]
 //! [layers]: ../layers/index.html
+
+use capnp_util::*;
 use co::prelude::*;
 use layers::*;
-use weight::WeightConfig;
-use util::{ArcLock, LayerOps};
-use std::fmt;
+use leaf_capnp::layer as capnp_layer;
+use leaf_capnp::layer_config as capnp_layer_config;
+use leaf_capnp::layer_config::layer_type as capnp_layer_type;
 use std::cmp;
 use std::collections::{HashMap, HashSet};
+use std::fmt;
 use std::fs::File;
 use std::io::{self, BufReader};
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use leaf_capnp::layer as capnp_layer;
-use leaf_capnp::layer_config as capnp_layer_config;
-use leaf_capnp::layer_config::layer_type as capnp_layer_type;
-use capnp_util::*;
+use util::{ArcLock, LayerOps};
+use weight::WeightConfig;
 
 #[derive(Debug)]
 /// The generic Layer
@@ -99,10 +100,13 @@ impl<B: IBackend> Layer<B> {
     /// [2]: ./trait.ILayer.html
     ///
     /// Called during initialization of containter layers.
-    pub fn connect(
-        &mut self,
-        registry: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>,
-        weight_registry: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>, Option<f32>, Option<f32>)>) {
+    pub fn connect(&mut self,
+                   registry: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>,
+                   weight_registry: &mut HashMap<String,
+                                                 (ArcLock<SharedTensor<f32>>,
+                                                  ArcLock<SharedTensor<f32>>,
+                                                  Option<f32>,
+                                                  Option<f32>)>) {
         // connect to all required inputs
         for input_name in &self.config.inputs.clone() {
             self.connect_input(input_name, registry)
@@ -120,7 +124,9 @@ impl<B: IBackend> Layer<B> {
         // specified fewer than the required number (as specified by
         // exact_num_top_blobs() or min_output_blobs()), allocate them here.
         let auto_output_blobs = self.worker.auto_output_blobs();
-        debug!("Layer {} - auto_output_blobs: {}", &self.name, &auto_output_blobs);
+        debug!("Layer {} - auto_output_blobs: {}",
+               &self.name,
+               &auto_output_blobs);
         let min_output_blobs = self.worker.min_output_blobs();
         let exact_num_output_blobs = self.worker.exact_num_output_blobs().unwrap_or(0);
         if auto_output_blobs {
@@ -138,7 +144,9 @@ impl<B: IBackend> Layer<B> {
         self.reshape();
         self.worker.resize_shared_workspace(self.backend.clone(), None);
         for t in &self.output_blobs_data {
-            debug!("Layer {} - output shape: {:?}", self.name, t.read().unwrap().desc());
+            debug!("Layer {} - output shape: {:?}",
+                   self.name,
+                   t.read().unwrap().desc());
         }
     }
 
@@ -151,7 +159,9 @@ impl<B: IBackend> Layer<B> {
     ///
     /// [3]: ../layer/struct.LayerConfig.html
     /// [5]: #method.init_backprop
-    fn connect_input(&mut self, blob_name: &str, available_blobs: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>) {
+    fn connect_input(&mut self,
+                     blob_name: &str,
+                     available_blobs: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>) {
         let input_id = self.config.inputs.iter().position(|input_name| input_name == blob_name).unwrap();
 
         if !available_blobs.contains_key(&*blob_name) {
@@ -163,8 +173,10 @@ impl<B: IBackend> Layer<B> {
         info!("Input {:<15} -> Layer {:>15}", blob_name, self.name);
 
         self.input_blob_names.push(blob_name.to_owned());
-        self.input_blobs_data.push(available_blobs.get(&*blob_name).expect(&format!("Unknown blob name {}", blob_name)).0.clone());
-        self.input_blobs_gradient.push(available_blobs.get(&*blob_name).expect(&format!("Unknown blob name {}", blob_name)).1.clone());
+        self.input_blobs_data
+            .push(available_blobs.get(&*blob_name).expect(&format!("Unknown blob name {}", blob_name)).0.clone());
+        self.input_blobs_gradient
+            .push(available_blobs.get(&*blob_name).expect(&format!("Unknown blob name {}", blob_name)).1.clone());
         // available_blobs.remove(&*blob_name);
 
         let mut propagate_down = true;
@@ -186,8 +198,8 @@ impl<B: IBackend> Layer<B> {
     /// connect it as their input.
     /// [2]: ../layer/struct.LayerConfig.html
     fn append_output(&mut self,
-                  output_id: usize,
-                  registry: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>) {
+                     output_id: usize,
+                     registry: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>) {
         let layer_config = &self.config;
 
         let blob_name = layer_config.output(output_id).unwrap().clone();
@@ -195,29 +207,33 @@ impl<B: IBackend> Layer<B> {
         let blob_gradient: ArcLock<SharedTensor<f32>>;
 
         if layer_config.input(output_id).is_some() && *layer_config.input(output_id).unwrap() == blob_name {
-            info!("Layer {:<15} -> Output {:>15} (in-place)", layer_config.name, blob_name);
+            info!("Layer {:<15} -> Output {:>15} (in-place)",
+                  layer_config.name,
+                  blob_name);
             blob_data = registry[&blob_name].0.clone();
             blob_gradient = registry[&blob_name].1.clone();
         } else if registry.contains_key(&blob_name) {
             // If we are not doing in-place computation but have duplicated blobs, raise an
             // error.
             error!("Top blob {} produced by multiple sources.", blob_name);
-            return
+            return;
         } else {
             {
                 info!("Layer {:<15} -> Output {:>15}", self.name, blob_name);
                 info!("Output {} = {}", output_id, blob_name);
             }
 
-            let backend: Rc<IBackend<F=B::F>> = self.backend.clone();
-            blob_data = Arc::new(RwLock::new(SharedTensor::new(&[1,1,1]))); // [1,1,1] for CUDA
-            blob_gradient = Arc::new(RwLock::new(SharedTensor::new(&[1,1,1]))); // [1,1,1] for CUDA
+            let backend: Rc<IBackend<F = B::F>> = self.backend.clone();
+            blob_data = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
+            blob_gradient = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
         }
         self.output_blob_names.push(blob_name.clone());
         self.output_blobs_data.push(blob_data.clone());
         self.output_blobs_gradient.push(blob_gradient.clone());
-        self.blob_names.insert(blob_name.clone(), (blob_data.clone(), blob_gradient.clone()));
-        registry.insert(blob_name.clone(), (blob_data.clone(), blob_gradient.clone()));
+        self.blob_names.insert(blob_name.clone(),
+                               (blob_data.clone(), blob_gradient.clone()));
+        registry.insert(blob_name.clone(),
+                        (blob_data.clone(), blob_gradient.clone()));
     }
 
     /// Append anonymous blob as [output blob][1] to the Layer.
@@ -233,14 +249,22 @@ impl<B: IBackend> Layer<B> {
 
         info!("{} -> {}", self.name, blob_name);
 
-        let backend: Rc<IBackend<F=B::F>> = self.backend.clone();
-        let output_data = Arc::new(RwLock::new(SharedTensor::new(&[1,1,1]))); // [1,1,1] for CUDA
-        let output_gradient = Arc::new(RwLock::new(SharedTensor::new(&[1,1,1]))); // [1,1,1] for CUDA
+        let backend: Rc<IBackend<F = B::F>> = self.backend.clone();
+        let output_data = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
+        let output_gradient = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
         self.output_blobs_data.push(output_data);
         self.output_blobs_gradient.push(output_gradient);
     }
 
-    fn append_weight(&mut self, layer_config: &LayerConfig, registry: &mut HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>, Option<f32>, Option<f32>)>, layer_id: usize, weight_id: usize) {
+    fn append_weight(&mut self,
+                     layer_config: &LayerConfig,
+                     registry: &mut HashMap<String,
+                                            (ArcLock<SharedTensor<f32>>,
+                                             ArcLock<SharedTensor<f32>>,
+                                             Option<f32>,
+                                             Option<f32>)>,
+                     layer_id: usize,
+                     weight_id: usize) {
         if self.worker.auto_weight_blobs() {
             info!("Layer {} - appending weight", &layer_config.name);
             let weights_len = self.weights_data.len();
@@ -263,7 +287,9 @@ impl<B: IBackend> Layer<B> {
             // add to tracking vectors
             let net_weight_id = weights_len;
             let output_data = self.output_blobs_data[weight_id].read().unwrap();
-            debug!("Layer {} - creating weight and gradient of size {:?}", &layer_config.name, output_data.desc());
+            debug!("Layer {} - creating weight and gradient of size {:?}",
+                   &layer_config.name,
+                   output_data.desc());
             let weight_data = Arc::new(RwLock::new(SharedTensor::new(output_data.desc())));
             let weight_gradient = Arc::new(RwLock::new(SharedTensor::new(output_data.desc())));
             self.weights_data.push(weight_data.clone());
@@ -280,7 +306,10 @@ impl<B: IBackend> Layer<B> {
                 // self.weight_owners.push(None);
                 if !weight_name.is_empty() {
                     registry.insert(weight_name.clone(),
-                        (weight_data.clone(), weight_gradient.clone(), weight_config.lr_mult, weight_config.decay_mult));
+                                    (weight_data.clone(),
+                                     weight_gradient.clone(),
+                                     weight_config.lr_mult,
+                                     weight_config.decay_mult));
                 }
                 let learnable_weight_id = self.learnable_weights.len();
                 self.learnable_weights.push(weight_data.clone());
@@ -290,7 +319,8 @@ impl<B: IBackend> Layer<B> {
             } else {
                 // Named weight blob with name we've seen before: share weights
 
-                let (shared_weight_data, shared_weight_gradient, shared_lr, shared_decay_mult) = registry.get(&registry_name).unwrap().clone();
+                let (shared_weight_data, shared_weight_gradient, shared_lr, shared_decay_mult) =
+                    registry.get(&registry_name).unwrap().clone();
                 info!("Sharing weight blob '{}'", weight_name.clone());
 
                 // can only share parameters if both have same lr_mult
@@ -303,7 +333,11 @@ impl<B: IBackend> Layer<B> {
                     } else {
                         // this is the first shared instance that has a lr_mult value so we take that
                         registry.remove(&registry_name).unwrap();
-                        registry.insert(registry_name.clone(), (shared_weight_data.clone(), shared_weight_gradient.clone(), weight_config.lr_mult, shared_decay_mult));
+                        registry.insert(registry_name.clone(),
+                                        (shared_weight_data.clone(),
+                                         shared_weight_gradient.clone(),
+                                         weight_config.lr_mult,
+                                         shared_decay_mult));
                     }
                 }
                 // can only share weights if both have same decay_mult
@@ -316,7 +350,11 @@ impl<B: IBackend> Layer<B> {
                     } else {
                         // this is the first shared instance that has a decay_mult value so we take that
                         registry.remove(&registry_name).unwrap();
-                        registry.insert(registry_name, (shared_weight_data.clone(), shared_weight_gradient.clone(), shared_lr, weight_config.decay_mult));
+                        registry.insert(registry_name,
+                                        (shared_weight_data.clone(),
+                                         shared_weight_gradient.clone(),
+                                         shared_lr,
+                                         weight_config.decay_mult));
                     }
                 }
             }
@@ -333,7 +371,7 @@ impl<B: IBackend> Layer<B> {
                                     &mut self.weights_gradient,
                                     &mut self.output_blobs_data,
                                     &mut self.output_blobs_gradient);
-            },
+            }
             true => {
                 self.worker.reshape(self.backend.clone(),
                                     &mut vec![],
@@ -342,7 +380,7 @@ impl<B: IBackend> Layer<B> {
                                     &mut self.weights_gradient,
                                     &mut self.output_blobs_data,
                                     &mut self.output_blobs_gradient);
-            },
+            }
         }
     }
 
@@ -354,9 +392,7 @@ impl<B: IBackend> Layer<B> {
     /// to the loss.
     /// If all of the blobs skip backpropagation we set a flag to skip backpropagation
     /// of the whole layer.
-    pub fn init_backprop(&mut self,
-                     blobs_under_loss: &mut HashSet<String>,
-                     blobs_skip_backp: &mut HashSet<String>) {
+    pub fn init_backprop(&mut self, blobs_under_loss: &mut HashSet<String>, blobs_skip_backp: &mut HashSet<String>) {
         let mut layer_contributes_loss = false;
         let mut layer_skip_propagate_down = true;
         for (output_id, _) in self.output_blobs_data.iter().enumerate() {
@@ -414,10 +450,9 @@ impl<B: IBackend> Layer<B> {
     pub fn init_force_backward(&mut self) {
         self.needs_backward = true;
         for (input_id, _) in self.input_need_backwards.clone().iter().enumerate() {
-            self.input_need_backwards[input_id] =
-                *self.input_need_backwards
-                     .get(input_id)
-                     .unwrap_or(&self.worker.allow_force_backward(input_id));
+            self.input_need_backwards[input_id] = *self.input_need_backwards
+                .get(input_id)
+                .unwrap_or(&self.worker.allow_force_backward(input_id));
         }
         for (weight_id, _) in self.weights_data.clone().iter().enumerate() {
             self.set_weight_propagate_down(weight_id, true);
@@ -455,19 +490,28 @@ impl<B: IBackend> Layer<B> {
             // reshape input tensor to the reshaped shape
             let old_shape = self.input_blobs_data[input_i].read().unwrap().desc().clone();
             if old_shape.size() != reshaped_shape.size() {
-                panic!("The provided input does not have the expected shape of {:?}", reshaped_shape);
+                panic!("The provided input does not have the expected shape of {:?}",
+                       reshaped_shape);
             }
             self.input_blobs_data[input_i].write().unwrap().reshape(&reshaped_shape).unwrap();
         }
 
         let forward_time = timeit_loops!(1, {
             if self.is_using_in_place() {
-                self.worker.forward(&self.backend, &[], &self.weights_data, &mut self.output_blobs_data);
+                self.worker.forward(&self.backend,
+                                    &[],
+                                    &self.weights_data,
+                                    &mut self.output_blobs_data);
             } else {
-                self.worker.forward(&self.backend, &self.input_blobs_data, &self.weights_data, &mut self.output_blobs_data);
+                self.worker.forward(&self.backend,
+                                    &self.input_blobs_data,
+                                    &self.weights_data,
+                                    &mut self.output_blobs_data);
             }
         });
-        debug!("{:<15} - Forward time: {:.5} ms", &self.name, forward_time / 0.001);
+        debug!("{:<15} - Forward time: {:.5} ms",
+               &self.name,
+               forward_time / 0.001);
         self.output_blobs_data.clone()
     }
 
@@ -487,25 +531,27 @@ impl<B: IBackend> Layer<B> {
     /// Calculate the gradient w.r.t. input.
     ///
     /// This method is mostly used when doing backpropagation.
-    pub fn backward_input(&mut self, output_gradients: &[ArcLock<SharedTensor<f32>>]) -> Vec<ArcLock<SharedTensor<f32>>> {
+    pub fn backward_input(&mut self,
+                          output_gradients: &[ArcLock<SharedTensor<f32>>])
+                          -> Vec<ArcLock<SharedTensor<f32>>> {
         for (output_i, output) in output_gradients.iter().enumerate() {
             self.output_blobs_gradient[output_i] = output.clone();
         }
 
         if self.is_using_in_place() {
             self.worker.backward_input(&self.backend,
-                                 &self.weights_data,
-                                 &[],
-                                 &[],
-                                 &self.input_blobs_data,
-                                 &mut self.input_blobs_gradient)
+                                       &self.weights_data,
+                                       &[],
+                                       &[],
+                                       &self.input_blobs_data,
+                                       &mut self.input_blobs_gradient)
         } else {
             self.worker.backward_input(&self.backend,
-                                 &self.weights_data,
-                                 &self.output_blobs_data,
-                                 &self.output_blobs_gradient,
-                                 &self.input_blobs_data,
-                                 &mut self.input_blobs_gradient)
+                                       &self.weights_data,
+                                       &self.output_blobs_data,
+                                       &self.output_blobs_gradient,
+                                       &self.input_blobs_data,
+                                       &mut self.input_blobs_gradient)
         }
 
         self.input_blobs_gradient.clone()
@@ -518,10 +564,10 @@ impl<B: IBackend> Layer<B> {
     /// This method is mostly used when doing backpropagation.
     pub fn backward_parameters(&mut self) {
         self.worker.backward_parameters(&self.backend,
-                             &self.output_blobs_data,
-                             &self.output_blobs_gradient,
-                             &self.input_blobs_data,
-                             &mut self.weights_gradient)
+                                        &self.output_blobs_data,
+                                        &self.output_blobs_gradient,
+                                        &self.input_blobs_data,
+                                        &mut self.weights_gradient)
     }
 
     /// Synchronize the layers backend.
@@ -540,9 +586,12 @@ impl<B: IBackend> Layer<B> {
     pub fn update_weights<SolverB: IBackend + ::util::SolverOps<f32>>(&mut self, backend: &SolverB) {
         // PERF: allocate this scalar once
         let shared_a = ::util::native_scalar(-1f32);
-        for (weight_gradient, weight_data) in self.learnable_weights_gradients().iter().zip(&mut self.learnable_weights_data()) {
-            backend.axpy(&shared_a, &weight_gradient.read().unwrap(),
-                         &mut weight_data.write().unwrap()).unwrap();
+        for (weight_gradient, weight_data) in
+            self.learnable_weights_gradients().iter().zip(&mut self.learnable_weights_data()) {
+            backend.axpy(&shared_a,
+                      &weight_gradient.read().unwrap(),
+                      &mut weight_data.write().unwrap())
+                .unwrap();
         }
     }
 
@@ -556,9 +605,7 @@ impl<B: IBackend> Layer<B> {
     /// [2]: ../solver/struct.Solver.html
     pub fn clear_weights_gradients(&mut self) {
         for weight_gradient in &mut self.learnable_weights_gradients().iter() {
-            let filler = ::weight::FillerType::Constant {
-                value: 0f32
-            };
+            let filler = ::weight::FillerType::Constant { value: 0f32 };
             filler.fill(&mut weight_gradient.write().unwrap());
         }
     }
@@ -650,13 +697,15 @@ impl<B: IBackend> Layer<B> {
     /// #    }
     /// # }
     /// ```
-    pub fn load<LB: IBackend + LayerOps<f32> + 'static, P: AsRef<Path>>(backend: Rc<LB>, path: P) -> io::Result<Layer<LB>> {
+    pub fn load<LB: IBackend + LayerOps<f32> + 'static, P: AsRef<Path>>(backend: Rc<LB>,
+                                                                        path: P)
+                                                                        -> io::Result<Layer<LB>> {
         let path = path.as_ref();
         let ref mut file = try!(File::open(path));
         let mut reader = BufReader::new(file);
 
-        let message_reader = ::capnp::serialize_packed::read_message(&mut reader,
-                                                                     ::capnp::message::ReaderOptions::new()).unwrap();
+        let message_reader =
+            ::capnp::serialize_packed::read_message(&mut reader, ::capnp::message::ReaderOptions::new()).unwrap();
         let read_layer = message_reader.get_root::<capnp_layer::Reader>().unwrap();
 
         let name = read_layer.get_name().unwrap().to_owned();
@@ -674,7 +723,7 @@ impl<B: IBackend> Layer<B> {
             for j in 0..read_weights.len() {
                 let capnp_weight = read_weights.get(i as u32);
                 if capnp_weight.get_name().unwrap() != name {
-                    continue
+                    continue;
                 }
 
                 let mut weight_lock = weight.write().unwrap();
@@ -687,7 +736,11 @@ impl<B: IBackend> Layer<B> {
                 }
                 weight_lock.reshape(&shape).unwrap();
 
-                let mut native_slice = weight_lock.write_only(native_backend.device()).unwrap().as_mut_native().unwrap().as_mut_slice::<f32>();
+                let mut native_slice = weight_lock.write_only(native_backend.device())
+                    .unwrap()
+                    .as_mut_native()
+                    .unwrap()
+                    .as_mut_slice::<f32>();
                 let data = capnp_tensor.get_data().unwrap();
                 for k in 0..data.len() {
                     native_slice[k as usize] = data.get(k);
@@ -716,10 +769,8 @@ impl<B: IBackend> Layer<B> {
     /// For a layer to use in-place computation it needs to support it via `compute_in_place`
     /// and the names of the first input and output tensor have to match.
     pub fn is_using_in_place(&self) -> bool {
-        self.worker.compute_in_place() &&
-        self.input_blob_names.get(0).is_some() &&
-        self.output_blob_names.get(0).is_some() &&
-        self.input_blob_names[0] == self.output_blob_names[0]
+        self.worker.compute_in_place() && self.input_blob_names.get(0).is_some() &&
+        self.output_blob_names.get(0).is_some() && self.input_blob_names[0] == self.output_blob_names[0]
     }
 
     /// Returns the names of all the input blobs.
@@ -739,8 +790,11 @@ impl<B: IBackend> Layer<B> {
     /// If the layer is a container layer it will return all the weights of the
     /// layers inside it.
     pub fn learnable_weights_data(&self) -> Vec<ArcLock<SharedTensor<f32>>> {
-        if let Some(weights) = self.worker.learnable_weights() { weights }
-        else { self.weights_data.clone() }
+        if let Some(weights) = self.worker.learnable_weights() {
+            weights
+        } else {
+            self.weights_data.clone()
+        }
     }
 
     /// Returns the gradients for all the learnable weights in the layer.
@@ -748,8 +802,11 @@ impl<B: IBackend> Layer<B> {
     /// If the layer is a container layer it will return all the gradients of the
     /// layers inside it.
     pub fn learnable_weights_gradients(&self) -> Vec<ArcLock<SharedTensor<f32>>> {
-        if let Some(gradients) = self.worker.learnable_weights_gradients() { gradients }
-        else { self.weights_gradient.clone() }
+        if let Some(gradients) = self.worker.learnable_weights_gradients() {
+            gradients
+        } else {
+            self.weights_gradient.clone()
+        }
     }
 
     /// Returns the names of all the learnable weights in the layer.
@@ -757,8 +814,11 @@ impl<B: IBackend> Layer<B> {
     /// If the layer is a container layer it will return all the names of the
     /// layers inside it.
     pub fn learnable_weights_names(&self) -> Vec<String> {
-        if let Some(names) = self.worker.learnable_weights_names() { names }
-        else { self.weights_display_names.clone() }
+        if let Some(names) = self.worker.learnable_weights_names() {
+            names
+        } else {
+            self.weights_display_names.clone()
+        }
     }
 
     /// Returns the learning rate for all the learnable weights in the layer.
@@ -766,10 +826,13 @@ impl<B: IBackend> Layer<B> {
     /// If the layer is a container layer it will return all learning rates of the
     /// layers inside it.
     pub fn learnable_weights_lr(&self) -> Vec<Option<f32>> {
-        if let Some(lr) = self.worker.learnable_weights_lr() { lr }
+        if let Some(lr) = self.worker.learnable_weights_lr() {
+            lr
+        }
         // else { self.weights_lr.clone() }
         else {
-            self.learnable_weights_data().iter().map(|_| Some(1f32)).collect::<Vec<_>>() }
+            self.learnable_weights_data().iter().map(|_| Some(1f32)).collect::<Vec<_>>()
+        }
     }
 }
 
@@ -807,7 +870,10 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
                 }
                 {
                     let native_slice = weight_lock.read(native_backend.device())
-                        .unwrap().as_native().unwrap().as_slice::<f32>();
+                        .unwrap()
+                        .as_native()
+                        .unwrap()
+                        .as_slice::<f32>();
                     let mut tensor_data = tensor.borrow().init_data(native_slice.len() as u32);
                     for (i, datum) in native_slice.iter().enumerate() {
                         tensor_data.set(i as u32, *datum);
@@ -866,25 +932,27 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
     /// [3]: ../layers/index.html
     fn worker_from_config(backend: Rc<B>, config: &LayerConfig) -> Box<ILayer<B>> {
         match config.layer_type.clone() {
-            #[cfg(all(feature="cuda", not(feature="native")))]
             LayerType::Convolution(layer_config) => Box::new(Convolution::from_config(&layer_config)),
             LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
             LayerType::LogSoftmax => Box::new(LogSoftmax::default()),
-            #[cfg(all(feature="cuda", not(feature="native")))]
             LayerType::Pooling(layer_config) => Box::new(Pooling::from_config(&layer_config)),
             LayerType::Sequential(layer_config) => Box::new(Sequential::from_config(backend, &layer_config)),
             LayerType::Softmax => Box::new(Softmax::default()),
             LayerType::ReLU => Box::new(ReLU),
             LayerType::TanH => Box::new(TanH),
             LayerType::Sigmoid => Box::new(Sigmoid),
-            LayerType::NegativeLogLikelihood(layer_config) => Box::new(NegativeLogLikelihood::from_config(&layer_config)),
+            LayerType::NegativeLogLikelihood(layer_config) => {
+                Box::new(NegativeLogLikelihood::from_config(&layer_config))
+            }
             LayerType::Reshape(layer_config) => Box::new(Reshape::from_config(&layer_config)),
         }
     }
 }
 
 /// A Layer in a Neural Network that can handle forward and backward of a computation step.
-pub trait ILayer<B: IBackend> : ComputeOutput<f32, B> + ComputeInputGradient<f32, B> + ComputeParametersGradient<f32, B> {
+pub trait ILayer<B: IBackend>
+    : ComputeOutput<f32, B> + ComputeInputGradient<f32, B> + ComputeParametersGradient<f32, B>
+    {
     /// Initialize the layer for computation.
     ///
     /// Allows for layer-specific one time setup, e.g. precomputing constant values.
@@ -904,7 +972,8 @@ pub trait ILayer<B: IBackend> : ComputeOutput<f32, B> + ComputeInputGradient<f32
                weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
                weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
                output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {}
+               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    }
 
     /// Adjust size of shared workspace.
     ///
@@ -916,7 +985,10 @@ pub trait ILayer<B: IBackend> : ComputeOutput<f32, B> + ComputeInputGradient<f32
     /// - create the workspace if the `workspace` is `None`
     ///
     /// The reference to the workspace should be saved in the layer.
-    fn resize_shared_workspace(&mut self, backend: Rc<B>, workspace: Option<ArcLock<SharedTensor<u8>>>) -> Option<ArcLock<SharedTensor<u8>>> {
+    fn resize_shared_workspace(&mut self,
+                               backend: Rc<B>,
+                               workspace: Option<ArcLock<SharedTensor<u8>>>)
+                               -> Option<ArcLock<SharedTensor<u8>>> {
         workspace
     }
 
@@ -958,12 +1030,12 @@ pub trait ILayer<B: IBackend> : ComputeOutput<f32, B> + ComputeInputGradient<f32
     /// [3]: ./trait.ComputeInputGradient.html#method.compute_input_gradient
     #[cfg_attr(lint, allow(map_clone))]
     fn backward_input(&self,
-                backend: &B,
-                weights_data: &[ArcLock<SharedTensor<f32>>],
-                output_data: &[ArcLock<SharedTensor<f32>>],
-                output_gradients: &[ArcLock<SharedTensor<f32>>],
-                input_data: &[ArcLock<SharedTensor<f32>>],
-                input_gradients: &mut [ArcLock<SharedTensor<f32>>]) {
+                      backend: &B,
+                      weights_data: &[ArcLock<SharedTensor<f32>>],
+                      output_data: &[ArcLock<SharedTensor<f32>>],
+                      output_gradients: &[ArcLock<SharedTensor<f32>>],
+                      input_data: &[ArcLock<SharedTensor<f32>>],
+                      input_gradients: &mut [ArcLock<SharedTensor<f32>>]) {
         let wgts_data: Vec<_> = weights_data.iter().map(|b| b.read().unwrap()).collect();
         let weights_data_: Vec<&SharedTensor<f32>> = wgts_data.iter().map(|val| &**val).collect();
         let out_data: Vec<_> = output_data.iter().map(|b| b.read().unwrap()).collect();
@@ -975,9 +1047,15 @@ pub trait ILayer<B: IBackend> : ComputeOutput<f32, B> + ComputeInputGradient<f32
         let btm_gradient_ref = input_gradients.iter().cloned().collect::<Vec<_>>();
         let mut btm_gradient = &mut btm_gradient_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
         let mut input_gradient = &mut btm_gradient.iter_mut().map(|a| a).collect::<Vec<_>>();
-        let mut input_gradients_: Vec<&mut SharedTensor<f32>> = input_gradient.iter_mut().map(|val| &mut ***val).collect();
+        let mut input_gradients_: Vec<&mut SharedTensor<f32>> =
+            input_gradient.iter_mut().map(|val| &mut ***val).collect();
 
-        self.compute_input_gradient(backend, &weights_data_, &output_data_, &output_gradients_, &input_data_, &mut input_gradients_);
+        self.compute_input_gradient(backend,
+                                    &weights_data_,
+                                    &output_data_,
+                                    &output_gradients_,
+                                    &input_data_,
+                                    &mut input_gradients_);
     }
 
     /// Compute the [backpropagation][1] parameters gradient using the provided backend.
@@ -989,11 +1067,11 @@ pub trait ILayer<B: IBackend> : ComputeOutput<f32, B> + ComputeInputGradient<f32
     /// [4]: ./trait.ComputeParametersGradient.html#method.compute_parameters_gradient
     #[cfg_attr(lint, allow(map_clone))]
     fn backward_parameters(&self,
-                backend: &B,
-                output_data: &[ArcLock<SharedTensor<f32>>],
-                output_gradients: &[ArcLock<SharedTensor<f32>>],
-                input_data: &[ArcLock<SharedTensor<f32>>],
-                weights_gradients: &mut [ArcLock<SharedTensor<f32>>]) {
+                           backend: &B,
+                           output_data: &[ArcLock<SharedTensor<f32>>],
+                           output_gradients: &[ArcLock<SharedTensor<f32>>],
+                           input_data: &[ArcLock<SharedTensor<f32>>],
+                           weights_gradients: &mut [ArcLock<SharedTensor<f32>>]) {
         let out_data: Vec<_> = output_data.iter().map(|b| b.read().unwrap()).collect();
         let output_data_: Vec<&SharedTensor<f32>> = out_data.iter().map(|val| &**val).collect();
         let out_gradients: Vec<_> = output_gradients.iter().map(|b| b.read().unwrap()).collect();
@@ -1003,9 +1081,14 @@ pub trait ILayer<B: IBackend> : ComputeOutput<f32, B> + ComputeInputGradient<f32
         let wgt_gradient_ref = weights_gradients.iter().cloned().collect::<Vec<_>>();
         let mut wgt_gradient = &mut wgt_gradient_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
         let mut weights_gradient = &mut wgt_gradient.iter_mut().map(|a| a).collect::<Vec<_>>();
-        let mut weights_gradients_: Vec<&mut SharedTensor<f32>> = weights_gradient.iter_mut().map(|val| &mut ***val).collect();
+        let mut weights_gradients_: Vec<&mut SharedTensor<f32>> =
+            weights_gradient.iter_mut().map(|val| &mut ***val).collect();
 
-        self.compute_parameters_gradient(backend, &output_data_, &output_gradients_, &input_data_, &mut weights_gradients_);
+        self.compute_parameters_gradient(backend,
+                                         &output_data_,
+                                         &output_gradients_,
+                                         &input_data_,
+                                         &mut weights_gradients_);
     }
 
     /// Return whether "anonymous" output blobs are created automatically for the layer.
@@ -1188,7 +1271,8 @@ pub trait ComputeParametersGradient<T, B: IBackend> {
                                    output_data: &[&SharedTensor<T>],
                                    output_gradients: &[&SharedTensor<T>],
                                    input_data: &[&SharedTensor<T>],
-                                   parameters_gradients: &mut [&mut SharedTensor<T>]) {}
+                                   parameters_gradients: &mut [&mut SharedTensor<T>]) {
+    }
 }
 
 impl<B: IBackend> fmt::Debug for ILayer<B> {
@@ -1279,19 +1363,35 @@ impl<'a> CapnpWrite<'a> for LayerType {
     /// Write the LayerType into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
         match self {
-            &LayerType::Linear(ref cfg) => { let ref mut config = builder.borrow().init_linear(); cfg.write_capnp(config); },
-            &LayerType::LogSoftmax => { builder.set_log_softmax(()) },
-            &LayerType::Sequential(ref cfg) => { let ref mut config = builder.borrow().init_sequential(); cfg.write_capnp(config); },
-            &LayerType::Softmax => { builder.set_softmax(()) },
-            &LayerType::ReLU => { builder.set_relu(()) },
-            &LayerType::TanH => { builder.set_tanh(()) },
-            &LayerType::Sigmoid => { builder.set_sigmoid(()) },
-            &LayerType::NegativeLogLikelihood(ref cfg) => { let ref mut config = builder.borrow().init_negative_log_likelihood(); cfg.write_capnp(config); },
-            &LayerType::Reshape(ref cfg) => { let ref mut config = builder.borrow().init_reshape(); cfg.write_capnp(config); },
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            &LayerType::Convolution(ref cfg) => { let ref mut config = builder.borrow().init_convolution(); cfg.write_capnp(config); },
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            &LayerType::Pooling(ref cfg) => { let ref mut config = builder.borrow().init_pooling(); cfg.write_capnp(config); },
+            &LayerType::Linear(ref cfg) => {
+                let ref mut config = builder.borrow().init_linear();
+                cfg.write_capnp(config);
+            }
+            &LayerType::LogSoftmax => builder.set_log_softmax(()),
+            &LayerType::Sequential(ref cfg) => {
+                let ref mut config = builder.borrow().init_sequential();
+                cfg.write_capnp(config);
+            }
+            &LayerType::Softmax => builder.set_softmax(()),
+            &LayerType::ReLU => builder.set_relu(()),
+            &LayerType::TanH => builder.set_tanh(()),
+            &LayerType::Sigmoid => builder.set_sigmoid(()),
+            &LayerType::NegativeLogLikelihood(ref cfg) => {
+                let ref mut config = builder.borrow().init_negative_log_likelihood();
+                cfg.write_capnp(config);
+            }
+            &LayerType::Reshape(ref cfg) => {
+                let ref mut config = builder.borrow().init_reshape();
+                cfg.write_capnp(config);
+            }
+            &LayerType::Convolution(ref cfg) => {
+                let ref mut config = builder.borrow().init_convolution();
+                cfg.write_capnp(config);
+            }
+            &LayerType::Pooling(ref cfg) => {
+                let ref mut config = builder.borrow().init_pooling();
+                cfg.write_capnp(config);
+            }
         }
     }
 }
@@ -1301,23 +1401,35 @@ impl<'a> CapnpRead<'a> for LayerType {
 
     fn read_capnp(reader: Self::Reader) -> Self {
         match reader.which().unwrap() {
-            capnp_layer_type::Which::Linear(read_config) => { let config = LinearConfig::read_capnp(read_config.unwrap()); LayerType::Linear(config) },
-            capnp_layer_type::Which::LogSoftmax(read_config) => { LayerType::LogSoftmax },
-            capnp_layer_type::Which::Sequential(read_config) => { let config = SequentialConfig::read_capnp(read_config.unwrap()); LayerType::Sequential(config) },
-            capnp_layer_type::Which::Softmax(_) => { LayerType::Softmax },
-            capnp_layer_type::Which::Relu(_) => { LayerType::ReLU },
-            capnp_layer_type::Which::Tanh(_) => { LayerType::TanH },
-            capnp_layer_type::Which::Sigmoid(_) => { LayerType::Sigmoid },
-            capnp_layer_type::Which::NegativeLogLikelihood(read_config) => { let config = NegativeLogLikelihoodConfig::read_capnp(read_config.unwrap()); LayerType::NegativeLogLikelihood(config) },
-            capnp_layer_type::Which::Reshape(read_config) => { let config = ReshapeConfig::read_capnp(read_config.unwrap()); LayerType::Reshape(config) },
-            #[cfg(all(feature="cuda", not(feature="native")))]
-            capnp_layer_type::Which::Pooling(read_config) => { let config = PoolingConfig::read_capnp(read_config.unwrap()); LayerType::Pooling(config) },
-            #[cfg(not(all(feature="cuda", not(feature="native"))))]
-            capnp_layer_type::Which::Pooling(_) => { panic!("Can not load Network because Pooling layer is not supported with the used feature flags.") },
-#[cfg(all(feature="cuda", not(feature="native")))]
-            capnp_layer_type::Which::Convolution(read_config) => { let config = ConvolutionConfig::read_capnp(read_config.unwrap()); LayerType::Convolution(config) },
-            #[cfg(not(all(feature="cuda", not(feature="native"))))]
-            capnp_layer_type::Which::Convolution(_) => { panic!("Can not load Network because Convolution layer is not supported with the used feature flags.") },
+            capnp_layer_type::Which::Linear(read_config) => {
+                let config = LinearConfig::read_capnp(read_config.unwrap());
+                LayerType::Linear(config)
+            }
+            capnp_layer_type::Which::LogSoftmax(read_config) => LayerType::LogSoftmax,
+            capnp_layer_type::Which::Sequential(read_config) => {
+                let config = SequentialConfig::read_capnp(read_config.unwrap());
+                LayerType::Sequential(config)
+            }
+            capnp_layer_type::Which::Softmax(_) => LayerType::Softmax,
+            capnp_layer_type::Which::Relu(_) => LayerType::ReLU,
+            capnp_layer_type::Which::Tanh(_) => LayerType::TanH,
+            capnp_layer_type::Which::Sigmoid(_) => LayerType::Sigmoid,
+            capnp_layer_type::Which::NegativeLogLikelihood(read_config) => {
+                let config = NegativeLogLikelihoodConfig::read_capnp(read_config.unwrap());
+                LayerType::NegativeLogLikelihood(config)
+            }
+            capnp_layer_type::Which::Reshape(read_config) => {
+                let config = ReshapeConfig::read_capnp(read_config.unwrap());
+                LayerType::Reshape(config)
+            }
+            capnp_layer_type::Which::Pooling(read_config) => {
+                let config = PoolingConfig::read_capnp(read_config.unwrap());
+                LayerType::Pooling(config)
+            }
+            capnp_layer_type::Which::Convolution(read_config) => {
+                let config = ConvolutionConfig::read_capnp(read_config.unwrap());
+                LayerType::Convolution(config)
+            }
         }
     }
 }

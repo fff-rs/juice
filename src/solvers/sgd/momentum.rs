@@ -12,6 +12,7 @@
 //! since if you keep adjusting the gradients
 //! into the same direction you will reach the optimum faster.
 //! It also makes solving more stable.
+
 use co::prelude::*;
 use layer::*;
 use solver::*;
@@ -53,7 +54,6 @@ impl<SolverB: IBackend + SolverOps<f32>> Momentum<SolverB> {
             momentum: SharedTensor::<f32>::new(&[1]),
         }
     }
-
 }
 
 impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGDSolver<B, NetB> for Momentum<B> {
@@ -64,13 +64,9 @@ impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGD
                             global_lr: &f32,
                             blob_lr: &f32) {
         // PERF: check if value is changed before writing it
-        ::weight::FillerType::Constant {
-            value: global_lr * blob_lr
-        }.fill(&mut self.lr);
+        ::weight::FillerType::Constant { value: global_lr * blob_lr }.fill(&mut self.lr);
 
-        ::weight::FillerType::Constant {
-            value: config.momentum
-        }.fill(&mut self.momentum);
+        ::weight::FillerType::Constant { value: config.momentum }.fill(&mut self.momentum);
 
         let backend = ISolver::<B, NetB>::backend(self);
         let device = IBackend::device(backend);
@@ -80,10 +76,12 @@ impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGD
                      &self.lr,
                      &weight_gradient.read().unwrap(),
                      &self.momentum,
-                     &mut history_blob.write().unwrap()).unwrap();
+                     &mut history_blob.write().unwrap())
+            .unwrap();
 
         backend.copy(&history_blob.read().unwrap(),
-                     &mut weight_gradient.write().unwrap()).unwrap();
+                  &mut weight_gradient.write().unwrap())
+            .unwrap();
     }
 }
 

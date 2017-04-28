@@ -132,56 +132,63 @@ fn bench_alexnet() {
     };
     cfg.add_layer(LayerConfig::new("conv1", conv1_layer_cfg));
     cfg.add_layer(LayerConfig::new("conv1/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool1", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![3],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool1",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![3],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
 
-    cfg.add_layer(LayerConfig::new("conv2", ConvolutionConfig{
-        num_output: 192,
-        filter_shape: vec![5],
-        padding: vec![2],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv2",
+                                   ConvolutionConfig {
+                                       num_output: 192,
+                                       filter_shape: vec![5],
+                                       padding: vec![2],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv2/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool2", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![3],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool2",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![3],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
 
-    cfg.add_layer(LayerConfig::new("conv3", ConvolutionConfig {
-        num_output: 384,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv3",
+                                   ConvolutionConfig {
+                                       num_output: 384,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv3/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv4", ConvolutionConfig {
-        num_output: 256,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv4",
+                                   ConvolutionConfig {
+                                       num_output: 256,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv4/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv5", ConvolutionConfig {
-        num_output: 256,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv5",
+                                   ConvolutionConfig {
+                                       num_output: 256,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv5/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool3", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![3],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool3",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![3],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
 
     cfg.add_layer(LayerConfig::new("fc1", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
@@ -383,19 +390,21 @@ fn bench_vgg_a() {
     };
     cfg.add_layer(LayerConfig::new("conv1", conv1_layer_cfg));
     cfg.add_layer(LayerConfig::new("conv1/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool1", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![2],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool1",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![2],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
 
-    cfg.add_layer(LayerConfig::new("conv2", ConvolutionConfig {
-        num_output: 128,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv2",
+                                   ConvolutionConfig {
+                                       num_output: 128,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv2/relu", LayerType::ReLU));
     let pool2_layer_cfg = PoolingConfig {
         mode: PoolingMode::Max,
@@ -403,78 +412,88 @@ fn bench_vgg_a() {
         stride: vec![2],
         padding: vec![0],
     };
-    cfg.add_layer(LayerConfig::new("pool2", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![2],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool2",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![2],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
 
-    cfg.add_layer(LayerConfig::new("conv3", ConvolutionConfig {
-        num_output: 256,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv3",
+                                   ConvolutionConfig {
+                                       num_output: 256,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv3/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv4", ConvolutionConfig {
-        num_output: 256,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv4",
+                                   ConvolutionConfig {
+                                       num_output: 256,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv4/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool3", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![2],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool3",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![2],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
 
-    cfg.add_layer(LayerConfig::new("conv5", ConvolutionConfig {
-        num_output: 512,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv5",
+                                   ConvolutionConfig {
+                                       num_output: 512,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv5/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv6", ConvolutionConfig {
-        num_output: 512,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv6",
+                                   ConvolutionConfig {
+                                       num_output: 512,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv6/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool4", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![2],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool4",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![2],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
 
-    cfg.add_layer(LayerConfig::new("conv7", ConvolutionConfig {
-        num_output: 512,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv7",
+                                   ConvolutionConfig {
+                                       num_output: 512,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv7/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv8", ConvolutionConfig {
-        num_output: 512,
-        filter_shape: vec![3],
-        padding: vec![1],
-        stride: vec![1],
-    }));
+    cfg.add_layer(LayerConfig::new("conv8",
+                                   ConvolutionConfig {
+                                       num_output: 512,
+                                       filter_shape: vec![3],
+                                       padding: vec![1],
+                                       stride: vec![1],
+                                   }));
     cfg.add_layer(LayerConfig::new("conv8/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool5", PoolingConfig {
-        mode: PoolingMode::Max,
-        filter_shape: vec![2],
-        stride: vec![2],
-        padding: vec![0],
-    }));
+    cfg.add_layer(LayerConfig::new("pool5",
+                                   PoolingConfig {
+                                       mode: PoolingMode::Max,
+                                       filter_shape: vec![2],
+                                       stride: vec![2],
+                                       padding: vec![0],
+                                   }));
     cfg.add_layer(LayerConfig::new("fc1", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc3", LinearConfig { output_size: 1000 }));

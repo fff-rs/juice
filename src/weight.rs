@@ -1,10 +1,11 @@
 //! Provides configuration of weights and their initialization.
+
+use capnp_util::*;
+use co::{ITensorDesc, SharedTensor};
+use leaf_capnp::weight_config as capnp_config;
 use rand;
 use rand::distributions::{IndependentSample, Range};
-use co::{ITensorDesc, SharedTensor};
 use util::native_backend;
-use leaf_capnp::weight_config as capnp_config;
-use capnp_util::*;
 
 #[derive(Debug, Clone)]
 /// Specifies training configuration for a weight blob.
@@ -53,12 +54,12 @@ impl WeightConfig {
     /// Checks dimensions of two blobs according to the `share_mode`.
     /// Returns an error if there is a count/shape mismatch.
     pub fn check_dimensions<T>(&self,
-                                        tensor_one: &SharedTensor<T>,
-                                        tensor_two: &SharedTensor<T>,
-                                        param_name: String,
-                                        owner_name: String,
-                                        layer_name: String)
-                                        -> Result<(), String> {
+                               tensor_one: &SharedTensor<T>,
+                               tensor_two: &SharedTensor<T>,
+                               param_name: String,
+                               owner_name: String,
+                               layer_name: String)
+                               -> Result<(), String> {
         match self.share_mode {
             // Permissive dimension checking -- only check counts are the same.
             DimCheckMode::Permissive => {
@@ -125,10 +126,7 @@ impl<'a> CapnpRead<'a> for WeightConfig {
     fn read_capnp(reader: Self::Reader) -> Self {
         // TODO: incomplete since WeightConfig isn't really used internally in Leaf at the moment.
         let name = reader.get_name().unwrap().to_owned();
-        WeightConfig {
-            name: name,
-            ..Self::default()
-        }
+        WeightConfig { name: name, ..Self::default() }
     }
 }
 
@@ -147,7 +145,7 @@ pub enum FillerType {
     /// Fills the weight blob with a constant `value` (all values are the same).
     Constant {
         /// The value that will be used to fill the blob.
-        value: f32
+        value: f32,
     },
     /// Fills the weight blobs based on the paper:
     ///
@@ -171,18 +169,18 @@ impl FillerType {
         let native_device = native.device();
 
         match *self {
-            FillerType::Constant { value } =>
-                Self::fill_constant(weight, value),
-            FillerType::Glorot { input_size, output_size } =>
-                Self::fill_glorot(weight, input_size, output_size),
+            FillerType::Constant { value } => Self::fill_constant(weight, value),
+            FillerType::Glorot { input_size, output_size } => Self::fill_glorot(weight, input_size, output_size),
         }
     }
 
     /// Directly use the [Constant Filler](#variant.Constant).
     pub fn fill_constant(weight: &mut SharedTensor<f32>, value: f32) {
         let native = native_backend();
-        let native_weight = weight.write_only(native.device()).unwrap()
-            .as_mut_native().unwrap();
+        let native_weight = weight.write_only(native.device())
+            .unwrap()
+            .as_mut_native()
+            .unwrap();
 
         for e in native_weight.as_mut_slice::<f32>() {
             *e = value;
@@ -192,8 +190,10 @@ impl FillerType {
     /// Directly use the [Glorot Filler](#variant.Glorot).
     pub fn fill_glorot(weight: &mut SharedTensor<f32>, num_inputs: usize, num_outputs: usize) {
         let native = native_backend();
-        let native_weight = weight.write_only(native.device()).unwrap()
-            .as_mut_native().unwrap();
+        let native_weight = weight.write_only(native.device())
+            .unwrap()
+            .as_mut_native()
+            .unwrap();
 
         let init_range = (6.0f32 / (num_inputs as f32 + num_outputs as f32)).sqrt();
 

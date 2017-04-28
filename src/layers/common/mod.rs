@@ -27,7 +27,11 @@ pub mod softmax;
 /// This is used by the Convolution and Pooling layers.
 pub trait FilterLayer {
     /// Computes the shape of the spatial dimensions.
-    fn calculate_spatial_output_dims(input_dims: &[usize], filter_dims: &[usize], padding: &[usize], stride: &[usize]) -> Vec<usize> {
+    fn calculate_spatial_output_dims(input_dims: &[usize],
+                                     filter_dims: &[usize],
+                                     padding: &[usize],
+                                     stride: &[usize])
+                                     -> Vec<usize> {
         let mut output_dims = Vec::with_capacity(input_dims.len());
         for (i, _) in input_dims.iter().enumerate() {
             output_dims.push(((input_dims[i] + (2 * padding[i]) - filter_dims[i]) / stride[i]) + 1);
@@ -56,7 +60,8 @@ pub trait FilterLayer {
         } else if filter_shape.len() == num_spatial_dims {
             panic!("unimplemented: You can not yet specify one filter dimension per spatial dimension");
         } else {
-            panic!("Must either specify one filter_shape or one filter_shape per spatial dimension. Supplied {:?}", filter_shape.len());
+            panic!("Must either specify one filter_shape or one filter_shape per spatial dimension. Supplied {:?}",
+                   filter_shape.len());
         }
 
         spatial_dims
@@ -74,7 +79,8 @@ pub trait FilterLayer {
         } else if stride.len() == num_spatial_dims {
             panic!("unimplemented: You can not yet specify one stride per spatial dimension");
         } else {
-            panic!("Must either specify one stride or one stride per spatial dimension. Supplied {:?}", stride.len());
+            panic!("Must either specify one stride or one stride per spatial dimension. Supplied {:?}",
+                   stride.len());
         }
 
         stride_dims
@@ -92,7 +98,8 @@ pub trait FilterLayer {
         } else if padding.len() == num_spatial_dims {
             panic!("unimplemented: You can not yet specify one padding per spatial dimension");
         } else {
-            panic!("Must either specify one padding or one padding per spatial dimension. Supplied {:?}", padding.len());
+            panic!("Must either specify one padding or one padding per spatial dimension. Supplied {:?}",
+                   padding.len());
         }
 
         padding_dims
