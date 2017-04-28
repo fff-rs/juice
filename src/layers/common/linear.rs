@@ -18,14 +18,15 @@
 //!
 //! In the context of convolutional neural networks this layer is also
 //! called a "fully-connected layer" if it is used at the end of the network.
+
+use capnp_util::*;
 use co::backend::IBackend;
 use co::tensor::SharedTensor;
 use coblas::transpose::Transpose;
 use layer::*;
+use leaf_capnp::linear_config as capnp_config;
 use util::{ArcLock, native_scalar, LayerOps};
 use weight::FillerType;
-use leaf_capnp::linear_config as capnp_config;
-use capnp_util::*;
 
 #[derive(Debug)]
 /// Linear Layer
@@ -110,10 +111,13 @@ impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
                       input_data: &[&SharedTensor<f32>],
                       output_data: &mut [&mut SharedTensor<f32>]) {
         backend.gemm(&self.one,
-                     Transpose::NoTrans, input_data[0],
-                     Transpose::Trans, weights[0],
-                     &self.zero,
-                     output_data[0]).unwrap();
+                  Transpose::NoTrans,
+                  input_data[0],
+                  Transpose::Trans,
+                  weights[0],
+                  &self.zero,
+                  output_data[0])
+            .unwrap();
         // let has_bias_term = false; // TODO: implement bias term
         // if has_bias_term {
         //     let bias_multiplier = unimplemented!();
@@ -137,10 +141,13 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for Linear {
                               input_gradients: &mut [&mut SharedTensor<f32>]) {
         // Gradient with respect to input data
         backend.gemm(&self.one,
-                     Transpose::NoTrans, output_gradients[0],
-                     Transpose::NoTrans, weights_data[0],
-                     &self.zero,
-                     input_gradients[0]).unwrap();
+                  Transpose::NoTrans,
+                  output_gradients[0],
+                  Transpose::NoTrans,
+                  weights_data[0],
+                  &self.zero,
+                  input_gradients[0])
+            .unwrap();
     }
 }
 
@@ -153,10 +160,13 @@ impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
                                    parameters_gradients: &mut [&mut SharedTensor<f32>]) {
         // gradient w.r.t. weights
         backend.gemm(&self.one,
-                     Transpose::Trans, output_gradients[0],
-                     Transpose::NoTrans, input_data[0],
-                     &self.zero,
-                     parameters_gradients[0]).unwrap();
+                  Transpose::Trans,
+                  output_gradients[0],
+                  Transpose::NoTrans,
+                  input_data[0],
+                  &self.zero,
+                  parameters_gradients[0])
+            .unwrap();
 
         // TODO: implement gradient w.r.t bias
         // if (bias_term_ && this->param_propagate_down_[1]) {
@@ -171,9 +181,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
 
 impl ::std::default::Default for Linear {
     fn default() -> Linear {
-        let config = LinearConfig {
-            output_size: 10,
-        };
+        let config = LinearConfig { output_size: 10 };
 
         Self::from_config(&config)
     }
@@ -203,9 +211,7 @@ impl<'a> CapnpRead<'a> for LinearConfig {
     fn read_capnp(reader: Self::Reader) -> Self {
         let output_size = reader.get_output_size() as usize;
 
-        LinearConfig {
-            output_size: output_size
-        }
+        LinearConfig { output_size: output_size }
     }
 }
 

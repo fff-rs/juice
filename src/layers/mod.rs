@@ -52,36 +52,16 @@
 /// [1]: ./layer/trait.ILayer.html
 /// [2]: ./layers/activation/index.html
 
-pub use self::activation::{
-    ReLU,
-    Sigmoid,
-    TanH,
-};
+pub use self::activation::{ReLU, Sigmoid, TanH};
 
-#[cfg(all(feature="cuda", not(feature="native")))]
-pub use self::common::{
-    Convolution, ConvolutionConfig,
-    Pooling, PoolingConfig, PoolingMode,
-};
+pub use self::common::{Convolution, ConvolutionConfig, Pooling, PoolingConfig, PoolingMode, Linear, LinearConfig,
+                       LogSoftmax, Softmax};
 
-pub use self::common::{
-    Linear, LinearConfig,
-    LogSoftmax,
-    Softmax,
-};
+pub use self::container::{Sequential, SequentialConfig};
 
-pub use self::loss::{
-    NegativeLogLikelihood, NegativeLogLikelihoodConfig,
-};
+pub use self::loss::{NegativeLogLikelihood, NegativeLogLikelihoodConfig};
 
-pub use self::utility::{
-    Flatten,
-    Reshape, ReshapeConfig,
-};
-
-pub use self::container::{
-    Sequential, SequentialConfig,
-};
+pub use self::utility::{Flatten, Reshape, ReshapeConfig};
 
 pub mod activation;
 pub mod common;

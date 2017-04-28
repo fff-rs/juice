@@ -12,6 +12,7 @@
 //! * can be computed faster
 //! * is therefore the most popular activation function in DNNs as of this
 //! writing (2015).
+
 use co::{IBackend, SharedTensor};
 use conn;
 use layer::*;
@@ -72,8 +73,13 @@ impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeInpu
                               input_data: &[&SharedTensor<f32>],
                               input_gradients: &mut [&mut SharedTensor<f32>]) {
         match output_data.get(0) {
-            Some(_) => backend.sigmoid_grad(output_data[0], output_gradients[0],
-                                            input_data[0], input_gradients[0]).unwrap(),
+            Some(_) => {
+                backend.sigmoid_grad(output_data[0],
+                                  output_gradients[0],
+                                  input_data[0],
+                                  input_gradients[0])
+                    .unwrap()
+            }
             None => backend.sigmoid_pointwise_grad(input_data[0], input_gradients[0]).unwrap(),
         }
     }

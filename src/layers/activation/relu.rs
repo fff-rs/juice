@@ -6,7 +6,7 @@
 //! The max function used in ReLU is usually faster to compute than the exponentiation
 //! needed in a Sigmoid layer.
 
-use co::{IBackend,SharedTensor};
+use co::{IBackend, SharedTensor};
 use conn::Relu;
 use conn::ReluPointwise;
 use layer::*;
@@ -67,7 +67,13 @@ impl<B: IBackend + Relu<f32> + ReluPointwise<f32>> ComputeInputGradient<f32, B> 
                               input_data: &[&SharedTensor<f32>],
                               input_gradients: &mut [&mut SharedTensor<f32>]) {
         match output_data.get(0) {
-            Some(_) => backend.relu_grad(output_data[0], output_gradients[0], input_data[0], input_gradients[0]).unwrap(),
+            Some(_) => {
+                backend.relu_grad(output_data[0],
+                               output_gradients[0],
+                               input_data[0],
+                               input_gradients[0])
+                    .unwrap()
+            }
             None => backend.relu_pointwise_grad(input_data[0], input_gradients[0]).unwrap(),
         }
     }

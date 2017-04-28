@@ -1,10 +1,11 @@
 //! TODO: DOC
 //!
+
+use capnp_util::*;
 use co::{IBackend, ITensorDesc, SharedTensor};
 use layer::*;
-use util::{ArcLock, native_backend};
 use leaf_capnp::negative_log_likelihood_config as capnp_config;
-use capnp_util::*;
+use util::{ArcLock, native_backend};
 
 #[derive(Debug, Clone)]
 #[allow(missing_copy_implementations)]
@@ -16,9 +17,7 @@ pub struct NegativeLogLikelihood {
 impl NegativeLogLikelihood {
     /// Create a NegativeLogLikelihood layer from a NegativeLogLikelihoodConfig.
     pub fn from_config(config: &NegativeLogLikelihoodConfig) -> NegativeLogLikelihood {
-        NegativeLogLikelihood {
-            num_classes: config.num_classes,
-        }
+        NegativeLogLikelihood { num_classes: config.num_classes }
     }
 
     fn calculate_outer_num(softmax_axis: usize, input_shape: &[usize]) -> usize {
@@ -33,7 +32,7 @@ impl NegativeLogLikelihood {
         match input_shape.len() {
             1 => 1,
             2 => input_shape[0],
-            _ => panic!("NegativeLogLikelihood layer only supports 1D/2D inputs")
+            _ => panic!("NegativeLogLikelihood layer only supports 1D/2D inputs"),
         }
     }
 }
@@ -73,10 +72,16 @@ impl<B: IBackend> ComputeOutput<f32, B> for NegativeLogLikelihood {
         let batch_size = Self::batch_size(labels.desc());
 
         let native = native_backend();
-        let native_labels = labels.read(native.device()).unwrap()
-            .as_native().unwrap().as_slice::<f32>();
-        let native_probabilities = probabilities.read(native.device()).unwrap()
-            .as_native().unwrap().as_slice::<f32>();
+        let native_labels = labels.read(native.device())
+            .unwrap()
+            .as_native()
+            .unwrap()
+            .as_slice::<f32>();
+        let native_probabilities = probabilities.read(native.device())
+            .unwrap()
+            .as_native()
+            .unwrap()
+            .as_slice::<f32>();
 
         let mut writable_loss = Vec::<f32>::new();
         for &label_value in native_labels {
@@ -106,8 +111,11 @@ impl<B: IBackend> ComputeInputGradient<f32, B> for NegativeLogLikelihood {
         let num_classes = self.num_classes;
 
         let native = native_backend();
-        let native_labels = labels.read(native.device()).unwrap()
-            .as_native().unwrap().as_slice::<f32>();
+        let native_labels = labels.read(native.device())
+            .unwrap()
+            .as_native()
+            .unwrap()
+            .as_slice::<f32>();
         let mut writable_gradient = vec![0f32; input_gradients[0].desc().size()];
 
         for (batch_n, &label_value) in native_labels.iter().enumerate() {
@@ -119,7 +127,7 @@ impl<B: IBackend> ComputeInputGradient<f32, B> for NegativeLogLikelihood {
     }
 }
 
-impl<B: IBackend> ComputeParametersGradient<f32, B> for NegativeLogLikelihood { }
+impl<B: IBackend> ComputeParametersGradient<f32, B> for NegativeLogLikelihood {}
 
 #[derive(Debug, Clone)]
 #[allow(missing_copy_implementations)]
@@ -144,9 +152,7 @@ impl<'a> CapnpRead<'a> for NegativeLogLikelihoodConfig {
     fn read_capnp(reader: Self::Reader) -> Self {
         let num_classes = reader.get_num_classes() as usize;
 
-        NegativeLogLikelihoodConfig {
-            num_classes: num_classes
-        }
+        NegativeLogLikelihoodConfig { num_classes: num_classes }
     }
 }
 

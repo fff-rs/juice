@@ -1,6 +1,7 @@
 //! Computes the softmax of its input.
 //!
 //! For the logarithmic softmax see the `LogSoftmax` layer.
+
 use co::{IBackend, SharedTensor};
 use conn;
 use layer::*;
@@ -45,12 +46,12 @@ impl<B: IBackend + conn::Softmax<f32>> ComputeInputGradient<f32, B> for Softmax 
                               output_gradients: &[&SharedTensor<f32>],
                               input_data: &[&SharedTensor<f32>],
                               input_gradients: &mut [&mut SharedTensor<f32>]) {
-        backend.softmax_grad(output_data[0], output_gradients[0],
-                             input_gradients[0]).unwrap();
+        backend.softmax_grad(output_data[0], output_gradients[0], input_gradients[0])
+            .unwrap();
     }
 }
 
-impl<B: IBackend + conn::Softmax<f32>> ComputeParametersGradient<f32, B> for Softmax { }
+impl<B: IBackend + conn::Softmax<f32>> ComputeParametersGradient<f32, B> for Softmax {}
 
 impl ::std::default::Default for Softmax {
     fn default() -> Softmax {

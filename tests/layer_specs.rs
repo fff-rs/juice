@@ -3,9 +3,9 @@ extern crate collenchyma as co;
 
 #[cfg(test)]
 mod layer_spec {
-    use std::rc::Rc;
     use co::prelude::*;
     use leaf::layer::*;
+    use std::rc::Rc;
     // only used by cuda right now
     #[allow(dead_code)]
     fn new_layer_config() -> LayerConfig {
@@ -23,9 +23,9 @@ mod layer_spec {
 
     #[cfg(all(feature="native", feature="cuda"))]
     mod native_cuda {
+        use super::{native_backend, cuda_backend};
         use leaf::layer::*;
         use leaf::layers::*;
-        use super::{native_backend, cuda_backend};
 
         #[test]
         fn create_layer_with_either() {
@@ -39,36 +39,37 @@ mod layer_spec {
 
     #[cfg(feature="native")]
     mod native {
+        use super::native_backend;
         use co::prelude::*;
         use leaf::layer::*;
         use leaf::layers::*;
-        use super::native_backend;
 
         fn simple_network() -> LayerConfig {
             let mut net_cfg = SequentialConfig::default();
             net_cfg.add_input("data", &vec![1, 1, 28, 28]);
-            net_cfg.add_layer(LayerConfig::new("linear", LayerType::Linear(LinearConfig { output_size: 10 })));
+            net_cfg.add_layer(LayerConfig::new("linear",
+                                               LayerType::Linear(LinearConfig { output_size: 10 })));
 
             LayerConfig::new("network", net_cfg)
         }
 
-	#[test]
-	fn xor_forward() {
-		// let _ = env_logger::init();
-		let mut cfg = SequentialConfig::default();
-		// Layer: data
-		cfg.add_input("data", &[2]);
-		// Layer: fc1
-		cfg.add_layer(LayerConfig::new("fc1", LayerType::Linear(LinearConfig { output_size: 2 })));
-		cfg.add_layer(LayerConfig::new("fc1_out/sigmoid", LayerType::Sigmoid));
-		// Layer: fc2 equiv. output
-		cfg.add_layer(LayerConfig::new("fc2", LayerType::Linear(LinearConfig { output_size: 1 })));
-		cfg.add_layer(LayerConfig::new("fc2_out/sigmoid", LayerType::Sigmoid));
+        #[test]
+        fn xor_forward() {
+            // let _ = env_logger::init();
+            let mut cfg = SequentialConfig::default();
+            // Layer: data
+            cfg.add_input("data", &[2]);
+            // Layer: fc1
+            cfg.add_layer(LayerConfig::new("fc1", LayerType::Linear(LinearConfig { output_size: 2 })));
+            cfg.add_layer(LayerConfig::new("fc1_out/sigmoid", LayerType::Sigmoid));
+            // Layer: fc2 equiv. output
+            cfg.add_layer(LayerConfig::new("fc2", LayerType::Linear(LinearConfig { output_size: 1 })));
+            cfg.add_layer(LayerConfig::new("fc2_out/sigmoid", LayerType::Sigmoid));
 
-		let backend = native_backend();
-		let _ = Layer::from_config(
-		    backend.clone(), &LayerConfig::new("network", LayerType::Sequential(cfg)));
-	}
+            let backend = native_backend();
+            let _ = Layer::from_config(backend.clone(),
+                                       &LayerConfig::new("network", LayerType::Sequential(cfg)));
+        }
 
         #[test]
         fn save_and_load_layer() {
@@ -78,7 +79,8 @@ mod layer_spec {
             original_layer.save("target/testnetwork").unwrap();
             let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), "target/testnetwork").unwrap();
 
-            assert_eq!(original_layer.input_blob_names(), loaded_layer.input_blob_names());
+            assert_eq!(original_layer.input_blob_names(),
+                       loaded_layer.input_blob_names());
 
             let original_weights = original_layer.learnable_weights_data();
             let original_weight_lock = original_weights[0].read().unwrap();
@@ -86,9 +88,15 @@ mod layer_spec {
             let loaded_weight_lock = loaded_weights[0].read().unwrap();
 
             let original_weight = original_weight_lock.read(native_backend().device())
-                .unwrap().as_native().unwrap().as_slice::<f32>();
+                .unwrap()
+                .as_native()
+                .unwrap()
+                .as_slice::<f32>();
             let loaded_weight = loaded_weight_lock.read(native_backend().device())
-                .unwrap().as_native().unwrap().as_slice::<f32>();
+                .unwrap()
+                .as_native()
+                .unwrap()
+                .as_slice::<f32>();
 
             assert_eq!(original_weight, loaded_weight);
         }
@@ -96,12 +104,12 @@ mod layer_spec {
 
     #[cfg(feature="cuda")]
     mod cuda {
-        use std::sync::{Arc, RwLock};
+        use super::{native_backend, cuda_backend};
         use co::prelude::*;
         use leaf::layer::*;
         use leaf::layers::*;
         use leaf::util::write_to_memory;
-        use super::{native_backend, cuda_backend};
+        use std::sync::{Arc, RwLock};
 
         #[test]
         fn new_layer() {
@@ -112,7 +120,8 @@ mod layer_spec {
         #[test]
         fn can_create_empty_sequential_layer() {
             let model = SequentialConfig::default();
-            Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Sequential(model)));
+            Layer::from_config(cuda_backend(),
+                               &LayerConfig::new("model", LayerType::Sequential(model)));
         }
 
         #[test]
@@ -121,7 +130,8 @@ mod layer_spec {
             model.add_input("data", &[28, 28]);
             model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
 
-            Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Sequential(model)));
+            Layer::from_config(cuda_backend(),
+                               &LayerConfig::new("model", LayerType::Sequential(model)));
         }
 
         #[test]
@@ -132,7 +142,8 @@ mod layer_spec {
             model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             model.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
 
-            let _ = Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Sequential(model)));
+            let _ = Layer::from_config(cuda_backend(),
+                                       &LayerConfig::new("model", LayerType::Sequential(model)));
         }
 
         #[test]
@@ -143,33 +154,43 @@ mod layer_spec {
             let mut normal_model = SequentialConfig::default();
             normal_model.add_input("data", &[3]);
             normal_model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            let mut normal_network = Layer::from_config(cuda_backend.clone(), &LayerConfig::new("normal_model", LayerType::Sequential(normal_model)));
+            let mut normal_network = Layer::from_config(cuda_backend.clone(),
+                                                        &LayerConfig::new("normal_model",
+                                                                          LayerType::Sequential(normal_model)));
 
             let mut reshape_model = SequentialConfig::default();
             reshape_model.add_input("data", &[3]);
             reshape_model.add_layer(LayerConfig::new("reshape", ReshapeConfig { shape: vec![1, 1, 3] }));
             reshape_model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            let mut reshape_network = Layer::from_config(cuda_backend.clone(), &LayerConfig::new("reshape_model", LayerType::Sequential(reshape_model)));
+            let mut reshape_network = Layer::from_config(cuda_backend.clone(),
+                                                         &LayerConfig::new("reshape_model",
+                                                                           LayerType::Sequential(reshape_model)));
 
             let input = vec![1f32, 1f32, 2f32];
             let mut normal_tensor = SharedTensor::<f32>::new(&[3]);
             // let mut normal_tensor_output = SharedTensor::<f32>::new(native_backend.device(), &(3)).unwrap();
             let mut reshape_tensor = SharedTensor::<f32>::new(&[3]);
             // let mut reshape_tensor_output = SharedTensor::<f32>::new(native_backend.device(), &(3)).unwrap();
-            write_to_memory(normal_tensor.write_only(native_backend.device()).unwrap(), &input);
-            write_to_memory(reshape_tensor.write_only(native_backend.device()).unwrap(), &input);
+            write_to_memory(normal_tensor.write_only(native_backend.device()).unwrap(),
+                            &input);
+            write_to_memory(reshape_tensor.write_only(native_backend.device()).unwrap(),
+                            &input);
 
             let normal_tensor_output = normal_network.forward(&[Arc::new(RwLock::new(normal_tensor))])[0].clone();
             let normal_tensor_output_native_ = normal_tensor_output.read().unwrap();
-            let normal_tensor_output_native = normal_tensor_output_native_
-                .read(native_backend.device()).unwrap().as_native().unwrap();
+            let normal_tensor_output_native = normal_tensor_output_native_.read(native_backend.device())
+                .unwrap()
+                .as_native()
+                .unwrap();
             assert_eq!(&[0.7310585786f32, 0.7310586f32, 0.880797f32],
                        normal_tensor_output_native.as_slice::<f32>());
 
             let reshape_tensor_output = reshape_network.forward(&[Arc::new(RwLock::new(reshape_tensor))])[0].clone();
             let reshape_tensor_output_native_ = reshape_tensor_output.read().unwrap();
-            let reshape_tensor_output_native = reshape_tensor_output_native_
-                .read(native_backend.device()).unwrap().as_native().unwrap();
+            let reshape_tensor_output_native = reshape_tensor_output_native_.read(native_backend.device())
+                .unwrap()
+                .as_native()
+                .unwrap();
             assert_eq!(&[0.7310585786f32, 0.7310586f32, 0.880797f32],
                        reshape_tensor_output_native.as_slice::<f32>());
             assert_eq!(normal_tensor_output_native.as_slice::<f32>(),

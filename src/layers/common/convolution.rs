@@ -11,17 +11,18 @@
 //! The layer expects the input to be in 4D NCHW format (2 spatial dimensions).
 //!
 //! [cs231n_convnets]: https://cs231n.github.io/convolutional-networks
-use std::rc::Rc;
-use std::sync::{Arc, RwLock};
+
+use super::FilterLayer;
+use capnp_util::*;
 use co::prelude::*;
 use conn;
 use conn::ConvolutionConfig as connConvolutionConfig;
 use layer::*;
+use leaf_capnp::convolution_config as capnp_config;
+use std::rc::Rc;
+use std::sync::{Arc, RwLock};
 use util::{ArcLock, cast_vec_usize_to_i32};
 use weight::FillerType;
-use super::FilterLayer;
-use leaf_capnp::convolution_config as capnp_config;
-use capnp_util::*;
 
 #[derive(Debug, Clone)]
 /// Convolution Layer
@@ -72,8 +73,9 @@ impl<B: conn::Convolution<f32>> FilterLayer for Convolution<B> {
     /// Calculates the number of spatial dimensions for the convolution operation.
     fn num_spatial_dims(&self, input_shape: &[usize]) -> usize {
         match input_shape.len() {
+            // FIXME this is stupid
             4 => 2,
-            _ => panic!("Only 2D convolutions supported at the moment")
+            _ => panic!("Only 2D convolutions supported at the moment"),
         }
     }
 
@@ -137,9 +139,15 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
             let stride = cast_vec_usize_to_i32(self.stride_dims(num_spatial_dims));
             let padding = cast_vec_usize_to_i32(self.padding_dims(num_spatial_dims));
 
-            let config = backend.new_convolution_config(&inp, &output_data, &mut filter,
-                                                        conn::ConvForwardAlgo::Auto, conn::ConvBackwardFilterAlgo::Auto, conn::ConvBackwardDataAlgo::Auto,
-                                                        &stride, &padding).unwrap();
+            let config = backend.new_convolution_config(&inp,
+                                        &output_data,
+                                        &mut filter,
+                                        conn::ConvForwardAlgo::Auto,
+                                        conn::ConvBackwardFilterAlgo::Auto,
+                                        conn::ConvBackwardDataAlgo::Auto,
+                                        &stride,
+                                        &padding)
+                .unwrap();
 
             // resize and fill weights
             weights_data[0].write().unwrap().resize(filter.desc()).unwrap();
@@ -153,7 +161,10 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
         }
     }
 
-    fn resize_shared_workspace(&mut self, backend: Rc<B>, workspace: Option<ArcLock<SharedTensor<u8>>>) -> Option<ArcLock<SharedTensor<u8>>> {
+    fn resize_shared_workspace(&mut self,
+                               backend: Rc<B>,
+                               workspace: Option<ArcLock<SharedTensor<u8>>>)
+                               -> Option<ArcLock<SharedTensor<u8>>> {
         let required_size = self.convolution_config.as_ref().unwrap().workspace_size();
         let new_workspace = if workspace.is_none() {
             Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
@@ -181,8 +192,12 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeOutput<f32, B> for Convolution
         let filter_data = weights[0];
         let conv_config = self.convolution_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
-        backend.convolution(filter_data, input_data[0], output_data[0],
-                            &mut workspace, conv_config).unwrap();
+        backend.convolution(filter_data,
+                         input_data[0],
+                         output_data[0],
+                         &mut workspace,
+                         conv_config)
+            .unwrap();
     }
 }
 
@@ -199,8 +214,11 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeInputGradient<f32, B> for Conv
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         // compute gradient w.r.t. input
         backend.convolution_grad_data(filter_data,
-                                      output_gradients[0], input_gradients[0],
-                                      &mut workspace, conv_config).unwrap();
+                                   output_gradients[0],
+                                   input_gradients[0],
+                                   &mut workspace,
+                                   conv_config)
+            .unwrap();
     }
 }
 
@@ -216,9 +234,12 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeParametersGradient<f32, B> for
         let conv_config = self.convolution_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         // compute gradient w.r.t. filter
-        backend.convolution_grad_filter(input_data[0], output_gradients[0],
-                                        filter_gradient, &mut workspace,
-                                        conv_config).unwrap();
+        backend.convolution_grad_filter(input_data[0],
+                                     output_gradients[0],
+                                     filter_gradient,
+                                     &mut workspace,
+                                     conv_config)
+            .unwrap();
     }
 }
 
@@ -302,9 +323,9 @@ impl<'a> CapnpRead<'a> for ConvolutionConfig {
 
 #[cfg(test)]
 mod tests {
-    use co::*;
     use super::{Convolution, ConvolutionConfig};
     use super::super::FilterLayer;
+    use co::*;
 
     #[test]
     #[cfg(feature="cuda")]
@@ -322,7 +343,9 @@ mod tests {
         assert_eq!(vec![11, 11], layer.spatial_filter_dims(2));
         assert_eq!(vec![2, 2], layer.padding_dims(2));
         assert_eq!(vec![4, 4], layer.stride_dims(2));
-        assert_eq!(vec![64, 3, 11, 11], layer.calculate_filter_shape(&[1, 3, 224, 224]));
-        assert_eq!(vec![1, 64, 55, 55], layer.calculate_output_shape(&[1, 3, 224, 224]));
+        assert_eq!(vec![64, 3, 11, 11],
+                   layer.calculate_filter_shape(&[1, 3, 224, 224]));
+        assert_eq!(vec![1, 64, 55, 55],
+                   layer.calculate_output_shape(&[1, 3, 224, 224]));
     }
 }

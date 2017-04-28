@@ -9,6 +9,7 @@
 //! specific data access layers for e.g. a database like LevelDB.
 //!
 //! [1]: ../../layer/index.html
+
 pub use self::flatten::Flatten;
 pub use self::reshape::{Reshape, ReshapeConfig};
 

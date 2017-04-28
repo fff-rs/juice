@@ -28,15 +28,16 @@
 //! [backprop]: https://en.wikipedia.org/wiki/Backpropagation
 
 #[allow(unused_import_braces)]
-pub use self::sgd::{Momentum};
+pub use self::sgd::Momentum;
 pub mod sgd;
 
 use co::{IBackend, MemoryType, SharedTensor};
-use solver::*;
 use layer::*;
+use solver::*;
 use util::*;
 
-trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32>> : ISolver<SolverB, NetB> {
+trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32>>
+    : ISolver<SolverB, NetB> {
     fn compute_update_value(&mut self,
                             config: &SolverConfig,
                             weight_blob: &ArcLock<SharedTensor<f32>>,
@@ -74,11 +75,11 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
 
                 // FIXME: I've removed redefinition of `result` that was here.
                 // Code was invalid. Not sure what it meant. It may explode.
-                match  result.read(native.device()).unwrap() {
+                match result.read(native.device()).unwrap() {
                     &MemoryType::Native(ref sumsq_result) => {
                         let sumsq_diff_slice = sumsq_result.as_slice::<f32>();
                         sumsq_diff += sumsq_diff_slice[0];
-                    },
+                    }
                     #[cfg(any(feature = "opencl", feature = "cuda"))]
                     _ => {}
                 }
@@ -123,7 +124,10 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
     /// [Regularize][1] the gradient according to the configured [RegularizationMethod][2].
     /// [1]: https://cs231n.github.io/neural-networks-2/#reg
     /// [2]: ../solver/enum.RegularizationMethod.html
-    fn regularize(&self, config: &SolverConfig, weight_gradient: &ArcLock<SharedTensor<f32>>, blob_weight_decay: Option<f32>) {
+    fn regularize(&self,
+                  config: &SolverConfig,
+                  weight_gradient: &ArcLock<SharedTensor<f32>>,
+                  blob_weight_decay: Option<f32>) {
         if let Some(global_weight_decay) = config.weight_decay {
             if let Some(regularization_method) = config.regularization_method {
                 match blob_weight_decay {

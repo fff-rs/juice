@@ -15,24 +15,23 @@
 //! - `C` : number of feature maps
 //! - `H` : height
 //! - `W` : width
+
+use capnp_util::*;
 use co::{IBackend, SharedTensor};
 use layer::*;
-use util::ArcLock;
 use leaf_capnp::reshape_config as capnp_config;
-use capnp_util::*;
+use util::ArcLock;
 
 #[derive(Debug, Clone)]
 /// Reshape Utility Layer
-pub struct Reshape{
+pub struct Reshape {
     shape: Vec<usize>,
 }
 
 impl Reshape {
     /// Create a Reshape layer from a ReshapeConfig.
     pub fn from_config(config: &ReshapeConfig) -> Reshape {
-        Reshape {
-            shape: config.shape.clone(),
-        }
+        Reshape { shape: config.shape.clone() }
     }
 }
 
@@ -74,7 +73,8 @@ impl<B: IBackend> ComputeInputGradient<f32, B> for Reshape {
                               output_data: &[&SharedTensor<f32>],
                               output_gradients: &[&SharedTensor<f32>],
                               input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {}
+                              input_gradients: &mut [&mut SharedTensor<f32>]) {
+    }
 }
 
 impl<B: IBackend> ComputeParametersGradient<f32, B> for Reshape {}
@@ -93,9 +93,7 @@ pub struct ReshapeConfig {
 impl ReshapeConfig {
     /// Create a ReshapeConfig that describes a Reshape layer with a provided shape.
     pub fn of_shape(shape: &[usize]) -> ReshapeConfig {
-        ReshapeConfig {
-            shape: shape.to_owned()
-        }
+        ReshapeConfig { shape: shape.to_owned() }
     }
 }
 
@@ -121,9 +119,7 @@ impl<'a> CapnpRead<'a> for ReshapeConfig {
             shape.push(read_shape.get(i) as usize)
         }
 
-        ReshapeConfig {
-            shape: shape
-        }
+        ReshapeConfig { shape: shape }
     }
 }
 
