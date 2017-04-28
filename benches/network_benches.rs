@@ -6,16 +6,28 @@ extern crate timeit;
 extern crate collenchyma as co;
 extern crate leaf;
 
+<<<<<<< HEAD
 #[cfg(feature = "cuda")]
 mod cuda {
     use test::Bencher;
+=======
+mod benches {
+>>>>>>> 6d2b40c... refactor/benches: streamline examples and benches
     use co::prelude::*;
-
-    use std::sync::{Arc, RwLock};
-    use leaf::layers::*;
     use leaf::layer::*;
+    use leaf::layers::*;
     use std::rc::Rc;
 
+<<<<<<< HEAD
+=======
+    use std::sync::{Arc, RwLock};
+    use test::Bencher;
+
+    fn native_backend() -> Rc<Backend<Native>> {
+        Rc::new(Backend::<Native>::default().unwrap())
+    }
+
+>>>>>>> 6d2b40c... refactor/benches: streamline examples and benches
     #[cfg(feature = "cuda")]
     fn cuda_backend() -> Rc<Backend<Cuda>> {
         Rc::new(Backend::<Cuda>::default().unwrap())
@@ -29,10 +41,7 @@ mod cuda {
 
     #[inline(never)]
     #[allow(unused_variables)]
-    fn bench_profile<F: FnMut() -> ()>(
-        b: &mut Bencher,
-        mut bench_func: F,
-        times: usize) {
+    fn bench_profile<F: FnMut() -> ()>(b: &mut Bencher, mut bench_func: F, times: usize) {
         timeit_loops!(times, {
             bench_func();
         });
@@ -92,8 +101,8 @@ mod cuda {
         // cfg.add_layer(loss_cfg);
 
         let backend = cuda_backend();
-        let mut network = Layer::from_config(
-            backend.clone(), &LayerConfig::new("network", LayerType::Sequential(cfg)));
+        let mut network = Layer::from_config(backend.clone(),
+                                             &LayerConfig::new("network", LayerType::Sequential(cfg)));
 
         let _ = timeit_loops!(10, {
             let inp = SharedTensor::<f32>::new(&[1, 30, 30]);
@@ -126,7 +135,7 @@ mod cuda {
             num_output: 64,
             filter_shape: vec![11],
             padding: vec![2],
-            stride: vec![4]
+            stride: vec![4],
         };
         let mut conv1_cfg = LayerConfig::new("conv1", LayerType::Convolution(conv1_layer_cfg));
         conv1_cfg.add_input("data");
@@ -153,7 +162,7 @@ mod cuda {
             num_output: 192,
             filter_shape: vec![5],
             padding: vec![2],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv2_cfg = LayerConfig::new("conv2", LayerType::Convolution(conv2_layer_cfg));
         conv2_cfg.add_input("pool1_out");
@@ -180,7 +189,7 @@ mod cuda {
             num_output: 384,
             filter_shape: vec![3],
             padding: vec![1],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv3_cfg = LayerConfig::new("conv3", LayerType::Convolution(conv3_layer_cfg));
         conv3_cfg.add_input("pool2_out");
@@ -196,7 +205,7 @@ mod cuda {
             num_output: 256,
             filter_shape: vec![3],
             padding: vec![1],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv4_cfg = LayerConfig::new("conv4", LayerType::Convolution(conv4_layer_cfg));
         conv4_cfg.add_input("conv3_out");
@@ -212,7 +221,7 @@ mod cuda {
             num_output: 256,
             filter_shape: vec![3],
             padding: vec![1],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv5_cfg = LayerConfig::new("conv5", LayerType::Convolution(conv5_layer_cfg));
         conv5_cfg.add_input("conv4_out");
@@ -255,8 +264,8 @@ mod cuda {
 
         let backend = cuda_backend();
         // let native_backend = native_backend();
-        let mut network = Layer::from_config(
-            backend.clone(), &LayerConfig::new("network", LayerType::Sequential(cfg)));
+        let mut network = Layer::from_config(backend.clone(),
+                                             &LayerConfig::new("network", LayerType::Sequential(cfg)));
 
         let func = || {
             let forward_time = timeit_loops!(1, {
@@ -267,12 +276,12 @@ mod cuda {
             });
             println!("Forward step: {}", forward_time);
         };
-        { bench_profile(b, func, 10); }
+        {
+            bench_profile(b, func, 10);
+        }
     }
 
     #[bench]
-    #[ignore]
-    #[cfg(feature = "cuda")]
     fn small_alexnet_forward(b: &mut Bencher) {
         // let _ = env_logger::init();
         let mut cfg = SequentialConfig::default();
@@ -283,7 +292,7 @@ mod cuda {
             num_output: 32,
             filter_shape: vec![11],
             padding: vec![2],
-            stride: vec![4]
+            stride: vec![4],
         };
         let mut conv1_cfg = LayerConfig::new("conv1", LayerType::Convolution(conv1_layer_cfg));
         conv1_cfg.add_input("data");
@@ -310,7 +319,7 @@ mod cuda {
             num_output: 96,
             filter_shape: vec![5],
             padding: vec![2],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv2_cfg = LayerConfig::new("conv2", LayerType::Convolution(conv2_layer_cfg));
         conv2_cfg.add_input("pool1_out");
@@ -337,7 +346,7 @@ mod cuda {
             num_output: 142,
             filter_shape: vec![3],
             padding: vec![1],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv3_cfg = LayerConfig::new("conv3", LayerType::Convolution(conv3_layer_cfg));
         conv3_cfg.add_input("pool2_out");
@@ -353,7 +362,7 @@ mod cuda {
             num_output: 128,
             filter_shape: vec![3],
             padding: vec![1],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv4_cfg = LayerConfig::new("conv4", LayerType::Convolution(conv4_layer_cfg));
         conv4_cfg.add_input("conv3_out");
@@ -369,7 +378,7 @@ mod cuda {
             num_output: 128,
             filter_shape: vec![3],
             padding: vec![1],
-            stride: vec![1]
+            stride: vec![1],
         };
         let mut conv5_cfg = LayerConfig::new("conv5", LayerType::Convolution(conv5_layer_cfg));
         conv5_cfg.add_input("conv4_out");
@@ -412,8 +421,8 @@ mod cuda {
 
         let backend = cuda_backend();
         // let native_backend = native_backend();
-        let mut network = Layer::from_config(
-            backend.clone(), &LayerConfig::new("network", LayerType::Sequential(cfg)));
+        let mut network = Layer::from_config(backend.clone(),
+                                             &LayerConfig::new("network", LayerType::Sequential(cfg)));
 
         let mut func = || {
             let inp = SharedTensor::<f32>::new(&[128, 3, 112, 112]);
@@ -421,7 +430,9 @@ mod cuda {
             let inp_lock = Arc::new(RwLock::new(inp));
             network.forward(&[inp_lock]);
         };
-        { func(); bench_profile(b, func, 10); }
+        {
+            func();
+            bench_profile(b, func, 10);
+        }
     }
-
 }
