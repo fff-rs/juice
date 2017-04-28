@@ -123,11 +123,15 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeOutput<f32, B> for Pooling<f32, B>
                       output_data: &mut [&mut SharedTensor<f32>]) {
         let config = &self.pooling_configs[0];
         match self.mode {
-            PoolingMode::Max => backend.pooling_max(input_data[0], output_data[0],
-                                                    &*config).unwrap(),
-            PoolingMode::Average => backend.pooling_avg(input_data[0], output_data[0],
-                                                    &*config).unwrap(),
-			_ => panic!("Unknown Parameter {} for PoolingMode", self.mode),
+            PoolingMode::Max => {
+                backend.pooling_max(input_data[0], output_data[0], &*config)
+                    .unwrap()
+            }
+            PoolingMode::Average => {
+                backend.pooling_avg(input_data[0], output_data[0], &*config)
+                    .unwrap()
+            }
+            _ => panic!("Unknown Parameter {:?} for PoolingMode", self.mode),
         }
     }
 }
@@ -142,13 +146,23 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeInputGradient<f32, B> for Pooling<
                               input_gradients: &mut [&mut SharedTensor<f32>]) {
         let config = &self.pooling_configs[0];
         match self.mode {
-            PoolingMode::Max => backend.pooling_max_grad(
-                output_data[0], output_gradients[0],
-                input_data[0], input_gradients[0], config).unwrap(),
-            PoolingMode::Average => backend.pooling_avg_grad(
-                output_data[0], output_gradients[0],
-                input_data[0], input_gradients[0], config).unwrap(),
-            _ => panic!("Unknown parameter {} for PoolingMode", self.mode)
+            PoolingMode::Max => {
+                backend.pooling_max_grad(output_data[0],
+                                      output_gradients[0],
+                                      input_data[0],
+                                      input_gradients[0],
+                                      config)
+                    .unwrap()
+            }
+            PoolingMode::Average => {
+                backend.pooling_avg_grad(output_data[0],
+                                      output_gradients[0],
+                                      input_data[0],
+                                      input_gradients[0],
+                                      config)
+                    .unwrap()
+            }
+            _ => panic!("Unknown parameter {:?} for PoolingMode", self.mode),
         }
     }
 }
@@ -237,8 +251,8 @@ impl<'a> CapnpRead<'a> for PoolingConfig {
 pub enum PoolingMode {
     /// The maximum value inside the pooling window will be used as result.
     Max,
-    // /// The average of all values inside the pooling window will be used as result.
-    // Average,
+    /// The average of all values inside the pooling window will be used as result.
+    Average,
 }
 
 impl PoolingMode {
@@ -246,6 +260,7 @@ impl PoolingMode {
     fn to_capnp(&self) -> CapnpPoolingMode {
         match *self {
             PoolingMode::Max => CapnpPoolingMode::Max,
+            PoolingMode::Average => CapnpPoolingMode::Average,
         }
     }
 
@@ -253,7 +268,7 @@ impl PoolingMode {
     fn from_capnp(value: CapnpPoolingMode) -> Self {
         match value {
             CapnpPoolingMode::Max => PoolingMode::Max,
-            CapnpPoolingMode::Average => unimplemented!(),
+            CapnpPoolingMode::Average => PoolingMode::Average,
         }
     }
 }

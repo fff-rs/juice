@@ -1225,14 +1225,12 @@ pub struct LayerConfig {
 pub enum LayerType {
     // Common layers
     /// Convolution Layer
-    #[cfg(all(feature="cuda", not(feature="native")))]
     Convolution(ConvolutionConfig),
     /// Linear Layer
     Linear(LinearConfig),
     /// LogSoftmax Layer
     LogSoftmax,
     /// Pooling Layer
-    #[cfg(all(feature="cuda", not(feature="native")))]
     Pooling(PoolingConfig),
     /// Sequential Layer
     Sequential(SequentialConfig),
@@ -1269,13 +1267,10 @@ impl LayerType {
             LayerType::Sigmoid => true,
             LayerType::NegativeLogLikelihood(_) => false,
             LayerType::Reshape(_) => true,
-            #[cfg(all(feature="cuda", not(feature="native")))]
             LayerType::Convolution(_) => false,
-            #[cfg(all(feature="cuda", not(feature="native")))]
             LayerType::Pooling(_) => false,
         }
     }
-
 }
 
 impl<'a> CapnpWrite<'a> for LayerType {
