@@ -129,8 +129,8 @@ And high priority issues, that we could need your help with.
 
 We have a mostly real-time collaboration culture and happens here on Github and
 on the [Collenchyma Gitter Channel][gitter-collenchyma].
-You can also reach out to the Maintainers
-{[@MJ][mj], [@hobofan][hobofan]}.
+You can also reach out to the Maintainer(s)
+{[@drahnr][drahnr]}.
 
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0
