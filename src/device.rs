@@ -5,68 +5,60 @@
 //! turn available hardware into a device, through the [backend][backend].
 //!
 //! [backend]: ../backend/index.html
+use std::any::Any;
+use std::error::Error as StdError;
 
 use hardware::IHardware;
-use memory::{IMemory, MemoryType};
-#[cfg(feature = "native")]
-use frameworks::native::device::Cpu;
 #[cfg(feature = "native")]
 use frameworks::native::Error as NativeError;
 #[cfg(feature = "opencl")]
-use frameworks::opencl::Context as OpenCLContext;
-#[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
-#[cfg(feature = "cuda")]
-use frameworks::cuda::Context as CudaContext;
 #[cfg(feature = "cuda")]
 use frameworks::cuda::DriverError as CudaError;
 use std::{fmt, error};
 
+/// Marker trait for backing memory.
+pub trait IMemory { }
+
 /// Specifies Hardware behavior across frameworks.
-pub trait IDevice {
+pub trait IDevice
+    where Self: Any + Clone + Eq + Any + MemorySync {
+
     /// The Hardware representation for this Device.
     type H: IHardware;
     /// The Memory representation for this Device.
-    type M: IMemory;
+    type M: IMemory + Any;
     /// Returns the unique identifier of the Device.
     fn id(&self) -> &isize;
     /// Returns the hardwares, which define the Device.
     fn hardwares(&self) -> &Vec<Self::H>;
     /// Allocate memory on the Device.
     fn alloc_memory(&self, size: usize) -> Result<Self::M, Error>;
-    /// Synchronize memory from `source_data` to the memory at `dest_data`.
-    ///
-    /// Defines how data is synchronized into the device.
-    /// All Frameworks, except Native(host), are also defining a `sync_out` method.
-    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Self::M) -> Result<(), Error>;
 }
 
-/// Specifies Sync out behavior across frameworks.
-pub trait IDeviceSyncOut<T: IMemory> {
-    /// The Memory representation for this Device.
-    type M: IMemory;
-    /// Synchronizes memory from `source_data` to `dest_data`.
-    fn sync_out(&self, source_data: &Self::M, dest_data: &mut T) -> Result<(), Error>;
-}
-
-
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
-/// Container for all known IDevice implementations
-pub enum DeviceType {
-    /// A native CPU
-    #[cfg(feature = "native")]
-    Native(Cpu),
-    /// A OpenCL Context
-    #[cfg(feature = "opencl")]
-    OpenCL(OpenCLContext),
-    /// A Cuda Context
-    #[cfg(feature = "cuda")]
-    Cuda(CudaContext),
+/// This trait should be implemented for `Device`.
+/// Use of `Any` everywhere is ugly, but it looks like there is no other way
+/// to do it if we want to extract CUDA stuff into its own crate completely,
+/// so that base crate knows nothing about it at all.
+pub trait MemorySync {
+    /// FIXME
+    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
+               -> Result<(), Error>;
+    /// FIXME
+    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
+                -> Result<(), Error>;
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Defines a generic set of Memory Errors.
 pub enum Error {
+    /// No route found for memory transfer between devices
+    NoMemorySyncRoute,
+    /// Framework error at memory synchronization.
+    MemorySyncError,
+    /// Framework error at memory allocation.
+    MemoryAllocationError,
+
     /// Failures related to the Native framework implementation.
     #[cfg(feature = "native")]
     Native(NativeError),
@@ -81,6 +73,10 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            Error::NoMemorySyncRoute => write!(f, "{}", self.description()),
+            Error::MemorySyncError => write!(f, "{}", self.description()),
+            Error::MemoryAllocationError => write!(f, "{}", self.description()),
+
             #[cfg(feature = "native")]
             Error::Native(ref err) => write!(f, "Native error: {}", err),
             #[cfg(feature = "opencl")]
@@ -94,6 +90,10 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
+            Error::NoMemorySyncRoute => "No available memory synchronization route",
+            Error::MemorySyncError => "Memory syncronization failed",
+            Error::MemoryAllocationError => "Memory allocation failed",
+
             #[cfg(feature = "native")]
             Error::Native(ref err) => err.description(),
             #[cfg(feature = "opencl")]
@@ -105,6 +105,10 @@ impl error::Error for Error {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
+            Error::NoMemorySyncRoute => None,
+            Error::MemorySyncError => None,
+            Error::MemoryAllocationError => None,
+
             #[cfg(feature = "native")]
             Error::Native(ref err) => Some(err),
             #[cfg(feature = "opencl")]
@@ -133,11 +137,5 @@ impl From<OpenCLError> for Error {
 impl From<CudaError> for Error {
     fn from(err: CudaError) -> Error {
         Error::Cuda(err)
-    }
-}
-
-impl From<Error> for ::tensor::Error {
-    fn from(err: Error) -> ::tensor::Error {
-        ::tensor::Error::MemoryAllocationError(err)
     }
 }

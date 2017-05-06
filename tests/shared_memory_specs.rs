@@ -5,17 +5,12 @@ extern crate libc;
 mod shared_memory_spec {
     use co::prelude::*;
     use co::tensor::Error;
+    use co::frameworks::native::flatbox::FlatBox;
 
-    fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        match mem {
-            &mut MemoryType::Native(ref mut mem) => {
-                let mut mem_buffer = mem.as_mut_slice::<T>();
-                for (index, datum) in data.iter().enumerate() {
-                    mem_buffer[index] = *datum;
-                }
-            },
-            #[cfg(any(feature = "cuda", feature = "opencl"))]
-            _ => assert!(false)
+    fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
+        let mut mem_buffer = mem.as_mut_slice::<T>();
+        for (index, datum) in data.iter().enumerate() {
+            mem_buffer[index] = *datum;
         }
     }
 
@@ -25,14 +20,8 @@ mod shared_memory_spec {
         let ntv = Native::new();
         let cpu = ntv.new_device(ntv.hardwares()).unwrap();
         let mut shared_data = SharedTensor::<f32>::new(&10);
-        match shared_data.write_only(&cpu).unwrap() {
-            &mut MemoryType::Native(ref dat) => {
-                let data = dat.as_slice::<f32>();
-                assert_eq!(10, data.len());
-            },
-            #[cfg(any(feature = "cuda", feature = "opencl"))]
-            _ => assert!(false)
-        }
+        let data = shared_data.write_only(&cpu).unwrap().as_slice::<f32>();
+        assert_eq!(10, data.len());
     }
 
     #[test]
@@ -41,11 +30,7 @@ mod shared_memory_spec {
         let ntv = Cuda::new();
         let device = ntv.new_device(&ntv.hardwares()[0..1]).unwrap();
         let mut shared_data = SharedTensor::<f32>::new(&10);
-        match shared_data.write_only(&device) {
-            Ok(&mut MemoryType::Cuda(_)) => {},
-            #[cfg(any(feature = "cuda", feature = "opencl"))]
-            _ => assert!(false)
-        }
+        shared_data.write_only(&device).unwrap();
     }
 
     #[test]
@@ -54,10 +39,7 @@ mod shared_memory_spec {
         let ntv = OpenCL::new();
         let device = ntv.new_device(&ntv.hardwares()[0..1]).unwrap();
         let mut shared_data = SharedTensor::<f32>::new(&10);
-        match shared_data.write_only(&device) {
-            Ok(&mut MemoryType::OpenCL(_)) => {},
-            _ => assert!(false),
-        }
+        shared_data.write_only(&device).unwrap();
     }
 
     #[test]
@@ -88,24 +70,13 @@ mod shared_memory_spec {
         let mut mem = SharedTensor::<f64>::new(&3);
         write_to_memory(mem.write_only(&nt_device).unwrap(),
                         &[1.0f64, 2.0, 123.456]);
-        match mem.read(&cu_device) {
-            Ok(_) => assert!(true),
-            Err(err) => {
-                println!("{:?}", err);
-                assert!(false);
-            }
-        }
+        mem.read(&cu_device).unwrap();
+
         // It has successfully synced to the device.
         // Not the other way around.
         mem.drop_device(&nt_device).unwrap();
-        match mem.read(&nt_device) {
-            Ok(m) => assert_eq!(m.as_native().unwrap().as_slice::<f64>(),
-                                [1.0, 2.0, 123.456]),
-            Err(err) => {
-                println!("{:?}", err);
-                assert!(false);
-            }
-        }
+        assert_eq!(mem.read(&nt_device).unwrap().as_slice::<f64>(),
+                   [1.0, 2.0, 123.456]);
     }
 
     #[test]
@@ -118,24 +89,13 @@ mod shared_memory_spec {
         let mut mem = SharedTensor::<f64>::new(&3);
         write_to_memory(mem.write_only(&nt_device).unwrap(),
                         &[1.0f64, 2.0, 123.456]);
-        match mem.read(&cl_device) {
-            Ok(_) => assert!(true),
-            Err(err) => {
-                println!("{:?}", err);
-                assert!(false);
-            }
-        }
+        mem.read(&cl_device).unwrap();
+
         // It has not successfully synced to the device.
         // Not the other way around.
         mem.drop_device(&nt_device).unwrap();
-        match mem.read(&nt_device) {
-            Ok(m) => assert_eq!(m.as_native().unwrap().as_slice::<f64>(),
-                                [1.0, 2.0, 123.456]),
-            Err(err) => {
-                println!("{:?}", err);
-                assert!(false);
-            }
-        }
+        assert_eq!(mem.read(&nt_device).unwrap().as_slice::<f64>(),
+                   [1.0, 2.0, 123.456]);
     }
 
     #[test]

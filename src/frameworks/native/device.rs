@@ -1,13 +1,12 @@
 //! Provides a hardware aka. the host CPU.
+use std::any::Any;
+use std::hash::{Hash, Hasher};
 
-use device::{IDevice, DeviceType, IDeviceSyncOut};
+use device::{IDevice, MemorySync};
 use device::Error as DeviceError;
-use memory::MemoryType;
 use super::hardware::Hardware;
-use super::Error;
 use super::flatbox::FlatBox;
 use super::allocate_boxed_slice;
-use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Clone)]
 /// Defines the host CPU Hardware.
@@ -42,25 +41,32 @@ impl IDevice for Cpu {
         let bx: Box<[u8]> = allocate_boxed_slice(size);
         Ok(FlatBox::from_box(bx))
     }
+}
 
-    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
-        match source {
-            &DeviceType::Native(_) => unimplemented!(),
-            #[cfg(feature = "cuda")]
-            &DeviceType::Cuda(ref context) => {
-                match source_data.as_cuda() {
-                    Some(h_mem) => Ok(try!(context.sync_out(&h_mem, dest_data))),
-                    None => Err(DeviceError::Native(Error::Memory("Expected CUDA Memory")))
-                }
-            },
-            #[cfg(feature = "opencl")]
-            &DeviceType::OpenCL(ref context) => {
-                match source_data.as_opencl() {
-                    Some(h_mem) => Ok(try!(context.sync_out(&h_mem, dest_data))),
-                    None => Err(DeviceError::Native(Error::Memory("Expected OpenCL Memory")))
-                }
-            },
+impl MemorySync for Cpu {
+    // transfers from/to Cuda and OpenCL are defined on their MemorySync traits
+    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
+               -> Result<(), DeviceError> {
+        if let Some(_) = src_device.downcast_ref::<Cpu>() {
+            let mut my_mem = my_memory.downcast_mut::<FlatBox>().unwrap();
+            let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
+            my_mem.as_mut_slice::<u8>().clone_from_slice(src_mem.as_slice::<u8>());
+            return Ok(());
         }
+
+        Err(DeviceError::NoMemorySyncRoute)
+    }
+
+    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
+                -> Result<(), DeviceError> {
+        if let Some(_) = dst_device.downcast_ref::<Cpu>() {
+            let my_mem = my_memory.downcast_ref::<FlatBox>().unwrap();
+            let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
+            dst_mem.as_mut_slice::<u8>().clone_from_slice(my_mem.as_slice::<u8>());
+            return Ok(());
+        }
+
+        Err(DeviceError::NoMemorySyncRoute)
     }
 }
 
