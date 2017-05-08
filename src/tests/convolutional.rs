@@ -68,11 +68,8 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
             ConvBackwardDataAlgo::Auto,
             &[1,1], &[0,0]).unwrap();
 
-        backend.convolution(&f, &x, &mut r, &mut ws, &conf).unwrap();
-        match r.read(&backend.device()) {
-            Ok(v) => println!("{:?}", v),
-            Err(_) => {},
-        }
+        assert!(backend.convolution(&f, &x, &mut r, &mut ws, &conf).is_ok());
+        assert!(r.read(backend.device()).is_ok());
     };
     // batchsize, width, height, depth, k_filters, filter_size
     test(4, 9, 9, 3, 6, 3);

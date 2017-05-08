@@ -55,7 +55,7 @@
 //!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
 //!     backend.sigmoid(&mut x, &mut result).unwrap();
 //!     // See the result.
-//!     println!("{:?}", result.read(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
+//!     println!("{:?}", result.read(&cpu).unwrap().unwrap().as_slice::<f64>());
 //! }
 //! # }
 //! # #[cfg(not(feature = "cuda"))]

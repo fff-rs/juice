@@ -2,22 +2,19 @@
 
 macro_rules! read {
     ($x:ident, $slf:ident) => (
-        try!($x.read($slf.device())).as_cuda()
-            .expect("Broken invariant: not a CUDA memory")
+        $x.read($slf.device()).unwrap()
     )
 }
 
 macro_rules! read_write {
     ($x:ident, $slf:ident) => (
-        try!($x.read_write($slf.device())).as_cuda()
-            .expect("Broken invariant: not a CUDA memory")
+        $x.read_write($slf.device()).unwrap()
     )
 }
 
 macro_rules! write_only {
     ($x:ident, $slf:ident) => (
-        try!($x.write_only($slf.device())).as_cuda()
-            .expect("Broken invariant: not a CUDA memory")
+        $x.write_only($slf.device()).unwrap()
     )
 }
 

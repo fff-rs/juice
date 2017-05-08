@@ -79,9 +79,6 @@ impl<T> NN<T> for Backend<Native>
     type CPOOL = helper::PoolingConfig;
 
     fn init_nn() {}
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
 }
 
 impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
@@ -148,15 +145,13 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
                    filter: &SharedTensor<T>,
                    x: &SharedTensor<T>,
                    result: &mut SharedTensor<T>,
-                   _scratch: &mut SharedTensor<u8>,
+                   _workspace: &mut SharedTensor<u8>,
                    config: &Self::CC)
                    -> Result<(), Error> {
         let dev = self.device();
 
         let input_dim = x.desc();
         let input = x.read(dev)
-            .unwrap()
-            .as_native()
             .unwrap()
             .as_slice::<T>();
         let input_stride = input_dim.default_stride();
@@ -166,11 +161,9 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
         let output = result
             .write_only(dev)
             .unwrap()
-            .as_mut_native()
-            .unwrap()
             .as_mut_slice::<T>();
-        let output_stride = output_dim.default_stride();
 
+        let output_stride = output_dim.default_stride();
         {
             for o in output.iter_mut() {
                 *o = Default::default();
@@ -180,8 +173,6 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
         let filter_dim = filter.desc();
         let filter = filter
             .read(dev)
-            .unwrap()
-            .as_native()
             .unwrap()
             .as_slice::<T>();
         let filter_stride = filter_dim.default_stride();
@@ -432,8 +423,6 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
         let input_dim = x.desc(); // [4, 4, 4, 4]
         let input = x.read(dev)
             .unwrap()
-            .as_native()
-            .unwrap()
             .as_slice::<T>();
         let input_stride = input_dim.default_stride(); // [64, 16, 4, 1];
 
@@ -441,8 +430,6 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
         // this is ok, we only read parts we already wrote
         let output = result
             .write_only(dev)
-            .unwrap()
-            .as_mut_native()
             .unwrap()
             .as_mut_slice::<T>();
         let output_stride = output_dim.default_stride(); // [16, 4, 2, 1]

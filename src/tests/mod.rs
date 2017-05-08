@@ -50,23 +50,18 @@ pub fn write_to_tensor<T,F>(backend: &Backend<F>, xs: &mut SharedTensor<T>, data
     let native = get_native_backend();
     let native_dev = native.device();
     {
-        let mem = xs.write_only(native_dev).unwrap().as_mut_native().unwrap();
+        let mem = xs.write_only(native_dev).unwrap();
         let mut mem_buffer = mem.as_mut_slice::<T>();
         for (i, x) in data.iter().enumerate() {
             mem_buffer[i] = cast::<_, T>(*x).unwrap();
         }
     }
-
-
-    let other_dev = backend.device();
-    match other_dev {
-        &DeviceType::Native(_) => {}
-        _ => {
-                // sync now TODO probably pointless with autosync
-                xs.read(&other_dev).unwrap();
-                xs.drop_device(&native_dev).unwrap();
-                }
-    }
+  // not functional since, PartialEq has yet to be implemented for Device
+  // but tbh this is test only so screw the extra dangling ununsed memory alloc
+  //       if other_dev != native_dev {
+  //           xs.read(other_dev).unwrap();
+  //           xs.drop_device(native_dev).unwrap();
+  //       }
 }
 
 pub fn filled_tensor<T,F>(backend: &Backend<F>, dims: &[usize], data: &[f64]) -> SharedTensor<T>
@@ -93,8 +88,8 @@ pub fn uniformly_random_tensor<T,F>(backend: &Backend<F>, dims: &[usize], low: T
         let native_dev = native.device();
         let other_dev = backend.device();
         {
-            let mut mem = xs.write_only(native_dev).unwrap().as_mut_native().unwrap();
-            let mem_slice = mem.as_mut_slice::<T>();
+            let mut mem = xs.write_only(native_dev).unwrap();
+            let mut mem_slice = mem.as_mut_slice::<T>();
 
             let mut rng = thread_rng();
             let distr = Range::new(low, high);
@@ -102,14 +97,12 @@ pub fn uniformly_random_tensor<T,F>(backend: &Backend<F>, dims: &[usize], low: T
                 *x = distr.ind_sample(&mut rng);
             }
         }
-        match other_dev {
-            &DeviceType::Native(_) => {}
-            _ => {
-                    // sync now TODO probably pointless with autosync
-                    xs.read(&other_dev).unwrap();
-                    xs.drop_device(&native_dev).unwrap();
-                    }
-        }
+  // not functional since, PartialEq has yet to be implemented for Device
+  // but tbh this is test only so screw the extra dangling ununsed memory alloc
+  //       if other_dev != native_dev {
+  //           xs.read(other_dev).unwrap();
+  //           xs.drop_device(native_dev).unwrap();
+  //       }
     }
     xs
 }
@@ -126,7 +119,7 @@ pub fn tensor_assert_eq<T>(xs: &SharedTensor<T>, data: &[f64], epsilon_mul: f64)
     let native = get_native_backend();
     let native_dev = native.device();
 
-    let mem = xs.read(&native_dev).unwrap().as_native().unwrap();
+    let mem = xs.read(native_dev).unwrap();
     let mem_slice = mem.as_slice::<T>();
 
     assert_eq!(mem_slice.len(), data.len());
@@ -151,10 +144,10 @@ pub fn tensor_assert_eq_tensor<T,U>(xa: &SharedTensor<T>, xb: &SharedTensor<U>, 
     let native = get_native_backend();
     let native_dev = native.device();
 
-    let mem_a = xa.read(&native_dev).unwrap().as_native().unwrap();
+    let mem_a = xa.read(native_dev).unwrap();
     let mem_slice_a = mem_a.as_slice::<T>();
 
-    let mem_b = xb.read(&native_dev).unwrap().as_native().unwrap();
+    let mem_b = xb.read(native_dev).unwrap();
     let mem_slice_b = mem_b.as_slice::<U>();
 
     assert_eq!(mem_slice_a.len(), mem_slice_b.len());
