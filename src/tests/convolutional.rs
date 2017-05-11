@@ -117,11 +117,13 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, b
     let width1 = 9;
     let height1 = 9;
     let depth1 = 3;
+    let stride_for_height = 1;
+    let stride_for_width = 1;
     let filter_size = 6;
     let filter_count = 3;
 
-    let result_width = (width1 - filter_size + 0) / 1;
-    let result_height = (height1 - filter_size + 0) / 1;
+    let result_width = (width1 - filter_size + 0) / stride_for_width + 1;
+    let result_height = (height1 - filter_size + 0) / stride_for_height + 1;
 
     let x_val = vec![1.0; batch * depth1 * height1 * width1];
     let f_val = vec![1.0; filter_count * depth1 * filter_size * filter_size];
