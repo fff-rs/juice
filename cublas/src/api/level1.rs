@@ -169,36 +169,27 @@ mod test {
     use co::backend::{Backend, IBackend, BackendConfig};
     use co::framework::IFramework;
     use co::frameworks::{Cuda, Native};
+    use co::frameworks::native::flatbox::FlatBox;
     use co::tensor::SharedTensor;
-    use co::memory::MemoryType;
 
     fn get_native_backend() -> Backend<Native> {
-        let framework = Native::new();
-        let hardwares = framework.hardwares();
-        let backend_config = BackendConfig::new(framework, hardwares);
-        Backend::new(backend_config).unwrap()
+        Backend::<Native>::default().unwrap()
     }
-
     fn get_cuda_backend() -> Backend<Cuda> {
-        let framework = Cuda::new();
-        let hardwares = framework.hardwares();
-        let backend_config = BackendConfig::new(framework, hardwares);
-        Backend::new(backend_config).unwrap()
+        Backend::<Cuda>::default().unwrap()
     }
 
-    fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        if let &mut MemoryType::Native(ref mut mem) = mem {
-            let mut mem_buffer = mem.as_mut_slice::<T>();
-            for (index, datum) in data.iter().enumerate() {
-                mem_buffer[index] = *datum;
-            }
+    fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
+        let mut mem_buffer = mem.as_mut_slice::<T>();
+        for (index, datum) in data.iter().enumerate() {
+            mem_buffer[index] = *datum;
         }
     }
 
     fn filled_tensor<B: IBackend, T: Copy>(backend: &B, n: usize, val: T) -> SharedTensor<T> {
-        let mut x = SharedTensor::<T>::new(backend.device(), &vec![n]).unwrap();
+        let mut x = SharedTensor::<T>::new(&vec![n]);
         let values: &[T] = &::std::iter::repeat(val).take(x.capacity()).collect::<Vec<T>>();
-        write_to_memory(x.get_mut(backend.device()).unwrap(), values);
+        write_to_memory(x.write_only(get_native_backend().device()).unwrap(), values);
         x
     }
 
@@ -211,17 +202,17 @@ mod test {
         let n = 20i32;
         let val = 2f32;
         let mut x = filled_tensor(&native, n as usize, val);
-        x.add_device(cuda.device()).unwrap();
-        x.sync(cuda.device()).unwrap();
+
+
 
         // set up result
-        let mut result = SharedTensor::<f32>::new(cuda.device(), &vec![1]).unwrap();
-        result.add_device(native.device()).unwrap();
-        result.sync(cuda.device()).unwrap();
+        let mut result = SharedTensor::<f32>::new(&vec![1]);
+
+
 
         {
-            let cuda_mem = x.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_result = result.get(cuda.device()).unwrap().as_cuda().unwrap();
+            let cuda_mem = x.read(cuda.device()).unwrap();
+            let cuda_mem_result = result.write_only(cuda.device()).unwrap();
             let mut ctx = Context::new().unwrap();
             ctx.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
@@ -231,8 +222,7 @@ mod test {
            }
        }
 
-       result.sync(native.device()).unwrap();
-       let native_res = result.get(native.device()).unwrap().as_native().unwrap();
+       let native_res = result.read(native.device()).unwrap();
        assert_eq!(&[40f32], native_res.as_slice::<f32>());
     }
 
@@ -243,26 +233,20 @@ mod test {
 
         // set up alpha
         let mut alpha = filled_tensor(&native, 1, 1.5f32);
-        alpha.add_device(cuda.device()).unwrap();
-        alpha.sync(cuda.device()).unwrap();
 
         // set up x
         let n = 5i32;
         let val = 2f32;
         let mut x = filled_tensor(&native, n as usize, val);
-        x.add_device(cuda.device()).unwrap();
-        x.sync(cuda.device()).unwrap();
 
         // set up y
         let val = 4f32;
         let mut y = filled_tensor(&native, n as usize, val);
-        y.add_device(cuda.device()).unwrap();
-        y.sync(cuda.device()).unwrap();
 
         {
-            let cuda_mem_alpha = alpha.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_x = x.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_y = y.get(cuda.device()).unwrap().as_cuda().unwrap();
+            let cuda_mem_alpha = alpha.read(cuda.device()).unwrap();
+            let cuda_mem_x = x.read(cuda.device()).unwrap();
+            let cuda_mem_y = y.read_write(cuda.device()).unwrap();
             let mut ctx = Context::new().unwrap();
             ctx.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
@@ -273,8 +257,8 @@ mod test {
            }
        }
 
-       y.sync(native.device()).unwrap();
-       let native_y = y.get(native.device()).unwrap().as_native().unwrap();
+
+       let native_y = y.read(native.device()).unwrap();
        assert_eq!(&[7f32, 7f32, 7f32, 7f32, 7f32], native_y.as_slice::<f32>());
     }
 
@@ -287,18 +271,14 @@ mod test {
         let n = 5i32;
         let val = 2f32;
         let mut x = filled_tensor(&native, n as usize, val);
-        x.add_device(cuda.device()).unwrap();
-        x.sync(cuda.device()).unwrap();
 
         // set up y
         let val = 4f32;
         let mut y = filled_tensor(&native, n as usize, val);
-        y.add_device(cuda.device()).unwrap();
-        y.sync(cuda.device()).unwrap();
 
         {
-            let cuda_mem_x = x.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_y = y.get(cuda.device()).unwrap().as_cuda().unwrap();
+            let cuda_mem_x = x.read(cuda.device()).unwrap();
+            let cuda_mem_y = y.write_only(cuda.device()).unwrap();
             let mut ctx = Context::new().unwrap();
             ctx.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
@@ -308,8 +288,8 @@ mod test {
            }
        }
 
-       y.sync(native.device()).unwrap();
-       let native_y = y.get(native.device()).unwrap().as_native().unwrap();
+
+       let native_y = y.read(native.device()).unwrap();
        assert_eq!(&[2f32, 2f32, 2f32, 2f32, 2f32], native_y.as_slice::<f32>());
     }
 
@@ -322,24 +302,18 @@ mod test {
         let n = 5i32;
         let val = 2f32;
         let mut x = filled_tensor(&native, n as usize, val);
-        x.add_device(cuda.device()).unwrap();
-        x.sync(cuda.device()).unwrap();
 
         // set up y
         let val = 4f32;
         let mut y = filled_tensor(&native, n as usize, val);
-        y.add_device(cuda.device()).unwrap();
-        y.sync(cuda.device()).unwrap();
 
         // set up result
-        let mut result = SharedTensor::<f32>::new(cuda.device(), &vec![1]).unwrap();
-        result.add_device(native.device()).unwrap();
-        result.sync(cuda.device()).unwrap();
+        let mut result = SharedTensor::<f32>::new(&vec![1]);
 
         {
-            let cuda_mem_x = x.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_y = y.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_result = result.get(cuda.device()).unwrap().as_cuda().unwrap();
+            let cuda_mem_x = x.read(cuda.device()).unwrap();
+            let cuda_mem_y = y.read(cuda.device()).unwrap();
+            let cuda_mem_result = result.write_only(cuda.device()).unwrap();
             let mut ctx = Context::new().unwrap();
             ctx.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
@@ -350,8 +324,8 @@ mod test {
            }
        }
 
-       result.sync(native.device()).unwrap();
-       let native_result = result.get(native.device()).unwrap().as_native().unwrap();
+
+       let native_result = result.read(native.device()).unwrap();
        assert_eq!(&[40f32], native_result.as_slice::<f32>());
     }
 
@@ -364,18 +338,14 @@ mod test {
         let n = 3i32;
         let val = 2f32;
         let mut x = filled_tensor(&native, n as usize, val);
-        write_to_memory(x.get_mut(native.device()).unwrap(), &[2f32, 2f32, 1f32]);
-        x.add_device(cuda.device()).unwrap();
-        x.sync(cuda.device()).unwrap();
+        write_to_memory(x.write_only(native.device()).unwrap(), &[2f32, 2f32, 1f32]);
 
         // set up result
-        let mut result = SharedTensor::<f32>::new(cuda.device(), &vec![1]).unwrap();
-        result.add_device(native.device()).unwrap();
-        result.sync(cuda.device()).unwrap();
+        let mut result = SharedTensor::<f32>::new(&vec![1]);
 
         {
-            let cuda_mem_x = x.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_result = result.get(cuda.device()).unwrap().as_cuda().unwrap();
+            let cuda_mem_x = x.read(cuda.device()).unwrap();
+            let cuda_mem_result = result.write_only(cuda.device()).unwrap();
             let mut ctx = Context::new().unwrap();
             ctx.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
@@ -385,8 +355,8 @@ mod test {
            }
        }
 
-       result.sync(native.device()).unwrap();
-       let native_result = result.get(native.device()).unwrap().as_native().unwrap();
+
+       let native_result = result.read(native.device()).unwrap();
        assert_eq!(&[3f32], native_result.as_slice::<f32>());
     }
 
@@ -397,19 +367,15 @@ mod test {
 
         // set up alpha
         let mut alpha = filled_tensor(&native, 1, 2.5f32);
-        alpha.add_device(cuda.device()).unwrap();
-        alpha.sync(cuda.device()).unwrap();
 
         // set up x
         let n = 3i32;
         let val = 2f32;
         let mut x = filled_tensor(&native, n as usize, val);
-        x.add_device(cuda.device()).unwrap();
-        x.sync(cuda.device()).unwrap();
 
         {
-            let cuda_mem_alpha = alpha.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_x = x.get(cuda.device()).unwrap().as_cuda().unwrap();
+            let cuda_mem_alpha = alpha.read(cuda.device()).unwrap();
+            let cuda_mem_x = x.read_write(cuda.device()).unwrap();
             let mut ctx = Context::new().unwrap();
             ctx.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
@@ -419,8 +385,8 @@ mod test {
            }
        }
 
-       x.sync(native.device()).unwrap();
-       let native_x = x.get(native.device()).unwrap().as_native().unwrap();
+
+       let native_x = x.read(native.device()).unwrap();
        assert_eq!(&[5f32, 5f32, 5f32], native_x.as_slice::<f32>());
     }
 
@@ -433,18 +399,14 @@ mod test {
         let n = 5i32;
         let val = 2f32;
         let mut x = filled_tensor(&native, n as usize, val);
-        x.add_device(cuda.device()).unwrap();
-        x.sync(cuda.device()).unwrap();
 
         // set up y
         let val = 4f32;
         let mut y = filled_tensor(&native, n as usize, val);
-        y.add_device(cuda.device()).unwrap();
-        y.sync(cuda.device()).unwrap();
 
         {
-            let cuda_mem_x = x.get(cuda.device()).unwrap().as_cuda().unwrap();
-            let cuda_mem_y = y.get(cuda.device()).unwrap().as_cuda().unwrap();
+            let cuda_mem_x = x.read_write(cuda.device()).unwrap();
+            let cuda_mem_y = y.read_write(cuda.device()).unwrap();
             let mut ctx = Context::new().unwrap();
             ctx.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
@@ -454,12 +416,10 @@ mod test {
            }
        }
 
-       x.sync(native.device()).unwrap();
-       let native_x = x.get(native.device()).unwrap().as_native().unwrap();
+       let native_x = x.read(native.device()).unwrap();
        assert_eq!(&[4f32, 4f32, 4f32, 4f32, 4f32], native_x.as_slice::<f32>());
 
-       y.sync(native.device()).unwrap();
-       let native_y = y.get(native.device()).unwrap().as_native().unwrap();
+       let native_y = y.read(native.device()).unwrap();
        assert_eq!(&[2f32, 2f32, 2f32, 2f32, 2f32], native_y.as_slice::<f32>());
     }
 }
