@@ -1,6 +1,6 @@
 [package]
 name = "cublas"
-description = "safe Rust wrapper for CUDA's cuDNN"
+description = "safe Rust wrapper for CUDA's cuBLAS"
 version = "0.2.0"
 authors = ["Maximilian Goisser <maximilian.goisser@autumnai.com>"]
 
@@ -19,7 +19,7 @@ cublas-sys = { version = "0.1.0", path = "../cublas-sys" }
 clippy = { version = "0.0.35", optional = true }
 
 [dev-dependencies]
-collenchyma = "0.0.7"
+collenchyma = { path = "../../collenchyma", default-features = false, features = ["native", "cuda"] }
 
 [features]
 dev = []
