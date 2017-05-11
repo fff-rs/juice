@@ -7,9 +7,11 @@
 use co::Error;
 use co::plugin::Error as PluginError;
 use co::plugin::numeric_helpers::Float;
+use co::plugin::numeric_helpers::Bounded;
 use co::prelude::*;
 use plugin::*;
 use std::cmp::PartialOrd;
+use std::fmt::Debug;
 
 use std::ops::*;
 
@@ -399,7 +401,7 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
 
 
 impl<T> ::plugin::Pooling<T> for Backend<Native>
-    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd
+    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
 {
     fn new_pooling_config(&self,
                           window: &[i32],
@@ -450,9 +452,9 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                            depth_end: usize,
                            current_max: Option<T>)
                            -> T
-            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd
+            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
         {
-            let mut current_max = current_max.unwrap_or_default();
+            let mut current_max = current_max.unwrap_or(T::min_value());
 
             let p = padding[0] as usize;
             let input_idx_end = input_dim[0] + 2 * p;
@@ -461,7 +463,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                 let input_idx = input_idx_base[0] + window_idx as usize;
 
                 let v = if input_idx < p || input_idx + 1 > input_idx_end - p {
-                    Default::default()
+                    T::min_value()
                 } else {
                     let i_mem_offset = input_offset + (input_idx - p) * input_stride[0];
                     if depth + 1 >= depth_end {
@@ -482,9 +484,10 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                 // TODO: Handle NAN, inf and so on
                 current_max = if current_max >= v {
                     current_max
-                } else if current_max <= v {
+                } else if current_max < v {
                     v
                 } else {
+		//TODO honour the configuration to pass on NaN or not, see cudnn API
                     panic!("NaN")
                 };
             }
@@ -506,7 +509,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                       output_stride: &[usize],
                       output_dim: &[usize],
                       output_offset: usize)
-            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd
+            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
         {
             let p = padding[depth] as usize; // 0
             let w = window[depth] as usize; // 2

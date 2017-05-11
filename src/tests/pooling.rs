@@ -130,19 +130,27 @@ pub fn cross_test_pooling_max<F: IFramework, G: IFramework>(backend_a: Backend<F
           Backend<F>: Pooling<f32> + IBackend,
           Backend<G>: Pooling<f32> + IBackend {
 
-    let mut inp = vec![1.0; 256];
+    let mut inp = vec![1.0; 192];
     inp[0] = 2.0;
+
+
+    let stride = &[2, 1];
+    let padding = &[0, 0];
+    let window = &[2, 2];
+
+    let dim_in = &[4, 3, 4, 4];
+    let dim_out = &[4, 3, 2, 4];
 
     let lower : f32 = -128.;
     let upper : f32 = 127.;
-    let x = uniformly_random_tensor(&backend_a, &[4, 4, 4, 4], lower, upper);
+    let x = uniformly_random_tensor(&backend_a, dim_in, lower, upper);
 
-    let mut r_a = SharedTensor::<f32>::new(&[4, 4, 2, 4]);
-    let mut r_b = SharedTensor::<f32>::new(&[4, 4, 2, 4]);
+    let mut r_a = SharedTensor::<f32>::new(dim_out);
+    let mut r_b = SharedTensor::<f32>::new(dim_out);
 
-    let conf_a = Pooling::<f32>::new_pooling_config(&backend_a, &[2, 2], &[2, 1], &[0, 0])
+    let conf_a = Pooling::<f32>::new_pooling_config(&backend_a, window, stride, padding)
         .unwrap();
-    let conf_b = Pooling::<f32>::new_pooling_config(&backend_b, &[2, 2], &[2, 1], &[0, 0])
+    let conf_b = Pooling::<f32>::new_pooling_config(&backend_b, window, stride, padding)
         .unwrap();
 
     backend_a.pooling_max(&x, &mut r_a, &conf_a).unwrap();
