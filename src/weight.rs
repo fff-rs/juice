@@ -178,8 +178,6 @@ impl FillerType {
     pub fn fill_constant(weight: &mut SharedTensor<f32>, value: f32) {
         let native = native_backend();
         let native_weight = weight.write_only(native.device())
-            .unwrap()
-            .as_mut_native()
             .unwrap();
 
         for e in native_weight.as_mut_slice::<f32>() {
@@ -191,8 +189,6 @@ impl FillerType {
     pub fn fill_glorot(weight: &mut SharedTensor<f32>, num_inputs: usize, num_outputs: usize) {
         let native = native_backend();
         let native_weight = weight.write_only(native.device())
-            .unwrap()
-            .as_mut_native()
             .unwrap();
 
         let init_range = (6.0f32 / (num_inputs as f32 + num_outputs as f32)).sqrt();

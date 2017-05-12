@@ -13,29 +13,20 @@ pub type ArcLock<T> = Arc<RwLock<T>>;
 ///
 /// This is handy when you need to sync data to host memory to read/write it.
 pub fn native_backend() -> Backend<Native> {
-    let framework = Native::new();
-    let hardwares = &framework.hardwares().to_vec();
-    let backend_config = BackendConfig::new(framework, hardwares);
-    Backend::new(backend_config).unwrap()
+    Backend<Native>::default().unwrap();
 }
 
 /// Write into a native Collenchyma Memory.
-pub fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut MemoryType, data: &[T]) {
+pub fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T]) {
     write_to_memory_offset(mem, data, 0);
 }
 
 /// Write into a native Collenchyma Memory with a offset.
-pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut MemoryType, data: &[T], offset: usize) {
-    match mem {
-        &mut MemoryType::Native(ref mut mem) => {
-            let mut mem_buffer = mem.as_mut_slice::<f32>();
-            for (index, datum) in data.iter().enumerate() {
-                // mem_buffer[index + offset] = *datum;
-                mem_buffer[index + offset] = cast(*datum).unwrap();
-            }
-        }
-        #[cfg(any(feature = "opencl", feature = "cuda"))]
-        _ => {}
+pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) {
+    let mut mem_buffer = mem.as_mut_slice::<f32>();
+    for (index, datum) in data.iter().enumerate() {
+        // mem_buffer[index + offset] = *datum;
+        mem_buffer[index + offset] = cast(*datum).unwrap();
     }
 }
 

@@ -354,7 +354,7 @@ impl<B: IBackend> Layer<B> {
                                         (shared_weight_data.clone(),
                                          shared_weight_gradient.clone(),
                                          shared_lr,
-                                         weight_config.decay_mult));
+                                     weight_config.decay_mult));
                     }
                 }
             }
@@ -738,8 +738,6 @@ impl<B: IBackend> Layer<B> {
 
                 let mut native_slice = weight_lock.write_only(native_backend.device())
                     .unwrap()
-                    .as_mut_native()
-                    .unwrap()
                     .as_mut_slice::<f32>();
                 let data = capnp_tensor.get_data().unwrap();
                 for k in 0..data.len() {
@@ -870,8 +868,6 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
                 }
                 {
                     let native_slice = weight_lock.read(native_backend.device())
-                        .unwrap()
-                        .as_native()
                         .unwrap()
                         .as_slice::<f32>();
                     let mut tensor_data = tensor.borrow().init_data(native_slice.len() as u32);

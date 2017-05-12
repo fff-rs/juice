@@ -31,7 +31,7 @@
 pub use self::sgd::Momentum;
 pub mod sgd;
 
-use co::{IBackend, MemoryType, SharedTensor};
+use co::{IBackend, IFramework, IDevice, SharedTensor};
 use layer::*;
 use solver::*;
 use util::*;
@@ -73,16 +73,9 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
                 // gradient.sumsq_diff(self.backend(), &mut result);
                 self.backend().dot(&gradient, &gradient, &mut result);
 
-                // FIXME: I've removed redefinition of `result` that was here.
-                // Code was invalid. Not sure what it meant. It may explode.
-                match result.read(native.device()).unwrap() {
-                    &MemoryType::Native(ref sumsq_result) => {
-                        let sumsq_diff_slice = sumsq_result.as_slice::<f32>();
-                        sumsq_diff += sumsq_diff_slice[0];
-                    }
-                    #[cfg(any(feature = "opencl", feature = "cuda"))]
-                    _ => {}
-                }
+                result.read(native.device()).unwrap();
+                let sumsq_diff_slice = sumsq_result.as_slice::<f32>();
+                sumsq_diff += sumsq_diff_slice[0];
             }
             let l2norm_diff = sumsq_diff.sqrt();
             if l2norm_diff > clip_threshold {
