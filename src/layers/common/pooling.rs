@@ -132,11 +132,7 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeOutput<f32, B> for Pooling<f32, B>
                 backend.pooling_avg(input_data[0], output_data[0], &*config)
                     .unwrap()
             }
-<<<<<<< HEAD
             _ => panic!("Unknown Parameter {:?} for PoolingMode", self.mode),
-=======
-            _ => panic!("Unknown Parameter {} for PoolingMode", self.mode),
->>>>>>> ff95bb3... chore/format: use rustfmt to re-format the whole codebase
         }
     }
 }

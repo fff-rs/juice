@@ -88,15 +88,9 @@ mod layer_spec {
             let loaded_weight_lock = loaded_weights[0].read().unwrap();
 
             let original_weight = original_weight_lock.read(native_backend().device())
-                .unwrap()
-                .as_native()
-                .unwrap()
-                .as_slice::<f32>();
+                .unwrap().as_slice::<f32>();
             let loaded_weight = loaded_weight_lock.read(native_backend().device())
-                .unwrap()
-                .as_native()
-                .unwrap()
-                .as_slice::<f32>();
+                .unwrap().as_slice::<f32>();
 
             assert_eq!(original_weight, loaded_weight);
         }
@@ -178,19 +172,15 @@ mod layer_spec {
 
             let normal_tensor_output = normal_network.forward(&[Arc::new(RwLock::new(normal_tensor))])[0].clone();
             let normal_tensor_output_native_ = normal_tensor_output.read().unwrap();
-            let normal_tensor_output_native = normal_tensor_output_native_.read(native_backend.device())
-                .unwrap()
-                .as_native()
-                .unwrap();
+            let normal_tensor_output_native = normal_tensor_output_native_
+                .read(native_backend.device()).unwrap();
             assert_eq!(&[0.7310585786f32, 0.7310586f32, 0.880797f32],
                        normal_tensor_output_native.as_slice::<f32>());
 
             let reshape_tensor_output = reshape_network.forward(&[Arc::new(RwLock::new(reshape_tensor))])[0].clone();
             let reshape_tensor_output_native_ = reshape_tensor_output.read().unwrap();
-            let reshape_tensor_output_native = reshape_tensor_output_native_.read(native_backend.device())
-                .unwrap()
-                .as_native()
-                .unwrap();
+            let reshape_tensor_output_native = reshape_tensor_output_native_
+                .read(native_backend.device()).unwrap();
             assert_eq!(&[0.7310585786f32, 0.7310586f32, 0.880797f32],
                        reshape_tensor_output_native.as_slice::<f32>());
             assert_eq!(normal_tensor_output_native.as_slice::<f32>(),

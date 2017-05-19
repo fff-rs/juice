@@ -6,20 +6,12 @@ extern crate timeit;
 extern crate collenchyma as co;
 extern crate leaf;
 
-<<<<<<< HEAD
-#[cfg(feature = "cuda")]
-mod cuda {
-    use test::Bencher;
-=======
 mod benches {
->>>>>>> 6d2b40c... refactor/benches: streamline examples and benches
     use co::prelude::*;
     use leaf::layer::*;
     use leaf::layers::*;
     use std::rc::Rc;
 
-<<<<<<< HEAD
-=======
     use std::sync::{Arc, RwLock};
     use test::Bencher;
 
@@ -27,7 +19,6 @@ mod benches {
         Rc::new(Backend::<Native>::default().unwrap())
     }
 
->>>>>>> 6d2b40c... refactor/benches: streamline examples and benches
     #[cfg(feature = "cuda")]
     fn cuda_backend() -> Rc<Backend<Cuda>> {
         Rc::new(Backend::<Cuda>::default().unwrap())

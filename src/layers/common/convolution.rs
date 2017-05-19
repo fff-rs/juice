@@ -62,7 +62,7 @@ impl<B: conn::Convolution<f32>> Convolution<B> {
         vec![filter_n, filter_c, filter_h, filter_w]
     }
 
-    fn create_filter(&self, device: &DeviceType, input_shape: &[usize]) -> SharedTensor<f32> {
+    fn create_filter(&self, input_shape: &[usize]) -> SharedTensor<f32> {
         let filter_shape = self.calculate_filter_shape(input_shape);
 
         SharedTensor::<f32>::new(&filter_shape)
@@ -135,7 +135,7 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
 
             let device = <B as IBackend>::device(&backend);
             let num_spatial_dims = self.num_spatial_dims(inp.desc());
-            let mut filter = self.create_filter(device, input_shape);
+            let mut filter = self.create_filter(input_shape);
             let stride = cast_vec_usize_to_i32(self.stride_dims(num_spatial_dims));
             let padding = cast_vec_usize_to_i32(self.padding_dims(num_spatial_dims));
 

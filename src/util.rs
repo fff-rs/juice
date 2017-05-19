@@ -1,6 +1,7 @@
 //! Provides common utility functions
 
 use co::prelude::*;
+use co::frameworks::native::flatbox::FlatBox;
 use coblas::plugin::*;
 use conn;
 use num::traits::{NumCast, cast};
@@ -20,22 +21,16 @@ pub fn native_backend() -> Backend<Native> {
 }
 
 /// Write into a native Collenchyma Memory.
-pub fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut MemoryType, data: &[T]) {
+pub fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T]) {
     write_to_memory_offset(mem, data, 0);
 }
 
 /// Write into a native Collenchyma Memory with a offset.
-pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut MemoryType, data: &[T], offset: usize) {
-    match mem {
-        &mut MemoryType::Native(ref mut mem) => {
-            let mut mem_buffer = mem.as_mut_slice::<f32>();
-            for (index, datum) in data.iter().enumerate() {
-                // mem_buffer[index + offset] = *datum;
-                mem_buffer[index + offset] = cast(*datum).unwrap();
-            }
-        }
-        #[cfg(any(feature = "opencl", feature = "cuda"))]
-        _ => {}
+pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) {
+    let mut mem_buffer = mem.as_mut_slice::<f32>();
+    for (index, datum) in data.iter().enumerate() {
+        // mem_buffer[index + offset] = *datum;
+        mem_buffer[index + offset] = cast(*datum).unwrap();
     }
 }
 
