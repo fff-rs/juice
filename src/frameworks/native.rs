@@ -11,24 +11,21 @@ use rblas;
 
 macro_rules! read {
     ($x:ident, $t:ident, $slf:ident) => (
-        try!($x.read($slf.device())).as_native()
-            .expect("Broken invariant: not a CUDA memory")
+        try!($x.read($slf.device()))
             .as_slice::<$t>();
     )
 }
 
 macro_rules! read_write {
     ($x:ident, $t: ident, $slf:ident) => (
-        try!($x.read_write($slf.device())).as_mut_native()
-            .expect("Broken invariant: not a CUDA memory")
+        try!($x.read_write($slf.device()))
             .as_mut_slice::<$t>();
     )
 }
 
 macro_rules! write_only {
     ($x:ident, $t: ident, $slf:ident) => (
-        try!($x.write_only($slf.device())).as_mut_native()
-            .expect("Broken invariant: not a CUDA memory")
+        try!($x.write_only($slf.device()))
             .as_mut_slice::<$t>();
     )
 }
@@ -223,30 +220,21 @@ fn read_from_matrix<T: Clone>(mat: &Mat<T>, slice: &mut [T]) {
 
 #[cfg(test)]
 mod test {
-    use collenchyma::backend::{Backend, BackendConfig};
+    use collenchyma::backend::{Backend, IBackend, BackendConfig};
     use collenchyma::framework::IFramework;
     use collenchyma::frameworks::Native;
     use collenchyma::tensor::SharedTensor;
-    use collenchyma::memory::MemoryType;
+	use collenchyma::frameworks::native::flatbox::FlatBox;
     use super::as_matrix;
 
-    fn get_native_backend() -> Backend<Native> {
-        let framework = Native::new();
-        let hardwares = framework.hardwares().to_vec();
-        let backend_config = BackendConfig::new(framework, &hardwares);
-        Backend::new(backend_config).unwrap()
-    }
+	fn get_native_backend() -> Backend<Native> {
+		Backend::<Native>::default().unwrap()
+	}
 
-    pub fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-        match mem {
-            &mut MemoryType::Native(ref mut mem) => {
-                let mut mem_buffer = mem.as_mut_slice::<T>();
-                for (index, datum) in data.iter().enumerate() {
-                    mem_buffer[index] = *datum;
-                }
-            },
-            #[cfg(any(feature = "cuda", feature = "opencl"))]
-            _ => assert!(false)
+    pub fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
+        let mut mem_buffer = mem.as_mut_slice::<T>();
+        for (index, datum) in data.iter().enumerate() {
+            mem_buffer[index] = *datum;
         }
     }
 
@@ -261,8 +249,7 @@ mod test {
               2f32, 5f32]);
 
         {
-            let a_slice_in = a.read(backend.device()).unwrap()
-                .as_native().unwrap().as_slice::<f32>();
+            let a_slice_in = a.read(backend.device()).unwrap().as_slice::<f32>();
             let a_mat = as_matrix(a_slice_in, &[3, 2]);
             // right
             assert_eq!(a_mat[0][0], 2f32);
