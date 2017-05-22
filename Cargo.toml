@@ -12,7 +12,7 @@ keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-collenchyma = { version = "0.0.8", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+collenchyma = { path = "../collenchyma", default-features = false, features = ["native"] } # native feature to read/write data into tensors
 
 image = "0.7.0"
 murmurhash3 = "0.0.5"
