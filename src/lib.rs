@@ -203,6 +203,7 @@ pub mod prelude {
     pub use device::{IDevice, IMemory};
     pub use hardware::{IHardware, HardwareType};
     pub use framework::IFramework;
+    pub use frameworks::native::flatbox::FlatBox;
     pub use tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
     #[cfg(feature = "native")]
     pub use frameworks::Native;
