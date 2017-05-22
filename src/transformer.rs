@@ -14,11 +14,11 @@ pub trait Transformer {
     /// observed one.
     fn transform(&self, shape: &[usize]) -> Result<SharedTensor<f32>, TransformerError> {
         let native_backend = Backend::<Native>::default().unwrap();
-        let mut tensor = SharedTensor::<f32>::new(native_backend.device(), &shape).unwrap();
+        let mut tensor = SharedTensor::<f32>::new(&shape);
 
         {
-            let mut native_tensor = tensor.get_mut(native_backend.device()).unwrap();
-            try!(Self::write_to_memory(&mut native_tensor, &self.transform_to_vec()));
+            let mut native_tensor = tensor.write_only(native_backend.device()).unwrap();
+            Self::write_to_memory(&mut native_tensor, &self.transform_to_vec())?;
         }
         Ok(tensor)
     }
@@ -27,27 +27,21 @@ pub trait Transformer {
     fn transform_to_vec(&self) -> Vec<f32>;
 
     /// Write into a native Collenchyma Memory.
-    fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut MemoryType, data: &[T]) -> Result<(), TransformerError> {
+    fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T]) -> Result<(), TransformerError> {
         Self::write_to_memory_offset(mem, data, 0)
     }
 
     /// Write into a native Collenchyma Memory with a offset.
-    fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut MemoryType, data: &[T], offset: usize) -> Result<(), TransformerError> {
-        match mem {
-            &mut MemoryType::Native(ref mut mem) => {
-                let mut mem_buffer = mem.as_mut_slice::<f32>();
-                if offset == 0 && mem_buffer.len() != data.len() {
-                    return Err(TransformerError::InvalidShape);
-                }
-                for (index, datum) in data.iter().enumerate() {
-                    let old_val = try!(mem_buffer.get_mut(index + offset).ok_or(TransformerError::InvalidShape));
-                    *old_val = cast(*datum).unwrap();
-                }
-                Ok(())
-            },
-            #[cfg(any(feature = "opencl", feature = "cuda"))]
-            _ => { unimplemented!() }
+    fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) -> Result<(), TransformerError> {
+        let mut mem_buffer = mem.as_mut_slice::<f32>();
+        if offset == 0 && mem_buffer.len() != data.len() {
+            return Err(TransformerError::InvalidShape);
         }
+        for (index, datum) in data.iter().enumerate() {
+            let old_val = try!(mem_buffer.get_mut(index + offset).ok_or(TransformerError::InvalidShape));
+            *old_val = cast(*datum).unwrap();
+        }
+        Ok(())
     }
 }
 

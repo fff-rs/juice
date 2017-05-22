@@ -31,7 +31,7 @@ mod transformer_spec {
         match img.transform(&vec![2, 2, 3]) {
             Ok(tensor) => {
                 let native_backend = Backend::<Native>::default().unwrap();
-                let data = tensor.get(native_backend.device()).unwrap().as_native().unwrap().as_slice();
+                let data = tensor.read(native_backend.device()).unwrap().as_slice();
                 assert_eq!(expected_result(), data);
             },
             _ => assert!(false)
