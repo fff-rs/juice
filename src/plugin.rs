@@ -4,7 +4,6 @@ use super::binary::IBlasBinary;
 use super::transpose::*;
 use collenchyma::binary::IBinary;
 use collenchyma::tensor::SharedTensor;
-use collenchyma::device::DeviceType;
 
 /// Provides the functionality for a backend to support Basic Linear Algebra Subprogram operations.
 pub trait IBlas<F> { }
@@ -98,8 +97,6 @@ pub trait Gemm<F> {
 pub trait BlasBinaryProvider<F, B: IBlasBinary<F> + IBinary> {
     /// Returns the binary representation
     fn binary(&self) -> &B;
-    /// Returns the device representation
-    fn device(&self) -> &DeviceType;
 }
 
 impl<F, B: IBlasBinary<F> + IBinary> IBlas<F> for BlasBinaryProvider<F, B> { }

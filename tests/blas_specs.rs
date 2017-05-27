@@ -4,54 +4,71 @@ extern crate collenchyma_blas as co_blas;
 extern crate collenchyma as co;
 
 use std::fmt;
-use co::backend::{Backend, BackendConfig, IBackend};
+use co::backend::{Backend, IBackend};
 use co::framework::{IFramework};
+
 use co::plugin::numeric_helpers::{cast, Float, NumCast};
-use co::tensor::SharedTensor;
+use co::tensor::{SharedTensor,ITensorDesc};
 use co_blas::plugin::*;
 use co_blas::transpose::Transpose;
+
+#[cfg(feature = "native")]
+use co::frameworks::Native;
 
 #[cfg(feature = "cuda")]
 use co::frameworks::Cuda;
 
-pub fn get_native_backend() -> Backend<::co::frameworks::Native> {
-    let framework = ::co::frameworks::Native::new();
-    let hardwares = framework.hardwares().to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    Backend::new(backend_config).unwrap()
+#[cfg(feature = "native")]
+fn get_native_backend() -> Backend<Native> {
+    Backend::<Native>::default().unwrap()
 }
-
 #[cfg(feature = "cuda")]
-pub fn get_cuda_backend() -> Backend<Cuda> {
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares().to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    Backend::new(backend_config).unwrap()
+fn get_cuda_backend() -> Backend<Cuda> {
+    Backend::<Cuda>::default().unwrap()
+}
+#[cfg(feature = "opencl")]
+fn get_opencl_backend() -> Backend<OpenCL> {
+    Backend::<OpenCL>::default().unwrap()
 }
 
+// TODO reuse the collenchyma-nn methods
+pub fn write_to_tensor<T>(xs: &mut SharedTensor<T>, data: &[f64])
+    where T: ::std::marker::Copy + NumCast {
 
-pub fn write_to_tensor<T, S>(x: &mut SharedTensor<T>, data: &[S])
-    where T: ::std::marker::Copy + NumCast,
-          S: ::std::marker::Copy + NumCast {
-
+    assert_eq!(xs.desc().size(), data.len());
     let native = get_native_backend();
-    let mem = x.write_only(native.device()).unwrap().as_mut_native().unwrap();
-    let mut mem_buffer = mem.as_mut_slice::<T>();
-    for (i, x) in data.iter().enumerate() {
-        mem_buffer[i] = cast::<S, T>(*x).unwrap();
+    let native_dev = native.device();
+    {
+        let mem = xs.write_only(native_dev).unwrap();
+        let mut mem_buffer = mem.as_mut_slice::<T>();
+        for (i, x) in data.iter().enumerate() {
+            mem_buffer[i] = cast::<_, T>(*x).unwrap();
+        }
     }
 }
 
-pub fn tensor_assert_eq<T: ::std::fmt::Debug>(x: &SharedTensor<T>, data: &[f64])
-    where T: fmt::Debug + PartialEq + NumCast {
+// TODO reuse the collenchyma-nn methods
+pub fn tensor_assert_eq<T>(xs: &SharedTensor<T>, data: &[f64], epsilon_mul: f64)
+    where T: Float + fmt::Debug + PartialEq + NumCast {
+
+	let e = 0. * epsilon_mul;
+
     let native = get_native_backend();
-    let mem = x.read(native.device()).unwrap().as_native().unwrap();
+    let native_dev = native.device();
+
+    let mem = xs.read(native_dev).unwrap();
     let mem_slice = mem.as_slice::<T>();
 
     assert_eq!(mem_slice.len(), data.len());
     for (x1, x2) in mem_slice.iter().zip(data.iter()) {
-        let x2_t = cast::<f64, T>(*x2).unwrap();
-        assert_eq!(*x1, x2_t); // TODO: compare approximately
+        let x1_t = cast::<_, f64>(*x1).unwrap();
+        let diff = (x1_t - x2).abs();
+        let max_diff = e * (x1_t.abs() + x2.abs()) * 0.5;
+        if (x1_t - x2).abs() > e * (x1_t.abs() + x2.abs()) * 0.5 {
+            println!("Results differ: {:?} != {:?} ({:.2?} in {:?} and {:?}",
+                     x1_t, x2, diff / max_diff, mem_slice, data);
+            assert!(false);
+        }
     }
 }
 
@@ -62,10 +79,10 @@ pub fn test_asum<T, F>(backend: Backend<F>)
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut result = SharedTensor::<T>::new(&[1]);
 
-    write_to_tensor(&mut x, &[1, -2, 3]);
+    write_to_tensor(&mut x, &[1., -2., 3.]);
     backend.asum(&x, &mut result).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&result, &[6.0]);
+    tensor_assert_eq(&result, &[6.0], 0.);
 }
 
 pub fn test_axpy<T, F>(backend: Backend<F>)
@@ -75,13 +92,13 @@ pub fn test_axpy<T, F>(backend: Backend<F>)
     let mut a = SharedTensor::<T>::new(&[1]);
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
-    write_to_tensor(&mut a, &[2]);
-    write_to_tensor(&mut x, &[1, 2, 3]);
-    write_to_tensor(&mut y, &[1, 2, 3]);
+    write_to_tensor(&mut a, &[2.]);
+    write_to_tensor(&mut x, &[1., 2., 3.]);
+    write_to_tensor(&mut y, &[1., 2., 3.]);
 
     backend.axpy(&a, &x, &mut y).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&y, &[3.0, 6.0, 9.0]);
+    tensor_assert_eq(&y, &[3.0, 6.0, 9.0], 0.);
 }
 
 pub fn test_copy<T, F>(backend: Backend<F>)
@@ -90,11 +107,11 @@ pub fn test_copy<T, F>(backend: Backend<F>)
             Backend<F>: Copy<T> + IBackend {
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
-    write_to_tensor(&mut x, &[1, 2, 3]);
+    write_to_tensor(&mut x, &[1., 2., 3.]);
 
     backend.copy(&x, &mut y).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&y, &[1.0, 2.0, 3.0]);
+    tensor_assert_eq(&y, &[1.0, 2.0, 3.0], 0.);
 }
 
 pub fn test_dot<T, F>(backend: Backend<F>)
@@ -104,12 +121,12 @@ pub fn test_dot<T, F>(backend: Backend<F>)
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
     let mut result = SharedTensor::<T>::new(&[1]);
-    write_to_tensor(&mut x, &[1, 2, 3]);
-    write_to_tensor(&mut y, &[1, 2, 3]);
+    write_to_tensor(&mut x, &[1., 2., 3.]);
+    write_to_tensor(&mut y, &[1., 2., 3.]);
 
     backend.dot(&x, &y, &mut result).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&result, &[14.0]);
+    tensor_assert_eq(&result, &[14.0], 0.);
 }
 
 pub fn test_nrm2<T, F>(backend: Backend<F>)
@@ -118,11 +135,11 @@ pub fn test_nrm2<T, F>(backend: Backend<F>)
             Backend<F>: Nrm2<T> + IBackend {
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut result = SharedTensor::<T>::new(&[1]);
-    write_to_tensor(&mut x, &[1, 2, 2]);
+    write_to_tensor(&mut x, &[1., 2., 2.]);
 
     backend.nrm2(&x, &mut result).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&result, &[3.0]);
+    tensor_assert_eq(&result, &[3.0], 0.);
 }
 
 pub fn test_scal<T, F>(backend: Backend<F>)
@@ -131,12 +148,12 @@ pub fn test_scal<T, F>(backend: Backend<F>)
             Backend<F>: Scal<T> + IBackend {
     let mut a = SharedTensor::<T>::new(&[1]);
     let mut y = SharedTensor::<T>::new(&[3]);
-    write_to_tensor(&mut a, &[2]);
-    write_to_tensor(&mut y, &[1, 2, 3]);
+    write_to_tensor(&mut a, &[2.]);
+    write_to_tensor(&mut y, &[1., 2., 3.]);
 
     backend.scal(&a, &mut y).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&y, &[2.0, 4.0, 6.0]);
+    tensor_assert_eq(&y, &[2.0, 4.0, 6.0], 0.);
 }
 
 pub fn test_swap<T, F>(backend: Backend<F>)
@@ -145,13 +162,13 @@ pub fn test_swap<T, F>(backend: Backend<F>)
             Backend<F>: Swap<T> + IBackend {
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
-    write_to_tensor(&mut x, &[1, 2, 3]);
-    write_to_tensor(&mut y, &[3, 2, 1]);
+    write_to_tensor(&mut x, &[1., 2., 3.]);
+    write_to_tensor(&mut y, &[3., 2., 1.]);
 
     backend.swap(&mut x, &mut y).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&x, &[3.0, 2.0, 1.0]);
-    tensor_assert_eq(&y, &[1.0, 2.0, 3.0]);
+    tensor_assert_eq(&x, &[3.0, 2.0, 1.0], 0.);
+    tensor_assert_eq(&y, &[1.0, 2.0, 3.0], 0.);
 }
 
 pub fn test_gemm<T, F>(backend: Backend<F>)
@@ -162,10 +179,10 @@ pub fn test_gemm<T, F>(backend: Backend<F>)
     let mut beta = SharedTensor::<T>::new(&[1]);
     let mut a = SharedTensor::<T>::new(&[3, 2]);
     let mut b = SharedTensor::<T>::new(&[2, 3]);
-    write_to_tensor(&mut alpha, &[1]);
-    write_to_tensor(&mut beta, &[0]);
-    write_to_tensor(&mut a, &[2, 5, 2,  5, 2, 5]);
-    write_to_tensor(&mut b, &[4, 1, 1,  4, 1, 1]);
+    write_to_tensor(&mut alpha, &[1.]);
+    write_to_tensor(&mut beta, &[0.]);
+    write_to_tensor(&mut a, &[2., 5., 2.,  5., 2., 5.]);
+    write_to_tensor(&mut b, &[4., 1., 1.,  4., 1., 1.]);
 
     let mut c = SharedTensor::<T>::new(&[3, 3]);
     backend.gemm(&alpha,
@@ -177,7 +194,7 @@ pub fn test_gemm<T, F>(backend: Backend<F>)
     tensor_assert_eq(&c, &[
         28.0, 7.0, 7.0,
         28.0, 7.0, 7.0,
-        28.0, 7.0, 7.0]);
+        28.0, 7.0, 7.0], 0.);
 
     let mut d = SharedTensor::<T>::new(&[2, 2]);
     backend.gemm(&alpha,
@@ -186,7 +203,7 @@ pub fn test_gemm<T, F>(backend: Backend<F>)
                     &beta,
                     &mut d).unwrap();
     backend.synchronize().unwrap();
-    tensor_assert_eq(&d, &[12.0, 12.0, 30.0, 30.0]);
+    tensor_assert_eq(&d, &[12.0, 12.0, 30.0, 30.0], 0.);
 }
 
 macro_rules! test_blas {
