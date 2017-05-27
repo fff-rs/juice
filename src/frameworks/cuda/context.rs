@@ -1,13 +1,14 @@
 //! Provides a Rust wrapper around Cuda's context.
 
-use device::{IDevice, DeviceType, IDeviceSyncOut};
+use device::{IDevice, MemorySync};
 use device::Error as DeviceError;
 use super::api::DriverFFI;
 use super::{Driver, DriverError, Device};
 use super::memory::*;
 #[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
-use memory::MemoryType;
+use frameworks::native::device::Cpu;
+use std::any::Any;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
@@ -63,13 +64,13 @@ impl Context {
     }
 }
 
-#[cfg(feature = "native")]
-impl IDeviceSyncOut<FlatBox> for Context {
-    type M = Memory;
-    fn sync_out(&self, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
-        Ok(try!(Driver::mem_cpy_d_to_h(source_data, dest_data)))
-    }
-}
+// #[cfg(feature = "native")]
+// impl IDeviceSyncOut<FlatBox> for Context {
+//     type M = Memory;
+//     fn sync_out(&self, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
+//         Ok(try!(Driver::mem_cpy_d_to_h(source_data, dest_data)))
+//     }
+// }
 
 impl IDevice for Context {
     type H = Device;
@@ -86,17 +87,29 @@ impl IDevice for Context {
     fn alloc_memory(&self, size: DriverFFI::size_t) -> Result<Memory, DeviceError> {
         Ok(try!(Driver::mem_alloc(size)))
     }
+}
 
-    fn sync_in(&self, source: &DeviceType, source_data: &MemoryType, dest_data: &mut Memory) -> Result<(), DeviceError> {
-        match source {
-            #[cfg(feature = "native")]
-            &DeviceType::Native(_) => {
-                match source_data.as_native() {
-                    Some(h_mem) => Ok(try!(Driver::mem_cpy_h_to_d(h_mem, dest_data))),
-                    None => unimplemented!()
-                }
-            },
-            _ => unimplemented!()
+impl MemorySync for Context {
+    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
+               -> Result<(), DeviceError> {
+        if let Some(_) = src_device.downcast_ref::<Cpu>() {
+            let mut my_mem = my_memory.downcast_mut::<Memory>().unwrap();
+            let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
+
+            Ok(try!(Driver::mem_cpy_h_to_d(src_mem, my_mem)))
+        } else {
+            Err(DeviceError::NoMemorySyncRoute)
+        }
+    }
+
+    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
+                -> Result<(), DeviceError> {
+        if let Some(_) = dst_device.downcast_ref::<Cpu>() {
+            let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
+            let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
+            Ok(try!(Driver::mem_cpy_d_to_h(my_mem, dst_mem)))
+        } else {
+            Err(DeviceError::NoMemorySyncRoute)
         }
     }
 }

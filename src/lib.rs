@@ -163,7 +163,6 @@ pub mod device;
 pub mod hardware;
 pub mod framework;
 pub mod frameworks;
-pub mod memory;
 pub mod tensor;
 pub mod operation;
 pub mod binary;
@@ -172,10 +171,9 @@ pub mod plugin;
 
 // These will be exported with the prelude.
 pub use backend::*;
-pub use device::{IDevice, DeviceType};
+pub use device::{IDevice, IMemory};
 pub use hardware::{IHardware, HardwareType};
 pub use framework::IFramework;
-pub use memory::{IMemory, MemoryType};
 pub use tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
 #[cfg(feature = "native")]
 pub use frameworks::Native;
@@ -202,10 +200,10 @@ pub use error::Error;
 /// when imported is `collenchyma::Error`.
 pub mod prelude {
     pub use backend::*;
-    pub use device::{IDevice, DeviceType};
+    pub use device::{IDevice, IMemory};
     pub use hardware::{IHardware, HardwareType};
     pub use framework::IFramework;
-    pub use memory::{IMemory, MemoryType};
+    pub use frameworks::native::flatbox::FlatBox;
     pub use tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
     #[cfg(feature = "native")]
     pub use frameworks::Native;

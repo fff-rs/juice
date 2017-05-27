@@ -7,7 +7,6 @@
 use framework::IFramework;
 use backend::{Backend, IBackend};
 use hardware::{HardwareType, IHardware};
-use device::DeviceType;
 use self::hardware::Hardware;
 pub use self::device::Cpu;
 pub use self::function::Function;
@@ -79,15 +78,15 @@ impl IFramework for Native {
         &self.binary
     }
 
-    fn new_device(&self, devices: &[Hardware]) -> Result<DeviceType, ::framework::Error> {
-        Ok(DeviceType::Native(Cpu::new(devices.to_vec())))
+    fn new_device(&self, devices: &[Hardware]) -> Result<Self::D, ::framework::Error> {
+        Ok(Cpu::new(devices.to_vec()))
     }
 }
 
 impl IBackend for Backend<Native> {
     type F = Native;
 
-    fn device(&self) -> &DeviceType {
+    fn device(&self) -> &Cpu {
         &self.device()
     }
 }

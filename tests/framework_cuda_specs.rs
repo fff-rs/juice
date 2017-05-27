@@ -25,10 +25,9 @@ mod framework_cuda_spec {
     fn it_allocates_memory() {
         let vec_a = vec![0isize, 1, 2, -3, 4, 5, 6, 7];
         let frm = Cuda::new();
-        if let DeviceType::Cuda(_) = frm.new_device(&frm.hardwares()[0..1]).unwrap() {
-            // Cuda memory
-            Memory::new(vec_a.len());
-        }
+        let _ctx = frm.new_device(&frm.hardwares()[0..1]).unwrap();
+        // Cuda memory
+        Memory::new(vec_a.len()).unwrap();
     }
 
     #[test]

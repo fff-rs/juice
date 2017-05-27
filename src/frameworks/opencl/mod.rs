@@ -13,7 +13,6 @@ extern { }
 
 use backend::{Backend, IBackend};
 use framework::IFramework;
-use device::DeviceType;
 pub use self::platform::Platform;
 pub use self::context::Context;
 pub use self::memory::{Memory, MemoryFlags};
@@ -92,15 +91,15 @@ impl IFramework for OpenCL {
     /// Contexts are used by the OpenCL runtime for managing objects such as command-queues,
     /// memory, program and kernel objects and for executing kernels on one or more hardwares
     /// specified in the context.
-    fn new_device(&self, hardwares: &[Device]) -> Result<DeviceType, ::framework::Error> {
-        Ok(DeviceType::OpenCL(try!(Context::new(hardwares.to_vec()))))
+    fn new_device(&self, hardwares: &[Device]) -> Result<Self::D, ::framework::Error> {
+        Ok(try!(Context::new(hardwares.to_vec())))
     }
 }
 
 impl IBackend for Backend<OpenCL> {
     type F = OpenCL;
 
-    fn device(&self) -> &DeviceType {
+    fn device(&self) -> &Context {
         &self.device()
     }
 }
