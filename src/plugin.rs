@@ -1,7 +1,6 @@
 //! Provides the INn Plugin trait for Collenchyma implementation.
 
 use co::tensor::SharedTensor;
-use co::device::DeviceType;
 
 #[derive(Debug, Copy, Clone)]
 /// Different algorithms to compute the convolution forward algorithm.
@@ -160,9 +159,6 @@ pub trait NN<F> {
 
     /// Initializes the Plugin.
     fn init_nn();
-
-    /// Returns the device on which the Plugin operations will run.
-    fn device(&self) -> &DeviceType;
 }
 
 /// Provides the functionality for a Backend to support Sigmoid operations.

@@ -29,14 +29,13 @@
 //! # #[cfg(feature = "cuda")]
 //! # mod cuda {
 //! use co::prelude::*;
+//! use co::frameworks::native::flatbox::FlatBox;
 //! use nn::*;
 //!
-//! fn write_to_memory<T: Copy>(mem: &mut MemoryType, data: &[T]) {
-//!     if let &mut MemoryType::Native(ref mut mem) = mem {
-//!         let mut mem_buffer = mem.as_mut_slice::<T>();
-//!         for (index, datum) in data.iter().enumerate() {
-//!             mem_buffer[index] = *datum;
-//!         }
+//! fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
+//!     let mut mem_buffer = mem.as_mut_slice::<T>();
+//!     for (index, datum) in data.iter().enumerate() {
+//!         mem_buffer[index] = *datum;
 //!     }
 //! }
 //!
@@ -51,11 +50,11 @@
 //!     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
 //!     let native = Native::new();
 //!     let cpu = native.new_device(native.hardwares()).unwrap();
-//!     write_to_memory(x.write_only(&cpu).unwrap(), payload); // Write to native host memory.
+//!     write_to_memory(x.write_only(&cpu), payload); // Write to native host memory.
 //!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
 //!     backend.sigmoid(&mut x, &mut result).unwrap();
 //!     // See the result.
-//!     println!("{:?}", result.read(&cpu).unwrap().as_native().unwrap().as_slice::<f64>());
+//!     println!("{:?}", result.read(&cpu).unwrap().as_slice::<f64>());
 //! }
 //! # }
 //! # #[cfg(not(feature = "cuda"))]

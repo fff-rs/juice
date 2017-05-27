@@ -7,57 +7,36 @@ use plugin::Pooling;
 use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, uniformly_random_tensor};
 use rand::distributions::{range, IndependentSample, Range};
 
-// TODO re-enable this over the stupid version below
-// TODO cuda verification for this one necessary
-// pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
-//     where T: Float + Epsilon + fmt::Debug,
-//           Backend<F>: Pooling<T> + IBackend {
-
-//     let test = |inp_dims: &[usize], out_dims: &[usize], window: &[i32], padding: &[i32], stride: &[i32] | {
-//         let inp_size = (0..inp_dims.len()).fold(1, |mpy, x| mpy * inp_dims[x]);
-//         let out_size = (0..out_dims.len()).fold(1, |mpy, x| mpy * out_dims[x]);
-//         let mut inp = vec![1.0; inp_size];
-//         inp[0] = 2.0;
-
-        // FIXME TODO implement sanity checks in pooling_max
-//         let x  = filled_tensor(&backend, inp_dims, &inp);
-//         let mut r = SharedTensor::<T>::new(&out_dims);
-//         let conf = Pooling::<T>::new_pooling_config(&backend, window, padding, stride)
-//             .unwrap();
-
-//         backend.pooling_max(&x, &mut r, &conf).unwrap();
-
-//         let mut r_test = vec![1.0; out_size];
-//         r_test[0] = 2.0;
-//         tensor_assert_eq(&r, &r_test, 1.0);
-//     };
-
-    //       input dims   , output dims  ,  window, padding, stride
-//     test(&[1, 1, 3, 3], &[1, 1, 2, 2], &[2, 2], &[0,0], &[1,1]);
-//     test(&[1, 1, 10, 10], &[1, 1, 2, 2], &[9, 9], &[0,0], &[1,1]);
-//     test(&[1, 1, 49, 49], &[1, 1, 7, 7], &[7, 7], &[0,0], &[7,7]);
-//     test(&[1, 1, 4, 4], &[1, 1, 2, 2], &[2, 2], &[0,0], &[2,2]);
-//     test(&[4, 1, 4, 4], &[4, 1, 2, 2], &[2, 2], &[0,0], &[2,2]);
-//     test(&[1, 4, 4, 4], &[1, 4, 2, 2], &[2, 2], &[0,0], &[2,2]);
-//     test(&[4, 4, 4, 4], &[4, 4, 3, 3], &[2, 2], &[1,1], &[2,2]);
-// }
-
 pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Pooling<T> + IBackend {
-    let mut inp = vec![1.0; 256];
-    inp[0] = 2.0;
 
-    let x  = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
-    let mut r = SharedTensor::<T>::new(&[4, 4, 2, 4]);
-    let conf = Pooling::<T>::new_pooling_config(&backend, &[2, 2], &[2, 1], &[0, 0])
-        .unwrap();
+    let test = |inp_dims: &[usize], out_dims: &[usize], window: &[i32], padding: &[i32], stride: &[i32] | {
+        let inp_size = (0..inp_dims.len()).fold(1, |mpy, x| mpy * inp_dims[x]);
+        let out_size = (0..out_dims.len()).fold(1, |mpy, x| mpy * out_dims[x]);
+        let mut inp = vec![1.0; inp_size];
+        inp[0] = 2.0;
 
-    backend.pooling_max(&x, &mut r, &conf).unwrap();
+        let x  = filled_tensor(&backend, inp_dims, &inp);
+        let mut r = SharedTensor::<T>::new(&out_dims);
+        let conf = Pooling::<T>::new_pooling_config(&backend, window, padding, stride)
+            .unwrap();
 
-    let mut r_test = vec![1.0; 128];
-    r_test[0] = 2.0;
-    tensor_assert_eq(&r, &r_test, 3.0);
+        backend.pooling_max(&x, &mut r, &conf).unwrap();
+
+        let mut r_test = vec![1.0; out_size];
+        r_test[0] = 2.0;
+        tensor_assert_eq(&r, &r_test, 1.0);
+    };
+
+    //   input dims   , output dims  ,  window, stride, padding
+    test(&[1, 1, 3, 3], &[1, 1, 2, 2], &[2, 2], &[1,1], &[0,0]);
+    test(&[1, 1, 10, 10], &[1, 1, 2, 2], &[9, 9], &[1,1], &[0,0]);
+    test(&[1, 1, 49, 49], &[1, 1, 7, 7], &[7, 7], &[7,7], &[0,0]);
+    test(&[1, 1, 4, 4], &[1, 1, 2, 2], &[2, 2], &[2,2], &[0,0]);
+    test(&[4, 1, 4, 4], &[4, 1, 2, 2], &[2, 2], &[2,2], &[0,0]);
+    test(&[1, 4, 4, 4], &[1, 4, 2, 2], &[2, 2], &[2,2], &[0,0]);
+    test(&[4, 4, 4, 4], &[4, 4, 3, 3], &[2, 2], &[2,2], &[1,1]);
 }
 
 pub fn test_pooling_max_grad<T, F: IFramework>(backend: Backend<F>)
@@ -130,19 +109,26 @@ pub fn cross_test_pooling_max<F: IFramework, G: IFramework>(backend_a: Backend<F
           Backend<F>: Pooling<f32> + IBackend,
           Backend<G>: Pooling<f32> + IBackend {
 
-    let mut inp = vec![1.0; 256];
+    let mut inp = vec![1.0; 192];
     inp[0] = 2.0;
+
+    let stride = &[2, 1];
+    let padding = &[0, 0];
+    let window = &[2, 2];
+
+    let dim_in = &[4, 3, 4, 4];
+    let dim_out = &[4, 3, 2, 4];
 
     let lower : f32 = -128.;
     let upper : f32 = 127.;
-    let x = uniformly_random_tensor(&backend_a, &[4, 4, 4, 4], lower, upper);
+    let x = uniformly_random_tensor(&backend_a, dim_in, lower, upper);
 
-    let mut r_a = SharedTensor::<f32>::new(&[4, 4, 2, 4]);
-    let mut r_b = SharedTensor::<f32>::new(&[4, 4, 2, 4]);
+    let mut r_a = SharedTensor::<f32>::new(dim_out);
+    let mut r_b = SharedTensor::<f32>::new(dim_out);
 
-    let conf_a = Pooling::<f32>::new_pooling_config(&backend_a, &[2, 2], &[2, 1], &[0, 0])
+    let conf_a = Pooling::<f32>::new_pooling_config(&backend_a, window, stride, padding)
         .unwrap();
-    let conf_b = Pooling::<f32>::new_pooling_config(&backend_b, &[2, 2], &[2, 1], &[0, 0])
+    let conf_b = Pooling::<f32>::new_pooling_config(&backend_b, window, stride, padding)
         .unwrap();
 
     backend_a.pooling_max(&x, &mut r_a, &conf_a).unwrap();

@@ -291,9 +291,6 @@ impl<T> NN<T> for Backend<Cuda>
     fn init_nn() {
         let _ = CUDNN.id_c();
     }
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
 }
 
 impl<'a, T> NNOperationConfig<T> for utils::ConvolutionConfig where T: Float + DataTypeInfo {}

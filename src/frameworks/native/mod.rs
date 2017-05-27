@@ -7,9 +7,11 @@
 use co::Error;
 use co::plugin::Error as PluginError;
 use co::plugin::numeric_helpers::Float;
+use co::plugin::numeric_helpers::Bounded;
 use co::prelude::*;
 use plugin::*;
 use std::cmp::PartialOrd;
+use std::fmt::Debug;
 
 use std::ops::*;
 
@@ -79,9 +81,6 @@ impl<T> NN<T> for Backend<Native>
     type CPOOL = helper::PoolingConfig;
 
     fn init_nn() {}
-    fn device(&self) -> &DeviceType {
-        self.device()
-    }
 }
 
 impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
@@ -148,15 +147,13 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
                    filter: &SharedTensor<T>,
                    x: &SharedTensor<T>,
                    result: &mut SharedTensor<T>,
-                   _scratch: &mut SharedTensor<u8>,
+                   _workspace: &mut SharedTensor<u8>,
                    config: &Self::CC)
                    -> Result<(), Error> {
         let dev = self.device();
 
         let input_dim = x.desc();
         let input = x.read(dev)
-            .unwrap()
-            .as_native()
             .unwrap()
             .as_slice::<T>();
         let input_stride = input_dim.default_stride();
@@ -166,11 +163,9 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
         let output = result
             .write_only(dev)
             .unwrap()
-            .as_mut_native()
-            .unwrap()
             .as_mut_slice::<T>();
-        let output_stride = output_dim.default_stride();
 
+        let output_stride = output_dim.default_stride();
         {
             for o in output.iter_mut() {
                 *o = Default::default();
@@ -180,8 +175,6 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
         let filter_dim = filter.desc();
         let filter = filter
             .read(dev)
-            .unwrap()
-            .as_native()
             .unwrap()
             .as_slice::<T>();
         let filter_stride = filter_dim.default_stride();
@@ -408,7 +401,7 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
 
 
 impl<T> ::plugin::Pooling<T> for Backend<Native>
-    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd
+    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
 {
     fn new_pooling_config(&self,
                           window: &[i32],
@@ -432,8 +425,6 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
         let input_dim = x.desc(); // [4, 4, 4, 4]
         let input = x.read(dev)
             .unwrap()
-            .as_native()
-            .unwrap()
             .as_slice::<T>();
         let input_stride = input_dim.default_stride(); // [64, 16, 4, 1];
 
@@ -441,8 +432,6 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
         // this is ok, we only read parts we already wrote
         let output = result
             .write_only(dev)
-            .unwrap()
-            .as_mut_native()
             .unwrap()
             .as_mut_slice::<T>();
         let output_stride = output_dim.default_stride(); // [16, 4, 2, 1]
@@ -463,9 +452,9 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                            depth_end: usize,
                            current_max: Option<T>)
                            -> T
-            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd
+            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
         {
-            let mut current_max = current_max.unwrap_or_default();
+            let mut current_max = current_max.unwrap_or(T::min_value());
 
             let p = padding[0] as usize;
             let input_idx_end = input_dim[0] + 2 * p;
@@ -474,7 +463,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                 let input_idx = input_idx_base[0] + window_idx as usize;
 
                 let v = if input_idx < p || input_idx + 1 > input_idx_end - p {
-                    Default::default()
+                    T::min_value()
                 } else {
                     let i_mem_offset = input_offset + (input_idx - p) * input_stride[0];
                     if depth + 1 >= depth_end {
@@ -495,9 +484,10 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                 // TODO: Handle NAN, inf and so on
                 current_max = if current_max >= v {
                     current_max
-                } else if current_max <= v {
+                } else if current_max < v {
                     v
                 } else {
+		//TODO honour the configuration to pass on NaN or not, see cudnn API
                     panic!("NaN")
                 };
             }
@@ -519,7 +509,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                       output_stride: &[usize],
                       output_dim: &[usize],
                       output_offset: usize)
-            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd
+            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
         {
             let p = padding[depth] as usize; // 0
             let w = window[depth] as usize; // 2
