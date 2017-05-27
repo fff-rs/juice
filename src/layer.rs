@@ -736,11 +736,7 @@ impl<B: IBackend> Layer<B> {
                 }
                 weight_lock.reshape(&shape).unwrap();
 
-                let mut native_slice = weight_lock.write_only(native_backend.device())
-                    .unwrap()
-                    .as_mut_native()
-                    .unwrap()
-                    .as_mut_slice::<f32>();
+                let mut native_slice = weight_lock.write_only(native_backend.device()).unwrap().as_mut_slice::<f32>();
                 let data = capnp_tensor.get_data().unwrap();
                 for k in 0..data.len() {
                     native_slice[k as usize] = data.get(k);
@@ -870,10 +866,7 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
                 }
                 {
                     let native_slice = weight_lock.read(native_backend.device())
-                        .unwrap()
-                        .as_native()
-                        .unwrap()
-                        .as_slice::<f32>();
+                        .unwrap().as_slice::<f32>();
                     let mut tensor_data = tensor.borrow().init_data(native_slice.len() as u32);
                     for (i, datum) in native_slice.iter().enumerate() {
                         tensor_data.set(i as u32, *datum);

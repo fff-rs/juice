@@ -72,15 +72,9 @@ impl<B: IBackend> ComputeOutput<f32, B> for NegativeLogLikelihood {
         let batch_size = Self::batch_size(labels.desc());
 
         let native = native_backend();
-        let native_labels = labels.read(native.device())
-            .unwrap()
-            .as_native()
-            .unwrap()
+        let native_labels = labels.read(native.device()).unwrap()
             .as_slice::<f32>();
-        let native_probabilities = probabilities.read(native.device())
-            .unwrap()
-            .as_native()
-            .unwrap()
+        let native_probabilities = probabilities.read(native.device()).unwrap()
             .as_slice::<f32>();
 
         let mut writable_loss = Vec::<f32>::new();
@@ -111,10 +105,7 @@ impl<B: IBackend> ComputeInputGradient<f32, B> for NegativeLogLikelihood {
         let num_classes = self.num_classes;
 
         let native = native_backend();
-        let native_labels = labels.read(native.device())
-            .unwrap()
-            .as_native()
-            .unwrap()
+        let native_labels = labels.read(native.device()).unwrap()
             .as_slice::<f32>();
         let mut writable_gradient = vec![0f32; input_gradients[0].desc().size()];
 
