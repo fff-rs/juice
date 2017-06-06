@@ -1,5 +1,6 @@
 use std::path::Path;
-use image_lib::{DynamicImage, ImageBuffer, open, load_from_memory};
+use image_crate::{DynamicImage, ImageBuffer, open, load_from_memory};
+
 use {Set, Transformer};
 use transformer::TransformerError;
 pub use self::modifiers::*;

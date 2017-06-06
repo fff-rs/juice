@@ -1,6 +1,6 @@
 use murmur3::murmurhash3_x86_32 as murmur3;
 use {Set, Transformer};
-pub use self::modifiers::*;
+use self::modifiers::*;
 
 /// The Modifiers for `Word`
 pub mod modifiers;

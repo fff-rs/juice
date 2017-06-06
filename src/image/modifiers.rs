@@ -1,5 +1,5 @@
 use modifier::Modifier;
-use image_lib::FilterType;
+use image_crate::FilterType;
 use super::Image;
 
 #[derive(Debug, Clone, Copy)]
