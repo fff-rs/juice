@@ -30,10 +30,118 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
-pub const CUDNN_MAJOR: ::libc::c_uint = 5;
-pub const CUDNN_MINOR: ::libc::c_uint = 1;
-pub const CUDNN_PATCHLEVEL: ::libc::c_uint = 5;
-pub const CUDNN_VERSION: ::libc::c_uint = 5105;
+pub const CUDNN_MAJOR: ::libc::c_uint = 6;
+pub const CUDNN_MINOR: ::libc::c_uint = 0;
+pub const CUDNN_PATCHLEVEL: ::libc::c_uint = 20;
+pub const CUDNN_VERSION: ::libc::c_uint = 6020;
+pub const _LIBC_LIMITS_H_: ::libc::c_uint = 1;
+pub const _FEATURES_H: ::libc::c_uint = 1;
+pub const _DEFAULT_SOURCE: ::libc::c_uint = 1;
+pub const __USE_ISOC11: ::libc::c_uint = 1;
+pub const __USE_ISOC99: ::libc::c_uint = 1;
+pub const __USE_ISOC95: ::libc::c_uint = 1;
+pub const __USE_POSIX_IMPLICITLY: ::libc::c_uint = 1;
+pub const _POSIX_SOURCE: ::libc::c_uint = 1;
+pub const _POSIX_C_SOURCE: ::libc::c_uint = 200809;
+pub const __USE_POSIX: ::libc::c_uint = 1;
+pub const __USE_POSIX2: ::libc::c_uint = 1;
+pub const __USE_POSIX199309: ::libc::c_uint = 1;
+pub const __USE_POSIX199506: ::libc::c_uint = 1;
+pub const __USE_XOPEN2K: ::libc::c_uint = 1;
+pub const __USE_XOPEN2K8: ::libc::c_uint = 1;
+pub const _ATFILE_SOURCE: ::libc::c_uint = 1;
+pub const __USE_MISC: ::libc::c_uint = 1;
+pub const __USE_ATFILE: ::libc::c_uint = 1;
+pub const __USE_FORTIFY_LEVEL: ::libc::c_uint = 0;
+pub const _STDC_PREDEF_H: ::libc::c_uint = 1;
+pub const __STDC_IEC_559__: ::libc::c_uint = 1;
+pub const __STDC_IEC_559_COMPLEX__: ::libc::c_uint = 1;
+pub const __STDC_ISO_10646__: ::libc::c_uint = 201605;
+pub const __STDC_NO_THREADS__: ::libc::c_uint = 1;
+pub const __GNU_LIBRARY__: ::libc::c_uint = 6;
+pub const __GLIBC__: ::libc::c_uint = 2;
+pub const __GLIBC_MINOR__: ::libc::c_uint = 24;
+pub const _SYS_CDEFS_H: ::libc::c_uint = 1;
+pub const __WORDSIZE: ::libc::c_uint = 64;
+pub const __WORDSIZE_TIME64_COMPAT32: ::libc::c_uint = 1;
+pub const __SYSCALL_WORDSIZE: ::libc::c_uint = 64;
+pub const MB_LEN_MAX: ::libc::c_uint = 16;
+pub const _BITS_POSIX1_LIM_H: ::libc::c_uint = 1;
+pub const _POSIX_AIO_LISTIO_MAX: ::libc::c_uint = 2;
+pub const _POSIX_AIO_MAX: ::libc::c_uint = 1;
+pub const _POSIX_ARG_MAX: ::libc::c_uint = 4096;
+pub const _POSIX_CHILD_MAX: ::libc::c_uint = 25;
+pub const _POSIX_DELAYTIMER_MAX: ::libc::c_uint = 32;
+pub const _POSIX_HOST_NAME_MAX: ::libc::c_uint = 255;
+pub const _POSIX_LINK_MAX: ::libc::c_uint = 8;
+pub const _POSIX_LOGIN_NAME_MAX: ::libc::c_uint = 9;
+pub const _POSIX_MAX_CANON: ::libc::c_uint = 255;
+pub const _POSIX_MAX_INPUT: ::libc::c_uint = 255;
+pub const _POSIX_MQ_OPEN_MAX: ::libc::c_uint = 8;
+pub const _POSIX_MQ_PRIO_MAX: ::libc::c_uint = 32;
+pub const _POSIX_NAME_MAX: ::libc::c_uint = 14;
+pub const _POSIX_NGROUPS_MAX: ::libc::c_uint = 8;
+pub const _POSIX_OPEN_MAX: ::libc::c_uint = 20;
+pub const _POSIX_PATH_MAX: ::libc::c_uint = 256;
+pub const _POSIX_PIPE_BUF: ::libc::c_uint = 512;
+pub const _POSIX_RE_DUP_MAX: ::libc::c_uint = 255;
+pub const _POSIX_RTSIG_MAX: ::libc::c_uint = 8;
+pub const _POSIX_SEM_NSEMS_MAX: ::libc::c_uint = 256;
+pub const _POSIX_SEM_VALUE_MAX: ::libc::c_uint = 32767;
+pub const _POSIX_SIGQUEUE_MAX: ::libc::c_uint = 32;
+pub const _POSIX_SSIZE_MAX: ::libc::c_uint = 32767;
+pub const _POSIX_STREAM_MAX: ::libc::c_uint = 8;
+pub const _POSIX_SYMLINK_MAX: ::libc::c_uint = 255;
+pub const _POSIX_SYMLOOP_MAX: ::libc::c_uint = 8;
+pub const _POSIX_TIMER_MAX: ::libc::c_uint = 32;
+pub const _POSIX_TTY_NAME_MAX: ::libc::c_uint = 9;
+pub const _POSIX_TZNAME_MAX: ::libc::c_uint = 6;
+pub const _POSIX_CLOCKRES_MIN: ::libc::c_uint = 20000000;
+pub const NR_OPEN: ::libc::c_uint = 1024;
+pub const NGROUPS_MAX: ::libc::c_uint = 65536;
+pub const ARG_MAX: ::libc::c_uint = 131072;
+pub const LINK_MAX: ::libc::c_uint = 127;
+pub const MAX_CANON: ::libc::c_uint = 255;
+pub const MAX_INPUT: ::libc::c_uint = 255;
+pub const NAME_MAX: ::libc::c_uint = 255;
+pub const PATH_MAX: ::libc::c_uint = 4096;
+pub const PIPE_BUF: ::libc::c_uint = 4096;
+pub const XATTR_NAME_MAX: ::libc::c_uint = 255;
+pub const XATTR_SIZE_MAX: ::libc::c_uint = 65536;
+pub const XATTR_LIST_MAX: ::libc::c_uint = 65536;
+pub const RTSIG_MAX: ::libc::c_uint = 32;
+pub const _POSIX_THREAD_KEYS_MAX: ::libc::c_uint = 128;
+pub const PTHREAD_KEYS_MAX: ::libc::c_uint = 1024;
+pub const _POSIX_THREAD_DESTRUCTOR_ITERATIONS: ::libc::c_uint = 4;
+pub const PTHREAD_DESTRUCTOR_ITERATIONS: ::libc::c_uint = 4;
+pub const _POSIX_THREAD_THREADS_MAX: ::libc::c_uint = 64;
+pub const AIO_PRIO_DELTA_MAX: ::libc::c_uint = 20;
+pub const PTHREAD_STACK_MIN: ::libc::c_uint = 16384;
+pub const DELAYTIMER_MAX: ::libc::c_uint = 2147483647;
+pub const TTY_NAME_MAX: ::libc::c_uint = 32;
+pub const LOGIN_NAME_MAX: ::libc::c_uint = 256;
+pub const HOST_NAME_MAX: ::libc::c_uint = 64;
+pub const MQ_PRIO_MAX: ::libc::c_uint = 32768;
+pub const SEM_VALUE_MAX: ::libc::c_uint = 2147483647;
+pub const _BITS_POSIX2_LIM_H: ::libc::c_uint = 1;
+pub const _POSIX2_BC_BASE_MAX: ::libc::c_uint = 99;
+pub const _POSIX2_BC_DIM_MAX: ::libc::c_uint = 2048;
+pub const _POSIX2_BC_SCALE_MAX: ::libc::c_uint = 99;
+pub const _POSIX2_BC_STRING_MAX: ::libc::c_uint = 1000;
+pub const _POSIX2_COLL_WEIGHTS_MAX: ::libc::c_uint = 2;
+pub const _POSIX2_EXPR_NEST_MAX: ::libc::c_uint = 32;
+pub const _POSIX2_LINE_MAX: ::libc::c_uint = 2048;
+pub const _POSIX2_RE_DUP_MAX: ::libc::c_uint = 255;
+pub const _POSIX2_CHARCLASS_NAME_MAX: ::libc::c_uint = 14;
+pub const BC_BASE_MAX: ::libc::c_uint = 99;
+pub const BC_DIM_MAX: ::libc::c_uint = 2048;
+pub const BC_SCALE_MAX: ::libc::c_uint = 99;
+pub const BC_STRING_MAX: ::libc::c_uint = 1000;
+pub const COLL_WEIGHTS_MAX: ::libc::c_uint = 255;
+pub const EXPR_NEST_MAX: ::libc::c_uint = 32;
+pub const LINE_MAX: ::libc::c_uint = 2048;
+pub const CHARCLASS_NAME_MAX: ::libc::c_uint = 2048;
+pub const RE_DUP_MAX: ::libc::c_uint = 32767;
 pub const cudaHostAllocDefault: ::libc::c_uint = 0;
 pub const cudaHostAllocPortable: ::libc::c_uint = 1;
 pub const cudaHostAllocMapped: ::libc::c_uint = 2;
@@ -8553,6 +8661,9 @@ pub type cudnnHandle_t = *mut cudnnContext;
 extern "C" {
     pub fn cudnnGetVersion() -> usize;
 }
+extern "C" {
+    pub fn cudnnGetCudartVersion() -> usize;
+}
 pub const CUDNN_STATUS_SUCCESS: _bindgen_ty_2 =
     _bindgen_ty_2::CUDNN_STATUS_SUCCESS;
 pub const CUDNN_STATUS_NOT_INITIALIZED: _bindgen_ty_2 =
@@ -8575,6 +8686,8 @@ pub const CUDNN_STATUS_NOT_SUPPORTED: _bindgen_ty_2 =
     _bindgen_ty_2::CUDNN_STATUS_NOT_SUPPORTED;
 pub const CUDNN_STATUS_LICENSE_ERROR: _bindgen_ty_2 =
     _bindgen_ty_2::CUDNN_STATUS_LICENSE_ERROR;
+pub const CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING: _bindgen_ty_2 =
+    _bindgen_ty_2::CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_2 {
@@ -8589,11 +8702,17 @@ pub enum _bindgen_ty_2 {
     CUDNN_STATUS_EXECUTION_FAILED = 8,
     CUDNN_STATUS_NOT_SUPPORTED = 9,
     CUDNN_STATUS_LICENSE_ERROR = 10,
+    CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING = 11,
 }
 pub use self::_bindgen_ty_2 as cudnnStatus_t;
 extern "C" {
     pub fn cudnnGetErrorString(status: cudnnStatus_t)
      -> *const ::libc::c_char;
+}
+extern "C" {
+    pub fn cudnnGetProperty(type_: libraryPropertyType,
+                            value: *mut ::libc::c_int)
+     -> cudnnStatus_t;
 }
 extern "C" {
     pub fn cudnnCreate(handle: *mut cudnnHandle_t) -> cudnnStatus_t;
@@ -8642,15 +8761,25 @@ pub type cudnnSpatialTransformerDescriptor_t =
 #[derive(Debug, Copy, Clone)]
 pub struct cudnnOpTensorStruct([u8; 0]);
 pub type cudnnOpTensorDescriptor_t = *mut cudnnOpTensorStruct;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnReduceTensorStruct([u8; 0]);
+pub type cudnnReduceTensorDescriptor_t = *mut cudnnReduceTensorStruct;
 pub const CUDNN_DATA_FLOAT: _bindgen_ty_3 = _bindgen_ty_3::CUDNN_DATA_FLOAT;
 pub const CUDNN_DATA_DOUBLE: _bindgen_ty_3 = _bindgen_ty_3::CUDNN_DATA_DOUBLE;
 pub const CUDNN_DATA_HALF: _bindgen_ty_3 = _bindgen_ty_3::CUDNN_DATA_HALF;
+pub const CUDNN_DATA_INT8: _bindgen_ty_3 = _bindgen_ty_3::CUDNN_DATA_INT8;
+pub const CUDNN_DATA_INT32: _bindgen_ty_3 = _bindgen_ty_3::CUDNN_DATA_INT32;
+pub const CUDNN_DATA_INT8x4: _bindgen_ty_3 = _bindgen_ty_3::CUDNN_DATA_INT8x4;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_3 {
     CUDNN_DATA_FLOAT = 0,
     CUDNN_DATA_DOUBLE = 1,
     CUDNN_DATA_HALF = 2,
+    CUDNN_DATA_INT8 = 3,
+    CUDNN_DATA_INT32 = 4,
+    CUDNN_DATA_INT8x4 = 5,
 }
 pub use self::_bindgen_ty_3 as cudnnDataType_t;
 pub const CUDNN_NOT_PROPAGATE_NAN: _bindgen_ty_4 =
@@ -8664,17 +8793,34 @@ pub enum _bindgen_ty_4 {
     CUDNN_PROPAGATE_NAN = 1,
 }
 pub use self::_bindgen_ty_4 as cudnnNanPropagation_t;
+pub const CUDNN_NON_DETERMINISTIC: _bindgen_ty_5 =
+    _bindgen_ty_5::CUDNN_NON_DETERMINISTIC;
+pub const CUDNN_DETERMINISTIC: _bindgen_ty_5 =
+    _bindgen_ty_5::CUDNN_DETERMINISTIC;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum _bindgen_ty_5 {
+    CUDNN_NON_DETERMINISTIC = 0,
+    CUDNN_DETERMINISTIC = 1,
+}
+pub use self::_bindgen_ty_5 as cudnnDeterminism_t;
 extern "C" {
     pub fn cudnnCreateTensorDescriptor(tensorDesc:
                                            *mut cudnnTensorDescriptor_t)
      -> cudnnStatus_t;
 }
-pub const CUDNN_TENSOR_NCHW: _bindgen_ty_5 = _bindgen_ty_5::CUDNN_TENSOR_NCHW;
-pub const CUDNN_TENSOR_NHWC: _bindgen_ty_5 = _bindgen_ty_5::CUDNN_TENSOR_NHWC;
+pub const CUDNN_TENSOR_NCHW: _bindgen_ty_6 = _bindgen_ty_6::CUDNN_TENSOR_NCHW;
+pub const CUDNN_TENSOR_NHWC: _bindgen_ty_6 = _bindgen_ty_6::CUDNN_TENSOR_NHWC;
+pub const CUDNN_TENSOR_NCHW_VECT_C: _bindgen_ty_6 =
+    _bindgen_ty_6::CUDNN_TENSOR_NCHW_VECT_C;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_5 { CUDNN_TENSOR_NCHW = 0, CUDNN_TENSOR_NHWC = 1, }
-pub use self::_bindgen_ty_5 as cudnnTensorFormat_t;
+pub enum _bindgen_ty_6 {
+    CUDNN_TENSOR_NCHW = 0,
+    CUDNN_TENSOR_NHWC = 1,
+    CUDNN_TENSOR_NCHW_VECT_C = 2,
+}
+pub use self::_bindgen_ty_6 as cudnnTensorFormat_t;
 extern "C" {
     pub fn cudnnSetTensor4dDescriptor(tensorDesc: cudnnTensorDescriptor_t,
                                       format: cudnnTensorFormat_t,
@@ -8720,6 +8866,14 @@ extern "C" {
      -> cudnnStatus_t;
 }
 extern "C" {
+    pub fn cudnnSetTensorNdDescriptorEx(tensorDesc: cudnnTensorDescriptor_t,
+                                        format: cudnnTensorFormat_t,
+                                        dataType: cudnnDataType_t,
+                                        nbDims: ::libc::c_int,
+                                        dimA: *const ::libc::c_int)
+     -> cudnnStatus_t;
+}
+extern "C" {
     pub fn cudnnGetTensorNdDescriptor(tensorDesc: cudnnTensorDescriptor_t,
                                       nbDimsRequested: ::libc::c_int,
                                       dataType: *mut cudnnDataType_t,
@@ -8727,6 +8881,10 @@ extern "C" {
                                       dimA: *mut ::libc::c_int,
                                       strideA: *mut ::libc::c_int)
      -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetTensorSizeInBytes(tensorDesc: cudnnTensorDescriptor_t,
+                                     size: *mut usize) -> cudnnStatus_t;
 }
 extern "C" {
     pub fn cudnnDestroyTensorDescriptor(tensorDesc: cudnnTensorDescriptor_t)
@@ -8751,23 +8909,26 @@ extern "C" {
                           cDesc: cudnnTensorDescriptor_t,
                           C: *mut ::libc::c_void) -> cudnnStatus_t;
 }
-pub const CUDNN_OP_TENSOR_ADD: _bindgen_ty_6 =
-    _bindgen_ty_6::CUDNN_OP_TENSOR_ADD;
-pub const CUDNN_OP_TENSOR_MUL: _bindgen_ty_6 =
-    _bindgen_ty_6::CUDNN_OP_TENSOR_MUL;
-pub const CUDNN_OP_TENSOR_MIN: _bindgen_ty_6 =
-    _bindgen_ty_6::CUDNN_OP_TENSOR_MIN;
-pub const CUDNN_OP_TENSOR_MAX: _bindgen_ty_6 =
-    _bindgen_ty_6::CUDNN_OP_TENSOR_MAX;
+pub const CUDNN_OP_TENSOR_ADD: _bindgen_ty_7 =
+    _bindgen_ty_7::CUDNN_OP_TENSOR_ADD;
+pub const CUDNN_OP_TENSOR_MUL: _bindgen_ty_7 =
+    _bindgen_ty_7::CUDNN_OP_TENSOR_MUL;
+pub const CUDNN_OP_TENSOR_MIN: _bindgen_ty_7 =
+    _bindgen_ty_7::CUDNN_OP_TENSOR_MIN;
+pub const CUDNN_OP_TENSOR_MAX: _bindgen_ty_7 =
+    _bindgen_ty_7::CUDNN_OP_TENSOR_MAX;
+pub const CUDNN_OP_TENSOR_SQRT: _bindgen_ty_7 =
+    _bindgen_ty_7::CUDNN_OP_TENSOR_SQRT;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_6 {
+pub enum _bindgen_ty_7 {
     CUDNN_OP_TENSOR_ADD = 0,
     CUDNN_OP_TENSOR_MUL = 1,
     CUDNN_OP_TENSOR_MIN = 2,
     CUDNN_OP_TENSOR_MAX = 3,
+    CUDNN_OP_TENSOR_SQRT = 4,
 }
-pub use self::_bindgen_ty_6 as cudnnOpTensorOp_t;
+pub use self::_bindgen_ty_7 as cudnnOpTensorOp_t;
 extern "C" {
     pub fn cudnnCreateOpTensorDescriptor(opTensorDesc:
                                              *mut cudnnOpTensorDescriptor_t)
@@ -8806,6 +8967,135 @@ extern "C" {
                          cDesc: cudnnTensorDescriptor_t,
                          C: *mut ::libc::c_void) -> cudnnStatus_t;
 }
+pub const CUDNN_REDUCE_TENSOR_ADD: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_ADD;
+pub const CUDNN_REDUCE_TENSOR_MUL: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_MUL;
+pub const CUDNN_REDUCE_TENSOR_MIN: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_MIN;
+pub const CUDNN_REDUCE_TENSOR_MAX: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_MAX;
+pub const CUDNN_REDUCE_TENSOR_AMAX: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_AMAX;
+pub const CUDNN_REDUCE_TENSOR_AVG: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_AVG;
+pub const CUDNN_REDUCE_TENSOR_NORM1: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_NORM1;
+pub const CUDNN_REDUCE_TENSOR_NORM2: _bindgen_ty_8 =
+    _bindgen_ty_8::CUDNN_REDUCE_TENSOR_NORM2;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum _bindgen_ty_8 {
+    CUDNN_REDUCE_TENSOR_ADD = 0,
+    CUDNN_REDUCE_TENSOR_MUL = 1,
+    CUDNN_REDUCE_TENSOR_MIN = 2,
+    CUDNN_REDUCE_TENSOR_MAX = 3,
+    CUDNN_REDUCE_TENSOR_AMAX = 4,
+    CUDNN_REDUCE_TENSOR_AVG = 5,
+    CUDNN_REDUCE_TENSOR_NORM1 = 6,
+    CUDNN_REDUCE_TENSOR_NORM2 = 7,
+}
+pub use self::_bindgen_ty_8 as cudnnReduceTensorOp_t;
+pub const CUDNN_REDUCE_TENSOR_NO_INDICES: _bindgen_ty_9 =
+    _bindgen_ty_9::CUDNN_REDUCE_TENSOR_NO_INDICES;
+pub const CUDNN_REDUCE_TENSOR_FLATTENED_INDICES: _bindgen_ty_9 =
+    _bindgen_ty_9::CUDNN_REDUCE_TENSOR_FLATTENED_INDICES;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum _bindgen_ty_9 {
+    CUDNN_REDUCE_TENSOR_NO_INDICES = 0,
+    CUDNN_REDUCE_TENSOR_FLATTENED_INDICES = 1,
+}
+pub use self::_bindgen_ty_9 as cudnnReduceTensorIndices_t;
+pub const CUDNN_32BIT_INDICES: _bindgen_ty_10 =
+    _bindgen_ty_10::CUDNN_32BIT_INDICES;
+pub const CUDNN_64BIT_INDICES: _bindgen_ty_10 =
+    _bindgen_ty_10::CUDNN_64BIT_INDICES;
+pub const CUDNN_16BIT_INDICES: _bindgen_ty_10 =
+    _bindgen_ty_10::CUDNN_16BIT_INDICES;
+pub const CUDNN_8BIT_INDICES: _bindgen_ty_10 =
+    _bindgen_ty_10::CUDNN_8BIT_INDICES;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum _bindgen_ty_10 {
+    CUDNN_32BIT_INDICES = 0,
+    CUDNN_64BIT_INDICES = 1,
+    CUDNN_16BIT_INDICES = 2,
+    CUDNN_8BIT_INDICES = 3,
+}
+pub use self::_bindgen_ty_10 as cudnnIndicesType_t;
+extern "C" {
+    pub fn cudnnCreateReduceTensorDescriptor(reduceTensorDesc:
+                                                 *mut cudnnReduceTensorDescriptor_t)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetReduceTensorDescriptor(reduceTensorDesc:
+                                              cudnnReduceTensorDescriptor_t,
+                                          reduceTensorOp:
+                                              cudnnReduceTensorOp_t,
+                                          reduceTensorCompType:
+                                              cudnnDataType_t,
+                                          reduceTensorNanOpt:
+                                              cudnnNanPropagation_t,
+                                          reduceTensorIndices:
+                                              cudnnReduceTensorIndices_t,
+                                          reduceTensorIndicesType:
+                                              cudnnIndicesType_t)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetReduceTensorDescriptor(reduceTensorDesc:
+                                              cudnnReduceTensorDescriptor_t,
+                                          reduceTensorOp:
+                                              *mut cudnnReduceTensorOp_t,
+                                          reduceTensorCompType:
+                                              *mut cudnnDataType_t,
+                                          reduceTensorNanOpt:
+                                              *mut cudnnNanPropagation_t,
+                                          reduceTensorIndices:
+                                              *mut cudnnReduceTensorIndices_t,
+                                          reduceTensorIndicesType:
+                                              *mut cudnnIndicesType_t)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyReduceTensorDescriptor(reduceTensorDesc:
+                                                  cudnnReduceTensorDescriptor_t)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetReductionIndicesSize(handle: cudnnHandle_t,
+                                        reduceTensorDesc:
+                                            cudnnReduceTensorDescriptor_t,
+                                        aDesc: cudnnTensorDescriptor_t,
+                                        cDesc: cudnnTensorDescriptor_t,
+                                        sizeInBytes: *mut usize)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetReductionWorkspaceSize(handle: cudnnHandle_t,
+                                          reduceTensorDesc:
+                                              cudnnReduceTensorDescriptor_t,
+                                          aDesc: cudnnTensorDescriptor_t,
+                                          cDesc: cudnnTensorDescriptor_t,
+                                          sizeInBytes: *mut usize)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnReduceTensor(handle: cudnnHandle_t,
+                             reduceTensorDesc: cudnnReduceTensorDescriptor_t,
+                             indices: *mut ::libc::c_void,
+                             indicesSizeInBytes: usize,
+                             workspace: *mut ::libc::c_void,
+                             workspaceSizeInBytes: usize,
+                             alpha: *const ::libc::c_void,
+                             aDesc: cudnnTensorDescriptor_t,
+                             A: *const ::libc::c_void,
+                             beta: *const ::libc::c_void,
+                             cDesc: cudnnTensorDescriptor_t,
+                             C: *mut ::libc::c_void) -> cudnnStatus_t;
+}
 extern "C" {
     pub fn cudnnSetTensor(handle: cudnnHandle_t,
                           yDesc: cudnnTensorDescriptor_t,
@@ -8820,13 +9110,17 @@ extern "C" {
                             alpha: *const ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_CONVOLUTION: _bindgen_ty_7 = _bindgen_ty_7::CUDNN_CONVOLUTION;
-pub const CUDNN_CROSS_CORRELATION: _bindgen_ty_7 =
-    _bindgen_ty_7::CUDNN_CROSS_CORRELATION;
+pub const CUDNN_CONVOLUTION: _bindgen_ty_11 =
+    _bindgen_ty_11::CUDNN_CONVOLUTION;
+pub const CUDNN_CROSS_CORRELATION: _bindgen_ty_11 =
+    _bindgen_ty_11::CUDNN_CROSS_CORRELATION;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_7 { CUDNN_CONVOLUTION = 0, CUDNN_CROSS_CORRELATION = 1, }
-pub use self::_bindgen_ty_7 as cudnnConvolutionMode_t;
+pub enum _bindgen_ty_11 {
+    CUDNN_CONVOLUTION = 0,
+    CUDNN_CROSS_CORRELATION = 1,
+}
+pub use self::_bindgen_ty_11 as cudnnConvolutionMode_t;
 extern "C" {
     pub fn cudnnCreateFilterDescriptor(filterDesc:
                                            *mut cudnnFilterDescriptor_t)
@@ -8886,22 +9180,10 @@ extern "C" {
                                            pad_w: ::libc::c_int,
                                            u: ::libc::c_int,
                                            v: ::libc::c_int,
-                                           upscalex: ::libc::c_int,
-                                           upscaley: ::libc::c_int,
-                                           mode: cudnnConvolutionMode_t)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetConvolution2dDescriptor_v5(convDesc:
-                                                  cudnnConvolutionDescriptor_t,
-                                              pad_h: ::libc::c_int,
-                                              pad_w: ::libc::c_int,
-                                              u: ::libc::c_int,
-                                              v: ::libc::c_int,
-                                              upscalex: ::libc::c_int,
-                                              upscaley: ::libc::c_int,
-                                              mode: cudnnConvolutionMode_t,
-                                              dataType: cudnnDataType_t)
+                                           dilation_h: ::libc::c_int,
+                                           dilation_w: ::libc::c_int,
+                                           mode: cudnnConvolutionMode_t,
+                                           computeType: cudnnDataType_t)
      -> cudnnStatus_t;
 }
 extern "C" {
@@ -8911,29 +9193,12 @@ extern "C" {
                                            pad_w: *mut ::libc::c_int,
                                            u: *mut ::libc::c_int,
                                            v: *mut ::libc::c_int,
-                                           upscalex:
+                                           dilation_h:
                                                *mut ::libc::c_int,
-                                           upscaley:
+                                           dilation_w:
                                                *mut ::libc::c_int,
-                                           mode: *mut cudnnConvolutionMode_t)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolution2dDescriptor_v5(convDesc:
-                                                  cudnnConvolutionDescriptor_t,
-                                              pad_h:
-                                                  *mut ::libc::c_int,
-                                              pad_w:
-                                                  *mut ::libc::c_int,
-                                              u: *mut ::libc::c_int,
-                                              v: *mut ::libc::c_int,
-                                              upscalex:
-                                                  *mut ::libc::c_int,
-                                              upscaley:
-                                                  *mut ::libc::c_int,
-                                              mode:
-                                                  *mut cudnnConvolutionMode_t,
-                                              dataType: *mut cudnnDataType_t)
+                                           mode: *mut cudnnConvolutionMode_t,
+                                           computeType: *mut cudnnDataType_t)
      -> cudnnStatus_t;
 }
 extern "C" {
@@ -8960,10 +9225,10 @@ extern "C" {
                                            padA: *const ::libc::c_int,
                                            filterStrideA:
                                                *const ::libc::c_int,
-                                           upscaleA:
+                                           dilationA:
                                                *const ::libc::c_int,
                                            mode: cudnnConvolutionMode_t,
-                                           dataType: cudnnDataType_t)
+                                           computeType: cudnnDataType_t)
      -> cudnnStatus_t;
 }
 extern "C" {
@@ -8976,10 +9241,10 @@ extern "C" {
                                            padA: *mut ::libc::c_int,
                                            strideA:
                                                *mut ::libc::c_int,
-                                           upscaleA:
+                                           dilationA:
                                                *mut ::libc::c_int,
                                            mode: *mut cudnnConvolutionMode_t,
-                                           dataType: *mut cudnnDataType_t)
+                                           computeType: *mut cudnnDataType_t)
      -> cudnnStatus_t;
 }
 extern "C" {
@@ -9000,39 +9265,41 @@ extern "C" {
                                                  cudnnConvolutionDescriptor_t)
      -> cudnnStatus_t;
 }
-pub const CUDNN_CONVOLUTION_FWD_NO_WORKSPACE: _bindgen_ty_8 =
-    _bindgen_ty_8::CUDNN_CONVOLUTION_FWD_NO_WORKSPACE;
-pub const CUDNN_CONVOLUTION_FWD_PREFER_FASTEST: _bindgen_ty_8 =
-    _bindgen_ty_8::CUDNN_CONVOLUTION_FWD_PREFER_FASTEST;
-pub const CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT: _bindgen_ty_8 =
-    _bindgen_ty_8::CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT;
+pub const CUDNN_CONVOLUTION_FWD_NO_WORKSPACE: _bindgen_ty_12 =
+    _bindgen_ty_12::CUDNN_CONVOLUTION_FWD_NO_WORKSPACE;
+pub const CUDNN_CONVOLUTION_FWD_PREFER_FASTEST: _bindgen_ty_12 =
+    _bindgen_ty_12::CUDNN_CONVOLUTION_FWD_PREFER_FASTEST;
+pub const CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT: _bindgen_ty_12 =
+    _bindgen_ty_12::CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_8 {
+pub enum _bindgen_ty_12 {
     CUDNN_CONVOLUTION_FWD_NO_WORKSPACE = 0,
     CUDNN_CONVOLUTION_FWD_PREFER_FASTEST = 1,
     CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT = 2,
 }
-pub use self::_bindgen_ty_8 as cudnnConvolutionFwdPreference_t;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_GEMM: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_GEMM;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_DIRECT: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_FFT: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_FFT;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD;
-pub const CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED: _bindgen_ty_9 =
-    _bindgen_ty_9::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED;
+pub use self::_bindgen_ty_12 as cudnnConvolutionFwdPreference_t;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_GEMM: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_GEMM;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_DIRECT: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_DIRECT;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_FFT: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_FFT;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED;
+pub const CUDNN_CONVOLUTION_FWD_ALGO_COUNT: _bindgen_ty_13 =
+    _bindgen_ty_13::CUDNN_CONVOLUTION_FWD_ALGO_COUNT;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_9 {
+pub enum _bindgen_ty_13 {
     CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM = 0,
     CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM = 1,
     CUDNN_CONVOLUTION_FWD_ALGO_GEMM = 2,
@@ -9041,26 +9308,28 @@ pub enum _bindgen_ty_9 {
     CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING = 5,
     CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD = 6,
     CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED = 7,
+    CUDNN_CONVOLUTION_FWD_ALGO_COUNT = 8,
 }
-pub use self::_bindgen_ty_9 as cudnnConvolutionFwdAlgo_t;
+pub use self::_bindgen_ty_13 as cudnnConvolutionFwdAlgo_t;
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct _bindgen_ty_10 {
+pub struct _bindgen_ty_14 {
     pub algo: cudnnConvolutionFwdAlgo_t,
     pub status: cudnnStatus_t,
     pub time: f32,
     pub memory: usize,
+    pub determinism: cudnnDeterminism_t,
+    pub reserved: [::libc::c_int; 4usize],
 }
 #[test]
-fn bindgen_test_layout__bindgen_ty_10() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_10>() , 24usize);
-    assert_eq!(::std::mem::align_of::<_bindgen_ty_10>() , 8usize);
+fn bindgen_test_layout__bindgen_ty_14() {
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_14>() , 48usize);
+    assert_eq!(::std::mem::align_of::<_bindgen_ty_14>() , 8usize);
 }
-impl Clone for _bindgen_ty_10 {
+impl Clone for _bindgen_ty_14 {
     fn clone(&self) -> Self { *self }
 }
-
-pub type cudnnConvolutionFwdAlgoPerf_t = _bindgen_ty_10;
+pub type cudnnConvolutionFwdAlgoPerf_t = _bindgen_ty_14;
 
 impl Default for cudnnConvolutionFwdAlgoPerf_t {
     fn default() -> Self {
@@ -9069,6 +9338,8 @@ impl Default for cudnnConvolutionFwdAlgoPerf_t {
             status : CUDNN_STATUS_NOT_INITIALIZED,
             time : 0.0 as f32,
             memory : 0,
+            determinism : CUDNN_NON_DETERMINISTIC,
+            reserved : [0; 4usize],
         }
     }
 }
@@ -9164,6 +9435,43 @@ extern "C" {
      -> cudnnStatus_t;
 }
 extern "C" {
+    pub fn cudnnConvolutionBiasActivationForward(handle: cudnnHandle_t,
+                                                 alpha1:
+                                                     *const ::libc::c_void,
+                                                 xDesc:
+                                                     cudnnTensorDescriptor_t,
+                                                 x:
+                                                     *const ::libc::c_void,
+                                                 wDesc:
+                                                     cudnnFilterDescriptor_t,
+                                                 w:
+                                                     *const ::libc::c_void,
+                                                 convDesc:
+                                                     cudnnConvolutionDescriptor_t,
+                                                 algo:
+                                                     cudnnConvolutionFwdAlgo_t,
+                                                 workSpace:
+                                                     *mut ::libc::c_void,
+                                                 workSpaceSizeInBytes: usize,
+                                                 alpha2:
+                                                     *const ::libc::c_void,
+                                                 zDesc:
+                                                     cudnnTensorDescriptor_t,
+                                                 z:
+                                                     *const ::libc::c_void,
+                                                 biasDesc:
+                                                     cudnnTensorDescriptor_t,
+                                                 bias:
+                                                     *const ::libc::c_void,
+                                                 activationDesc:
+                                                     cudnnActivationDescriptor_t,
+                                                 yDesc:
+                                                     cudnnTensorDescriptor_t,
+                                                 y:
+                                                     *mut ::libc::c_void)
+     -> cudnnStatus_t;
+}
+extern "C" {
     pub fn cudnnConvolutionBackwardBias(handle: cudnnHandle_t,
                                         alpha: *const ::libc::c_void,
                                         dyDesc: cudnnTensorDescriptor_t,
@@ -9173,60 +9481,70 @@ extern "C" {
                                         db: *mut ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_CONVOLUTION_BWD_FILTER_NO_WORKSPACE: _bindgen_ty_11 =
-    _bindgen_ty_11::CUDNN_CONVOLUTION_BWD_FILTER_NO_WORKSPACE;
-pub const CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST: _bindgen_ty_11 =
-    _bindgen_ty_11::CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST;
-pub const CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT: _bindgen_ty_11
+pub const CUDNN_CONVOLUTION_BWD_FILTER_NO_WORKSPACE: _bindgen_ty_15 =
+    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_FILTER_NO_WORKSPACE;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST: _bindgen_ty_15 =
+    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT: _bindgen_ty_15
           =
-    _bindgen_ty_11::CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT;
+    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_11 {
+pub enum _bindgen_ty_15 {
     CUDNN_CONVOLUTION_BWD_FILTER_NO_WORKSPACE = 0,
     CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST = 1,
     CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT = 2,
 }
-pub use self::_bindgen_ty_11 as cudnnConvolutionBwdFilterPreference_t;
-pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0: _bindgen_ty_12 =
-    _bindgen_ty_12::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0;
-pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1: _bindgen_ty_12 =
-    _bindgen_ty_12::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1;
-pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT: _bindgen_ty_12 =
-    _bindgen_ty_12::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT;
-pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3: _bindgen_ty_12 =
-    _bindgen_ty_12::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3;
-pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED: _bindgen_ty_12
+pub use self::_bindgen_ty_15 as cudnnConvolutionBwdFilterPreference_t;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0: _bindgen_ty_16 =
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1: _bindgen_ty_16 =
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT: _bindgen_ty_16 =
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3: _bindgen_ty_16 =
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD: _bindgen_ty_16 =
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED: _bindgen_ty_16
           =
-    _bindgen_ty_12::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED;
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING: _bindgen_ty_16 =
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING;
+pub const CUDNN_CONVOLUTION_BWD_FILTER_ALGO_COUNT: _bindgen_ty_16 =
+    _bindgen_ty_16::CUDNN_CONVOLUTION_BWD_FILTER_ALGO_COUNT;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_12 {
+pub enum _bindgen_ty_16 {
     CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0 = 0,
     CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 = 1,
     CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT = 2,
     CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 = 3,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD = 4,
     CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED = 5,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING = 6,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_COUNT = 7,
 }
-pub use self::_bindgen_ty_12 as cudnnConvolutionBwdFilterAlgo_t;
+pub use self::_bindgen_ty_16 as cudnnConvolutionBwdFilterAlgo_t;
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct _bindgen_ty_13 {
+pub struct _bindgen_ty_17 {
     pub algo: cudnnConvolutionBwdFilterAlgo_t,
     pub status: cudnnStatus_t,
     pub time: f32,
     pub memory: usize,
+    pub determinism: cudnnDeterminism_t,
+    pub reserved: [::libc::c_int; 4usize],
 }
 #[test]
-fn bindgen_test_layout__bindgen_ty_13() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_13>() , 24usize);
-    assert_eq!(::std::mem::align_of::<_bindgen_ty_13>() , 8usize);
+fn bindgen_test_layout__bindgen_ty_17() {
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_17>() , 48usize);
+    assert_eq!(::std::mem::align_of::<_bindgen_ty_17>() , 8usize);
 }
-impl Clone for _bindgen_ty_13 {
+impl Clone for _bindgen_ty_17 {
     fn clone(&self) -> Self { *self }
 }
-pub type cudnnConvolutionBwdFilterAlgoPerf_t = _bindgen_ty_13;
-
+pub type cudnnConvolutionBwdFilterAlgoPerf_t = _bindgen_ty_17;
 impl Default for cudnnConvolutionBwdFilterAlgoPerf_t {
     fn default() -> Self {
         cudnnConvolutionBwdFilterAlgoPerf_t {
@@ -9234,9 +9552,12 @@ impl Default for cudnnConvolutionBwdFilterAlgoPerf_t {
             status : CUDNN_STATUS_NOT_INITIALIZED,
             time : 0.0 as f32,
             memory : 0,
+            determinism : CUDNN_NON_DETERMINISTIC,
+            reserved: [0; 4usize],
         }
     }
 }
+
 
 extern "C" {
     pub fn cudnnFindConvolutionBackwardFilterAlgorithm(handle: cudnnHandle_t,
@@ -9340,72 +9661,80 @@ extern "C" {
                                           dw: *mut ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_CONVOLUTION_BWD_DATA_NO_WORKSPACE: _bindgen_ty_14 =
-    _bindgen_ty_14::CUDNN_CONVOLUTION_BWD_DATA_NO_WORKSPACE;
-pub const CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST: _bindgen_ty_14 =
-    _bindgen_ty_14::CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST;
-pub const CUDNN_CONVOLUTION_BWD_DATA_SPECIFY_WORKSPACE_LIMIT: _bindgen_ty_14 =
-    _bindgen_ty_14::CUDNN_CONVOLUTION_BWD_DATA_SPECIFY_WORKSPACE_LIMIT;
+pub const CUDNN_CONVOLUTION_BWD_DATA_NO_WORKSPACE: _bindgen_ty_18 =
+    _bindgen_ty_18::CUDNN_CONVOLUTION_BWD_DATA_NO_WORKSPACE;
+pub const CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST: _bindgen_ty_18 =
+    _bindgen_ty_18::CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST;
+pub const CUDNN_CONVOLUTION_BWD_DATA_SPECIFY_WORKSPACE_LIMIT: _bindgen_ty_18 =
+    _bindgen_ty_18::CUDNN_CONVOLUTION_BWD_DATA_SPECIFY_WORKSPACE_LIMIT;
 #[repr(u32)]
 /*********************************************************/
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_14 {
+pub enum _bindgen_ty_18 {
     CUDNN_CONVOLUTION_BWD_DATA_NO_WORKSPACE = 0,
     CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST = 1,
     CUDNN_CONVOLUTION_BWD_DATA_SPECIFY_WORKSPACE_LIMIT = 2,
 }
-pub use self::_bindgen_ty_14 as cudnnConvolutionBwdDataPreference_t;
-pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_0: _bindgen_ty_15 =
-    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0;
-pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_1: _bindgen_ty_15 =
-    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1;
-pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT: _bindgen_ty_15 =
-    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT;
-pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING: _bindgen_ty_15 =
-    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING;
-pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD: _bindgen_ty_15 =
-    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD;
-pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED: _bindgen_ty_15 =
-    _bindgen_ty_15::CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED;
+pub use self::_bindgen_ty_18 as cudnnConvolutionBwdDataPreference_t;
+pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_0: _bindgen_ty_19 =
+    _bindgen_ty_19::CUDNN_CONVOLUTION_BWD_DATA_ALGO_0;
+pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_1: _bindgen_ty_19 =
+    _bindgen_ty_19::CUDNN_CONVOLUTION_BWD_DATA_ALGO_1;
+pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT: _bindgen_ty_19 =
+    _bindgen_ty_19::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT;
+pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING: _bindgen_ty_19 =
+    _bindgen_ty_19::CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING;
+pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD: _bindgen_ty_19 =
+    _bindgen_ty_19::CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD;
+pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED: _bindgen_ty_19 =
+    _bindgen_ty_19::CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED;
+pub const CUDNN_CONVOLUTION_BWD_DATA_ALGO_COUNT: _bindgen_ty_19 =
+    _bindgen_ty_19::CUDNN_CONVOLUTION_BWD_DATA_ALGO_COUNT;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_15 {
+pub enum _bindgen_ty_19 {
     CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 = 0,
     CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 = 1,
     CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT = 2,
     CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING = 3,
     CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD = 4,
     CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED = 5,
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_COUNT = 6,
 }
-pub use self::_bindgen_ty_15 as cudnnConvolutionBwdDataAlgo_t;
+pub use self::_bindgen_ty_19 as cudnnConvolutionBwdDataAlgo_t;
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct _bindgen_ty_16 {
+pub struct _bindgen_ty_20 {
     pub algo: cudnnConvolutionBwdDataAlgo_t,
     pub status: cudnnStatus_t,
     pub time: f32,
     pub memory: usize,
+    pub determinism: cudnnDeterminism_t,
+    pub reserved: [::libc::c_int; 4usize],
 }
 #[test]
-fn bindgen_test_layout__bindgen_ty_16() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_16>() , 24usize);
-    assert_eq!(::std::mem::align_of::<_bindgen_ty_16>() , 8usize);
+fn bindgen_test_layout__bindgen_ty_20() {
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_20>() , 48usize);
+    assert_eq!(::std::mem::align_of::<_bindgen_ty_20>() , 8usize);
 }
-impl Clone for _bindgen_ty_16 {
+impl Clone for _bindgen_ty_20 {
     fn clone(&self) -> Self { *self }
 }
-pub type cudnnConvolutionBwdDataAlgoPerf_t = _bindgen_ty_16;
+pub type cudnnConvolutionBwdDataAlgoPerf_t = _bindgen_ty_20;
 
 impl Default for cudnnConvolutionBwdDataAlgoPerf_t {
-    fn default() -> Self {
+   fn default() -> Self {
         cudnnConvolutionBwdDataAlgoPerf_t {
             algo : CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
             status : CUDNN_STATUS_NOT_INITIALIZED,
             time : 0.0 as f32,
             memory : 0,
+            determinism : CUDNN_NON_DETERMINISTIC,
+            reserved : [0; 4usize],
         }
     }
 }
+
 
 extern "C" {
     pub fn cudnnFindConvolutionBackwardDataAlgorithm(handle: cudnnHandle_t,
@@ -9512,31 +9841,31 @@ extern "C" {
                        colBuffer: *mut ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_SOFTMAX_FAST: _bindgen_ty_17 =
-    _bindgen_ty_17::CUDNN_SOFTMAX_FAST;
-pub const CUDNN_SOFTMAX_ACCURATE: _bindgen_ty_17 =
-    _bindgen_ty_17::CUDNN_SOFTMAX_ACCURATE;
-pub const CUDNN_SOFTMAX_LOG: _bindgen_ty_17 =
-    _bindgen_ty_17::CUDNN_SOFTMAX_LOG;
+pub const CUDNN_SOFTMAX_FAST: _bindgen_ty_21 =
+    _bindgen_ty_21::CUDNN_SOFTMAX_FAST;
+pub const CUDNN_SOFTMAX_ACCURATE: _bindgen_ty_21 =
+    _bindgen_ty_21::CUDNN_SOFTMAX_ACCURATE;
+pub const CUDNN_SOFTMAX_LOG: _bindgen_ty_21 =
+    _bindgen_ty_21::CUDNN_SOFTMAX_LOG;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_17 {
+pub enum _bindgen_ty_21 {
     CUDNN_SOFTMAX_FAST = 0,
     CUDNN_SOFTMAX_ACCURATE = 1,
     CUDNN_SOFTMAX_LOG = 2,
 }
-pub use self::_bindgen_ty_17 as cudnnSoftmaxAlgorithm_t;
-pub const CUDNN_SOFTMAX_MODE_INSTANCE: _bindgen_ty_18 =
-    _bindgen_ty_18::CUDNN_SOFTMAX_MODE_INSTANCE;
-pub const CUDNN_SOFTMAX_MODE_CHANNEL: _bindgen_ty_18 =
-    _bindgen_ty_18::CUDNN_SOFTMAX_MODE_CHANNEL;
+pub use self::_bindgen_ty_21 as cudnnSoftmaxAlgorithm_t;
+pub const CUDNN_SOFTMAX_MODE_INSTANCE: _bindgen_ty_22 =
+    _bindgen_ty_22::CUDNN_SOFTMAX_MODE_INSTANCE;
+pub const CUDNN_SOFTMAX_MODE_CHANNEL: _bindgen_ty_22 =
+    _bindgen_ty_22::CUDNN_SOFTMAX_MODE_CHANNEL;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_18 {
+pub enum _bindgen_ty_22 {
     CUDNN_SOFTMAX_MODE_INSTANCE = 0,
     CUDNN_SOFTMAX_MODE_CHANNEL = 1,
 }
-pub use self::_bindgen_ty_18 as cudnnSoftmaxMode_t;
+pub use self::_bindgen_ty_22 as cudnnSoftmaxMode_t;
 extern "C" {
     pub fn cudnnSoftmaxForward(handle: cudnnHandle_t,
                                algo: cudnnSoftmaxAlgorithm_t,
@@ -9563,20 +9892,23 @@ extern "C" {
                                 dx: *mut ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_POOLING_MAX: _bindgen_ty_19 =
-    _bindgen_ty_19::CUDNN_POOLING_MAX;
-pub const CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING: _bindgen_ty_19 =
-    _bindgen_ty_19::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING;
-pub const CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING: _bindgen_ty_19 =
-    _bindgen_ty_19::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
+pub const CUDNN_POOLING_MAX: _bindgen_ty_23 =
+    _bindgen_ty_23::CUDNN_POOLING_MAX;
+pub const CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING: _bindgen_ty_23 =
+    _bindgen_ty_23::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING;
+pub const CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING: _bindgen_ty_23 =
+    _bindgen_ty_23::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING;
+pub const CUDNN_POOLING_MAX_DETERMINISTIC: _bindgen_ty_23 =
+    _bindgen_ty_23::CUDNN_POOLING_MAX_DETERMINISTIC;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_19 {
+pub enum _bindgen_ty_23 {
     CUDNN_POOLING_MAX = 0,
     CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING = 1,
     CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING = 2,
+    CUDNN_POOLING_MAX_DETERMINISTIC = 3,
 }
-pub use self::_bindgen_ty_19 as cudnnPoolingMode_t;
+pub use self::_bindgen_ty_23 as cudnnPoolingMode_t;
 extern "C" {
     pub fn cudnnCreatePoolingDescriptor(poolingDesc:
                                             *mut cudnnPoolingDescriptor_t)
@@ -9692,23 +10024,26 @@ extern "C" {
                                 dx: *mut ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_ACTIVATION_SIGMOID: _bindgen_ty_20 =
-    _bindgen_ty_20::CUDNN_ACTIVATION_SIGMOID;
-pub const CUDNN_ACTIVATION_RELU: _bindgen_ty_20 =
-    _bindgen_ty_20::CUDNN_ACTIVATION_RELU;
-pub const CUDNN_ACTIVATION_TANH: _bindgen_ty_20 =
-    _bindgen_ty_20::CUDNN_ACTIVATION_TANH;
-pub const CUDNN_ACTIVATION_CLIPPED_RELU: _bindgen_ty_20 =
-    _bindgen_ty_20::CUDNN_ACTIVATION_CLIPPED_RELU;
+pub const CUDNN_ACTIVATION_SIGMOID: _bindgen_ty_24 =
+    _bindgen_ty_24::CUDNN_ACTIVATION_SIGMOID;
+pub const CUDNN_ACTIVATION_RELU: _bindgen_ty_24 =
+    _bindgen_ty_24::CUDNN_ACTIVATION_RELU;
+pub const CUDNN_ACTIVATION_TANH: _bindgen_ty_24 =
+    _bindgen_ty_24::CUDNN_ACTIVATION_TANH;
+pub const CUDNN_ACTIVATION_CLIPPED_RELU: _bindgen_ty_24 =
+    _bindgen_ty_24::CUDNN_ACTIVATION_CLIPPED_RELU;
+pub const CUDNN_ACTIVATION_ELU: _bindgen_ty_24 =
+    _bindgen_ty_24::CUDNN_ACTIVATION_ELU;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_20 {
+pub enum _bindgen_ty_24 {
     CUDNN_ACTIVATION_SIGMOID = 0,
     CUDNN_ACTIVATION_RELU = 1,
     CUDNN_ACTIVATION_TANH = 2,
     CUDNN_ACTIVATION_CLIPPED_RELU = 3,
+    CUDNN_ACTIVATION_ELU = 4,
 }
-pub use self::_bindgen_ty_20 as cudnnActivationMode_t;
+pub use self::_bindgen_ty_24 as cudnnActivationMode_t;
 extern "C" {
     pub fn cudnnCreateActivationDescriptor(activationDesc:
                                                *mut cudnnActivationDescriptor_t)
@@ -9719,7 +10054,7 @@ extern "C" {
                                             cudnnActivationDescriptor_t,
                                         mode: cudnnActivationMode_t,
                                         reluNanOpt: cudnnNanPropagation_t,
-                                        reluCeiling: f64) -> cudnnStatus_t;
+                                        coef: f64) -> cudnnStatus_t;
 }
 extern "C" {
     pub fn cudnnGetActivationDescriptor(activationDesc:
@@ -9727,8 +10062,7 @@ extern "C" {
                                         mode: *mut cudnnActivationMode_t,
                                         reluNanOpt:
                                             *mut cudnnNanPropagation_t,
-                                        reluCeiling: *mut f64)
-     -> cudnnStatus_t;
+                                        coef: *mut f64) -> cudnnStatus_t;
 }
 extern "C" {
     pub fn cudnnDestroyActivationDescriptor(activationDesc:
@@ -9766,12 +10100,12 @@ extern "C" {
     pub fn cudnnCreateLRNDescriptor(normDesc: *mut cudnnLRNDescriptor_t)
      -> cudnnStatus_t;
 }
-pub const CUDNN_LRN_CROSS_CHANNEL_DIM1: _bindgen_ty_21 =
-    _bindgen_ty_21::CUDNN_LRN_CROSS_CHANNEL_DIM1;
+pub const CUDNN_LRN_CROSS_CHANNEL_DIM1: _bindgen_ty_25 =
+    _bindgen_ty_25::CUDNN_LRN_CROSS_CHANNEL_DIM1;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_21 { CUDNN_LRN_CROSS_CHANNEL_DIM1 = 0, }
-pub use self::_bindgen_ty_21 as cudnnLRNMode_t;
+pub enum _bindgen_ty_25 { CUDNN_LRN_CROSS_CHANNEL_DIM1 = 0, }
+pub use self::_bindgen_ty_25 as cudnnLRNMode_t;
 extern "C" {
     pub fn cudnnSetLRNDescriptor(normDesc: cudnnLRNDescriptor_t,
                                  lrnN: ::libc::c_uint, lrnAlpha: f64,
@@ -9815,12 +10149,12 @@ extern "C" {
                                         dx: *mut ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_DIVNORM_PRECOMPUTED_MEANS: _bindgen_ty_22 =
-    _bindgen_ty_22::CUDNN_DIVNORM_PRECOMPUTED_MEANS;
+pub const CUDNN_DIVNORM_PRECOMPUTED_MEANS: _bindgen_ty_26 =
+    _bindgen_ty_26::CUDNN_DIVNORM_PRECOMPUTED_MEANS;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_22 { CUDNN_DIVNORM_PRECOMPUTED_MEANS = 0, }
-pub use self::_bindgen_ty_22 as cudnnDivNormMode_t;
+pub enum _bindgen_ty_26 { CUDNN_DIVNORM_PRECOMPUTED_MEANS = 0, }
+pub use self::_bindgen_ty_26 as cudnnDivNormMode_t;
 extern "C" {
     pub fn cudnnDivisiveNormalizationForward(handle: cudnnHandle_t,
                                              normDesc: cudnnLRNDescriptor_t,
@@ -9867,17 +10201,17 @@ extern "C" {
                                                   *mut ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_BATCHNORM_PER_ACTIVATION: _bindgen_ty_23 =
-    _bindgen_ty_23::CUDNN_BATCHNORM_PER_ACTIVATION;
-pub const CUDNN_BATCHNORM_SPATIAL: _bindgen_ty_23 =
-    _bindgen_ty_23::CUDNN_BATCHNORM_SPATIAL;
+pub const CUDNN_BATCHNORM_PER_ACTIVATION: _bindgen_ty_27 =
+    _bindgen_ty_27::CUDNN_BATCHNORM_PER_ACTIVATION;
+pub const CUDNN_BATCHNORM_SPATIAL: _bindgen_ty_27 =
+    _bindgen_ty_27::CUDNN_BATCHNORM_SPATIAL;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_23 {
+pub enum _bindgen_ty_27 {
     CUDNN_BATCHNORM_PER_ACTIVATION = 0,
     CUDNN_BATCHNORM_SPATIAL = 1,
 }
-pub use self::_bindgen_ty_23 as cudnnBatchNormMode_t;
+pub use self::_bindgen_ty_27 as cudnnBatchNormMode_t;
 extern "C" {
     pub fn cudnnDeriveBNTensorDescriptor(derivedBnDesc:
                                              cudnnTensorDescriptor_t,
@@ -9979,12 +10313,12 @@ extern "C" {
                                                *const ::libc::c_void)
      -> cudnnStatus_t;
 }
-pub const CUDNN_SAMPLER_BILINEAR: _bindgen_ty_24 =
-    _bindgen_ty_24::CUDNN_SAMPLER_BILINEAR;
+pub const CUDNN_SAMPLER_BILINEAR: _bindgen_ty_28 =
+    _bindgen_ty_28::CUDNN_SAMPLER_BILINEAR;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_24 { CUDNN_SAMPLER_BILINEAR = 0, }
-pub use self::_bindgen_ty_24 as cudnnSamplerType_t;
+pub enum _bindgen_ty_28 { CUDNN_SAMPLER_BILINEAR = 0, }
+pub use self::_bindgen_ty_28 as cudnnSamplerType_t;
 extern "C" {
     pub fn cudnnCreateSpatialTransformerDescriptor(stDesc:
                                                        *mut cudnnSpatialTransformerDescriptor_t)
@@ -10114,34 +10448,48 @@ extern "C" {
                                 reserveSpaceSizeInBytes: usize)
      -> cudnnStatus_t;
 }
-pub const CUDNN_RNN_RELU: _bindgen_ty_25 = _bindgen_ty_25::CUDNN_RNN_RELU;
-pub const CUDNN_RNN_TANH: _bindgen_ty_25 = _bindgen_ty_25::CUDNN_RNN_TANH;
-pub const CUDNN_LSTM: _bindgen_ty_25 = _bindgen_ty_25::CUDNN_LSTM;
-pub const CUDNN_GRU: _bindgen_ty_25 = _bindgen_ty_25::CUDNN_GRU;
+pub const CUDNN_RNN_RELU: _bindgen_ty_29 = _bindgen_ty_29::CUDNN_RNN_RELU;
+pub const CUDNN_RNN_TANH: _bindgen_ty_29 = _bindgen_ty_29::CUDNN_RNN_TANH;
+pub const CUDNN_LSTM: _bindgen_ty_29 = _bindgen_ty_29::CUDNN_LSTM;
+pub const CUDNN_GRU: _bindgen_ty_29 = _bindgen_ty_29::CUDNN_GRU;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_25 {
+pub enum _bindgen_ty_29 {
     CUDNN_RNN_RELU = 0,
     CUDNN_RNN_TANH = 1,
     CUDNN_LSTM = 2,
     CUDNN_GRU = 3,
 }
-pub use self::_bindgen_ty_25 as cudnnRNNMode_t;
-pub const CUDNN_UNIDIRECTIONAL: _bindgen_ty_26 =
-    _bindgen_ty_26::CUDNN_UNIDIRECTIONAL;
-pub const CUDNN_BIDIRECTIONAL: _bindgen_ty_26 =
-    _bindgen_ty_26::CUDNN_BIDIRECTIONAL;
+pub use self::_bindgen_ty_29 as cudnnRNNMode_t;
+pub const CUDNN_UNIDIRECTIONAL: _bindgen_ty_30 =
+    _bindgen_ty_30::CUDNN_UNIDIRECTIONAL;
+pub const CUDNN_BIDIRECTIONAL: _bindgen_ty_30 =
+    _bindgen_ty_30::CUDNN_BIDIRECTIONAL;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_26 { CUDNN_UNIDIRECTIONAL = 0, CUDNN_BIDIRECTIONAL = 1, }
-pub use self::_bindgen_ty_26 as cudnnDirectionMode_t;
-pub const CUDNN_LINEAR_INPUT: _bindgen_ty_27 =
-    _bindgen_ty_27::CUDNN_LINEAR_INPUT;
-pub const CUDNN_SKIP_INPUT: _bindgen_ty_27 = _bindgen_ty_27::CUDNN_SKIP_INPUT;
+pub enum _bindgen_ty_30 { CUDNN_UNIDIRECTIONAL = 0, CUDNN_BIDIRECTIONAL = 1, }
+pub use self::_bindgen_ty_30 as cudnnDirectionMode_t;
+pub const CUDNN_LINEAR_INPUT: _bindgen_ty_31 =
+    _bindgen_ty_31::CUDNN_LINEAR_INPUT;
+pub const CUDNN_SKIP_INPUT: _bindgen_ty_31 = _bindgen_ty_31::CUDNN_SKIP_INPUT;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_27 { CUDNN_LINEAR_INPUT = 0, CUDNN_SKIP_INPUT = 1, }
-pub use self::_bindgen_ty_27 as cudnnRNNInputMode_t;
+pub enum _bindgen_ty_31 { CUDNN_LINEAR_INPUT = 0, CUDNN_SKIP_INPUT = 1, }
+pub use self::_bindgen_ty_31 as cudnnRNNInputMode_t;
+pub const CUDNN_RNN_ALGO_STANDARD: _bindgen_ty_32 =
+    _bindgen_ty_32::CUDNN_RNN_ALGO_STANDARD;
+pub const CUDNN_RNN_ALGO_PERSIST_STATIC: _bindgen_ty_32 =
+    _bindgen_ty_32::CUDNN_RNN_ALGO_PERSIST_STATIC;
+pub const CUDNN_RNN_ALGO_PERSIST_DYNAMIC: _bindgen_ty_32 =
+    _bindgen_ty_32::CUDNN_RNN_ALGO_PERSIST_DYNAMIC;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum _bindgen_ty_32 {
+    CUDNN_RNN_ALGO_STANDARD = 0,
+    CUDNN_RNN_ALGO_PERSIST_STATIC = 1,
+    CUDNN_RNN_ALGO_PERSIST_DYNAMIC = 2,
+}
+pub use self::_bindgen_ty_32 as cudnnRNNAlgo_t;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudnnRNNStruct([u8; 0]);
@@ -10152,6 +10500,39 @@ extern "C" {
 }
 extern "C" {
     pub fn cudnnDestroyRNNDescriptor(rnnDesc: cudnnRNNDescriptor_t)
+     -> cudnnStatus_t;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnPersistentRNNPlan([u8; 0]);
+pub type cudnnPersistentRNNPlan_t = *mut cudnnPersistentRNNPlan;
+extern "C" {
+    pub fn cudnnCreatePersistentRNNPlan(rnnDesc: cudnnRNNDescriptor_t,
+                                        minibatch: ::libc::c_int,
+                                        dataType: cudnnDataType_t,
+                                        plan: *mut cudnnPersistentRNNPlan_t)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetPersistentRNNPlan(rnnDesc: cudnnRNNDescriptor_t,
+                                     plan: cudnnPersistentRNNPlan_t)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyPersistentRNNPlan(plan: cudnnPersistentRNNPlan_t)
+     -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNDescriptor_v6(handle: cudnnHandle_t,
+                                    rnnDesc: cudnnRNNDescriptor_t,
+                                    hiddenSize: ::libc::c_int,
+                                    numLayers: ::libc::c_int,
+                                    dropoutDesc: cudnnDropoutDescriptor_t,
+                                    inputMode: cudnnRNNInputMode_t,
+                                    direction: cudnnDirectionMode_t,
+                                    mode: cudnnRNNMode_t,
+                                    algo: cudnnRNNAlgo_t,
+                                    dataType: cudnnDataType_t)
      -> cudnnStatus_t;
 }
 extern "C" {
@@ -10287,7 +10668,7 @@ extern "C" {
                                 dcx: *mut ::libc::c_void,
                                 workspace: *mut ::libc::c_void,
                                 workSpaceSizeInBytes: usize,
-                                reserveSpace: *const ::libc::c_void,
+                                reserveSpace: *mut ::libc::c_void,
                                 reserveSpaceSizeInBytes: usize)
      -> cudnnStatus_t;
 }
@@ -10311,262 +10692,67 @@ extern "C" {
      -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnSetFilter4dDescriptor_v3(filterDesc: cudnnFilterDescriptor_t,
-                                         dataType: cudnnDataType_t,
-                                         k: ::libc::c_int,
-                                         c: ::libc::c_int,
-                                         h: ::libc::c_int,
-                                         w: ::libc::c_int)
+    pub fn cudnnSetConvolution2dDescriptor_v4(convDesc:
+                                                  cudnnConvolutionDescriptor_t,
+                                              pad_h: ::libc::c_int,
+                                              pad_w: ::libc::c_int,
+                                              u: ::libc::c_int,
+                                              v: ::libc::c_int,
+                                              dilation_h:
+                                                  ::libc::c_int,
+                                              dilation_w:
+                                                  ::libc::c_int,
+                                              mode: cudnnConvolutionMode_t)
      -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnSetFilter4dDescriptor_v4(filterDesc: cudnnFilterDescriptor_t,
-                                         dataType: cudnnDataType_t,
-                                         format: cudnnTensorFormat_t,
-                                         k: ::libc::c_int,
-                                         c: ::libc::c_int,
-                                         h: ::libc::c_int,
-                                         w: ::libc::c_int)
+    pub fn cudnnSetConvolution2dDescriptor_v5(convDesc:
+                                                  cudnnConvolutionDescriptor_t,
+                                              pad_h: ::libc::c_int,
+                                              pad_w: ::libc::c_int,
+                                              u: ::libc::c_int,
+                                              v: ::libc::c_int,
+                                              dilation_h:
+                                                  ::libc::c_int,
+                                              dilation_w:
+                                                  ::libc::c_int,
+                                              mode: cudnnConvolutionMode_t,
+                                              computeType: cudnnDataType_t)
      -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnGetFilter4dDescriptor_v3(filterDesc: cudnnFilterDescriptor_t,
-                                         dataType: *mut cudnnDataType_t,
-                                         k: *mut ::libc::c_int,
-                                         c: *mut ::libc::c_int,
-                                         h: *mut ::libc::c_int,
-                                         w: *mut ::libc::c_int)
+    pub fn cudnnGetConvolution2dDescriptor_v4(convDesc:
+                                                  cudnnConvolutionDescriptor_t,
+                                              pad_h:
+                                                  *mut ::libc::c_int,
+                                              pad_w:
+                                                  *mut ::libc::c_int,
+                                              u: *mut ::libc::c_int,
+                                              v: *mut ::libc::c_int,
+                                              dilation_h:
+                                                  *mut ::libc::c_int,
+                                              dilation_w:
+                                                  *mut ::libc::c_int,
+                                              mode:
+                                                  *mut cudnnConvolutionMode_t)
      -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnGetFilter4dDescriptor_v4(filterDesc: cudnnFilterDescriptor_t,
-                                         dataType: *mut cudnnDataType_t,
-                                         format: *mut cudnnTensorFormat_t,
-                                         k: *mut ::libc::c_int,
-                                         c: *mut ::libc::c_int,
-                                         h: *mut ::libc::c_int,
-                                         w: *mut ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetFilterNdDescriptor_v3(filterDesc: cudnnFilterDescriptor_t,
-                                         dataType: cudnnDataType_t,
-                                         nbDims: ::libc::c_int,
-                                         filterDimA:
-                                             *const ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetFilterNdDescriptor_v4(filterDesc: cudnnFilterDescriptor_t,
-                                         dataType: cudnnDataType_t,
-                                         format: cudnnTensorFormat_t,
-                                         nbDims: ::libc::c_int,
-                                         filterDimA:
-                                             *const ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetFilterNdDescriptor_v3(filterDesc: cudnnFilterDescriptor_t,
-                                         nbDimsRequested:
-                                             ::libc::c_int,
-                                         dataType: *mut cudnnDataType_t,
-                                         nbDims: *mut ::libc::c_int,
-                                         filterDimA:
-                                             *mut ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetFilterNdDescriptor_v4(filterDesc: cudnnFilterDescriptor_t,
-                                         nbDimsRequested:
-                                             ::libc::c_int,
-                                         dataType: *mut cudnnDataType_t,
-                                         format: *mut cudnnTensorFormat_t,
-                                         nbDims: *mut ::libc::c_int,
-                                         filterDimA:
-                                             *mut ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetPooling2dDescriptor_v3(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          mode: cudnnPoolingMode_t,
-                                          windowHeight: ::libc::c_int,
-                                          windowWidth: ::libc::c_int,
-                                          verticalPadding:
-                                              ::libc::c_int,
-                                          horizontalPadding:
-                                              ::libc::c_int,
-                                          verticalStride:
-                                              ::libc::c_int,
-                                          horizontalStride:
-                                              ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetPooling2dDescriptor_v4(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          mode: cudnnPoolingMode_t,
-                                          maxpoolingNanOpt:
-                                              cudnnNanPropagation_t,
-                                          windowHeight: ::libc::c_int,
-                                          windowWidth: ::libc::c_int,
-                                          verticalPadding:
-                                              ::libc::c_int,
-                                          horizontalPadding:
-                                              ::libc::c_int,
-                                          verticalStride:
-                                              ::libc::c_int,
-                                          horizontalStride:
-                                              ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetPooling2dDescriptor_v3(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          mode: *mut cudnnPoolingMode_t,
-                                          windowHeight:
-                                              *mut ::libc::c_int,
-                                          windowWidth:
-                                              *mut ::libc::c_int,
-                                          verticalPadding:
-                                              *mut ::libc::c_int,
-                                          horizontalPadding:
-                                              *mut ::libc::c_int,
-                                          verticalStride:
-                                              *mut ::libc::c_int,
-                                          horizontalStride:
-                                              *mut ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetPooling2dDescriptor_v4(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          mode: *mut cudnnPoolingMode_t,
-                                          maxpoolingNanOpt:
-                                              *mut cudnnNanPropagation_t,
-                                          windowHeight:
-                                              *mut ::libc::c_int,
-                                          windowWidth:
-                                              *mut ::libc::c_int,
-                                          verticalPadding:
-                                              *mut ::libc::c_int,
-                                          horizontalPadding:
-                                              *mut ::libc::c_int,
-                                          verticalStride:
-                                              *mut ::libc::c_int,
-                                          horizontalStride:
-                                              *mut ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetPoolingNdDescriptor_v3(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          mode: cudnnPoolingMode_t,
-                                          nbDims: ::libc::c_int,
-                                          windowDimA:
-                                              *const ::libc::c_int,
-                                          paddingA:
-                                              *const ::libc::c_int,
-                                          strideA:
-                                              *const ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetPoolingNdDescriptor_v4(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          mode: cudnnPoolingMode_t,
-                                          maxpoolingNanOpt:
-                                              cudnnNanPropagation_t,
-                                          nbDims: ::libc::c_int,
-                                          windowDimA:
-                                              *const ::libc::c_int,
-                                          paddingA:
-                                              *const ::libc::c_int,
-                                          strideA:
-                                              *const ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetPoolingNdDescriptor_v3(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          nbDimsRequested:
-                                              ::libc::c_int,
-                                          mode: *mut cudnnPoolingMode_t,
-                                          nbDims: *mut ::libc::c_int,
-                                          windowDimA:
-                                              *mut ::libc::c_int,
-                                          paddingA:
-                                              *mut ::libc::c_int,
-                                          strideA: *mut ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetPoolingNdDescriptor_v4(poolingDesc:
-                                              cudnnPoolingDescriptor_t,
-                                          nbDimsRequested:
-                                              ::libc::c_int,
-                                          mode: *mut cudnnPoolingMode_t,
-                                          maxpoolingNanOpt:
-                                              *mut cudnnNanPropagation_t,
-                                          nbDims: *mut ::libc::c_int,
-                                          windowDimA:
-                                              *mut ::libc::c_int,
-                                          paddingA:
-                                              *mut ::libc::c_int,
-                                          strideA: *mut ::libc::c_int)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnActivationForward_v3(handle: cudnnHandle_t,
-                                     mode: cudnnActivationMode_t,
-                                     alpha: *const ::libc::c_void,
-                                     xDesc: cudnnTensorDescriptor_t,
-                                     x: *const ::libc::c_void,
-                                     beta: *const ::libc::c_void,
-                                     yDesc: cudnnTensorDescriptor_t,
-                                     y: *mut ::libc::c_void)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnActivationForward_v4(handle: cudnnHandle_t,
-                                     activationDesc:
-                                         cudnnActivationDescriptor_t,
-                                     alpha: *const ::libc::c_void,
-                                     xDesc: cudnnTensorDescriptor_t,
-                                     x: *const ::libc::c_void,
-                                     beta: *const ::libc::c_void,
-                                     yDesc: cudnnTensorDescriptor_t,
-                                     y: *mut ::libc::c_void)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnActivationBackward_v3(handle: cudnnHandle_t,
-                                      mode: cudnnActivationMode_t,
-                                      alpha: *const ::libc::c_void,
-                                      yDesc: cudnnTensorDescriptor_t,
-                                      y: *const ::libc::c_void,
-                                      dyDesc: cudnnTensorDescriptor_t,
-                                      dy: *const ::libc::c_void,
-                                      xDesc: cudnnTensorDescriptor_t,
-                                      x: *const ::libc::c_void,
-                                      beta: *const ::libc::c_void,
-                                      dxDesc: cudnnTensorDescriptor_t,
-                                      dx: *mut ::libc::c_void)
-     -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnActivationBackward_v4(handle: cudnnHandle_t,
-                                      activationDesc:
-                                          cudnnActivationDescriptor_t,
-                                      alpha: *const ::libc::c_void,
-                                      yDesc: cudnnTensorDescriptor_t,
-                                      y: *const ::libc::c_void,
-                                      dyDesc: cudnnTensorDescriptor_t,
-                                      dy: *const ::libc::c_void,
-                                      xDesc: cudnnTensorDescriptor_t,
-                                      x: *const ::libc::c_void,
-                                      beta: *const ::libc::c_void,
-                                      dxDesc: cudnnTensorDescriptor_t,
-                                      dx: *mut ::libc::c_void)
+    pub fn cudnnGetConvolution2dDescriptor_v5(convDesc:
+                                                  cudnnConvolutionDescriptor_t,
+                                              pad_h:
+                                                  *mut ::libc::c_int,
+                                              pad_w:
+                                                  *mut ::libc::c_int,
+                                              u: *mut ::libc::c_int,
+                                              v: *mut ::libc::c_int,
+                                              dilation_h:
+                                                  *mut ::libc::c_int,
+                                              dilation_w:
+                                                  *mut ::libc::c_int,
+                                              mode:
+                                                  *mut cudnnConvolutionMode_t,
+                                              computeType:
+                                                  *mut cudnnDataType_t)
      -> cudnnStatus_t;
 }
