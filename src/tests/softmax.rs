@@ -4,7 +4,7 @@ use co::prelude::*;
 use co::plugin::numeric_helpers::Float;
 
 use plugin::{Softmax, LogSoftmax};
-use tests::{Epsilon, filled_tensor, tensor_assert_eq};
+use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
 
 const DIMS: [usize; 3] = [4, 1, 3];
 
@@ -89,6 +89,29 @@ pub fn test_log_softmax_grad<T, F: IFramework>(backend: Backend<F>)
 
     backend.log_softmax_grad(&x, &dx, &mut dr).unwrap();
     tensor_assert_eq(&dr, &LOG_SOFTMAX_IN_GRAD, 10.0);
+}
+
+pub fn cross_test_log_softmax_grad<F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
+    where Backend<F>: LogSoftmax<f32> + IBackend,
+          Backend<G>: LogSoftmax<f32> + IBackend {
+
+    let x  = filled_tensor(&backend_a, &DIMS, &LOG_SOFTMAX_OUT);
+    let dx = filled_tensor(&backend_a, &DIMS, &OUT_GRAD);
+    let mut dr_a = SharedTensor::new(&DIMS);
+    let mut dr_b = SharedTensor::new(&DIMS);
+
+    {
+        backend_a.log_softmax_grad(&x, &dx, &mut dr_b).unwrap();
+    }
+    {
+        backend_b.log_softmax_grad(&x, &dx, &mut dr_a).unwrap();
+    }
+    tensor_assert_eq_tensor(&dr_a, &dr_b, 10.0);
+}
+
+mod cross {
+    use super::*;
+    test_cross!(cross_test_log_softmax_grad, cross_test_log_softmax_grad_f32);
 }
 
 mod native {
