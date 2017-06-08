@@ -136,9 +136,35 @@ pub fn cross_test_pooling_max<F: IFramework, G: IFramework>(backend_a: Backend<F
     tensor_assert_eq_tensor(&r_a, &r_b, 3.0);
 }
 
+
+pub fn cross_test_pooling_max_grad<F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
+        where
+          Backend<F>: Pooling<f32> + IBackend,
+          Backend<G>: Pooling<f32> + IBackend {
+
+    let mut inp = vec![1.0; 256];
+    inp[0] = 2.0;
+
+    let x  = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
+    let dx = filled_tensor(&backend,&[4, 4, 4, 4], &inp);
+    let r  = filled_tensor(&backend,&[4, 4, 2, 2], &inp[0..64]);
+    let mut dr_a = SharedTensor::<T>::new(&[4, 4, 2, 2]);
+    let mut dr_b = SharedTensor::<T>::new(&[4, 4, 2, 2]);
+    let conf_a = Pooling::<T>::new_pooling_config(&backend_a, &[2, 2], &[2, 2], &[0, 0])
+        .unwrap();
+    let conf_b = Pooling::<T>::new_pooling_config(&backend_b, &[2, 2], &[2, 2], &[0, 0])
+        .unwrap();
+
+    backend_a.pooling_max_grad(&x, &dx, &r, &mut dr_a, &conf_a).unwrap();
+    backend_b.pooling_max_grad(&x, &dx, &r, &mut dr_b, &conf_b).unwrap();
+
+    tensor_assert_eq_tensor(&dr_a, &dr_b, 3.0);
+}
+
 mod cross {
     use super::*;
     test_cross!(cross_test_pooling_max, cross_test_pooling_max_f32);
+    test_cross!(cross_test_pooling_max_grad, cross_test_pooling_max_grad_f32);
 }
 
 mod cuda {
