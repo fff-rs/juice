@@ -70,6 +70,7 @@ impl ConvForwardAlgo {
             CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => Direct,
             CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD => Winograd,
             CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
+            _ => unimplemented!(),
         }
     }
 
@@ -126,6 +127,7 @@ impl ConvBackwardFilterAlgo {
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT => FFT,
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 => ImplicitPrecompiledGEMMSum,
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
+            _ => unimplemented!(),
         }
     }
 
@@ -184,6 +186,7 @@ impl ConvBackwardDataAlgo {
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING => FFTTiling,
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD => Winograd,
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
+            _ => unimplemented!(),
         }
     }
 
