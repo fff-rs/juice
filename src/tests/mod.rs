@@ -58,6 +58,7 @@ pub fn write_to_tensor<T,F>(backend: &Backend<F>, xs: &mut SharedTensor<T>, data
     }
   // not functional since, PartialEq has yet to be implemented for Device
   // but tbh this is test only so screw the extra dangling ununsed memory alloc
+  //       let other_dev = backend.device();
   //       if other_dev != native_dev {
   //           xs.read(other_dev).unwrap();
   //           xs.drop_device(native_dev).unwrap();
@@ -86,10 +87,9 @@ pub fn uniformly_random_tensor<T,F>(backend: &Backend<F>, dims: &[usize], low: T
     {
         let native = get_native_backend();
         let native_dev = native.device();
-        let other_dev = backend.device();
         {
             let mut mem = xs.write_only(native_dev).unwrap();
-            let mut mem_slice = mem.as_mut_slice::<T>();
+            let mem_slice = mem.as_mut_slice::<T>();
 
             let mut rng = thread_rng();
             let distr = Range::new(low, high);
@@ -99,6 +99,7 @@ pub fn uniformly_random_tensor<T,F>(backend: &Backend<F>, dims: &[usize], low: T
         }
   // not functional since, PartialEq has yet to be implemented for Device
   // but tbh this is test only so screw the extra dangling ununsed memory alloc
+  //       let other_dev = backend.device();
   //       if other_dev != native_dev {
   //           xs.read(other_dev).unwrap();
   //           xs.drop_device(native_dev).unwrap();
