@@ -71,28 +71,28 @@
 //!
 //! ## Provided Operations
 //!
-//! This Plugins provides the following operations. (Forward + Backward)
+//! This Plugins provides the following operations. If not denoted otherwise, this means forward and backward
 //! A `-` means not yet implemented.
 //!
 
-//! | Operation            | CUDA           | OpenCL    | Native    |
-//! |---                   |---             |---        |---        |
-//! | Sigmoid              | cuDNN v5.1     | -         | Rust      |
-//! | SigmoidPointwise     | cuDNN v5.1     | -         | Rust      |
-//! | ReLU                 | cuDNN v5.1     | -         | Rust      |
-//! | ReLUPointwise        | cuDNN v5.1     | -         | Rust      |
-//! | Tanh                 | cuDNN v5.1     | -         | Rust      |
-//! | TanhPointwise        | cuDNN v5.1     | -         | Rust      |
-//! |                      |                |           |           |
-//! | Normalization (LRN)  | cuDNN v5.1     | -         | -         |
-//! |                      |                |           |           |
-//! | Convolution          | cuDNN v5.1     | -         | Rust(fwd) |
-//! |                      |                |           |           |
-//! | Softmax              | cuDNN v5.1     | -         | Rust      |
-//! | LogSoftmax           | cuDNN v5.1     | -         | Rust      |
-//! |                      |                |           |           |
-//! | Pooling Max          | cuDNN v5.1     | -         | Rust(fwd) |
-//! | Pooling Avg          | cuDNN v5.1     | -         | -         |
+//! | Operation            | CUDA              | OpenCL    | Native    |
+//! |---                   |---                |---        |---        |
+//! | Sigmoid              | cuDNN v5 or later | -         | Rust      |
+//! | SigmoidPointwise     | cuDNN v5 or later | -         | Rust      |
+//! | ReLU                 | cuDNN v5 or later | -         | Rust      |
+//! | ReLUPointwise        | cuDNN v5 or later | -         | Rust      |
+//! | Tanh                 | cuDNN v5 or later | -         | Rust      |
+//! | TanhPointwise        | cuDNN v5 or later | -         | Rust      |
+//! |                      |                   |           |           |
+//! | Normalization (LRN)  | cuDNN v5 or later | -         | -         |
+//! |                      |                   |           |           |
+//! | Convolution          | cuDNN v5 or later | -         | Rust(fwd) |
+//! |                      |                   |           |           |
+//! | Softmax              | cuDNN v5 or later | -         | Rust      |
+//! | LogSoftmax           | cuDNN v5 or later | -         | Rust      |
+//! |                      |                   |           |           |
+//! | Pooling Max          | cuDNN v5 or later | -         | Rust(fwd) |
+//! | Pooling Avg          | cuDNN v5 or later | -         | -         |
 //!
 //! [collenchyma]: https://github.com/autumnai/collenchyma
 //! [collenchyma-docs]: http://autumnai.github.io/collenchyma

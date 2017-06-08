@@ -238,7 +238,7 @@ pub trait Tanh<F> : NN<F> {
     fn tanh(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>)
             -> Result<(), ::co::error::Error>;
 
-    /// Computes the gradient of [tanh][tanh] over the input Tensor `x`.
+    /// Computes the gradient of [hyperbolic Tangent][tanh] over the input Tensor `x`.
     /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
     ///
     /// Saves the result to `result_diff`.
