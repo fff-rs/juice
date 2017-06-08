@@ -87,22 +87,9 @@ pub fn tanh_grad<T: Float>(x: T, dx: T) -> T {
     (T::one() - x.powi(2)) * dx
 }
 
-macro_rules! impl_oconf_for_cc(($($t: ident), +) => (
-    $(
-        impl<'a> NNOperationConfig<$t> for ::frameworks::native::helper::ConvolutionConfig { }
-        impl<'a> ConvolutionConfig<$t> for ::frameworks::native::helper::ConvolutionConfig { }
-    )+
-));
-
 macro_rules! impl_oconf_for_clrn(($($t: ident), +) => (
     $(
         impl NNOperationConfig<$t> for ::frameworks::native::helper::NormalizationConfig { }
-    )+
-));
-
-macro_rules! impl_oconf_for_pooling(($($t: ident), +) => (
-    $(
-        impl NNOperationConfig<$t> for ::frameworks::native::helper::PoolingConfig { }
     )+
 ));
 
