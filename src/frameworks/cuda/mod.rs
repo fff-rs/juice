@@ -953,6 +953,11 @@ impl<T> Pooling<T> for Backend<Cuda>
                         result_diff: &mut ::co::tensor::SharedTensor<T>,
                         config: &Self::CPOOL)
                         -> Result<(), ::co::error::Error> {
+        println!("cudnn x {:?}", x.desc());
+        println!("cudnn x_diff {:?}", x_diff.desc());
+        println!("cudnn result {:?}", result.desc());
+        println!("cudnn result_diff {:?}", result_diff.desc());
+
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
         let dr_desc = try!(result_diff.cudnn_tensor_desc());
         let x_mem = read!(x, self);

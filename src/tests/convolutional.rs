@@ -56,8 +56,8 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
         let x_val = vec![1.0; batch * depth * height * width];
         let f_val = vec![1.0; filter_count * depth * filter_size * filter_size];
 
-        let x  = filled_tensor(&backend,&[batch, depth, height, width], &x_val);
-        let f  = filled_tensor(&backend,&[filter_count, depth, filter_size,  filter_size], &f_val);
+        let x  = filled_tensor(&backend, &[batch, depth, height, width], &x_val);
+        let f  = filled_tensor(&backend, &[filter_count, depth, filter_size,  filter_size], &f_val);
         let mut r  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
         let mut ws = SharedTensor::<u8>::new(&[4]);
 

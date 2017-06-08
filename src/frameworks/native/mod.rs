@@ -487,11 +487,10 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                 } else if current_max < v {
                     v
                 } else {
-		//TODO honour the configuration to pass on NaN or not, see cudnn API
+                //TODO honour the configuration to pass on NaN or not, see cudnn API
                     panic!("NaN")
                 };
             }
-
             current_max
         }
 
@@ -591,9 +590,11 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
         }
 
         Ok(())
-
     }
 
+    // x, x_diff are known outputs of the forward propagation
+    // result is the previous layer which derivate we want to know
+    // FIXME verify
     fn pooling_max_grad(&self,
                         x: &SharedTensor<T>,
                         x_diff: &SharedTensor<T>,
@@ -601,7 +602,191 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                         result_diff: &mut SharedTensor<T>,
                         config: &Self::CPOOL)
                         -> Result<(), ::co::error::Error> {
-        return Err(Error::Plugin(PluginError::Plugin("Unimplemented.")));
+
+        let dev = self.device();
+
+        let input_dim = x.desc(); // []
+        println!("x dims {:?}", input_dim);
+        let input = x.read(dev)
+            .unwrap()
+            .as_slice::<T>();
+        let input_stride = input_dim.default_stride(); // [];
+
+        let x_diff_dim = x_diff.desc(); // []
+        let x_diff = x_diff.read(dev).unwrap().as_slice::<T>();
+        println!("x_diff dims {:?}", x_diff_dim);
+
+        let output_dim = result_diff.desc().clone(); // []
+        println!("result dims {:?}", result.desc());
+        println!("result_diff dims {:?}", output_dim);
+
+        // this is ok, we only read parts we already wrote
+        let output = result_diff
+            .write_only(dev)
+            .unwrap()
+            .as_mut_slice::<T>();
+        let output_stride = output_dim.default_stride(); // []
+        {
+            for o in output.iter_mut() {
+                *o = Default::default();
+            }
+        }
+
+        fn max_pooling_<T>(input: &[T],
+                           input_stride: &[usize],
+                           input_dim: &[usize],
+                           input_offset: usize,
+                           input_idx_base: &[usize],
+                           window: &[i32],
+                           padding: &[i32],
+                           depth: usize,
+                           depth_end: usize,
+                           current_max: Option<T>,
+                           current_max_index: Option<usize>)
+                           -> (T, usize)
+            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
+        {
+            let mut current_max = (current_max.unwrap_or(T::min_value()), current_max_index.unwrap_or(0usize));
+
+            let p = padding[0] as usize;
+            let input_idx_end = input_dim[0] + 2 * p;
+
+            for window_idx in 0..window[0] {
+                let input_idx = input_idx_base[0] + window_idx as usize;
+
+                let (v, v_index) = if input_idx < p || input_idx + 1 > input_idx_end - p {
+                    (T::min_value(), 0usize)
+                } else {
+                    let i_mem_offset = input_offset + (input_idx - p) * input_stride[0];
+                    if depth + 1 >= depth_end {
+                        (input[i_mem_offset], i_mem_offset)
+                    } else {
+                        max_pooling_(input,
+                                     &input_stride[1..],
+                                     &input_dim[1..],
+                                     i_mem_offset,
+                                     &input_idx_base[1..],
+                                     &window[1..],
+                                     &padding[1..],
+                                     depth + 1,
+                                     depth_end,
+                                     None,
+                                     None)
+                    }
+                };
+                current_max = if current_max.0 >= v {
+                    current_max
+                } else if current_max.0 < v {
+                    (v, v_index)
+                } else {
+                //TODO honour the configuration to pass on NaN or not, see cudnn API
+                    panic!("NaN")
+                };
+            }
+            current_max
+        }
+
+        fn recurse<T>(input: &[T],
+                      input_stride: &[usize],
+                      input_dim: &[usize],
+                      top_input_offset: usize,
+                      input_offset: usize,
+                      input_idx_base: &mut [usize],
+                      window: &[i32],
+                      depth: usize,
+                      stride: &[i32],
+                      padding: &[i32],
+                      output: &mut [T],
+                      output_stride: &[usize],
+                      output_dim: &[usize],
+                      output_offset: usize,
+                      dx: &[T])
+            where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
+        {
+            let p = padding[depth] as usize; // 0
+            let w = window[depth] as usize; // 2
+
+            for output_idx in 0..output_dim[0] {
+                let input_idx = output_idx * stride[0] as usize;
+                input_idx_base[depth] = input_idx;
+                // memory offset of linear input_idx
+                let input_offset = input_offset + input_idx * input_stride[depth];
+                let output_offset = output_offset + output_idx * output_stride[0];
+                //println!("input_offset {} <- output_offset {}", input_offset, output_offset);
+
+                if depth + 1 < input_dim.len() {
+                    recurse(input,
+                            input_stride,
+                            input_dim,
+                            top_input_offset,
+                            input_offset,
+                            input_idx_base,
+                            window,
+                            depth + 1,
+                            &stride[1..],
+                            padding,
+                            output,
+                            &output_stride[1..],
+                            &output_dim[1..],
+                            output_offset,
+                            dx);
+                } else {
+                    let (val, index) = max_pooling_(input,
+                                         input_stride,
+                                         input_dim,
+                                         top_input_offset,
+                                         &input_idx_base[..],
+                                         window,
+                                         padding,
+                                         0,
+                                         input_dim.len(),
+                                         None, None);
+                    // if the stride is 1 and the size is i.e. multiple outputs of the forward propagation
+                    // can map back to one input
+                    // TODO sum up
+                    output[index] = dx[0]; // FIXME we need a second index for this shit
+                }
+            }
+        }
+
+
+        let mut input_idx = Vec::new();
+        input_idx.resize(input_dim.len() - 2, 0);
+        let mut output_idx = Vec::new();
+        output_idx.resize(output_dim.len(), 0);
+
+        let window = &config.window[..];
+        let stride = &config.stride[..];
+        let padding = &config.padding[..];
+        // do everything for each batch
+        for batch in 0..input_dim[0] {
+            // iterate over the batches!
+            let input_offset = batch * input_stride[0];
+            let output_offset = batch * output_stride[0];
+
+            // iterate over the chanels
+            for d1 in 0..input_dim[1] {
+                let input_offset = input_offset + d1 * input_stride[1];
+                let output_offset = output_offset + d1 * output_stride[1];
+                // pass on the remaining dimensions (no batches, no channels, thus [2..]
+                recurse(input,
+                        &input_stride[2..],
+                        &input_dim[2..],
+                        input_offset,
+                        input_offset,
+                        &mut input_idx,
+                        &window,
+                        0,
+                        &stride,
+                        &padding,
+                        output,
+                        &output_stride[2..],
+                        &output_dim[2..],
+                        output_offset,
+                        x_diff);
+            }
+        }
+        Ok(())
     }
 
     fn pooling_avg(&self,
