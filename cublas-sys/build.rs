@@ -1,12 +1,27 @@
 extern crate pkg_config;
-
+extern crate bindgen;
+use std::path::PathBuf;
 use std::env;
 
 fn main() {
-    let lib_dir = env::var("CUBLAS_LIB_DIR").ok();
-    let include_dir = env::var("CUBLAS_INCLUDE_DIR").ok();
+    let lib_dir = env::var("CUDBLAS_LIB_DIR").ok();
+    let include_dir = env::var("CUDBLAS_INCLUDE_DIR").ok();
 
     if lib_dir.is_none() && include_dir.is_none() {
+        if let Ok(info) = pkg_config::find_library("cudart") {
+            // avoid empty include paths as they are not supported by GCC
+            if info.include_paths.len() > 0 {
+                let paths = env::join_paths(info.include_paths).unwrap();
+                println!("cargo:include={}", paths.to_str().unwrap());
+            }
+        }
+        if let Ok(info) = pkg_config::find_library("cuda") {
+            // avoid empty include paths as they are not supported by GCC
+            if info.include_paths.len() > 0 {
+                let paths = env::join_paths(info.include_paths).unwrap();
+                println!("cargo:include={}", paths.to_str().unwrap());
+            }
+        }
         if let Ok(info) = pkg_config::find_library("cublas") {
             // avoid empty include paths as they are not supported by GCC
             if info.include_paths.len() > 0 {
@@ -37,7 +52,28 @@ fn main() {
         println!("cargo:rustc-link-lib={}={}", mode, lib);
     }
 
-    if let Some(include_dir) = include_dir {
+    if let Some(include_dir) = include_dir.clone() {
         println!("cargo:include={}", include_dir);
+    }
+
+    if true {
+        let bindings = bindgen::Builder::default()
+            // Do not generate unstable Rust code that
+            // requires a nightly rustc and enabling
+            // unstable features.
+            .no_unstable_rust()
+            .clang_arg("-I")
+            .clang_arg(include_dir.unwrap_or(String::from("/usr/include/cuda")).as_str())
+            // The input header we would like to generate
+            // bindings for.
+            .header("wrapper.h")
+            // Finish the builder and generate the bindings.
+            .generate()
+            // Unwrap the Result and panic on failure.
+            .expect("Unable to generate bindings");
+
+        let out_path = PathBuf::from("src");
+        bindings.write_to_file(out_path.join("lib.rs"))
+            .expect("Couldn't write bindings!");
     }
 }
