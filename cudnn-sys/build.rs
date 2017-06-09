@@ -62,6 +62,14 @@ fn main() {
             // requires a nightly rustc and enabling
             // unstable features.
             .no_unstable_rust()
+            .raw_line(r"
+//! Defines the FFI for CUDA cuDNN.
+//!
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
+            ")
+            .ctypes_prefix("::libc")
             .clang_arg("-I")
             .clang_arg(include_dir.unwrap_or(String::from("/usr/include/cuda")).as_str())
             // The input header we would like to generate
@@ -73,7 +81,7 @@ fn main() {
             .expect("Unable to generate bindings");
 
         let out_path = PathBuf::from("src");
-        bindings.write_to_file(out_path.join("lib.rs"))
+        bindings.write_to_file(out_path.join("generated.rs"))
             .expect("Couldn't write bindings!");
     }
 }
