@@ -472,7 +472,7 @@ impl Cudnn {
         where T: Float + DataTypeInfo,
     {
         API::lrn_cross_channel_forward(
-            *self.id_c(), *normalization_conf.lrn_desc().id_c(), CUDNN_LRN_CROSS_CHANNEL_DIM1,
+            *self.id_c(), *normalization_conf.lrn_desc().id_c(), cudnnLRNMode_t::CUDNN_LRN_CROSS_CHANNEL_DIM1,
             unsafe { transmute_copy(&&scale.a) }, *src_desc.id_c(), src_data,
             unsafe { transmute_copy(&&scale.b) }, *dest_desc.id_c(), dest_data
         )
@@ -497,7 +497,8 @@ impl Cudnn {
         where T: Float + DataTypeInfo,
     {
         API::lrn_cross_channel_backward(
-            *self.id_c(), *normalization_conf.lrn_desc().id_c(), CUDNN_LRN_CROSS_CHANNEL_DIM1,
+            *self.id_c(), *normalization_conf.lrn_desc().id_c(),
+            cudnnLRNMode_t::CUDNN_LRN_CROSS_CHANNEL_DIM1,
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(), src_data, *src_diff_desc.id_c(), src_diff_data,
             unsafe { transmute_copy(&&scale.b) },

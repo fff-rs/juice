@@ -28,7 +28,7 @@ impl ActivationDescriptor {
         let generic_activation_desc = try!(API::create_activation_descriptor());
         try!(API::set_activation_descriptor(generic_activation_desc,
                                             mode,
-                                            CUDNN_NOT_PROPAGATE_NAN, // FIXME check if this makes sense
+                                            cudnnNanPropagation_t::CUDNN_NOT_PROPAGATE_NAN, // FIXME check if this makes sense
                                             ::std::f64::MAX// FIXME make this public API
                                             ));
 
