@@ -62,6 +62,18 @@ fn main() {
             // requires a nightly rustc and enabling
             // unstable features.
             .no_unstable_rust()
+            .raw_line(r"
+//! Defines the FFI for CUDA cuBLAS.
+//!
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
+
+extern crate libc;
+
+pub use self::convenience;
+            ")
+            .ctypes_prefix("::libc")
             .clang_arg("-I")
             .clang_arg(include_dir.unwrap_or(String::from("/usr/include/cuda")).as_str())
             // The input header we would like to generate
