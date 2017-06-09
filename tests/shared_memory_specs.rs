@@ -54,7 +54,7 @@ mod shared_memory_spec {
                    Error::UninitializedMemory);
 
         shared_data.write_only(&cpu).unwrap();
-        shared_data.drop_device(&cpu).unwrap();
+        shared_data.drop(&cpu).unwrap();
 
         assert_eq!(shared_data.read(&cpu).unwrap_err(),
                    Error::UninitializedMemory);
@@ -74,7 +74,7 @@ mod shared_memory_spec {
 
         // It has successfully synced to the device.
         // Not the other way around.
-        mem.drop_device(&nt_device).unwrap();
+        mem.drop(&nt_device).unwrap();
         assert_eq!(mem.read(&nt_device).unwrap().as_slice::<f64>(),
                    [1.0, 2.0, 123.456]);
     }
@@ -93,7 +93,7 @@ mod shared_memory_spec {
 
         // It has not successfully synced to the device.
         // Not the other way around.
-        mem.drop_device(&nt_device).unwrap();
+        mem.drop(&nt_device).unwrap();
         assert_eq!(mem.read(&nt_device).unwrap().as_slice::<f64>(),
                    [1.0, 2.0, 123.456]);
     }
