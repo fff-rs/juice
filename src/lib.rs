@@ -108,7 +108,7 @@
 
 extern crate coaster as co;
 #[cfg(feature = "cuda")]
-extern crate cudnn;
+extern crate rcudnn as cudnn;
 extern crate libc;
 #[macro_use]
 extern crate lazy_static;
