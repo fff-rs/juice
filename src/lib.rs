@@ -50,7 +50,7 @@
 //!     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
 //!     let native = Native::new();
 //!     let cpu = native.new_device(native.hardwares()).unwrap();
-//!     write_to_memory(x.write_only(&cpu), payload); // Write to native host memory.
+//!     write_to_memory(x.write_only(&cpu).unwrap(), payload); // Write to native host memory.
 //!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
 //!     backend.sigmoid(&mut x, &mut result).unwrap();
 //!     // See the result.
