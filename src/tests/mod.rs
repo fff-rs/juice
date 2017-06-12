@@ -4,7 +4,7 @@
 //! floating point library, so if there is need to increase precision for f128,
 //! it can be easily done.
 //!
-//! [nn-test-vectors]: https://github.com/autumnai/collenchyma
+//! [nn-test-vectors]: https://github.com/ratpoison-io/coaster
 
 use std;
 use std::fmt;

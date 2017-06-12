@@ -193,7 +193,6 @@ pub fn test_tanh_pointwise_grad<T, F: IFramework>(backend: Backend<F>)
     tensor_assert_eq(&dx, &TANH_IN_GRAD, 10.0);
 }
 
-
 mod native {
     use super::*;
     test_native!(test_relu, relu_f32, relu_f64);

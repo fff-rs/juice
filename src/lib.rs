@@ -1,10 +1,10 @@
-//! Provides a [Collenchyma][collenchyma] Plugin, to extend Collenchyma with Neural Network related
+//! Provides a [Coaster][coaster] Plugin, to extend Coaster with Neural Network related
 //! operations such as convolutions, pooling, ReLU, etc. A full list of operations provided by this Plugin,
 //! can be found at the [provided Operations section](#operations).
 //!
 //! ## Overview
 //!
-//! This Collenchyma Plugin extends Collenchyma's Backend with NN related methods/operations. This allows
+//! This Coaster Plugin extends Coaster's Backend with NN related methods/operations. This allows
 //! you to run, these operations (and therefore your application) on your local machine as well as on servers,
 //! mobiles or any other machine (as if they were written for common CPU execution), while
 //! receiving the significant performance increases (usually one-to-two orders of magnitutde), by
@@ -14,7 +14,7 @@
 //! The architecture of a Plugin is quite easy. It defines one Plugin Trait, in this case the `NN`
 //! trait, which implements basic functionality for initialization and multiple Plugin Operation Traits which define the
 //! methods which are going to be available on the Backed, as the Plugin Trait as well as the Plugin Operations Traits
-//! are implemented for the Collenchyma Backends (CUDA, OpenCL, Native). The operations take as arguments one or many
+//! are implemented for the Coaster Backends (CUDA, OpenCL, Native). The operations take as arguments one or many
 //! SharedTensors, holding the data over which the operation should happen, and none or one Operation Configuration.
 //!
 //! ## Usage
@@ -24,8 +24,8 @@
 //!
 //! ```rust
 //! # #![allow(dead_code)]
-//! extern crate collenchyma as co;
-//! extern crate collenchyma_nn as nn;
+//! extern crate coaster as co;
+//! extern crate coaster_nn as nn;
 //! # #[cfg(feature = "cuda")]
 //! # mod cuda {
 //! use co::prelude::*;
@@ -41,7 +41,7 @@
 //!
 //! pub fn main() {
 //!     // Initialize a CUDA Backend.
-//!     // Usually you would not use CUDA but let Collenchyma pick what is available on the machine.
+//!     // Usually you would not use CUDA but let Coaster pick what is available on the machine.
 //!     let backend = Backend::<Cuda>::default().unwrap();
 //!     // Initialize two SharedTensors.
 //!     let mut x = SharedTensor::<f32>::new(&(1, 1, 3));
@@ -94,8 +94,8 @@
 //! | Pooling Max          | cuDNN v5 or later | -         | Rust(fwd) |
 //! | Pooling Avg          | cuDNN v5 or later | -         | -         |
 //!
-//! [collenchyma]: https://github.com/autumnai/collenchyma
-//! [collenchyma-docs]: http://autumnai.github.io/collenchyma
+//! [coaster]: https://github.com/ratpoison-io/coaster
+//! [coaster-docs]: https://ratpoison.io/projects/coaster/documentation
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 #![cfg_attr(feature = "unstable", feature(test))]
 #![cfg_attr(lint, feature(plugin))]
@@ -106,7 +106,7 @@
         trivial_casts, trivial_numeric_casts,
         unused_import_braces, unused_qualifications)]
 
-extern crate collenchyma as co;
+extern crate coaster as co;
 #[cfg(feature = "cuda")]
 extern crate cudnn;
 extern crate libc;

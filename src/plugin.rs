@@ -1,4 +1,4 @@
-//! Provides the INn Plugin trait for Collenchyma implementation.
+//! Provides the INn Plugin trait for Coaster implementation.
 
 use co::tensor::SharedTensor;
 
