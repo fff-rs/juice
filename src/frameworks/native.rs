@@ -2,9 +2,9 @@
 
 use ::plugin::*;
 use ::transpose::*;
-use collenchyma::backend::Backend;
-use collenchyma::frameworks::native::Native;
-use collenchyma::tensor::{SharedTensor, ITensorDesc};
+use coaster::backend::Backend;
+use coaster::frameworks::native::Native;
+use coaster::tensor::{SharedTensor, ITensorDesc};
 use rblas::math::mat::Mat;
 use rblas::matrix::Matrix;
 use rblas;
@@ -34,7 +34,7 @@ macro_rules! write_only {
 macro_rules! iblas_asum_for_native {
     ($t:ident) => (
         fn asum(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let r_slice = write_only!(result, $t, self);
             r_slice[0] = rblas::Asum::asum(read!(x, $t, self));
             Ok(())
@@ -46,7 +46,7 @@ macro_rules! iblas_axpy_for_native {
     ($t:ident) => (
         fn axpy(&self, a: &SharedTensor<$t>, x: &SharedTensor<$t>,
                 y: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             rblas::Axpy::axpy(
                 &read!(a, $t, self)[0],
                 read!(x, $t, self),
@@ -59,7 +59,7 @@ macro_rules! iblas_axpy_for_native {
 macro_rules! iblas_copy_for_native {
     ($t:ident) => (
         fn copy(&self, x: &SharedTensor<$t>, y: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             rblas::Copy::copy(
                 read!(x, $t, self),
                 write_only!(y, $t, self));
@@ -72,7 +72,7 @@ macro_rules! iblas_dot_for_native {
     ($t:ident) => (
         fn dot(&self, x: &SharedTensor<$t>, y: &SharedTensor<$t>,
                result: &mut SharedTensor<$t>
-               ) -> Result<(), ::collenchyma::error::Error> {
+               ) -> Result<(), ::coaster::error::Error> {
             let r_slice = write_only!(result, $t, self);
             r_slice[0] = rblas::Dot::dot(read!(x, $t, self), read!(y, $t, self));
             Ok(())
@@ -83,7 +83,7 @@ macro_rules! iblas_dot_for_native {
 macro_rules! iblas_nrm2_for_native {
     ($t:ident) => (
         fn nrm2(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let r_slice = write_only!(result, $t, self);
             r_slice[0] = rblas::Nrm2::nrm2(read!(x, $t, self));
             Ok(())
@@ -94,7 +94,7 @@ macro_rules! iblas_nrm2_for_native {
 macro_rules! iblas_scal_for_native {
     ($t:ident) => (
         fn scal(&self, a: &SharedTensor<$t>, x: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             rblas::Scal::scal(
                 &read!(a, $t, self)[0],
                 read_write!(x, $t, self));
@@ -106,7 +106,7 @@ macro_rules! iblas_scal_for_native {
 macro_rules! iblas_swap_for_native {
     ($t:ident) => (
         fn swap(&self, x: &mut SharedTensor<$t>, y: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             rblas::Swap::swap(read_write!(x, $t, self), read_write!(y, $t, self));
             Ok(())
         }
@@ -123,7 +123,7 @@ macro_rules! iblas_gemm_for_native {
                 b: &SharedTensor<$t>,
                 beta: &SharedTensor<$t>,
                 c: &mut SharedTensor<$t>
-        ) -> Result<(), ::collenchyma::error::Error> {
+        ) -> Result<(), ::coaster::error::Error> {
             let c_dims = c.desc().clone(); // FIXME: clone() can be removed
 
             let a_slice = read!(a, $t, self);
@@ -220,11 +220,11 @@ fn read_from_matrix<T: Clone>(mat: &Mat<T>, slice: &mut [T]) {
 
 #[cfg(test)]
 mod test {
-    use collenchyma::backend::{Backend, IBackend, BackendConfig};
-    use collenchyma::framework::IFramework;
-    use collenchyma::frameworks::Native;
-    use collenchyma::tensor::SharedTensor;
-	use collenchyma::frameworks::native::flatbox::FlatBox;
+    use coaster::backend::{Backend, IBackend, BackendConfig};
+    use coaster::framework::IFramework;
+    use coaster::frameworks::Native;
+    use coaster::tensor::SharedTensor;
+	use coaster::frameworks::native::flatbox::FlatBox;
     use super::as_matrix;
 
 	fn get_native_backend() -> Backend<Native> {

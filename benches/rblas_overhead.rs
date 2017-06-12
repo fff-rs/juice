@@ -1,8 +1,8 @@
 #![feature(test)]
 
 extern crate test;
-extern crate collenchyma as co;
-extern crate collenchyma_blas as co_blas;
+extern crate coaster as co;
+extern crate coaster_blas as co_blas;
 extern crate rblas;
 extern crate rand;
 
@@ -27,7 +27,7 @@ fn bench_dot_rblas(b: &mut Bencher, n: usize) {
     });
 }
 
-fn bench_dot_collenchyma(b: &mut Bencher, n: usize) {
+fn bench_dot_coaster(b: &mut Bencher, n: usize) {
     let mut rng = thread_rng();
     let slice_a = rng.gen_iter::<f32>().take(n).collect::<Vec<f32>>();
     let slice_b = rng.gen_iter::<f32>().take(n).collect::<Vec<f32>>();
@@ -51,28 +51,28 @@ fn bench_dot_collenchyma(b: &mut Bencher, n: usize) {
 fn bench_dot_100_rblas(b: &mut Bencher) { bench_dot_rblas(b, 100); }
 
 #[bench]
-fn bench_dot_100_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 100); }
+fn bench_dot_100_coaster(b: &mut Bencher) { bench_dot_coaster(b, 100); }
 
 #[bench]
 fn bench_dot_1000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 1000); }
 
 #[bench]
-fn bench_dot_1000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 1000); }
+fn bench_dot_1000_coaster(b: &mut Bencher) { bench_dot_coaster(b, 1000); }
 
 #[bench]
 fn bench_dot_2000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 2000); }
 
 #[bench]
-fn bench_dot_2000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 2000); }
+fn bench_dot_2000_coaster(b: &mut Bencher) { bench_dot_coaster(b, 2000); }
 
 #[bench]
 fn bench_dot_10000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 10000); }
 
 #[bench]
-fn bench_dot_10000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 10000); }
+fn bench_dot_10000_coaster(b: &mut Bencher) { bench_dot_coaster(b, 10000); }
 
 #[bench]
 fn bench_dot_20000_rblas(b: &mut Bencher) { bench_dot_rblas(b, 20000); }
 
 #[bench]
-fn bench_dot_20000_collenchyma(b: &mut Bencher) { bench_dot_collenchyma(b, 20000); }
+fn bench_dot_20000_coaster(b: &mut Bencher) { bench_dot_coaster(b, 20000); }

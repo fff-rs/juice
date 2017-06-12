@@ -1,9 +1,9 @@
 //! Provides BLAS for a CUDA backend.
 #![allow(missing_docs)]
-use collenchyma::backend::Backend;
-use collenchyma::tensor::{SharedTensor, ITensorDesc};
-use collenchyma::plugin::Error as PluginError;
-use collenchyma::frameworks::cuda::Cuda;
+use coaster::backend::Backend;
+use coaster::tensor::{SharedTensor, ITensorDesc};
+use coaster::plugin::Error as PluginError;
+use coaster::frameworks::cuda::Cuda;
 use cublas;
 use ::plugin::*;
 use ::transpose::Transpose;

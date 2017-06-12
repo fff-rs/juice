@@ -1,41 +1,40 @@
-# collenchyma-BLAS • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma-blas.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma-blas) [![Coverage Status](https://coveralls.io/repos/autumnai/collenchyma-blas/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/collenchyma-blas?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma-blas)](https://crates.io/crates/collenchyma-blas) [![License](https://img.shields.io/crates/l/collenchyma-blas.svg)](LICENSE)
+# coaster-BLAS • [![Join the chat at https://gitter.im/ratpoison-io/coaster-nn](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/ratpoison-io/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.ratpoison.io/api/v1/pipelines/leaf/jobs/test-coaster-blas/badge)](https://ci.ratpoison.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster-blas.svg)](https://crates.io/crates/coaster-nn) [![License](https://img.shields.io/crates/l/coaster-blas.svg)](#license)
 
-collenchyma-BLAS provides full BLAS support for [Collenchyma][collenchyma],
+coaster-BLAS provides full BLAS support for [Coaster][coaster],
 so you can use Basic Linear Algebra Subprograms on servers, desktops or mobiles,
 GPUs, FPGAs or CPUS, without carrying about OpenCL or CUDA support on the
 machine.
 
-collenchyma-BLAS was started at [Autumn][autumn] for the Rust Machine Intelligence
+coaster-BLAS was started as collenchyma-BLAS at [Autumn][autumn] for the Rust Machine Intelligence
 Framework [Leaf][leaf].
 
 For more information,
 
-* see collenchyma-BLAS's [Documentation](http://autumnai.github.io/collenchyma-blas)
-* visit [Collenchyma][collenchyma] for portable operations and other Plugins.
-* or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
+* see coaster-BLAS's [Documentation](https://ratpoison.io/projects/coaster-blas)
+* visit [Coaster][coaster] for portable operations and other Plugins.
+* or get in touch on [Gitter][gitter-coaster]
 
-[collenchyma]: https://github.com/autumnai/collenchyma
+[coaster]: https://github.com/autumnai/coaster
 [autumn]: http://autumnai.com
 [leaf]: https://github.com/autumnai/leaf
-[twitter-autumn]: https://twitter.com/autumn_eng
 
 ## Getting Started
 
-If you're using Cargo, just add collenchyma-BLAS to your Cargo.toml:
+If you're using Cargo, just add coaster-BLAS to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.8"
-    collenchyma-blas = "0.2.0"
+    coaster = "0.4"
+    coaster-blas = "0.2.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
-    $ cargo add collenchyma-blas
+    $ cargo add coaster-blas
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
 
 ## Provided Operations
 
-This Plugins provides the following operations to the Collenchyma Backend.
+This Plugins provides the following operations to the Coaster Backend.
 A `-` means not yet implemented.
 More information can be found in the [Documentation][docs-ops].
 
@@ -47,7 +46,7 @@ More information can be found in the [Documentation][docs-ops].
 | GEMM                 | cuBLAS     | -         | rblas     |
 
 
-[docs-ops]: http://autumnai.github.io/collenchyma-blas/collenchyma_blas/plugin/trait.IBlas.html
+[docs-ops]: https://ratpoison.io/projects/coaster-blas/coaster_blas/plugin/trait.IBlas.html
 
 Note that `blas` does not have all methods and thus fails to link, use `CARGO_BLAS=openblas` to compile for `native`
 
@@ -58,9 +57,9 @@ Want to contribute? Awesome! We have
 And high priority issues, that we could need your help with.
 
 We have a mostly real-time collaboration culture and happens here on Github and
-on the [Collenchyma Gitter Channel][gitter-collenchyma].
+on the [Coaster Gitter Channel][gitter-coaster].
 You can also reach out to the Maintainers
-{[@MJ][mj], [@hobofan][hobofan]}.
+{[@drahnr][drahnr]}.
 
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0
@@ -68,9 +67,8 @@ license, shall be dual licensed as below, without any additional terms or
 conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
-[mj]: https://twitter.com/mjhirn
-[hobofan]: https://twitter.com/hobofan
+[gitter-coaster]: https://gitter.im/autumnai/coaster
+[drahnr]: https://github.com/drahnr
 
 ## Changelog
 

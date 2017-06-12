@@ -1,4 +1,4 @@
-//! Provides backend-agnostic BLAS operations for [Collenchyma][collenchyma].
+//! Provides backend-agnostic BLAS operations for [Coaster][coaster].
 //!
 //! BLAS (Basic Linear Algebra Subprograms) is a specification that prescribes a set of low-level
 //! routines for performing common linear algebra operations such as vector addition, scalar
@@ -12,7 +12,7 @@
 //!
 //! ## Overview
 //!
-//! A Collenchyma Plugin describes the functionality through three types of traits.
+//! A Coaster Plugin describes the functionality through three types of traits.
 //!
 //! * __PluginTrait__ -> IBlas<br/>
 //! This trait provides 'provided methods', which already specify the exact, backend-agnostic
@@ -29,16 +29,16 @@
 //! The PluginTrait can provide 'provided methods', thanks to the OperationTrait. The OperationTrait,
 //! has one required method `compute` which every Framework Function will implement on it's own way.
 //!
-//! Beside these traits a Collenchyma Plugin might also use macros for faster
-//! implementation for various Collenchyma Frameworks such as CUDA, OpenCL or common host CPU.
+//! Beside these traits a Coaster Plugin might also use macros for faster
+//! implementation for various Coaster Frameworks such as CUDA, OpenCL or common host CPU.
 //!
-//! Beside these generic functionality through traits, a Plugin also extends the Collenchyma Backend
-//! with implementations of the generic functionality for the Collenchyma Frameworks.
+//! Beside these generic functionality through traits, a Plugin also extends the Coaster Backend
+//! with implementations of the generic functionality for the Coaster Frameworks.
 //!
-//! For more information, give the [Collenchyma docs][collenchyma-docs] a visit.
+//! For more information, give the [Coaster docs][coaster-docs] a visit.
 //!
-//! [collenchyma]: https://github.com/autumnai/collenchyma
-//! [collenchyma-docs]: http://autumnai.github.io/collenchyma
+//! [coaster]: https://github.com/autumnai/coaster
+//! [coaster-docs]: https://ratpoison.io/projects/coaster
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
@@ -51,7 +51,7 @@
 #[macro_use]
 extern crate lazy_static;
 
-extern crate collenchyma;
+extern crate coaster;
 #[cfg(feature = "native")]
 extern crate rblas;
 #[cfg(feature = "cuda")]

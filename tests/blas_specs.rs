@@ -1,7 +1,7 @@
 #![cfg(feature = "native")] // required for data i/o
 
-extern crate collenchyma_blas as co_blas;
-extern crate collenchyma as co;
+extern crate coaster_blas as co_blas;
+extern crate coaster as co;
 
 use std::fmt;
 use co::backend::{Backend, IBackend};
@@ -31,7 +31,7 @@ fn get_opencl_backend() -> Backend<OpenCL> {
     Backend::<OpenCL>::default().unwrap()
 }
 
-// TODO reuse the collenchyma-nn methods
+// TODO reuse the coaster-nn methods
 pub fn write_to_tensor<T>(xs: &mut SharedTensor<T>, data: &[f64])
     where T: ::std::marker::Copy + NumCast {
 
@@ -47,7 +47,7 @@ pub fn write_to_tensor<T>(xs: &mut SharedTensor<T>, data: &[f64])
     }
 }
 
-// TODO reuse the collenchyma-nn methods
+// TODO reuse the coaster-nn methods
 pub fn tensor_assert_eq<T>(xs: &SharedTensor<T>, data: &[f64], epsilon_mul: f64)
     where T: Float + fmt::Debug + PartialEq + NumCast {
 

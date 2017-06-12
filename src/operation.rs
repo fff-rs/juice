@@ -1,7 +1,7 @@
-//! Provides the IOperationX operation traits for Collenchyma's Framework implementation.
+//! Provides the IOperationX operation traits for Coaster's Framework implementation.
 
-use collenchyma::tensor::SharedTensor;
-use collenchyma::plugin::Error;
+use coaster::tensor::SharedTensor;
+use coaster::plugin::Error;
 use ::transpose::Transpose;
 
 /// Describes a Asum Operation.
@@ -49,5 +49,5 @@ pub trait IOperationSwap<F> {
 /// Describes a Gemm Operation.
 pub trait IOperationGemm<F> {
     /// Computes the Gemm operation.
-    fn compute(&self, alpha: &SharedTensor<F>, at: Transpose, a_dims: &[usize], a: &SharedTensor<F>, bt: Transpose, b_dims: &[usize], b: &SharedTensor<F>, beta: &SharedTensor<F>, c_dims: &[usize], c: &mut SharedTensor<F>) -> Result<(), ::collenchyma::error::Error>;
+    fn compute(&self, alpha: &SharedTensor<F>, at: Transpose, a_dims: &[usize], a: &SharedTensor<F>, bt: Transpose, b_dims: &[usize], b: &SharedTensor<F>, beta: &SharedTensor<F>, c_dims: &[usize], c: &mut SharedTensor<F>) -> Result<(), ::coaster::error::Error>;
 }

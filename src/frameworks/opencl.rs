@@ -3,11 +3,11 @@
 // use ::operation::*;
 // use ::binary::*;
 // use ::library::*;
-// use collenchyma::backend::Backend;
-// use collenchyma::device::DeviceType;
-// use collenchyma::memory::MemoryType;
-// use collenchyma::plugin::Error;
-// use collenchyma::frameworks::opencl::{Kernel, Program, OpenCL};
+// use coaster::backend::Backend;
+// use coaster::device::DeviceType;
+// use coaster::memory::MemoryType;
+// use coaster::plugin::Error;
+// use coaster::frameworks::opencl::{Kernel, Program, OpenCL};
 //
 // impl IBlasBinary<f32> for Program {
 //     type Asum = Kernel;

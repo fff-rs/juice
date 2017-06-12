@@ -1,4 +1,4 @@
-//! Provides the IBlasBinary binary trait for Collenchyma's Framework implementation.
+//! Provides the IBlasBinary binary trait for Coaster's Framework implementation.
 
 use super::operation::*;
 

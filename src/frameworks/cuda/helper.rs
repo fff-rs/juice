@@ -40,7 +40,7 @@ macro_rules! exec {
 macro_rules! iblas_asum_for_cuda {
     ($t:ident) => (
         fn asum(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let r_mem = write_only!(result, self);
@@ -57,7 +57,7 @@ macro_rules! iblas_axpy_for_cuda {
     ($t:ident) => (
         fn axpy(&self, a: &SharedTensor<$t>, x: &SharedTensor<$t>,
                 y: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let n = x.desc().size() as i32;
             let a_mem = read!(a, self);
             let x_mem = read!(x, self);
@@ -75,7 +75,7 @@ macro_rules! iblas_axpy_for_cuda {
 macro_rules! iblas_copy_for_cuda {
     ($t:ident) => (
         fn copy(&self, x: &SharedTensor<$t>, y: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let y_mem = write_only!(y, self);
@@ -92,7 +92,7 @@ macro_rules! iblas_dot_for_cuda {
     ($t:ident) => (
         fn dot(&self, x: &SharedTensor<$t>, y: &SharedTensor<$t>,
                result: &mut SharedTensor<$t>)
-               -> Result<(), ::collenchyma::error::Error> {
+               -> Result<(), ::coaster::error::Error> {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let y_mem = read!(y, self);
@@ -110,7 +110,7 @@ macro_rules! iblas_dot_for_cuda {
 macro_rules! iblas_nrm2_for_cuda {
     ($t:ident) => (
         fn nrm2(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let r_mem = write_only!(result, self);
@@ -126,7 +126,7 @@ macro_rules! iblas_nrm2_for_cuda {
 macro_rules! iblas_scal_for_cuda {
     ($t:ident) => (
         fn scal(&self, a: &SharedTensor<$t>, x: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let n = x.desc().size() as i32;
             let a_mem = read!(a, self);
             let x_mem = read_write!(x, self);
@@ -142,7 +142,7 @@ macro_rules! iblas_scal_for_cuda {
 macro_rules! iblas_swap_for_cuda {
     ($t:ident) => (
         fn swap(&self, x: &mut SharedTensor<$t>, y: &mut SharedTensor<$t>)
-                -> Result<(), ::collenchyma::error::Error> {
+                -> Result<(), ::coaster::error::Error> {
             let n = x.desc().size() as i32;
             let x_mem = read_write!(x, self);
             let y_mem = read_write!(y, self);
@@ -165,7 +165,7 @@ macro_rules! iblas_gemm_for_cuda {
                 b: &SharedTensor<$t>,
                 beta: &SharedTensor<$t>,
                 c: &mut SharedTensor<$t>
-        ) -> Result<(), ::collenchyma::error::Error> {
+        ) -> Result<(), ::coaster::error::Error> {
             let c_desc = c.desc().clone();
             let alpha_mem = read!(alpha, self);
             let beta_mem = read!(beta, self);
