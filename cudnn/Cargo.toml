@@ -22,7 +22,7 @@ num = "0.1.31"
 clippy = { version = "0.0.27", optional = true }
 
 [dev-dependencies]
-collenchyma = { path = "../../collenchyma", default-features = false, features = ["native", "cuda"] }
+coaster = "0.1.0"
 
 [features]
 dev = []

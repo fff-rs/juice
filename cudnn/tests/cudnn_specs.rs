@@ -1,5 +1,5 @@
 extern crate cudnn;
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate libc;
 
 extern crate cudnn_sys as ffi;
