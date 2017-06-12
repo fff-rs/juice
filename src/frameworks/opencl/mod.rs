@@ -67,7 +67,7 @@ impl IFramework for OpenCL {
     }
 
     fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
-        let platforms = try!(API::load_platforms());
+        let platforms = API::load_platforms()?;
 
         let mut hardware_container: Vec<Device> = vec!();
         for platform in &platforms {
@@ -91,8 +91,10 @@ impl IFramework for OpenCL {
     /// Contexts are used by the OpenCL runtime for managing objects such as command-queues,
     /// memory, program and kernel objects and for executing kernels on one or more hardwares
     /// specified in the context.
+    /// OpenCL allows to move memory within one context from one device to another without
+    /// any explicit API calls.
     fn new_device(&self, hardwares: &[Device]) -> Result<Self::D, ::framework::Error> {
-        Ok(try!(Context::new(hardwares.to_vec())))
+        Ok(Context::new(hardwares.to_vec())?)
     }
 }
 

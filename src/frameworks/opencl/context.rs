@@ -7,6 +7,7 @@ use super::{API, Error, Device, Queue};
 use super::memory::*;
 #[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
+#[cfg(feature = "native")]
 use frameworks::native::device::Cpu;
 use std::any::Any;
 use std::{ptr, mem};
@@ -25,7 +26,7 @@ impl Context {
     pub fn new(devices: Vec<Device>) -> Result<Context, Error> {
         let callback = unsafe { mem::transmute(ptr::null::<fn()>()) };
         let mut context = Context::from_c(
-                        try!(API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())),
+                        API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())?,
                         devices.clone());
         // initialize queue
         context.queue_mut();
@@ -76,7 +77,7 @@ impl IDevice for Context {
     }
 
     fn alloc_memory(&self, size: usize) -> Result<Memory, DeviceError> {
-        Ok(try!(Memory::new(self, size)))
+        Ok(Memory::new(self, size)?)
     }
 }
 
@@ -87,9 +88,9 @@ impl MemorySync for Context {
             let mut my_mem = my_memory.downcast_mut::<Memory>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
 
-            try!(API::write_to_memory(
+            API::write_to_memory(
                 self.queue().unwrap(), my_mem, true, 0,
-                src_mem.byte_size(), src_mem.as_slice().as_ptr(), &[]));
+                src_mem.byte_size(), src_mem.as_slice().as_ptr(), &[])?;
             Ok(())
         } else {
             Err(DeviceError::NoMemorySyncRoute)
@@ -102,9 +103,9 @@ impl MemorySync for Context {
             let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
             let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
 
-            try!(API::read_from_memory(
+            API::read_from_memory(
                 self.queue().unwrap(), my_mem, true, 0,
-                dst_mem.byte_size(), dst_mem.as_mut_slice().as_mut_ptr(), &[]));
+                dst_mem.byte_size(), dst_mem.as_mut_slice().as_mut_ptr(), &[])?;
             Ok(())
         } else {
             Err(DeviceError::NoMemorySyncRoute)

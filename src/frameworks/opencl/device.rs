@@ -6,6 +6,49 @@ use super::api::API;
 use std::io::Cursor;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
 
+use std::cmp::Ordering;
+
+#[derive(Debug, Clone)]
+/// Defines a OpenCL Version.
+pub struct Version {
+    major: usize,
+    minor: usize,
+    ext: Option<String>,
+}
+
+impl PartialEq for Version {
+    fn eq(&self, other: &Self) -> bool {
+        self.major == other.major && self.minor == other.minor
+    }
+}
+
+impl Eq for Version {}
+
+impl Ord for Version {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.major < other.major {
+            Ordering::Less
+        } else if self.major > other.major {
+            Ordering::Greater
+        } else {
+            if self.minor < other.minor {
+                Ordering::Less
+            } else if self.minor > other.minor {
+                Ordering::Greater
+            } else {
+                Ordering::Equal
+            }
+        }
+    }
+}
+
+
+impl PartialOrd for Version {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 #[derive(Debug, Clone)]
 /// Defines a OpenCL Device.
 ///
@@ -16,6 +59,8 @@ pub struct Device {
     name: Option<String>,
     device_type: Option<HardwareType>,
     compute_units: Option<isize>,
+    version: Option<Version>,
+    vendor: Option<String>,
 }
 
 impl Default for Device {
@@ -25,6 +70,8 @@ impl Default for Device {
             name: None,
             device_type: None,
             compute_units: None,
+            version: None,
+            vendor: None,
         }
     }
 }
@@ -81,6 +128,25 @@ impl Device {
         };
         self.clone()
     }
+
+    /// Loads the OpenCL version this device supports via a foreign OpenCL call.
+    pub fn load_version(&mut self) -> Self {
+        // TODO
+        // self.version = match API::load_device_info(self, cl::CL_DEVICE_VERSION) {
+        //     Ok(result) => Some(result.to_isize()),
+        //     Err(_) => None
+        // };
+        self.clone()
+    }
+
+    /// Loads the OpenCL version this device supports via a foreign OpenCL call.
+    pub fn load_vendor(&mut self) -> Self {
+        self.vendor = match API::load_device_info(self, cl::CL_DEVICE_VENDOR) {
+            Ok(result) => Some(result.to_string()),
+            Err(_) => None
+        };
+        self.clone()
+    }
 }
 
 impl IHardware for Device {
@@ -122,6 +188,8 @@ impl IHardware for Device {
             name: self.name(),
             device_type: self.hardware_type(),
             compute_units: self.compute_units(),
+            version: self.version,
+            vendor: self.vendor,
         }
     }
 }
