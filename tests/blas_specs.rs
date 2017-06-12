@@ -26,10 +26,10 @@ fn get_native_backend() -> Backend<Native> {
 fn get_cuda_backend() -> Backend<Cuda> {
     Backend::<Cuda>::default().unwrap()
 }
-#[cfg(feature = "opencl")]
-fn get_opencl_backend() -> Backend<OpenCL> {
-    Backend::<OpenCL>::default().unwrap()
-}
+// #[cfg(feature = "opencl")]
+// fn get_opencl_backend() -> Backend<OpenCL> {
+//     Backend::<OpenCL>::default().unwrap()
+// }
 
 // TODO reuse the coaster-nn methods
 pub fn write_to_tensor<T>(xs: &mut SharedTensor<T>, data: &[f64])

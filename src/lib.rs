@@ -55,7 +55,7 @@ extern crate coaster;
 #[cfg(feature = "native")]
 extern crate rblas;
 #[cfg(feature = "cuda")]
-extern crate cublas;
+extern crate rcublas as cublas;
 
 pub mod plugin;
 pub mod binary;

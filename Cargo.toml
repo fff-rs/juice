@@ -22,7 +22,7 @@ lazy_static = "0.1"
 rblas = { path = "../rust-blas", version = "0.0.13", optional = true }
 
 # cuda
-cublas = { path = "../rust-cublas/cublas", version = "0.2.0",  optional = true }
+rcublas = { path = "../rust-cublas/cublas", version = "0.2.0",  optional = true }
 
 clippy = { version = "0.0.27", optional = true }
 
@@ -33,7 +33,7 @@ rand = "0.3"
 [features]
 default = ["native", "cuda", "opencl"]
 native = ["coaster/native", "rblas"]
-cuda = ["coaster/cuda", "cublas"]
+cuda = ["coaster/cuda", "rcublas"]
 opencl = ["coaster/opencl"]
 
 travis = ["native"]
