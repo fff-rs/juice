@@ -66,7 +66,7 @@
         unused_import_braces, unused_qualifications)]
 
 extern crate libc;
-extern crate cudnn_sys as ffi;
+extern crate rcudnn_sys as ffi;
 extern crate num;
 
 pub use ffi::*;
