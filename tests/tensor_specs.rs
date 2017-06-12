@@ -1,4 +1,4 @@
-extern crate collenchyma as co;
+extern crate coaster as co;
 
 #[cfg(test)]
 mod tensor_spec {

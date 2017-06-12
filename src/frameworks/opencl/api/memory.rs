@@ -1,6 +1,6 @@
 //! Provides the OpenCL API with its memory/buffer functionality.
 //!
-//! At Collenchyma device can be understood as a synonym to OpenCL's context.
+//! At Coaster device can be understood as a synonym to OpenCL's context.
 
 use std::ptr;
 use libc;

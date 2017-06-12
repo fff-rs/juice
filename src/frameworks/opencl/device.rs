@@ -52,7 +52,7 @@ impl PartialOrd for Version {
 #[derive(Debug, Clone)]
 /// Defines a OpenCL Device.
 ///
-/// Can later be transformed into a [Collenchyma hardware][hardware].
+/// Can later be transformed into a [Coaster hardware][hardware].
 /// [hardware]: ../../hardware/index.html
 pub struct Device {
     id: isize,

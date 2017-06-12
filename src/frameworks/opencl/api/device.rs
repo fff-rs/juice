@@ -1,6 +1,6 @@
 //! Provides the OpenCL API with its device functionality.
 //!
-//! At Collenchyma hardware can be understood as a synonym to OpenCL's device.
+//! At Coaster hardware can be understood as a synonym to OpenCL's device.
 
 use libc;
 use frameworks::opencl::{API, Error};

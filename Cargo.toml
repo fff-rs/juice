@@ -1,18 +1,17 @@
 [package]
-name          = "collenchyma"
+name          = "coaster"
 description   = "high-performance computation on any hardware"
-version       = "0.0.8"
-authors       = ["Michael Hirn <mj@autumnai.com>",
-                 "Maximilian Goisser <max@autumnai.com>",
-		  "Bernhard Schsuter <bernhard@ratpoison.io>"
-]
+version       = "0.1.0"
+authors       = ["Bernhard Schsuter <bernhard@ratpoison.io>",
+		 "Michael Hirn <mj@autumnai.com>",
+                 "Maximilian Goisser <max@autumnai.com>"]
 
-repository    = "https://github.com/ratpoison-io/collenchyma"
-homepage      = "https://ratpoison.io/collenchyma"
-documentation = "http://autumnai.github.io/collenchyma"
+repository    = "https://github.com/ratpoison-io/coaster"
+homepage      = "https://ratpoison.io/coaster"
+documentation = "http://ratpoison.io/projects/coaster"
 readme        = "README.md"
 
-keywords      = ["backend", "computation", "opencl", "cuda", "hpc", "fpga"]
+keywords      = ["backend", "computation", "opencl", "cuda", "hpc"]
 license       = "MIT OR Apache-2.0"
 
 [dependencies]

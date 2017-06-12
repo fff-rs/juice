@@ -21,7 +21,7 @@
 //! ## Examples
 //!
 //! ```
-//! extern crate collenchyma as co;
+//! extern crate coaster as co;
 //! use co::framework::*;
 //! use co::backend::{Backend, BackendConfig};
 //! use co::frameworks::Native;
@@ -45,7 +45,7 @@ use framework::IFramework;
 use device::IDevice;
 
 #[derive(Debug, Clone)]
-/// Defines the main and highest struct of Collenchyma.
+/// Defines the main and highest struct of Coaster.
 pub struct Backend<F: IFramework> {
     /// Provides the Framework.
     ///

@@ -1,9 +1,9 @@
-//! Defines the general set of error types in Collenchyma.
+//! Defines the general set of error types in Coaster.
 
 use std::{error, fmt};
 
 #[derive(Debug)]
-/// Defines the set of available Collenchyma error types.
+/// Defines the set of available Coaster error types.
 pub enum Error {
     /// Failure related to the Framework implementation.
     Framework(::framework::Error),

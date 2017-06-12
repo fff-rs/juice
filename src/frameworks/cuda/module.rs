@@ -5,7 +5,7 @@ use binary::IBinary;
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Module.
 ///
-/// A Module is Cuda's version of Collenchyma's [binary][binary].
+/// A Module is Cuda's version of Coaster's [binary][binary].
 /// [binary]: ../../binary/index.html
 pub struct Module {
     id: isize,

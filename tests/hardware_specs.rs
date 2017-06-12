@@ -1,4 +1,4 @@
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate libc;
 
 #[cfg(test)]

@@ -1,6 +1,6 @@
 //! Provides the OpenCL API with its context functionality.
 //!
-//! At Collenchyma device can be understood as a synonym to OpenCL's context.
+//! At Coaster device can be understood as a synonym to OpenCL's context.
 
 use libc;
 use frameworks::opencl::{API, Error, Device};
@@ -13,7 +13,7 @@ impl API {
     /// An OpenCL context is created with one or more devices. Contexts are used by the OpenCL
     /// runtime for managing objects such as command-queues, memory, program and kernel objects
     /// and for executing kernels on one or more devices specified in the context.
-    /// An OpenCL context is a synonym to a Collenchyma device.
+    /// An OpenCL context is a synonym to a Coaster device.
     pub fn create_context(
         devices: Vec<Device>,
         properties: *const cl::context_properties,

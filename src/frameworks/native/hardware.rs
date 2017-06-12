@@ -5,7 +5,7 @@ use hardware::{IHardware, HardwareType};
 #[derive(Debug, Clone)]
 /// Defines the host CPU Hardware.
 ///
-/// Can later be transformed into a [Collenchyma hardware][hardware].
+/// Can later be transformed into a [Coaster hardware][hardware].
 /// [hardware]: ../../hardware/index.html
 pub struct Hardware {
     id: isize,

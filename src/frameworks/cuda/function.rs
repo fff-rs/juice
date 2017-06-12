@@ -5,7 +5,7 @@ use operation::IOperation;
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Function.
 ///
-/// A Function is Cuda's version of Collenchyma's [operation][operation].
+/// A Function is Cuda's version of Coaster's [operation][operation].
 /// [operation]: ../../operation/index.html
 pub struct Function {
     id: isize,

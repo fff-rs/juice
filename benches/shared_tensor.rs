@@ -1,7 +1,7 @@
 #![feature(test)]
 
 extern crate test;
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate rand;
 
 use test::Bencher;

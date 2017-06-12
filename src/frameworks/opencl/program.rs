@@ -6,7 +6,7 @@ use super::api::types as cl;
 #[derive(Debug, Copy, Clone)]
 /// Defines a OpenCL Program.
 ///
-/// A Program is OpenCL's version of Collenchyma's [binary][binary].
+/// A Program is OpenCL's version of Coaster's [binary][binary].
 /// [binary]: ../../binary/index.html
 pub struct Program {
     id: isize,

@@ -2,7 +2,7 @@
 //! devices such as CPUs and GPUs, accross different computation languages such as OpenCL and
 //! CUDA and allows you to swap your backend on run-time.
 //!
-//! Collenchyma was started at [Autumn][autumn] to create an easy and performant abstraction over
+//! Coaster was started at [Autumn][autumn] to create an easy and performant abstraction over
 //! different backends for the Machine Intelligence Framework [Leaf][leaf], with no hard
 //! dependency on any driver or libraries so that it can easily be used without the need for a
 //! long and painful build process.
@@ -29,14 +29,14 @@
 //! one to two orders of magnitudes faster, thanks to better support of parallelizing operations.
 //! OpenCL and CUDA make parallelizing operations super easy.
 //!
-//! With Collenchyma we eleminate the pain points of writing device code, so you can run your code
+//! With Coaster we eleminate the pain points of writing device code, so you can run your code
 //! like any other Rust code, don't need to learn about kernels, events, or memory
 //! synchronization, and can deploy your code with ease to servers, desktops or mobiles and
 //! your code will make full use of the underlying hardware.
 //!
 //! ## Architecture
 //!
-//! The single entry point of Collenchyma is a [Backend][backend]. A Backend is agnostic over the [Device][device] it
+//! The single entry point of Coaster is a [Backend][backend]. A Backend is agnostic over the [Device][device] it
 //! runs [Operations][operation] on. In order to be agnostic over the Device, such as native host CPU, GPUs,
 //! Accelerators or other types of [Hardware][hardware], the Backend needs to be agnostic over the
 //! [Framework][framework] as well. A Framework is a computation language such as OpenCL, Cuda or the native programming
@@ -49,9 +49,9 @@
 //! machines where it will execute on the most potent Hardware by default.
 //!
 //! Operations get introduced by a [Plugin][plugin]. A Plugin extends your Backend with ready-to-execute Operations.
-//! All you need to do is provide these Collenchyma Plugin crates alongside the Collenchyma crate in your Cargo
+//! All you need to do is provide these Coaster Plugin crates alongside the Coaster crate in your Cargo
 //! file. Your Backend will then be extended with the operations provided by the Plugin. The interface is just common
-//! Rust e.g. to execute the dot product operation of the [Collenchyma-BLAS][collenchyma-blas] Plugin,
+//! Rust e.g. to execute the dot product operation of the [Coaster-BLAS][coaster-blas] Plugin,
 //! we can simply call `backend.dot(...)`. Whether or not the dot Operation is executed on, e.g.
 //! one or many GPUs or CPUs, depends solely on how you configured the Backend. If you did not further specify which
 //! Framework and Hardware to use, it depends solely on the machine you execute the dot Operation on. The concept of Operations
@@ -59,7 +59,7 @@
 //! to compile and build the Operation manually at run-time, which makes up a significant part of a Framework. We need
 //! an initializable instance for holding the state and compiled Operations, wich the Binary is good for.
 //!
-//! The last piece of Collenchyma is the [Memory][memory]. A Operation happens over data, but this data needs to be
+//! The last piece of Coaster is the [Memory][memory]. A Operation happens over data, but this data needs to be
 //! accessable by the device on which the Operation is executed. The process is occurs often, that memory space needs
 //! to be allocated on the device and then in a later step, synced from the host to the device or from
 //! the device back to the host. Thanks to [Tensor][tensor] we do not have to care about memory management
@@ -69,11 +69,11 @@
 //!
 //! ## Examples
 //!
-//! This example requires the Collenchyma NN Plugin, for Neural Network related operations, to work.
+//! This example requires the Coaster NN Plugin, for Neural Network related operations, to work.
 //!
 //! ```ignore
-//! extern crate collenchyma as co;
-//! extern crate collenchyma_nn as nn;
+//! extern crate coaster as co;
+//! extern crate coaster_nn as nn;
 //! use co::prelude::*;
 //! use nn::*;
 //!
@@ -110,7 +110,7 @@
 //!
 //! ## Development
 //!
-//! At the moment Collenchyma itself will provide Rust APIs for the important frameworks - OpenCL
+//! At the moment Coaster itself will provide Rust APIs for the important frameworks - OpenCL
 //! and CUDA. One step we are looking out for is to seperate OpenCL and CUDA into their own crate.
 //! Something similar to [Glium][glium].
 //!
@@ -121,10 +121,10 @@
 //! mandatory. Leaving it blank, the Backend would try to use the most potent Framework given the underlying hardware,
 //! which would be probably in this order Cuda -> OpenCL -> Native. The setup might take longer, as every framework
 //! needs to be checked, and devices be loaded in order to identify the best setup. But this would allow, that you
-//! really could deploy a Collenchyma-backed application to almost any hardware - server, desktops, mobiles.
+//! really could deploy a Coaster-backed application to almost any hardware - server, desktops, mobiles.
 //!
 //! [autumn]: http://autumnai.com
-//! [leaf]: https://github.com/autumnai/leaf
+//! [leaf]: https://github.com/ratpoison-io/leaf
 //! [glium]: https://github.com/tomaka/glium
 //! [backend]: ./backend/index.html
 //! [device]: ./device/index.html
@@ -133,7 +133,7 @@
 //! [hardware]: ./hardware/index.html
 //! [framework]: ./framework/index.html
 //! [plugin]: ./plugin/index.html
-//! [collenchyma-blas]: https://github.com/autumnai/collenchyma-blas
+//! [coaster-blas]: https://github.com/ratpoison-io/coaster-blas
 //! [memory]: ./memory/index.html
 //! [tensor]: ./tensor/index.html
 #![cfg_attr(lint, feature(plugin))]
@@ -186,18 +186,18 @@ pub use frameworks::OpenCL;
 // to create a namespace collision.
 pub use error::Error;
 
-/// A module meant to be glob imported when using Collenchyma.
+/// A module meant to be glob imported when using Coaster.
 ///
 /// For instance:
 ///
 /// ```
-/// use collenchyma::prelude::*;
+/// use coaster::prelude::*;
 /// ```
 ///
 /// This module contains several important traits that provide many
-/// of the convenience methods in Collenchyma, as well as most important types.
+/// of the convenience methods in Coaster, as well as most important types.
 /// Another type that is often needed but is likely to cause a name collision
-/// when imported is `collenchyma::Error`.
+/// when imported is `coaster::Error`.
 pub mod prelude {
     pub use backend::*;
     pub use device::{IDevice, IMemory};

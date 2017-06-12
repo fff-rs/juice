@@ -6,7 +6,7 @@ use super::api::types as cl;
 #[derive(Debug, Copy, Clone)]
 /// Defines a OpenCL Kernel.
 ///
-/// A Kernel is OpenCL's version of Collenchyma's [operation][operation].
+/// A Kernel is OpenCL's version of Coaster's [operation][operation].
 /// [operation]: ../../operation/index.html
 pub struct Kernel {
     id: isize,

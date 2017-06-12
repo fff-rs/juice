@@ -14,8 +14,8 @@
 //!
 //! ## Development
 //!
-//! The funcionality provided here is used to construct specific Collenchyma binaries, which are
-//! used to construct the basic computation behavior that come shipped with Collenchyma. However, it should
+//! The funcionality provided here is used to construct specific Coaster binaries, which are
+//! used to construct the basic computation behavior that come shipped with Coaster. However, it should
 //! allow you to define and run your own backend-agnostic programs as well.
 //!
 //! [blas]: ../libraries/blas/index.html

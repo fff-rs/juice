@@ -71,7 +71,7 @@ pub enum Error {
     /// Failures related to the Cuda framework implementation.
     #[cfg(feature = "cuda")]
     Cuda(CudaError),
-    /// Failure related to the Collenchyma implementation of a specific Framework.
+    /// Failure related to the Coaster implementation of a specific Framework.
     Implementation(String),
 }
 
@@ -82,7 +82,7 @@ impl fmt::Display for Error {
             Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
-            Error::Implementation(ref err) => write!(f, "Collenchyma Implementation error: {}", err),
+            Error::Implementation(ref err) => write!(f, "Coaster Implementation error: {}", err),
         }
     }
 }

@@ -7,27 +7,27 @@
 //! methods will than be able to excute on different devices and use the full power of the machine's
 //! underlying hardware.
 //!
-//! So extending the Backend with operations is easy. In Collenchyma we call crates, which provide
+//! So extending the Backend with operations is easy. In Coaster we call crates, which provide
 //! operations for the Backend, Plugins. Plugins are usually a group of related operations of a common
-//! field. Two examples for Collenchyma Plugins are [BLAS][collenchyma-blas] and [NN][collenchyma-nn].
+//! field. Two examples for Coaster Plugins are [BLAS][coaster-blas] and [NN][coaster-nn].
 //!
 //! A Plugin does roughly two important things. It provides generic traits and the explicit implementation
-//! of these traits for one or (even better) all available Collenchyma Frameworks - common host CPU, OpenCL,
+//! of these traits for one or (even better) all available Coaster Frameworks - common host CPU, OpenCL,
 //! CUDA.
 //!
 //! The structure of Plugin is pretty simple with as little overhead as possible. Macros make implementations
 //! even easier. If you would like to use specific Plugins for you Backend, all you need to do is
-//! set them as dependencies in your Cargo file in addition to the Collenchyma crate. The Plugin
-//! then automatically extends the Backend provided by Collenchyma.
+//! set them as dependencies in your Cargo file in addition to the Coaster crate. The Plugin
+//! then automatically extends the Backend provided by Coaster.
 //!
 //! Extending the Backend with your own Plugin is a straight forward process.
-//! For now we recommend that you take a look at the general code structure of [Collenchyma-BLAS][collenchyma-blas]
+//! For now we recommend that you take a look at the general code structure of [Coaster-BLAS][coaster-blas]
 //! or its documentation. Let us now about your Plugin on the Gitter chat, we are happy to feature
-//! your Collenchyma Plugin on the README.
+//! your Coaster Plugin on the README.
 //!
 //! [program]: ../program/index.html
-//! [collenchyma-blas]: https://github.com/autumnai/collenchyma-blas
-//! [collenchyma-nn]: https://github.com/autumnai/collenchyma-nn
+//! [coaster-blas]: https://github.com/ratpoison-io/coaster-blas
+//! [coaster-nn]: https://github.com/ratpoison-io/coaster-nn
 
 pub use self::numeric_helpers::Float;
 use tensor;

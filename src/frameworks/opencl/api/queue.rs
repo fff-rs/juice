@@ -1,6 +1,6 @@
 //! Provides the OpenCL API with its command queue functionality.
 //!
-//! At Collenchyma device can be understood as a synonym to OpenCL's context.
+//! At Coaster device can be understood as a synonym to OpenCL's context.
 
 use frameworks::opencl::{API, Device, Error, Context, Queue, QueueFlags};
 use super::types as cl;

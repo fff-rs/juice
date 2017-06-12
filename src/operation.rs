@@ -12,7 +12,7 @@
 //! ## Development
 //!
 //! The functionality provided by this module is used to construct the basic operations that come
-//! shipped with Collenchyma, but should also allow you to define and run your own backend-agnostic
+//! shipped with Coaster, but should also allow you to define and run your own backend-agnostic
 //! operations as well.
 //!
 //! [frameworks]: ../frameworks/index.html

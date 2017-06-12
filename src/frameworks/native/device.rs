@@ -11,7 +11,7 @@ use super::allocate_boxed_slice;
 #[derive(Debug, Clone)]
 /// Defines the host CPU Hardware.
 ///
-/// Can later be transformed into a [Collenchyma hardware][hardware].
+/// Can later be transformed into a [Coaster hardware][hardware].
 /// [hardware]: ../../hardware/index.html
 pub struct Cpu {
     hardwares: Vec<Hardware>

@@ -1,5 +1,5 @@
-extern crate collenchyma;
-use collenchyma::prelude::*;
+extern crate coaster;
+use coaster::prelude::*;
 
 fn main() {
     let ntv = Native::new();

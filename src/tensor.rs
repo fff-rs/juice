@@ -1,7 +1,7 @@
 //! Provides the functionality for memory management across devices.
 //!
 //! A Tensor is a potentially multi-dimensional matrix containing information about the actual data and its structure.
-//! A Collenchyma Tensor tracks the memory copies of the numeric data of an Tensor across the devices of the Backend
+//! A Coaster Tensor tracks the memory copies of the numeric data of an Tensor across the devices of the Backend
 //! and manages
 //!
 //! * the location of these memory copies
@@ -18,7 +18,7 @@
 //! ## Terminology
 //!
 //! A Tensor is a homogeneous multi-dimensional array - a table of elements (usually numeric elements) of the same type,
-//! indexed by tuples of positive integers. In Collenchyma, `dimensions` of a Tensor describe the axis for a
+//! indexed by tuples of positive integers. In Coaster, `dimensions` of a Tensor describe the axis for a
 //! coordinate system. The numbers of dimensions is known as the `rank`. A scalar value like `3` has the rank 0, and a Rust array
 //! like `[1, 2, 3]` has a rank of 1 as it has one dimension. A array of arrays like `[[1, 2, 3], [2, 3]]` has a rank
 //! of 2 as it has two dimensions. The number of elements for a dimension is called `length`.
@@ -32,10 +32,10 @@
 //! Create a SharedTensor and fill it with some numbers:
 //!
 //! ```
-//! # extern crate collenchyma;
-//! use collenchyma::framework::IFramework;
-//! use collenchyma::frameworks::Native;
-//! use collenchyma::tensor::SharedTensor;
+//! # extern crate coaster;
+//! use coaster::framework::IFramework;
+//! use coaster::frameworks::Native;
+//! use coaster::tensor::SharedTensor;
 //! # fn main() {
 //! // allocate memory
 //! let native = Native::new();

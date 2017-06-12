@@ -1,6 +1,6 @@
 //! Provides the Cuda API with its context functionality.
 //!
-//! A Collenchyma device can be understood as a synonym to Cuda's context.
+//! A Coaster device can be understood as a synonym to Cuda's context.
 
 use super::{API, Error};
 use frameworks::cuda::Device;
@@ -13,7 +13,7 @@ impl API {
     /// An Cuda context can only be created with one device. Contexts are used by the Cuda
     /// runtime for managing objects such as command-queues, memory, program and kernel objects
     /// and for executing kernels on one or more devices specified in the context.
-    /// An Cuda context is a synonym to a Collenchyma device.
+    /// An Cuda context is a synonym to a Coaster device.
     pub fn create_context(device: Device) -> Result<CUcontext, Error> {
         unsafe {API::ffi_create_context(device.id_c())}
     }

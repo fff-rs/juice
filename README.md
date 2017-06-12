@@ -1,92 +1,92 @@
-# Collenchyma • [![Join the chat at https://gitter.im/autumnai/collenchyma](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/collenchyma.svg?branch=master)](https://travis-ci.org/autumnai/collenchyma) [![Coverage Status](https://coveralls.io/repos/autumnai/collenchyma/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/collenchyma?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/collenchyma)](https://crates.io/crates/collenchyma) [![License](https://img.shields.io/crates/l/collenchyma.svg)](LICENSE)
+# coaster • [![Join the chat at https://gitter.im/ratpoison-io/coaster](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/ratpoison-io/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.ratpoison.io/api/v1/pipelines/leaf/jobs/test-collenchyma/badge)](https://ci.ratpoison.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
 
-Collenchyma is an extensible, pluggable, backend-agnostic framework for parallel,
+coaster is an extensible, pluggable, backend-agnostic framework for parallel,
 high-performance computations on CUDA, OpenCL and common host CPU. It is fast, easy
 to build and provides an extensible Rust struct to execute operations on almost any
 machine, even if it does not have CUDA or OpenCL capable devices.
 
-Collenchyma's abstracts over the different computation languages (Native,
+coaster's abstracts over the different computation languages (Native,
 OpenCL, Cuda) and let's you run highly-performant code, thanks to easy
 parallelization, on servers, desktops or mobiles without the need to adapt your
-code for the machine you deploy to. Collenchyma does not require OpenCL or Cuda
+code for the machine you deploy to. coaster does not require OpenCL or Cuda
 on the machine and automatically falls back to the native host CPU, making your
 application highly flexible and fast to build.
 
-Collenchyma was started at [Autumn][autumn] to support the Machine Intelligence
+coaster was started as colenchyma at [Autumn][autumn] to support the Machine Intelligence
 Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 * __Parallelizing Performance__<br/>
-Collenchyma makes it easy to parallelize computations on your machine, putting
+coaster makes it easy to parallelize computations on your machine, putting
 all the available cores of your CPUs/GPUs to use.
-Collenchyma provides optimized operations through Plugins,
+coaster provides optimized operations through Plugins,
 that you can use right away to speed up your application.
 
 * __Easily Extensible__<br/>
-Writing custom operations for GPU execution becomes easy with Collenchyma, as
+Writing custom operations for GPU execution becomes easy with coaster, as
 it already takes care of Framework peculiarities, memory management, safety and other
-overhead. Collenchyma provides Plugins (see examples below), that you can use to extend
-the Collenchyma backend with your own, business-specific operations.
+overhead. coaster provides Plugins (see examples below), that you can use to extend
+the coaster backend with your own, business-specific operations.
 
 * __Butter-smooth Builds__<br/>
-As Collenchyma does not require the installation of various frameworks and
+As coaster does not require the installation of various frameworks and
 libraries, it will not add significantly to the build time of your application.
-Collenchyma checks at run-time if these frameworks can be used and gracefully
+coaster checks at run-time if these frameworks can be used and gracefully
 falls back to the standard, native host CPU if they are not.
 No long and painful build procedures for you or your users.
 
 For more information,
 
-* see Collenchyma's [Documentation](http://autumnai.github.io/collenchyma)
-* or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
+* see coaster's [Documentation](http://ratpoision.io/projects/coaster/documentation)
+* or get in touch via [Gitter][gitter-coaster]
 
-> Disclaimer: Collenchyma is currently in a very early and heavy stage of
+> Disclaimer: coaster is currently in a very early and heavy stage of
 > development. If you are experiencing any bugs that are not due to not yet
 > implemented features, feel free to create an issue.
 
 [arrayfire]: https://github.com/arrayfire/arrayfire
 [autumn]: http://autumnai.com
 [leaf]: https://github.com/autumnai/leaf
-[twitter-autumn]: https://twitter.com/autumn_eng
+[ratpoison]: https://ratpoision.io/projects/coaster
 
 ## Getting Started
 
-If you're using Cargo, just add Collenchyma to your Cargo.toml:
+If you're using Cargo, just add coaster to your Cargo.toml:
 
     [dependencies]
-    collenchyma = "0.0.8"
+    coaster = "0.0.8"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
-    $ cargo add collenchyma
+    $ cargo add coaster
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
 
 ## Plugins
 
-You can easily extend Collenchyma's `Backend` with more backend-agnostic operations, through Plugins.
-Plugins provide a set of related operations - BLAS would be a good example. To extend Collenchyma's `Backend`
+You can easily extend coaster's `Backend` with more backend-agnostic operations, through Plugins.
+Plugins provide a set of related operations - BLAS would be a good example. To extend coaster's `Backend`
 with operations from a Plugin, just add a the desired Plugin crate to your Cargo.toml file.
-Here is a list of available Collenchyma Plugins, that you can use right away for your own application, or
+Here is a list of available coaster Plugins, that you can use right away for your own application, or
 take as a starting point, if you would like to create your own Plugin.
 
-* [BLAS][collenchyma-blas] - Collenchyma plugin for backend-agnostic Basic Linear Algebra Subprogram Operations.
-* [NN][collenchyma-nn] - Collenchyma plugin for Neural Network related algorithms.
+* [BLAS][coaster-blas] - coaster plugin for backend-agnostic Basic Linear Algebra Subprogram Operations.
+* [NN][coaster-nn] - coaster plugin for Neural Network related algorithms.
 
 You can easily write your own backend-agnostic, parallel operations and provide it for others,
 via a Plugin - we are happy to feature your Plugin here, just send us a PR.
 
-[collenchyma-blas]: http://github.com/autumnai/collenchyma-blas
-[collenchyma-nn]: http://github.com/autumnai/collenchyma-nn
+[coaster-blas]: http://github.com/ratpoison-io/coaster-blas
+[coaster-nn]: http://github.com/ratpoison-io/coaster-nn
 
 ## Examples
 
-Collenchyma comes without any operations. The following examples therefore assumes,
-that you have added both `collenchyma` and the Collenchyma Plugin `collenchyma-nn`
+coaster comes without any operations. The following examples therefore assumes,
+that you have added both `coaster` and the coaster Plugin `coaster-nn`
 to your Cargo manifest.
 
 ```rust
-extern crate collenchyma as co;
-extern crate collenchyma_nn as nn;
+extern crate coaster as co;
+extern crate coaster_nn as nn;
 use co::prelude::*;
 use nn::*;
 
@@ -109,15 +109,12 @@ fn main() {
     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
     let native = Backend::<Native>::default().unwrap();
     x.add_device(native.device()).unwrap(); // Add native host memory
-    x.sync(native.device()).unwrap(); // Sync to native host memory
-    write_to_memory(x.get_mut(native.device()).unwrap(), payload); // Write to native host memory.
-    x.sync(backend.device()).unwrap(); // Sync the data to the CUDA device.
+    write_to_memory(x.write_only(native.device()).unwrap(), payload); // Write to native host memory.
     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
     backend.sigmoid(&mut x, &mut result).unwrap();
     // See the result.
     result.add_device(native.device()).unwrap(); // Add native host memory
-    result.sync(native.device()).unwrap(); // Sync the result to host memory.
-    println!("{:?}", result.get(native.device()).unwrap().as_native().unwrap().as_slice::<f32>());
+    println!("{:?}", result.read(native.device()).unwrap().as_slice::<f32>());
 }
 ```
 
@@ -128,7 +125,7 @@ Want to contribute? Awesome! We have
 And high priority issues, that we could need your help with.
 
 We have a mostly real-time collaboration culture and happens here on Github and
-on the [Collenchyma Gitter Channel][gitter-collenchyma].
+on the [Coaster Gitter Channel][gitter-coaster].
 You can also reach out to the Maintainer(s)
 {[@drahnr][drahnr]}.
 
@@ -137,14 +134,12 @@ submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as below, without any additional terms or
 conditions.
 
-[issue-2]: https://github.com/autumnai/collenchyma/issues/2
-[issue-4]: https://github.com/autumnai/collenchyma/issues/4
-[issue-5]: https://github.com/autumnai/collenchyma/issues/5
-[issue-6]: https://github.com/autumnai/collenchyma/issues/6
+[issue-1]: https://github.com/ratpoison-io/coaster/issues/1
+[issue-2]: https://github.com/ratpoison-io/coaster/issues/2
+[issue-3]: https://github.com/ratpoison-io/coaster/issues/3
 [contributing]: CONTRIBUTING.md
-[gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
-[mj]: https://twitter.com/mjhirn
-[hobofan]: https://twitter.com/hobofan
+[gitter-coaster]: https://gitter.im/ratpoison-io/coaster
+[drahnr]: https://github.com/drahnr
 
 ## Changelog
 
