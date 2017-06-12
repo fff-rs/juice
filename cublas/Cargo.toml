@@ -1,13 +1,13 @@
 [package]
-name = "cublas"
+name = "rcublas"
 description = "safe Rust wrapper for CUDA's cuBLAS"
 version = "0.2.0"
 authors = ["Bernhard Schuster <bernhard@ratpoison.io>",
 	   "Maximilian Goisser <maximilian.goisser@autumnai.com>"]
 
-repository      = "https://github.com/autumnai/rust-cublas"
-homepage        = "https://github.com/autumnai/rust-cublas"
-documentation   = "https://autumnai.github.io/rust-cublas"
+repository      = "https://github.com/ratpoison-io/rust-cublas"
+homepage        = "https://github.com/ratpoison-io/rust-cublas"
+documentation   = "https://ratpoison.io/projects/rust-cublas"
 readme          = "../README.md"
 
 keywords        = ["cublas", "cuda", "nvidia", "blas"]
@@ -15,7 +15,7 @@ license         = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"
-cublas-sys = { version = "0.1.0", path = "../cublas-sys" }
+rcublas-sys = { version = "0.1.0", path = "../cublas-sys" }
 
 clippy = { version = "0.0.35", optional = true }
 

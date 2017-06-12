@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-extern crate cublas_sys as ffi;
+extern crate rcublas_sys as ffi;
 
 #[cfg(test)]
 extern crate collenchyma as co;
