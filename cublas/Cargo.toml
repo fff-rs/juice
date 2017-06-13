@@ -15,7 +15,7 @@ license         = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"
-rcublas-sys = { version = "0.1.0", path = "../cublas-sys" }
+rcublas-sys = { version = "0.1.1", path = "../cublas-sys" }
 
 clippy = { version = "0.0.35", optional = true }
 
