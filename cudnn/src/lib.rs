@@ -24,7 +24,7 @@
 //! ## Examples
 //!
 //! ```
-//! extern crate cudnn;
+//! extern crate rcudnn as cudnn;
 //! extern crate libc;
 //! use cudnn::{Cudnn, TensorDescriptor};
 //! use cudnn::utils::{ScalParams, DataType};

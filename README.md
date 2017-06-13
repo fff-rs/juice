@@ -28,7 +28,7 @@ For more information,
 If you're using Cargo, just add rust-cuDNN to your Cargo.toml:
 
     [dependencies]
-    cudnn = "1.3.1"
+    cudnn = "1.5.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
@@ -41,7 +41,7 @@ If you're using [Cargo Edit][cargo-edit], you can call:
 Using the high-level `Cudnn` interface.
 
 ```rust
-extern crate cudnn;
+extern crate rcudnn as cudnn;
 extern crate libc;
 use cudnn::{Cudnn, TensorDescriptor};
 use cudnn::utils::{ScalParams, DataType};

@@ -1,8 +1,8 @@
-extern crate cudnn;
+extern crate rcudnn as cudnn;
 extern crate coaster as co;
 extern crate libc;
 
-extern crate cudnn_sys as ffi;
+extern crate rcudnn_sys as ffi;
 use ffi::*;
 
 #[cfg(test)]
