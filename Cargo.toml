@@ -8,8 +8,8 @@ authors = ["Bernhard Schuster <bernhard@ratpoison.io>",
 
 [dependencies]
 # cuticula = { path = "../cuticula", default-features = false }
-leaf = { path = "../leaf", default-features = false }
-collenchyma = { path = "../collenchyma", default-features = false }
+leaf = { path = "../leaf", default-features = false, version = "0.2.2" }
+coaster = { path = "../coaster", default-features = false, version = "0.1.0" }
 
 csv = "0.14"
 hyper = "0.6"
@@ -27,9 +27,9 @@ clippy = { version = "0.0.23", optional = true }
 
 [features]
 default = ["native", "opencl", "cuda"]
-native = ["leaf/native", "collenchyma/native"]
-opencl = ["leaf/opencl", "collenchyma/opencl"]
-cuda = ["leaf/cuda", "collenchyma/cuda"]
+native = ["leaf/native", "coaster/native"]
+opencl = ["leaf/opencl", "coaster/opencl"]
+cuda = ["leaf/cuda", "coaster/cuda"]
 
 [profile.dev]
 opt-level = 0

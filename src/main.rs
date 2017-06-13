@@ -16,7 +16,7 @@ use csv::{Reader};
 
 
 extern crate env_logger;
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate leaf;
 
 use co::prelude::*;
