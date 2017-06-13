@@ -14,7 +14,7 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 collenchyma = { path = "../collenchyma", default-features = false, features = ["native"] } # native feature to read/write data into tensors
 
-image = "0.13.0"
+image = "0.14.0"
 murmurhash3 = "0.0.5"
 modifier = "0.1"
 
