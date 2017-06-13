@@ -3,7 +3,7 @@
 extern crate rcublas_sys as ffi;
 
 #[cfg(test)]
-extern crate collenchyma as co;
+extern crate coaster as co;
 
 pub use api::Context;
 pub use error::Error;
