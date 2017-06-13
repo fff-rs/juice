@@ -1,7 +1,7 @@
 [package]
 name = "rcublas-sys"
 description     = "FFI bindings to cuBLAS"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Bernhard Schuster <bernhard@ratpoison.io>",
            "Maximilian Goisser <maximilian.goisser@autumnai.com>"]
 

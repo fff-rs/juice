@@ -56,7 +56,7 @@ fn main() {
         println!("cargo:include={}", include_dir);
     }
 
-    if true {
+    if false {
         let bindings = bindgen::Builder::default()
             // Do not generate unstable Rust code that
             // requires a nightly rustc and enabling
@@ -68,10 +68,6 @@ fn main() {
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
-
-extern crate libc;
-
-pub use self::convenience;
             ")
             .ctypes_prefix("::libc")
             .clang_arg("-I")
@@ -85,7 +81,7 @@ pub use self::convenience;
             .expect("Unable to generate bindings");
 
         let out_path = PathBuf::from("src");
-        bindings.write_to_file(out_path.join("lib.rs"))
+        bindings.write_to_file(out_path.join("generated.rs"))
             .expect("Couldn't write bindings!");
     }
 }
