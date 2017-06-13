@@ -1,4 +1,4 @@
-extern crate cudnn;
+extern crate rcudnn as cudnn;
 
 #[cfg(test)]
 mod tensor_descriptor_spec {
