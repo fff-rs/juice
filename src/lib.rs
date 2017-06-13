@@ -3,7 +3,7 @@
 //! Tensorflow and Caffe.
 //!
 //! An important module in Leaf is the backend-agnostic, high-performance computation Framework
-//! [Collenchyma][collenchyma], which combines performance and usability for Leaf Networks.
+//! [Coaster][coaster], which combines performance and usability for Leaf Networks.
 //! This allows you to run and deploy Leaf Networks to servers, desktops or even mobiles
 //! using the full available computation power of GPUs or other CUDA/OpenCL supported
 //! devices for the learning of your Networks. And if your machine does not have a GPU or you do
@@ -22,7 +22,7 @@
 //! Layer types which are closer defined at the [Layers page][layers]. Every
 //! layer serves a special purpose and can occur zero, one or many times inside a Network.
 //!
-//! Leaf uses [Collenchymas'][collenchyma] SharedTensor, an N-dimensional array
+//! Leaf uses [Coasters'][coaster] SharedTensor, an N-dimensional array
 //! for a unified memory interface over the actual data for automatic synchronization between
 //! different devices (CUDA, OpenCL, host CPU). A SharedTensor stores the actual data flowing
 //! through the system and the weights required for some Layers.
@@ -39,7 +39,7 @@
 //! Layer, which is used for the interaction of Network and Solver. The Network produces the loss
 //! and gradients, which the Solver uses to optimize the Network through parameter updates. Beside
 //! that, the Solver provides housekeeping and other evaluations of the Network. All operation
-//! on the Solver happen through Collenchyma, therefore can be executed on Cuda, OpenCL or native
+//! on the Solver happen through Coaster, therefore can be executed on Cuda, OpenCL or native
 //! host CPU as well.
 //!
 //! Leaf provides a robust and modular design, which allows to express almost any numerical
@@ -78,7 +78,7 @@
 //! - [Issue #19 for Activation Layers][issue-activation]
 //! - [Issue #20 for Common Layers][issue-common]
 //!
-//! [collenchyma]: https://github.com/autumnai/collenchyma
+//! [coaster]: https://github.com/autumnai/coaster
 //! [network]: ./network/index.html
 //! [layers]: ./layers/index.html
 //! [activation]: ./layers/activation/index.html
@@ -114,9 +114,9 @@ extern crate log;
 extern crate rand;
 extern crate num;
 extern crate capnp;
-extern crate collenchyma as co;
-extern crate collenchyma_blas as coblas;
-extern crate collenchyma_nn as conn;
+extern crate coaster as co;
+extern crate coaster_blas as coblas;
+extern crate coaster_nn as conn;
 pub mod layer;
 pub mod layers;
 pub mod solver;

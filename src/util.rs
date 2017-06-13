@@ -20,12 +20,12 @@ pub fn native_backend() -> Backend<Native> {
     Backend::new(backend_config).unwrap()
 }
 
-/// Write into a native Collenchyma Memory.
+/// Write into a native Coaster Memory.
 pub fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T]) {
     write_to_memory_offset(mem, data, 0);
 }
 
-/// Write into a native Collenchyma Memory with a offset.
+/// Write into a native Coaster Memory with a offset.
 pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) {
     let mut mem_buffer = mem.as_mut_slice::<f32>();
     for (index, datum) in data.iter().enumerate() {
@@ -52,7 +52,7 @@ pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedT
                            i * sample_size);
 }
 
-/// Create a Collenchyma SharedTensor for a scalar value.
+/// Create a Coaster SharedTensor for a scalar value.
 pub fn native_scalar<T: NumCast + ::std::marker::Copy>(scalar: T) -> SharedTensor<T> {
     let native = native_backend();
     let mut shared_scalar = SharedTensor::<T>::new(&[1]);

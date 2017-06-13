@@ -2,7 +2,7 @@
 extern crate timeit;
 
 extern crate env_logger;
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate leaf;
 
 use co::prelude::*;
@@ -116,7 +116,7 @@ fn get_time_scale<'a>(sec: f64) -> (f64, &'a str) {
 
 #[cfg(feature="native")]
 fn bench_alexnet() {
-    println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Collenchyma NN Plugin.");
+    println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Coaster NN Plugin.");
     println!("Try running with `cargo run --release --no-default-features --features cuda --example benchmarks alexnet`.");
 }
 #[cfg(all(feature="cuda", not(feature="native")))]
@@ -245,7 +245,7 @@ fn bench_alexnet() {
 
 #[cfg(feature="native")]
 fn bench_overfeat() {
-    println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Collenchyma NN Plugin.");
+    println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Coaster NN Plugin.");
     println!("Try running with `cargo run --release --no-default-features --features cuda --example benchmarks overfeat`.");
 }
 #[cfg(all(feature="cuda", not(feature="native")))]
@@ -374,7 +374,7 @@ fn bench_overfeat() {
 
 #[cfg(feature="native")]
 fn bench_vgg_a() {
-    println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Collenchyma NN Plugin.");
+    println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Coaster NN Plugin.");
     println!("Try running with `cargo run --release --no-default-features --features cuda --example benchmarks vgg`.");
 }
 #[cfg(all(feature="cuda", not(feature="native")))]

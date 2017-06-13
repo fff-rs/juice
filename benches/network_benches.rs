@@ -3,7 +3,7 @@
 extern crate test;
 #[macro_use]
 extern crate timeit;
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate leaf;
 
 mod benches {

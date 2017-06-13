@@ -1,15 +1,15 @@
 [package]
 name = "leaf"
 description = "Machine Learning Framework for Hackers"
-version = "0.2.1"
+version = "0.2.2"
 authors = [
+  "Bernhard Schuster <bernhard@ratpoison.io>",
   "Maximilian Goisser <max@autumnai.com>",
   "Michael Hirn <mj@autumnai.com>",
-  "Bernhard Schuster <bernhard@ratpoison.io>",
 ]
 repository = "https://github.com/ratpoison-io/leaf"
 homepage = "https://ratpoison.io/leaf"
-documentation = "http://autumnai.github.io/leaf"
+documentation = "http://ratpoison.io/projects/leaf"
 readme = "README.md"
 keywords = ["deep-learning", "neural-networks", "machine-learning", "framework"]
 license = "MIT OR Apache-2.0"
@@ -17,9 +17,9 @@ license = "MIT OR Apache-2.0"
 build = "build.rs"
 
 [dependencies]
-collenchyma = { path = "../collenchyma", default-features = false }
-collenchyma-blas = { path = "../collenchyma-blas", default-features = false }
-collenchyma-nn = { path = "../collenchyma-nn", default-features = false }
+coaster = { path = "../coaster", default-features = false, version = "0.1.0" }
+coaster-blas = { path = "../coaster-blas", default-features = false, version = "0.2.0" }
+coaster-nn = { path = "../coaster-nn", default-features = false, version = "0.4.1" }
 
 log = "0.3.2"
 rand = "0.3.0"
@@ -37,9 +37,9 @@ env_logger = "0.3"
 
 [features]
 default = ["native"]
-native = ["collenchyma-blas/native", "collenchyma-nn/native"]
-cuda = ["collenchyma/cuda", "collenchyma-blas/cuda", "collenchyma-nn/cuda"]
-opencl = ["collenchyma/opencl", "collenchyma-blas/opencl", "collenchyma-nn/opencl"]
+native = ["coaster-blas/native", "coaster-nn/native"]
+cuda = ["coaster/cuda", "coaster-blas/cuda", "coaster-nn/cuda"]
+opencl = ["coaster/opencl", "coaster-blas/opencl", "coaster-nn/opencl"]
 
 travis = ["native"]
 dev = []

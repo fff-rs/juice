@@ -666,14 +666,14 @@ impl<B: IBackend> Layer<B> {
     ///
     /// ```
     /// # extern crate leaf;
-    /// # extern crate collenchyma;
+    /// # extern crate coaster;
     /// # #[cfg(feature = "native")]
     /// # mod native {
     /// # use std::rc::Rc;
     /// # use leaf::layer::*;
     /// # use leaf::layers::*;
     /// # use leaf::util;
-    /// use collenchyma::prelude::*;
+    /// use coaster::prelude::*;
     /// # pub fn test() {
     ///
     /// let native_backend = Rc::new(util::native_backend());

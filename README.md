@@ -23,7 +23,7 @@ one of the fastest Machine Intelligence Frameworks available.
 
 Leaf is portable. Run it on CPUs, GPUs, and FPGAs, on machines with an OS, or on
 machines without one. Run it with OpenCL or CUDA. Credit goes to
-[Collenchyma][collenchyma] and Rust.
+[Coaster][coaster] and Rust.
 
 Leaf is part of the [Autumn][autumn] Machine Intelligence Platform, which is
 working on making AI algorithms 100x more computational efficient.
@@ -131,10 +131,10 @@ We designed Leaf and the other crates of the [Autumn Platform][autumn] to be as 
 and extensible as possible. More helpful crates you can use with Leaf:
 
 - [**Cuticula**][cuticula]: Preprocessing Framework for Machine Learning
-- [**Collenchyma**][collenchyma]: Portable, HPC-Framework on any hardware with CUDA, OpenCL, Rust
+- [**Coaster**][coaster]: Portable, HPC-Framework on any hardware with CUDA, OpenCL, Rust
 
 [cuticula]: https://github.com/autumnai/cuticula
-[collenchyma]: https://github.com/autumnai/collenchyma
+[coaster]: https://github.com/autumnai/coaster
 
 ## Support / Contact
 

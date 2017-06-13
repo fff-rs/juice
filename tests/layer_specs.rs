@@ -1,5 +1,5 @@
 extern crate leaf;
-extern crate collenchyma as co;
+extern crate coaster as co;
 
 #[cfg(test)]
 mod layer_spec {
