@@ -122,7 +122,7 @@
 //! really could deploy a Coaster-backed application to almost any hardware - server, desktops, mobiles.
 //!
 //! [autumn]: http://autumnai.com
-//! [leaf]: https://github.com/ratpoison-io/leaf
+//! [leaf]: https://github.com/spearow/leaf
 //! [glium]: https://github.com/tomaka/glium
 //! [backend]: ./backend/index.html
 //! [device]: ./device/index.html
@@ -131,7 +131,7 @@
 //! [hardware]: ./hardware/index.html
 //! [framework]: ./framework/index.html
 //! [plugin]: ./plugin/index.html
-//! [coaster-blas]: https://github.com/ratpoison-io/coaster-blas
+//! [coaster-blas]: https://github.com/spearow/coaster-blas
 //! [memory]: ./memory/index.html
 //! [tensor]: ./tensor/index.html
 #![cfg_attr(lint, feature(plugin))]

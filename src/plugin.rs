@@ -26,8 +26,8 @@
 //! your Coaster Plugin on the README.
 //!
 //! [program]: ../program/index.html
-//! [coaster-blas]: https://github.com/ratpoison-io/coaster-blas
-//! [coaster-nn]: https://github.com/ratpoison-io/coaster-nn
+//! [coaster-blas]: https://github.com/spearow/coaster-blas
+//! [coaster-nn]: https://github.com/spearow/coaster-nn
 
 pub use self::numeric_helpers::Float;
 use tensor;

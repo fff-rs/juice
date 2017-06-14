@@ -2,13 +2,13 @@
 name          = "coaster"
 description   = "high-performance computation on any hardware"
 version       = "0.1.0"
-authors       = ["Bernhard Schsuter <bernhard@ratpoison.io>",
+authors       = ["Bernhard Schsuter <bernhard@ahoi.io>",
 		 "Michael Hirn <mj@autumnai.com>",
                  "Maximilian Goisser <max@autumnai.com>"]
 
-repository    = "https://github.com/ratpoison-io/coaster"
-homepage      = "https://ratpoison.io/coaster"
-documentation = "http://ratpoison.io/projects/coaster"
+repository    = "https://github.com/spearow/coaster"
+homepage      = "https://spearow.io/projects/coaster"
+documentation = "https://spearow.github.io/coaster"
 readme        = "README.md"
 
 keywords      = ["backend", "computation", "opencl", "cuda", "hpc"]
