@@ -94,8 +94,8 @@
 //! | Pooling Max          | cuDNN v5 or later | -         | Rust(fwd) |
 //! | Pooling Avg          | cuDNN v5 or later | -         | -         |
 //!
-//! [coaster]: https://github.com/ratpoison-io/coaster
-//! [coaster-docs]: https://ratpoison.io/projects/coaster/documentation
+//! [coaster]: https://github.com/spearow/coaster
+//! [coaster-docs]: https://spearow.github.io/coaster
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 #![cfg_attr(feature = "unstable", feature(test))]
 #![cfg_attr(lint, feature(plugin))]

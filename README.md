@@ -1,4 +1,4 @@
-# coaster-NN • [![Join the chat at https://gitter.im/ratpoison-io/coaster-nn](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/ratpoison-io/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.ratpoison.io/api/v1/pipelines/leaf/jobs/test-coaster-nn/badge)](https://ci.ratpoison.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster-nn.svg)](https://crates.io/crates/coaster-nn) [![License](https://img.shields.io/crates/l/coaster-nn.svg)](#license)
+# coaster-NN • [![Join the chat at https://gitter.im/spearow/coaster-nn](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-coaster-nn/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster-nn.svg)](https://crates.io/crates/coaster-nn) [![License](https://img.shields.io/crates/l/coaster-nn.svg)](#license)
 
 coaster-NN provides Neural Network related algorithms for [coaster][coaster].
 Run NN operations on servers, desktops or mobiles, GPUs, FPGAs or CPUS, without
@@ -9,13 +9,13 @@ Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 For more information,
 
-* see coaster-NN's [Documentation](http://autumnai.github.io/coaster-nn)
+* see coaster-NN's [Documentation](http://spearow.github.io/coaster-nn)
 * visit [coaster][coaster] for more information about portable operations and other Plugins.
 * or get in touch on [Gitter][gitter-coaster]
 
-[coaster]: https://github.com/ratpoison-io/coaster
+[coaster]: https://github.com/spearow/coaster
 [autumn]: http://autumnai.com
-[leaf]: https://github.com/ratpoison-io/leaf
+[leaf]: https://github.com/spearow/leaf
 
 ## Provided Operations
 
@@ -44,7 +44,7 @@ More information can be found in the [Documentation][docs-ops].
 
 Kudos to [ehiggs][ehiggs], for implementing the initial native Rust operations.
 
-[docs-ops]: http://ratpoison.io/projects/coaster-nn/documentation/coaster_nn/trait.NN.html
+[docs-ops]: https://spearow.github.io/coaster-nn/coaster_nn/trait.NN.html
 [ehiggs]: https://github.com/ehiggs
 
 ## Getting Started
@@ -101,7 +101,7 @@ license, shall be dual licensed as below, without any additional terms or
 conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-coaster]: https://gitter.im/ratpoison-io/coaster
+[gitter-coaster]: https://gitter.im/spearow/coaster
 [drahnr]: https://github.com/drahnr
 
 ## Changelog
