@@ -15,7 +15,7 @@ keywords        = ["blas", "coaster", "computation", "hpc", "plugin"]
 license         = "MIT OR Apache-2.0"
 
 [dependencies]
-coaster = "0.1.0"
+coaster = { path = "../coaster", default-features = false, version = "0.1.0" }
 lazy_static = "0.1"
 
 # native
