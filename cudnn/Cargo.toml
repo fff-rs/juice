@@ -2,13 +2,13 @@
 name            = "rcudnn"
 description     = "safe Rust wrapper for CUDA's cuDNN"
 version         = "1.5.0"
-authors         = ["Bernhard Schuster <bernhard@ratpoison.io>",
+authors         = ["Bernhard Schuster <bernhard@ahoi.io>",
                    "MichaelHirn <mj@autumnai.com>",
                    "Maximilian Goisser <max@autumnai.com>"]
 
-repository      = "https://github.com/ratpoison-io/rust-cudnn"
-homepage        = "https://github.com/ratpoison-io/rust-cudnn"
-documentation   = "https://ratpoison.io/projects/rust-cudnn"
+repository      = "https://github.com/spearow/rust-cudnn"
+homepage        = "https://spearow.io/projects/rust-cudnn"
+documentation   = "https://spearow.github.com/rust-cudnn"
 readme          = "../README.md"
 
 keywords        = ["cudnn", "cuda", "nvidia", "neural-network"]
