@@ -1,4 +1,4 @@
-# coaster-BLAS • [![Join the chat at https://gitter.im/ratpoison-io/coaster-nn](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/ratpoison-io/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.ratpoison.io/api/v1/pipelines/leaf/jobs/test-coaster-blas/badge)](https://ci.ratpoison.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster-blas.svg)](https://crates.io/crates/coaster-nn) [![License](https://img.shields.io/crates/l/coaster-blas.svg)](#license)
+# coaster-BLAS • [![Join the chat at https://gitter.im/spearow/coaster-nn](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-coaster-blas/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster-blas.svg)](https://crates.io/crates/coaster-nn) [![License](https://img.shields.io/crates/l/coaster-blas.svg)](#license)
 
 coaster-BLAS provides full BLAS support for [Coaster][coaster],
 so you can use Basic Linear Algebra Subprograms on servers, desktops or mobiles,
@@ -10,13 +10,13 @@ Framework [Leaf][leaf].
 
 For more information,
 
-* see coaster-BLAS's [Documentation](https://ratpoison.io/projects/coaster-blas)
+* see coaster-BLAS's [Documentation](https://spearow.github.io/coaster-blas)
 * visit [Coaster][coaster] for portable operations and other Plugins.
 * or get in touch on [Gitter][gitter-coaster]
 
-[coaster]: https://github.com/autumnai/coaster
+[coaster]: https://github.com/spearow/coaster
 [autumn]: http://autumnai.com
-[leaf]: https://github.com/autumnai/leaf
+[leaf]: https://github.com/spearow/leaf
 
 ## Getting Started
 
@@ -46,7 +46,7 @@ More information can be found in the [Documentation][docs-ops].
 | GEMM                 | cuBLAS     | -         | rblas     |
 
 
-[docs-ops]: https://ratpoison.io/projects/coaster-blas/coaster_blas/plugin/trait.IBlas.html
+[docs-ops]: https://spearow.github.io/coaster-blas/coaster_blas/plugin/trait.IBlas.html
 
 Note that `blas` does not have all methods and thus fails to link, use `CARGO_BLAS=openblas` to compile for `native`
 
@@ -67,7 +67,7 @@ license, shall be dual licensed as below, without any additional terms or
 conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-coaster]: https://gitter.im/autumnai/coaster
+[gitter-coaster]: https://gitter.im/spearow/coaster
 [drahnr]: https://github.com/drahnr
 
 ## Changelog

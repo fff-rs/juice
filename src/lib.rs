@@ -37,8 +37,8 @@
 //!
 //! For more information, give the [Coaster docs][coaster-docs] a visit.
 //!
-//! [coaster]: https://github.com/autumnai/coaster
-//! [coaster-docs]: https://ratpoison.io/projects/coaster
+//! [coaster]: https://github.com/spearow/coaster
+//! [coaster-docs]: https://spearow.github.io/coaster
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
