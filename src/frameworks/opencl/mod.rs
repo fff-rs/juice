@@ -7,10 +7,6 @@
 //! OpenCL device -> Hardware
 //! OpenCL context -> Device
 
-#[link(name = "OpenCL")]
-#[cfg(target_os = "linux")]
-extern { }
-
 use backend::{Backend, IBackend};
 use framework::IFramework;
 pub use self::platform::Platform;
