@@ -1,4 +1,4 @@
-//! Cuticula provides convenient and universal Machine Learning Transformer
+//! Greenglas provides convenient and universal Machine Learning Transformer
 //! for non-numeric data types such as: `Strings`, `Images` and `Audio`.
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
@@ -8,7 +8,7 @@
         trivial_casts, trivial_numeric_casts,
         unsafe_code, unused_import_braces, unused_qualifications)]
 
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate murmurhash3 as murmur3;
 extern crate image as image_crate;
 

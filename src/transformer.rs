@@ -26,12 +26,12 @@ pub trait Transformer {
     /// Transforms the non-numeric data into a numeric `Vec`
     fn transform_to_vec(&self) -> Vec<f32>;
 
-    /// Write into a native Collenchyma Memory.
+    /// Write into a native Coaster Memory.
     fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T]) -> Result<(), TransformerError> {
         Self::write_to_memory_offset(mem, data, 0)
     }
 
-    /// Write into a native Collenchyma Memory with a offset.
+    /// Write into a native Coaster Memory with a offset.
     fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) -> Result<(), TransformerError> {
         let mut mem_buffer = mem.as_mut_slice::<f32>();
         if offset == 0 && mem_buffer.len() != data.len() {

@@ -1,13 +1,13 @@
-extern crate cuticula;
-extern crate collenchyma;
+extern crate greenglas;
+extern crate coaster;
 
 #[cfg(test)]
 mod transformer_spec {
 
-    use cuticula::{Set, Transformer, Image};
-    use cuticula::image::{Crop};
-    use cuticula::transformer::TransformerError;
-    use collenchyma::prelude::*;
+    use greenglas::{Set, Transformer, Image};
+    use greenglas::image::{Crop};
+    use greenglas::transformer::TransformerError;
+    use coaster::prelude::*;
     use std::path::Path;
 
     fn expected_result() -> Vec<f32> {

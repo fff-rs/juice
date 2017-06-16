@@ -1,18 +1,18 @@
 [package]
-name = "cuticula"
+name = "greenglas"
 description = "Data Preprocessing library for Machine Learning"
-authors = ["Michael Hirn <mj@autumnai.com>"]
+authors = ["Bernhard Schuster <bernhard@ahoi.io>",
+           "Michael Hirn <mj@autumnai.com>"]
 version = "0.2.0"
-repository = "https://github.com/autumnai/cuticula"
-homepage = "https://github.com/autumnai/cuticula"
-documentation = "http://autumnai.github.io/cuticula"
+repository = "https://github.com/autumnai/greenglas"
+homepage = "https://spearow.io/projects/greenglas"
+documentation = "https://spearow.github.com/greenglas"
 readme = "README.md"
-keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
-"machine-learning"]
+keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding", "machine-learning"]
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-collenchyma = { path = "../collenchyma", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+coaster = { path = "../coaster", version="0.1.0", default-features = false, features = ["native"] } # native feature to read/write data into tensors
 
 image = "0.14.0"
 murmurhash3 = "0.0.5"
@@ -23,8 +23,8 @@ clippy = { version = "0.0.54", optional = true }
 [features]
 default = ["native"]
 native = []
-cuda = ["collenchyma/cuda"]
-opencl = ["collenchyma/opencl"]
+cuda = ["coaster/cuda"]
+opencl = ["coaster/opencl"]
 
 dev = []
 lint = ["clippy"]

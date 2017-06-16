@@ -1,18 +1,18 @@
-# Cuticula • [![Join the chat at https://gitter.im/autumnai/cuticula](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/cuticula?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/cuticula.svg?branch=master)](https://travis-ci.org/autumnai/cuticula) [![Coverage Status](https://coveralls.io/repos/autumnai/cuticula/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/cuticula?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/cuticula)](https://crates.io/crates/cuticula) [![License](https://img.shields.io/crates/l/cuticula.svg)](LICENSE)
+# Greenglas • [![Join the chat at https://gitter.im/autumnai/greenglas](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/greenglas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/greenglas.svg?branch=master)](https://travis-ci.org/autumnai/greenglas) [![Coverage Status](https://coveralls.io/repos/autumnai/greenglas/badge.svg?branch=master&service=github)](https://coveralls.io/github/autumnai/greenglas?branch=master) [![Crates.io](http://meritbadge.herokuapp.com/greenglas)](https://crates.io/crates/greenglas) [![License](https://img.shields.io/crates/l/greenglas.svg)](LICENSE)
 
-Cuticula tries to provide a smart and customizable pipeline for preprocessing
+Greenglas tries to provide a smart and customizable pipeline for preprocessing
 data for machine learning tasks. Clean preprocessing methods for the most
-common type of data, makes preprocessing easy. Cuticula offers a pipeline of
+common type of data, makes preprocessing easy. Greenglas offers a pipeline of
 Modifiers and Transformers to turn non-numeric data into a safe and consistent
-numeric output in the form of Collenchyma's [`SharedTensor`](https://github.com/autumnai/collenchyma). For
+numeric output in the form of Coaster's [`SharedTensor`](https://github.com/autumnai/coaster). For
 putting your preprocessed data to use, you might like to use the Machine
 Learning Framework [`Leaf`](https://github.com/autumnai/leaf).
 
-For more information see the [Documentation](http://autumnai.github.io/cuticula).
+For more information see the [Documentation](http://autumnai.github.io/greenglas).
 
 ## Architecture
 
-Cuticula exposes several standard data types, which might need a numeric
+Greenglas exposes several standard data types, which might need a numeric
 transformation in order to be processed by a Machine Learning Algorithm such as
 Neural Nets.
 
@@ -27,7 +27,7 @@ image.set(Resize(20, 20))
 ```
 
 After one, none or many modifications through Modifiers, the Data Type can then
-finally be transformed into a [`SharedTensor`](https://github.com/autumnai/collenchyma)
+finally be transformed into a [`SharedTensor`](https://github.com/autumnai/coaster)
 (numeric Vector). Taking `data_type` from the above example:
 
 ```
@@ -37,7 +37,7 @@ let final_tensor = data_type.transform(vec![20, 20, 3]).unwrap();
 
 ## Transformable Data Types
 
-These are the data types that `cuticula` is currently addressing. For most of
+These are the data types that `greenglas` is currently addressing. For most of
 them are basic Modifiers and Transformers already specified.
 
 - **`Missing`**: `NULL` data
@@ -54,10 +54,10 @@ Data Types implement the `Set` trait of the same library, one can easily write
 custom modifiers as well. Quick Example:
 
 ```
-extern crate cuticula;
+extern crate greenglas;
 
-use cuticula::Image;
-use cuticula::modifier::Modifier;
+use greenglas::Image;
+use greenglas::modifier::Modifier;
 
 struct CustomModifier(usize)
 

@@ -1,10 +1,10 @@
-extern crate cuticula;
+extern crate greenglas;
 
 #[cfg(test)]
 mod image_spec {
 
-    use cuticula::{Set, Transformer, Image};
-    use cuticula::image::{Resize, Crop};
+    use greenglas::{Set, Transformer, Image};
+    use greenglas::image::{Resize, Crop};
     use std::path::Path;
 
     fn expected_result() -> Vec<f32> {
