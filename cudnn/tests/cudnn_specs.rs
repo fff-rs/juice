@@ -6,6 +6,9 @@ extern crate rcudnn_sys as ffi;
 use ffi::*;
 
 #[cfg(test)]
+#[link(name = "cudart")]
+
+#[cfg(test)]
 mod cudnn_spec {
 
     use cudnn::{Cudnn, API, TensorDescriptor, ActivationDescriptor, FilterDescriptor, ConvolutionDescriptor};
