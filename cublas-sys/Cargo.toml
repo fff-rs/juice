@@ -2,12 +2,12 @@
 name = "rcublas-sys"
 description     = "FFI bindings to cuBLAS"
 version = "0.1.1"
-authors = ["Bernhard Schuster <bernhard@ratpoison.io>",
+authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Maximilian Goisser <maximilian.goisser@autumnai.com>"]
 
-repository      = "https://github.com/ratpoison-io/rust-cublas"
-homepage        = "https://github.com/ratpoison-io/rust-cublas"
-documentation   = "https://ratpoison.io/projects/rust-cublas"
+repository      = "https://github.com/spearow/rust-cublas"
+homepage        = "https://spearow.io/projects/rust-cublas"
+documentation   = "https://spearow.github.com/rust-cublas"
 
 keywords        = ["cublas", "cuda", "nvidia", "sys"]
 license         = "MIT OR Apache-2.0"
