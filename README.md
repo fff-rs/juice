@@ -1,4 +1,4 @@
-# coaster • [![Join the chat at https://gitter.im/ratpoison-io/coaster](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/ratpoison-io/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.ratpoison.io/api/v1/pipelines/leaf/jobs/test-collenchyma/badge)](https://ci.ratpoison.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
+# coaster • [![Join the chat at https://gitter.im/spearow/coaster](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/coaster?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-coaster/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/coaster.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
 
 coaster is an extensible, pluggable, backend-agnostic framework for parallel,
 high-performance computations on CUDA, OpenCL and common host CPU. It is fast, easy
@@ -12,7 +12,7 @@ code for the machine you deploy to. coaster does not require OpenCL or Cuda
 on the machine and automatically falls back to the native host CPU, making your
 application highly flexible and fast to build.
 
-coaster was started as colenchyma at [Autumn][autumn] to support the Machine Intelligence
+coaster was started as collenchyma at [Autumn][autumn] to support the Machine Intelligence
 Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 * __Parallelizing Performance__<br/>
@@ -36,7 +36,7 @@ No long and painful build procedures for you or your users.
 
 For more information,
 
-* see coaster's [Documentation](http://ratpoision.io/projects/coaster/documentation)
+* see coaster's [Documentation][documentation]
 * or get in touch via [Gitter][gitter-coaster]
 
 > Disclaimer: coaster is currently in a very early and heavy stage of
@@ -45,15 +45,16 @@ For more information,
 
 [arrayfire]: https://github.com/arrayfire/arrayfire
 [autumn]: http://autumnai.com
-[leaf]: https://github.com/autumnai/leaf
-[ratpoison]: https://ratpoision.io/projects/coaster
+[leaf]: https://github.com/spearow/leaf
+[spearow]: https://spearow.io/projects/coaster
+[documentation]: https://spearow.github.com/coaster
 
 ## Getting Started
 
 If you're using Cargo, just add coaster to your Cargo.toml:
 
     [dependencies]
-    coaster = "0.0.8"
+    coaster = "0.1.0"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
@@ -75,8 +76,8 @@ take as a starting point, if you would like to create your own Plugin.
 You can easily write your own backend-agnostic, parallel operations and provide it for others,
 via a Plugin - we are happy to feature your Plugin here, just send us a PR.
 
-[coaster-blas]: http://github.com/ratpoison-io/coaster-blas
-[coaster-nn]: http://github.com/ratpoison-io/coaster-nn
+[coaster-blas]: http://github.com/spearow/coaster-blas
+[coaster-nn]: http://github.com/spearow/coaster-nn
 
 ## Examples
 
@@ -125,18 +126,18 @@ And high priority issues, that we could need your help with.
 We have a mostly real-time collaboration culture and happens here on Github and
 on the [Coaster Gitter Channel][gitter-coaster].
 You can also reach out to the Maintainer(s)
-{[@drahnr][drahnr]}.
+{[@drahnr][drahnr],}.
 
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as below, without any additional terms or
 conditions.
 
-[issue-1]: https://github.com/ratpoison-io/coaster/issues/1
-[issue-2]: https://github.com/ratpoison-io/coaster/issues/2
-[issue-3]: https://github.com/ratpoison-io/coaster/issues/3
+[issue-1]: https://github.com/spearow/coaster/issues/1
+[issue-2]: https://github.com/spearow/coaster/issues/2
+[issue-3]: https://github.com/spearow/coaster/issues/3
 [contributing]: CONTRIBUTING.md
-[gitter-coaster]: https://gitter.im/ratpoison-io/coaster
+[gitter-coaster]: https://gitter.im/spearow/coaster
 [drahnr]: https://github.com/drahnr
 
 ## Changelog
