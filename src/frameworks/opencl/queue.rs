@@ -51,6 +51,11 @@ impl Queue {
     pub fn id_c(&self) -> cl::queue_id {
         self.id as cl::queue_id
     }
+
+    pub fn enqueue_kernel() -> Result<(), Error> {
+        // TODO API::enqueue_kernel
+        Ok(())
+    }
 }
 
 bitflags! {

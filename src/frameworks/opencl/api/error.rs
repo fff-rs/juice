@@ -29,6 +29,18 @@ pub enum Error {
     InvalidBufferSize(&'static str),
     /// Failure with provided host pointer.
     InvalidHostPtr(&'static str),
+    /// Failure with provided work dimensions
+    InvalidWorkDimension(&'static str),
+    /// Failure with provided work item size
+    InvalidWorkItemSize(&'static str),
+    /// Failure with provided work group size
+    InvalidWorkGroupSize(&'static str),
+    /// Failure with provided global offset
+    InvalidGlobalOffset(&'static str),
+    /// Failure with provided kernel
+    InvalidKernel(&'static str),
+    /// Failure with provided kernel arguments
+    InvalidKernelArgs(&'static str),
     /// Failure with provided properties for the device.
     InvalidQueueProperties(&'static str),
     /// Failure with device availability.
@@ -65,6 +77,12 @@ impl fmt::Display for Error {
             Error::InvalidBufferSize(ref err) => write!(f, "{:?}", err),
             Error::InvalidHostPtr(ref err) => write!(f, "{:?}", err),
             Error::InvalidQueueProperties(ref err) => write!(f, "{:?}", err),
+            Error::InvalidWorkDimension(ref err) => write!(f, "{:?}", err),
+            Error::InvalidWorkItemSize(ref err) => write!(f, "{:?}", err),
+            Error::InvalidWorkGroupSize(ref err) => write!(f, "{:?}", err),
+            Error::InvalidKernel(ref err) => write!(f, "{:?}", err),
+            Error::InvalidKernelArgs(ref err) => write!(f, "{:?}", err),
+            Error::InvalidGlobalOffset(ref err) => write!(f, "{:?}", err),
             Error::DeviceNotFound(ref err) => write!(f, "{:?}", err),
             Error::DeviceNotAvailable(ref err) => write!(f, "{:?}", err),
             Error::MemObjectAllocationFailure(ref err) => write!(f, "{:?}", err),
@@ -93,6 +111,12 @@ impl error::Error for Error {
             Error::InvalidBufferSize(ref err) => err,
             Error::InvalidHostPtr(ref err) => err,
             Error::InvalidQueueProperties(ref err) => err,
+            Error::InvalidWorkDimension(ref err) => err,
+            Error::InvalidWorkItemSize(ref err) => err,
+            Error::InvalidWorkGroupSize(ref err) => err,
+            Error::InvalidKernel(ref err) => err,
+            Error::InvalidKernelArgs(ref err) => err,
+            Error::InvalidGlobalOffset(ref err) => err,
             Error::DeviceNotFound(ref err) => err,
             Error::DeviceNotAvailable(ref err) => err,
             Error::MemObjectAllocationFailure(ref err) => err,
@@ -119,6 +143,12 @@ impl error::Error for Error {
             Error::InvalidBufferSize(_) => None,
             Error::InvalidHostPtr(_) => None,
             Error::InvalidQueueProperties(_) => None,
+            Error::InvalidWorkDimension(_) => None,
+            Error::InvalidWorkItemSize(_) => None,
+            Error::InvalidWorkGroupSize(_) => None,
+            Error::InvalidKernel(_) => None,
+            Error::InvalidKernelArgs(_) => None,
+            Error::InvalidGlobalOffset(_) => None,
             Error::DeviceNotFound(_) => None,
             Error::DeviceNotAvailable(_) => None,
             Error::MemObjectAllocationFailure(_) => None,
