@@ -14,6 +14,8 @@ use super::api::types as cl;
 use super::api::{API, Error};
 use super::Context;
 use super::Device;
+use super::Event;
+use super::Program;
 
 #[derive(Debug, Clone)]
 #[allow(missing_copy_implementations)]
@@ -52,9 +54,17 @@ impl Queue {
         self.id as cl::queue_id
     }
 
-    pub fn enqueue_kernel() -> Result<(), Error> {
-        // TODO API::enqueue_kernel
-        Ok(())
+    /// Enqueue a Opencl program/kernel.
+    pub fn enqueue_kernel(
+        &mut self,
+        kernel: &Program,
+        work_dim: u32,
+        global_work_offset: usize,
+        global_work_size: usize,
+        local_work_size: usize,
+        event_wait_list: &[Event]
+    ) -> Result<Event, Error> {
+        API::enqueue_kernel(self, kernel, work_dim, global_work_offset, global_work_size, local_work_size, event_wait_list)
     }
 }
 

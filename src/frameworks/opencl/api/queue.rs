@@ -2,10 +2,11 @@
 //!
 //! At Coaster device can be understood as a synonym to OpenCL's context.
 
-use frameworks::opencl::{API, Device, Error, Context, Queue, QueueFlags};
+use frameworks::opencl::{API, Device, Error, Event, Context, Program, Queue, QueueFlags};
 use super::types as cl;
 use super::ffi::*;
 use libc;
+use std::ptr;
 
 impl API {
     /// Returns a command queue for a specified context and device.
@@ -13,14 +14,14 @@ impl API {
     /// OpenCL command queues are used to control memory allocation and operations
     /// for a single device.
     pub fn create_queue(context: &Context, device: &Device, queue_flags: &QueueFlags) -> Result<Queue, Error> {
-        Ok(Queue::from_c(try!(unsafe {
+        Ok(Queue::from_c((unsafe {
             API::ffi_create_command_queue(context.id_c(), device.id_c(), queue_flags.bits())
-        })))
+        })?))
     }
 
     /// Releases command queue from the OpenCL device.
     pub fn release_queue(queue: &mut Queue) -> Result<(), Error> {
-        Ok(try!(unsafe {API::ffi_release_command_queue(queue.id_c())}))
+        Ok((unsafe {API::ffi_release_command_queue(queue.id_c())})?)
     }
 
     unsafe fn ffi_create_command_queue(
@@ -79,7 +80,35 @@ impl API {
         }
     }
 
-    pub fn enqueue_kernel() {
-        // TODO ffi_enqueue_nd_range_kernel
+    /// Enqueue program in a command queue.
+    pub fn enqueue_kernel(
+        queue: &mut Queue,
+        kernel: &Program,
+        work_dim: u32,
+        global_work_offset: usize,
+        global_work_size: usize,
+        local_work_size: usize,
+        event_wait_list: &[Event]
+    ) -> Result<Event, Error> {
+        let num_events_in_wait_list = event_wait_list.len();
+        let event_list: *const *mut libc::c_void = if event_wait_list.is_empty() {
+            ptr::null_mut()
+        } else {
+            event_wait_list.as_ptr() as *const *mut libc::c_void
+        };
+        let new_event: cl::event = 0 as *mut libc::c_void;
+
+        unsafe {API::ffi_enqueue_nd_range_kernel(
+            queue.id_c(),
+            kernel.id_c(),
+            work_dim,
+            global_work_offset as *const libc::size_t,
+            global_work_size as *const libc::size_t,
+            local_work_size as *const libc::size_t,
+              num_events_in_wait_list as cl::uint,
+              event_list,
+              new_event as *mut cl::event)}?;
+
+        Ok(Event::from_c(new_event))
     }
 }
