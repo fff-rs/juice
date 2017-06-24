@@ -177,7 +177,7 @@ pub const CL_DEVICE_TYPE_CUSTOM:                        bitfield = 1 << 4;
 pub static CL_DEVICE_TYPE_ALL:                          bitfield = 0xFFFFFFFF;
 
 /* cl_device_info */
-pub const CL_DEVICE_TYPE:                               uint = 0x1000;
+pub const CL_DEVICE_TYPE:                                uint = 0x1000;
 pub static CL_DEVICE_VENDOR_ID:                          uint = 0x1001;
 pub static CL_DEVICE_MAX_COMPUTE_UNITS:                  uint = 0x1002;
 pub static CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS:           uint = 0x1003;
@@ -272,6 +272,28 @@ pub static CL_CONTEXT_DEVICES:                           uint = 0x1081;
 pub static CL_CONTEXT_PROPERTIES:                        uint = 0x1082;
 pub static CL_CONTEXT_NUM_DEVICES:                       uint = 0x1083;
 
+enum_from_primitive! {
+    /// OpenCL context info constants.
+    #[derive(PartialEq, Debug, Copy, Clone)]
+    #[repr(C)]
+    pub enum ContextInfoQuery {
+        REFERENCE_COUNT = 0x1080,
+        DEVICES = 0x1081,
+        PROPERTIES = 0x1082,
+        NUM_DEVICES = 0x1083
+    }
+}
+
+/// OpenCL context info constants.
+#[derive(PartialEq, Debug)]
+#[repr(C)]
+pub enum ContextInfo {
+    ReferenceCount(uint),
+    NumDevices(uint),
+    ContextProperties(context_properties),
+    Devices(Vec<uint>)
+}
+    
 /* cl_context_info + cl_context_properties */
 pub static CL_CONTEXT_PLATFORM:                          libc::intptr_t = 0x1084;
 

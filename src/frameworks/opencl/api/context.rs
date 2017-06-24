@@ -7,6 +7,7 @@ use frameworks::opencl::{API, Error, Device};
 use super::types as cl;
 use super::ffi::*;
 use std::ptr;
+use std::mem::size_of;
 
 impl API {
     /// Creates a OpenCL context.
@@ -51,20 +52,56 @@ impl API {
         }
     }
 
-    // pub fn get_context_info(
-    //     context: cl::context_id,
-    //     info_type: ??        
-    // ) -> Result<ContextInfo, Error> {}
+    /// Gets info about one of the available properties of an OpenCL context.
+    pub fn get_context_info(
+        context: cl::context_id,
+        info: cl::ContextInfoQuery,
+    ) -> Result<cl::ContextInfo, Error> {
+        Ok(try! {
+            unsafe {
+                let mut zero: usize = 0;
+                let info_size: *mut usize = &mut zero;
+                let info_ptr: *mut libc::c_void = ptr::null_mut();
+                API::ffi_get_context_info_size(context, info, info_size)
+                    .and_then(|_| {
+                        API::ffi_get_context_info(context,
+                                                  info,
+                                                  *info_size,
+                                                  info_ptr)
+                    }).and_then(|_| {
+                        match info {
+                            cl::ContextInfoQuery::REFERENCE_COUNT => {
+                                Ok(cl::ContextInfo::ReferenceCount(info_ptr as cl::uint))
+                            },
+                            cl::ContextInfoQuery::DEVICES => {
+                                let len = *info_size / size_of::<cl::uint>();
+                                Ok(cl::ContextInfo::Devices(
+                                    Vec::from_raw_parts(
+                                        info_ptr as *mut cl::uint,
+                                        len, len
+                                )))
+                            },
+                            cl::ContextInfoQuery::NUM_DEVICES => {
+                                Ok(cl::ContextInfo::NumDevices(info_ptr as cl::uint))
+                            },
+                            cl::ContextInfoQuery::PROPERTIES => {
+                                Ok(cl::ContextInfo::ContextProperties(info_ptr as cl::context_properties))
+                            }
+                        }
+                    })
+            }
+        })
+    }
     
     // This function calls clGetContextInfo with the return data pointer set to
     // NULL to find out the needed memory allocation first.
     unsafe fn ffi_get_context_info_size(
         context: cl::context_id,
-        param_name: cl::context_info,
+        param_name: cl::ContextInfoQuery,
         param_value_size_ret: *mut libc::size_t
     ) -> Result<(), Error> {
         match clGetContextInfo(context,
-                               param_name,
+                               param_name as cl::uint,
                                0,
                                ptr::null_mut(),
                                param_value_size_ret) {
@@ -82,11 +119,11 @@ impl API {
     // you call this function how much memory you need).
     unsafe fn ffi_get_context_info(
         context: cl::context_id,
-        param_name: cl::context_info,
+        param_name: cl::ContextInfoQuery,
         param_value_size: libc::size_t,
         param_value: *mut libc::c_void) -> Result<(), Error> {
         match clGetContextInfo(context,
-                               param_name,
+                               param_name as cl::uint,
                                param_value_size,
                                param_value,
                                ptr::null_mut()) {
