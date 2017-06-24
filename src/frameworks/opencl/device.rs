@@ -6,6 +6,7 @@ use super::api::API;
 use std::io::Cursor;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
 
+use regex::Regex;
 use std::cmp::Ordering;
 
 #[derive(Debug, Clone)]
@@ -49,10 +50,16 @@ impl PartialOrd for Version {
     }
 }
 
+impl Version {
+    fn new(major : usize, minor : usize, ext : Option<String>) -> Version {
+        Version { major, minor, ext }
+    }
+}
+
 #[derive(Debug, Clone)]
 /// Defines a OpenCL Device.
 ///
-/// Can later be transformed into a [Coaster hardware][hardware].
+/// Can later be transformed into a [Collenchyma hardware][hardware].
 /// [hardware]: ../../hardware/index.html
 pub struct Device {
     id: isize,
@@ -131,11 +138,10 @@ impl Device {
 
     /// Loads the OpenCL version this device supports via a foreign OpenCL call.
     pub fn load_version(&mut self) -> Self {
-        // TODO
-        // self.version = match API::load_device_info(self, cl::CL_DEVICE_VERSION) {
-        //     Ok(result) => Some(result.to_isize()),
-        //     Err(_) => None
-        // };
+        self.version = match API::load_device_info(self, cl::CL_DEVICE_VERSION) {
+            Ok(result) => Some(result.to_version()),
+            Err(_) => None
+        };
         self.clone()
     }
 
@@ -225,4 +231,19 @@ impl DeviceInfo {
         let mut bytes = Cursor::new(&self.info);
         bytes.read_u32::<LittleEndian>().unwrap() as isize
     }
+
+    #[allow(missing_docs)]
+    pub fn to_version(self) -> Version {
+        lazy_static! {
+            static ref VERSION_RE: Regex = Regex::new(r"OpenCL\s([0-9])+\.([0-9]*)\s([[:print:]])").unwrap();
+        }
+        let version_string = unsafe { String::from_utf8_unchecked(self.info) };
+        for cap in VERSION_RE.captures_iter(version_string.as_str()) {
+            return Version::new(cap[1].to_string().parse::<usize>().unwrap(),
+                                cap[2].to_string().parse::<usize>().unwrap(),
+                                Some(cap[3].to_string()))
+        }
+        Version::new(0,0,None)
+    }
+
 }

@@ -153,6 +153,8 @@ extern crate bitflags;
 extern crate enum_primitive;
 #[macro_use]
 extern crate lazy_static;
+#[cfg(feature = "opencl")]
+extern crate regex;
 extern crate num;
 extern crate byteorder;
 
