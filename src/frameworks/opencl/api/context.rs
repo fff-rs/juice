@@ -6,6 +6,7 @@ use libc;
 use frameworks::opencl::{API, Error, Device};
 use super::types as cl;
 use super::ffi::*;
+use std::ptr;
 
 impl API {
     /// Creates a OpenCL context.
@@ -47,6 +48,54 @@ impl API {
             errcode if errcode == cl::Status::OUT_OF_RESOURCES as i32 => Err(Error::OutOfResources("Failure to allocate resources on the device")),
             errcode if errcode == cl::Status::OUT_OF_HOST_MEMORY as i32 => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
             _ => Err(Error::Other("Unable to create context"))
+        }
+    }
+
+    // pub fn get_context_info(
+    //     context: cl::context_id,
+    //     info_type: ??        
+    // ) -> Result<ContextInfo, Error> {}
+    
+    // This function calls clGetContextInfo with the return data pointer set to
+    // NULL to find out the needed memory allocation first.
+    unsafe fn ffi_get_context_info_size(
+        context: cl::context_id,
+        param_name: cl::context_info,
+        param_value_size_ret: *mut libc::size_t
+    ) -> Result<(), Error> {
+        match clGetContextInfo(context,
+                               param_name,
+                               0,
+                               ptr::null_mut(),
+                               param_value_size_ret) {
+            cl::Status::SUCCESS => Ok(()),
+            cl::Status::INVALID_CONTEXT => Err(Error::InvalidContext("Invalid context")),
+            cl::Status::INVALID_VALUE => Err(Error::InvalidValue("Invalid value")),
+            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Out of resources")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Out of host memory")),
+            _ => Err(Error::Other("Could not determine needed memory to allocate context info."))
+        }
+    }
+
+    // This function calls clGetContextInfo with the return data pointer set,
+    // and the return size pointer set to NULL (since we assume you know before
+    // you call this function how much memory you need).
+    unsafe fn ffi_get_context_info(
+        context: cl::context_id,
+        param_name: cl::context_info,
+        param_value_size: libc::size_t,
+        param_value: *mut libc::c_void) -> Result<(), Error> {
+        match clGetContextInfo(context,
+                               param_name,
+                               param_value_size,
+                               param_value,
+                               ptr::null_mut()) {
+            cl::Status::SUCCESS => Ok(()),
+            cl::Status::INVALID_CONTEXT => Err(Error::InvalidContext("Invalid context")),
+            cl::Status::INVALID_VALUE => Err(Error::InvalidValue("Invalid value")),
+            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Out of resources")),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Out of host memory")),
+            _ => Err(Error::Other("Could not determine needed memory to allocate context info."))
         }
     }
 }
