@@ -21,6 +21,34 @@ pub struct Context {
     queue: Option<Queue>
 }
 
+/// OpenCL context info types. Each variant is returned from the same function,
+/// `get_context_info`.
+#[derive(PartialEq, Debug)]
+#[repr(C)]
+pub enum ContextInfo {
+    /// Number of references to the context currently held.
+    ReferenceCount(cl::uint),
+    /// Number of devices in the context.
+    NumDevices(cl::uint),
+    /// The properties the context was configured with.
+    ///
+    /// These are:
+    ///
+    /// - CL_CONTEXT_PLATFORM
+    /// - CL_CONTEXT_D3D10_DEVICE_KHR
+    /// - CL_GL_CONTEXT_KHR
+    /// - CL_EGL_CONTEXT_KHR
+    /// - CL_GLX_DISPLAY_KHR
+    /// - CL_WGL_HDC_KHR
+    /// - CL_CGL_SHAREGROUP_KHR
+    ///
+    /// Only the first property is required--the others may not be there
+    /// depending on CL extensions.
+    ContextProperties(cl::context_properties),
+    /// The devices (IDs) in the context.
+    Devices(Vec<cl::uint>)
+}
+
 impl Context {
     /// Initializes a new OpenCL platform.
     pub fn new(devices: Vec<Device>) -> Result<Context, Error> {

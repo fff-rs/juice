@@ -3,7 +3,8 @@
 //! At Coaster device can be understood as a synonym to OpenCL's context.
 
 use libc;
-use frameworks::opencl::{API, Error, Device};
+use frameworks::opencl::{API, Device, Error};
+use frameworks::opencl::context::ContextInfo;
 use super::types as cl;
 use super::ffi::*;
 use std::ptr;
@@ -56,7 +57,7 @@ impl API {
     pub fn get_context_info(
         context: cl::context_id,
         info: cl::ContextInfoQuery,
-    ) -> Result<cl::ContextInfo, Error> {
+    ) -> Result<ContextInfo, Error> {
         Ok(try! {
             unsafe {
                 let mut zero: usize = 0;
@@ -71,21 +72,21 @@ impl API {
                     }).and_then(|_| {
                         match info {
                             cl::ContextInfoQuery::REFERENCE_COUNT => {
-                                Ok(cl::ContextInfo::ReferenceCount(info_ptr as cl::uint))
+                                Ok(ContextInfo::ReferenceCount(info_ptr as cl::uint))
                             },
                             cl::ContextInfoQuery::DEVICES => {
                                 let len = *info_size / size_of::<cl::uint>();
-                                Ok(cl::ContextInfo::Devices(
+                                Ok(ContextInfo::Devices(
                                     Vec::from_raw_parts(
                                         info_ptr as *mut cl::uint,
                                         len, len
                                 )))
                             },
                             cl::ContextInfoQuery::NUM_DEVICES => {
-                                Ok(cl::ContextInfo::NumDevices(info_ptr as cl::uint))
+                                Ok(ContextInfo::NumDevices(info_ptr as cl::uint))
                             },
                             cl::ContextInfoQuery::PROPERTIES => {
-                                Ok(cl::ContextInfo::ContextProperties(info_ptr as cl::context_properties))
+                                Ok(ContextInfo::ContextProperties(info_ptr as cl::context_properties))
                             }
                         }
                     })
