@@ -3,12 +3,13 @@
 //! At Coaster device can be understood as a synonym to OpenCL's context.
 
 use libc;
-use frameworks::opencl::{API, Device, Error};
-use frameworks::opencl::context::ContextInfo;
+use frameworks::opencl::{API, Device, Error, Platform};
+use frameworks::opencl::context::{ContextInfo,ContextInfoQuery,ContextProperties};
 use super::types as cl;
 use super::ffi::*;
 use std::ptr;
 use std::mem::size_of;
+use std;
 
 impl API {
     /// Creates a OpenCL context.
@@ -31,6 +32,7 @@ impl API {
         )
     }
 
+    /// FFI Creates an OpenCL context.
     unsafe fn ffi_create_context(
         properties: *const cl::context_properties,
         num_devices: cl::uint,
@@ -56,9 +58,17 @@ impl API {
     /// Gets info about one of the available properties of an OpenCL context.
     pub fn get_context_info(
         context: cl::context_id,
-        info: cl::ContextInfoQuery,
+        query: ContextInfoQuery ,
     ) -> Result<ContextInfo, Error> {
-        Ok(try! {
+
+        let mut info : cl::context_info = match query {
+            ContextInfoQuery::ReferenceCount => cl::CL_CONTEXT_REFERENCE_COUNT,
+            ContextInfoQuery::NumDevices => cl::CL_CONTEXT_NUM_DEVICES,
+            ContextInfoQuery::Properties => cl::CL_CONTEXT_PROPERTIES,
+            ContextInfoQuery::Devices => cl::CL_CONTEXT_DEVICES,
+        };
+
+        Ok({
             unsafe {
                 let mut zero: usize = 0;
                 let info_size: *mut usize = &mut zero;
@@ -71,11 +81,13 @@ impl API {
                                                   info_ptr)
                     }).and_then(|_| {
                         match info {
-                            cl::ContextInfoQuery::REFERENCE_COUNT => {
-                                Ok(ContextInfo::ReferenceCount(info_ptr as cl::uint))
+                            cl::CL_CONTEXT_REFERENCE_COUNT => {
+                                Ok(ContextInfo::ReferenceCount(info_ptr as u32))
                             },
-                            cl::ContextInfoQuery::DEVICES => {
+                            cl::CL_CONTEXT_DEVICES => {
                                 let len = *info_size / size_of::<cl::uint>();
+                                // TODO can we really consume the output here?
+                                // TODO Vec takes over ownership
                                 let dev_ids = Vec::from_raw_parts(
                                         info_ptr as *mut cl::uint,
                                         len, len
@@ -87,27 +99,60 @@ impl API {
                                         .collect()
                                 ))
                             },
-                            cl::ContextInfoQuery::NUM_DEVICES => {
-                                Ok(ContextInfo::NumDevices(info_ptr as cl::uint))
+                            cl::CL_CONTEXT_NUM_DEVICES => {
+                                Ok(ContextInfo::NumDevices(info_ptr as u32))
                             },
-                            cl::ContextInfoQuery::PROPERTIES => {
-                                Ok(ContextInfo::Properties(info_ptr as cl::context_properties))
+                            cl::CL_CONTEXT_PROPERTIES => {
+                                let mut v : Vec<ContextProperties> = vec!();
+                                let mut start : *mut u8 = info_ptr as *mut u8;
+                                let old : *mut u8 = start.clone();
+                                loop {
+                                    let key : *mut cl::context_properties = start as *mut cl::context_properties;
+                                    let x = *key;
+                                    start = start.offset(std::mem::size_of::<cl::context_properties>() as isize);
+                                    match x {
+                                        cl::CL_CONTEXT_PLATFORM => {
+                                            let next : *const cl::platform_id = info_ptr  as *const cl::platform_id;
+                                            let p = *next;
+                                            start = start.offset(std::mem::size_of::<cl::platform_id>() as isize);
+                                            v.push(ContextProperties::Platform(Platform::from_c(p)));
+
+                                        },
+                                        cl::CL_CONTEXT_INTEROP_USER_SYNC => {
+                                            let next : *const cl::boolean = info_ptr as *const cl::boolean;
+                                            let ius = *next == 0;
+                                            start = start.offset(std::mem::size_of::<cl::boolean>() as isize);
+                                            v.push(ContextProperties::InteropUserSync(ius));
+                                        },
+                                        _ => {
+                                            return Err(Error::Other("Unknown property"));
+                                        }
+                                    };
+                                    // TODO comparision operator?
+                                    if old.offset(*info_size as isize) == start {
+                                        break;
+                                    }
+                                }
+                                Ok(ContextInfo::Properties(v))
+                            }
+                            _ => {
+                                Err(Error::Other("Unknown property"))
                             }
                         }
                     })
             }
-        })
+        }?)
     }
     
     // This function calls clGetContextInfo with the return data pointer set to
     // NULL to find out the needed memory allocation first.
     unsafe fn ffi_get_context_info_size(
         context: cl::context_id,
-        param_name: cl::ContextInfoQuery,
+        param_name: cl::context_info,
         param_value_size_ret: *mut libc::size_t
     ) -> Result<(), Error> {
         match clGetContextInfo(context,
-                               param_name as cl::uint,
+                               param_name,
                                0,
                                ptr::null_mut(),
                                param_value_size_ret) {
@@ -125,11 +170,11 @@ impl API {
     // you call this function how much memory you need).
     unsafe fn ffi_get_context_info(
         context: cl::context_id,
-        param_name: cl::ContextInfoQuery,
+        param_name: cl::context_info,
         param_value_size: libc::size_t,
         param_value: *mut libc::c_void) -> Result<(), Error> {
         match clGetContextInfo(context,
-                               param_name as cl::uint,
+                               param_name,
                                param_value_size,
                                param_value,
                                ptr::null_mut()) {

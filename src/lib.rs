@@ -140,7 +140,7 @@
 #![deny(missing_docs,
         missing_debug_implementations, missing_copy_implementations,
         trivial_casts, trivial_numeric_casts,
-        unused_import_braces, unused_qualifications)]
+        unused_import_braces)]
 
 #![cfg_attr(feature = "unstable_alloc", feature(alloc))]
 #[cfg(feature = "unstable_alloc")]
