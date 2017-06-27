@@ -12,6 +12,7 @@ use frameworks::native::device::Cpu;
 use std::any::Any;
 use std::{ptr, mem};
 use std::hash::{Hash, Hasher};
+use libc::c_void;
 
 #[derive(Debug, Clone)]
 /// Defines a OpenCL Context.
@@ -19,6 +20,19 @@ pub struct Context {
     id: isize,
     devices: Vec<Device>,
     queue: Option<Queue>
+}
+
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub struct ContextProperties {
+    /// Identifies a context's associated platform.
+    platform: u32,
+    /// Pointer to an ID3D10Device, as defined by the Microsoft Direct3D API.
+    d3d10_device: Option<*const c_void>,
+    // GLContext(), // OS dependent
+    // EGLContext, // EGLDisplay
+    // GLXDisplay, // GLXContent
+    // WGLHDC, // HDC (letter barf)
+    // CGLSharegroup // CGLShareGroupObj
 }
 
 /// OpenCL context info types. Each variant is returned from the same function,
@@ -35,15 +49,15 @@ pub enum ContextInfo {
     ///
     /// - CL_CONTEXT_PLATFORM
     /// - CL_CONTEXT_D3D10_DEVICE_KHR
-    /// - CL_GL_CONTEXT_KHR
-    /// - CL_EGL_CONTEXT_KHR
-    /// - CL_GLX_DISPLAY_KHR
-    /// - CL_WGL_HDC_KHR
-    /// - CL_CGL_SHAREGROUP_KHR
+    // - CL_GL_CONTEXT_KHR (OS-dependent)
+    // - CL_EGL_CONTEXT_KHR (OpenGL-ES context on embedded devices)
+    // - CL_GLX_DISPLAY_KHR (GL context on Linux)
+    // - CL_WGL_HDC_KHR (GL context on Windows)
+    // - CL_CGL_SHAREGROUP_KHR (GL context sharegroup on MacOS)
     ///
     /// Only the first property is required--the others may not be there
     /// depending on CL extensions.
-    ContextProperties(cl::context_properties),
+    Properties(ContextProperties),
     /// The devices (IDs) in the context.
     Devices(Vec<Device>)
 }

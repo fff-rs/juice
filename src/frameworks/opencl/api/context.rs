@@ -91,7 +91,7 @@ impl API {
                                 Ok(ContextInfo::NumDevices(info_ptr as cl::uint))
                             },
                             cl::ContextInfoQuery::PROPERTIES => {
-                                Ok(ContextInfo::ContextProperties(info_ptr as cl::context_properties))
+                                Ok(ContextInfo::Properties(info_ptr as cl::context_properties))
                             }
                         }
                     })
