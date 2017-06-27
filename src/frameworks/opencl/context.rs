@@ -24,12 +24,11 @@ pub struct Context {
 /// OpenCL context info types. Each variant is returned from the same function,
 /// `get_context_info`.
 #[derive(PartialEq, Debug)]
-#[repr(C)]
 pub enum ContextInfo {
     /// Number of references to the context currently held.
-    ReferenceCount(cl::uint),
+    ReferenceCount(u32),
     /// Number of devices in the context.
-    NumDevices(cl::uint),
+    NumDevices(u32),
     /// The properties the context was configured with.
     ///
     /// These are:
@@ -46,7 +45,7 @@ pub enum ContextInfo {
     /// depending on CL extensions.
     ContextProperties(cl::context_properties),
     /// The devices (IDs) in the context.
-    Devices(Vec<cl::uint>)
+    Devices(Vec<Device>)
 }
 
 impl Context {

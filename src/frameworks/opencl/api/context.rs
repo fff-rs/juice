@@ -76,11 +76,16 @@ impl API {
                             },
                             cl::ContextInfoQuery::DEVICES => {
                                 let len = *info_size / size_of::<cl::uint>();
-                                Ok(ContextInfo::Devices(
-                                    Vec::from_raw_parts(
+                                let dev_ids = Vec::from_raw_parts(
                                         info_ptr as *mut cl::uint,
                                         len, len
-                                )))
+                                );
+                                Ok(ContextInfo::Devices(
+                                    dev_ids
+                                        .iter()
+                                        .map(|&id| Device::from_isize(id as isize))
+                                        .collect()
+                                ))
                             },
                             cl::ContextInfoQuery::NUM_DEVICES => {
                                 Ok(ContextInfo::NumDevices(info_ptr as cl::uint))
