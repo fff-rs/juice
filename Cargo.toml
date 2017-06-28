@@ -3,13 +3,13 @@ name = "leaf"
 description = "Machine Learning Framework for Hackers"
 version = "0.2.2"
 authors = [
-  "Bernhard Schuster <bernhard@ratpoison.io>",
+  "Bernhard Schuster <bernhard@ahoi.io>",
   "Maximilian Goisser <max@autumnai.com>",
   "Michael Hirn <mj@autumnai.com>",
 ]
-repository = "https://github.com/ratpoison-io/leaf"
-homepage = "https://ratpoison.io/leaf"
-documentation = "http://ratpoison.io/projects/leaf"
+repository = "https://github.com/spearow/leaf"
+homepage = "https://spearow.io/projects/leaf"
+documentation = "https://spearow.github.io/leaf"
 readme = "README.md"
 keywords = ["deep-learning", "neural-networks", "machine-learning", "framework"]
 license = "MIT OR Apache-2.0"

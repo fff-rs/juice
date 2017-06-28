@@ -1,5 +1,4 @@
-# Leaf • [![Join the chat at https://gitter.im/autumnai/leaf](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/leaf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/autumnai/leaf.svg?branch=master)](https://travis-ci.org/autumnai/leaf) [![Crates.io](http://meritbadge.herokuapp.com/leaf)](https://crates.io/crates/leaf) [![License](https://img.shields.io/crates/l/leaf.svg)](LICENSE)
-
+# Leaf • [![Join the chat at https://gitter.im/spearow/leaf](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/leaf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-leaf/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/leaf.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
 ## Introduction
 
 Leaf is a open Machine Learning Framework for hackers to build classical, deep
@@ -12,37 +11,27 @@ technical debt to your stack.
 
 See the [Leaf - Machine Learning for Hackers][leaf-book] book for more.
 
-Leaf is a few months old, but thanks to its architecture and Rust, it is already
-one of the fastest Machine Intelligence Frameworks available.
-
-<div align="center">
-  <img src="http://autumnai.com/images/autumn_leaf_benchmarks_alexnet.png"><br><br>
-</div>
-
 > See more Deep Neural Networks benchmarks on [Deep Learning Benchmarks][deep-learning-benchmarks-website].
 
 Leaf is portable. Run it on CPUs, GPUs, and FPGAs, on machines with an OS, or on
 machines without one. Run it with OpenCL or CUDA. Credit goes to
 [Coaster][coaster] and Rust.
 
-Leaf is part of the [Autumn][autumn] Machine Intelligence Platform, which is
-working on making AI algorithms 100x more computational efficient.
-
 We see Leaf as the core of constructing high-performance machine intelligence
 applications. Leaf's design makes it easy to publish independent modules to make
 e.g. deep reinforcement learning, visualization and monitoring, network
-distribution, [automated preprocessing][cuticula] or scaleable production
+distribution, [automated preprocessing][greenglas] or scaleable production
 deployment easily accessible for everyone.
 
 [caffe]: https://github.com/BVLC/caffe
 [rust]: https://www.rust-lang.org/
 [autumn]: http://autumnai.com
-[leaf-book]: http://autumnai.com/leaf/book
+[spearow]: http://spearow.io
+[leaf-book]: http://spearow.io/leaf/book
 [tensorflow]: https://github.com/tensorflow/tensorflow
 [benchmarks]: #benchmarks
 [leaf-examples]: #examples
-[deep-learning-benchmarks-website]: http://autumnai.com/deep-learning-benchmarks
-[documentation]: http://autumnai.github.io/leaf
+[documentation]: http://spearow.github.io/leaf
 
 > Disclaimer: Leaf is currently in an early stage of development.
 > If you are experiencing any bugs with features that have been
@@ -54,7 +43,7 @@ deployment easily accessible for everyone.
 
 To learn how to build classical, deep or hybrid machine learning applications with Leaf, check out the [Leaf - Machine Learning for Hackers][leaf-book] book.
 
-For additional information see the [Rust API Documentation][documentation] or the [Autumn Website][autumn].
+For additional information see the [Rust API Documentation][documentation] or the [Spearow Website][spearow].
 
 Or start by running the **Leaf examples**.
 
@@ -72,7 +61,7 @@ the install guide, clone this repoistory and then run
 cargo run --release --no-default-features --features cuda --example benchmarks alexnet
 ```
 
-[leaf-examples]: https://github.com/autumnai/leaf-examples
+[leaf-examples]: https://github.com/spearow/leaf-examples
 
 ### Installation
 
@@ -83,7 +72,7 @@ To start building a machine learning application (Rust only for now. Wrappers ar
 
 ```toml
 [dependencies]
-leaf = "0.2.1"
+leaf = "0.2.2"
 ```
 
 [rust_download]: https://www.rust-lang.org/downloads.html
@@ -95,7 +84,7 @@ can selectively enable them like this in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-leaf = { version = "0.2.1", default-features = false }
+leaf = { version = "0.2.2", default-features = false }
 
 [features]
 default = ["native"] # include only the ones you want to use, in this case "native"
@@ -109,7 +98,7 @@ opencl  = ["leaf/opencl"]
 ### Contributing
 
 If you want to start hacking on Leaf (e.g.
-  [adding a new `Layer`](http://autumnai.com/leaf/book/create-new-layer.html))
+  [adding a new `Layer`](http://spearow.io/leaf/book/create-new-layer.html))
 you should start with forking and cloning the repository.
 
 We have more instructions to help you get started in the [CONTRIBUTING.md][contributing].
@@ -120,31 +109,28 @@ here on Github and on the [Leaf Gitter Channel][gitter-leaf].
 > Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-leaf]: https://gitter.im/autumnai/leaf
-[mj]: https://twitter.com/mjhirn
-[hobofan]: https://twitter.com/hobofan
-[irc]: https://chat.mibbit.com/?server=irc.mozilla.org&channel=%23rust-machine-learning
+[gitter-leaf]: https://gitter.im/spearow/leaf
+[drahnr]: https://github.com/drahnr
 
 ## Ecosystem / Extensions
 
 We designed Leaf and the other crates of the [Autumn Platform][autumn] to be as modular
 and extensible as possible. More helpful crates you can use with Leaf:
 
-- [**Cuticula**][cuticula]: Preprocessing Framework for Machine Learning
+- [**Greenglas**][greenglas]: Preprocessing Framework for Machine Learning
 - [**Coaster**][coaster]: Portable, HPC-Framework on any hardware with CUDA, OpenCL, Rust
 
-[cuticula]: https://github.com/autumnai/cuticula
-[coaster]: https://github.com/autumnai/coaster
+[cuticula]: https://github.com/spearow/greenglas
+[coaster]: https://github.com/spearow/coaster
 
 ## Support / Contact
 
 - With a bit of luck, you can find us online on the #rust-machine-learning IRC at irc.mozilla.org,
 - but we are always approachable on [Gitter/Leaf][gitter-leaf]
 - For bugs and feature request, you can create a [Github issue][leaf-issue]
-- For more private matters, send us email straight to our inbox: developers@autumnai.com
-- Refer to [Autumn][autumn] for more information
+- For more private matters, send us email straight to our inbox: hej@spearow.io
 
-[leaf-issue]: https://github.com/autumnai/leaf/issues
+[leaf-issue]: https://github.com/spearow/leaf/issues
 
 ## Changelog
 

@@ -15,7 +15,7 @@ Another challenge is that not all backends have support for the same operations,
 which constrains neural networks with special requirements to the backends that
 provide those operations. Due to some limitations in the current version of Rust
 (1.7) allowing differently featured backends can not be that easily supported.
-See [Issue #81](https://github.com/autumnai/leaf/issues/81).
+See [Issue #7](https://github.com/spearow/leaf/issues/7).
 
 ## The solution
 
@@ -27,7 +27,7 @@ Luckily, Cargo, Rust's package manager has built-in support for feature flags.
 A simple dependency with additional features enabled in a `Cargo.toml` looks like this:
 ```toml
 [dependencies]
-leaf = { version = "0.2.0", features = ["cuda"] }
+leaf = { version = "0.2.2", features = ["cuda"] }
 ```
 
 Feature flags are usually used in an additive way, but **some configurations
@@ -61,15 +61,15 @@ the feature flags.
 A typical example (including collenchyma) would look like this:
 ```toml
 [dependencies]
-leaf = { version = "0.2.0", default-features = false }
+leaf = { version = "0.2.2", default-features = false }
 # the native collenchyma feature is neccesary to read/write tensors
-collenchyma = { version = "0.0.8", default-features = false, features = ["native"] }
+coaster = { version = "0.1.0", default-features = false, features = ["native"] }
 
 [features]
 default = ["native"]
 native  = ["leaf/native"]
-opencl  = ["leaf/opencl", "collenchyma/opencl"]
-cuda    = ["leaf/cuda", "collenchyma/cuda"]
+opencl  = ["leaf/opencl", "coaster/opencl"]
+cuda    = ["leaf/cuda", "coaster/cuda"]
 
 ```
 

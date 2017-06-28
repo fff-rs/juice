@@ -1,8 +1,3 @@
-<div align="center">
-  <img src="http://autumnai.com/images/autumn_leaf_benchmarks_alexnet.png"><br><br>
-</div>
-> Forward and Backward duration for Leaf 0.2 and other Machine Learning Frameworks on the popular Alexnet.
-
 # Announcing Leaf 0.2
 
 We are happy to announce today the release of Leaf 0.2 on which we have been
@@ -77,13 +72,12 @@ Github.
 
 <div align="center">
   <p>
-    <a href="http://autumnai.com">More about Leaf and Autumn</a> |
-    Follow on Twitter: <a href="https://twitter.com/autumn_eng">@autumn_eng</a>
+    <a href="https://spearow.io">More about Leaf and Spearow</a>
   </p>
 </div>
 
-[install]: https://github.com/autumnai/leaf#getting-started
-[examples]: https://github.com/autumnai/leaf#examples
-[collenchyma]: https://github.com/autumnai/collenchyma
-[deep-learning-benchmarks-website]: http://autumnai.com/deep-learning-benchmarks
-[gitter-leaf]: https://gitter.im/autumnai/leaf
+[install]: https://github.com/spearow/leaf#getting-started
+[examples]: https://github.com/spearow/leaf#examples
+[coaster]: https://github.com/spearow/coaster
+[deep-learning-benchmarks-website]: http://spearow.io/deep-learning-benchmarks
+[gitter-leaf]: https://gitter.im/spearow/leaf
