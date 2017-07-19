@@ -1,6 +1,8 @@
 # Leaf • [![Join the chat at https://gitter.im/spearow/leaf](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/leaf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-leaf/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/leaf.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
 ## Introduction
 
+[![Join the chat at https://gitter.im/spearow/juice](https://badges.gitter.im/spearow/juice.svg)](https://gitter.im/spearow/juice?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Leaf is a open Machine Learning Framework for hackers to build classical, deep
 or hybrid machine learning applications. It was inspired by the brilliant people
 behind TensorFlow, Torch, Caffe, Rust and numerous research papers and brings
