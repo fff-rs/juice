@@ -24,7 +24,7 @@ use co::backend::IBackend;
 use co::tensor::SharedTensor;
 use coblas::transpose::Transpose;
 use layer::*;
-use leaf_capnp::linear_config as capnp_config;
+use juice_capnp::linear_config as capnp_config;
 use util::{ArcLock, native_scalar, LayerOps};
 use weight::FillerType;
 

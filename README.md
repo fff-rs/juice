@@ -1,24 +1,24 @@
-# Leaf • [![Join the chat at https://gitter.im/spearow/leaf](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/leaf?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-leaf/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/leaf.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
+# Juice • [![Join the chat at https://gitter.im/spearow/juice](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/juice?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/juice/jobs/test-juice/badge)](https://ci.spearow.io/teams/main/pipelines/juice) [![Crates.io](https://img.shields.io/crates/v/juice.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
 ## Introduction
 
-Leaf is a open Machine Learning Framework for hackers to build classical, deep
+Juice is a open Machine Learning Framework for hackers to build classical, deep
 or hybrid machine learning applications. It was inspired by the brilliant people
 behind TensorFlow, Torch, Caffe, Rust and numerous research papers and brings
 modularity, performance and portability to deep learning.
 
-Leaf has one of the simplest APIs, is lean and tries to introduce minimal
+Juice has one of the simplest APIs, is lean and tries to introduce minimal
 technical debt to your stack.
 
-See the [Leaf - Machine Learning for Hackers][leaf-book] book for more.
+See the [Juice - Machine Learning for Hackers][juice-book] book for more.
 
 > See more Deep Neural Networks benchmarks on [Deep Learning Benchmarks][deep-learning-benchmarks-website].
 
-Leaf is portable. Run it on CPUs, GPUs, and FPGAs, on machines with an OS, or on
+Juice is portable. Run it on CPUs, GPUs, and FPGAs, on machines with an OS, or on
 machines without one. Run it with OpenCL or CUDA. Credit goes to
 [Coaster][coaster] and Rust.
 
-We see Leaf as the core of constructing high-performance machine intelligence
-applications. Leaf's design makes it easy to publish independent modules to make
+We see Juice as the core of constructing high-performance machine intelligence
+applications. Juice's design makes it easy to publish independent modules to make
 e.g. deep reinforcement learning, visualization and monitoring, network
 distribution, [automated preprocessing][greenglas] or scaleable production
 deployment easily accessible for everyone.
@@ -27,13 +27,13 @@ deployment easily accessible for everyone.
 [rust]: https://www.rust-lang.org/
 [autumn]: http://autumnai.com
 [spearow]: http://spearow.io
-[leaf-book]: http://spearow.io/leaf/book
+[juice-book]: http://spearow.io/juice/book
 [tensorflow]: https://github.com/tensorflow/tensorflow
 [benchmarks]: #benchmarks
-[leaf-examples]: #examples
-[documentation]: http://spearow.github.io/leaf
+[juice-examples]: #examples
+[documentation]: http://spearow.github.io/juice
 
-> Disclaimer: Leaf is currently in an early stage of development.
+> Disclaimer: Juice is currently in an early stage of development.
 > If you are experiencing any bugs with features that have been
 > implemented, feel free to create a issue.
 
@@ -41,18 +41,18 @@ deployment easily accessible for everyone.
 
 ### Documentation
 
-To learn how to build classical, deep or hybrid machine learning applications with Leaf, check out the [Leaf - Machine Learning for Hackers][leaf-book] book.
+To learn how to build classical, deep or hybrid machine learning applications with Juice, check out the [Juice - Machine Learning for Hackers][juice-book] book.
 
 For additional information see the [Rust API Documentation][documentation] or the [Spearow Website][spearow].
 
-Or start by running the **Leaf examples**.
+Or start by running the **Juice examples**.
 
-We are providing a [Leaf examples repository][leaf-examples], where we and
-others publish executable machine learning models build with Leaf. It features
+We are providing a [Juice examples repository][juice-examples], where we and
+others publish executable machine learning models build with Juice. It features
 a CLI for easy usage and has a detailed guide in the [project
-README.md][leaf-examples].
+README.md][juice-examples].
 
-Leaf comes with an examples directory as well, which features popular neural
+Juice comes with an examples directory as well, which features popular neural
 networks (e.g. Alexnet, Overfeat, VGG). To run them on your machine, just follow
 the install guide, clone this repoistory and then run
 
@@ -61,18 +61,18 @@ the install guide, clone this repoistory and then run
 cargo run --release --no-default-features --features cuda --example benchmarks alexnet
 ```
 
-[leaf-examples]: https://github.com/spearow/leaf-examples
+[juice-examples]: https://github.com/spearow/juice-examples
 
 ### Installation
 
-> Leaf is build in [Rust][rust]. If you are new to Rust you can install Rust as detailed [here][rust_download].
+> Juice is build in [Rust][rust]. If you are new to Rust you can install Rust as detailed [here][rust_download].
 We also recommend taking a look at the [official Rust - Getting Started Guide][rust_getting_started].
 
-To start building a machine learning application (Rust only for now. Wrappers are welcome) and you are using Cargo, just add Leaf to your `Cargo.toml`:
+To start building a machine learning application (Rust only for now. Wrappers are welcome) and you are using Cargo, just add Juice to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-leaf = "0.2.2"
+juice = "0.2.2"
 ```
 
 [rust_download]: https://www.rust-lang.org/downloads.html
@@ -84,53 +84,53 @@ can selectively enable them like this in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-leaf = { version = "0.2.2", default-features = false }
+juice = { version = "0.2.2", default-features = false }
 
 [features]
 default = ["native"] # include only the ones you want to use, in this case "native"
-native  = ["leaf/native"]
-cuda    = ["leaf/cuda"]
-opencl  = ["leaf/opencl"]
+native  = ["juice/native"]
+cuda    = ["juice/cuda"]
+opencl  = ["juice/opencl"]
 ```
 
-> More information on the use of feature flags in Leaf can be found in [FEATURE-FLAGS.md](./FEATURE-FLAGS.md)
+> More information on the use of feature flags in Juice can be found in [FEATURE-FLAGS.md](./FEATURE-FLAGS.md)
 
 ### Contributing
 
-If you want to start hacking on Leaf (e.g.
-  [adding a new `Layer`](http://spearow.io/leaf/book/create-new-layer.html))
+If you want to start hacking on Juice (e.g.
+  [adding a new `Layer`](http://spearow.io/juice/book/create-new-layer.html))
 you should start with forking and cloning the repository.
 
 We have more instructions to help you get started in the [CONTRIBUTING.md][contributing].
 
 We also has a near real-time collaboration culture, which happens
-here on Github and on the [Leaf Gitter Channel][gitter-leaf].
+here on Github and on the [Juice Gitter Channel][gitter-juice].
 
 > Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-leaf]: https://gitter.im/spearow/leaf
+[gitter-juice]: https://gitter.im/spearow/juice
 [drahnr]: https://github.com/drahnr
 
 ## Ecosystem / Extensions
 
-We designed Leaf and the other crates of the [Autumn Platform][autumn] to be as modular
-and extensible as possible. More helpful crates you can use with Leaf:
+We designed Juice and the other crates of the [Autumn Platform][autumn] to be as modular
+and extensible as possible. More helpful crates you can use with Juice:
 
 - [**Greenglas**][greenglas]: Preprocessing Framework for Machine Learning
 - [**Coaster**][coaster]: Portable, HPC-Framework on any hardware with CUDA, OpenCL, Rust
 
-[cuticula]: https://github.com/spearow/greenglas
+[greenglas]: https://github.com/spearow/greenglas
 [coaster]: https://github.com/spearow/coaster
 
 ## Support / Contact
 
 - With a bit of luck, you can find us online on the #rust-machine-learning IRC at irc.mozilla.org,
-- but we are always approachable on [Gitter/Leaf][gitter-leaf]
-- For bugs and feature request, you can create a [Github issue][leaf-issue]
+- but we are always approachable on [Gitter/Juice][gitter-juice]
+- For bugs and feature request, you can create a [Github issue][juice-issue]
 - For more private matters, send us email straight to our inbox: hej@spearow.io
 
-[leaf-issue]: https://github.com/spearow/leaf/issues
+[juice-issue]: https://github.com/spearow/juice/issues
 
 ## Changelog
 

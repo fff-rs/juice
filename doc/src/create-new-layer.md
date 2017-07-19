@@ -1,9 +1,9 @@
 # Create a new Layer
 
-A layer in Leaf can implement any behavior as long as it takes an input and
-produces an output. As Leaf is new, there are still many valuable layers that
+A layer in Juice can implement any behavior as long as it takes an input and
+produces an output. As Juice is new, there are still many valuable layers that
 are not yet implemented. This is why this chapter shows how you can add new
-layers to Leaf.
+layers to Juice.
 
 A not exclusive list of steps to take in order to implement a new layer:
 
@@ -13,7 +13,7 @@ A not exclusive list of steps to take in order to implement a new layer:
 
 1. Decide to which of the [five types](./layers.html#What&#32;can&#32;Layers&#32;do?)
 the new layer belongs. This decides under which directory to put the layer
-implementation in the Leaf project.
+implementation in the Juice project.
 
 2. Create the `Layer` worker struct.
 
@@ -26,7 +26,7 @@ implementation in the Leaf project.
 6. Add the new layer to the `LayerType` in `layer.rs` and add the matching
 for `.support_in_place` and `.worker_from_config`.
 
-7. If the new layer relies on a collenchyma operation, also add the collenchyma
+7. If the new layer relies on a coaster operation, also add the coaster
 trait boundary.
 
 8. Add documentation and serialization to the new layer.

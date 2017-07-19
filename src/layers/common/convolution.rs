@@ -18,7 +18,7 @@ use co::prelude::*;
 use conn;
 use conn::ConvolutionConfig as connConvolutionConfig;
 use layer::*;
-use leaf_capnp::convolution_config as capnp_config;
+use juice_capnp::convolution_config as capnp_config;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 use util::{ArcLock, cast_vec_usize_to_i32};

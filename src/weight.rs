@@ -2,7 +2,7 @@
 
 use capnp_util::*;
 use co::{ITensorDesc, SharedTensor};
-use leaf_capnp::weight_config as capnp_config;
+use juice_capnp::weight_config as capnp_config;
 use rand;
 use rand::distributions::{IndependentSample, Range};
 use util::native_backend;
@@ -115,7 +115,7 @@ impl<'a> CapnpWrite<'a> for WeightConfig {
 
     /// Write the WeightConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
-        // TODO: incomplete since WeightConfig isn't really used internally in Leaf at the moment.
+        // TODO: incomplete since WeightConfig isn't really used internally in Juice at the moment.
         builder.borrow().set_name(&self.name);
     }
 }
@@ -124,7 +124,7 @@ impl<'a> CapnpRead<'a> for WeightConfig {
     type Reader = capnp_config::Reader<'a>;
 
     fn read_capnp(reader: Self::Reader) -> Self {
-        // TODO: incomplete since WeightConfig isn't really used internally in Leaf at the moment.
+        // TODO: incomplete since WeightConfig isn't really used internally in Juice at the moment.
         let name = reader.get_name().unwrap().to_owned();
         WeightConfig { name: name, ..Self::default() }
     }

@@ -16,8 +16,8 @@ use capnp_util::*;
 use co::{IBackend, SharedTensor};
 use conn;
 use layer::*;
-use leaf_capnp::PoolingMode as CapnpPoolingMode;
-use leaf_capnp::pooling_config as capnp_config;
+use juice_capnp::PoolingMode as CapnpPoolingMode;
+use juice_capnp::pooling_config as capnp_config;
 use std::rc::Rc;
 use util::{ArcLock, cast_vec_usize_to_i32};
 

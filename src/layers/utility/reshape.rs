@@ -19,7 +19,7 @@
 use capnp_util::*;
 use co::{IBackend, SharedTensor};
 use layer::*;
-use leaf_capnp::reshape_config as capnp_config;
+use juice_capnp::reshape_config as capnp_config;
 use util::ArcLock;
 
 #[derive(Debug, Clone)]

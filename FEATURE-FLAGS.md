@@ -1,10 +1,10 @@
-# Feature flags in Leaf
+# Feature flags in Juice
 
 ## The problem(s)
 
-Supporting different backends is an important concept in Leaf.
+Supporting different backends is an important concept in Juice.
 
-Optimally we would like to always have to choice of running Leaf on all backends.
+Optimally we would like to always have to choice of running Juice on all backends.
 However in reality there are some tradeoffs that have to be made.
 
 One problem is that certain backends require the presence of special hardware to
@@ -15,7 +15,7 @@ Another challenge is that not all backends have support for the same operations,
 which constrains neural networks with special requirements to the backends that
 provide those operations. Due to some limitations in the current version of Rust
 (1.7) allowing differently featured backends can not be that easily supported.
-See [Issue #7](https://github.com/spearow/leaf/issues/7).
+See [Issue #7](https://github.com/spearow/juice/issues/7).
 
 ## The solution
 
@@ -27,11 +27,11 @@ Luckily, Cargo, Rust's package manager has built-in support for feature flags.
 A simple dependency with additional features enabled in a `Cargo.toml` looks like this:
 ```toml
 [dependencies]
-leaf = { version = "0.2.2", features = ["cuda"] }
+juice = { version = "0.2.2", features = ["cuda"] }
 ```
 
 Feature flags are usually used in an additive way, but **some configurations
-of features for Leaf might actually take away some functionality**.
+of features for Juice might actually take away some functionality**.
 We do this because we want the models to be portable across different backends,
 which is not possible if e.g. the CUDA backend supports Convolution layers while
 the Native backend doesn't. To make it possible we deactivate those features that
@@ -46,7 +46,7 @@ Example:
 
 One thing we have ignored until now are default feature flags. Cargo allows to
 define a set of features that should be included in a package by default .
-One of the default feature flags of Leaf is the `native` flag. When looking at
+One of the default feature flags of Juice is the `native` flag. When looking at
 the above example you might notice that the only way we can unleash the full
 power of the CUDA backend is by deactivating the default `native` flag.
 Cargo allows us to do that either via the `--no-default-features` on the CLI or
@@ -58,18 +58,18 @@ The simple `Cargo.toml` example above works in simple cases but if you want
 to provide the same flexibility of backends in your project, you can reexport
 the feature flags.
 
-A typical example (including collenchyma) would look like this:
+A typical example (including coaster) would look like this:
 ```toml
 [dependencies]
-leaf = { version = "0.2.2", default-features = false }
-# the native collenchyma feature is neccesary to read/write tensors
+juice = { version = "0.2.2", default-features = false }
+# the native coaster feature is neccesary to read/write tensors
 coaster = { version = "0.1.0", default-features = false, features = ["native"] }
 
 [features]
 default = ["native"]
-native  = ["leaf/native"]
-opencl  = ["leaf/opencl", "coaster/opencl"]
-cuda    = ["leaf/cuda", "coaster/cuda"]
+native  = ["juice/native"]
+opencl  = ["juice/opencl", "coaster/opencl"]
+cuda    = ["juice/cuda", "coaster/cuda"]
 
 ```
 

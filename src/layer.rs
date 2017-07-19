@@ -6,9 +6,9 @@
 use capnp_util::*;
 use co::prelude::*;
 use layers::*;
-use leaf_capnp::layer as capnp_layer;
-use leaf_capnp::layer_config as capnp_layer_config;
-use leaf_capnp::layer_config::layer_type as capnp_layer_type;
+use juice_capnp::layer as capnp_layer;
+use juice_capnp::layer_config as capnp_layer_config;
+use juice_capnp::layer_config::layer_type as capnp_layer_type;
 use std::cmp;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -612,15 +612,15 @@ impl<B: IBackend> Layer<B> {
 
     /// Serialize the Layer and it's weights to a Cap'n Proto file at the specified path.
     ///
-    /// You can find the capnp schema [here](../../../../capnp/leaf.capnp).
+    /// You can find the capnp schema [here](../../../../capnp/juice.capnp).
     ///
     /// ```
     /// # #[cfg(feature = "native")]
     /// # mod native {
     /// # use std::rc::Rc;
-    /// # use leaf::layer::*;
-    /// # use leaf::layers::*;
-    /// # use leaf::util;
+    /// # use juice::layer::*;
+    /// # use juice::layers::*;
+    /// # use juice::util;
     /// # pub fn test() {
     /// #
     /// let mut net_cfg = SequentialConfig::default();
@@ -662,17 +662,17 @@ impl<B: IBackend> Layer<B> {
 
     /// Read a Cap'n Proto file at the specified path and deserialize the Layer inside it.
     ///
-    /// You can find the capnp schema [here](../../../../capnp/leaf.capnp).
+    /// You can find the capnp schema [here](../../../../capnp/juice.capnp).
     ///
     /// ```
-    /// # extern crate leaf;
+    /// # extern crate juice;
     /// # extern crate coaster;
     /// # #[cfg(feature = "native")]
     /// # mod native {
     /// # use std::rc::Rc;
-    /// # use leaf::layer::*;
-    /// # use leaf::layers::*;
-    /// # use leaf::util;
+    /// # use juice::layer::*;
+    /// # use juice::layers::*;
+    /// # use juice::util;
     /// use coaster::prelude::*;
     /// # pub fn test() {
     ///

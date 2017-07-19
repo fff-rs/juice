@@ -31,5 +31,5 @@ let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_c
 
 The now initialized `Solver` can be feed with data to optimize the `network`.
 
-[solver]: https://github.com/autumnai/leaf/blob/master/src/solver/mod.rs
-[solver-config]: https://github.com/autumnai/leaf/blob/master/src/solver/mod.rs
+[solver]: https://github.com/spearow/juice/blob/master/src/solver/mod.rs
+[solver-config]: https://github.com/spearow/juice/blob/master/src/solver/mod.rs

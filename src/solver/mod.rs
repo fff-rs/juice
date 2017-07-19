@@ -201,7 +201,7 @@ pub struct SolverConfig {
     /// [2]: ./enum.RegularizationMethod.html
     ///
     /// Currently only L2 regularization is implemented.
-    /// See [Issue #23](https://github.com/autumnai/leaf/issues/23).
+    /// See [Issue #23](https://github.com/spearow/juice/issues/23).
     pub regularization_method: Option<RegularizationMethod>,
     /// The [momentum][1] multiplier for [SGD solvers][2].
     /// [1]: https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Momentum

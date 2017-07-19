@@ -16,5 +16,5 @@ let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_c
 ```
 
 The backend is a concept of
-[Collenchyma](https://github.com/autumnai/collenchyma), to which you can refer
+[Coaster](https://github.com/autumnai/coaster), to which you can refer
 for now, until this chapter becomes more fleshed out.

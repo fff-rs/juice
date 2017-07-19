@@ -3,8 +3,8 @@
 use capnp_util::*;
 use co::{IBackend, SharedTensor};
 use layer::*;
-use leaf_capnp::sequential_config as capnp_config;
-use leaf_capnp::shaped_input as capnp_shaped_input;
+use juice_capnp::sequential_config as capnp_config;
+use juice_capnp::shaped_input as capnp_shaped_input;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;

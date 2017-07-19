@@ -1,6 +1,6 @@
 # Profiling
 
-Collenchyma comes with scripts to help with profiling performance problems.
+Coaster comes with scripts to help with profiling performance problems.
 
 Run [perf](http://www.brendangregg.com/perf.html) on one of the benchmark test:
 

@@ -1,8 +1,8 @@
-# Contributing to Leaf
+# Contributing to Juice
 
-We love, that you are interested in contributing to Leaf. There are many ways
+We love, that you are interested in contributing to Juice. There are many ways
 to contribute and we appreciate all of them. This document gives a rough
-overview of how you can contribute to Leaf.
+overview of how you can contribute to Juice.
 
 * [Pull Requests](#pull-requests)
 * [Bug Reports](#bug-reports)
@@ -12,7 +12,7 @@ overview of how you can contribute to Leaf.
   * [Documentation Guidelines](#documentation-guidelines)
 
 
-If you have questions hop on the [Leaf Chat](https://gitter.im/autumnai/leaf), to the #rust-machine-learning IRC on irc.mozilla.org or reach out to {@[MJ](https://twitter.com/mjhirn), @[Max](https://twitter.com/hobofan)}.
+If you have questions hop on the [Juice Chat](https://gitter.im/spearow/juice), to the #rust-machine-learning IRC on irc.mozilla.org or reach out to {@[drahnr](https://github.com/drahnr), }.
 
 ## Pull Requests
 
@@ -29,7 +29,7 @@ working on the problem you would love to solve.
 
 #### Making a PR
 
-Pull requests are the primary mechanism we use to change Leaf repos. GitHub
+Pull requests are the primary mechanism we use to change Juice repos. GitHub
 itself has some [great documentation](https://help.github.com/articles/using-pull-requests/)
 on using the Pull Request feature. We use the 'fork and pull' model described
 there.
@@ -107,7 +107,7 @@ $ RUST_BACKTRACE=1 rustc ...
 
 ## Feature Requests
 
-To request a change to the way that one of the Leaf libraries work, please
+To request a change to the way that one of the Juice libraries work, please
 open an issue in the repository.
 
 ## Appendix

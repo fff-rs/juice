@@ -1,6 +1,6 @@
 # Summary
 
-- [Leaf](./leaf.md)
+- [Juice](./juice.md)
 - [Layers](./layers.md)
     - [Layer Lifecycle](./layer-lifecycle.md)
     - [Create a Network](./building-networks.md)
@@ -12,4 +12,4 @@
 - [Backend](./backend.md)
 - [Glossary](./deep-learning-glossary.md)
 -----------
-- [Rust API Documentation](http://autumnai.github.io/leaf/leaf/index.html)
+- [Rust API Documentation](http://spearow.github.io/juice/juice/index.html)

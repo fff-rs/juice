@@ -41,7 +41,7 @@ pub fn train_minibatch(&mut self, mb_data: ArcLock<SharedTensor<f32>>, mb_target
 Using the `.train_minibatch` is straight forward. We pass the data as well as the
 expected result of the `network` to the `.train_minibatch` method of the
 initialized `Solver` struct. A more detailed example can be found at the
-[autumnai/leaf-examples](https://github.com/autumnai/leaf-examples) repository.
+[spearow/juice-examples](https://github.com/spearow/juice-examples) repository.
 
 ```rust
 let inp_lock = Arc::new(RwLock::new(inp));
@@ -61,7 +61,7 @@ To run just the forward of the `network` without any optimization we can run
 let inferred_out = solver.network().forward(inp_lock.clone());
 ```
 
-Leaf ships with a [confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix),
+Juice ships with a [confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix),
 which is a convenient way to visualize the performance of the optimized
 `network`.
 
@@ -76,4 +76,4 @@ println!("Last sample: {} | Accuracy {}", confusion.samples().iter().last().unwr
 ```
 
 A more detailed example can be found at the
-[autumnai/leaf-examples](https://github.com/autumnai/leaf-examples) repository.
+[spearow/juice-examples](https://github.com/spearow/juice-examples) repository.

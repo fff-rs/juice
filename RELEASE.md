@@ -1,26 +1,26 @@
-# Announcing Leaf 0.2
+# Announcing Juice 0.2
 
-We are happy to announce today the release of Leaf 0.2 on which we have been
-working on for the last weeks. Leaf is a modular, performant, portable
+We are happy to announce today the release of Juice 0.2 on which we have been
+working on for the last weeks. Juice is a modular, performant, portable
 Machine Intelligence Framework.
 It is the Hacker's Machine Intelligence Framework, developed by software
 engineers.
 
-You can [install Leaf 0.2][install] and [run examples][examples], including
+You can [install Juice 0.2][install] and [run examples][examples], including
 popular Deep Neural Networks like Alexnet, Overfeat, VGG and more.
 
-## What's in Leaf 0.2
+## What's in Juice 0.2
 
 The release was mostly about finding an efficient and clean architecture,
 catching up with the performance level of other Machine Learning Frameworks. It
 shares concepts from the brilliant work done by the people behind Torch,
 Tensorflow, Caffe, Rust and numerous research papers. We have several large
-features under development, Leaf 0.2 gives us the platform to go on exploring
-new territory with Leaf 0.3.
+features under development, Juice 0.2 gives us the platform to go on exploring
+new territory with Juice 0.3.
 
 ### Performance
 
-Leaf 0.2 is one of the fastest Machine Intelligence Frameworks that exist
+Juice 0.2 is one of the fastest Machine Intelligence Frameworks that exist
 today. Rust was a big help in developing the entire platform over the course of
 a few months. We achieved a very efficient GPU utilization and oriented our
 architecture close to Torch and achieved the distribution capabilities of
@@ -32,7 +32,7 @@ More Benchmarks and comparisons, including Memory utilization, can be found on
 
 ### Portability
 
-Leaf 0.2 uses [Collenchyma][collenchyma] for training and running models on
+Juice 0.2 uses [Coaster][coaster] for training and running models on
 CPUs, GPUs, FPGAs, etc. with OpenCL or CUDA or other Computation Languages, on
 various machines and operating systems, without the need to adapt your code what
 so ever. This makes deployment of models to servers, desktops, smartphones and
@@ -45,7 +45,7 @@ performance and development overhead concerns.
 
 ### Architecture
 
-Leaf 0.2 replaces special `Network` objects with container layers
+Juice 0.2 replaces special `Network` objects with container layers
 like the `Sequential` layer. Where previously all weights were stored centrally
 by the Network, each Layer is now responsible for managing its own weights.
 This allows for more flexibility in expressing different network architectures.
@@ -53,11 +53,11 @@ It also enables better programmatic generation of networks by nesting container
 layers where each container represents a common pattern in neural networks,
 e.g. Convolution, Pooling and ReLU following each other.
 
-### Contributors for Leaf 0.2
+### Contributors for Juice 0.2
 
-We had 9 individual contributors, which made Leaf 0.2 possible. Thank you so
-much for your contribution, when Leaf wasn't even executable, yet. And thank you
-for everyone who took the time to engage with us on [Gitter][gitter-leaf] and
+We had 9 individual contributors, which made Juice 0.2 possible. Thank you so
+much for your contribution, when Juice wasn't even executable, yet. And thank you
+for everyone who took the time to engage with us on [Gitter][gitter-juice] and
 Github.
 
 * Maximilian Goisser ([@hobofan](https://twitter.com/hobofan))
@@ -72,12 +72,12 @@ Github.
 
 <div align="center">
   <p>
-    <a href="https://spearow.io">More about Leaf and Spearow</a>
+    <a href="https://spearow.io">More about Juice and Spearow</a>
   </p>
 </div>
 
-[install]: https://github.com/spearow/leaf#getting-started
-[examples]: https://github.com/spearow/leaf#examples
+[install]: https://github.com/spearow/juice#getting-started
+[examples]: https://github.com/spearow/juice#examples
 [coaster]: https://github.com/spearow/coaster
 [deep-learning-benchmarks-website]: http://spearow.io/deep-learning-benchmarks
-[gitter-leaf]: https://gitter.im/spearow/leaf
+[gitter-juice]: https://gitter.im/spearow/juice

@@ -4,7 +4,7 @@
 use capnp_util::*;
 use co::{IBackend, ITensorDesc, SharedTensor};
 use layer::*;
-use leaf_capnp::negative_log_likelihood_config as capnp_config;
+use juice_capnp::negative_log_likelihood_config as capnp_config;
 use util::{ArcLock, native_backend};
 
 #[derive(Debug, Clone)]
