@@ -24,13 +24,13 @@ coaster-nn = { path = "../coaster-nn", default-features = false, version = "0.4.
 log = "0.3.2"
 rand = "0.3.0"
 num = "0.1"
-capnp = "0.8.0"
+capnp = "0.8"
 timeit = "0.1.2"
 
 clippy = { version = "0.0.41", optional = true }
 
 [build-dependencies]
-capnpc = "0.8.1"
+capnpc = "0.8"
 
 [dev-dependencies]
 env_logger = "0.3"
