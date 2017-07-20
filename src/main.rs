@@ -17,14 +17,14 @@ use csv::{Reader};
 
 extern crate env_logger;
 extern crate coaster as co;
-extern crate leaf;
+extern crate juice;
 
 use co::prelude::*;
 
-use leaf::layer::*;
-use leaf::layers::*;
-use leaf::solver::*;
-use leaf::util::*;
+use juice::layer::*;
+use juice::layers::*;
+use juice::solver::*;
+use juice::util::*;
 
 
 use std::rc::Rc;
@@ -32,13 +32,13 @@ use std::env;
 
 
 const MAIN_USAGE: &'static str = "
-Leaf Examples
+Juice Examples
 
 Usage:
-    leaf-examples load-dataset <dataset-name>
-    leaf-examples mnist <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
-    leaf-examples (-h | --help)
-    leaf-examples --version
+    juice-examples load-dataset <dataset-name>
+    juice-examples mnist <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
+    juice-examples (-h | --help)
+    juice-examples --version
 
 Options:
     <model-name>            Which MNIST model to use. Valid values: [linear, mlp, conv]
@@ -172,7 +172,7 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_cfg);
 
     // set up confusion matrix
-    let mut confusion = ::leaf::solver::ConfusionMatrix::new(10);
+    let mut confusion = ::juice::solver::ConfusionMatrix::new(10);
     confusion.set_capacity(Some(1000));
 
     let mut inp = SharedTensor::<f32>::new(&[batch_size, 28, 28]);
