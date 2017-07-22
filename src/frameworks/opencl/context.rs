@@ -45,7 +45,7 @@ pub enum ContextInfoQuery {
 
 /// OpenCL context info types. Each variant is returned from the same function,
 /// `get_context_info`.
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 pub enum ContextInfo {
     /// Number of references to the context currently held.
     ReferenceCount(u32),

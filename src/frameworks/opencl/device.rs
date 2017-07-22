@@ -56,7 +56,7 @@ impl Version {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 /// Defines a OpenCL Device.
 ///
 /// Can later be transformed into a [Coaster hardware][hardware].
