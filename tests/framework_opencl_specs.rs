@@ -38,12 +38,12 @@ mod framework_opencl_spec {
     }
 
     #[test]
-    fn it_querries_context_info() {
+    fn it_queries_context_info() {
         let frm = OpenCL::new();
         let ctx = frm.new_device(&frm.hardwares()[0..1]).unwrap();
         println!("ReferenceCount: {:?}", ctx.get_context_info(ContextInfoQuery::ReferenceCount));
         println!("NumDevices: {:?}", ctx.get_context_info(ContextInfoQuery::NumDevices));
-        println!("Properties: {:?}", ctx.get_context_info(ContextInfoQuery::Properties));
         println!("Devices: {:?}", ctx.get_context_info(ContextInfoQuery::Devices));
+        println!("Properties: {:?}", ctx.get_context_info(ContextInfoQuery::Properties));
 	}
 }

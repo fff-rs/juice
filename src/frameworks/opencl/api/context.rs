@@ -61,7 +61,7 @@ impl API {
         query: ContextInfoQuery ,
     ) -> Result<ContextInfo, Error> {
 
-        let mut info : cl::context_info = match query {
+        let mut info_name : cl::context_info = match query {
             ContextInfoQuery::ReferenceCount => cl::CL_CONTEXT_REFERENCE_COUNT,
             ContextInfoQuery::NumDevices => cl::CL_CONTEXT_NUM_DEVICES,
             ContextInfoQuery::Properties => cl::CL_CONTEXT_PROPERTIES,
@@ -72,75 +72,77 @@ impl API {
             unsafe {
                 let mut zero: usize = 0;
                 let info_size: *mut usize = &mut zero;
-                let info_ptr: *mut libc::c_void = ptr::null_mut();
-                API::ffi_get_context_info_size(context, info, info_size)
+                API::ffi_get_context_info_size(context, info_name, info_size)
                     .and_then(|_| {
+                        let mut buffer = vec![0u8; *info_size];
+                        let info_ptr: *mut libc::c_void = buffer.as_mut_ptr() as *mut libc::c_void;
                         API::ffi_get_context_info(context,
-                                                  info,
+                                                  info_name,
                                                   *info_size,
                                                   info_ptr)
-                    }).and_then(|_| {
-                        match info {
-                            cl::CL_CONTEXT_REFERENCE_COUNT => {
-                                Ok(ContextInfo::ReferenceCount(info_ptr as u32))
-                            },
-                            cl::CL_CONTEXT_DEVICES => {
-                                let len = *info_size / size_of::<cl::uint>();
-                                // TODO can we really consume the output here?
-                                // TODO Vec takes over ownership
-                                let dev_ids = Vec::from_raw_parts(
-                                        info_ptr as *mut cl::uint,
-                                        len, len
-                                );
-                                Ok(ContextInfo::Devices(
-                                    dev_ids
-                                        .iter()
-                                        .map(|&id| Device::from_isize(id as isize))
-                                        .collect()
-                                ))
-                            },
-                            cl::CL_CONTEXT_NUM_DEVICES => {
-                                Ok(ContextInfo::NumDevices(info_ptr as u32))
-                            },
-                            cl::CL_CONTEXT_PROPERTIES => {
-                                let mut v : Vec<ContextProperties> = vec!();
-                                let mut start : *mut u8 = info_ptr as *mut u8;
-                                let old : *mut u8 = start.clone();
-                                loop {
-                                    let key : *mut cl::context_properties = start as *mut cl::context_properties;
-                                    let x = *key;
-                                    start = start.offset(std::mem::size_of::<cl::context_properties>() as isize);
-                                    match x {
-                                        cl::CL_CONTEXT_PLATFORM => {
-                                            let next : *const cl::platform_id = info_ptr  as *const cl::platform_id;
-                                            let p = *next;
-                                            start = start.offset(std::mem::size_of::<cl::platform_id>() as isize);
-                                            v.push(ContextProperties::Platform(Platform::from_c(p)));
+                        .and_then(|_| {
+		                match info_name {
+		                    cl::CL_CONTEXT_REFERENCE_COUNT => {
+		                        Ok(ContextInfo::ReferenceCount(info_ptr as u32))
+		                    },
+		                    cl::CL_CONTEXT_DEVICES => {
+		                        let len = *info_size / size_of::<cl::uint>();
+		                        let mut dev_ids : Vec<cl::uint> = Vec::new();
+		                        let info_ptr : *mut cl::uint = info_ptr as *mut cl::uint;
+				        for i in 0..len as isize {
+				            dev_ids.push(*info_ptr.offset(i));
+					}
+		                        Ok(ContextInfo::Devices(
+		                            dev_ids
+		                                .iter()
+		                                .map(|&id| Device::from_isize(id as isize))
+		                                .collect()
+		                        ))
+		                    },
+		                    cl::CL_CONTEXT_NUM_DEVICES => {
+		                        Ok(ContextInfo::NumDevices(info_ptr as u32))
+		                    },
+		                    cl::CL_CONTEXT_PROPERTIES => {
+		                        let mut v : Vec<ContextProperties> = vec!();
+		                        let mut start : *mut u8 = info_ptr as *mut u8;
+		                        let old : *mut u8 = start.clone();
+		                        loop {
+		                            let key : *mut cl::context_properties = start as *mut cl::context_properties;
+		                            let x = *key;
+		                            start = start.offset(std::mem::size_of::<cl::context_properties>() as isize);
+		                            match x {
+		                                cl::CL_CONTEXT_PLATFORM => {
+		                                    let next : *const cl::platform_id = info_ptr  as *const cl::platform_id;
+		                                    let p = *next;
+		                                    start = start.offset(std::mem::size_of::<cl::platform_id>() as isize);
+		                                    v.push(ContextProperties::Platform(Platform::from_c(p)));
 
-                                        },
-                                        cl::CL_CONTEXT_INTEROP_USER_SYNC => {
-                                            let next : *const cl::boolean = info_ptr as *const cl::boolean;
-                                            let ius = *next == 0;
-                                            start = start.offset(std::mem::size_of::<cl::boolean>() as isize);
-                                            v.push(ContextProperties::InteropUserSync(ius));
-                                        },
-                                        _ => {
-                                            return Err(Error::Other("Unknown property"));
-                                        }
-                                    };
-                                    // TODO comparision operator?
-                                    if old.offset(*info_size as isize) == start {
-                                        break;
-                                    }
-                                }
-                                Ok(ContextInfo::Properties(v))
-                            }
-                            _ => {
-                                Err(Error::Other("Unknown property"))
-                            }
-                        }
+		                                },
+		                                cl::CL_CONTEXT_INTEROP_USER_SYNC => {
+		                                    let next : *const cl::boolean = info_ptr as *const cl::boolean;
+		                                    let ius = *next == 0;
+		                                    start = start.offset(std::mem::size_of::<cl::boolean>() as isize);
+		                                    v.push(ContextProperties::InteropUserSync(ius));
+		                                },
+		                                _ => {
+		                                    return Err(Error::Other("Unknown property"));
+		                                }
+		                            };
+		                            // TODO comparision operator?
+		                            if old.offset(*info_size as isize) == start {
+		                                break;
+		                            }
+		                        }
+		                        Ok(ContextInfo::Properties(v))
+		                    }
+		                    _ => {
+		                        Err(Error::Other("Unknown property"))
+		                    }
+		                }
+		            })
                     })
             }
+
         }?)
     }
     
