@@ -69,15 +69,16 @@ extern crate libc;
 extern crate rcudnn_sys as ffi;
 extern crate num;
 
-pub use ffi::*;
+pub use self::activation_descriptor::ActivationDescriptor;
+pub use self::convolution_descriptor::ConvolutionDescriptor;
+pub use self::dropout_descriptor::DropoutDescriptor;
 pub use self::cudnn::Cudnn;
 pub use self::error::Error;
-pub use self::tensor_descriptor::TensorDescriptor;
-pub use self::convolution_descriptor::ConvolutionDescriptor;
 pub use self::filter_descriptor::FilterDescriptor;
 pub use self::normalization_descriptor::NormalizationDescriptor;
 pub use self::pooling_descriptor::PoolingDescriptor;
-pub use self::activation_descriptor::ActivationDescriptor;
+pub use self::tensor_descriptor::TensorDescriptor;
+pub use ffi::*;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the Cuda cuDNN API.
@@ -92,4 +93,5 @@ mod normalization_descriptor;
 mod pooling_descriptor;
 mod convolution_descriptor;
 mod activation_descriptor;
+mod dropout_descriptor;
 mod api;
