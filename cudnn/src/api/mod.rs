@@ -6,6 +6,8 @@
 
 pub mod activation;
 pub mod convolution;
+pub mod dropout;
+pub mod lstm;
 pub mod normalization;
 pub mod pooling;
 pub mod softmax;
