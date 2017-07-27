@@ -5,8 +5,8 @@
 //! stores the handle and manages future calls.
 
 use super::*;
-use super::utils::{ConvolutionConfig, DataTypeInfo,
-                   NormalizationConfig, PoolingConfig, ActivationConfig, ScalParams};
+use super::utils::{ConvolutionConfig, DataTypeInfo, NormalizationConfig, PoolingConfig,
+                   ActivationConfig, DropoutConfig, ScalParams};
 use num::traits::Float;
 use std::mem::transmute_copy;
 
@@ -97,6 +97,7 @@ impl Cudnn {
         padding: &[i32],
         stride: &[i32],
     ) -> Result<PoolingConfig, Error> {
+	// TODO make the mode an input parameter
         let avg = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING, window, padding, stride));
         let max = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_MAX, window, padding, stride));
         Ok(PoolingConfig::new(avg, max))
@@ -106,6 +107,7 @@ impl Cudnn {
     pub fn init_activation(
         &self,
         ) -> Result<ActivationConfig, Error> {
+        // TODO make the activation function mode an input parameter (enum, so for clipped relu)
         let sigmoid = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID));
         let relu = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_RELU));
         let clipped_relu = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_CLIPPED_RELU));
@@ -600,5 +602,51 @@ impl Cudnn {
             unsafe { transmute_copy(&&scale.b) },
             *dest_desc.id_c(), dest_data, *dest_diff_desc.id_c(), dest_diff_data
         )
+    }
+
+    /// Computes probability and applies it to Dropout
+    ///
+    /// Writes the result of the computation to `dest_data`
+    pub fn dropout_forward<T>(
+        &self,
+        dropout_conf: &DropoutConfig,
+        src_desc: &TensorDescriptor,
+        src_data: *const ::libc::c_void,
+        dest_desc: &TensorDescriptor,
+        dest_data: *mut ::libc::c_void,
+    ) -> Result<(), Error> {
+        API::dropout_forward(
+            *self.id_c(),
+            *dropout_conf.dropout_desc().id_c(),
+            *src_desc.id_c(),
+            src_data,
+            *dest_desc.id_c(),
+            dest_data,
+            dropout_conf.reserved_space,
+            dropout_conf.reserve_space_size_in_bytes,
+        ) // TODO
+    }
+
+    /// Computes probability and applies it to Dropout
+    ///
+    /// Writes the result of the computation to `dest_data`
+    pub fn dropout_backward<T>(
+        &self,
+        dropout_conf: &DropoutConfig,
+        src_desc: &TensorDescriptor,
+        src_data: *const ::libc::c_void,
+        dest_desc: &TensorDescriptor,
+        dest_data: *mut ::libc::c_void,
+    ) -> Result<(), Error> {
+        API::dropout_backward(
+            *self.id_c(),
+            *dropout_conf.dropout_desc().id_c(),
+            *src_desc.id_c(),
+            src_data,
+            *dest_desc.id_c(),
+            dest_data,
+            dropout_conf.reserved_space,
+            dropout_conf.reserve_space_size_in_bytes,
+        ) // TODO
     }
 }
