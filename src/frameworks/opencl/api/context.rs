@@ -81,72 +81,74 @@ impl API {
                                                   *info_size,
                                                   info_ptr)
                         .and_then(|_| {
-		                match info_name {
-		                    cl::CL_CONTEXT_REFERENCE_COUNT => {
-		                        Ok(ContextInfo::ReferenceCount(info_ptr as u32))
-		                    },
-		                    cl::CL_CONTEXT_DEVICES => {
-		                        let len = *info_size / size_of::<cl::uint>();
-		                        let mut dev_ids : Vec<cl::uint> = Vec::new();
-		                        let info_ptr : *mut cl::uint = info_ptr as *mut cl::uint;
-		                        for i in 0..len as isize {
-		                            dev_ids.push(*info_ptr.offset(i));
-		                        }
-		                        Ok(ContextInfo::Devices(
-		                            dev_ids
-		                                .iter()
-		                                .map(|&id| Device::from_isize(id as isize))
-		                                .collect()
-		                        ))
-		                    },
-		                    cl::CL_CONTEXT_NUM_DEVICES => {
-		                        Ok(ContextInfo::NumDevices(info_ptr as u32))
-		                    },
-		                    cl::CL_CONTEXT_PROPERTIES => {
-		                        let mut v : Vec<ContextProperties> = Vec::new();
-		                        let mut ptr : *mut u8 = info_ptr as *mut u8;
-		                        let mut total_decoded: isize = 0;
-		                        let info_size = *info_size as isize;
-		                        println!("{:?}", info_size);
-		                        while total_decoded < info_size {
-		                            // get the identifier and advance by identifier size count bytes
-		                            let identifier : *mut cl::context_properties = ptr as *mut cl::context_properties;
-		                            let identifier = *identifier;
-		                            ptr = ptr.offset(std::mem::size_of::<cl::context_properties>() as isize);
-		                            // depending on the identifier decode the per identifier payload/argument with the
-		                            // corresponding type
-		                            match identifier {
-		                                cl::CL_CONTEXT_PLATFORM => {
-		                                    let platform_id : *const cl::platform_id = info_ptr  as *const cl::platform_id;
-		                                    let platform_id = *platform_id;
-		                                    let size = std::mem::size_of::<cl::platform_id>() as isize;
-		                                    total_decoded += size;
-		                                    ptr = ptr.offset(size);
-		                                    v.push(ContextProperties::Platform(Platform::from_c(platform_id)));
-		                                },
-		                                cl::CL_CONTEXT_INTEROP_USER_SYNC => {
-		                                    let interop_user_sync : *const cl::boolean = info_ptr as *const cl::boolean;
-		                                    let interop_user_sync = *interop_user_sync == 0;
-		                                    let size = std::mem::size_of::<cl::boolean>() as isize;
-		                                    total_decoded += size;
-		                                    ptr = ptr.offset(size);
-		                                    v.push(ContextProperties::InteropUserSync(interop_user_sync));
-		                                },
-		                                0 => {
-		                                    break;
-		                                }
-		                                _ => {
-		                                    return Err(Error::Other("Unknown property"));
-		                                }
-		                            };
-		                        }
-		                        Ok(ContextInfo::Properties(v))
-		                    }
-		                    _ => {
-		                        Err(Error::Other("Unknown property"))
-		                    }
-		                }
-		            })
+                        match info_name {
+                            cl::CL_CONTEXT_REFERENCE_COUNT => {
+                                let reference_count : u32 = *(info_ptr as *mut u32);
+                                Ok(ContextInfo::ReferenceCount(reference_count))
+                            },
+                            cl::CL_CONTEXT_DEVICES => {
+                                let len = *info_size / size_of::<cl::uint>();
+                                let mut dev_ids : Vec<cl::uint> = Vec::new();
+                                let info_ptr : *mut cl::uint = info_ptr as *mut cl::uint;
+                                for i in 0..len as isize {
+                                    dev_ids.push(*info_ptr.offset(i));
+                                }
+                                Ok(ContextInfo::Devices(
+                                    dev_ids
+                                        .iter()
+                                        .map(|&id| Device::from_isize(id as isize))
+                                        .collect()
+                                ))
+                            },
+                            cl::CL_CONTEXT_NUM_DEVICES => {
+                                let device_count : u32 = *(info_ptr as *mut u32);
+                                Ok(ContextInfo::NumDevices(device_count))
+                            },
+                            cl::CL_CONTEXT_PROPERTIES => {
+                                let mut v : Vec<ContextProperties> = Vec::new();
+                                let mut ptr : *mut u8 = info_ptr as *mut u8;
+                                let mut total_decoded: isize = 0;
+                                let info_size = *info_size as isize;
+                                println!("{:?}", info_size);
+                                while total_decoded < info_size {
+                                    // get the identifier and advance by identifier size count bytes
+                                    let identifier : *mut cl::context_properties = ptr as *mut cl::context_properties;
+                                    let identifier = *identifier;
+                                    ptr = ptr.offset(std::mem::size_of::<cl::context_properties>() as isize);
+                                    // depending on the identifier decode the per identifier payload/argument with the
+                                    // corresponding type
+                                    match identifier {
+                                        cl::CL_CONTEXT_PLATFORM => {
+                                            let platform_id : *const cl::platform_id = info_ptr  as *const cl::platform_id;
+                                            let platform_id = *platform_id;
+                                            let size = std::mem::size_of::<cl::platform_id>() as isize;
+                                            total_decoded += size;
+                                            ptr = ptr.offset(size);
+                                            v.push(ContextProperties::Platform(Platform::from_c(platform_id)));
+                                        },
+                                        cl::CL_CONTEXT_INTEROP_USER_SYNC => {
+                                            let interop_user_sync : *const cl::boolean = info_ptr as *const cl::boolean;
+                                            let interop_user_sync = *interop_user_sync == 0;
+                                            let size = std::mem::size_of::<cl::boolean>() as isize;
+                                            total_decoded += size;
+                                            ptr = ptr.offset(size);
+                                            v.push(ContextProperties::InteropUserSync(interop_user_sync));
+                                        },
+                                        0 => {
+                                            break;
+                                        }
+                                        _ => {
+                                            return Err(Error::Other("Unknown property"));
+                                        }
+                                    };
+                                }
+                                Ok(ContextInfo::Properties(v))
+                            }
+                            _ => {
+                                Err(Error::Other("Unknown property"))
+                            }
+                        }
+                    })
                     })
             }
 
