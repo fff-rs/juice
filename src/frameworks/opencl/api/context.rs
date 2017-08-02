@@ -87,9 +87,9 @@ impl API {
                                 Ok(ContextInfo::ReferenceCount(reference_count))
                             },
                             cl::CL_CONTEXT_DEVICES => {
-                                let len = *info_size / size_of::<cl::uint>();
-                                let mut dev_ids : Vec<cl::uint> = Vec::new();
-                                let info_ptr : *mut cl::uint = info_ptr as *mut cl::uint;
+                                let len = *info_size / size_of::<cl::device_id>();
+                                let mut dev_ids : Vec<cl::device_id> = Vec::new();
+                                let info_ptr : *mut cl::device_id = info_ptr as *mut cl::device_id;
                                 for i in 0..len as isize {
                                     dev_ids.push(*info_ptr.offset(i));
                                 }
