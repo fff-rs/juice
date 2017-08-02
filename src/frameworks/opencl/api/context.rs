@@ -109,7 +109,6 @@ impl API {
                                 let mut ptr : *mut u8 = info_ptr as *mut u8;
                                 let mut total_decoded: isize = 0;
                                 let info_size = *info_size as isize;
-                                println!("{:?}", info_size);
                                 while total_decoded < info_size {
                                     // get the identifier and advance by identifier size count bytes
                                     let identifier : *mut cl::context_properties = ptr as *mut cl::context_properties;
