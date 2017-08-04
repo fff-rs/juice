@@ -7,6 +7,7 @@ mod framework_opencl_spec {
     use co::prelude::*;
     use co::frameworks::opencl::memory::*;
     use co::frameworks::opencl::queue::*;
+    use co::frameworks::opencl::context::*;
 
     #[test]
     fn it_works() {
@@ -35,4 +36,14 @@ mod framework_opencl_spec {
         let ctx = frm.new_device(&frm.hardwares()[0..1]).unwrap();
         Queue::new(&ctx, &frm.hardwares()[0..1][0], None).unwrap();
     }
+
+    #[test]
+    fn it_queries_context_info() {
+        let frm = OpenCL::new();
+        let ctx = frm.new_device(&frm.hardwares()[0..1]).unwrap();
+        println!("ReferenceCount: {:?}", ctx.get_context_info(ContextInfoQuery::ReferenceCount));
+        println!("NumDevices: {:?}", ctx.get_context_info(ContextInfoQuery::NumDevices));
+        println!("Devices: {:?}", ctx.get_context_info(ContextInfoQuery::Devices));
+        println!("Properties: {:?}", ctx.get_context_info(ContextInfoQuery::Properties));
+	}
 }

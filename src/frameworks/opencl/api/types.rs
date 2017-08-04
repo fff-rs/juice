@@ -73,7 +73,6 @@ pub struct buffer_region {
 }
 
 
-
 enum_from_primitive! {
 /// OpenCL error codes.
 #[derive(PartialEq, Debug)]
@@ -177,7 +176,7 @@ pub const CL_DEVICE_TYPE_CUSTOM:                        bitfield = 1 << 4;
 pub static CL_DEVICE_TYPE_ALL:                          bitfield = 0xFFFFFFFF;
 
 /* cl_device_info */
-pub const CL_DEVICE_TYPE:                               uint = 0x1000;
+pub static CL_DEVICE_TYPE:                               uint = 0x1000;
 pub static CL_DEVICE_VENDOR_ID:                          uint = 0x1001;
 pub static CL_DEVICE_MAX_COMPUTE_UNITS:                  uint = 0x1002;
 pub static CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS:           uint = 0x1003;
@@ -267,13 +266,14 @@ pub static CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE:       bitfield = 1;
 pub static CL_QUEUE_PROFILING_ENABLE:                    bitfield = 1 << 1;
 
 /* cl_context_info  */
-pub static CL_CONTEXT_REFERENCE_COUNT:                   uint = 0x1080;
-pub static CL_CONTEXT_DEVICES:                           uint = 0x1081;
-pub static CL_CONTEXT_PROPERTIES:                        uint = 0x1082;
-pub static CL_CONTEXT_NUM_DEVICES:                       uint = 0x1083;
+pub const CL_CONTEXT_REFERENCE_COUNT:                   uint = 0x1080;
+pub const CL_CONTEXT_DEVICES:                           uint = 0x1081;
+pub const CL_CONTEXT_PROPERTIES:                        uint = 0x1082;
+pub const CL_CONTEXT_NUM_DEVICES:                       uint = 0x1083;
 
 /* cl_context_info + cl_context_properties */
-pub static CL_CONTEXT_PLATFORM:                          libc::intptr_t = 0x1084;
+pub const CL_CONTEXT_PLATFORM:                          libc::intptr_t = 0x1084;
+pub const CL_CONTEXT_INTEROP_USER_SYNC:                 libc::intptr_t = 0x1085;
 
 /* cl_command_queue_info */
 pub static CL_QUEUE_CONTEXT:                             uint = 0x1090;

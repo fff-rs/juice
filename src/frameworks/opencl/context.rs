@@ -3,7 +3,7 @@
 use device::{IDevice, MemorySync};
 use device::Error as DeviceError;
 use super::api::types as cl;
-use super::{API, Error, Device, Queue};
+use super::{API, Error, Device, Queue, Platform};
 use super::memory::*;
 #[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
@@ -19,6 +19,55 @@ pub struct Context {
     id: isize,
     devices: Vec<Device>,
     queue: Option<Queue>
+}
+
+/// The individual properties for `ContextInfo::Properties`
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub enum ContextProperties {
+    /// Identifies a context's associated platform.
+    Platform(Platform),
+    /// Does the user need to sync between frameworks manually (OpenCL 2.0 and later)
+    InteropUserSync(bool),
+}
+
+/// OpenCL context info constants, these ones are for the Query
+#[derive(PartialEq, Debug, Copy, Clone)]
+pub enum ContextInfoQuery {
+    /// Number of references to the context currently held.
+    ReferenceCount,
+    /// Number of devices in the context.
+    NumDevices,
+    /// The properties the context was configured with.
+    Properties,
+    /// The devices (IDs) in the context.
+    Devices
+}
+
+/// OpenCL context info types. Each variant is returned from the same function,
+/// `get_context_info`.
+#[derive(Clone, Debug)]
+pub enum ContextInfo {
+    /// Number of references to the context currently held.
+    ReferenceCount(u32),
+    /// Number of devices in the context.
+    NumDevices(u32),
+    /// The properties the context was configured with.
+    ///
+    /// These are:
+    ///
+    /// - CL_CONTEXT_PLATFORM
+    /// - CL_CONTEXT_D3D10_DEVICE_KHR
+    /// - CL_GL_CONTEXT_KHR (OS-dependent)
+    /// - CL_EGL_CONTEXT_KHR (OpenGL-ES context on embedded devices)
+    /// - CL_GLX_DISPLAY_KHR (GL context on Linux)
+    /// - CL_WGL_HDC_KHR (GL context on Windows)
+    /// - CL_CGL_SHAREGROUP_KHR (GL context sharegroup on MacOS)
+    ///
+    /// Only the first property is required--the others may not be there
+    /// depending on CL extensions.
+    Properties(Vec<ContextProperties>),
+    /// The devices (IDs) in the context.
+    Devices(Vec<Device>)
 }
 
 impl Context {
@@ -51,6 +100,11 @@ impl Context {
             self.queue = Some(Queue::new(self, &self.hardwares()[0], None).unwrap());
             self.queue.as_mut().unwrap()
         }
+    }
+
+    /// Get certain parameters of the context, defined by `ContextInfoQuery`.
+    pub fn get_context_info(&self, query : ContextInfoQuery) -> Result<ContextInfo, Error> {
+        API::get_context_info(self.id as cl::context_id, query)
     }
 
     /// Returns the id as isize.
