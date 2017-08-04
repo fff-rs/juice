@@ -9,7 +9,6 @@ use super::types as cl;
 use super::ffi::*;
 use std::ptr;
 use std::mem::size_of;
-use std;
 
 impl API {
     /// Creates a OpenCL context.
@@ -113,14 +112,14 @@ impl API {
                                     // get the identifier and advance by identifier size count bytes
                                     let identifier : *mut cl::context_properties = ptr as *mut cl::context_properties;
                                     let identifier = *identifier;
-                                    ptr = ptr.offset(std::mem::size_of::<cl::context_properties>() as isize);
+                                    ptr = ptr.offset(size_of::<cl::context_properties>() as isize);
                                     // depending on the identifier decode the per identifier payload/argument with the
                                     // corresponding type
                                     match identifier {
                                         cl::CL_CONTEXT_PLATFORM => {
                                             let platform_id : *const cl::platform_id = info_ptr  as *const cl::platform_id;
                                             let platform_id = *platform_id;
-                                            let size = std::mem::size_of::<cl::platform_id>() as isize;
+                                            let size = size_of::<cl::platform_id>() as isize;
                                             total_decoded += size;
                                             ptr = ptr.offset(size);
                                             v.push(ContextProperties::Platform(Platform::from_c(platform_id)));
@@ -128,7 +127,7 @@ impl API {
                                         cl::CL_CONTEXT_INTEROP_USER_SYNC => {
                                             let interop_user_sync : *const cl::boolean = info_ptr as *const cl::boolean;
                                             let interop_user_sync = *interop_user_sync == 0;
-                                            let size = std::mem::size_of::<cl::boolean>() as isize;
+                                            let size = size_of::<cl::boolean>() as isize;
                                             total_decoded += size;
                                             ptr = ptr.offset(size);
                                             v.push(ContextProperties::InteropUserSync(interop_user_sync));
