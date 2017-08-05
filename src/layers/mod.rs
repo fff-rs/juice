@@ -54,8 +54,12 @@
 
 pub use self::activation::{ReLU, Sigmoid, TanH};
 
-pub use self::common::{Convolution, ConvolutionConfig, Pooling, PoolingConfig, PoolingMode, Linear, LinearConfig,
-                       LogSoftmax, Softmax};
+pub use self::common::{Convolution, ConvolutionConfig,
+                       Pooling, PoolingConfig, PoolingMode,
+                       Linear, LinearConfig,
+                       LogSoftmax,
+                       Softmax,
+                       Dropout, DropoutConfig};
 
 pub use self::container::{Sequential, SequentialConfig};
 

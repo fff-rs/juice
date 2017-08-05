@@ -15,12 +15,14 @@ pub use self::linear::{Linear, LinearConfig};
 pub use self::log_softmax::LogSoftmax;
 pub use self::pooling::{Pooling, PoolingConfig, PoolingMode};
 pub use self::softmax::Softmax;
+pub use self::dropout::{Dropout,DropoutConfig};
 
 pub mod convolution;
 pub mod linear;
 pub mod log_softmax;
 pub mod pooling;
 pub mod softmax;
+pub mod dropout;
 
 /// Provides common utilities for Layers that utilize a filter with stride and padding.
 ///
