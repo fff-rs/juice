@@ -622,9 +622,9 @@ impl Cudnn {
             src_data,
             *dest_desc.id_c(),
             dest_data,
-            dropout_conf.reserved_space,
-            dropout_conf.reserve_space_size_in_bytes,
-        ) // TODO
+            *dropout_conf.reserved_space().id_c(),
+            *dropout_conf.reserved_space().size(),
+        )
     }
 
     /// Computes probability and applies it to Dropout
@@ -645,8 +645,8 @@ impl Cudnn {
             src_data,
             *dest_desc.id_c(),
             dest_data,
-            dropout_conf.reserved_space,
-            dropout_conf.reserve_space_size_in_bytes,
-        ) // TODO
+            *dropout_conf.reserved_space().id_c(),
+            *dropout_conf.reserved_space().size(),
+        )
     }
 }

@@ -85,6 +85,7 @@ pub use ffi::*;
 pub struct API;
 
 mod cudnn;
+mod cuda;
 mod error;
 pub mod utils;
 mod tensor_descriptor;

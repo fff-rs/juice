@@ -2,6 +2,8 @@
 
 use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor,
             ActivationDescriptor, DropoutDescriptor};
+use cuda::CudaDeviceMemory;
+
 use ffi::*;
 
 use num::traits::*;
@@ -234,6 +236,7 @@ impl ActivationConfig {
 /// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_dropout()`.
 pub struct DropoutConfig {
     dropout_desc: DropoutDescriptor,
+    reserve_space: CudaDeviceMemory,
 }
 
 impl DropoutConfig {
@@ -241,13 +244,20 @@ impl DropoutConfig {
     pub fn new(
         dropout_desc: DropoutDescriptor,
     ) -> DropoutConfig {
+    	let device_memory = CudaDeviceMemory::new(500).unwrap(); // FIXME how to check for this
         DropoutConfig {
             dropout_desc: dropout_desc,
+            reserve_space: device_memory,
         }
     }
     /// Returns `activation_desc`.
     pub fn dropout_desc(&self) -> &DropoutDescriptor {
         &self.dropout_desc
+    }
+
+    /// Returns the reserved space ``.
+    pub fn reserved_space(&self) -> &CudaDeviceMemory {
+    	&self.reserve_space
     }
 }
 
