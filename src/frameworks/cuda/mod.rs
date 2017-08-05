@@ -291,6 +291,8 @@ impl<T> NN<T> for Backend<Cuda>
     type CLRN = utils::NormalizationConfig;
     type CPOOL = utils::PoolingConfig;
 
+    type CDROP = utils::DropoutConfig;
+
     fn init_nn() {
         let _ = CUDNN.id_c();
     }
@@ -299,6 +301,7 @@ impl<T> NN<T> for Backend<Cuda>
 impl<'a, T> NNOperationConfig<T> for utils::ConvolutionConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::NormalizationConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::PoolingConfig where T: Float + DataTypeInfo {}
+impl<T> NNOperationConfig<T> for utils::DropoutConfig where T: Float + DataTypeInfo {}
 
 impl<T> Sigmoid<T> for Backend<Cuda>
     where T: Float + DataTypeInfo + Default

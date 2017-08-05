@@ -79,6 +79,8 @@ impl<T> NN<T> for Backend<Native>
     type CC = helper::ConvolutionConfig;
     type CLRN = helper::NormalizationConfig;
     type CPOOL = helper::PoolingConfig;
+    // type CACTI = helper::ActivationConfig;
+    type CDROP = helper::DropoutConfig;
 
     fn init_nn() {}
 }
@@ -96,6 +98,14 @@ impl<T> NNOperationConfig<T> for helper::NormalizationConfig
 {
 }
 impl<T> NNOperationConfig<T> for helper::PoolingConfig
+    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
+{
+}
+// impl<T> NNOperationConfig<T> for helper::ActivationConfig
+//     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
+// {
+// }
+impl<T> NNOperationConfig<T> for helper::DropoutConfig
     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
 }

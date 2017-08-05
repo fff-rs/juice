@@ -17,6 +17,11 @@ pub struct PoolingConfig {
 }
 
 
+#[derive(Debug, Copy, Clone)]
+#[allow(missing_docs)]
+pub struct DropoutConfig {
+// TODO
+}
 
 macro_rules! read {
     ($x:ident, $t:ident, $slf:ident) => (
