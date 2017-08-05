@@ -13,3 +13,4 @@ pub mod pooling;
 pub mod softmax;
 pub mod tensor;
 pub mod utils;
+pub mod cuda;
