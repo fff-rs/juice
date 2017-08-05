@@ -104,6 +104,7 @@ pub trait LayerOps<F> : conn::Convolution<F>
                       + conn::Sigmoid<F> + conn::SigmoidPointwise<F>
                       + conn::Tanh<F> + conn::TanhPointwise<F>
                       + conn::Softmax<F> + conn::LogSoftmax<F>
+                      + conn::Dropout<F>
                       + Gemm<F> {}
 
 impl<T: conn::Convolution<f32>
@@ -112,4 +113,5 @@ impl<T: conn::Convolution<f32>
       + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>
       + conn::Tanh<f32> + conn::TanhPointwise<f32>
       + conn::Softmax<f32> + conn::LogSoftmax<f32>
+      + conn::Dropout<f32>
       + Gemm<f32>> LayerOps<f32> for T {}
