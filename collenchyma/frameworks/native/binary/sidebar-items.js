@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Binary","Defines a host CPU binary."]]});

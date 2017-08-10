@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["ll","Bindings for matrix functions."],["ops","Wrappers for matrix functions."]],"trait":[["BandMatrix",""],["Matrix","Methods that allow a type to be used in BLAS functions as a matrix."]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Marker",""],["Trans",""]],"mod":[["mat",""],["matrix",""],["matrix_vector",""],["vector",""]]});

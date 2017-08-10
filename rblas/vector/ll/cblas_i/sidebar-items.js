@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["cblas_icamax",""],["cblas_idamax",""],["cblas_isamax",""],["cblas_izamax",""]]});

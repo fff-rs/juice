@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["FlatBox","A Box without any knowledge of its underlying type."]]});

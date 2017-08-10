@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `FillerType` enum in crate `juice`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, FillerType">
+
+    <title>juice::weight::FillerType - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc enum">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'>Enum FillerType</p><div class="block items"><ul><li><a href="#variants">Variants</a></li><li><a href="#methods">Methods</a></li><li><a href="#implementations">Trait Implementations</a></li></ul></div><p class='location'><a href='../index.html'>juice</a>::<wbr><a href='index.html'>weight</a></p><script>window.sidebarCurrent = {name: 'FillerType', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Enum <a href='../index.html'>juice</a>::<wbr><a href='index.html'>weight</a>::<wbr><a class="enum" href=''>FillerType</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/juice/weight.rs.html#144-161' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum FillerType {
+    Constant {
+        value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>,
+    },
+    Glorot {
+        input_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+        output_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    },
+}</pre><div class='docblock'><p>Enum for specifing the type of Filler.</p>
+</div><h2 id='variants' class='variants'>Variants</h2>
+<span id='variant.Constant' class='variant'><span id='Constant.v' class='invisible'><code>Constant</code></span></span><div class='docblock'><p>Fills the weight blob with a constant <code>value</code> (all values are the same).</p>
+</div><span class='docblock autohide sub-variant' id='variant.Constant.fields'><h3 class='fields'>Fields of <code>Constant</code></h3>
+
+                           <table><tr><td id='variant.Constant.field.value'><span id='Constant.v.value.v' class='invisible'><code>value:&nbsp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></span></td><td><div class='docblock'><p>The value that will be used to fill the blob.</p>
+</div></td></tr></table></span><span id='variant.Glorot' class='variant'><span id='Glorot.v' class='invisible'><code>Glorot</code></span></span><div class='docblock'><p>Fills the weight blobs based on the paper:</p>
+
+<p><code>[Bengio and Glorot 2010]: Understanding the difficulty of training deep feedforward neural networks.</code></p>
+
+<p>Also known as Xavier filler.</p>
+</div><span class='docblock autohide sub-variant' id='variant.Glorot.fields'><h3 class='fields'>Fields of <code>Glorot</code></h3>
+
+                           <table><tr><td id='variant.Glorot.field.input_size'><span id='Glorot.v.input_size.v' class='invisible'><code>input_size:&nbsp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span></td><td><div class='docblock'><p>Number of input nodes for each output.</p>
+</div></td></tr><tr><td id='variant.Glorot.field.output_size'><span id='Glorot.v.output_size.v' class='invisible'><code>output_size:&nbsp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span></td><td><div class='docblock'><p>Number of output nodes for each input.</p>
+</div></td></tr></table></span><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="enum" href="../../juice/weight/enum.FillerType.html" title="enum juice::weight::FillerType">FillerType</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#163-199' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fill' class="method"><span id='fill.v' class='invisible'><code>fn <a href='#method.fill' class='fnname'>fill</a>(&amp;self, weight: &amp;mut SharedTensor&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;)</code></span></h4>
+<div class='docblock'><p>Uses a filler as specified by this FillerType to fill the values in a SharedTensor</p>
+
+<p>This filling of weights is usually done directly after creation of the weight blob.</p>
+</div><h4 id='method.fill_constant' class="method"><span id='fill_constant.v' class='invisible'><code>fn <a href='#method.fill_constant' class='fnname'>fill_constant</a>(weight: &amp;mut SharedTensor&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>)</code></span></h4>
+<div class='docblock'><p>Directly use the <a href="#variant.Constant">Constant Filler</a>.</p>
+</div><h4 id='method.fill_glorot' class="method"><span id='fill_glorot.v' class='invisible'><code>fn <a href='#method.fill_glorot' class='fnname'>fill_glorot</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;weight: &amp;mut SharedTensor&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;num_inputs: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;num_outputs: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>)</code></span></h4>
+<div class='docblock'><p>Directly use the <a href="#variant.Glorot">Glorot Filler</a>.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="enum" href="../../juice/weight/enum.FillerType.html" title="enum juice::weight::FillerType">FillerType</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#142' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> for <a class="enum" href="../../juice/weight/enum.FillerType.html" title="enum juice::weight::FillerType">FillerType</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#142' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="enum" href="../../juice/weight/enum.FillerType.html" title="enum juice::weight::FillerType">FillerType</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#142' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class="enum" href="../../juice/weight/enum.FillerType.html" title="enum juice::weight::FillerType">FillerType</a></code></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "juice";
+    </script>
+    <script src="../../main.js"></script>
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Error","Defines the set of available Collenchyma error types."]]});

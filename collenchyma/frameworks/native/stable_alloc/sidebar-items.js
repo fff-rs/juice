@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["allocate_boxed_slice","Traditional allocation via creation of a filled Vec."]]});

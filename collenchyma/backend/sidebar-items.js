@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Backend","Defines the main and highest struct of Collenchyma."],["BackendConfig","Provides Backend Configuration."]],"trait":[["IBackend","Describes a Backend."]]});

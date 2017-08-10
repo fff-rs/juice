@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["DeviceType","Container for all known IDevice implementations"],["Error","Defines a generic set of Memory Errors."]],"trait":[["IDevice","Specifies Hardware behavior across frameworks."],["IDeviceSyncOut","Specifies Sync out behavior across frameworks."]]});

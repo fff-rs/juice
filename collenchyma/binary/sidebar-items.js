@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["IBinary","Defines the functionality for turning a library into backend-specific, executable operations."]]});

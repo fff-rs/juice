@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Hardware","Defines the host CPU Hardware."]]});

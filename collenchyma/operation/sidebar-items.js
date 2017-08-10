@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["IOperation","Defines the functionality of an operation."]]});
