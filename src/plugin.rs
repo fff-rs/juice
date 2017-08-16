@@ -446,8 +446,8 @@ pub trait Pooling<F> : NN<F> {
 /// Provides the functionality for a Backend to support Dropout operations.
 pub trait Dropout<F> : NN<F> {
     /// Creates a new DropoutConfig, which needs to be passed to further dropout Operations.
-    fn new_dropout_config(&self, dropout: &[f32])
-                          -> Result<Self::CPOOL, ::co::error::Error>;
+    fn new_dropout_config(&self, dropout: f32, seed: u64)
+                          -> Result<Self::CDROP, ::co::error::Error>;
 
     /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.
     /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
