@@ -624,7 +624,9 @@ impl Cudnn {
         src_data: *const ::libc::c_void,
         dest_desc: &TensorDescriptor,
         dest_data: *mut ::libc::c_void,
-    ) -> Result<(), Error> {
+    ) -> Result<(), Error>
+        where T: Float + DataTypeInfo,
+    {
         API::dropout_forward(
             *self.id_c(),
             *dropout_conf.dropout_desc().id_c(),
@@ -647,7 +649,9 @@ impl Cudnn {
         src_data: *const ::libc::c_void,
         dest_desc: &TensorDescriptor,
         dest_data: *mut ::libc::c_void,
-    ) -> Result<(), Error> {
+    ) -> Result<(), Error>
+        where T: Float + DataTypeInfo,
+    {
         API::dropout_backward(
             *self.id_c(),
             *dropout_conf.dropout_desc().id_c(),
