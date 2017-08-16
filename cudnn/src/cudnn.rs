@@ -97,7 +97,7 @@ impl Cudnn {
         padding: &[i32],
         stride: &[i32],
     ) -> Result<PoolingConfig, Error> {
-	// TODO make the mode an input parameter
+    // TODO make the mode an input parameter
         let avg = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING, window, padding, stride));
         let max = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_MAX, window, padding, stride));
         Ok(PoolingConfig::new(avg, max))
@@ -113,6 +113,16 @@ impl Cudnn {
         let clipped_relu = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_CLIPPED_RELU));
         let tanh = try!(ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_TANH));
         Ok(ActivationConfig::new(sigmoid, relu, clipped_relu, tanh))
+    }
+
+    /// Initializes the parameters and configurations for running CUDA cuDNN dropout operation.
+    pub fn init_dropout(
+        &self,
+        probability : f32,
+        seed : u64,
+        ) -> Result<DropoutConfig, Error> {
+        let dropout = DropoutDescriptor::new(&self, probability, seed)?;
+        Ok(DropoutConfig::new(dropout))
     }
 
     /// Computes the forward Sigmoid Activation function.
