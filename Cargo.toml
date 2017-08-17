@@ -1,8 +1,8 @@
 [package]
 name = "juice-examples"
 description = "Examples for the Machine Learning Framework 'Juice'"
-version = "0.1.0"
-authors = ["Bernhard Schuster <bernhard@ratpoison.io>",
+version = "0.1.1"
+authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Michael Hirn <mj@autumnai.com>",
            "Maximilian Goisser <max@autumnai.com>"]
 
@@ -11,11 +11,13 @@ authors = ["Bernhard Schuster <bernhard@ratpoison.io>",
 juice = { path = "../juice", default-features = false, version = "0.2.2" }
 coaster = { path = "../coaster", default-features = false, version = "0.1.0" }
 
-csv = "0.14"
-hyper = "0.6"
+csv = "0.15"
+hyper = "0.11"
+futures = "0.1"
+tokio-core = "0.1.9"
 
-log = "0.3.7"
-env_logger = "0.4.2"
+log = "0.3"
+env_logger = "0.4"
 timeit = "0.1.2"
 
 # CLI tooling

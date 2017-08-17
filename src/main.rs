@@ -1,7 +1,9 @@
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate csv;
+extern crate tokio_core;
 extern crate hyper;
+extern crate futures;
 #[macro_use]
 extern crate log;
 
@@ -10,6 +12,12 @@ use std::fs::File;
 use std::sync::{Arc, RwLock};
 
 use hyper::Client;
+use hyper::Uri;
+use hyper::Body;
+use std::str::FromStr;
+use futures::Future;
+use futures::Stream;
+use futures::future;
 
 use docopt::Docopt;
 use csv::{Reader};
@@ -75,13 +83,18 @@ fn main() {
                     println!("Downloading... {}/{}: {}", i+1, datasets.len(), v);
                     let mut body = String::new();
 
-                    Client::new()
-                        .get(&format!("http://pjreddie.com/media/files/{}", v))
-                        .send().unwrap().read_to_string(&mut body);
-
+                    let uri = Uri::from_str(&format!("http://pjreddie.com/media/files/{}", v)).unwrap();
+                    let mut core = tokio_core::reactor::Core::new().unwrap();
+                    let response = Client::new(&core.handle())
+                        .get(uri)
+                        .wait().unwrap();
+                    let body : Vec<u8> = response.body().fold(Vec::new(), |mut acc, chunk| {
+                                                            acc.extend_from_slice(&*chunk);
+                                                            future::ok::<_,hyper::Error>(acc)
+                                                        }).wait().unwrap();
                     File::create(format!("assets/{}", v))
                         .unwrap()
-                        .write_all(&body.into_bytes());
+                        .write_all(&body as &[u8]);
                 }
                 println!("{}", "MNIST dataset downloaded".to_string())
             },
