@@ -7,9 +7,9 @@ authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Maximilian Goisser <max@autumnai.com>"]
 
 [dependencies]
-# cuticula = { path = "../cuticula", default-features = false }
-juice = { path = "../juice", default-features = false, version = "0.2.2" }
-coaster = { path = "../coaster", default-features = false, version = "0.1.0" }
+greenglas = { git = "https://github.com/spearow/greenglas.git" }
+juice = { git = "https://github.com/spearow/juice.git", default-features = false }
+coaster = { git = "https://github.com/spearow/coaster.git", default-features = false }
 
 csv = "0.15"
 hyper = "0.11"
