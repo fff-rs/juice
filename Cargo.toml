@@ -15,14 +15,14 @@ keywords        = ["blas", "coaster", "computation", "hpc", "plugin"]
 license         = "MIT OR Apache-2.0"
 
 [dependencies]
-coaster = { path = "../coaster", default-features = false, version = "0.1.0" }
+coaster = { git = "https://github.com/spearow/coaster.git", default-features = false }
 lazy_static = "0.1"
 
 # native
-rblas = { path = "../rust-blas", version = "0.0.13", optional = true }
+rblas = { version = "0.0.13", optional = true }
 
 # cuda
-rcublas = { path = "../rust-cublas/cublas", version = "0.2.0",  optional = true }
+rcublas = { version = "0.2.0",  optional = true }
 
 clippy = { version = "0.0.27", optional = true }
 
