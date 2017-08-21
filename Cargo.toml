@@ -12,9 +12,9 @@ keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-coaster = { path = "../coaster", version="0.1.0", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+coaster = { git = "https://github.com/spearow/coaster.git", default-features = false, features = ["native"] } # native feature to read/write data into tensors
 
-image = "0.14.0"
+image = "0.14"
 murmurhash3 = "0.0.5"
 modifier = "0.1"
 
