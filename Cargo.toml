@@ -17,9 +17,9 @@ license = "MIT OR Apache-2.0"
 build = "build.rs"
 
 [dependencies]
-coaster = { path = "../coaster", default-features = false, version = "0.1.0" }
-coaster-blas = { path = "../coaster-blas", default-features = false, version = "0.2.0" }
-coaster-nn = { path = "../coaster-nn", default-features = false, version = "0.4.1" }
+coaster = { git = "https://github.com/spearow/coaster.git" , default-features = false}
+coaster-blas = { git = "https://github.com/spearow/coaster-blas.git" , default-features = false }
+coaster-nn = { git = "https://github.com/spearow/coaster-nn.git" , default-features = false }
 
 log = "0.3.2"
 rand = "0.3.0"
