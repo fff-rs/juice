@@ -4,8 +4,8 @@ use std::path::PathBuf;
 use std::env;
 
 fn main() {
-    let lib_dir = env::var("CUDBLAS_LIB_DIR").ok();
-    let include_dir = env::var("CUDBLAS_INCLUDE_DIR").ok();
+    let lib_dir = env::var("CUBLAS_LIB_DIR").ok();
+    let include_dir = env::var("CUBLAS_INCLUDE_DIR").ok();
 
     if lib_dir.is_none() && include_dir.is_none() {
         if let Ok(info) = pkg_config::find_library("cudart") {
