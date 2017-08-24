@@ -41,6 +41,9 @@ If you're using [Cargo Edit][cargo-edit], you can call:
 
 ## Building
 
+The library can be built by entering `cublas/` and `cublas-sys/`, and issuing a
+`cargo build` within each directory.
+
 rust-cublas depends on the cuBLAS runtime libraries,
 which can be obtained from [NVIDIA](https://developer.nvidia.com/cublas).
 
