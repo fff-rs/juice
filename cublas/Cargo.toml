@@ -20,7 +20,7 @@ rcublas-sys = { version = "0.1.1", path = "../cublas-sys" }
 clippy = { version = "0.0.35", optional = true }
 
 [dev-dependencies]
-coaster = { path = "../../coaster", default-features = false, features = ["cuda", "native"], version = "0.1.0" }
+coaster = { git = "https://github.com/spearow/coaster.git", default-features = false, features = ["cuda", "native"], version = "0.1.0" }
 
 [features]
 dev = []
