@@ -1,4 +1,4 @@
-# Juice • [![Join the chat at https://gitter.im/spearow/juice](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/juice?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/pipelines/juice/jobs/test-juice/badge)](https://ci.spearow.io/teams/main/pipelines/juice) [![Crates.io](https://img.shields.io/crates/v/juice.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
+# Juice • [![Join the chat at https://gitter.im/spearow/juice](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/juice?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/teams/spearow/pipelines/juice/jobs/test-juice/badge)](https://ci.spearow.io/teams/main/pipelines/juice) [![Crates.io](https://img.shields.io/crates/v/juice.svg)](https://crates.io/crates/coaster) [![License](https://img.shields.io/crates/l/coaster.svg)](#license)
 ## Introduction
 
 Juice is a open Machine Learning Framework for hackers to build classical, deep
