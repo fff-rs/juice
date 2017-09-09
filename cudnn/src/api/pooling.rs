@@ -162,7 +162,7 @@ impl API {
         match cudnnGetPoolingNdDescriptor(desc, nb_dims_requested, mode, maxpooling_nan_opt, nb_dims, window_dim_a, padding_a, stride_a) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Descriptor.")),
         }
     }
 
@@ -180,7 +180,7 @@ impl API {
         match cudnnSetPooling2dDescriptor(desc, mode, maxpooling_nan_opt, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.")),
+            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor 2D.")),
         }
     }
 
@@ -198,7 +198,7 @@ impl API {
         match cudnnGetPooling2dDescriptor(desc, mode, maxpooling_nan_opt, window_height, window_width, vertical_padding, horizontal_padding, vertical_stride, horizontal_stride) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Descriptor 2D.")),
         }
     }
 
