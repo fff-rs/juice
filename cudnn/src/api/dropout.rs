@@ -106,9 +106,9 @@ impl API {
         match cudnnCreateDropoutDescriptor(&mut dropout_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(dropout_desc),
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed(
-                "The function was unable to allocate memory.",
+                "The resources could not be allocated",
             )),
-            _ => Err(Error::Unknown("An unknown error occured")),
+            _ => Err(Error::Unknown("Unable create generic CUDA cuDNN Dropout Descriptor")),
         }
     }
     unsafe fn ffi_destroy_dropout_descriptor(
@@ -116,14 +116,14 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnDestroyDropoutDescriptor(dropout_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown("An unknown error occured")),
+            _ => Err(Error::Unknown("Unable to destroy CUDA cuDNN Dropout Descriptor")),
         }
     }
     unsafe fn ffi_dropout_get_states_size(handle: cudnnHandle_t) -> Result<usize, Error> {
         let mut size_in_bytes: usize = 0;
         match cudnnDropoutGetStatesSize(handle, &mut size_in_bytes) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size_in_bytes),
-            _ => Err(Error::Unknown("An unknown error occured")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Dropout Descriptor states size")),
         }
     }
     unsafe fn ffi_dropout_get_reserve_space_size(
@@ -132,7 +132,7 @@ impl API {
         let mut size_in_bytes: usize = 0;
         match cudnnDropoutGetReserveSpaceSize(xdesc, &mut size_in_bytes) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size_in_bytes),
-            _ => Err(Error::Unknown("An unknown error occured")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Dropout Descriptor reserved space size")),
         }
     }
     unsafe fn ffi_set_dropout_descriptor(
@@ -158,7 +158,7 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed(
                 "The function failed to launch on the GPU",
             )),
-            _ => Err(Error::Unknown("An unknown error occured")),
+            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Dropout Descriptor")),
         }
     }
 
@@ -192,7 +192,7 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed(
                 "The function failed to launch on the GPU.",
             )),
-            _ => Err(Error::Unknown("An unknown error occured")),
+            _ => Err(Error::Unknown("Unable to calculate CUDA cuDNN Dropout forward")),
 
         }
     }
@@ -226,7 +226,7 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed(
                 "The function failed to launch on the GPU.",
             )),
-            _ => Err(Error::Unknown("An unknown error occured")),
+            _ => Err(Error::Unknown("Unable to calculate CUDA cuDNN Dropout backward")),
         }
     }
 }
