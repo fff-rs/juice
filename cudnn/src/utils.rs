@@ -243,14 +243,14 @@ impl DropoutConfig {
     /// Returns a new DropoutConfig.
     pub fn new(
         dropout_desc: DropoutDescriptor,
+        reserve: CudaDeviceMemory,
     ) -> DropoutConfig {
-    	let device_memory = CudaDeviceMemory::new(500).unwrap(); // FIXME how to check for this
         DropoutConfig {
             dropout_desc: dropout_desc,
-            reserve_space: device_memory,
+            reserve_space: reserve,
         }
     }
-    /// Returns `activation_desc`.
+    /// Returns `dropout_desc`.
     pub fn dropout_desc(&self) -> &DropoutDescriptor {
         &self.dropout_desc
     }

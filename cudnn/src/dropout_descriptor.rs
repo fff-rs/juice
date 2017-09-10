@@ -7,6 +7,8 @@ use super::{API, Error};
 use ffi::*;
 use cudnn::Cudnn;
 
+use cuda::CudaDeviceMemory;
+
 #[derive(Debug, Clone)]
 /// Describes a DropoutDescriptor.
 pub struct DropoutDescriptor {
@@ -22,21 +24,25 @@ impl Drop for DropoutDescriptor {
 
 impl DropoutDescriptor {
     /// Initializes a new CUDA cuDNN Dropout Descriptor.
-    pub fn new(handle : &Cudnn, dropout: f32, seed: u64) -> Result<DropoutDescriptor, Error> {
+    pub fn new(handle : &Cudnn, dropout: f32, seed: u64, reserve : &CudaDeviceMemory) -> Result<DropoutDescriptor, Error> {
         let generic_dropout_desc = API::create_dropout_descriptor()?;
-	let states: *mut ::libc::c_void = ::std::ptr::null_mut();
-	let state_size_in_bytes : usize = 0;
+	
             // ::cudaHostAlloc(&mut x, 2 * 2 * 2, 0);
         API::set_dropout_descriptor(
             generic_dropout_desc,
             *handle.id_c(),
             dropout,
-            states,
-            state_size_in_bytes,
+            *reserve.id_c(),
+            *reserve.size(),
             seed,
         )?;
 
         Ok(DropoutDescriptor::from_c(generic_dropout_desc))
+    }
+
+    /// Get the size for a tensor
+    pub fn get_required_size() -> usize {
+	4096
     }
 
     /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.

@@ -1,6 +1,15 @@
+//! Defines Cuda Device Memory.
+//!
+//! Hold a pointer and size of the cuda device memory.
+//! This is only a convenience wrapper to interact in a
+//! defined mamner with cudnn, which requires scrap/temporary 
+//! memory for some operations, i.e. dropout.
+
 use super::{API, Error};
 
+
 #[derive(Debug)]
+/// A pointer to memory existing on a nvidia GPU
 pub struct CudaDeviceMemory {
 	ptr: *mut ::libc::c_void,
 	size: usize,
@@ -16,16 +25,17 @@ impl CudaDeviceMemory {
 	    })
     }
 
-    /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.
+    /// Initializes a new CUDA Device Memory from its C type.
     pub fn from_c(ptr: *mut ::libc::c_void, size: usize) -> CudaDeviceMemory {
         CudaDeviceMemory { ptr: ptr, size: size }
     }
 
-    /// Returns the CUDA cuDNN Tensor Descriptor as its C type.
+    /// Returns the CUDA Device Memory ptr as its C type.
     pub fn id_c(&self) -> &*mut ::libc::c_void {
         &self.ptr
     }
 
+    /// Returns the size of the CUDA Device Memory chunk.
     pub fn size(&self) -> &usize {
         &self.size
     }

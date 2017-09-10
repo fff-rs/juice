@@ -10,6 +10,8 @@ use super::utils::{ConvolutionConfig, DataTypeInfo, NormalizationConfig, Pooling
 use num::traits::Float;
 use std::mem::transmute_copy;
 
+use cuda::CudaDeviceMemory;
+
 #[derive(Debug, Clone)]
 /// Provides a the high-level interface to CUDA's cuDNN.
 pub struct Cudnn {
@@ -97,7 +99,7 @@ impl Cudnn {
         padding: &[i32],
         stride: &[i32],
     ) -> Result<PoolingConfig, Error> {
-    // TODO make the mode an input parameter
+        // TODO make the mode an input parameter
         let avg = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING, window, padding, stride));
         let max = try!(PoolingDescriptor::new(cudnnPoolingMode_t::CUDNN_POOLING_MAX, window, padding, stride));
         Ok(PoolingConfig::new(avg, max))
@@ -118,11 +120,14 @@ impl Cudnn {
     /// Initializes the parameters and configurations for running CUDA cuDNN dropout operation.
     pub fn init_dropout(
         &self,
+        src_desc: &TensorDescriptor,
         probability : f32,
         seed : u64,
         ) -> Result<DropoutConfig, Error> {
-        let dropout = DropoutDescriptor::new(&self, probability, seed)?;
-        Ok(DropoutConfig::new(dropout))
+        let reserve_required : usize = API::dropout_get_reserve_space_size(*src_desc.id_c())?;
+        let reserve = CudaDeviceMemory::new(reserve_required)?;
+        let dropout = DropoutDescriptor::new(&self, probability, seed, &reserve)?;
+        Ok(DropoutConfig::new(dropout, reserve))
     }
 
     /// Computes the forward Sigmoid Activation function.
