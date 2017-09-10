@@ -1,4 +1,6 @@
 extern crate rcudnn as cudnn;
+
+#[macro_use]
 extern crate coaster as co;
 extern crate libc;
 
@@ -11,10 +13,12 @@ use ffi::*;
 #[cfg(test)]
 mod cudnn_spec {
 
-    use cudnn::{Cudnn, API, TensorDescriptor, ActivationDescriptor, FilterDescriptor, ConvolutionDescriptor};
+    use cudnn::{Cudnn, API, TensorDescriptor, ActivationDescriptor, FilterDescriptor, ConvolutionDescriptor, DropoutDescriptor};
     use cudnn::utils::DataType;
     use co::frameworks::Cuda;
+    use co::frameworks::cuda::*;
     use co::framework::IFramework;
+    use cudnn::cuda::CudaDeviceMemory;
 
     #[test]
     fn it_initializes_correctly() {
@@ -94,6 +98,41 @@ mod cudnn_spec {
         let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
         match API::find_convolution_backward_data_algorithm(*cudnn.id_c(), *filter.id_c(), *conv.id_c(), *src.id_c(), *dest.id_c()) {
             Ok(algos) => { assert_eq!(2, algos.len())},
+            Err(err) => { println!("{:?}", err); assert!(false) }
+        }
+    }
+
+    #[test]
+    fn it_allocates_cuda_device_memory() {
+        let _ = Cudnn::new().unwrap();
+        let _ = CudaDeviceMemory::new(1024).unwrap();
+    }
+
+
+    #[test]
+    fn it_computes_dropout_forward() {
+        let cudnn = Cudnn::new().unwrap();
+        let src = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
+
+
+        let cfg = cudnn.init_dropout(&src, 0.5, 27)?;
+	let ref drop = cfg.dropout_desc();
+	let ref reserve = cfg.reserved_space();
+        let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
+
+	let src_data = CudaDeviceMemory::new(2*2*2 * 4).unwrap();
+	let mut dest_data = CudaDeviceMemory::new(2*2*2 * 4).unwrap();
+
+        match API::dropout_forward(
+				*cudnn.id_c(),
+				*drop.id_c(),
+				*src.id_c(),
+				*src_data.id_c(),
+				*dest.id_c(),
+				*dest_data.id_c(),
+				*reserve.id_c(),
+				*reserve.size()) {
+            Ok(_) => { },
             Err(err) => { println!("{:?}", err); assert!(false) }
         }
     }
