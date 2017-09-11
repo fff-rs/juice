@@ -11,7 +11,7 @@ pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Pooling<T> + IBackend {
 
-    let test = |inp_dims: &[usize], out_dims: &[usize], window: &[i32], padding: &[i32], stride: &[i32] | {
+    let test = |inp_dims: &[usize], out_dims: &[usize], window: &[i32], stride: &[i32], padding: &[i32] | {
         let inp_size = (0..inp_dims.len()).fold(1, |mpy, x| mpy * inp_dims[x]);
         let out_size = (0..out_dims.len()).fold(1, |mpy, x| mpy * out_dims[x]);
         let mut inp = vec![1.0; inp_size];
@@ -19,7 +19,7 @@ pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
 
         let x  = filled_tensor(&backend, inp_dims, &inp);
         let mut r = SharedTensor::<T>::new(&out_dims);
-        let conf = Pooling::<T>::new_pooling_config(&backend, window, padding, stride)
+        let conf = Pooling::<T>::new_pooling_config(&backend, window, stride, padding)
             .unwrap();
 
         backend.pooling_max(&x, &mut r, &conf).unwrap();
