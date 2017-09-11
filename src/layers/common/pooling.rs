@@ -1,6 +1,6 @@
 //! Applies pooling to the input.
 //!
-//! This layers looks at adjectant values of the input and then computes a
+//! This layers looks at adjacent values of the input and then computes a
 //! simple pooling operation over them (e.g. taking their maximum or average value).
 //! *See [PoolingMode][pooling_mode]*
 //!
@@ -110,7 +110,7 @@ impl<B: IBackend + conn::Pooling<f32>> ILayer<B> for Pooling<f32, B> {
             let stride = cast_vec_usize_to_i32(self.stride_dims(num_spatial_dims));
             let padding = cast_vec_usize_to_i32(self.padding_dims(num_spatial_dims));
 
-            let config = backend.new_pooling_config(&filter, &padding, &stride).unwrap();
+            let config = backend.new_pooling_config(&filter, &stride, &padding).unwrap();
             self.pooling_configs.push(Rc::new(config));
         }
     }
