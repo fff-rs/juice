@@ -103,9 +103,10 @@ fn main() {
     } else if args.cmd_mnist {
         #[cfg(all(feature="cuda"))]
         run_mnist(args.arg_model_name, args.arg_batch_size, args.arg_learning_rate, args.arg_momentum);
-        #[cfg(not(feature="cuda"))]
-        println!("Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda.");
-        panic!()
+        #[cfg(not(feature="cuda"))] {
+            println!("Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda.");
+            panic!()
+        }
     }
 }
 
