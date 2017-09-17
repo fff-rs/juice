@@ -47,7 +47,7 @@
         </script>
 
         <div id="sidebar" class="sidebar">
-            <ul class="chapter"><li><a href="./leaf.html"><strong>1.</strong> Leaf</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html" class="active"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://autumnai.github.io/leaf/leaf/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
+            <ul class="chapter"><li><a href="./juice.html"><strong>1.</strong> Juice</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html" class="active"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://spearow.github.io/juice/juice/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
         </div>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -75,8 +75,8 @@ Neural Networks but is not limited to this kind of learning.</p>
 is common to use a Stochastic Gradient Descent based approach
 like Adagrad, whereas for a classical regression the solving might be
 done via a maximum likelihood estimation.</p>
-<p>Similar to <code>Layer</code>s, we can construct a <a href="https://github.com/autumnai/leaf/blob/master/src/solver/mod.rs"><code>Solver</code> (<em>/src/solver/mod.rs</em>)</a>
-from a <a href="https://github.com/autumnai/leaf/blob/master/src/solver/mod.rs"><code>SolverConfig</code> (<em>/src/solver/mod.rs</em>)</a>.
+<p>Similar to <code>Layer</code>s, we can construct a <a href="https://github.com/spearow/juice/blob/master/src/solver/mod.rs"><code>Solver</code> (<em>/src/solver/mod.rs</em>)</a>
+from a <a href="https://github.com/spearow/juice/blob/master/src/solver/mod.rs"><code>SolverConfig</code> (<em>/src/solver/mod.rs</em>)</a>.
 When passing this <code>SolverConfig</code> (e.g. an Adagrad <code>SolverConfig</code>) to the
 <code>Solver::from_config</code> method, a <code>Solver</code> with the behavior
 of the config is returned.</p>

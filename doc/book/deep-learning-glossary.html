@@ -47,7 +47,7 @@
         </script>
 
         <div id="sidebar" class="sidebar">
-            <ul class="chapter"><li><a href="./leaf.html"><strong>1.</strong> Leaf</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html" class="active"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://autumnai.github.io/leaf/leaf/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
+            <ul class="chapter"><li><a href="./juice.html"><strong>1.</strong> Juice</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html" class="active"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://spearow.github.io/juice/juice/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
         </div>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -77,17 +77,17 @@ function like ReLU, pooling, convolution etc. so that it can be easily compared
 to other parts of the network. The first and last layers in a network are called
 input and output layers, respectively, and all layers in between are called
 hidden layers.</p>
-<p><strong>In Leaf</strong></p>
-<p>In Leaf, a layer is very similar to the general understanding of a layer. A layer
-in Leaf, like a layer in a (Deep) Neural Network,</p>
+<p><strong>In Juice</strong></p>
+<p>In Juice, a layer is very similar to the general understanding of a layer. A layer
+in Juice, like a layer in a (Deep) Neural Network,</p>
 <ul>
 <li>is the highest-level building block</li>
 <li>needs to receive input, might transform it and needs to return the result</li>
 <li>should be uniform (it does one type of function)</li>
 </ul>
-<p>Additionally to a Neural Network layer, a Leaf layer can implement any
+<p>Additionally to a Neural Network layer, a Juice layer can implement any
 functionality, not only those related to Neural Networks like ReLU, pooling,
-LSTM, etc. For example, the <code>Sequential</code> layer in Leaf, allows it to connect
+LSTM, etc. For example, the <code>Sequential</code> layer in Juice, allows it to connect
 multiple layers, creating a network.</p>
 <h3>Network</h3>
 <p><strong>In General</strong></p>
@@ -96,11 +96,11 @@ multiple layers, creating a network.</p>
 <p>A not exhaustive list of other Machine Learning methods:<br />
 <em>Linear Regression, SVM, Genetic/Evolution Algorithms, dynamic programming,
 deterministic algorithmic optimization methods.</em></p>
-<p><strong>In Leaf</strong></p>
-<p>In Leaf, a network means a graph (a connected set) of one or more
+<p><strong>In Juice</strong></p>
+<p>In Juice, a network means a graph (a connected set) of one or more
 <a href="./layers.html">layers</a>. This network can consist of Artificial Neural Network
 methods, other Machine Learning methods or any other (not Machine Learning
-related) methods. As described in <a href="./layers.html">2. Layers</a> a network in Leaf
+related) methods. As described in <a href="./layers.html">2. Layers</a> a network in Juice
 is actually a layer which connects other layers.</p>
 <p>An initialized network is a network, which is ready to be executed, meaning it
 is fully constructed e.g. all necessary memory is allocated on the host or device.</p>
@@ -115,7 +115,7 @@ is fully constructed e.g. all necessary memory is allocated on the host or devic
                 
 
                 
-                    <a href="http://autumnai.github.io/leaf/leaf/index.html" class="mobile-nav-chapters next">
+                    <a href="http://spearow.github.io/juice/juice/index.html" class="mobile-nav-chapters next">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
@@ -129,7 +129,7 @@ is fully constructed e.g. all necessary memory is allocated on the host or devic
             
 
             
-                <a href="http://autumnai.github.io/leaf/leaf/index.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                <a href="http://spearow.github.io/juice/juice/index.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
                     <i class="fa fa-angle-right"></i>
                 </a>
             

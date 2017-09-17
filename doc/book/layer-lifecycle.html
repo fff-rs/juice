@@ -47,7 +47,7 @@
         </script>
 
         <div id="sidebar" class="sidebar">
-            <ul class="chapter"><li><a href="./leaf.html"><strong>1.</strong> Leaf</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html" class="active"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://autumnai.github.io/leaf/leaf/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
+            <ul class="chapter"><li><a href="./juice.html"><strong>1.</strong> Juice</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html" class="active"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://spearow.github.io/juice/juice/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
         </div>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -70,11 +70,11 @@
                     <h1>Layer Lifecycle</h1>
 <p>In chapter <a href="./layers.html">2. Layers</a> we saw how to
 construct a simple <code>Layer</code> from a <code>LayerConfig</code>. In this chapter, we take
-a closer look at what happens inside Leaf when initializing a <code>Layer</code> and when running its
+a closer look at what happens inside Juice when initializing a <code>Layer</code> and when running its
 <code>.forward</code> and <code>.backward</code> methods. In the next chapter <a href="./building-networks.html">2.2 Create a Network</a> we
 apply our knowledge to construct deep networks with the container layer.</p>
 <p>The most important methods of a <code>Layer</code> are initialization (<code>::from_config</code>), <code>.forward</code> and <code>.backward</code>.
-They basically describe the entire API, so let's take a closer look at what happens inside Leaf when these methods are called.</p>
+They basically describe the entire API, so let's take a closer look at what happens inside Juice when these methods are called.</p>
 <h3>Initialization</h3>
 <p>A layer is constructed from a <code>LayerConfig</code> with the <code>Layer::from_config</code>
 method, which returns a fully initialized <code>Layer</code>.</p>
