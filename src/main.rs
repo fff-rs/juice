@@ -64,15 +64,15 @@ struct MainArgs {
     arg_momentum: Option<f32>,
     cmd_load_dataset: bool,
     cmd_mnist: bool,
+    cmd_fashion: bool
 }
 
-fn download_datasets(datasets: Vec<&str>, base_url: &str) {
+fn download_datasets(datasets: &[&str], base_url: &str) {
     for (i, v) in datasets.iter().enumerate() {
         println!("Downloading... {}/{}: {}", i+1, datasets.len(), v);
-        let mut body = String::new();
 
         let uri = Uri::from_str(&format!("{}/{}", base_url, v)).unwrap();
-        let mut core = tokio_core::reactor::Core::new().unwrap();
+        let core = tokio_core::reactor::Core::new().unwrap();
         let response = Client::new(&core.handle())
             .get(uri)
             .wait().unwrap();
@@ -82,11 +82,11 @@ fn download_datasets(datasets: Vec<&str>, base_url: &str) {
         }).wait().unwrap();
         File::create(format!("assets/{}", v))
             .unwrap()
-            .write_all(&body as &[u8]);
+            .write_all(&body as &[u8]).unwrap();
     }
 }
 
-fn unzip_datasets(datasets: Vec<&str>) {
+fn unzip_datasets(datasets: &[&str]) {
     for filename in datasets {
         let mut file_handle = File::open(&format!("assets/{}", filename))
             .unwrap();
@@ -117,7 +117,7 @@ fn main() {
         match &*args.arg_dataset_name.unwrap() {
             "mnist" => {
                 let datasets = ["mnist_test.csv", "mnist_train.csv"];
-                download_datasets(datasets, "http://pjreddie.com/media/files");
+                download_datasets(&datasets, "http://pjreddie.com/media/files");
                 println!("{}", "MNIST dataset downloaded".to_string())
             },
             "fashion" => {
@@ -125,10 +125,10 @@ fn main() {
                                 "train-labels-idx1-ubyte.gz",
                                 "t10k-images-idx3-ubyte.gz",
                                 "t10k-labels-idx1-ubyte.gz"];
-                download_datasets(datasets, "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/");
+                download_datasets(&datasets, "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/");
                 println!("{}", "Fashion MNIST dataset downloaded".to_string());
                 // TODO avoid repeated effort here
-                unzip_datasets(datasets);
+                unzip_datasets(&datasets);
             },
             _ => println!("{}", "Failed to download MNIST dataset!".to_string())
         }
