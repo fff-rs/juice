@@ -149,24 +149,27 @@ fn main() {
     }
 }
 
-
 #[cfg(all(feature="cuda"))]
 fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rate: Option<f32>, momentum: Option<f32>) {
+    let example_count = 60000;
+    let pixel_count = 784;
+    let pixel_dim = 28;
+
     let mut rdr = Reader::from_file("assets/mnist_train.csv").unwrap();
     let mut decoded_images = rdr.decode().map(|row|
         match row {
             Ok(value) => {
                 let row_vec: Box<Vec<u8>> = Box::new(value);
                 let label = row_vec[0];
-                let mut pixels = vec![0u8; 784];
+                let mut pixels = vec![0u8; pixel_count];
                 for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
                     *place = *element;
                 }
                 // TODO: reintroduce Cuticula
-                // let img = Image::from_luma_pixels(28, 28, pixels);
+                // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
                 // match img {
                 //     Ok(in_img) => {
-                //         println!("({}): {:?}", label, in_img.transform(vec![28, 28]));
+                //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
                 //     },
                 //     Err(_) => unimplemented!()
                 // }
@@ -184,12 +187,12 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     let momentum = momentum.unwrap_or(0f32);
 
     let mut net_cfg = SequentialConfig::default();
-    net_cfg.add_input("data", &[batch_size, 28, 28]);
+    net_cfg.add_input("data", &[batch_size, pixel_dim, pixel_dim]);
     net_cfg.force_backward = true;
 
     match &*model_name.unwrap_or("none".to_owned()) {
         "conv" => {
-            net_cfg.add_layer(LayerConfig::new("reshape", ReshapeConfig::of_shape(&[batch_size, 1, 28, 28])));
+            net_cfg.add_layer(LayerConfig::new("reshape", ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim])));
             net_cfg.add_layer(LayerConfig::new("conv", ConvolutionConfig { num_output: 20, filter_shape: vec![5], padding: vec![0], stride: vec![1] }));
             net_cfg.add_layer(LayerConfig::new("pooling", PoolingConfig { mode: PoolingMode::Max, filter_shape: vec![2], padding: vec![0], stride: vec![2] }));
             net_cfg.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 500 }));
@@ -197,7 +200,7 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
             net_cfg.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
         },
         "mlp" => {
-            net_cfg.add_layer(LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, 784]))));
+            net_cfg.add_layer(LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count]))));
             net_cfg.add_layer(LayerConfig::new("linear1", LayerType::Linear(LinearConfig { output_size: 1568 })));
             net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             net_cfg.add_layer(LayerConfig::new("linear2", LayerType::Linear(LinearConfig { output_size: 10 })));
@@ -231,13 +234,13 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
     let mut confusion = ::juice::solver::ConfusionMatrix::new(10);
     confusion.set_capacity(Some(1000));
 
-    let mut inp = SharedTensor::<f32>::new(&[batch_size, 28, 28]);
+    let mut inp = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
     let label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     let inp_lock = Arc::new(RwLock::new(inp));
     let label_lock = Arc::new(RwLock::new(label));
 
-    for _ in 0..(60000 / batch_size) {
+    for _ in 0..(example_count / batch_size) {
         // write input
         let mut targets = Vec::new();
         for (batch_n, (label_val, input)) in decoded_images.by_ref().take(batch_size).enumerate() {
@@ -263,6 +266,7 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
 fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_rate: Option<f32>, momentum: Option<f32>) {
     let example_count = 60000;
     let pixel_count = 784;
+    let pixel_dim = 28;
     
     let mut rdr = Reader::from_file("assets/train-images-idx3-ubyte.csv").unwrap();
     let mut decoded_images = rdr.decode().map(|row|
@@ -275,10 +279,10 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
                     *place = *element;
                 }
                 // TODO: reintroduce Cuticula
-                // let img = Image::from_luma_pixels(28, 28, pixels);
+                // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
                 // match img {
                 //     Ok(in_img) => {
-                //         println!("({}): {:?}", label, in_img.transform(vec![28, 28]));
+                //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
                 //     },
                 //     Err(_) => unimplemented!()
                 // }
@@ -297,15 +301,15 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
             Ok(value) => {
                 let row_vec: Box<Vec<u8>> = Box::new(value);
                 let label = row_vec[0];
-                let mut pixels = vec![0u8; 784];
+                let mut pixels = vec![0u8; pixel_count];
                 for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
                     *place = *element;
                 }
                 // TODO: reintroduce Cuticula
-                // let img = Image::from_luma_pixels(28, 28, pixels);
+                // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
                 // match img {
                 //     Ok(in_img) => {
-                //         println!("({}): {:?}", label, in_img.transform(vec![28, 28]));
+                //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
                 //     },
                 //     Err(_) => unimplemented!()
                 // }
@@ -323,12 +327,12 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
     let momentum = momentum.unwrap_or(0f32);
 
     let mut net_cfg = SequentialConfig::default();
-    net_cfg.add_input("data", &[batch_size, 28, 28]);
+    net_cfg.add_input("data", &[batch_size, pixel_dim, pixel_dim]);
     net_cfg.force_backward = true;
 
     match &*model_name.unwrap_or("none".to_owned()) {
         "conv" => {
-            net_cfg.add_layer(LayerConfig::new("reshape", ReshapeConfig::of_shape(&[batch_size, 1, 28, 28])));
+            net_cfg.add_layer(LayerConfig::new("reshape", ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim])));
             net_cfg.add_layer(LayerConfig::new("conv", ConvolutionConfig { num_output: 20, filter_shape: vec![5], padding: vec![0], stride: vec![1] }));
             net_cfg.add_layer(LayerConfig::new("pooling", PoolingConfig { mode: PoolingMode::Max, filter_shape: vec![2], padding: vec![0], stride: vec![2] }));
             net_cfg.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 500 }));
@@ -336,7 +340,7 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
             net_cfg.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
         },
         "mlp" => {
-            net_cfg.add_layer(LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, 784]))));
+            net_cfg.add_layer(LayerConfig::new("reshape", LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count]))));
             net_cfg.add_layer(LayerConfig::new("linear1", LayerType::Linear(LinearConfig { output_size: 1568 })));
             net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             net_cfg.add_layer(LayerConfig::new("linear2", LayerType::Linear(LinearConfig { output_size: 10 })));
@@ -375,7 +379,7 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
     let mut confusion = ::juice::solver::ConfusionMatrix::new(10);
     confusion.set_capacity(Some(1000));
 
-    let mut inp = SharedTensor::<f32>::new(&[batch_size, 28, 28]);
+    let mut inp = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
     let label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     let inp_lock = Arc::new(RwLock::new(inp));
