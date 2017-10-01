@@ -34,10 +34,8 @@ use juice::layers::*;
 use juice::solver::*;
 use juice::util::*;
 
-extern crate inflate;
-
-use inflate::inflate_bytes_zlib;
-
+extern crate flate2;
+use flate2::read::GzDecoder;
 
 const MAIN_USAGE: &'static str = "
 Juice Examples
@@ -45,6 +43,7 @@ Juice Examples
 Usage:
     juice-examples load-dataset <dataset-name>
     juice-examples mnist <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
+    juice-examples fashion <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
     juice-examples (-h | --help)
     juice-examples --version
 
@@ -67,11 +66,14 @@ struct MainArgs {
     cmd_fashion: bool
 }
 
+#[allow(unused_must_use)]
 fn download_datasets(datasets: &[&str], base_url: &str) {
     for (i, v) in datasets.iter().enumerate() {
         println!("Downloading... {}/{}: {}", i+1, datasets.len(), v);
 
         let uri = Uri::from_str(&format!("{}/{}", base_url, v)).unwrap();
+        println!("URL: {}", &uri);
+        
         let core = tokio_core::reactor::Core::new().unwrap();
         let response = Client::new(&core.handle())
             .get(uri)
@@ -86,21 +88,25 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
     }
 }
 
+#[allow(unused_must_use)]
 fn unzip_datasets(datasets: &[&str]) {
     for filename in datasets {
         let mut file_handle = File::open(&format!("assets/{}", filename))
             .unwrap();
         let mut in_file: Vec<u8> = Vec::new();
+        let mut decompressed_file: Vec<u8> = Vec::new();
         
-        file_handle.read_to_end(&mut in_file);
+        file_handle.read_to_end(&mut in_file).unwrap();
 
-        let unzipped_data = inflate_bytes_zlib(in_file.as_slice()).unwrap();
+        let mut decoder = GzDecoder::new(in_file.as_slice()).unwrap();
+
+        decoder.read_to_end(&mut decompressed_file).unwrap();
 
         let filename_string = filename.split(".").nth(0).unwrap();
         
         File::create(format!("assets/{}.csv", filename_string))
             .unwrap()
-            .write_all(&unzipped_data as &[u8]);
+            .write_all(&decompressed_file as &[u8]);
     }
 }
 
@@ -125,10 +131,11 @@ fn main() {
                                 "train-labels-idx1-ubyte.gz",
                                 "t10k-images-idx3-ubyte.gz",
                                 "t10k-labels-idx1-ubyte.gz"];
-                download_datasets(&datasets, "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/");
+                download_datasets(&datasets, "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com");
                 println!("{}", "Fashion MNIST dataset downloaded".to_string());
                 // TODO avoid repeated effort here
                 unzip_datasets(&datasets);
+                println!("{}", "Fashion MNIST dataset decompressed".to_string());
             },
             _ => println!("{}", "Failed to download MNIST dataset!".to_string())
         }
