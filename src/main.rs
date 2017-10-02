@@ -13,7 +13,6 @@ use std::sync::{Arc, RwLock};
 
 use hyper::Client;
 use hyper::Uri;
-use hyper::Body;
 use std::str::FromStr;
 use futures::Future;
 use futures::Stream;
@@ -37,6 +36,9 @@ use juice::util::*;
 extern crate flate2;
 use flate2::read::GzDecoder;
 
+extern crate mnist;
+use mnist::{Mnist, MnistBuilder};
+
 const MAIN_USAGE: &'static str = "
 Juice Examples
 
@@ -46,6 +48,7 @@ Usage:
     juice-examples fashion <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
     juice-examples (-h | --help)
     juice-examples --version
+
 
 Options:
     <model-name>            Which MNIST model to use. Valid values: [linear, mlp, conv]
@@ -66,7 +69,6 @@ struct MainArgs {
     cmd_fashion: bool
 }
 
-#[allow(unused_must_use)]
 fn download_datasets(datasets: &[&str], base_url: &str) {
     for (i, v) in datasets.iter().enumerate() {
         println!("Downloading... {}/{}: {}", i+1, datasets.len(), v);
@@ -82,16 +84,16 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
             acc.extend_from_slice(&*chunk);
             future::ok::<_,hyper::Error>(acc)
         }).wait().unwrap();
-        File::create(format!("assets/{}", v))
+        File::create(format!("./assets/{}", v))
             .unwrap()
             .write_all(&body as &[u8]).unwrap();
     }
 }
 
-#[allow(unused_must_use)]
 fn unzip_datasets(datasets: &[&str]) {
     for filename in datasets {
-        let mut file_handle = File::open(&format!("assets/{}", filename))
+        // TODO figure out how to specify asset dir
+        let mut file_handle = File::open(&format!("./assets/{}", filename))
             .unwrap();
         let mut in_file: Vec<u8> = Vec::new();
         let mut decompressed_file: Vec<u8> = Vec::new();
@@ -104,7 +106,7 @@ fn unzip_datasets(datasets: &[&str]) {
 
         let filename_string = filename.split(".").nth(0).unwrap();
         
-        File::create(format!("assets/{}.csv", filename_string))
+        File::create(format!("assets/{}", filename_string))
             .unwrap()
             .write_all(&decompressed_file as &[u8]);
     }
@@ -272,62 +274,28 @@ fn run_mnist(model_name: Option<String>, batch_size: Option<usize>, learning_rat
 #[cfg(all(feature="cuda"))]
 fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_rate: Option<f32>, momentum: Option<f32>) {
     let example_count = 60000;
+    let test_count = 10000;
     let pixel_count = 784;
     let pixel_dim = 28;
-    
-    let mut rdr = Reader::from_file("assets/train-images-idx3-ubyte.csv").unwrap();
-    let mut decoded_images = rdr.decode().map(|row|
-        match row {
-            Ok(value) => {
-                let row_vec: Box<Vec<u8>> = Box::new(value);
-                let label = row_vec[0];
-                let mut pixels = vec![0u8; pixel_count];
-                for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
-                    *place = *element;
-                }
-                // TODO: reintroduce Cuticula
-                // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
-                // match img {
-                //     Ok(in_img) => {
-                //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
-                //     },
-                //     Err(_) => unimplemented!()
-                // }
-                (label, pixels)
-            },
-            _ => {
-                println!("no value");
-                panic!();
-            }
-        }
-    );
 
-    let mut label_rdr = Reader::from_file("assets/train-labels-idx3-ubyte.csv").unwrap();
-    let mut decoded_labels = label_rdr.decode().map(|row|
-        match row {
-            Ok(value) => {
-                let row_vec: Box<Vec<u8>> = Box::new(value);
-                let label = row_vec[0];
-                let mut pixels = vec![0u8; pixel_count];
-                for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
-                    *place = *element;
-                }
-                // TODO: reintroduce Cuticula
-                // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
-                // match img {
-                //     Ok(in_img) => {
-                //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
-                //     },
-                //     Err(_) => unimplemented!()
-                // }
-                (label, pixels)
-            },
-            _ => {
-                println!("no value");
-                panic!();
-            }
-        }
-    );
+    let Mnist { trn_img, trn_lbl, .. } = MnistBuilder::new()
+        .base_path("./assets/")
+        .label_format_digit()
+        .training_set_length(example_count)
+        .test_set_length(test_count)
+        .finalize();
+    
+    let mut decoded_images: Vec<(u8, Vec<u8>)> = trn_img.chunks(pixel_count).enumerate().map(|(ind, pixels)| {
+        // TODO: reintroduce Cuticula
+        // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
+        // match img {
+        //     Ok(in_img) => {
+        //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
+        //     },
+        //     Err(_) => unimplemented!()
+        // }
+        (trn_lbl[ind], pixels.to_vec())
+    }).collect();
 
     let batch_size = batch_size.unwrap_or(1);
     let learning_rate = learning_rate.unwrap_or(0.001f32);
@@ -392,11 +360,11 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
     let inp_lock = Arc::new(RwLock::new(inp));
     let label_lock = Arc::new(RwLock::new(label));
 
-    for _ in 0..(example_count / batch_size) {
+    for _ in 0..(example_count / batch_size as u32) {
         // write input
         let mut targets = Vec::new();
-        // TODO zip labels from the other reader as similar iterator
-        for (batch_n, (label_val, input)) in decoded_images.by_ref().take(batch_size).enumerate() {
+
+        for (batch_n, &(label_val, ref input)) in decoded_images.iter().take(batch_size).enumerate() {
             let mut inp = inp_lock.write().unwrap();
             let mut label = label_lock.write().unwrap();
             write_batch_sample(&mut inp, &input, batch_n);
