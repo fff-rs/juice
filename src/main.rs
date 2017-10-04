@@ -285,7 +285,7 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
         .test_set_length(test_count)
         .finalize();
     
-    let mut decoded_images: Vec<(u8, Vec<u8>)> = trn_img.chunks(pixel_count).enumerate().map(|(ind, pixels)| {
+    let mut decoded_images = trn_img.chunks(pixel_count).enumerate().map(|(ind, pixels)| {
         // TODO: reintroduce Cuticula
         // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
         // match img {
@@ -295,7 +295,7 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
         //     Err(_) => unimplemented!()
         // }
         (trn_lbl[ind], pixels.to_vec())
-    }).collect();
+    });
 
     let batch_size = batch_size.unwrap_or(1);
     let learning_rate = learning_rate.unwrap_or(0.001f32);
@@ -364,7 +364,7 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
         // write input
         let mut targets = Vec::new();
 
-        for (batch_n, &(label_val, ref input)) in decoded_images.iter().take(batch_size).enumerate() {
+        for (batch_n, (label_val, ref input)) in decoded_images.by_ref().take(batch_size).enumerate() {
             let mut inp = inp_lock.write().unwrap();
             let mut label = label_lock.write().unwrap();
             write_batch_sample(&mut inp, &input, batch_n);
