@@ -286,14 +286,6 @@ fn run_fashion(model_name: Option<String>, batch_size: Option<usize>, learning_r
         .finalize();
     
     let mut decoded_images = trn_img.chunks(pixel_count).enumerate().map(|(ind, pixels)| {
-        // TODO: reintroduce Cuticula
-        // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
-        // match img {
-        //     Ok(in_img) => {
-        //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
-        //     },
-        //     Err(_) => unimplemented!()
-        // }
         (trn_lbl[ind], pixels.to_vec())
     });
 
