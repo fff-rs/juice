@@ -26,7 +26,7 @@ impl DropoutDescriptor {
     /// Initializes a new CUDA cuDNN Dropout Descriptor.
     pub fn new(handle : &Cudnn, dropout: f32, seed: u64, reserve : &CudaDeviceMemory) -> Result<DropoutDescriptor, Error> {
         let generic_dropout_desc = API::create_dropout_descriptor()?;
-	
+	println!("new dropout {}", reserve.size());
             // ::cudaHostAlloc(&mut x, 2 * 2 * 2, 0);
         API::set_dropout_descriptor(
             generic_dropout_desc,
