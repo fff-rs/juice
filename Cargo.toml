@@ -13,6 +13,7 @@ coaster = { git = "https://github.com/spearow/coaster.git", default-features = f
 
 csv = "0.15"
 hyper = "0.11"
+hyper-tls = "*"
 futures = "0.1"
 tokio-core = "0.1.9"
 flate2 = "0.2"
