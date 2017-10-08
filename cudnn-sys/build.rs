@@ -1,7 +1,7 @@
 extern crate pkg_config;
 extern crate bindgen;
-use std::path::PathBuf;
 use std::env;
+use std::path::PathBuf;
 
 fn main() {
     let lib_dir = env::var("CUDNN_LIB_DIR").ok();
@@ -35,17 +35,17 @@ fn main() {
     let libs_env = env::var("CUDNN_LIBS").ok();
     let libs = match libs_env {
         Some(ref v) => v.split(":").collect(),
-        None => vec!["cudnn"]
+        None => vec!["cudnn"],
     };
 
     let mode = if env::var_os("CUDNN_STATIC").is_some() {
-    	"static"
+        "static"
     } else {
-    	"dylib"
+        "dylib"
     };
 
     if let Some(lib_dir) = lib_dir {
-    	println!("cargo:rustc-link-search=native={}", lib_dir);
+        println!("cargo:rustc-link-search=native={}", lib_dir);
     }
 
     for lib in libs {
@@ -82,7 +82,8 @@ fn main() {
             .expect("Unable to generate bindings");
 
         let out_path = PathBuf::from("src");
-        bindings.write_to_file(out_path.join("generated.rs"))
+        bindings
+            .write_to_file(out_path.join("generated.rs"))
             .expect("Couldn't write bindings!");
     }
 }
