@@ -19,10 +19,14 @@ pub struct Struct_float2 {
     pub y: ::libc::c_float,
 }
 impl ::std::clone::Clone for Struct_float2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_float2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type float2 = Struct_float2;
 
@@ -33,10 +37,14 @@ pub struct Struct_double2 {
     pub y: ::libc::c_double,
 }
 impl ::std::clone::Clone for Struct_double2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_double2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type double2 = Struct_double2;
 
@@ -46,10 +54,14 @@ pub struct Struct_Unnamed6 {
     pub x: ::libc::c_ushort,
 }
 impl ::std::clone::Clone for Struct_Unnamed6 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed6 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type __half = Struct_Unnamed6;
 
@@ -90,13 +102,23 @@ pub enum Enum_Unnamed2 {
 }
 #[derive(PartialEq, Debug, Clone, Copy)]
 #[repr(u32)]
-pub enum Enum_Unnamed3 { CUBLAS_DIAG_NON_UNIT = 0, CUBLAS_DIAG_UNIT = 1, }
+pub enum Enum_Unnamed3 {
+    CUBLAS_DIAG_NON_UNIT = 0,
+    CUBLAS_DIAG_UNIT = 1,
+}
 #[derive(PartialEq, Debug, Clone, Copy)]
 #[repr(u32)]
-pub enum Enum_Unnamed4 { CUBLAS_SIDE_LEFT = 0, CUBLAS_SIDE_RIGHT = 1, }
+pub enum Enum_Unnamed4 {
+    CUBLAS_SIDE_LEFT = 0,
+    CUBLAS_SIDE_RIGHT = 1,
+}
 #[derive(PartialEq, Debug, Clone, Copy)]
 #[repr(u32)]
-pub enum Enum_Unnamed5 { CUBLAS_OP_N = 0, CUBLAS_OP_T = 1, CUBLAS_OP_C = 2, }
+pub enum Enum_Unnamed5 {
+    CUBLAS_OP_N = 0,
+    CUBLAS_OP_T = 1,
+    CUBLAS_OP_C = 2,
+}
 #[derive(PartialEq, Debug, Clone, Copy)]
 #[repr(u32)]
 pub enum Enum_Unnamed6 {
@@ -122,1327 +144,2517 @@ pub enum Struct_cublasContext { }
 extern "C" {
     pub fn cublasCreate_v2(handle: *mut cublasHandle_t) -> cublasStatus_t;
     pub fn cublasDestroy_v2(handle: cublasHandle_t) -> cublasStatus_t;
-    pub fn cublasGetVersion_v2(handle: cublasHandle_t,
-                               version: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSetStream_v2(handle: cublasHandle_t, streamId: cudaStream_t)
-     -> cublasStatus_t;
-    pub fn cublasGetStream_v2(handle: cublasHandle_t,
-                              streamId: *mut cudaStream_t) -> cublasStatus_t;
-    pub fn cublasGetPointerMode_v2(handle: cublasHandle_t,
-                                   mode: *mut cublasPointerMode_t)
-     -> cublasStatus_t;
-    pub fn cublasSetPointerMode_v2(handle: cublasHandle_t,
-                                   mode: cublasPointerMode_t)
-     -> cublasStatus_t;
-    pub fn cublasGetAtomicsMode(handle: cublasHandle_t,
-                                mode: *mut cublasAtomicsMode_t)
-     -> cublasStatus_t;
-    pub fn cublasSetAtomicsMode(handle: cublasHandle_t,
-                                mode: cublasAtomicsMode_t) -> cublasStatus_t;
-    pub fn cublasSetVector(n: ::libc::c_int, elemSize: ::libc::c_int,
-                           x: *const ::libc::c_void, incx: ::libc::c_int,
-                           devicePtr: *mut ::libc::c_void,
-                           incy: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasGetVector(n: ::libc::c_int, elemSize: ::libc::c_int,
-                           x: *const ::libc::c_void, incx: ::libc::c_int,
-                           y: *mut ::libc::c_void, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSetMatrix(rows: ::libc::c_int, cols: ::libc::c_int,
-                           elemSize: ::libc::c_int, A: *const ::libc::c_void,
-                           lda: ::libc::c_int, B: *mut ::libc::c_void,
-                           ldb: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasGetMatrix(rows: ::libc::c_int, cols: ::libc::c_int,
-                           elemSize: ::libc::c_int, A: *const ::libc::c_void,
-                           lda: ::libc::c_int, B: *mut ::libc::c_void,
-                           ldb: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSetVectorAsync(n: ::libc::c_int, elemSize: ::libc::c_int,
-                                hostPtr: *const ::libc::c_void,
-                                incx: ::libc::c_int,
-                                devicePtr: *mut ::libc::c_void,
-                                incy: ::libc::c_int, stream: cudaStream_t)
-     -> cublasStatus_t;
-    pub fn cublasGetVectorAsync(n: ::libc::c_int, elemSize: ::libc::c_int,
-                                devicePtr: *const ::libc::c_void,
-                                incx: ::libc::c_int,
-                                hostPtr: *mut ::libc::c_void,
-                                incy: ::libc::c_int, stream: cudaStream_t)
-     -> cublasStatus_t;
-    pub fn cublasSetMatrixAsync(rows: ::libc::c_int, cols: ::libc::c_int,
-                                elemSize: ::libc::c_int,
-                                A: *const ::libc::c_void, lda: ::libc::c_int,
-                                B: *mut ::libc::c_void, ldb: ::libc::c_int,
-                                stream: cudaStream_t) -> cublasStatus_t;
-    pub fn cublasGetMatrixAsync(rows: ::libc::c_int, cols: ::libc::c_int,
-                                elemSize: ::libc::c_int,
-                                A: *const ::libc::c_void, lda: ::libc::c_int,
-                                B: *mut ::libc::c_void, ldb: ::libc::c_int,
-                                stream: cudaStream_t) -> cublasStatus_t;
+    pub fn cublasGetVersion_v2(
+        handle: cublasHandle_t,
+        version: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSetStream_v2(handle: cublasHandle_t, streamId: cudaStream_t) -> cublasStatus_t;
+    pub fn cublasGetStream_v2(
+        handle: cublasHandle_t,
+        streamId: *mut cudaStream_t,
+    ) -> cublasStatus_t;
+    pub fn cublasGetPointerMode_v2(
+        handle: cublasHandle_t,
+        mode: *mut cublasPointerMode_t,
+    ) -> cublasStatus_t;
+    pub fn cublasSetPointerMode_v2(
+        handle: cublasHandle_t,
+        mode: cublasPointerMode_t,
+    ) -> cublasStatus_t;
+    pub fn cublasGetAtomicsMode(
+        handle: cublasHandle_t,
+        mode: *mut cublasAtomicsMode_t,
+    ) -> cublasStatus_t;
+    pub fn cublasSetAtomicsMode(
+        handle: cublasHandle_t,
+        mode: cublasAtomicsMode_t,
+    ) -> cublasStatus_t;
+    pub fn cublasSetVector(
+        n: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        x: *const ::libc::c_void,
+        incx: ::libc::c_int,
+        devicePtr: *mut ::libc::c_void,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasGetVector(
+        n: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        x: *const ::libc::c_void,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_void,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSetMatrix(
+        rows: ::libc::c_int,
+        cols: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        A: *const ::libc::c_void,
+        lda: ::libc::c_int,
+        B: *mut ::libc::c_void,
+        ldb: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasGetMatrix(
+        rows: ::libc::c_int,
+        cols: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        A: *const ::libc::c_void,
+        lda: ::libc::c_int,
+        B: *mut ::libc::c_void,
+        ldb: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSetVectorAsync(
+        n: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        hostPtr: *const ::libc::c_void,
+        incx: ::libc::c_int,
+        devicePtr: *mut ::libc::c_void,
+        incy: ::libc::c_int,
+        stream: cudaStream_t,
+    ) -> cublasStatus_t;
+    pub fn cublasGetVectorAsync(
+        n: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        devicePtr: *const ::libc::c_void,
+        incx: ::libc::c_int,
+        hostPtr: *mut ::libc::c_void,
+        incy: ::libc::c_int,
+        stream: cudaStream_t,
+    ) -> cublasStatus_t;
+    pub fn cublasSetMatrixAsync(
+        rows: ::libc::c_int,
+        cols: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        A: *const ::libc::c_void,
+        lda: ::libc::c_int,
+        B: *mut ::libc::c_void,
+        ldb: ::libc::c_int,
+        stream: cudaStream_t,
+    ) -> cublasStatus_t;
+    pub fn cublasGetMatrixAsync(
+        rows: ::libc::c_int,
+        cols: ::libc::c_int,
+        elemSize: ::libc::c_int,
+        A: *const ::libc::c_void,
+        lda: ::libc::c_int,
+        B: *mut ::libc::c_void,
+        ldb: ::libc::c_int,
+        stream: cudaStream_t,
+    ) -> cublasStatus_t;
     pub fn cublasXerbla(srName: *const ::libc::c_char, info: ::libc::c_int);
-    pub fn cublasSnrm2_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          result: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDnrm2_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          result: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasScnrm2_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDznrm2_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuDoubleComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasSdot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                         x: *const ::libc::c_float, incx: ::libc::c_int,
-                         y: *const ::libc::c_float, incy: ::libc::c_int,
-                         result: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDdot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                         x: *const ::libc::c_double, incx: ::libc::c_int,
-                         y: *const ::libc::c_double, incy: ::libc::c_int,
-                         result: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasCdotu_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *const cuComplex, incy: ::libc::c_int,
-                          result: *mut cuComplex) -> cublasStatus_t;
-    pub fn cublasCdotc_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *const cuComplex, incy: ::libc::c_int,
-                          result: *mut cuComplex) -> cublasStatus_t;
-    pub fn cublasZdotu_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *const cuDoubleComplex, incy: ::libc::c_int,
-                          result: *mut cuDoubleComplex) -> cublasStatus_t;
-    pub fn cublasZdotc_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *const cuDoubleComplex, incy: ::libc::c_int,
-                          result: *mut cuDoubleComplex) -> cublasStatus_t;
-    pub fn cublasSscal_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const ::libc::c_float,
-                          x: *mut ::libc::c_float, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDscal_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const ::libc::c_double,
-                          x: *mut ::libc::c_double, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCscal_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const cuComplex, x: *mut cuComplex,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCsscal_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           alpha: *const ::libc::c_float, x: *mut cuComplex,
-                           incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZscal_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const cuDoubleComplex,
-                          x: *mut cuDoubleComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZdscal_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           alpha: *const ::libc::c_double,
-                           x: *mut cuDoubleComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSaxpy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const ::libc::c_float,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDaxpy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const ::libc::c_double,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCaxpy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const cuComplex, x: *const cuComplex,
-                          incx: ::libc::c_int, y: *mut cuComplex,
-                          incy: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZaxpy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          alpha: *const cuDoubleComplex,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasScopy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDcopy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCcopy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *mut cuComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZcopy_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSswap_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut ::libc::c_float, incx: ::libc::c_int,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDswap_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut ::libc::c_double, incx: ::libc::c_int,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCswap_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut cuComplex, incx: ::libc::c_int,
-                          y: *mut cuComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZswap_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut cuDoubleComplex, incx: ::libc::c_int,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasIsamax_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const ::libc::c_float, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasIdamax_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const ::libc::c_double, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasIcamax_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasIzamax_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuDoubleComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasIsamin_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const ::libc::c_float, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasIdamin_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const ::libc::c_double, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasIcamin_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasIzamin_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuDoubleComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSasum_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          result: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDasum_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          result: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasScasum_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDzasum_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                           x: *const cuDoubleComplex, incx: ::libc::c_int,
-                           result: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasSrot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                         x: *mut ::libc::c_float, incx: ::libc::c_int,
-                         y: *mut ::libc::c_float, incy: ::libc::c_int,
-                         c: *const ::libc::c_float, s: *const ::libc::c_float)
-     -> cublasStatus_t;
-    pub fn cublasDrot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                         x: *mut ::libc::c_double, incx: ::libc::c_int,
-                         y: *mut ::libc::c_double, incy: ::libc::c_int,
-                         c: *const ::libc::c_double,
-                         s: *const ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasCrot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                         x: *mut cuComplex, incx: ::libc::c_int,
-                         y: *mut cuComplex, incy: ::libc::c_int,
-                         c: *const ::libc::c_float, s: *const cuComplex)
-     -> cublasStatus_t;
-    pub fn cublasCsrot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut cuComplex, incx: ::libc::c_int,
-                          y: *mut cuComplex, incy: ::libc::c_int,
-                          c: *const ::libc::c_float,
-                          s: *const ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasZrot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                         x: *mut cuDoubleComplex, incx: ::libc::c_int,
-                         y: *mut cuDoubleComplex, incy: ::libc::c_int,
-                         c: *const ::libc::c_double,
-                         s: *const cuDoubleComplex) -> cublasStatus_t;
-    pub fn cublasZdrot_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut cuDoubleComplex, incx: ::libc::c_int,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int,
-                          c: *const ::libc::c_double,
-                          s: *const ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasSrotg_v2(handle: cublasHandle_t, a: *mut ::libc::c_float,
-                          b: *mut ::libc::c_float, c: *mut ::libc::c_float,
-                          s: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDrotg_v2(handle: cublasHandle_t, a: *mut ::libc::c_double,
-                          b: *mut ::libc::c_double, c: *mut ::libc::c_double,
-                          s: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasCrotg_v2(handle: cublasHandle_t, a: *mut cuComplex,
-                          b: *mut cuComplex, c: *mut ::libc::c_float,
-                          s: *mut cuComplex) -> cublasStatus_t;
-    pub fn cublasZrotg_v2(handle: cublasHandle_t, a: *mut cuDoubleComplex,
-                          b: *mut cuDoubleComplex, c: *mut ::libc::c_double,
-                          s: *mut cuDoubleComplex) -> cublasStatus_t;
-    pub fn cublasSrotm_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut ::libc::c_float, incx: ::libc::c_int,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int,
-                          param: *const ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDrotm_v2(handle: cublasHandle_t, n: ::libc::c_int,
-                          x: *mut ::libc::c_double, incx: ::libc::c_int,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int,
-                          param: *const ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasSrotmg_v2(handle: cublasHandle_t, d1: *mut ::libc::c_float,
-                           d2: *mut ::libc::c_float, x1: *mut ::libc::c_float,
-                           y1: *const ::libc::c_float,
-                           param: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDrotmg_v2(handle: cublasHandle_t, d1: *mut ::libc::c_double,
-                           d2: *mut ::libc::c_double,
-                           x1: *mut ::libc::c_double,
-                           y1: *const ::libc::c_double,
-                           param: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasSgemv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDgemv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCgemv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          alpha: *const cuComplex, A: *const cuComplex,
-                          lda: ::libc::c_int, x: *const cuComplex,
-                          incx: ::libc::c_int, beta: *const cuComplex,
-                          y: *mut cuComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZgemv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSgbmv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          kl: ::libc::c_int, ku: ::libc::c_int,
-                          alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDgbmv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          kl: ::libc::c_int, ku: ::libc::c_int,
-                          alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCgbmv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          kl: ::libc::c_int, ku: ::libc::c_int,
-                          alpha: *const cuComplex, A: *const cuComplex,
-                          lda: ::libc::c_int, x: *const cuComplex,
-                          incx: ::libc::c_int, beta: *const cuComplex,
-                          y: *mut cuComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZgbmv_v2(handle: cublasHandle_t, trans: cublasOperation_t,
-                          m: ::libc::c_int, n: ::libc::c_int,
-                          kl: ::libc::c_int, ku: ::libc::c_int,
-                          alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStrmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const ::libc::c_float,
-                          lda: ::libc::c_int, x: *mut ::libc::c_float,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDtrmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const ::libc::c_double,
-                          lda: ::libc::c_int, x: *mut ::libc::c_double,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCtrmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const cuComplex,
-                          lda: ::libc::c_int, x: *mut cuComplex,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZtrmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const cuDoubleComplex,
-                          lda: ::libc::c_int, x: *mut cuDoubleComplex,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasStbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          x: *mut ::libc::c_float, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          x: *mut ::libc::c_double, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          x: *mut cuComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZtbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          x: *mut cuDoubleComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStpmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const ::libc::c_float,
-                          x: *mut ::libc::c_float, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtpmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const ::libc::c_double,
-                          x: *mut ::libc::c_double, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtpmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const cuComplex,
-                          x: *mut cuComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZtpmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const cuDoubleComplex,
-                          x: *mut cuDoubleComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStrsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const ::libc::c_float,
-                          lda: ::libc::c_int, x: *mut ::libc::c_float,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDtrsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const ::libc::c_double,
-                          lda: ::libc::c_int, x: *mut ::libc::c_double,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCtrsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const cuComplex,
-                          lda: ::libc::c_int, x: *mut cuComplex,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZtrsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, A: *const cuDoubleComplex,
-                          lda: ::libc::c_int, x: *mut cuDoubleComplex,
-                          incx: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasStpsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const ::libc::c_float,
-                          x: *mut ::libc::c_float, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtpsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const ::libc::c_double,
-                          x: *mut ::libc::c_double, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtpsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const cuComplex,
-                          x: *mut cuComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZtpsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, AP: *const cuDoubleComplex,
-                          x: *mut cuDoubleComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStbsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          x: *mut ::libc::c_float, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtbsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          x: *mut ::libc::c_double, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtbsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          x: *mut cuComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZtbsv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, diag: cublasDiagType_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          x: *mut cuDoubleComplex, incx: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSsymv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDsymv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCsymv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          beta: *const cuComplex, y: *mut cuComplex,
-                          incy: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZsymv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasChemv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          beta: *const cuComplex, y: *mut cuComplex,
-                          incy: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZhemv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSsbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDsbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasChbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const cuComplex, A: *const cuComplex,
-                          lda: ::libc::c_int, x: *const cuComplex,
-                          incx: ::libc::c_int, beta: *const cuComplex,
-                          y: *mut cuComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZhbmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSspmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_float,
-                          AP: *const ::libc::c_float,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          y: *mut ::libc::c_float, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDspmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_double,
-                          AP: *const ::libc::c_double,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          y: *mut ::libc::c_double, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasChpmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          AP: *const cuComplex, x: *const cuComplex,
-                          incx: ::libc::c_int, beta: *const cuComplex,
-                          y: *mut cuComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZhpmv_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          AP: *const cuDoubleComplex,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          y: *mut cuDoubleComplex, incy: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSger_v2(handle: cublasHandle_t, m: ::libc::c_int,
-                         n: ::libc::c_int, alpha: *const ::libc::c_float,
-                         x: *const ::libc::c_float, incx: ::libc::c_int,
-                         y: *const ::libc::c_float, incy: ::libc::c_int,
-                         A: *mut ::libc::c_float, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDger_v2(handle: cublasHandle_t, m: ::libc::c_int,
-                         n: ::libc::c_int, alpha: *const ::libc::c_double,
-                         x: *const ::libc::c_double, incx: ::libc::c_int,
-                         y: *const ::libc::c_double, incy: ::libc::c_int,
-                         A: *mut ::libc::c_double, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCgeru_v2(handle: cublasHandle_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *const cuComplex, incy: ::libc::c_int,
-                          A: *mut cuComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCgerc_v2(handle: cublasHandle_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *const cuComplex, incy: ::libc::c_int,
-                          A: *mut cuComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZgeru_v2(handle: cublasHandle_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *const cuDoubleComplex, incy: ::libc::c_int,
-                          A: *mut cuDoubleComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZgerc_v2(handle: cublasHandle_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *const cuDoubleComplex, incy: ::libc::c_int,
-                          A: *mut cuDoubleComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSsyr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_float,
-                         x: *const ::libc::c_float, incx: ::libc::c_int,
-                         A: *mut ::libc::c_float, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDsyr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_double,
-                         x: *const ::libc::c_double, incx: ::libc::c_int,
-                         A: *mut ::libc::c_double, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCsyr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const cuComplex,
-                         x: *const cuComplex, incx: ::libc::c_int,
-                         A: *mut cuComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZsyr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                         x: *const cuDoubleComplex, incx: ::libc::c_int,
-                         A: *mut cuDoubleComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCher_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_float,
-                         x: *const cuComplex, incx: ::libc::c_int,
-                         A: *mut cuComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZher_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_double,
-                         x: *const cuDoubleComplex, incx: ::libc::c_int,
-                         A: *mut cuDoubleComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSspr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_float,
-                         x: *const ::libc::c_float, incx: ::libc::c_int,
-                         AP: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDspr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_double,
-                         x: *const ::libc::c_double, incx: ::libc::c_int,
-                         AP: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasChpr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_float,
-                         x: *const cuComplex, incx: ::libc::c_int,
-                         AP: *mut cuComplex) -> cublasStatus_t;
-    pub fn cublasZhpr_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                         n: ::libc::c_int, alpha: *const ::libc::c_double,
-                         x: *const cuDoubleComplex, incx: ::libc::c_int,
-                         AP: *mut cuDoubleComplex) -> cublasStatus_t;
-    pub fn cublasSsyr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_float,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          y: *const ::libc::c_float, incy: ::libc::c_int,
-                          A: *mut ::libc::c_float, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDsyr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_double,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          y: *const ::libc::c_double, incy: ::libc::c_int,
-                          A: *mut ::libc::c_double, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCsyr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *const cuComplex, incy: ::libc::c_int,
-                          A: *mut cuComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZsyr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *const cuDoubleComplex, incy: ::libc::c_int,
-                          A: *mut cuDoubleComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCher2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *const cuComplex, incy: ::libc::c_int,
-                          A: *mut cuComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZher2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *const cuDoubleComplex, incy: ::libc::c_int,
-                          A: *mut cuDoubleComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSspr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_float,
-                          x: *const ::libc::c_float, incx: ::libc::c_int,
-                          y: *const ::libc::c_float, incy: ::libc::c_int,
-                          AP: *mut ::libc::c_float) -> cublasStatus_t;
-    pub fn cublasDspr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const ::libc::c_double,
-                          x: *const ::libc::c_double, incx: ::libc::c_int,
-                          y: *const ::libc::c_double, incy: ::libc::c_int,
-                          AP: *mut ::libc::c_double) -> cublasStatus_t;
-    pub fn cublasChpr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          x: *const cuComplex, incx: ::libc::c_int,
-                          y: *const cuComplex, incy: ::libc::c_int,
-                          AP: *mut cuComplex) -> cublasStatus_t;
-    pub fn cublasZhpr2_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          x: *const cuDoubleComplex, incx: ::libc::c_int,
-                          y: *const cuDoubleComplex, incy: ::libc::c_int,
-                          AP: *mut cuDoubleComplex) -> cublasStatus_t;
-    pub fn cublasSgemm_v2(handle: cublasHandle_t, transa: cublasOperation_t,
-                          transb: cublasOperation_t, m: ::libc::c_int,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          B: *const ::libc::c_float, ldb: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          C: *mut ::libc::c_float, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDgemm_v2(handle: cublasHandle_t, transa: cublasOperation_t,
-                          transb: cublasOperation_t, m: ::libc::c_int,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          B: *const ::libc::c_double, ldb: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCgemm_v2(handle: cublasHandle_t, transa: cublasOperation_t,
-                          transb: cublasOperation_t, m: ::libc::c_int,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const cuComplex, A: *const cuComplex,
-                          lda: ::libc::c_int, B: *const cuComplex,
-                          ldb: ::libc::c_int, beta: *const cuComplex,
-                          C: *mut cuComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZgemm_v2(handle: cublasHandle_t, transa: cublasOperation_t,
-                          transb: cublasOperation_t, m: ::libc::c_int,
-                          n: ::libc::c_int, k: ::libc::c_int,
-                          alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasHgemm(handle: cublasHandle_t, transa: cublasOperation_t,
-                       transb: cublasOperation_t, m: ::libc::c_int,
-                       n: ::libc::c_int, k: ::libc::c_int,
-                       alpha: *const __half, A: *const __half,
-                       lda: ::libc::c_int, B: *const __half,
-                       ldb: ::libc::c_int, beta: *const __half,
-                       C: *mut __half, ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSgemmEx(handle: cublasHandle_t, transa: cublasOperation_t,
-                         transb: cublasOperation_t, m: ::libc::c_int,
-                         n: ::libc::c_int, k: ::libc::c_int,
-                         alpha: *const ::libc::c_float,
-                         A: *const ::libc::c_void, Atype: cublasDataType_t,
-                         lda: ::libc::c_int, B: *const ::libc::c_void,
-                         Btype: cublasDataType_t, ldb: ::libc::c_int,
-                         beta: *const ::libc::c_float, C: *mut ::libc::c_void,
-                         Ctype: cublasDataType_t, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSsyrk_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, n: ::libc::c_int,
-                          k: ::libc::c_int, alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          C: *mut ::libc::c_float, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDsyrk_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, n: ::libc::c_int,
-                          k: ::libc::c_int, alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCsyrk_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, n: ::libc::c_int,
-                          k: ::libc::c_int, alpha: *const cuComplex,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          beta: *const cuComplex, C: *mut cuComplex,
-                          ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZsyrk_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, n: ::libc::c_int,
-                          k: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCherk_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, n: ::libc::c_int,
-                          k: ::libc::c_int, alpha: *const ::libc::c_float,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          beta: *const ::libc::c_float, C: *mut cuComplex,
-                          ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZherk_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                          trans: cublasOperation_t, n: ::libc::c_int,
-                          k: ::libc::c_int, alpha: *const ::libc::c_double,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSsyr2k_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                           trans: cublasOperation_t, n: ::libc::c_int,
-                           k: ::libc::c_int, alpha: *const ::libc::c_float,
-                           A: *const ::libc::c_float, lda: ::libc::c_int,
-                           B: *const ::libc::c_float, ldb: ::libc::c_int,
-                           beta: *const ::libc::c_float,
-                           C: *mut ::libc::c_float, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDsyr2k_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                           trans: cublasOperation_t, n: ::libc::c_int,
-                           k: ::libc::c_int, alpha: *const ::libc::c_double,
-                           A: *const ::libc::c_double, lda: ::libc::c_int,
-                           B: *const ::libc::c_double, ldb: ::libc::c_int,
-                           beta: *const ::libc::c_double,
-                           C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCsyr2k_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                           trans: cublasOperation_t, n: ::libc::c_int,
-                           k: ::libc::c_int, alpha: *const cuComplex,
-                           A: *const cuComplex, lda: ::libc::c_int,
-                           B: *const cuComplex, ldb: ::libc::c_int,
-                           beta: *const cuComplex, C: *mut cuComplex,
-                           ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZsyr2k_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                           trans: cublasOperation_t, n: ::libc::c_int,
-                           k: ::libc::c_int, alpha: *const cuDoubleComplex,
-                           A: *const cuDoubleComplex, lda: ::libc::c_int,
-                           B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                           beta: *const cuDoubleComplex,
-                           C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCher2k_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                           trans: cublasOperation_t, n: ::libc::c_int,
-                           k: ::libc::c_int, alpha: *const cuComplex,
-                           A: *const cuComplex, lda: ::libc::c_int,
-                           B: *const cuComplex, ldb: ::libc::c_int,
-                           beta: *const ::libc::c_float, C: *mut cuComplex,
-                           ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZher2k_v2(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                           trans: cublasOperation_t, n: ::libc::c_int,
-                           k: ::libc::c_int, alpha: *const cuDoubleComplex,
-                           A: *const cuDoubleComplex, lda: ::libc::c_int,
-                           B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                           beta: *const ::libc::c_double,
-                           C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSsyrkx(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        trans: cublasOperation_t, n: ::libc::c_int,
-                        k: ::libc::c_int, alpha: *const ::libc::c_float,
-                        A: *const ::libc::c_float, lda: ::libc::c_int,
-                        B: *const ::libc::c_float, ldb: ::libc::c_int,
-                        beta: *const ::libc::c_float, C: *mut ::libc::c_float,
-                        ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDsyrkx(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        trans: cublasOperation_t, n: ::libc::c_int,
-                        k: ::libc::c_int, alpha: *const ::libc::c_double,
-                        A: *const ::libc::c_double, lda: ::libc::c_int,
-                        B: *const ::libc::c_double, ldb: ::libc::c_int,
-                        beta: *const ::libc::c_double,
-                        C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCsyrkx(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        trans: cublasOperation_t, n: ::libc::c_int,
-                        k: ::libc::c_int, alpha: *const cuComplex,
-                        A: *const cuComplex, lda: ::libc::c_int,
-                        B: *const cuComplex, ldb: ::libc::c_int,
-                        beta: *const cuComplex, C: *mut cuComplex,
-                        ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZsyrkx(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        trans: cublasOperation_t, n: ::libc::c_int,
-                        k: ::libc::c_int, alpha: *const cuDoubleComplex,
-                        A: *const cuDoubleComplex, lda: ::libc::c_int,
-                        B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                        beta: *const cuDoubleComplex, C: *mut cuDoubleComplex,
-                        ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCherkx(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        trans: cublasOperation_t, n: ::libc::c_int,
-                        k: ::libc::c_int, alpha: *const cuComplex,
-                        A: *const cuComplex, lda: ::libc::c_int,
-                        B: *const cuComplex, ldb: ::libc::c_int,
-                        beta: *const ::libc::c_float, C: *mut cuComplex,
-                        ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZherkx(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        trans: cublasOperation_t, n: ::libc::c_int,
-                        k: ::libc::c_int, alpha: *const cuDoubleComplex,
-                        A: *const cuDoubleComplex, lda: ::libc::c_int,
-                        B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                        beta: *const ::libc::c_double,
-                        C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSsymm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          B: *const ::libc::c_float, ldb: ::libc::c_int,
-                          beta: *const ::libc::c_float,
-                          C: *mut ::libc::c_float, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDsymm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          B: *const ::libc::c_double, ldb: ::libc::c_int,
-                          beta: *const ::libc::c_double,
-                          C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCsymm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          B: *const cuComplex, ldb: ::libc::c_int,
-                          beta: *const cuComplex, C: *mut cuComplex,
-                          ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZsymm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasChemm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          B: *const cuComplex, ldb: ::libc::c_int,
-                          beta: *const cuComplex, C: *mut cuComplex,
-                          ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZhemm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                          beta: *const cuDoubleComplex,
-                          C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStrsm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          B: *mut ::libc::c_float, ldb: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtrsm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          B: *mut ::libc::c_double, ldb: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtrsm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          B: *mut cuComplex, ldb: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZtrsm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          B: *mut cuDoubleComplex, ldb: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStrmm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const ::libc::c_float,
-                          A: *const ::libc::c_float, lda: ::libc::c_int,
-                          B: *const ::libc::c_float, ldb: ::libc::c_int,
-                          C: *mut ::libc::c_float, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtrmm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const ::libc::c_double,
-                          A: *const ::libc::c_double, lda: ::libc::c_int,
-                          B: *const ::libc::c_double, ldb: ::libc::c_int,
-                          C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtrmm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuComplex,
-                          A: *const cuComplex, lda: ::libc::c_int,
-                          B: *const cuComplex, ldb: ::libc::c_int,
-                          C: *mut cuComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZtrmm_v2(handle: cublasHandle_t, side: cublasSideMode_t,
-                          uplo: cublasFillMode_t, trans: cublasOperation_t,
-                          diag: cublasDiagType_t, m: ::libc::c_int,
-                          n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                          A: *const cuDoubleComplex, lda: ::libc::c_int,
-                          B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                          C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSgemmBatched(handle: cublasHandle_t,
-                              transa: cublasOperation_t,
-                              transb: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, k: ::libc::c_int,
-                              alpha: *const ::libc::c_float,
-                              Aarray: *mut *const ::libc::c_float,
-                              lda: ::libc::c_int,
-                              Barray: *mut *const ::libc::c_float,
-                              ldb: ::libc::c_int,
-                              beta: *const ::libc::c_float,
-                              Carray: *mut *mut ::libc::c_float,
-                              ldc: ::libc::c_int, batchCount: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDgemmBatched(handle: cublasHandle_t,
-                              transa: cublasOperation_t,
-                              transb: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, k: ::libc::c_int,
-                              alpha: *const ::libc::c_double,
-                              Aarray: *mut *const ::libc::c_double,
-                              lda: ::libc::c_int,
-                              Barray: *mut *const ::libc::c_double,
-                              ldb: ::libc::c_int,
-                              beta: *const ::libc::c_double,
-                              Carray: *mut *mut ::libc::c_double,
-                              ldc: ::libc::c_int, batchCount: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCgemmBatched(handle: cublasHandle_t,
-                              transa: cublasOperation_t,
-                              transb: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, k: ::libc::c_int,
-                              alpha: *const cuComplex,
-                              Aarray: *mut *const cuComplex,
-                              lda: ::libc::c_int,
-                              Barray: *mut *const cuComplex,
-                              ldb: ::libc::c_int, beta: *const cuComplex,
-                              Carray: *mut *mut cuComplex, ldc: ::libc::c_int,
-                              batchCount: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZgemmBatched(handle: cublasHandle_t,
-                              transa: cublasOperation_t,
-                              transb: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, k: ::libc::c_int,
-                              alpha: *const cuDoubleComplex,
-                              Aarray: *mut *const cuDoubleComplex,
-                              lda: ::libc::c_int,
-                              Barray: *mut *const cuDoubleComplex,
-                              ldb: ::libc::c_int,
-                              beta: *const cuDoubleComplex,
-                              Carray: *mut *mut cuDoubleComplex,
-                              ldc: ::libc::c_int, batchCount: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSgeam(handle: cublasHandle_t, transa: cublasOperation_t,
-                       transb: cublasOperation_t, m: ::libc::c_int,
-                       n: ::libc::c_int, alpha: *const ::libc::c_float,
-                       A: *const ::libc::c_float, lda: ::libc::c_int,
-                       beta: *const ::libc::c_float,
-                       B: *const ::libc::c_float, ldb: ::libc::c_int,
-                       C: *mut ::libc::c_float, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDgeam(handle: cublasHandle_t, transa: cublasOperation_t,
-                       transb: cublasOperation_t, m: ::libc::c_int,
-                       n: ::libc::c_int, alpha: *const ::libc::c_double,
-                       A: *const ::libc::c_double, lda: ::libc::c_int,
-                       beta: *const ::libc::c_double,
-                       B: *const ::libc::c_double, ldb: ::libc::c_int,
-                       C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCgeam(handle: cublasHandle_t, transa: cublasOperation_t,
-                       transb: cublasOperation_t, m: ::libc::c_int,
-                       n: ::libc::c_int, alpha: *const cuComplex,
-                       A: *const cuComplex, lda: ::libc::c_int,
-                       beta: *const cuComplex, B: *const cuComplex,
-                       ldb: ::libc::c_int, C: *mut cuComplex,
-                       ldc: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZgeam(handle: cublasHandle_t, transa: cublasOperation_t,
-                       transb: cublasOperation_t, m: ::libc::c_int,
-                       n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                       A: *const cuDoubleComplex, lda: ::libc::c_int,
-                       beta: *const cuDoubleComplex,
-                       B: *const cuDoubleComplex, ldb: ::libc::c_int,
-                       C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSgetrfBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *mut ::libc::c_float,
-                               lda: ::libc::c_int, P: *mut ::libc::c_int,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDgetrfBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *mut ::libc::c_double,
-                               lda: ::libc::c_int, P: *mut ::libc::c_int,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCgetrfBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *mut cuComplex, lda: ::libc::c_int,
-                               P: *mut ::libc::c_int,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZgetrfBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *mut cuDoubleComplex,
-                               lda: ::libc::c_int, P: *mut ::libc::c_int,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSgetriBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *const ::libc::c_float,
-                               lda: ::libc::c_int, P: *const ::libc::c_int,
-                               C: *mut *mut ::libc::c_float,
-                               ldc: ::libc::c_int, info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDgetriBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *const ::libc::c_double,
-                               lda: ::libc::c_int, P: *const ::libc::c_int,
-                               C: *mut *mut ::libc::c_double,
-                               ldc: ::libc::c_int, info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCgetriBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *const cuComplex, lda: ::libc::c_int,
-                               P: *const ::libc::c_int,
-                               C: *mut *mut cuComplex, ldc: ::libc::c_int,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZgetriBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                               A: *mut *const cuDoubleComplex,
-                               lda: ::libc::c_int, P: *const ::libc::c_int,
-                               C: *mut *mut cuDoubleComplex,
-                               ldc: ::libc::c_int, info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSgetrsBatched(handle: cublasHandle_t,
-                               trans: cublasOperation_t, n: ::libc::c_int,
-                               nrhs: ::libc::c_int,
-                               Aarray: *mut *const ::libc::c_float,
-                               lda: ::libc::c_int,
-                               devIpiv: *const ::libc::c_int,
-                               Barray: *mut *mut ::libc::c_float,
-                               ldb: ::libc::c_int, info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDgetrsBatched(handle: cublasHandle_t,
-                               trans: cublasOperation_t, n: ::libc::c_int,
-                               nrhs: ::libc::c_int,
-                               Aarray: *mut *const ::libc::c_double,
-                               lda: ::libc::c_int,
-                               devIpiv: *const ::libc::c_int,
-                               Barray: *mut *mut ::libc::c_double,
-                               ldb: ::libc::c_int, info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCgetrsBatched(handle: cublasHandle_t,
-                               trans: cublasOperation_t, n: ::libc::c_int,
-                               nrhs: ::libc::c_int,
-                               Aarray: *mut *const cuComplex,
-                               lda: ::libc::c_int,
-                               devIpiv: *const ::libc::c_int,
-                               Barray: *mut *mut cuComplex,
-                               ldb: ::libc::c_int, info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZgetrsBatched(handle: cublasHandle_t,
-                               trans: cublasOperation_t, n: ::libc::c_int,
-                               nrhs: ::libc::c_int,
-                               Aarray: *mut *const cuDoubleComplex,
-                               lda: ::libc::c_int,
-                               devIpiv: *const ::libc::c_int,
-                               Barray: *mut *mut cuDoubleComplex,
-                               ldb: ::libc::c_int, info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasStrsmBatched(handle: cublasHandle_t, side: cublasSideMode_t,
-                              uplo: cublasFillMode_t,
-                              trans: cublasOperation_t,
-                              diag: cublasDiagType_t, m: ::libc::c_int,
-                              n: ::libc::c_int, alpha: *const ::libc::c_float,
-                              A: *mut *const ::libc::c_float,
-                              lda: ::libc::c_int,
-                              B: *mut *mut ::libc::c_float,
-                              ldb: ::libc::c_int, batchCount: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtrsmBatched(handle: cublasHandle_t, side: cublasSideMode_t,
-                              uplo: cublasFillMode_t,
-                              trans: cublasOperation_t,
-                              diag: cublasDiagType_t, m: ::libc::c_int,
-                              n: ::libc::c_int,
-                              alpha: *const ::libc::c_double,
-                              A: *mut *const ::libc::c_double,
-                              lda: ::libc::c_int,
-                              B: *mut *mut ::libc::c_double,
-                              ldb: ::libc::c_int, batchCount: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtrsmBatched(handle: cublasHandle_t, side: cublasSideMode_t,
-                              uplo: cublasFillMode_t,
-                              trans: cublasOperation_t,
-                              diag: cublasDiagType_t, m: ::libc::c_int,
-                              n: ::libc::c_int, alpha: *const cuComplex,
-                              A: *mut *const cuComplex, lda: ::libc::c_int,
-                              B: *mut *mut cuComplex, ldb: ::libc::c_int,
-                              batchCount: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZtrsmBatched(handle: cublasHandle_t, side: cublasSideMode_t,
-                              uplo: cublasFillMode_t,
-                              trans: cublasOperation_t,
-                              diag: cublasDiagType_t, m: ::libc::c_int,
-                              n: ::libc::c_int, alpha: *const cuDoubleComplex,
-                              A: *mut *const cuDoubleComplex,
-                              lda: ::libc::c_int,
-                              B: *mut *mut cuDoubleComplex,
-                              ldb: ::libc::c_int, batchCount: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasSmatinvBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                                A: *mut *const ::libc::c_float,
-                                lda: ::libc::c_int,
-                                Ainv: *mut *mut ::libc::c_float,
-                                lda_inv: ::libc::c_int,
-                                info: *mut ::libc::c_int,
-                                batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDmatinvBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                                A: *mut *const ::libc::c_double,
-                                lda: ::libc::c_int,
-                                Ainv: *mut *mut ::libc::c_double,
-                                lda_inv: ::libc::c_int,
-                                info: *mut ::libc::c_int,
-                                batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCmatinvBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                                A: *mut *const cuComplex, lda: ::libc::c_int,
-                                Ainv: *mut *mut cuComplex,
-                                lda_inv: ::libc::c_int,
-                                info: *mut ::libc::c_int,
-                                batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZmatinvBatched(handle: cublasHandle_t, n: ::libc::c_int,
-                                A: *mut *const cuDoubleComplex,
-                                lda: ::libc::c_int,
-                                Ainv: *mut *mut cuDoubleComplex,
-                                lda_inv: ::libc::c_int,
-                                info: *mut ::libc::c_int,
-                                batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSgeqrfBatched(handle: cublasHandle_t, m: ::libc::c_int,
-                               n: ::libc::c_int,
-                               Aarray: *mut *mut ::libc::c_float,
-                               lda: ::libc::c_int,
-                               TauArray: *mut *mut ::libc::c_float,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDgeqrfBatched(handle: cublasHandle_t, m: ::libc::c_int,
-                               n: ::libc::c_int,
-                               Aarray: *mut *mut ::libc::c_double,
-                               lda: ::libc::c_int,
-                               TauArray: *mut *mut ::libc::c_double,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCgeqrfBatched(handle: cublasHandle_t, m: ::libc::c_int,
-                               n: ::libc::c_int, Aarray: *mut *mut cuComplex,
-                               lda: ::libc::c_int,
-                               TauArray: *mut *mut cuComplex,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZgeqrfBatched(handle: cublasHandle_t, m: ::libc::c_int,
-                               n: ::libc::c_int,
-                               Aarray: *mut *mut cuDoubleComplex,
-                               lda: ::libc::c_int,
-                               TauArray: *mut *mut cuDoubleComplex,
-                               info: *mut ::libc::c_int,
-                               batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSgelsBatched(handle: cublasHandle_t,
-                              trans: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, nrhs: ::libc::c_int,
-                              Aarray: *mut *mut ::libc::c_float,
-                              lda: ::libc::c_int,
-                              Carray: *mut *mut ::libc::c_float,
-                              ldc: ::libc::c_int, info: *mut ::libc::c_int,
-                              devInfoArray: *mut ::libc::c_int,
-                              batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasDgelsBatched(handle: cublasHandle_t,
-                              trans: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, nrhs: ::libc::c_int,
-                              Aarray: *mut *mut ::libc::c_double,
-                              lda: ::libc::c_int,
-                              Carray: *mut *mut ::libc::c_double,
-                              ldc: ::libc::c_int, info: *mut ::libc::c_int,
-                              devInfoArray: *mut ::libc::c_int,
-                              batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasCgelsBatched(handle: cublasHandle_t,
-                              trans: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, nrhs: ::libc::c_int,
-                              Aarray: *mut *mut cuComplex, lda: ::libc::c_int,
-                              Carray: *mut *mut cuComplex, ldc: ::libc::c_int,
-                              info: *mut ::libc::c_int,
-                              devInfoArray: *mut ::libc::c_int,
-                              batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasZgelsBatched(handle: cublasHandle_t,
-                              trans: cublasOperation_t, m: ::libc::c_int,
-                              n: ::libc::c_int, nrhs: ::libc::c_int,
-                              Aarray: *mut *mut cuDoubleComplex,
-                              lda: ::libc::c_int,
-                              Carray: *mut *mut cuDoubleComplex,
-                              ldc: ::libc::c_int, info: *mut ::libc::c_int,
-                              devInfoArray: *mut ::libc::c_int,
-                              batchSize: ::libc::c_int) -> cublasStatus_t;
-    pub fn cublasSdgmm(handle: cublasHandle_t, mode: cublasSideMode_t,
-                       m: ::libc::c_int, n: ::libc::c_int,
-                       A: *const ::libc::c_float, lda: ::libc::c_int,
-                       x: *const ::libc::c_float, incx: ::libc::c_int,
-                       C: *mut ::libc::c_float, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDdgmm(handle: cublasHandle_t, mode: cublasSideMode_t,
-                       m: ::libc::c_int, n: ::libc::c_int,
-                       A: *const ::libc::c_double, lda: ::libc::c_int,
-                       x: *const ::libc::c_double, incx: ::libc::c_int,
-                       C: *mut ::libc::c_double, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCdgmm(handle: cublasHandle_t, mode: cublasSideMode_t,
-                       m: ::libc::c_int, n: ::libc::c_int,
-                       A: *const cuComplex, lda: ::libc::c_int,
-                       x: *const cuComplex, incx: ::libc::c_int,
-                       C: *mut cuComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZdgmm(handle: cublasHandle_t, mode: cublasSideMode_t,
-                       m: ::libc::c_int, n: ::libc::c_int,
-                       A: *const cuDoubleComplex, lda: ::libc::c_int,
-                       x: *const cuDoubleComplex, incx: ::libc::c_int,
-                       C: *mut cuDoubleComplex, ldc: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStpttr(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, AP: *const ::libc::c_float,
-                        A: *mut ::libc::c_float, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasDtpttr(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, AP: *const ::libc::c_double,
-                        A: *mut ::libc::c_double, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasCtpttr(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, AP: *const cuComplex,
-                        A: *mut cuComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasZtpttr(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, AP: *const cuDoubleComplex,
-                        A: *mut cuDoubleComplex, lda: ::libc::c_int)
-     -> cublasStatus_t;
-    pub fn cublasStrttp(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, A: *const ::libc::c_float,
-                        lda: ::libc::c_int, AP: *mut ::libc::c_float)
-     -> cublasStatus_t;
-    pub fn cublasDtrttp(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, A: *const ::libc::c_double,
-                        lda: ::libc::c_int, AP: *mut ::libc::c_double)
-     -> cublasStatus_t;
-    pub fn cublasCtrttp(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, A: *const cuComplex,
-                        lda: ::libc::c_int, AP: *mut cuComplex)
-     -> cublasStatus_t;
-    pub fn cublasZtrttp(handle: cublasHandle_t, uplo: cublasFillMode_t,
-                        n: ::libc::c_int, A: *const cuDoubleComplex,
-                        lda: ::libc::c_int, AP: *mut cuDoubleComplex)
-     -> cublasStatus_t;
+    pub fn cublasSnrm2_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDnrm2_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasScnrm2_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDznrm2_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasSdot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_float,
+        incy: ::libc::c_int,
+        result: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDdot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_double,
+        incy: ::libc::c_int,
+        result: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasCdotu_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *const cuComplex,
+        incy: ::libc::c_int,
+        result: *mut cuComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasCdotc_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *const cuComplex,
+        incy: ::libc::c_int,
+        result: *mut cuComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasZdotu_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *const cuDoubleComplex,
+        incy: ::libc::c_int,
+        result: *mut cuDoubleComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasZdotc_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *const cuDoubleComplex,
+        incy: ::libc::c_int,
+        result: *mut cuDoubleComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasSscal_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDscal_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCscal_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsscal_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZscal_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZdscal_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSaxpy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDaxpy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCaxpy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZaxpy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasScopy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDcopy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCcopy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZcopy_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSswap_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDswap_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCswap_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZswap_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIsamax_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIdamax_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIcamax_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIzamax_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIsamin_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIdamin_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIcamin_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasIzamin_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSasum_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDasum_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasScasum_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDzasum_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        result: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasSrot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+        c: *const ::libc::c_float,
+        s: *const ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDrot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+        c: *const ::libc::c_double,
+        s: *const ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasCrot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+        c: *const ::libc::c_float,
+        s: *const cuComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasCsrot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+        c: *const ::libc::c_float,
+        s: *const ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasZrot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+        c: *const ::libc::c_double,
+        s: *const cuDoubleComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasZdrot_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+        c: *const ::libc::c_double,
+        s: *const ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasSrotg_v2(
+        handle: cublasHandle_t,
+        a: *mut ::libc::c_float,
+        b: *mut ::libc::c_float,
+        c: *mut ::libc::c_float,
+        s: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDrotg_v2(
+        handle: cublasHandle_t,
+        a: *mut ::libc::c_double,
+        b: *mut ::libc::c_double,
+        c: *mut ::libc::c_double,
+        s: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasCrotg_v2(
+        handle: cublasHandle_t,
+        a: *mut cuComplex,
+        b: *mut cuComplex,
+        c: *mut ::libc::c_float,
+        s: *mut cuComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasZrotg_v2(
+        handle: cublasHandle_t,
+        a: *mut cuDoubleComplex,
+        b: *mut cuDoubleComplex,
+        c: *mut ::libc::c_double,
+        s: *mut cuDoubleComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasSrotm_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+        param: *const ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDrotm_v2(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+        param: *const ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasSrotmg_v2(
+        handle: cublasHandle_t,
+        d1: *mut ::libc::c_float,
+        d2: *mut ::libc::c_float,
+        x1: *mut ::libc::c_float,
+        y1: *const ::libc::c_float,
+        param: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDrotmg_v2(
+        handle: cublasHandle_t,
+        d1: *mut ::libc::c_double,
+        d2: *mut ::libc::c_double,
+        x1: *mut ::libc::c_double,
+        y1: *const ::libc::c_double,
+        param: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasSgemv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgemv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgemv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        beta: *const cuComplex,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgemv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgbmv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        kl: ::libc::c_int,
+        ku: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgbmv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        kl: ::libc::c_int,
+        ku: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgbmv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        kl: ::libc::c_int,
+        ku: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        beta: *const cuComplex,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgbmv_v2(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        kl: ::libc::c_int,
+        ku: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStrmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtrmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtrmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtrmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStpmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const ::libc::c_float,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtpmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const ::libc::c_double,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtpmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const cuComplex,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtpmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const cuDoubleComplex,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStrsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtrsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtrsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtrsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStpsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const ::libc::c_float,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtpsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const ::libc::c_double,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtpsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const cuComplex,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtpsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        AP: *const cuDoubleComplex,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStbsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_float,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtbsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *mut ::libc::c_double,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtbsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *mut cuComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtbsv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *mut cuDoubleComplex,
+        incx: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSsymv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsymv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsymv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        beta: *const cuComplex,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZsymv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasChemv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        beta: *const cuComplex,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZhemv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSsbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasChbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        beta: *const cuComplex,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZhbmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSspmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        AP: *const ::libc::c_float,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        y: *mut ::libc::c_float,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDspmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        AP: *const ::libc::c_double,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        y: *mut ::libc::c_double,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasChpmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        AP: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        beta: *const cuComplex,
+        y: *mut cuComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZhpmv_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        AP: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        y: *mut cuDoubleComplex,
+        incy: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSger_v2(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_float,
+        incy: ::libc::c_int,
+        A: *mut ::libc::c_float,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDger_v2(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_double,
+        incy: ::libc::c_int,
+        A: *mut ::libc::c_double,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgeru_v2(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *const cuComplex,
+        incy: ::libc::c_int,
+        A: *mut cuComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgerc_v2(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *const cuComplex,
+        incy: ::libc::c_int,
+        A: *mut cuComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgeru_v2(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *const cuDoubleComplex,
+        incy: ::libc::c_int,
+        A: *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgerc_v2(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *const cuDoubleComplex,
+        incy: ::libc::c_int,
+        A: *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSsyr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        A: *mut ::libc::c_float,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsyr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        A: *mut ::libc::c_double,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsyr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        A: *mut cuComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZsyr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        A: *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCher_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        A: *mut cuComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZher_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        A: *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSspr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        AP: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDspr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        AP: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasChpr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        AP: *mut cuComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasZhpr_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        AP: *mut cuDoubleComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasSsyr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_float,
+        incy: ::libc::c_int,
+        A: *mut ::libc::c_float,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsyr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_double,
+        incy: ::libc::c_int,
+        A: *mut ::libc::c_double,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsyr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *const cuComplex,
+        incy: ::libc::c_int,
+        A: *mut cuComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZsyr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *const cuDoubleComplex,
+        incy: ::libc::c_int,
+        A: *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCher2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *const cuComplex,
+        incy: ::libc::c_int,
+        A: *mut cuComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZher2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *const cuDoubleComplex,
+        incy: ::libc::c_int,
+        A: *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSspr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_float,
+        incy: ::libc::c_int,
+        AP: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDspr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        y: *const ::libc::c_double,
+        incy: ::libc::c_int,
+        AP: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasChpr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        y: *const cuComplex,
+        incy: ::libc::c_int,
+        AP: *mut cuComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasZhpr2_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        y: *const cuDoubleComplex,
+        incy: ::libc::c_int,
+        AP: *mut cuDoubleComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasSgemm_v2(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_float,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgemm_v2(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_double,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgemm_v2(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuComplex,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgemm_v2(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasHgemm(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const __half,
+        A: *const __half,
+        lda: ::libc::c_int,
+        B: *const __half,
+        ldb: ::libc::c_int,
+        beta: *const __half,
+        C: *mut __half,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgemmEx(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_void,
+        Atype: cublasDataType_t,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_void,
+        Btype: cublasDataType_t,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut ::libc::c_void,
+        Ctype: cublasDataType_t,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSsyrk_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsyrk_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsyrk_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        beta: *const cuComplex,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZsyrk_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCherk_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZherk_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSsyr2k_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_float,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsyr2k_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_double,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsyr2k_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuComplex,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZsyr2k_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCher2k_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZher2k_v2(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSsyrkx(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_float,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsyrkx(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_double,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsyrkx(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuComplex,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZsyrkx(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCherkx(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZherkx(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSsymm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_float,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDsymm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_double,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCsymm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuComplex,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZsymm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasChemm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuComplex,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZhemm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStrsm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        B: *mut ::libc::c_float,
+        ldb: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtrsm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        B: *mut ::libc::c_double,
+        ldb: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtrsm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *mut cuComplex,
+        ldb: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtrsm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *mut cuDoubleComplex,
+        ldb: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStrmm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_float,
+        ldb: ::libc::c_int,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtrmm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        B: *const ::libc::c_double,
+        ldb: ::libc::c_int,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtrmm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtrmm_v2(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgemmBatched(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        Aarray: *mut *const ::libc::c_float,
+        lda: ::libc::c_int,
+        Barray: *mut *const ::libc::c_float,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        Carray: *mut *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgemmBatched(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        Aarray: *mut *const ::libc::c_double,
+        lda: ::libc::c_int,
+        Barray: *mut *const ::libc::c_double,
+        ldb: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        Carray: *mut *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgemmBatched(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuComplex,
+        Aarray: *mut *const cuComplex,
+        lda: ::libc::c_int,
+        Barray: *mut *const cuComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuComplex,
+        Carray: *mut *mut cuComplex,
+        ldc: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgemmBatched(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        k: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        Aarray: *mut *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        Barray: *mut *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        Carray: *mut *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgeam(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        beta: *const ::libc::c_float,
+        B: *const ::libc::c_float,
+        ldb: ::libc::c_int,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgeam(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        beta: *const ::libc::c_double,
+        B: *const ::libc::c_double,
+        ldb: ::libc::c_int,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgeam(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        beta: *const cuComplex,
+        B: *const cuComplex,
+        ldb: ::libc::c_int,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgeam(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        beta: *const cuDoubleComplex,
+        B: *const cuDoubleComplex,
+        ldb: ::libc::c_int,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgetrfBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *mut ::libc::c_float,
+        lda: ::libc::c_int,
+        P: *mut ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgetrfBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *mut ::libc::c_double,
+        lda: ::libc::c_int,
+        P: *mut ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgetrfBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *mut cuComplex,
+        lda: ::libc::c_int,
+        P: *mut ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgetrfBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+        P: *mut ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgetriBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const ::libc::c_float,
+        lda: ::libc::c_int,
+        P: *const ::libc::c_int,
+        C: *mut *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgetriBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const ::libc::c_double,
+        lda: ::libc::c_int,
+        P: *const ::libc::c_int,
+        C: *mut *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgetriBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const cuComplex,
+        lda: ::libc::c_int,
+        P: *const ::libc::c_int,
+        C: *mut *mut cuComplex,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgetriBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        P: *const ::libc::c_int,
+        C: *mut *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgetrsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *const ::libc::c_float,
+        lda: ::libc::c_int,
+        devIpiv: *const ::libc::c_int,
+        Barray: *mut *mut ::libc::c_float,
+        ldb: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgetrsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *const ::libc::c_double,
+        lda: ::libc::c_int,
+        devIpiv: *const ::libc::c_int,
+        Barray: *mut *mut ::libc::c_double,
+        ldb: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgetrsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *const cuComplex,
+        lda: ::libc::c_int,
+        devIpiv: *const ::libc::c_int,
+        Barray: *mut *mut cuComplex,
+        ldb: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgetrsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        devIpiv: *const ::libc::c_int,
+        Barray: *mut *mut cuDoubleComplex,
+        ldb: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStrsmBatched(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_float,
+        A: *mut *const ::libc::c_float,
+        lda: ::libc::c_int,
+        B: *mut *mut ::libc::c_float,
+        ldb: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtrsmBatched(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const ::libc::c_double,
+        A: *mut *const ::libc::c_double,
+        lda: ::libc::c_int,
+        B: *mut *mut ::libc::c_double,
+        ldb: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtrsmBatched(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuComplex,
+        A: *mut *const cuComplex,
+        lda: ::libc::c_int,
+        B: *mut *mut cuComplex,
+        ldb: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtrsmBatched(
+        handle: cublasHandle_t,
+        side: cublasSideMode_t,
+        uplo: cublasFillMode_t,
+        trans: cublasOperation_t,
+        diag: cublasDiagType_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        alpha: *const cuDoubleComplex,
+        A: *mut *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        B: *mut *mut cuDoubleComplex,
+        ldb: ::libc::c_int,
+        batchCount: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSmatinvBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const ::libc::c_float,
+        lda: ::libc::c_int,
+        Ainv: *mut *mut ::libc::c_float,
+        lda_inv: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDmatinvBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const ::libc::c_double,
+        lda: ::libc::c_int,
+        Ainv: *mut *mut ::libc::c_double,
+        lda_inv: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCmatinvBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const cuComplex,
+        lda: ::libc::c_int,
+        Ainv: *mut *mut cuComplex,
+        lda_inv: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZmatinvBatched(
+        handle: cublasHandle_t,
+        n: ::libc::c_int,
+        A: *mut *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        Ainv: *mut *mut cuDoubleComplex,
+        lda_inv: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgeqrfBatched(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        Aarray: *mut *mut ::libc::c_float,
+        lda: ::libc::c_int,
+        TauArray: *mut *mut ::libc::c_float,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgeqrfBatched(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        Aarray: *mut *mut ::libc::c_double,
+        lda: ::libc::c_int,
+        TauArray: *mut *mut ::libc::c_double,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgeqrfBatched(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        Aarray: *mut *mut cuComplex,
+        lda: ::libc::c_int,
+        TauArray: *mut *mut cuComplex,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgeqrfBatched(
+        handle: cublasHandle_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        Aarray: *mut *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+        TauArray: *mut *mut cuDoubleComplex,
+        info: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSgelsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *mut ::libc::c_float,
+        lda: ::libc::c_int,
+        Carray: *mut *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        devInfoArray: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDgelsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *mut ::libc::c_double,
+        lda: ::libc::c_int,
+        Carray: *mut *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        devInfoArray: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCgelsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *mut cuComplex,
+        lda: ::libc::c_int,
+        Carray: *mut *mut cuComplex,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        devInfoArray: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZgelsBatched(
+        handle: cublasHandle_t,
+        trans: cublasOperation_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        nrhs: ::libc::c_int,
+        Aarray: *mut *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+        Carray: *mut *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+        info: *mut ::libc::c_int,
+        devInfoArray: *mut ::libc::c_int,
+        batchSize: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasSdgmm(
+        handle: cublasHandle_t,
+        mode: cublasSideMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_float,
+        incx: ::libc::c_int,
+        C: *mut ::libc::c_float,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDdgmm(
+        handle: cublasHandle_t,
+        mode: cublasSideMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        x: *const ::libc::c_double,
+        incx: ::libc::c_int,
+        C: *mut ::libc::c_double,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCdgmm(
+        handle: cublasHandle_t,
+        mode: cublasSideMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        x: *const cuComplex,
+        incx: ::libc::c_int,
+        C: *mut cuComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZdgmm(
+        handle: cublasHandle_t,
+        mode: cublasSideMode_t,
+        m: ::libc::c_int,
+        n: ::libc::c_int,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        x: *const cuDoubleComplex,
+        incx: ::libc::c_int,
+        C: *mut cuDoubleComplex,
+        ldc: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStpttr(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        AP: *const ::libc::c_float,
+        A: *mut ::libc::c_float,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasDtpttr(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        AP: *const ::libc::c_double,
+        A: *mut ::libc::c_double,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasCtpttr(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        AP: *const cuComplex,
+        A: *mut cuComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasZtpttr(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        AP: *const cuDoubleComplex,
+        A: *mut cuDoubleComplex,
+        lda: ::libc::c_int,
+    ) -> cublasStatus_t;
+    pub fn cublasStrttp(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        A: *const ::libc::c_float,
+        lda: ::libc::c_int,
+        AP: *mut ::libc::c_float,
+    ) -> cublasStatus_t;
+    pub fn cublasDtrttp(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        A: *const ::libc::c_double,
+        lda: ::libc::c_int,
+        AP: *mut ::libc::c_double,
+    ) -> cublasStatus_t;
+    pub fn cublasCtrttp(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        A: *const cuComplex,
+        lda: ::libc::c_int,
+        AP: *mut cuComplex,
+    ) -> cublasStatus_t;
+    pub fn cublasZtrttp(
+        handle: cublasHandle_t,
+        uplo: cublasFillMode_t,
+        n: ::libc::c_int,
+        A: *const cuDoubleComplex,
+        lda: ::libc::c_int,
+        AP: *mut cuDoubleComplex,
+    ) -> cublasStatus_t;
 }
