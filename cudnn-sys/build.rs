@@ -61,7 +61,7 @@ fn main() {
             // Do not generate unstable Rust code that
             // requires a nightly rustc and enabling
             // unstable features.
-            .no_unstable_rust()
+            .rust_target(bindgen::RustTarget::Stable_1_19)
             .hide_type("max_align_t") // https://github.com/servo/rust-bindgen/issues/550
             .raw_line(r"
 //! Defines the FFI for CUDA cuDNN.
