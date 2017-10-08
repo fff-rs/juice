@@ -3,7 +3,7 @@ use ffi::*;
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PointerMode {
     Host,
-    Device
+    Device,
 }
 
 impl PointerMode {

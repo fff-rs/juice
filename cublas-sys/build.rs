@@ -35,17 +35,17 @@ fn main() {
     let libs_env = env::var("CUBLAS_LIBS").ok();
     let libs = match libs_env {
         Some(ref v) => v.split(":").collect(),
-        None => vec!["cublas"]
+        None => vec!["cublas"],
     };
 
     let mode = if env::var_os("CUBLAS_STATIC").is_some() {
-    	"static"
+        "static"
     } else {
-    	"dylib"
+        "dylib"
     };
 
     if let Some(lib_dir) = lib_dir {
-    	println!("cargo:rustc-link-search=native={}", lib_dir);
+        println!("cargo:rustc-link-search=native={}", lib_dir);
     }
 
     for lib in libs {

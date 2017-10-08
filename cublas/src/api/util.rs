@@ -1,4 +1,4 @@
-use ::{API, Error};
+use {API, Error};
 use super::Context;
 use super::PointerMode;
 use ffi::*;
@@ -11,7 +11,7 @@ impl API {
     /// Creating contexts all the time can lead to performance problems.
     /// Generally one Context per GPU device and configuration is recommended.
     pub fn create() -> Result<Context, Error> {
-        Ok(Context::from_c(try!( unsafe { API::ffi_create() })))
+        Ok(Context::from_c(try!(unsafe { API::ffi_create() })))
     }
 
     /// Destroys the cuBLAS context, freeing its resources.
@@ -24,12 +24,16 @@ impl API {
 
     /// Retrieve the pointer mode for a given cuBLAS context.
     pub fn get_pointer_mode(context: &Context) -> Result<PointerMode, Error> {
-        Ok(PointerMode::from_c(try!(unsafe { API::ffi_get_pointer_mode(*context.id_c()) })))
+        Ok(PointerMode::from_c(
+            try!(unsafe { API::ffi_get_pointer_mode(*context.id_c()) }),
+        ))
     }
 
     /// Set the pointer mode for a given cuBLAS context.
     pub fn set_pointer_mode(context: &mut Context, pointer_mode: PointerMode) -> Result<(), Error> {
-        Ok(try!(unsafe { API::ffi_set_pointer_mode(*context.id_c(), pointer_mode.as_c()) }))
+        Ok(try!(unsafe {
+            API::ffi_set_pointer_mode(*context.id_c(), pointer_mode.as_c())
+        }))
     }
 
     unsafe fn ffi_create() -> Result<cublasHandle_t, Error> {
@@ -39,7 +43,9 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => Err(Error::AllocFailed),
-            _ => Err(Error::Unknown("Unable to create the cuBLAS context/resources."))
+            _ => Err(Error::Unknown(
+                "Unable to create the cuBLAS context/resources.",
+            )),
         }
     }
 
@@ -47,7 +53,9 @@ impl API {
         match cublasDestroy_v2(handle) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-            _ => Err(Error::Unknown("Unable to destroy the CUDA cuDNN context/resources.")),
+            _ => Err(Error::Unknown(
+                "Unable to destroy the CUDA cuDNN context/resources.",
+            )),
         }
     }
 
@@ -60,7 +68,10 @@ impl API {
         }
     }
 
-    unsafe fn ffi_set_pointer_mode(handle: cublasHandle_t, pointer_mode: cublasPointerMode_t) -> Result<(), Error> {
+    unsafe fn ffi_set_pointer_mode(
+        handle: cublasHandle_t,
+        pointer_mode: cublasPointerMode_t,
+    ) -> Result<(), Error> {
         match cublasSetPointerMode_v2(handle, pointer_mode) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
@@ -86,7 +97,7 @@ impl API {
 #[cfg(test)]
 mod test {
     use ffi::cublasPointerMode_t;
-    use ::API;
+    use API;
     use super::super::Context;
 
     #[test]
@@ -110,10 +121,16 @@ mod test {
     fn can_set_pointer_mode() {
         unsafe {
             let context = Context::new().unwrap();
-            API::ffi_set_pointer_mode(*context.id_c(), cublasPointerMode_t::CUBLAS_POINTER_MODE_DEVICE).unwrap();
+            API::ffi_set_pointer_mode(
+                *context.id_c(),
+                cublasPointerMode_t::CUBLAS_POINTER_MODE_DEVICE,
+            ).unwrap();
             let mode = API::ffi_get_pointer_mode(*context.id_c()).unwrap();
             assert_eq!(cublasPointerMode_t::CUBLAS_POINTER_MODE_DEVICE, mode);
-            API::ffi_set_pointer_mode(*context.id_c(), cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST).unwrap();
+            API::ffi_set_pointer_mode(
+                *context.id_c(),
+                cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST,
+            ).unwrap();
             let mode2 = API::ffi_get_pointer_mode(*context.id_c()).unwrap();
             assert_eq!(cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST, mode2);
         }
