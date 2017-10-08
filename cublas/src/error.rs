@@ -51,11 +51,15 @@ impl error::Error for Error {
             Error::AllocFailed => "The resources could not be allocated.",
             Error::InternalError(ref err) => err,
             Error::InvalidValue(ref err) => err,
-            Error::ArchMismatch => "cuBLAS only supports devices with compute capabilities greater than or equal to 1.3.",
+            Error::ArchMismatch => {
+                "cuBLAS only supports devices with compute capabilities greater than or equal to 1.3."
+            }
             Error::MappingError => "There was an error accessing GPU memory.",
             Error::ExecutionFailed => "Execution failed to launch on the GPU.",
             Error::NotSupported(ref err) => err,
-            Error::LicenseError => "There is an error with the license. Check that it is present, unexpired and the NVIDIA_LICENSE_FILE environment variable has been set correctly.",
+            Error::LicenseError => {
+                "There is an error with the license. Check that it is present, unexpired and the NVIDIA_LICENSE_FILE environment variable has been set correctly."
+            }
             Error::Unknown(ref err) => err,
         }
     }
