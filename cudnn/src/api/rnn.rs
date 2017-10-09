@@ -74,6 +74,7 @@ impl API {
 
     /// Initializes a generic CUDA cuDNN RNN Descriptor with specific properties.
     pub fn set_rnn_descriptor(
+        handle: cudnnHandle_t,
         desc: cudnnRNNDescriptor_t,
         hidden_size : i32,
         num_layers : i32,
@@ -81,13 +82,15 @@ impl API {
         input_mode : cudnnRNNInputMode_t,
         direction : cudnnDirectionMode_t,
         mode : cudnnRNNMode_t,
+        algorithm : cudnnRNNAlgo_t,
         data_type : cudnnDataType_t,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_set_rnn_descriptor(desc, hidden_size, num_layers, dropout_desc, input_mode, direction, mode, data_type) }
+        unsafe { API::ffi_set_rnn_descriptor(handle, desc, hidden_size, num_layers, dropout_desc, input_mode, direction, mode, algorithm, data_type) }
     }
 
 
     unsafe fn ffi_set_rnn_descriptor(
+        handle: cudnnHandle_t,
         desc: cudnnRNNDescriptor_t,
         hidden_size : i32,
         num_layers : i32,
@@ -95,9 +98,10 @@ impl API {
         input_mode : cudnnRNNInputMode_t,
         direction : cudnnDirectionMode_t,
         mode : cudnnRNNMode_t,
+        algorithm : cudnnRNNAlgo_t,
         data_type : cudnnDataType_t,
     ) -> Result<(), Error> {
-        match cudnnSetRNNDescriptor(desc, hidden_size, num_layers, dropout_desc, input_mode, direction, mode, data_type) {
+        match cudnnSetRNNDescriptor(handle, desc, hidden_size, num_layers, dropout_desc, input_mode, direction, mode, algorithm, data_type) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("FIXME RNN")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
