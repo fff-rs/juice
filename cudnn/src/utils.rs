@@ -1,5 +1,9 @@
 //! Describes utility functionality for CUDA cuDNN.
-use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor, ActivationDescriptor};
+
+use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor,
+            ActivationDescriptor, DropoutDescriptor};
+use cuda::CudaDeviceMemory;
+
 use ffi::*;
 
 use num::traits::*;
@@ -224,6 +228,39 @@ impl ActivationConfig {
         &self.activation_tanh_desc
     }
 }
+
+
+#[allow(missing_debug_implementations, missing_copy_implementations)]
+/// Provides a convenient interface to access cuDNN's Dropout Descriptor.
+///
+/// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_dropout()`.
+pub struct DropoutConfig {
+    dropout_desc: DropoutDescriptor,
+    reserve_space: CudaDeviceMemory,
+}
+
+impl DropoutConfig {
+    /// Returns a new DropoutConfig.
+    pub fn new(
+        dropout_desc: DropoutDescriptor,
+        reserve: CudaDeviceMemory,
+    ) -> DropoutConfig {
+        DropoutConfig {
+            dropout_desc: dropout_desc,
+            reserve_space: reserve,
+        }
+    }
+    /// Returns `dropout_desc`.
+    pub fn dropout_desc(&self) -> &DropoutDescriptor {
+        &self.dropout_desc
+    }
+
+    /// Returns the reserved space ``.
+    pub fn reserved_space(&self) -> &CudaDeviceMemory {
+    	&self.reserve_space
+    }
+}
+
 
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 /// Provides a convenient interface for cuDNN's scaling parameters `alpha` and `beta`.

@@ -1,4 +1,6 @@
 extern crate rcudnn as cudnn;
+
+#[macro_use]
 extern crate coaster as co;
 extern crate libc;
 
@@ -7,14 +9,17 @@ use ffi::*;
 
 #[cfg(test)]
 #[link(name = "cudart")]
-
 #[cfg(test)]
 mod cudnn_spec {
 
-    use cudnn::{Cudnn, API, TensorDescriptor, ActivationDescriptor, FilterDescriptor, ConvolutionDescriptor};
-    use cudnn::utils::DataType;
-    use co::frameworks::Cuda;
     use co::framework::IFramework;
+    use co::frameworks::Cuda;
+    use co::frameworks::cuda::*;
+    use cudnn::{Cudnn, API, TensorDescriptor, ActivationDescriptor, FilterDescriptor,
+                ConvolutionDescriptor, DropoutDescriptor};
+    use cudnn::cuda::CudaDeviceMemory;
+    use cudnn::utils::DataType;
+    use cudnn::utils::DropoutConfig;
 
     #[test]
     fn it_initializes_correctly() {
@@ -45,15 +50,16 @@ mod cudnn_spec {
     fn it_computes_sigmoid() {
         let cudnn = Cudnn::new().unwrap();
         let desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-        let acti = ActivationDescriptor::new(::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID).unwrap();
+        let acti = ActivationDescriptor::new(::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID)
+            .unwrap();
 
-        let mut a : u64 = 1;
-        let a_ptr : *mut u64 = &mut a;
-        let mut b : u64 = 1;
-        let b_ptr : *mut u64 = &mut b;
+        let mut a: u64 = 1;
+        let a_ptr: *mut u64 = &mut a;
+        let mut b: u64 = 1;
+        let b_ptr: *mut u64 = &mut b;
         unsafe {
-            let mut x : *mut ::libc::c_void = ::std::ptr::null_mut();;
-            ::cudaHostAlloc(&mut x, 2*2*2, 0);
+            let mut x: *mut ::libc::c_void = ::std::ptr::null_mut();
+            ::cudaHostAlloc(&mut x, 2 * 2 * 2, 0);
             match API::activation_forward(
                 *cudnn.id_c(),
                 *acti.id_c(),
@@ -65,7 +71,10 @@ mod cudnn_spec {
                 x,
             ) {
                 Ok(_) => assert!(true),
-                Err(err) => { println!("{:?}", err); assert!(false) }
+                Err(err) => {
+                    println!("{:?}", err);
+                    assert!(false)
+                }
             }
             ::cudaFreeHost(x);
         }
@@ -79,9 +88,18 @@ mod cudnn_spec {
         let filter = FilterDescriptor::new(&[1, 1, 1], DataType::Float).unwrap();
         let conv = ConvolutionDescriptor::new(&[1, 1, 1], &[1, 1, 1], DataType::Float).unwrap();
         let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-        match API::find_convolution_forward_algorithm(*cudnn.id_c(), *filter.id_c(), *conv.id_c(), *src.id_c(), *dest.id_c()) {
-            Ok(algos) => { assert_eq!(2, algos.len())},
-            Err(err) => { println!("{:?}", err); assert!(false) }
+        match API::find_convolution_forward_algorithm(
+            *cudnn.id_c(),
+            *filter.id_c(),
+            *conv.id_c(),
+            *src.id_c(),
+            *dest.id_c(),
+        ) {
+            Ok(algos) => assert_eq!(2, algos.len()),
+            Err(err) => {
+                println!("{:?}", err);
+                assert!(false)
+            }
         }
     }
 
@@ -92,9 +110,58 @@ mod cudnn_spec {
         let filter = FilterDescriptor::new(&[1, 1, 1], DataType::Float).unwrap();
         let conv = ConvolutionDescriptor::new(&[1, 1, 1], &[1, 1, 1], DataType::Float).unwrap();
         let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-        match API::find_convolution_backward_data_algorithm(*cudnn.id_c(), *filter.id_c(), *conv.id_c(), *src.id_c(), *dest.id_c()) {
-            Ok(algos) => { assert_eq!(2, algos.len())},
-            Err(err) => { println!("{:?}", err); assert!(false) }
+        match API::find_convolution_backward_data_algorithm(
+            *cudnn.id_c(),
+            *filter.id_c(),
+            *conv.id_c(),
+            *src.id_c(),
+            *dest.id_c(),
+        ) {
+            Ok(algos) => assert_eq!(2, algos.len()),
+            Err(err) => {
+                println!("{:?}", err);
+                assert!(false)
+            }
+        }
+    }
+
+    #[test]
+    fn it_allocates_cuda_device_memory() {
+        let _ = Cudnn::new().unwrap();
+        let _ = CudaDeviceMemory::new(1024).unwrap();
+    }
+
+
+    #[test]
+    fn it_computes_dropout_forward() {
+        let cudnn = Cudnn::new().unwrap();
+        let src = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
+
+
+        let result = cudnn.init_dropout(&src, 0.5, 27);
+        let cfg: DropoutConfig = result.unwrap();
+        let ref drop = cfg.dropout_desc();
+        let ref reserve = cfg.reserved_space();
+        let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
+
+        let src_data = CudaDeviceMemory::new(2 * 2 * 2 * 4).unwrap();
+        let mut dest_data = CudaDeviceMemory::new(2 * 2 * 2 * 4).unwrap();
+
+        match API::dropout_forward(
+            *cudnn.id_c(),
+            *drop.id_c(),
+            *src.id_c(),
+            *src_data.id_c(),
+            *dest.id_c(),
+            *dest_data.id_c(),
+            *reserve.id_c(),
+            *reserve.size(),
+        ) {
+            Ok(_) => {}
+            Err(err) => {
+                println!("{:?}", err);
+                assert!(false)
+            }
         }
     }
 }
