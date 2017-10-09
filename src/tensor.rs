@@ -382,10 +382,34 @@ impl<T> SharedTensor<T> {
             x => return x.map_err(|e| e.into()),
         }
 
-        dst_loc.mem_transfer.sync_in(dst_loc.mem.as_mut(), src_loc.device.deref(),
-                                     src_loc.mem.deref()).map_err(|e| e.into())
+        match dst_loc.mem_transfer.sync_in(
+        	dst_loc.mem.as_mut(), src_loc.device.deref(), src_loc.mem.deref()) {
+            Err(DeviceError::NoMemorySyncRoute) => {},
+            x => return x.map_err(|e| e.into()),
+        }
 
-        // TODO: try transfer indirectly via Native backend
+		// If there is no direct path, we take the detour via native
+		// and do an indirect transfer.
+		if cfg!(feature = "Native") {
+			use framework::IFramework;
+			use frameworks::native::Native;
+			let native_framework = Native::new();
+			let native_device = native_framework.new_device(native_framework.hardwares()).unwrap(); // FIXME
+			let mut native_mem = native_device.alloc_memory(self.desc.size()).unwrap(); // FIXME calculate size
+		    match src_loc.mem_transfer.sync_out(
+		        src_loc.mem.deref(), &native_device, &mut native_mem) {
+		        Err(DeviceError::NoMemorySyncRoute) => {},
+		        x => return x.map_err(|e| e.into()),
+		    }
+		    match dst_loc.mem_transfer.sync_in(
+		    	dst_loc.mem.as_mut(), &native_device, &native_mem) {
+		        Err(DeviceError::NoMemorySyncRoute) => {},
+		        x => return x.map_err(|e| e.into()),
+		    }
+		    Ok(())
+        } else {
+            Err(DeviceError::NoMemorySyncRoute.into())
+        }
     }
 
     // Functions `read()`, `read_write()`, `write_only()` use `unsafe` to
@@ -441,7 +465,7 @@ impl<T> SharedTensor<T> {
     /// uninitialized state.
     pub fn write_only<'a, D: IDevice>(&'a mut self, device: &D)
                           -> Result<&'a mut D::M, Error> {
-        let i = try!(self.get_or_create_location_index(device));
+        let i = self.get_or_create_location_index(device)?;
         self.up_to_date.set(1 << i);
 
         let mut locs = self.locations.borrow_mut();
@@ -451,10 +475,10 @@ impl<T> SharedTensor<T> {
         Ok(mem_a)
     }
 
-    // FIXME: syncronize memory elsewhere if possible?
+    // FIXME: synchronize memory elsewhere if possible?
     /// Drops memory allocation on the specified device. Returns error if
     /// no memory has been allocated on this device.
-    pub fn drop_device<D: IDevice>(&mut self, device: &D) -> Result<(), Error> {
+    pub fn drop<D: IDevice>(&mut self, device: &D) -> Result<(), Error> {
         match self.get_location_index(device) {
             Some(i) => {
                 self.locations.borrow_mut().remove(i);
@@ -470,6 +494,20 @@ impl<T> SharedTensor<T> {
                 Err(Error::InvalidRemove("Memory isn't allocated on this device"))
         }
     }
+	// force synchronize initialized memory to a device
+	/// Allocates an already filled memory block on a device.
+	/// This is a special needs function for performance concerns and should be avoided where possible.
+    fn sync<D: IDevice>(&mut self, device: &D) -> Result<(), Error> {
+        if self.up_to_date.get() == 0 {
+            return Err(Error::UninitializedMemory);
+        }
+        let i = self.get_or_create_location_index(device)?;
+        self.sync_if_needed(i)?;
+        self.up_to_date.set(1 << i);
+        Ok(())
+    }
+
+    // TODO move = sync + drop
 
     /// Returns the number of elements for which the Tensor has been allocated.
     pub fn capacity(&self) -> usize {
