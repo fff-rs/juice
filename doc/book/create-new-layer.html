@@ -47,7 +47,7 @@
         </script>
 
         <div id="sidebar" class="sidebar">
-            <ul class="chapter"><li><a href="./leaf.html"><strong>1.</strong> Leaf</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html" class="active"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://autumnai.github.io/leaf/leaf/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
+            <ul class="chapter"><li><a href="./juice.html"><strong>1.</strong> Juice</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html" class="active"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://spearow.github.io/juice/juice/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
         </div>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -68,10 +68,10 @@
 
                 <div id="content" class="content">
                     <h1>Create a new Layer</h1>
-<p>A layer in Leaf can implement any behavior as long as it takes an input and
-produces an output. As Leaf is new, there are still many valuable layers that
+<p>A layer in Juice can implement any behavior as long as it takes an input and
+produces an output. As Juice is new, there are still many valuable layers that
 are not yet implemented. This is why this chapter shows how you can add new
-layers to Leaf.</p>
+layers to Juice.</p>
 <p>A not exclusive list of steps to take in order to implement a new layer:</p>
 <blockquote>
 <p>The Rust compiler is also very helpful with pointing out the necessary steps
@@ -82,7 +82,7 @@ implementation of a new layer from a copied file of an already existing layer.</
 <li>
 <p>Decide to which of the <a href="./layers.html#What%20can%20Layers%20do?">five types</a>
 the new layer belongs. This decides under which directory to put the layer
-implementation in the Leaf project.</p>
+implementation in the Juice project.</p>
 </li>
 <li>
 <p>Create the <code>Layer</code> worker struct.</p>
@@ -101,7 +101,7 @@ implementation in the Leaf project.</p>
 for <code>.support_in_place</code> and <code>.worker_from_config</code>.</p>
 </li>
 <li>
-<p>If the new layer relies on a collenchyma operation, also add the collenchyma
+<p>If the new layer relies on a coaster operation, also add the coaster
 trait boundary.</p>
 </li>
 <li>
