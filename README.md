@@ -36,3 +36,20 @@ target/release/juice-examples mnist mlp --batch-size 5 --learning-rate 0.001
 # run the MNIST Convolutional Neural Network example
 target/release/juice-examples mnist conv --batch-size 10 --learning-rate 0.002
 ```
+
+## Fashion-MNIST
+
+The [fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist) dataset is
+also too big to be included, but it can be downloaded in the same way as MNIST:
+
+```bash
+# download the fashion-MNIST dataset.
+target/release/juice-examples load-dataset fashion
+
+# run the fashion-MNIST linear example
+target/release/juice-examples fashion linear --batch-size 10
+# run the fashion-MNIST MLP (Multilayer Perceptron) example
+target/release/juice-examples fashion mlp --batch-size 5 --learning-rate 0.001
+# run the fashion-MNIST Convolutional Neural Network example
+target/release/juice-examples fashion conv --batch-size 10 --learning-rate 0.002
+```
