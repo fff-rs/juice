@@ -187,7 +187,7 @@ impl Cudnn {
         seed : u64,
         ) -> Result<DropoutConfig, Error> {
 
-        let reserve_required : usize = API::dropout_get_reserve_space_size(*src_desc.id_c())?;
+        let reserve_required : usize = API::dropout_get_states_size(*self.id_c())?;
         let reserve = CudaDeviceMemory::new(reserve_required)?;
         let dropout = DropoutDescriptor::new(&self, probability, seed, &reserve)?;
         Ok(DropoutConfig::new(dropout, reserve))
