@@ -182,7 +182,6 @@ impl Cudnn {
     /// Initializes the parameters and configurations for running CUDA cuDNN dropout operation.
     pub fn init_dropout(
         &self,
-        src_desc: &TensorDescriptor,
         probability : f32,
         seed : u64,
         ) -> Result<DropoutConfig, Error> {
