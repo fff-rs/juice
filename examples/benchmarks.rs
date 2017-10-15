@@ -3,7 +3,7 @@ extern crate timeit;
 
 extern crate env_logger;
 extern crate coaster as co;
-extern crate leaf;
+extern crate juice;
 
 use co::prelude::*;
 use std::env;
