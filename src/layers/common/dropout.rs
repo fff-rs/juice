@@ -30,7 +30,7 @@ impl<T, B: conn::Dropout<T>> Dropout<T, B> {
             probability: config.probability,
             dropout_config: None,
         }
-    }
+    }    
 }
 
 //
@@ -122,5 +122,11 @@ impl<'a> CapnpRead<'a> for DropoutConfig {
         DropoutConfig {
             probability: probability,
         }
+    }
+}
+
+impl ::std::default::Default for DropoutConfig {
+    fn default() -> DropoutConfig {
+        DropoutConfig { probability: 0.75 }
     }
 }
