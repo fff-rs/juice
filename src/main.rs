@@ -7,7 +7,7 @@ extern crate futures;
 extern crate log;
 
 use std::io::prelude::*;
-use std::fs::File;
+use std::fs::{OpenOptions,File};
 use std::sync::{Arc, RwLock};
 
 use hyper::Client;
@@ -97,10 +97,16 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
         let work = response_fut.and_then(|res| {
             println!("Response: {}", res.status());
 
-            res.body().for_each(|chunk| {
-                File::create(format!("assets/{}", v))
-                    .unwrap()
-                    .write_all(&chunk)
+            let name = format!("assets/{}", v);
+            {
+                let _ = File::create(name.clone()).expect("Failed to create file");
+            }
+            res.body().for_each(move |chunk| {
+                    let mut f = OpenOptions::new()
+                        .append(true)
+                        .open(name.clone())
+                        .expect("Failed to open file in append mode");
+                    f.write(&chunk)
                     .map(|_| ())
                     .map_err(From::from)
             })
