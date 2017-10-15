@@ -4,7 +4,6 @@ extern crate csv;
 extern crate tokio_core;
 extern crate hyper;
 extern crate futures;
-#[macro_use]
 extern crate log;
 
 use std::io::prelude::*;
@@ -13,16 +12,13 @@ use std::sync::{Arc, RwLock};
 
 use hyper::Client;
 use hyper::Uri;
-use hyper::Body;
 
 extern crate hyper_tls;
 use hyper_tls::HttpsConnector;
-use hyper::client::Config;
 
 use std::str::FromStr;
 use futures::Future;
 use futures::Stream;
-use futures::future;
 
 use docopt::Docopt;
 use csv::Reader;
@@ -115,6 +111,7 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
 
 fn unzip_datasets(datasets: &[&str]) {
     for filename in datasets {
+        println!("Decompressing: {}", filename);
         // TODO figure out how to specify asset dir
         let mut file_handle = File::open(&format!("./assets/{}", filename)).unwrap();
         let mut in_file: Vec<u8> = Vec::new();
@@ -158,11 +155,11 @@ fn main() {
                     "t10k-images-idx3-ubyte.gz",
                     "t10k-labels-idx1-ubyte.gz",
                 ];
-                download_datasets(
-                    &datasets,
-                    "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com",
-                );
-                println!("{}", "Fashion MNIST dataset downloaded".to_string());
+                // download_datasets(
+                //     &datasets,
+                //     "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com",
+                // );
+                // println!("{}", "Fashion MNIST dataset downloaded".to_string());
                 // TODO avoid repeated effort here
                 unzip_datasets(&datasets);
                 println!("{}", "Fashion MNIST dataset decompressed".to_string());
@@ -321,7 +318,7 @@ fn run_mnist(
 
     // set up backends
     let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
-    let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
+    // let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
 
     // set up solver
     let mut solver_cfg = SolverConfig {
@@ -338,7 +335,7 @@ fn run_mnist(
     let mut confusion = ::juice::solver::ConfusionMatrix::new(10);
     confusion.set_capacity(Some(1000));
 
-    let mut inp = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
+    let inp = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
     let label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     let inp_lock = Arc::new(RwLock::new(inp));
@@ -476,7 +473,7 @@ fn run_fashion(
 
     // set up backends
     let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
-    let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
+    // let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
 
     // set up solver
     let mut solver_cfg = SolverConfig {
