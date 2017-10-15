@@ -35,7 +35,7 @@ fn main() {
     let libs_env = env::var("CUDNN_LIBS").ok();
     let libs = match libs_env {
         Some(ref v) => v.split(":").collect(),
-        None => vec!["cudnn"],
+        None => vec!["cudnn","cudart","cuda"],
     };
 
     let mode = if env::var_os("CUDNN_STATIC").is_some() {
