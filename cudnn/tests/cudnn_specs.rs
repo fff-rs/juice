@@ -138,7 +138,7 @@ mod cudnn_spec {
         let src = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
 
 
-        let result = cudnn.init_dropout(&src, 0.5, 27);
+        let result = cudnn.init_dropout(0.5, 27);
         let cfg: DropoutConfig = result.unwrap();
         let ref drop = cfg.dropout_desc();
         let ref reserve = cfg.reserved_space();
