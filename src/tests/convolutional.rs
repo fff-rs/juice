@@ -45,37 +45,53 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Convolution<T> + IBackend {
 
-    let test = |batch: usize, width : usize, height: usize, depth: usize, filter_count: usize, filter_size: usize |
+    let test = | input_dim : &[usize;4], filter_count: usize, filter_size: &[usize;2], stride: &[usize;2], padding: &[usize;2] |
     {
-        // TODO add stride and padding
-        // TODO use a slice for filtersize and k_filters
-        let stride = 1;
-        let result_width = (width - filter_size ) / stride + 1;
-        let result_height = (height - filter_size) / stride + 1;
+
+        let batch = input_dim[0];
+        let width = input_dim[1];
+        let height = input_dim[2];
+        let depth = input_dim[3];
+
+        let result_width = (width + 2*padding[0] - filter_size[0] ) / stride[0] + 1;
+        let result_height = (height + 2*padding[1] - filter_size[1] ) / stride[1] + 1;
+        println!("result {}x{}", result_width, result_height);
+
+        let f_element_count = filter_count * depth * filter_size[0] * filter_size[1];
+        let f_element_count = f_element_count;
 
         let x_val = vec![1.0; batch * depth * height * width];
-        let f_val = vec![1.0; filter_count * depth * filter_size * filter_size];
+        let f_val = vec![1.0; f_element_count];
 
         let x  = filled_tensor(&backend, &[batch, depth, height, width], &x_val);
-        let f  = filled_tensor(&backend, &[filter_count, depth, filter_size,  filter_size], &f_val);
+        let f  = filled_tensor(&backend, &[filter_count, depth, filter_size[0],  filter_size[1]], &f_val);
         let mut r  = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
-        let mut ws = SharedTensor::<u8>::new(&[4]);
+        let mut ws = SharedTensor::<u8>::new(&[64]);
 
         let conf = backend.new_convolution_config(
             &x, &r, &f,
             ConvForwardAlgo::Auto,
             ConvBackwardFilterAlgo::Auto,
             ConvBackwardDataAlgo::Auto,
-            &[1,1], &[0,0]).unwrap();
+            &[stride[0] as i32, stride[1] as i32], &[padding[0] as i32, padding[1] as i32]).unwrap();
 
         assert!(backend.convolution(&f, &x, &mut r, &mut ws, &conf).is_ok());
         assert!(r.read(backend.device()).is_ok());
+
+        // this only works because our data is all ones, if padding is non zero, this can not be applied
+        let expected_val = filter_size[0] * filter_size[1] * depth;
+        let expected_val_count = batch * filter_count * result_height * result_width;
+        let expected_val = expected_val as f64;
+        let expected_vals : Vec<f64> = vec![expected_val; expected_val_count];
+        let expected : SharedTensor<T> = filled_tensor(&backend, &[batch, filter_count, result_height, result_width], expected_vals.as_slice());
+
+        tensor_assert_eq_tensor(&r, &expected, 3.0);
     };
-    // batchsize, width, height, depth, k_filters, filter_size
-    test(4, 9, 9, 3, 6, 3);
-    test(2, 16, 16, 1, 1, 4);
-    test(2, 16, 16, 1, 1, 2);
-    test(2, 16, 16, 10, 10, 2);
+    // [batchsize, width, height, depth], k_filters, [filter_size_x, filter_size_y], stride, padding
+    test(&[4, 9, 9, 3], 6, &[3,3], &[1,1], &[0,0]);
+    test(&[2, 16, 16, 1], 1, &[4,4], &[1,1], &[0,0]);
+    test(&[2, 16, 16, 1], 1, &[2,2], &[1,1], &[0,0]);
+    test(&[2, 16, 16, 10], 10, &[2,2], &[1,1], &[0,0]);
 }
 
 
