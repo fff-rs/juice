@@ -5,4 +5,5 @@ pub mod native;
 //#[cfg(feature = "opencl")]
 //pub mod opencl;
 #[cfg(feature = "cuda")]
+#[macro_use]
 pub mod cuda;
