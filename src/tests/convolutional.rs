@@ -79,9 +79,8 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
         assert!(r.read(backend.device()).is_ok());
 
         // this only works because our data is all ones, if padding is non zero, this can not be applied
-        let expected_val = filter_size[0] * filter_size[1] * depth;
         let expected_val_count = batch * filter_count * result_height * result_width;
-        let expected_val = expected_val as f64;
+        let expected_val = 1f64;
         let expected_vals : Vec<f64> = vec![expected_val; expected_val_count];
         let expected : SharedTensor<T> = filled_tensor(&backend, &[batch, filter_count, result_height, result_width], expected_vals.as_slice());
 
@@ -148,7 +147,7 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, b
     let f  = filled_tensor(&backend_a, &[filter_count, depth1, filter_size,  filter_size], &f_val);
     let mut result_a  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
     let mut result_b  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
-    let mut ws = SharedTensor::<u8>::new(&[4]);
+    let mut ws = SharedTensor::<u8>::new(&[64]);
 
     let conf_a = backend_a.new_convolution_config(
         &x, &result_a, &f,
