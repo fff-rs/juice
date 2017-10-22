@@ -217,5 +217,5 @@ mod activation;
 mod convolutional;
 mod softmax;
 mod pooling;
-
+mod dropout;
 mod bench_all;
