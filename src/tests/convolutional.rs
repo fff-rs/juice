@@ -55,7 +55,6 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
 
         let result_width = (width + 2*padding[0] - filter_size[0] ) / stride[0] + 1;
         let result_height = (height + 2*padding[1] - filter_size[1] ) / stride[1] + 1;
-        println!("result {}x{}", result_width, result_height);
 
         let f_element_count = filter_count * depth * filter_size[0] * filter_size[1];
         let f_element_count = f_element_count;
@@ -80,7 +79,8 @@ pub fn test_convolution<T, F: IFramework>(backend: Backend<F>)
 
         // this only works because our data is all ones, if padding is non zero, this can not be applied
         let expected_val_count = batch * filter_count * result_height * result_width;
-        let expected_val = 1f64;
+        let expected_val = depth * filter_size[0] * filter_size[1];
+        let expected_val = expected_val as f64;
         let expected_vals : Vec<f64> = vec![expected_val; expected_val_count];
         let expected : SharedTensor<T> = filled_tensor(&backend, &[batch, filter_count, result_height, result_width], expected_vals.as_slice());
 
