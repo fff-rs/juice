@@ -822,7 +822,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
 
 
 impl<T> Dropout<T> for Backend<Native>
-    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
+    where T: Float + Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
 {
     fn new_dropout_config(&self,
                       probability: f32,
@@ -855,11 +855,12 @@ impl<T> Dropout<T> for Backend<Native>
 
         let mut rng : Isaac64Rng = SeedableRng::from_seed(&[config.seed.clone()][..]);
 
-        for idx in 0..input.len() {
+        for i in 0..output.len() {
             if rng.gen_range::<f32>(0f32,1f32) >= config.probability {
-                output[idx] = input[idx];
-            };
-
+                output[i] = input[i];
+            } else {
+                output[i] = T::zero();
+            }
         }
         Ok(())
     }

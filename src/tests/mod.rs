@@ -165,6 +165,35 @@ pub fn tensor_assert_eq_tensor<T,U>(xa: &SharedTensor<T>, xb: &SharedTensor<U>, 
     }
 }
 
+pub fn tensor_assert_ne_tensor<T,U>(xa: &SharedTensor<T>, xb: &SharedTensor<U>, epsilon_mul: f64)
+    where T: Copy + fmt::Debug + PartialEq + NumCast + Epsilon,
+          U: Copy + fmt::Debug + PartialEq + NumCast + Epsilon {
+
+    let e = cast::<_, f64>(T::epsilon()).unwrap() * epsilon_mul;
+
+    let native = get_native_backend();
+    let native_dev = native.device();
+
+    let mem_a = xa.read(native_dev).unwrap();
+    let mem_slice_a = mem_a.as_slice::<T>();
+
+    let mem_b = xb.read(native_dev).unwrap();
+    let mem_slice_b = mem_b.as_slice::<U>();
+
+    assert_eq!(mem_slice_a.len(), mem_slice_b.len());
+    for (x1, x2) in mem_slice_a.iter().zip(mem_slice_b.iter()) {
+        let x1_t = cast::<_, f64>(*x1).unwrap();
+        let x2_t = cast::<_, f64>(*x2).unwrap();
+        let diff = (x1_t - x2_t).abs();
+        let max_diff = e * (x1_t.abs() + x2_t.abs()) * 0.5;
+        if (x1_t - x2_t).abs() > e * (x1_t.abs() + x2_t.abs()) * 0.5 {
+            return;
+        }
+    }
+    println!("Results are too similar {:?} ~= {:?}", mem_slice_a, mem_slice_b);
+    assert!(false);
+}
+
 // All operations for Cuda and Native are provided for f32 and f64.
 // Those macros remove boilerplate in test definitions.
 // concat_idents! is behind feature gate at the moment, otherwise
