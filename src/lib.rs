@@ -115,7 +115,6 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
-#[cfg(test)]
 extern crate rand;
 
 pub use plugin::*;

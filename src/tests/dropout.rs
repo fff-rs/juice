@@ -10,8 +10,6 @@ pub fn test_dropout<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
           Backend<F>: Dropout<T> + IBackend {
 
-
-
     let test = |dims : &[usize], probability : f32, seed : u64| {
 
         let conf = Dropout::<T>::new_dropout_config(&backend, probability, seed)

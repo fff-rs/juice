@@ -20,7 +20,8 @@ pub struct PoolingConfig {
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
 pub struct DropoutConfig {
-// TODO
+    pub probability: f32,
+    pub seed: u64,
 }
 
 macro_rules! read {
