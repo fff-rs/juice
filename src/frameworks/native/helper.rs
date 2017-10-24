@@ -46,7 +46,7 @@ macro_rules! write_only {
 pub fn write_to_memory<T: Iterator>(mem: &mut FlatBox, data: T)
     where T::Item: Clone
 {
-    let mut mem_buffer = mem.as_mut_slice::<T::Item>();
+    let mem_buffer = mem.as_mut_slice::<T::Item>();
     for (index, datum) in data.enumerate() {
         mem_buffer[index] = datum;
     }
