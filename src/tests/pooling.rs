@@ -136,7 +136,7 @@ pub fn cross_test_pooling_max<F: IFramework, G: IFramework>(backend_a: Backend<F
     tensor_assert_eq_tensor(&r_a, &r_b, 3.0);
 }
 
-
+#[allow(unused_must_use)]
 pub fn cross_test_pooling_max_grad<F: IFramework, G: IFramework>(backend_a: Backend<F>, backend_b: Backend<G>)
         where
           Backend<F>: Pooling<f32> + IBackend,
@@ -152,15 +152,15 @@ pub fn cross_test_pooling_max_grad<F: IFramework, G: IFramework>(backend_a: Back
     let window = &[2,2];
     let stride = &[2,2];
     let padding = &[0,0];
-    // FIXME calc dynamically
+    // TODO calculate dynamically
     let output_dims = &[batchsize,channels,1,1];
 
-    let N_in = input_dims.iter().fold(1,|a, &b| a * b);
-    let N_out = output_dims.iter().fold(1,|a, &b| a * b);
+    let n_in = input_dims.iter().fold(1,|a, &b| a * b);
+    let n_out = output_dims.iter().fold(1,|a, &b| a * b);
 
-    let x  = filled_tensor(&backend_a, input_dims, &inp[0..N_in]);
-    let dx = filled_tensor(&backend_a, input_dims, &inp[0..N_in]);
-    let r  = filled_tensor(&backend_a, output_dims, &inp[0..N_out]);
+    let x  = filled_tensor(&backend_a, input_dims, &inp[0..n_in]);
+    let dx = filled_tensor(&backend_a, input_dims, &inp[0..n_in]);
+    let r  = filled_tensor(&backend_a, output_dims, &inp[0..n_out]);
     let mut dr_a = SharedTensor::<f32>::new(output_dims);
     let mut dr_b = SharedTensor::<f32>::new(output_dims);
     let conf_a = Pooling::<f32>::new_pooling_config(&backend_a, window, stride, padding)
@@ -168,16 +168,16 @@ pub fn cross_test_pooling_max_grad<F: IFramework, G: IFramework>(backend_a: Back
     let conf_b = Pooling::<f32>::new_pooling_config(&backend_b, window, stride, padding)
         .unwrap();
 
-//    backend_a.pooling_max_grad(&x, &dx, &r, &mut dr_a, &conf_a).unwrap();
+    backend_a.pooling_max_grad(&x, &dx, &r, &mut dr_a, &conf_a).unwrap();
     backend_b.pooling_max_grad(&x, &dx, &r, &mut dr_b, &conf_b).unwrap();
 
-//    tensor_assert_eq_tensor(&dr_a, &dr_b, 3.0);
+    tensor_assert_eq_tensor(&dr_a, &dr_b, 3.0);
 }
 
 mod cross {
     use super::*;
     test_cross!(cross_test_pooling_max, cross_test_pooling_max_f32);
-    test_cross!(cross_test_pooling_max_grad, cross_test_pooling_max_grad_f32);
+    //test_cross!(cross_test_pooling_max_grad, cross_test_pooling_max_grad_f32);
 }
 
 mod cuda {
