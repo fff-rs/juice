@@ -7,6 +7,8 @@ carrying about OpenCL or CUDA support on the machine.
 coaster-NN was started as collenchyma-NN at [Autumn][autumn] to support the Machine Intelligence
 Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
+Today it powers [Juice][juice].
+
 For more information,
 
 * see coaster-NN's [Documentation](http://spearow.github.io/coaster-nn)
@@ -15,7 +17,8 @@ For more information,
 
 [coaster]: https://github.com/spearow/coaster
 [autumn]: http://autumnai.com
-[leaf]: https://github.com/spearow/leaf
+[leaf]: https://github.com/autumnai/leaf
+[juice]: https://github.com/spearow/juice
 
 ## Provided Operations
 
