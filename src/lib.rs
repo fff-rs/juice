@@ -86,6 +86,8 @@
 //! |                      |                   |           |           |
 //! | Normalization (LRN)  | cuDNN v5 or later | -         | -         |
 //! |                      |                   |           |           |
+//! | Dropout              | cuDNN v5 or later | -         | Rust      |
+//! |                      |                   |           |           |
 //! | Convolution          | cuDNN v5 or later | -         | Rust(fwd) |
 //! |                      |                   |           |           |
 //! | Softmax              | cuDNN v5 or later | -         | Rust      |
@@ -115,7 +117,6 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
-#[cfg(test)]
 extern crate rand;
 
 pub use plugin::*;

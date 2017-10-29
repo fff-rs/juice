@@ -12,6 +12,8 @@ use co::prelude::*;
 use plugin::*;
 use std::cmp::PartialOrd;
 use std::fmt::Debug;
+use rand::{Rng,SeedableRng};
+use rand::isaac::Isaac64Rng;
 
 use std::ops::*;
 
@@ -79,6 +81,8 @@ impl<T> NN<T> for Backend<Native>
     type CC = helper::ConvolutionConfig;
     type CLRN = helper::NormalizationConfig;
     type CPOOL = helper::PoolingConfig;
+    // type CACTI = helper::ActivationConfig;
+    type CDROP = helper::DropoutConfig;
 
     fn init_nn() {}
 }
@@ -96,6 +100,14 @@ impl<T> NNOperationConfig<T> for helper::NormalizationConfig
 {
 }
 impl<T> NNOperationConfig<T> for helper::PoolingConfig
+    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
+{
+}
+// impl<T> NNOperationConfig<T> for helper::ActivationConfig
+//     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
+// {
+// }
+impl<T> NNOperationConfig<T> for helper::DropoutConfig
     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
 }
@@ -807,6 +819,65 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
         return Err(Error::Plugin(PluginError::Plugin("Unimplemented.")));
     }
 }
+
+
+impl<T> Dropout<T> for Backend<Native>
+    where T: Float + Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
+{
+    fn new_dropout_config(&self,
+                      probability: f32,
+                      seed: u64,
+                      )
+                      -> Result<Self::CDROP, ::co::error::Error> {
+        Ok(helper::DropoutConfig{probability, seed})
+    }
+
+    // TODO this is supposed to be an in place operation
+    fn dropout(&self,
+           x: &::co::tensor::SharedTensor<T>,
+           result: &mut ::co::tensor::SharedTensor<T>,
+           config: &Self::CDROP)
+           -> Result<(), ::co::error::Error> {
+        let dev = self.device();
+
+        let input_dim = x.desc(); // [4, 4, 4, 4]
+        let input = x.read(dev)
+            .unwrap()
+            .as_slice::<T>();
+
+        let output_dim = result.desc().clone(); // [4,4,2,2]
+        let output = result
+            .write_only(dev)
+            .unwrap()
+            .as_mut_slice::<T>();
+
+        output.clone_from_slice(input);
+
+        let mut rng : Isaac64Rng = SeedableRng::from_seed(&[config.seed.clone()][..]);
+
+        for i in 0..output.len() {
+            if rng.gen_range::<f32>(0f32,1f32) >= config.probability {
+                output[i] = input[i];
+            } else {
+                output[i] = T::zero();
+            }
+        }
+        Ok(())
+    }
+
+    #[allow(unused_variables)]
+    fn dropout_grad(&self,
+                x: &::co::tensor::SharedTensor<T>,
+                x_diff: &::co::tensor::SharedTensor<T>,
+                result: &::co::tensor::SharedTensor<T>,
+                result_diff: &mut ::co::tensor::SharedTensor<T>,
+                config: &Self::CDROP)
+                -> Result<(), ::co::error::Error> {
+        // TODO check if there is anything to do here?
+        Ok(())
+    }
+}
+
 // convolution is not needed here, it is well implemented without the macro madness
 impl_ops_sigmoid_for!(f32, Backend<Native>);
 impl_ops_relu_for!(f32, Backend<Native>);

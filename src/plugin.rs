@@ -155,7 +155,10 @@ pub trait NN<F> {
     type CLRN: NNOperationConfig<F>;
     /// The Pooling Operation Config representation for this Plugin.
     type CPOOL: NNOperationConfig<F>;
-    /// The Activation Operation Config representation for this Plugin.
+    // /// The Activation Operation Config representation for this Plugin.
+    // type CACTI: NNOperationConfig<F>;
+    /// The Dropout Operation Config representation for this Plugin.
+    type CDROP: NNOperationConfig<F>;
 
     /// Initializes the Plugin.
     fn init_nn();
@@ -438,4 +441,26 @@ pub trait Pooling<F> : NN<F> {
     fn pooling_avg_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
                         result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
                         config: &Self::CPOOL) -> Result<(), ::co::error::Error>;
+}
+
+/// Provides the functionality for a Backend to support Dropout operations.
+pub trait Dropout<F> : NN<F> {
+    /// Creates a new DropoutConfig, which needs to be passed to further dropout Operations.
+    fn new_dropout_config(&self, dropout: f32, seed: u64)
+                          -> Result<Self::CDROP, ::co::error::Error>;
+
+    /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.
+    /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
+    ///
+    /// Saves the result to `result`.
+    fn dropout(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>,
+                   config: &Self::CDROP) -> Result<(), ::co::error::Error>;
+
+    /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.
+    /// [pooling]: https://en.wikipedia.org/wiki/Dropout_(neural_networks)
+    ///
+    /// Saves the result to `result`.
+    fn dropout_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
+                        result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
+                        config: &Self::CDROP) -> Result<(), ::co::error::Error>;
 }

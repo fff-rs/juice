@@ -290,6 +290,7 @@ impl<T> NN<T> for Backend<Cuda>
     type CC = utils::ConvolutionConfig;
     type CLRN = utils::NormalizationConfig;
     type CPOOL = utils::PoolingConfig;
+    type CDROP = utils::DropoutConfig;
 
     fn init_nn() {
         let _ = CUDNN.id_c();
@@ -299,6 +300,7 @@ impl<T> NN<T> for Backend<Cuda>
 impl<'a, T> NNOperationConfig<T> for utils::ConvolutionConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::NormalizationConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::PoolingConfig where T: Float + DataTypeInfo {}
+impl<T> NNOperationConfig<T> for utils::DropoutConfig where T: Float + DataTypeInfo {}
 
 impl<T> Sigmoid<T> for Backend<Cuda>
     where T: Float + DataTypeInfo + Default
@@ -953,10 +955,6 @@ impl<T> Pooling<T> for Backend<Cuda>
                         result_diff: &mut ::co::tensor::SharedTensor<T>,
                         config: &Self::CPOOL)
                         -> Result<(), ::co::error::Error> {
-        println!("cudnn x {:?}", x.desc());
-        println!("cudnn x_diff {:?}", x_diff.desc());
-        println!("cudnn result {:?}", result.desc());
-        println!("cudnn result_diff {:?}", result_diff.desc());
 
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
         let dr_desc = try!(result_diff.cudnn_tensor_desc());
@@ -1026,5 +1024,63 @@ impl<T> Pooling<T> for Backend<Cuda>
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN avg pooling Backward."))),
         }
+    }
+}
+
+
+
+impl<T> Dropout<T> for Backend<Cuda>
+    where T: Float + Default + DataTypeInfo
+{
+    fn new_dropout_config(&self,
+                      probability: f32,
+                      seed: u64,
+                      )
+                      -> Result<Self::CDROP, ::co::error::Error> {
+        Ok(CUDNN.init_dropout(probability, seed).unwrap())
+    }
+
+    fn dropout(&self,
+           x: &::co::tensor::SharedTensor<T>,
+           result: &mut ::co::tensor::SharedTensor<T>,
+           config: &Self::CDROP)
+           -> Result<(), ::co::error::Error> {
+        let r_desc = try!(result.cudnn_tensor_desc());
+        let x_mem = read!(x, self);
+        let r_mem = write_only!(result, self);
+        match CUDNN.dropout_forward::<f32>(config,
+                                &try!(x.cudnn_tensor_desc()),
+                                trans!(x_mem),
+                                &r_desc,
+                                trans_mut!(r_mem),
+                                ) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Dropout Forward."))),
+        }
+    }
+
+    #[allow(unused_variables)]
+    fn dropout_grad(&self,
+                x: &::co::tensor::SharedTensor<T>,
+                x_diff: &::co::tensor::SharedTensor<T>,
+                result: &::co::tensor::SharedTensor<T>,
+                result_diff: &mut ::co::tensor::SharedTensor<T>,
+                config: &Self::CDROP)
+                -> Result<(), ::co::error::Error> {
+        // TODO what to do with the gradient? should be all zeroes since this is supposed to be a `nop` but I am not 100% sure about the nv implementations
+        // let dr_desc = try!(result_diff.cudnn_tensor_desc());
+        // let x_mem = read!(x, self);
+        // let dx_mem = read!(x_diff, self);
+        // let r_mem = write_only!(result, self);
+        // let dr_mem = write_only!(result_diff, self);
+        // match CUDNN.dropout_backward::<f32>(config,
+        //                          &try!(x.cudnn_tensor_desc()),
+        //                          trans!(x_mem),
+        //                          &try!(result.cudnn_tensor_desc()),
+        //                          trans_mut!(r_mem)) {
+            // Ok(_) => Ok(()),
+        //     Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Dropout Backward."))),
+        // }
+        Ok(())
     }
 }
