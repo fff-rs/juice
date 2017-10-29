@@ -22,18 +22,41 @@ impl Drop for RnnDescriptor {
 
 impl RnnDescriptor {
     /// Initializes a new CUDA cuDNN RnnDescriptor.
-    pub fn new(pad: &[i32], filter_stride: &[i32], data_type: DataType) -> Result<RnnDescriptor, Error> {
+    pub fn new(
+        handle: &Cudnn,
+        hidden_size: i32,
+        num_layers: i32,
+        dropout_desc: DropoutDescriptor,
+        input_mode: cudnnRNNInputMode_t,
+        direction: cudnnDirectionMode_t,
+        mode: cudnnRNNMode_t,
+        algorithm: cudnnRNNAlgo_t,
+        data_type: DataType,
+    ) -> Result<RnnDescriptor, Error> {
         let array_length = pad.len() as i32;
-        let upscale: Vec<i32> = ::std::iter::repeat(1i32).take(array_length as usize).collect();
+        let upscale: Vec<i32> = ::std::iter::repeat(1i32)
+            .take(array_length as usize)
+            .collect();
 
         let generic_rnn_desc = try!(API::create_rnn_descriptor());
         let data_type = match data_type {
             DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
-            DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE),
-            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF),
+            DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
+            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF,
             _ => return Err(Error::InvalidValue("Invalid data type value passed")),
-        }
-        API::set_rnn_descriptor(generic_rnn_desc, );
+        };
+        API::set_rnn_descriptor(
+            handle.id_c(),
+            generic_rnn_desc,
+            hidden_size,
+            num_layers,
+            dropout_desc,
+            input_mode,
+            direction,
+            mode,
+            algorithm,
+            data_type,
+        );
         Ok(RnnDescriptor::from_c(generic_rnn_desc))
 
     }
