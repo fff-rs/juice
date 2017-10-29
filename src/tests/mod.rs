@@ -41,7 +41,7 @@ fn get_opencl_backend() -> Backend<OpenCL> {
     Backend::<OpenCL>::default().unwrap()
 }
 
-pub fn write_to_tensor<T,F>(backend: &Backend<F>, xs: &mut SharedTensor<T>, data: &[f64])
+pub fn write_to_tensor<T,F>(_backend: &Backend<F>, xs: &mut SharedTensor<T>, data: &[f64])
     where T: ::std::marker::Copy + NumCast,
           F: IFramework,
           Backend<F>: IBackend {
@@ -51,7 +51,7 @@ pub fn write_to_tensor<T,F>(backend: &Backend<F>, xs: &mut SharedTensor<T>, data
     let native_dev = native.device();
     {
         let mem = xs.write_only(native_dev).unwrap();
-        let mut mem_buffer = mem.as_mut_slice::<T>();
+        let mem_buffer = mem.as_mut_slice::<T>();
         for (i, x) in data.iter().enumerate() {
             mem_buffer[i] = cast::<_, T>(*x).unwrap();
         }
@@ -78,7 +78,7 @@ pub fn filled_tensor<T,F>(backend: &Backend<F>, dims: &[usize], data: &[f64]) ->
 // Currently unused. It was supposed to be used for random tests with inlined
 // verification or cross tests (Native <-> Cuda), but they aren't implemented
 // yet.
-pub fn uniformly_random_tensor<T,F>(backend: &Backend<F>, dims: &[usize], low: T, high: T) -> SharedTensor<T>
+pub fn uniformly_random_tensor<T,F>(_backend: &Backend<F>, dims: &[usize], low: T, high: T) -> SharedTensor<T>
     where T: Copy + PartialEq + PartialOrd + range::SampleRange,
           F: IFramework,
           Backend<F>: IBackend {
@@ -88,7 +88,7 @@ pub fn uniformly_random_tensor<T,F>(backend: &Backend<F>, dims: &[usize], low: T
         let native = get_native_backend();
         let native_dev = native.device();
         {
-            let mut mem = xs.write_only(native_dev).unwrap();
+            let mem = xs.write_only(native_dev).unwrap();
             let mem_slice = mem.as_mut_slice::<T>();
 
             let mut rng = thread_rng();
@@ -184,8 +184,6 @@ pub fn tensor_assert_ne_tensor<T,U>(xa: &SharedTensor<T>, xb: &SharedTensor<U>, 
     for (x1, x2) in mem_slice_a.iter().zip(mem_slice_b.iter()) {
         let x1_t = cast::<_, f64>(*x1).unwrap();
         let x2_t = cast::<_, f64>(*x2).unwrap();
-        let diff = (x1_t - x2_t).abs();
-        let max_diff = e * (x1_t.abs() + x2_t.abs()) * 0.5;
         if (x1_t - x2_t).abs() > e * (x1_t.abs() + x2_t.abs()) * 0.5 {
             return;
         }
