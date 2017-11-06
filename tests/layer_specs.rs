@@ -5,7 +5,7 @@ extern crate coaster as co;
 mod layer_spec {
     use co::prelude::*;
     use juice::layer::*;
-    use juice::weight::{DimCheckMode, WeightConfig};        
+    use juice::weight::{DimCheckMode, WeightConfig};
     use std::rc::Rc;
     // only used by cuda right now
     #[allow(dead_code)]
@@ -27,7 +27,7 @@ mod layer_spec {
         use super::{native_backend, cuda_backend};
         use juice::layer::*;
         use juice::layers::*;
-        
+
         #[test]
         fn create_layer_with_either() {
             let cfg = super::new_layer_config();
@@ -66,33 +66,33 @@ mod layer_spec {
             // Layer: fc2 equiv. output
             cfg.add_layer(LayerConfig::new("fc2", LayerType::Linear(LinearConfig { output_size: 1 })));
             cfg.add_layer(LayerConfig::new("fc2_out/sigmoid", LayerType::Sigmoid));
-        
+
             let backend = native_backend();
             let _ = Layer::from_config(backend.clone(),
                                        &LayerConfig::new("network", LayerType::Sequential(cfg)));
         }
-        
+
         #[test]
         fn save_and_load_layer() {
             let cfg = simple_network();
             let mut original_layer = Layer::from_config(native_backend(), &cfg);
-        
+
             original_layer.save("target/testnetwork").unwrap();
             let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), "target/testnetwork").unwrap();
-        
+
             assert_eq!(original_layer.input_blob_names(),
                        loaded_layer.input_blob_names());
-        
+
             let original_weights = original_layer.learnable_weights_data();
             let original_weight_lock = original_weights[0].read().unwrap();
             let loaded_weights = loaded_layer.learnable_weights_data();
             let loaded_weight_lock = loaded_weights[0].read().unwrap();
-        
+
             let original_weight = original_weight_lock.read(native_backend().device())
                 .unwrap().as_slice::<f32>();
             let loaded_weight = loaded_weight_lock.read(native_backend().device())
                 .unwrap().as_slice::<f32>();
-        
+
             assert_eq!(original_weight, loaded_weight);
         }
     }
@@ -103,7 +103,7 @@ mod layer_spec {
         use co::prelude::*;
         use juice::layer::*;
         use juice::layers::*;
-        use juice::util::write_to_memory;        
+        use juice::util::write_to_memory;
         use std::sync::{Arc, RwLock};
 
         #[test]
@@ -118,7 +118,7 @@ mod layer_spec {
             Layer::from_config(cuda_backend(),
                                &LayerConfig::new("model", LayerType::Dropout(model)));
         }
-        
+
         #[test]
         fn can_create_empty_sequential_layer() {
             let model = SequentialConfig::default();
@@ -197,62 +197,65 @@ mod layer_spec {
         }
     }
 
-    // #[test]
-    // fn dim_check_strict() {
-    //     let cfg = WeightConfig { share_mode: DimCheckMode::Strict, ..WeightConfig::default() };
-    //     let blob_one = SharedTensor::<f32>::new(backend().device(), &vec![2, 3, 3]);
-    //     let blob_two = SharedTensor::<f32>::new(backend().device(), &vec![3, 2, 3]);
-    //     let param_name = "foo".to_owned();
-    //     let owner_name = "owner".to_owned();
-    //     let layer_name = "layer".to_owned();
-    //
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_one,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_ok());
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_two,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_err());
-    // }
+    #[test]
+    fn dim_check_strict() {
+        let cfg = WeightConfig { share_mode: DimCheckMode::Strict, ..WeightConfig::default() };
+        let blob_one = SharedTensor::<f32>::new(&vec![2, 3, 3]);
+        let blob_two = SharedTensor::<f32>::new(&vec![3, 2, 3]);
+        let param_name = "foo".to_owned();
+        let owner_name = "owner".to_owned();
+        let layer_name = "layer".to_owned();
 
-    // #[test]
-    // fn dim_check_permissive() {
-    //     let cfg = WeightConfig { share_mode: DimCheckMode::Permissive, ..WeightConfig::default() };
-    //     let blob_one = SharedTensor::<f32>::new(backend().device(), &vec![2, 3, 3]);
-    //     let blob_two = SharedTensor::<f32>::new(backend().device(), &vec![3, 2, 3]);
-    //     let blob_three = SharedTensor::<f32>::new(backend().device(), &vec![3, 10, 3]);
-    //     let param_name = "foo".to_owned();
-    //     let owner_name = "owner".to_owned();
-    //     let layer_name = "layer".to_owned();
-    //
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_one,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_ok());
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_two,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_ok());
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_three,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_err());
-    //     assert!(cfg.check_dimensions(&blob_two,
-    //                                  &blob_three,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_err());
-    // }
+        println!("first blob's info {:?}", &blob_one.desc());
+        println!("second blob's info {:?}", &blob_two.desc());
+
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_one,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_ok());
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_two,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_err());
+    }
+
+    #[test]
+    fn dim_check_permissive() {
+        let cfg = WeightConfig { share_mode: DimCheckMode::Permissive, ..WeightConfig::default() };
+        let blob_one = SharedTensor::<f32>::new(&vec![2, 3, 3]);
+        let blob_two = SharedTensor::<f32>::new(&vec![3, 2, 3]);
+        let blob_three = SharedTensor::<f32>::new(&vec![3, 10, 3]);
+        let param_name = "foo".to_owned();
+        let owner_name = "owner".to_owned();
+        let layer_name = "layer".to_owned();
+
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_one,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_ok());
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_two,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_ok());
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_three,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_err());
+        assert!(cfg.check_dimensions(&blob_two,
+                                     &blob_three,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_err());
+    }
 }
