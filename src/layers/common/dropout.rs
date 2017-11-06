@@ -22,7 +22,6 @@ pub struct Dropout<T, B: conn::Dropout<T>> {
     dropout_config: Option<Rc<B::CDROP>>,
 }
 
-
 impl<T, B: conn::Dropout<T>> Dropout<T, B> {
     /// Create a Dropout layer from a DropoutConfig.
     pub fn from_config(config: &DropoutConfig) -> Dropout<T, B> {
