@@ -114,6 +114,13 @@ mod layer_spec {
 
         #[test]
         fn can_create_default_dropout_layer() {
+            let model = DropoutConfig { probability: 0.5 };
+            Layer::from_config(cuda_backend(),
+                               &LayerConfig::new("model", LayerType::Dropout(model)));
+        }
+
+        #[test]
+        fn can_create_single_dropout_layer() {
             let model = DropoutConfig::default();
             Layer::from_config(cuda_backend(),
                                &LayerConfig::new("model", LayerType::Dropout(model)));
@@ -143,13 +150,13 @@ mod layer_spec {
             model.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 1568 }));
             model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             model.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
+            model.add_layer(LayerConfig::new("dropout", DropoutConfig { probability: 0.8 }));
 
             let _ = Layer::from_config(cuda_backend(),
                                        &LayerConfig::new("model", LayerType::Sequential(model)));
         }
 
         #[test]
-        #[ignore] // TODO this needs CUDA support
         fn reshape_does_not_affect_output() {
             let native_backend = native_backend();
             let cuda_backend = cuda_backend();
@@ -171,9 +178,7 @@ mod layer_spec {
 
             let input = vec![1f32, 1f32, 2f32];
             let mut normal_tensor = SharedTensor::<f32>::new(&[3]);
-            // let mut normal_tensor_output = SharedTensor::<f32>::new(native_backend.device(), &(3)).unwrap();
             let mut reshape_tensor = SharedTensor::<f32>::new(&[3]);
-            // let mut reshape_tensor_output = SharedTensor::<f32>::new(native_backend.device(), &(3)).unwrap();
             write_to_memory(normal_tensor.write_only(native_backend.device()).unwrap(),
                             &input);
             write_to_memory(reshape_tensor.write_only(native_backend.device()).unwrap(),
@@ -205,9 +210,6 @@ mod layer_spec {
         let param_name = "foo".to_owned();
         let owner_name = "owner".to_owned();
         let layer_name = "layer".to_owned();
-
-        println!("first blob's info {:?}", &blob_one.desc());
-        println!("second blob's info {:?}", &blob_two.desc());
 
         assert!(cfg.check_dimensions(&blob_one,
                                      &blob_one,
