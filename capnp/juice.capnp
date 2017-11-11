@@ -76,7 +76,8 @@ enum PoolingMode {
 }
 
 struct DropoutConfig {
-  dropout @0 :Float32;
+  probability @0 :Float32;
+  seed @1 :UInt64;
 }
 
 struct SequentialConfig {

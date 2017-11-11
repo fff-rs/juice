@@ -19,15 +19,19 @@ use util::ArcLock;
 /// [Dropout](./index.html) Layer
 pub struct Dropout<T, B: conn::Dropout<T>> {
     probability: f32,
-    dropout_config: Option<Rc<B::CDROP>>,
+    seed: u64,
+    dropout_config: Vec<Rc<B::CDROP>>,
 }
 
 impl<T, B: conn::Dropout<T>> Dropout<T, B> {
     /// Create a Dropout layer from a DropoutConfig.
     pub fn from_config(config: &DropoutConfig) -> Dropout<T, B> {
         Dropout {
+            // TODO consider moving to vec
             probability: config.probability,
-            dropout_config: None,
+            // TODO consider moving to vec
+            seed: config.seed,
+            dropout_config: vec![],
         }
     }    
 }
@@ -46,12 +50,15 @@ impl<B: IBackend + conn::Dropout<f32>> ILayer<B> for Dropout<f32, B> {
                weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
                output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
                output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
-        if let Some(inp) = input_data.get(0) {
-            let read_inp = inp.read().unwrap();
-            let input_desc = read_inp.desc();
+        for i in 0..input_data.len() {
+            let inp = input_data[0].read().unwrap();
+            let input_desc = inp.desc();
             input_gradient[0].write().unwrap().resize(input_desc).unwrap();
             output_data[0].write().unwrap().resize(input_desc).unwrap();
             output_gradient[0].write().unwrap().resize(input_desc).unwrap();
+
+            let config = backend.new_dropout_config(self.probability, self.seed).unwrap();
+            self.dropout_config.push(Rc::new(config));
         }
     }
 }
@@ -63,8 +70,8 @@ impl<B: IBackend + conn::Dropout<f32>> ComputeOutput<f32, B> for Dropout<f32,B> 
                       input_data: &[&SharedTensor<f32>],
                       output_data: &mut [&mut SharedTensor<f32>]) {
 
-        let dropout_config = self.dropout_config.as_ref().unwrap();
-	backend.dropout(input_data[0], output_data[0], dropout_config).unwrap();
+		let config = &self.dropout_config[0];
+		backend.dropout(input_data[0], output_data[0], &*config).unwrap();
     }
 }
 
@@ -77,7 +84,7 @@ impl<B: IBackend + conn::Dropout<f32>> ComputeInputGradient<f32, B> for Dropout<
                               input_data: &[&SharedTensor<f32>],
                               input_gradients: &mut [&mut SharedTensor<f32>]) {
 
-        let dropout_config = self.dropout_config.as_ref().unwrap();
+        let dropout_config = &self.dropout_config[0];
         backend.dropout_grad(output_data[0],
                        output_gradients[0],
                        input_data[0],
@@ -94,6 +101,8 @@ impl<B: IBackend + conn::Dropout<f32>> ComputeParametersGradient<f32, B> for Dro
 pub struct DropoutConfig {
     /// The probability to clamp a value to zero
     pub probability: f32,
+    /// The initial seed for the (pseudo-)random generator
+    pub seed: u64,
 }
 
 impl Into<LayerType> for DropoutConfig {
@@ -107,8 +116,8 @@ impl<'a> CapnpWrite<'a> for DropoutConfig {
 
     /// Write the DropoutConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
-        builder.borrow().set_dropout(self.probability);
-
+        builder.borrow().set_probability(self.probability);
+        builder.borrow().set_seed(self.seed);
     }
 }
 
@@ -116,16 +125,18 @@ impl<'a> CapnpRead<'a> for DropoutConfig {
     type Reader = capnp_config::Reader<'a>;
 
     fn read_capnp(reader: Self::Reader) -> Self {
-        let probability : f32 = reader.get_dropout();
+        let probability : f32 = reader.get_probability();
+        let seed : u64 = reader.get_seed();
 
         DropoutConfig {
             probability: probability,
+            seed: seed,
         }
     }
 }
 
 impl ::std::default::Default for DropoutConfig {
     fn default() -> DropoutConfig {
-        DropoutConfig { probability: 0.75 }
+        DropoutConfig { probability: 0.75, seed: 42 }
     }
 }
