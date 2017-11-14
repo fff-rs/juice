@@ -114,14 +114,14 @@ mod layer_spec {
 
         #[test]
         fn can_create_default_dropout_layer() {
-            let model = DropoutConfig { probability: 0.5 };
+            let model = DropoutConfig::default();
             Layer::from_config(cuda_backend(),
                                &LayerConfig::new("model", LayerType::Dropout(model)));
         }
 
         #[test]
         fn can_create_single_dropout_layer() {
-            let model = DropoutConfig::default();
+            let model = DropoutConfig { probability: 0.5, seed: 0 };
             Layer::from_config(cuda_backend(),
                                &LayerConfig::new("model", LayerType::Dropout(model)));
         }
@@ -150,7 +150,7 @@ mod layer_spec {
             model.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 1568 }));
             model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             model.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
-            model.add_layer(LayerConfig::new("dropout", DropoutConfig { probability: 0.8 }));
+            model.add_layer(LayerConfig::new("dropout", DropoutConfig { probability: 0.8, seed: 0 }));
 
             let _ = Layer::from_config(cuda_backend(),
                                        &LayerConfig::new("model", LayerType::Sequential(model)));
