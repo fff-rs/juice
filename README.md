@@ -27,7 +27,7 @@ deployment easily accessible for everyone.
 [rust]: https://www.rust-lang.org/
 [autumn]: http://autumnai.com
 [spearow]: http://spearow.io
-[juice-book]: http://spearow.io/juice/book
+[juice-book]: https://spearow.github.io/juice/book/juice.html
 [tensorflow]: https://github.com/tensorflow/tensorflow
 [benchmarks]: #benchmarks
 [juice-examples]: #examples
