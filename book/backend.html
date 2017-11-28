@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Chapter 1 - </title>
+        <title>Backend - </title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,7 +48,7 @@
         </script>
 
         <div id="sidebar" class="sidebar">
-            <ul class="chapter"><li><a href="./chapter_1.html" class="active"><strong>1.</strong> Chapter 1</a></li></ul>
+            <ul class="chapter"><li><a href="./juice.html"><strong>1.</strong> Juice</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html" class="active"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://spearow.github.io/juice/juice/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
         </div>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -68,19 +68,53 @@
                 </div>
 
                 <div id="content" class="content">
-                    <a class="header" href="./chapter_1.html#chapter-1" id="chapter-1"><h1>Chapter 1</h1></a>
+                    <a class="header" href="./backend.html#backend" id="backend"><h1>Backend</h1></a>
+<p>Via the concept of a backend we can abstract over the platform we will execute
+or optimize a network on. The construction of a backend is trivial. The backend
+is passed to the <code>Solver</code>, (one backend for <code>network</code> and one for the
+<code>objectve</code>). The Solver than executes all operations on the provided backend.</p>
+<pre><pre class="playpen"><code class="language-rust"># #![allow(unused_variables)]
+#fn main() {
+let backend = ::std::rc::Rc::new(Backend::&lt;Cuda&gt;::default().unwrap());
+
+// set up solver
+let mut solver_cfg = SolverConfig { minibatch_size: batch_size, base_lr: learning_rate, momentum: momentum, .. SolverConfig::default() };
+solver_cfg.network = LayerConfig::new(&quot;network&quot;, net_cfg);
+solver_cfg.objective = LayerConfig::new(&quot;classifier&quot;, classifier_cfg);
+let mut solver = Solver::from_config(backend.clone(), backend.clone(), &amp;solver_cfg);
+
+#}</code></pre></pre>
+<p>The backend is a concept of
+<a href="https://github.com/autumnai/coaster">Coaster</a>, to which you can refer
+for now, until this chapter becomes more fleshed out.</p>
 
                 </div>
 
                 <!-- Mobile navigation buttons -->
                 
+                    <a href="./distributed-optimization.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
 
+                
+                    <a href="./deep-learning-glossary.html" class="mobile-nav-chapters next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                 
 
             </div>
 
             
+                <a href="./distributed-optimization.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
 
+            
+                <a href="./deep-learning-glossary.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-right"></i>
+                </a>
             
 
         </div>

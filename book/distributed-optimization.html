@@ -2,11 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Juice - </title>
+        <title>Distributed Optimization - </title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <base href="">
 
         <link rel="stylesheet" href="book.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
@@ -47,7 +48,7 @@
         </script>
 
         <div id="sidebar" class="sidebar">
-            <ul class="chapter"><li><a href="./juice.html" class="active"><strong>1.</strong> Juice</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://spearow.github.io/juice/juice/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
+            <ul class="chapter"><li><a href="./juice.html"><strong>1.</strong> Juice</a></li><li><a href="./layers.html"><strong>2.</strong> Layers</a></li><li><ul class="section"><li><a href="./layer-lifecycle.html"><strong>2.1.</strong> Layer Lifecycle</a></li><li><a href="./building-networks.html"><strong>2.2.</strong> Create a Network</a></li><li><a href="./create-new-layer.html"><strong>2.3.</strong> Create a new Layer</a></li></ul></li><li><a href="./solvers.html"><strong>3.</strong> Solvers</a></li><li><ul class="section"><li><a href="./optimize-layers.html"><strong>3.1.</strong> Optimize Layers</a></li><li><a href="./multi-device-optimization.html"><strong>3.2.</strong> Multi-Device Optimization</a></li><li><a href="./distributed-optimization.html" class="active"><strong>3.3.</strong> Distributed Optimization</a></li></ul></li><li><a href="./backend.html"><strong>4.</strong> Backend</a></li><li><a href="./deep-learning-glossary.html"><strong>5.</strong> Glossary</a></li><li class="spacer"></li><li><a href="http://spearow.github.io/juice/juice/index.html"><strong>6.</strong> Rust API Documentation</a></li></ul>
         </div>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -67,15 +68,23 @@
                 </div>
 
                 <div id="content" class="content">
-                    <a class="header" href="./juice.html#juice" id="juice"><h1>Juice</h1></a>
+                    <a class="header" href="./distributed-optimization.html#distributed-optimization" id="distributed-optimization"><h1>Distributed Optimization</h1></a>
+<p>The distributed optimization of networks will (very likely) be managed by a
+standalone crate on top of Juice. Although distributed optimization will not be a
+core part of Juice itself, we will cover the topic of distributed optimization
+with Juice here in this chapter of the book.</p>
 
                 </div>
 
                 <!-- Mobile navigation buttons -->
                 
+                    <a href="./multi-device-optimization.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
 
                 
-                    <a href="./layers.html" class="mobile-nav-chapters next">
+                    <a href="./backend.html" class="mobile-nav-chapters next">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
@@ -83,9 +92,13 @@
             </div>
 
             
+                <a href="./multi-device-optimization.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
 
             
-                <a href="./layers.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
+                <a href="./backend.html" class="nav-chapters next" title="You can navigate through the chapters using the arrow keys">
                     <i class="fa fa-angle-right"></i>
                 </a>
             
