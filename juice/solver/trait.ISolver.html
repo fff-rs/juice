@@ -51,14 +51,16 @@
                </span><a class='srclink' href='../../src/juice/solver/mod.rs.html#112-131' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ISolver&lt;SolverB, B:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.LayerOps.html" title="trait juice::util::LayerOps">LayerOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;&gt; {
     fn <a href='#tymethod.compute_update' class='fnname'>compute_update</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;param: &amp;<a class="struct" href="../../juice/solver/struct.SolverConfig.html" title="struct juice::solver::SolverConfig">SolverConfig</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;network: &amp;mut <a class="struct" href="../../juice/layer/struct.Layer.html" title="struct juice::layer::Layer">Layer</a>&lt;B&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iter: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>&nbsp;&nbsp;&nbsp;&nbsp;);
-    fn <a href='#tymethod.backend' class='fnname'>backend</a>(&amp;self) -&gt; &amp;SolverB;
+<div class='item-spacer'></div>    fn <a href='#tymethod.backend' class='fnname'>backend</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>SolverB;
 
     fn <a href='#method.init' class='fnname'>init</a>(&amp;mut self, net: &amp;<a class="struct" href="../../juice/layer/struct.Layer.html" title="struct juice::layer::Layer">Layer</a>&lt;B&gt;) { ... }
 }</pre><div class='docblock'><p>Implementation of a specific Solver.</p>
 
 <p>See <a href="../solvers/index.html">Solvers</a></p>
 </div>
-            <h2 id='required-methods'>Required Methods</h2>
+            <h2 id='required-methods' class='small-section-header'>
+              Required Methods<a href='#required-methods' class='anchor'></a>
+            </h2>
             <div class='methods'>
         <h3 id='tymethod.compute_update' class='method'><span id='compute_update.v' class='invisible'><code>fn <a href='#tymethod.compute_update' class='fnname'>compute_update</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;param: &amp;<a class="struct" href="../../juice/solver/struct.SolverConfig.html" title="struct juice::solver::SolverConfig">SolverConfig</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;network: &amp;mut <a class="struct" href="../../juice/layer/struct.Layer.html" title="struct juice::layer::Layer">Layer</a>&lt;B&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;iter: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>)</code></span></h3><div class='docblock'><p>Update the weights of the net with part of the gradient.</p>
 
@@ -67,16 +69,24 @@ Calculates the gradient update that should be applied to the network,
 and then applies that gradient to the network, changing its weights.</p>
 
 <p>Used by <a href="./struct.Solver.html#method.step">step</a> to optimize the network.</p>
-</div><h3 id='tymethod.backend' class='method'><span id='backend.v' class='invisible'><code>fn <a href='#tymethod.backend' class='fnname'>backend</a>(&amp;self) -&gt; &amp;SolverB</code></span></h3><div class='docblock'><p>Returns the backend used by the solver.</p>
+</div><h3 id='tymethod.backend' class='method'><span id='backend.v' class='invisible'><code>fn <a href='#tymethod.backend' class='fnname'>backend</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>SolverB</code></span></h3><div class='docblock'><p>Returns the backend used by the solver.</p>
 </div></div>
-            <h2 id='provided-methods'>Provided Methods</h2>
+            <h2 id='provided-methods' class='small-section-header'>
+              Provided Methods<a href='#provided-methods' class='anchor'></a>
+            </h2>
             <div class='methods'>
         <h3 id='method.init' class='method'><span id='init.v' class='invisible'><code>fn <a href='#method.init' class='fnname'>init</a>(&amp;mut self, net: &amp;<a class="struct" href="../../juice/layer/struct.Layer.html" title="struct juice::layer::Layer">Layer</a>&lt;B&gt;)</code></span></h3><div class='docblock'><p>Initialize the solver, setting up any network related data.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;SolverB, B:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.LayerOps.html" title="trait juice::util::LayerOps">LayerOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="trait" href="../../juice/solver/trait.ISolver.html" title="trait juice::solver::ISolver">ISolver</a>&lt;SolverB, B&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#133-137' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
+</div></div>
+            <h2 id='implementations' class='small-section-header'>
+              Trait Implementations<a href='#implementations' class='anchor'></a>
+            </h2>
+        <h3 id='impl-Debug' class='impl'><span class='in-band'><code>impl&lt;SolverB, B:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.LayerOps.html" title="trait juice::util::LayerOps">LayerOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="trait" href="../../juice/solver/trait.ISolver.html" title="trait juice::solver::ISolver">ISolver</a>&lt;SolverB, B&gt;</code><a href='#impl-Debug' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#133-137' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#134-136' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Formats the value using the given formatter.</p>
 </div></div>
-        <h2 id='implementors'>Implementors</h2>
+        <h2 id='implementors' class='small-section-header'>
+          Implementors<a href='#implementors' class='anchor'></a>
+        </h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl&lt;SolverB:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.SolverOps.html" title="trait juice::util::SolverOps">SolverOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;, NetB:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.LayerOps.html" title="trait juice::util::LayerOps">LayerOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt; + 'static&gt; ISolver&lt;SolverB, NetB&gt; for <a class="struct" href="../../juice/solvers/sgd/momentum/struct.Momentum.html" title="struct juice::solvers::sgd::momentum::Momentum">Momentum</a>&lt;SolverB&gt;</code></li>
 </ul><script type="text/javascript" async
