@@ -60,10 +60,10 @@ iter, which is the current iteration of the solver, that is supplied as a parame
 for the learning rate calculation.</p>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.Fixed' class='variant'><span id='Fixed.v' class='invisible'><code>Fixed</code></span></span><div class='docblock'><p>always return base_lr</p>
-</div><span id='variant.Step' class='variant'><span id='Step.v' class='invisible'><code>Step</code></span></span><div class='docblock'><p>learning rate decays every <code>step</code> iterations.
+<span id="variant.Fixed" class="variant small-section-header"><a href="#variant.Fixed" class="anchor field"></a><span id='Fixed.v' class='invisible'><code>Fixed</code></span></span><div class='docblock'><p>always return base_lr</p>
+</div><span id="variant.Step" class="variant small-section-header"><a href="#variant.Step" class="anchor field"></a><span id='Step.v' class='invisible'><code>Step</code></span></span><div class='docblock'><p>learning rate decays every <code>step</code> iterations.
 return base_lr * gamma ^ (floor(iter / step))</p>
-</div><span id='variant.Exp' class='variant'><span id='Exp.v' class='invisible'><code>Exp</code></span></span><div class='docblock'><p>return base_lr * gamma ^ iter</p>
+</div><span id="variant.Exp" class="variant small-section-header"><a href="#variant.Exp" class="anchor field"></a><span id='Exp.v' class='invisible'><code>Exp</code></span></span><div class='docblock'><p>return base_lr * gamma ^ iter</p>
 </div>
             <h2 id='implementations' class='small-section-header'>
               Trait Implementations<a href='#implementations' class='anchor'></a>

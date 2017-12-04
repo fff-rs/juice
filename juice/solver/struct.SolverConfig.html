@@ -65,54 +65,64 @@
     pub momentum: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>,
 }</pre><div class='docblock'><p>Configuration for a Solver</p>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.name' class="structfield">
-                           <span id='name.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.name" class="structfield small-section-header">
+                           <a href="#structfield.name" class="anchor field"></a>
+                           <span id="name.v" class='invisible'>
                            <code>name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
                            </span></span><div class='docblock'><p>Name of the solver.</p>
-</div><span id='structfield.network' class="structfield">
-                           <span id='network.v' class='invisible'>
+</div><span id="structfield.network" class="structfield small-section-header">
+                           <a href="#structfield.network" class="anchor field"></a>
+                           <span id="network.v" class='invisible'>
                            <code>network: <a class="struct" href="../../juice/layer/struct.LayerConfig.html" title="struct juice::layer::LayerConfig">LayerConfig</a></code>
                            </span></span><div class='docblock'><p>The <a href="../layer/struct.LayerConfig.html">LayerConfig</a> that is used to initialize the network.</p>
-</div><span id='structfield.objective' class="structfield">
-                           <span id='objective.v' class='invisible'>
+</div><span id="structfield.objective" class="structfield small-section-header">
+                           <a href="#structfield.objective" class="anchor field"></a>
+                           <span id="objective.v" class='invisible'>
                            <code>objective: <a class="struct" href="../../juice/layer/struct.LayerConfig.html" title="struct juice::layer::LayerConfig">LayerConfig</a></code>
                            </span></span><div class='docblock'><p>The <a href="../layer/struct.LayerConfig.html">LayerConfig</a> that is used to initialize the objective.</p>
-</div><span id='structfield.solver' class="structfield">
-                           <span id='solver.v' class='invisible'>
+</div><span id="structfield.solver" class="structfield small-section-header">
+                           <a href="#structfield.solver" class="anchor field"></a>
+                           <span id="solver.v" class='invisible'>
                            <code>solver: <a class="enum" href="../../juice/solver/enum.SolverKind.html" title="enum juice::solver::SolverKind">SolverKind</a></code>
                            </span></span><div class='docblock'><p>The <a href="../solvers/index.html">Solver implementation</a> to be used.</p>
-</div><span id='structfield.minibatch_size' class="structfield">
-                           <span id='minibatch_size.v' class='invisible'>
+</div><span id="structfield.minibatch_size" class="structfield small-section-header">
+                           <a href="#structfield.minibatch_size" class="anchor field"></a>
+                           <span id="minibatch_size.v" class='invisible'>
                            <code>minibatch_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code>
                            </span></span><div class='docblock'><p>Accumulate gradients over <code>minibatch_size</code> instances.</p>
 
 <p>Default: 1</p>
-</div><span id='structfield.lr_policy' class="structfield">
-                           <span id='lr_policy.v' class='invisible'>
+</div><span id="structfield.lr_policy" class="structfield small-section-header">
+                           <a href="#structfield.lr_policy" class="anchor field"></a>
+                           <span id="lr_policy.v" class='invisible'>
                            <code>lr_policy: <a class="enum" href="../../juice/solver/enum.LRPolicy.html" title="enum juice::solver::LRPolicy">LRPolicy</a></code>
                            </span></span><div class='docblock'><p>The learning rate policy to be used.</p>
 
 <p>Default: Fixed</p>
-</div><span id='structfield.base_lr' class="structfield">
-                           <span id='base_lr.v' class='invisible'>
+</div><span id="structfield.base_lr" class="structfield small-section-header">
+                           <a href="#structfield.base_lr" class="anchor field"></a>
+                           <span id="base_lr.v" class='invisible'>
                            <code>base_lr: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code>
                            </span></span><div class='docblock'><p>The base learning rate.</p>
 
 <p>Default: 0.01</p>
-</div><span id='structfield.gamma' class="structfield">
-                           <span id='gamma.v' class='invisible'>
+</div><span id="structfield.gamma" class="structfield small-section-header">
+                           <a href="#structfield.gamma" class="anchor field"></a>
+                           <span id="gamma.v" class='invisible'>
                            <code>gamma: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code>
                            </span></span><div class='docblock'><p>gamma as used in the calculation of most learning rate policies.</p>
 
 <p>Default: 0.1</p>
-</div><span id='structfield.stepsize' class="structfield">
-                           <span id='stepsize.v' class='invisible'>
+</div><span id="structfield.stepsize" class="structfield small-section-header">
+                           <a href="#structfield.stepsize" class="anchor field"></a>
+                           <span id="stepsize.v" class='invisible'>
                            <code>stepsize: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code>
                            </span></span><div class='docblock'><p>The stepsize used in Step and Sigmoid learning policies.</p>
 
 <p>Default: 10</p>
-</div><span id='structfield.clip_gradients' class="structfield">
-                           <span id='clip_gradients.v' class='invisible'>
+</div><span id="structfield.clip_gradients" class="structfield small-section-header">
+                           <a href="#structfield.clip_gradients" class="anchor field"></a>
+                           <span id="clip_gradients.v" class='invisible'>
                            <code>clip_gradients: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;</code>
                            </span></span><div class='docblock'><p>The threshold for clipping gradients.</p>
 
@@ -121,16 +131,18 @@ if their L2 norm is larger than <code>clip_gradients</code>.
 If set to <code>None</code> gradients will not be clipped.</p>
 
 <p>Default: None</p>
-</div><span id='structfield.weight_decay' class="structfield">
-                           <span id='weight_decay.v' class='invisible'>
+</div><span id="structfield.weight_decay" class="structfield small-section-header">
+                           <a href="#structfield.weight_decay" class="anchor field"></a>
+                           <span id="weight_decay.v" class='invisible'>
                            <code>weight_decay: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;</code>
                            </span></span><div class='docblock'><p>The global <a href="http://www.alglib.net/dataanalysis/improvinggeneralization.php#header3">weight decay</a> multiplier for <a href="https://cs231n.github.io/neural-networks-2/#reg">regularization</a>.</p>
 
 <p>Regularization can prevent <a href="https://cs231n.github.io/neural-networks-2/#reg">overfitting</a>.</p>
 
 <p>If set to <code>None</code> no regularization will be performed.</p>
-</div><span id='structfield.regularization_method' class="structfield">
-                           <span id='regularization_method.v' class='invisible'>
+</div><span id="structfield.regularization_method" class="structfield small-section-header">
+                           <a href="#structfield.regularization_method" class="anchor field"></a>
+                           <span id="regularization_method.v" class='invisible'>
                            <code>regularization_method: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../../juice/solver/enum.RegularizationMethod.html" title="enum juice::solver::RegularizationMethod">RegularizationMethod</a>&gt;</code>
                            </span></span><div class='docblock'><p>The method of <a href="https://cs231n.github.io/neural-networks-2/#reg">regularization</a> to use.</p>
 
@@ -141,8 +153,9 @@ The two most common ones are <a href="https://cs231n.github.io/neural-networks-2
 
 <p>Currently only L2 regularization is implemented.
 See <a href="https://github.com/spearow/juice/issues/23">Issue #23</a>.</p>
-</div><span id='structfield.momentum' class="structfield">
-                           <span id='momentum.v' class='invisible'>
+</div><span id="structfield.momentum" class="structfield small-section-header">
+                           <a href="#structfield.momentum" class="anchor field"></a>
+                           <span id="momentum.v" class='invisible'>
                            <code>momentum: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code>
                            </span></span><div class='docblock'><p>The <a href="https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Momentum">momentum</a> multiplier for <a href="../solvers/sgd/index.html">SGD solvers</a>.</p>
 
@@ -157,7 +170,7 @@ gradient update will be added to the current one.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../juice/solver/struct.SolverConfig.html" title="struct juice::solver::SolverConfig">SolverConfig</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#245-325' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.get_learning_rate' class="method"><span id='get_learning_rate.v' class='invisible'><code>fn <a href='#method.get_learning_rate' class='fnname'>get_learning_rate</a>(&amp;self, iter: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#258-297' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.get_learning_rate' class="method"><span id='get_learning_rate.v' class='invisible'><code>pub fn <a href='#method.get_learning_rate' class='fnname'>get_learning_rate</a>(&amp;self, iter: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#258-297' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Return the learning rate for a supplied iteration.</p>
 
 <p>The way the learning rate is calculated depends on the configured <a href="./enum.LRPolicy.html">LRPolicy</a>.</p>

@@ -57,35 +57,40 @@
     pub filler: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../../juice/weight/enum.FillerType.html" title="enum juice::weight::FillerType">FillerType</a>&gt;,
 }</pre><div class='docblock'><p>Specifies training configuration for a weight blob.</p>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.name' class="structfield">
-                           <span id='name.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.name" class="structfield small-section-header">
+                           <a href="#structfield.name" class="anchor field"></a>
+                           <span id="name.v" class='invisible'>
                            <code>name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
                            </span></span><div class='docblock'><p>The name of the weight blob -- useful for sharing weights among
 layers, but never required otherwise. To share a weight between two
 layers, give it a (non-empty) name.</p>
 
 <p>Default: &quot;&quot;</p>
-</div><span id='structfield.share_mode' class="structfield">
-                           <span id='share_mode.v' class='invisible'>
+</div><span id="structfield.share_mode" class="structfield small-section-header">
+                           <a href="#structfield.share_mode" class="anchor field"></a>
+                           <span id="share_mode.v" class='invisible'>
                            <code>share_mode: <a class="enum" href="../../juice/weight/enum.DimCheckMode.html" title="enum juice::weight::DimCheckMode">DimCheckMode</a></code>
                            </span></span><div class='docblock'><p>Whether to require shared weights to have the same shape, or just the same
 count</p>
 
 <p>Default: DimCheckMode::Strict</p>
-</div><span id='structfield.lr_mult' class="structfield">
-                           <span id='lr_mult.v' class='invisible'>
+</div><span id="structfield.lr_mult" class="structfield small-section-header">
+                           <a href="#structfield.lr_mult" class="anchor field"></a>
+                           <span id="lr_mult.v" class='invisible'>
                            <code>lr_mult: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;</code>
                            </span></span><div class='docblock'><p>The multiplier on the global learning rate for this parameter.</p>
 
 <p>Default: 1.0f32</p>
-</div><span id='structfield.decay_mult' class="structfield">
-                           <span id='decay_mult.v' class='invisible'>
+</div><span id="structfield.decay_mult" class="structfield small-section-header">
+                           <a href="#structfield.decay_mult" class="anchor field"></a>
+                           <span id="decay_mult.v" class='invisible'>
                            <code>decay_mult: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;</code>
                            </span></span><div class='docblock'><p>The multiplier on the global weight decay for this parameter.</p>
 
 <p>Default: 1.0f32</p>
-</div><span id='structfield.filler' class="structfield">
-                           <span id='filler.v' class='invisible'>
+</div><span id="structfield.filler" class="structfield small-section-header">
+                           <a href="#structfield.filler" class="anchor field"></a>
+                           <span id="filler.v" class='invisible'>
                            <code>filler: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../../juice/weight/enum.FillerType.html" title="enum juice::weight::FillerType">FillerType</a>&gt;</code>
                            </span></span><div class='docblock'><p>The filler that initializes the weights in the weight blob.</p>
 
@@ -95,12 +100,12 @@ count</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../juice/weight/struct.WeightConfig.html" title="struct juice::weight::WeightConfig">WeightConfig</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#53-111' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.check_dimensions' class="method"><span id='check_dimensions.v' class='invisible'><code>fn <a href='#method.check_dimensions' class='fnname'>check_dimensions</a>&lt;T&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;tensor_one: &amp;SharedTensor&lt;T&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;tensor_two: &amp;SharedTensor&lt;T&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;param_name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;owner_name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;layer_name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a><br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#56-94' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.check_dimensions' class="method"><span id='check_dimensions.v' class='invisible'><code>pub fn <a href='#method.check_dimensions' class='fnname'>check_dimensions</a>&lt;T&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;tensor_one: &amp;SharedTensor&lt;T&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;tensor_two: &amp;SharedTensor&lt;T&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;param_name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;owner_name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;layer_name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a><br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#56-94' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Checks dimensions of two blobs according to the <code>share_mode</code>.
 Returns an error if there is a count/shape mismatch.</p>
-</div><h4 id='method.lr_mult' class="method"><span id='lr_mult.v-1' class='invisible'><code>fn <a href='#method.lr_mult' class='fnname'>lr_mult</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#97-102' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.lr_mult' class="method"><span id='lr_mult.v-1' class='invisible'><code>pub fn <a href='#method.lr_mult' class='fnname'>lr_mult</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#97-102' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>The multiplier on the global learning rate for this weight blob.</p>
-</div><h4 id='method.decay_mult' class="method"><span id='decay_mult.v-1' class='invisible'><code>fn <a href='#method.decay_mult' class='fnname'>decay_mult</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#105-110' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.decay_mult' class="method"><span id='decay_mult.v-1' class='invisible'><code>pub fn <a href='#method.decay_mult' class='fnname'>decay_mult</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/weight.rs.html#105-110' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>The multiplier on the global weight decay for this weight blob.</p>
 </div></div>
             <h2 id='implementations' class='small-section-header'>
