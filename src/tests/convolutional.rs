@@ -132,13 +132,13 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, b
     let width1 = 9;
     let height1 = 9;
     let depth1 = 3;
-    let stride_for_height = 1;
-    let stride_for_width = 1;
+    let padding = &[0,0];
+    let stride = &[1,1];
     let filter_size = 6;
     let filter_count = 3;
 
-    let result_width = (width1 - filter_size + 0) / stride_for_width + 1;
-    let result_height = (height1 - filter_size + 0) / stride_for_height + 1;
+    let result_width = (width1 - filter_size + 2*padding[0]) / stride[0] + 1;
+    let result_height = (height1 - filter_size + 2*padding[1]) / stride[1] + 1;
 
     let x_val = vec![1.0; batch * depth1 * height1 * width1];
     let f_val = vec![1.0; filter_count * depth1 * filter_size * filter_size];
@@ -147,14 +147,14 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, b
     let f  = filled_tensor(&backend_a, &[filter_count, depth1, filter_size,  filter_size], &f_val);
     let mut result_a  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
     let mut result_b  = SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
-    let mut ws = SharedTensor::<u8>::new(&[64]);
+    let mut ws = SharedTensor::<u8>::new(&[128]);
 
     let conf_a = backend_a.new_convolution_config(
         &x, &result_a, &f,
         ConvForwardAlgo::Auto,
         ConvBackwardFilterAlgo::Auto,
         ConvBackwardDataAlgo::Auto,
-        &[1,1], &[0,0]).unwrap();
+        stride, padding).unwrap();
     backend_a.convolution(&f, &x, &mut result_a, &mut ws, &conf_a).unwrap();
 
     let conf_b = backend_b.new_convolution_config(
@@ -162,7 +162,7 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, b
         ConvForwardAlgo::Auto,
         ConvBackwardFilterAlgo::Auto,
         ConvBackwardDataAlgo::Auto,
-        &[1,1], &[0,0]).unwrap();
+        stride, padding).unwrap();
 
     backend_b.convolution(&f, &x, &mut result_b, &mut ws, &conf_b).unwrap();
 
