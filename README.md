@@ -72,7 +72,7 @@ To start building a machine learning application (Rust only for now. Wrappers ar
 
 ```toml
 [dependencies]
-juice = "0.2.2"
+juice = "0.2.3"
 ```
 
 [rust_download]: https://www.rust-lang.org/downloads.html
@@ -84,7 +84,7 @@ can selectively enable them like this in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-juice = { version = "0.2.2", default-features = false }
+juice = { version = "0.2.3", default-features = false }
 
 [features]
 default = ["native"] # include only the ones you want to use, in this case "native"
