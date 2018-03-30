@@ -88,20 +88,15 @@
 //!     // Initialize a CUDA Backend.
 //!     let backend = Backend::<Cuda>::default().unwrap();
 //!     // Initialize two SharedTensors.
-//!     let mut x = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
-//!     let mut result = SharedTensor::<f32>::new(backend.device(), &(1, 1, 3)).unwrap();
+//!     let mut x = SharedTensor::<f32>::new(&(1, 1, 3)).unwrap();
+//!     let mut result = SharedTensor::<f32>::new(&(1, 1, 3)).unwrap();
 //!     // Fill `x` with some data.
 //!     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
 //!     let native = Backend::<Native>::default().unwrap();
-//!     x.add_device(native.device()).unwrap(); // Add native host memory
-//!     x.sync(native.device()).unwrap(); // Sync to native host memory
 //!     write_to_memory(x.get_mut(native.device()).unwrap(), payload); // Write to native host memory.
-//!     x.sync(backend.device()).unwrap(); // Sync the data to the CUDA device.
 //!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
 //!     backend.sigmoid(&mut x, &mut result).unwrap();
 //!     // See the result.
-//!     result.add_device(native.device()).unwrap(); // Add native host memory
-//!     result.sync(native.device()).unwrap(); // Sync the result to host memory.
 //!     println!("{:?}", result.get(native.device()).unwrap().as_native().unwrap().as_slice::<f32>());
 //! }
 //! ```
