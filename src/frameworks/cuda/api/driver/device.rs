@@ -14,8 +14,8 @@ impl API {
         match API::load_device_list() {
             Ok(device_list) => {
                 Ok(
-                    device_list.iter().map(|device| {
-                        device.clone()
+                    device_list.into_iter().map(|mut device| {
+                        device
                             .load_name()
                             .load_device_type()
                             .load_compute_units()
