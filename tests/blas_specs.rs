@@ -81,7 +81,6 @@ pub fn test_asum<T, F>(backend: Backend<F>)
 
     write_to_tensor(&mut x, &[1., -2., 3.]);
     backend.asum(&x, &mut result).unwrap();
-    backend.synchronize().unwrap();
     tensor_assert_eq(&result, &[6.0], 0.);
 }
 
@@ -110,7 +109,6 @@ pub fn test_copy<T, F>(backend: Backend<F>)
     write_to_tensor(&mut x, &[1., 2., 3.]);
 
     backend.copy(&x, &mut y).unwrap();
-    backend.synchronize().unwrap();
     tensor_assert_eq(&y, &[1.0, 2.0, 3.0], 0.);
 }
 
@@ -125,7 +123,6 @@ pub fn test_dot<T, F>(backend: Backend<F>)
     write_to_tensor(&mut y, &[1., 2., 3.]);
 
     backend.dot(&x, &y, &mut result).unwrap();
-    backend.synchronize().unwrap();
     tensor_assert_eq(&result, &[14.0], 0.);
 }
 
@@ -138,7 +135,6 @@ pub fn test_nrm2<T, F>(backend: Backend<F>)
     write_to_tensor(&mut x, &[1., 2., 2.]);
 
     backend.nrm2(&x, &mut result).unwrap();
-    backend.synchronize().unwrap();
     tensor_assert_eq(&result, &[3.0], 0.);
 }
 
@@ -152,7 +148,7 @@ pub fn test_scal<T, F>(backend: Backend<F>)
     write_to_tensor(&mut y, &[1., 2., 3.]);
 
     backend.scal(&a, &mut y).unwrap();
-    backend.synchronize().unwrap();
+
     tensor_assert_eq(&y, &[2.0, 4.0, 6.0], 0.);
 }
 
@@ -166,7 +162,7 @@ pub fn test_swap<T, F>(backend: Backend<F>)
     write_to_tensor(&mut y, &[3., 2., 1.]);
 
     backend.swap(&mut x, &mut y).unwrap();
-    backend.synchronize().unwrap();
+
     tensor_assert_eq(&x, &[3.0, 2.0, 1.0], 0.);
     tensor_assert_eq(&y, &[1.0, 2.0, 3.0], 0.);
 }
@@ -190,7 +186,7 @@ pub fn test_gemm<T, F>(backend: Backend<F>)
                     Transpose::NoTrans, &b,
                     &beta,
                     &mut c).unwrap();
-    backend.synchronize().unwrap();
+
     tensor_assert_eq(&c, &[
         28.0, 7.0, 7.0,
         28.0, 7.0, 7.0,
@@ -202,7 +198,7 @@ pub fn test_gemm<T, F>(backend: Backend<F>)
                     Transpose::Trans, &b,
                     &beta,
                     &mut d).unwrap();
-    backend.synchronize().unwrap();
+
     tensor_assert_eq(&d, &[12.0, 12.0, 30.0, 30.0], 0.);
 }
 
