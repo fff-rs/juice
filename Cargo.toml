@@ -15,7 +15,7 @@ keywords        = ["blas", "coaster", "computation", "hpc", "plugin"]
 license         = "MIT OR Apache-2.0"
 
 [dependencies]
-coaster = { git = "https://github.com/spearow/coaster.git", default-features = false }
+coaster = { version = "^0.1", default-features = false }
 lazy_static = "0.1"
 
 # native
