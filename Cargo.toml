@@ -16,7 +16,7 @@ license         = "MIT OR Apache-2.0"
 
 [dependencies]
 coaster = { version = "^0.1", default-features = false }
-lazy_static = "0.1"
+lazy_static = "^1.0.0"
 
 # native
 rblas = { git = "https://github.com/spearow/rust-blas", optional = true }
@@ -24,7 +24,7 @@ rblas = { git = "https://github.com/spearow/rust-blas", optional = true }
 # cuda
 rcublas = { version = "0.2.0",  optional = true }
 
-clippy = { version = "0.0.27", optional = true }
+clippy = { version = "0.0.187", optional = true }
 
 [dev-dependencies]
 
