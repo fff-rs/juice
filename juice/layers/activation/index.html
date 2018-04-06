@@ -10,8 +10,11 @@
     <title>juice::layers::activation - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css" id="themeStyle">
+    <script src="../../../storage.js"></script>
     
 
     
@@ -30,9 +33,16 @@
     <nav class="sidebar">
         <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'>Module activation</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Reexports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'><a href='../../index.html'>juice</a>::<wbr><a href='../index.html'>layers</a></p><script>window.sidebarCurrent = {name: 'activation', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
+        <p class='location'>Module activation</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'><a href='../../index.html'>juice</a>::<wbr><a href='../index.html'>layers</a></p><script>window.sidebarCurrent = {name: 'activation', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -51,25 +61,21 @@
                    </a>
                </span><a class='srclink' href='../../../src/juice/layers/activation/mod.rs.html#1-38' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Provides nonlinear activation methods.</p>
-
 <p>Activation Layers take a input tensor, provide the activation operation and
 produce a output tensor.
-Thanks to the nonlinearity of the activation methods, we can &#39;learn&#39; and
+Thanks to the nonlinearity of the activation methods, we can 'learn' and
 detect nonlinearities
 in our (complex) datasets.</p>
-
 <p>The activation operation used should depend on the task at hand. For binary
 classification a
 step function might be very useful. For more complex tasks continious
 activation functions such
 as <a href="./sigmoid/index.html">Sigmoid</a>, TanH, <a href="./relu/index.html">ReLU</a> should be used. In most cases ReLU might
 provide the best results.</p>
-
 <p>If you supply the same blob as input and output to a layer via the <a href="../../layer/struct.LayerConfig.html">LayerConfig</a>,
 computations will be done in-place, requiring less memory.</p>
-
 <p>The activation function is also sometimes called transfer function.</p>
-</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
 <table><tr><td><code>pub use self::relu::<a class="struct" href="../../../juice/layers/activation/relu/struct.ReLU.html" title="struct juice::layers::activation::relu::ReLU">ReLU</a>;</code></td></tr><tr><td><code>pub use self::sigmoid::<a class="struct" href="../../../juice/layers/activation/sigmoid/struct.Sigmoid.html" title="struct juice::layers::activation::sigmoid::Sigmoid">Sigmoid</a>;</code></td></tr><tr><td><code>pub use self::tanh::<a class="struct" href="../../../juice/layers/activation/tanh/struct.TanH.html" title="struct juice::layers::activation::tanh::TanH">TanH</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -77,6 +83,7 @@ computations will be done in-place, requiring less memory.</p>
                                   title='mod juice::layers::activation::relu'>relu</a></td>
                            <td class='docblock-short'>
                                 <p>Applies the nonlinear Rectified Linear Unit.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -84,6 +91,7 @@ computations will be done in-place, requiring less memory.</p>
                                   title='mod juice::layers::activation::sigmoid'>sigmoid</a></td>
                            <td class='docblock-short'>
                                 <p>Applies the nonlinear Log-Sigmoid function.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -91,6 +99,7 @@ computations will be done in-place, requiring less memory.</p>
                                   title='mod juice::layers::activation::tanh'>tanh</a></td>
                            <td class='docblock-short'>
                                 <p>Applies the nonlinear TanH function.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -105,20 +114,22 @@ computations will be done in-place, requiring less memory.</p>
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 

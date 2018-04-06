@@ -10,8 +10,11 @@
     <title>juice::solvers::sgd - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css" id="themeStyle">
+    <script src="../../../storage.js"></script>
     
 
     
@@ -30,9 +33,16 @@
     <nav class="sidebar">
         <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'>Module sgd</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Reexports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'><a href='../../index.html'>juice</a>::<wbr><a href='../index.html'>solvers</a></p><script>window.sidebarCurrent = {name: 'sgd', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
+        <p class='location'>Module sgd</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'><a href='../../index.html'>juice</a>::<wbr><a href='../index.html'>solvers</a></p><script>window.sidebarCurrent = {name: 'sgd', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -50,29 +60,30 @@
                        [<span class='inner'>&#x2212;</span>]
                    </a>
                </span><a class='srclink' href='../../../src/juice/solvers/sgd/mod.rs.html#1-69' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Provides ISolver implementations based on <a href="https://en.wikipedia.org/wiki/Stochastic_gradient_descent">Stochastic Gradient
-Descent</a>.</p>
-
+<div class='docblock'><p>Provides ISolver implementations based on [Stochastic Gradient
+Descent][2].
+[2]: https://en.wikipedia.org/wiki/Stochastic_gradient_descent</p>
 <p>One of the steps during <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a> is determining the
 gradient for each weight.
 In theory this can be achieved very well using <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient Descent (GD)</a>.
 In practice however applying GD when minimizing an objective function
 for large datasets, quickly becomes computationaly unfeasible.</p>
-
 <p>Luckily GD can be approximated by taking a small random subset
 from the training dataset, commonly refered to as <em>mini-batch</em>.
 We then compute the gradients
 only for the samples from the mini-batch and average over these gradients,
 resulting in an estimate of the global gradient.</br>
 This method is refered to as <strong>Stochastic Gradient Descent</strong>.</p>
-</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
 <table><tr><td><code>pub use self::momentum::<a class="struct" href="../../../juice/solvers/sgd/momentum/struct.Momentum.html" title="struct juice::solvers::sgd::momentum::Momentum">Momentum</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class="mod" href="momentum/index.html"
                                   title='mod juice::solvers::sgd::momentum'>momentum</a></td>
                            <td class='docblock-short'>
-                                <p>A <a href="https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Momentum">Stochastic Gradient Descent with Momentum</a></p>
+                                <p>A [Stochastic Gradient Descent with Momentum][1]
+[1]: https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Momentum</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -87,20 +98,22 @@ This method is refered to as <strong>Stochastic Gradient Descent</strong>.</p>
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 

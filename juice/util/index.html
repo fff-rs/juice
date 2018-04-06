@@ -10,8 +10,11 @@
     <title>juice::util - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -33,6 +36,13 @@
         <p class='location'>Module util</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'><a href='../index.html'>juice</a></p><script>window.sidebarCurrent = {name: 'util', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -58,6 +68,7 @@
                                   title='trait juice::util::Axpby'>Axpby</a></td>
                            <td class='docblock-short'>
                                 <p>Extends IBlas with Axpby</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -65,6 +76,7 @@
                                   title='trait juice::util::LayerOps'>LayerOps</a></td>
                            <td class='docblock-short'>
                                 <p>Encapsulates all traits used in Layers.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -72,6 +84,7 @@
                                   title='trait juice::util::SolverOps'>SolverOps</a></td>
                            <td class='docblock-short'>
                                 <p>Encapsulates all traits required by Solvers.</p>
+
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
@@ -80,6 +93,7 @@
                                   title='fn juice::util::cast_vec_usize_to_i32'>cast_vec_usize_to_i32</a></td>
                            <td class='docblock-short'>
                                 <p>Casts a Vec<usize> to as Vec<i32></p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -87,6 +101,7 @@
                                   title='fn juice::util::native_backend'>native_backend</a></td>
                            <td class='docblock-short'>
                                 <p>Create a simple native backend.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -94,6 +109,7 @@
                                   title='fn juice::util::native_scalar'>native_scalar</a></td>
                            <td class='docblock-short'>
                                 <p>Create a Coaster SharedTensor for a scalar value.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -101,6 +117,7 @@
                                   title='fn juice::util::write_batch_sample'>write_batch_sample</a></td>
                            <td class='docblock-short'>
                                 <p>Write the <code>i</code>th sample of a batch into a SharedTensor.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -108,6 +125,7 @@
                                   title='fn juice::util::write_to_memory'>write_to_memory</a></td>
                            <td class='docblock-short'>
                                 <p>Write into a native Coaster Memory.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -115,6 +133,7 @@
                                   title='fn juice::util::write_to_memory_offset'>write_to_memory_offset</a></td>
                            <td class='docblock-short'>
                                 <p>Write into a native Coaster Memory with a offset.</p>
+
                            </td>
                        </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
@@ -123,6 +142,7 @@
                                   title='type juice::util::ArcLock'>ArcLock</a></td>
                            <td class='docblock-short'>
                                 <p>Shared Lock used for our tensors</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -137,20 +157,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 

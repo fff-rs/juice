@@ -10,8 +10,11 @@
     <title>juice::solver - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -30,9 +33,16 @@
     <nav class="sidebar">
         <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'>Module solver</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Reexports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class='location'><a href='../index.html'>juice</a></p><script>window.sidebarCurrent = {name: 'solver', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
+        <p class='location'>Module solver</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class='location'><a href='../index.html'>juice</a></p><script>window.sidebarCurrent = {name: 'solver', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -51,9 +61,9 @@
                    </a>
                </span><a class='srclink' href='../../src/juice/solver/mod.rs.html#1-408' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Provides the generics and interfaces for the specific Solvers.</p>
-
-<p>See <a href="../solvers/index.html">Solvers</a></p>
-</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<p>See [Solvers][solvers]
+[solvers]: ../solvers/index.html</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
 <table><tr><td><code>pub use self::confusion_matrix::<a class="struct" href="../../juice/solver/confusion_matrix/struct.ConfusionMatrix.html" title="struct juice::solver::confusion_matrix::ConfusionMatrix">ConfusionMatrix</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -61,6 +71,7 @@
                                   title='mod juice::solver::confusion_matrix'>confusion_matrix</a></td>
                            <td class='docblock-short'>
                                 <p>TODO: DOC</p>
+
                            </td>
                        </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
@@ -68,7 +79,9 @@
                            <td><a class="struct" href="struct.Solver.html"
                                   title='struct juice::solver::Solver'>Solver</a></td>
                            <td class='docblock-short'>
-                                <p>Solver that optimizes a <a href="../layer/index.html">Layer</a> with a given objective.</p>
+                                <p>Solver that optimizes a [Layer][1] with a given objective.
+[1]: ../layer/index.html</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -76,6 +89,7 @@
                                   title='struct juice::solver::SolverConfig'>SolverConfig</a></td>
                            <td class='docblock-short'>
                                 <p>Configuration for a Solver</p>
+
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
@@ -83,14 +97,19 @@
                            <td><a class="enum" href="enum.LRPolicy.html"
                                   title='enum juice::solver::LRPolicy'>LRPolicy</a></td>
                            <td class='docblock-short'>
-                                <p>Learning Rate Policy for a <a href="./struct.Solver.html">Solver</a></p>
+                                <p>Learning Rate Policy for a [Solver][1]
+[1]: ./struct.Solver.html</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class="enum" href="enum.RegularizationMethod.html"
                                   title='enum juice::solver::RegularizationMethod'>RegularizationMethod</a></td>
                            <td class='docblock-short'>
-                                <p><a href="https://cs231n.github.io/neural-networks-2/#reg">Regularization</a> method for a <a href="./struct.Solver.html">Solver</a>.</p>
+                                <p>[Regularization][1] method for a [Solver][2].
+[1]: https://cs231n.github.io/neural-networks-2/#reg
+[2]: ./struct.Solver.html</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -98,6 +117,7 @@
                                   title='enum juice::solver::SGDKind'>SGDKind</a></td>
                            <td class='docblock-short'>
                                 <p>All available types of Stochastic Gradient Descent solvers.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -105,6 +125,7 @@
                                   title='enum juice::solver::SolverKind'>SolverKind</a></td>
                            <td class='docblock-short'>
                                 <p>All available types of solvers.</p>
+
                            </td>
                        </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
@@ -113,6 +134,7 @@
                                   title='trait juice::solver::ISolver'>ISolver</a></td>
                            <td class='docblock-short'>
                                 <p>Implementation of a specific Solver.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -127,20 +149,22 @@
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 

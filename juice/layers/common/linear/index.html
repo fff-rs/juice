@@ -10,8 +10,11 @@
     <title>juice::layers::common::linear - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../../../main.css" id="themeStyle">
+    <script src="../../../../storage.js"></script>
     
 
     
@@ -33,6 +36,13 @@
         <p class='location'>Module linear</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li></ul></div><p class='location'><a href='../../../index.html'>juice</a>::<wbr><a href='../../index.html'>layers</a>::<wbr><a href='../index.html'>common</a></p><script>window.sidebarCurrent = {name: 'linear', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -51,26 +61,21 @@
                    </a>
                </span><a class='srclink' href='../../../../src/juice/layers/common/linear.rs.html#1-222' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Applies a linear transformation to the input data <code>y = a * x + b</code></p>
-
 <p>The variables are:</p>
-
 <ul>
 <li><code>y</code>: output value</li>
 <li><code>a</code>: weight (a trainable weight in a neural network)</li>
 <li><code>x</code>: input value</li>
 <li><code>b</code>: bias (not implemented yet)</li>
 </ul>
-
-<h2 id='input-data' class='section-header'><a href='#input-data'>Input Data</a></h2>
+<h2 id="input-data" class="section-header"><a href="#input-data">Input Data</a></h2>
 <p>The input can either have one or two dimensions:</p>
-
 <ul>
 <li>If the input has one dimension the transformation will just be applied to the input data.</li>
 <li>If the input has two dimensions <strong>the first dimension is treated as batch size</strong> (<code>N</code>)
 and the transformation will be applied to every vector in the second dimension, using the
 same weights and biases.</li>
 </ul>
-
 <p>In the context of convolutional neural networks this layer is also
 called a &quot;fully-connected layer&quot; if it is used at the end of the network.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
@@ -80,6 +85,7 @@ called a &quot;fully-connected layer&quot; if it is used at the end of the netwo
                                   title='struct juice::layers::common::linear::Linear'>Linear</a></td>
                            <td class='docblock-short'>
                                 <p>Linear Layer</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -87,6 +93,7 @@ called a &quot;fully-connected layer&quot; if it is used at the end of the netwo
                                   title='struct juice::layers::common::linear::LinearConfig'>LinearConfig</a></td>
                            <td class='docblock-short'>
                                 <p>Specifies configuration parameters for a Linear Layer.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -101,20 +108,22 @@ called a &quot;fully-connected layer&quot; if it is used at the end of the netwo
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 

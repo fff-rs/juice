@@ -10,8 +10,11 @@
     <title>juice::solver::Solver - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -33,6 +36,13 @@
         <p class='location'>Struct Solver</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#fields">Fields</a><div class="sidebar-links"><a href="#structfield.worker">worker</a></div><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.from_config">from_config</a><a href="#method.train_minibatch">train_minibatch</a><a href="#method.network">network</a><a href="#method.mut_network">mut_network</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Debug">Debug</a></div></div><p class='location'><a href='../index.html'>juice</a>::<wbr><a href='index.html'>solver</a></p><script>window.sidebarCurrent = {name: 'Solver', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -53,7 +63,8 @@
 <pre class='rust struct'>pub struct Solver&lt;SolverB:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.SolverOps.html" title="trait juice::util::SolverOps">SolverOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;, B:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.LayerOps.html" title="trait juice::util::LayerOps">LayerOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;&gt; {
     pub worker: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;<a class="trait" href="../../juice/solver/trait.ISolver.html" title="trait juice::solver::ISolver">ISolver</a>&lt;SolverB, B&gt;&gt;,
     // some fields omitted
-}</pre><div class='docblock'><p>Solver that optimizes a <a href="../layer/index.html">Layer</a> with a given objective.</p>
+}</pre><div class='docblock'><p>Solver that optimizes a [Layer][1] with a given objective.
+[1]: ../layer/index.html</p>
 </div><h2 id='fields' class='fields small-section-header'>
                        Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.worker" class="structfield small-section-header">
                            <a href="#structfield.worker" class="anchor field"></a>
@@ -66,19 +77,17 @@
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl&lt;SolverB:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.SolverOps.html" title="trait juice::util::SolverOps">SolverOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt; + 'static, B:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.LayerOps.html" title="trait juice::util::LayerOps">LayerOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt; + 'static&gt; <a class="struct" href="../../juice/solver/struct.Solver.html" title="struct juice::solver::Solver">Solver</a>&lt;SolverB, B&gt;</code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#35-55' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.from_config' class="method"><span id='from_config.v' class='invisible'><code>pub fn <a href='#method.from_config' class='fnname'>from_config</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;net_backend: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html" title="struct alloc::rc::Rc">Rc</a>&lt;B&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;obj_backend: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/rc/struct.Rc.html" title="struct alloc::rc::Rc">Rc</a>&lt;SolverB&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;config: &amp;<a class="struct" href="../../juice/solver/struct.SolverConfig.html" title="struct juice::solver::SolverConfig">SolverConfig</a><br>) -&gt; <a class="struct" href="../../juice/solver/struct.Solver.html" title="struct juice::solver::Solver">Solver</a>&lt;SolverB, B&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#40-54' title='goto source code'>[src]</a></span></h4>
-<div class='docblock'><p>Create Solver from <a href="./struct.SolverConfig.html">SolverConfig</a></p>
-
+<div class='docblock'><p>Create Solver from [SolverConfig][1]
+[1]: ./struct.SolverConfig.html</p>
 <p>This is the <strong>preferred method</strong> to create a Solver for training a neural network.</p>
 </div></div><h3 id='impl-1' class='impl'><span class='in-band'><code>impl&lt;SolverB:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.SolverOps.html" title="trait juice::util::SolverOps">SolverOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt; + 'static, B:&nbsp;IBackend + <a class="trait" href="../../juice/util/trait.LayerOps.html" title="trait juice::util::LayerOps">LayerOps</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt; + 'static&gt; <a class="struct" href="../../juice/solver/struct.Solver.html" title="struct juice::solver::Solver">Solver</a>&lt;SolverB, B&gt;</code><a href='#impl-1' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#57-106' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.train_minibatch' class="method"><span id='train_minibatch.v' class='invisible'><code>pub fn <a href='#method.train_minibatch' class='fnname'>train_minibatch</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;mb_data: <a class="type" href="../../juice/util/type.ArcLock.html" title="type juice::util::ArcLock">ArcLock</a>&lt;SharedTensor&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;mb_target: <a class="type" href="../../juice/util/type.ArcLock.html" title="type juice::util::ArcLock">ArcLock</a>&lt;SharedTensor&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;&gt;<br>) -&gt; <a class="type" href="../../juice/util/type.ArcLock.html" title="type juice::util::ArcLock">ArcLock</a>&lt;SharedTensor&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#71-88' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Train the network with one minibatch</p>
 </div><h4 id='method.network' class="method"><span id='network.v' class='invisible'><code>pub fn <a href='#method.network' class='fnname'>network</a>(&amp;self) -&gt; &amp;<a class="struct" href="../../juice/layer/struct.Layer.html" title="struct juice::layer::Layer">Layer</a>&lt;B&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#93-95' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the network trained by the solver.</p>
-
 <p>This is the recommended method to get a usable trained network.</p>
 </div><h4 id='method.mut_network' class="method"><span id='mut_network.v' class='invisible'><code>pub fn <a href='#method.mut_network' class='fnname'>mut_network</a>(&amp;mut self) -&gt; &amp;mut <a class="struct" href="../../juice/layer/struct.Layer.html" title="struct juice::layer::Layer">Layer</a>&lt;B&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/juice/solver/mod.rs.html#103-105' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the network trained by the solver.</p>
-
 <p>This is the recommended method to get a trained network,
 if you want to alter the network. Keep in mind that altering the network
 might render the solver unusable and continuing training the network with it will yield
@@ -103,20 +112,22 @@ unexpected results.</p>
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 

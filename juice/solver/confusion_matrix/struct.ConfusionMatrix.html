@@ -10,8 +10,11 @@
     <title>juice::solver::confusion_matrix::ConfusionMatrix - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css" id="themeStyle">
+    <script src="../../../storage.js"></script>
     
 
     
@@ -33,6 +36,13 @@
         <p class='location'>Struct ConfusionMatrix</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.new">new</a><a href="#method.add_sample">add_sample</a><a href="#method.add_samples">add_samples</a><a href="#method.get_predictions">get_predictions</a><a href="#method.set_capacity">set_capacity</a><a href="#method.samples">samples</a><a href="#method.accuracy">accuracy</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Debug">Debug</a></div></div><p class='location'><a href='../../index.html'>juice</a>::<wbr><a href='../index.html'>solver</a>::<wbr><a href='index.html'>confusion_matrix</a></p><script>window.sidebarCurrent = {name: 'ConfusionMatrix', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -62,11 +72,9 @@
 <div class='docblock'><p>Add a sample by providing the expected <code>target</code> class and the <code>prediction</code>.</p>
 </div><h4 id='method.add_samples' class="method"><span id='add_samples.v' class='invisible'><code>pub fn <a href='#method.add_samples' class='fnname'>add_samples</a>(&amp;mut self, predictions: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>, targets: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/juice/solver/confusion_matrix.rs.html#44-48' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Add a batch of samples.</p>
-
 <p>See <a href="#method.add_sample">add_sample</a>.</p>
 </div><h4 id='method.get_predictions' class="method"><span id='get_predictions.v' class='invisible'><code>pub fn <a href='#method.get_predictions' class='fnname'>get_predictions</a>(&amp;self, network_out: &amp;mut SharedTensor&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a>&gt;) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/juice/solver/confusion_matrix.rs.html#54-65' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Get the predicted classes from the output of a network.</p>
-
 <p>The prediction for each sample of the batch is found by
 determining which output value had the smallest loss.</p>
 </div><h4 id='method.set_capacity' class="method"><span id='set_capacity.v' class='invisible'><code>pub fn <a href='#method.set_capacity' class='fnname'>set_capacity</a>(&amp;mut self, capacity: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/juice/solver/confusion_matrix.rs.html#68-71' title='goto source code'>[src]</a></span></h4>
@@ -95,20 +103,22 @@ determining which output value had the smallest loss.</p>
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 

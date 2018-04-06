@@ -10,8 +10,11 @@
     <title>juice::layers - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle">
+    
+    <link rel="stylesheet" type="text/css" href="../../dark.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css" id="themeStyle">
+    <script src="../../storage.js"></script>
     
 
     
@@ -30,9 +33,16 @@
     <nav class="sidebar">
         <div class="sidebar-menu">&#9776;</div>
         
-        <p class='location'>Module layers</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Reexports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'><a href='../index.html'>juice</a></p><script>window.sidebarCurrent = {name: 'layers', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
+        <p class='location'>Module layers</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'><a href='../index.html'>juice</a></p><script>window.sidebarCurrent = {name: 'layers', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div>
     </nav>
 
+    <div class="theme-picker">
+        <button id="theme-picker" aria-label="Pick another theme!">
+            <img src="../../brush.svg" width="18" alt="Pick another theme!">
+        </button>
+        <div id="theme-choices"></div>
+    </div>
+    <script src="../../theme.js"></script>
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
@@ -51,26 +61,31 @@
                    </a>
                </span><a class='srclink' href='../../src/juice/layers/mod.rs.html#1-70' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Provides the fundamental units of computation in a Neural Network.</p>
-
 <p>These layers provide different type of operations to the data Blobs
 that flow through them.
 The operations provided by the layers are grouped into five categories:</p>
-
 <ul>
-<li><p><a href="./activation/index.html"><strong>Activation</strong></a></br>
+<li>
+<p><a href="./activation/index.html"><strong>Activation</strong></a></br>
 Activation Layers provide element-wise operations and produce one top Blob
 of the same size as the bottom Blob.
-It can be seen as a synonym to nonlinear <a href="https://en.wikipedia.org/wiki/Activation_function">Activation Functions</a>.</p></li>
-<li><p><a href="./common/index.html"><strong>Common</strong></a></br>
+It can be seen as a synonym to nonlinear <a href="https://en.wikipedia.org/wiki/Activation_function">Activation Functions</a>.</p>
+</li>
+<li>
+<p><a href="./common/index.html"><strong>Common</strong></a></br>
 Common Layers can differ in their connectivity and behavior and are
 typically all network layer
 types which are not covered by activation or loss layers.
 Examples would be fully connected
-layers, covolutional layers, pooling layers, etc.</p></li>
-<li><p><a href="./loss/index.html"><strong>Loss</strong></a></br>
+layers, covolutional layers, pooling layers, etc.</p>
+</li>
+<li>
+<p><a href="./loss/index.html"><strong>Loss</strong></a></br>
 Loss Layers compare an output to a target value and assign cost to
-minimize. Loss Layers are often the last layer in a [Network][1].</p></li>
-<li><p><a href="./utility/index.html"><strong>Utility</strong></a></br>
+minimize. Loss Layers are often the last layer in a [Network][1].</p>
+</li>
+<li>
+<p><a href="./utility/index.html"><strong>Utility</strong></a></br>
 Utility Layers provide all kind of helpful functionality, which might not
 be directly related
 to machine learning and neural nets. This could be operations for
@@ -78,17 +93,19 @@ normalizing,
 restructuring or transforming information, log and debug behavior or data
 access.
 Utility Layers follow the general behavior of a layer, like the other types
-do.</p></li>
-<li><p><a href="./container/index.html"><strong>Container</strong></a></br>
+do.</p>
+</li>
+<li>
+<p><a href="./container/index.html"><strong>Container</strong></a></br>
 Container layers take <code>LayerConfig</code>s and connect them on initialization, which
 creates a &quot;network&quot;. But as container layers are layers one can stack multiple
 container layers on top of another and compose even bigger container layers.
-Container layers differ in how they connect the layers that it receives.</p></li>
+Container layers differ in how they connect the layers that it receives.</p>
+</li>
 </ul>
-
 <p>For more information about how these layers work together, see the
 documentation for the general <a href="../layer/index.html">Layer module</a>.</p>
-</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
 <table><tr><td><code>pub use self::activation::<a class="struct" href="../../juice/layers/activation/relu/struct.ReLU.html" title="struct juice::layers::activation::relu::ReLU">ReLU</a>;</code></td></tr><tr><td><code>pub use self::activation::<a class="struct" href="../../juice/layers/activation/sigmoid/struct.Sigmoid.html" title="struct juice::layers::activation::sigmoid::Sigmoid">Sigmoid</a>;</code></td></tr><tr><td><code>pub use self::activation::<a class="struct" href="../../juice/layers/activation/tanh/struct.TanH.html" title="struct juice::layers::activation::tanh::TanH">TanH</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/convolution/struct.Convolution.html" title="struct juice::layers::common::convolution::Convolution">Convolution</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/convolution/struct.ConvolutionConfig.html" title="struct juice::layers::common::convolution::ConvolutionConfig">ConvolutionConfig</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/pooling/struct.Pooling.html" title="struct juice::layers::common::pooling::Pooling">Pooling</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/pooling/struct.PoolingConfig.html" title="struct juice::layers::common::pooling::PoolingConfig">PoolingConfig</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="enum" href="../../juice/layers/common/pooling/enum.PoolingMode.html" title="enum juice::layers::common::pooling::PoolingMode">PoolingMode</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/linear/struct.Linear.html" title="struct juice::layers::common::linear::Linear">Linear</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/linear/struct.LinearConfig.html" title="struct juice::layers::common::linear::LinearConfig">LinearConfig</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/log_softmax/struct.LogSoftmax.html" title="struct juice::layers::common::log_softmax::LogSoftmax">LogSoftmax</a>;</code></td></tr><tr><td><code>pub use self::common::<a class="struct" href="../../juice/layers/common/softmax/struct.Softmax.html" title="struct juice::layers::common::softmax::Softmax">Softmax</a>;</code></td></tr><tr><td><code>pub use self::container::<a class="struct" href="../../juice/layers/container/sequential/struct.Sequential.html" title="struct juice::layers::container::sequential::Sequential">Sequential</a>;</code></td></tr><tr><td><code>pub use self::container::<a class="struct" href="../../juice/layers/container/sequential/struct.SequentialConfig.html" title="struct juice::layers::container::sequential::SequentialConfig">SequentialConfig</a>;</code></td></tr><tr><td><code>pub use self::loss::<a class="struct" href="../../juice/layers/loss/negative_log_likelihood/struct.NegativeLogLikelihood.html" title="struct juice::layers::loss::negative_log_likelihood::NegativeLogLikelihood">NegativeLogLikelihood</a>;</code></td></tr><tr><td><code>pub use self::loss::<a class="struct" href="../../juice/layers/loss/negative_log_likelihood/struct.NegativeLogLikelihoodConfig.html" title="struct juice::layers::loss::negative_log_likelihood::NegativeLogLikelihoodConfig">NegativeLogLikelihoodConfig</a>;</code></td></tr><tr><td><code>pub use self::utility::<a class="struct" href="../../juice/layers/utility/flatten/struct.Flatten.html" title="struct juice::layers::utility::flatten::Flatten">Flatten</a>;</code></td></tr><tr><td><code>pub use self::utility::<a class="struct" href="../../juice/layers/utility/reshape/struct.Reshape.html" title="struct juice::layers::utility::reshape::Reshape">Reshape</a>;</code></td></tr><tr><td><code>pub use self::utility::<a class="struct" href="../../juice/layers/utility/reshape/struct.ReshapeConfig.html" title="struct juice::layers::utility::reshape::ReshapeConfig">ReshapeConfig</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -96,6 +113,7 @@ documentation for the general <a href="../layer/index.html">Layer module</a>.</p
                                   title='mod juice::layers::activation'>activation</a></td>
                            <td class='docblock-short'>
                                 <p>Provides nonlinear activation methods.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -103,6 +121,7 @@ documentation for the general <a href="../layer/index.html">Layer module</a>.</p
                                   title='mod juice::layers::common'>common</a></td>
                            <td class='docblock-short'>
                                 <p>Provides common neural network layers.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -110,6 +129,7 @@ documentation for the general <a href="../layer/index.html">Layer module</a>.</p
                                   title='mod juice::layers::container'>container</a></td>
                            <td class='docblock-short'>
                                 <p>Provides container layers.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -117,6 +137,7 @@ documentation for the general <a href="../layer/index.html">Layer module</a>.</p
                                   title='mod juice::layers::loss'>loss</a></td>
                            <td class='docblock-short'>
                                 <p>Provides methods to calculate the loss (cost) of some output.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -125,6 +146,7 @@ documentation for the general <a href="../layer/index.html">Layer module</a>.</p
                            <td class='docblock-short'>
                                 <p>Provides various helpful layers, which might be not directly related to
 neural networks in general.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -139,20 +161,22 @@ neural networks in general.</p>
                 <h2>Keyboard Shortcuts</h2>
 
                 <dl>
-                    <dt>?</dt>
+                    <dt><kbd>?</kbd></dt>
                     <dd>Show this help dialog</dd>
-                    <dt>S</dt>
+                    <dt><kbd>S</kbd></dt>
                     <dd>Focus the search field</dd>
-                    <dt>↑</dt>
+                    <dt><kbd>↑</kbd></dt>
                     <dd>Move up in search results</dd>
-                    <dt>↓</dt>
+                    <dt><kbd>↓</kbd></dt>
                     <dd>Move down in search results</dd>
-                    <dt>↹</dt>
+                    <dt><kbd>↹</kbd></dt>
                     <dd>Switch tab</dd>
-                    <dt>&#9166;</dt>
+                    <dt><kbd>&#9166;</kbd></dt>
                     <dd>Go to active search result</dd>
-                    <dt style="width:31px;">+ / -</dt>
-                    <dd>Collapse/expand all sections</dd>
+                    <dt><kbd>+</kbd></dt>
+                    <dd>Expand all sections</dd>
+                    <dt><kbd>-</kbd></dt>
+                    <dd>Collapse all sections</dd>
                 </dl>
             </div>
 
