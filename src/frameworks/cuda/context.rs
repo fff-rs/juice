@@ -5,7 +5,6 @@ use device::Error as DeviceError;
 use super::api::DriverFFI;
 use super::{Driver, DriverError, Device};
 use super::memory::*;
-#[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
 use frameworks::native::device::Cpu;
 use std::any::Any;
@@ -96,7 +95,7 @@ impl MemorySync for Context {
             let mut my_mem = my_memory.downcast_mut::<Memory>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
 
-            Ok(try!(Driver::mem_cpy_h_to_d(src_mem, my_mem)))
+            Ok(Driver::mem_cpy_h_to_d(src_mem, my_mem)?)
         } else {
             Err(DeviceError::NoMemorySyncRoute)
         }
@@ -107,7 +106,7 @@ impl MemorySync for Context {
         if let Some(_) = dst_device.downcast_ref::<Cpu>() {
             let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
             let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
-            Ok(try!(Driver::mem_cpy_d_to_h(my_mem, dst_mem)))
+            Ok(Driver::mem_cpy_d_to_h(my_mem, dst_mem)?)
         } else {
             Err(DeviceError::NoMemorySyncRoute)
         }

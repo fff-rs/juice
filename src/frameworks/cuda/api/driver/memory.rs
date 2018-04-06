@@ -1,7 +1,6 @@
 //! Provides the Cuda API with its memory/buffer functionality.
 
 use super::{API, Error};
-#[cfg(feature = "native")]
 use frameworks::native::flatbox::FlatBox;
 use frameworks::cuda::Memory;
 use super::ffi::*;
@@ -22,13 +21,11 @@ impl API {
     }
 
     /// Copies memory from the Host to the Cuda device.
-    #[cfg(feature = "native")]
     pub fn mem_cpy_h_to_d(host_mem: &FlatBox, device_mem: &mut Memory) -> Result<(), Error> {
         unsafe {API::ffi_mem_cpy_h_to_d(*device_mem.id_c(), host_mem.as_slice().as_ptr(), host_mem.byte_size())}
     }
 
     /// Copies memory from the Cuda device to the Host.
-    #[cfg(feature = "native")]
     pub fn mem_cpy_d_to_h(device_mem: &Memory, host_mem: &mut FlatBox) -> Result<(), Error> {
         unsafe {API::ffi_mem_cpy_d_to_h(host_mem.as_mut_slice().as_mut_ptr(), *device_mem.id_c(), host_mem.byte_size())}
     }
