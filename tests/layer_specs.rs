@@ -1,10 +1,10 @@
-extern crate leaf;
+extern crate juice;
 extern crate coaster as co;
 
 #[cfg(test)]
 mod layer_spec {
     use co::prelude::*;
-    use leaf::layer::*;
+    use juice::layer::*;
     use std::rc::Rc;
     // only used by cuda right now
     #[allow(dead_code)]
@@ -24,8 +24,8 @@ mod layer_spec {
     #[cfg(all(feature="native", feature="cuda"))]
     mod native_cuda {
         use super::{native_backend, cuda_backend};
-        use leaf::layer::*;
-        use leaf::layers::*;
+        use juice::layer::*;
+        use juice::layers::*;
 
         #[test]
         fn create_layer_with_either() {
@@ -41,8 +41,8 @@ mod layer_spec {
     mod native {
         use super::native_backend;
         use co::prelude::*;
-        use leaf::layer::*;
-        use leaf::layers::*;
+        use juice::layer::*;
+        use juice::layers::*;
 
         fn simple_network() -> LayerConfig {
             let mut net_cfg = SequentialConfig::default();
@@ -100,9 +100,9 @@ mod layer_spec {
     mod cuda {
         use super::{native_backend, cuda_backend};
         use co::prelude::*;
-        use leaf::layer::*;
-        use leaf::layers::*;
-        use leaf::util::write_to_memory;
+        use juice::layer::*;
+        use juice::layers::*;
+        use juice::util::write_to_memory;
         use std::sync::{Arc, RwLock};
 
         #[test]
