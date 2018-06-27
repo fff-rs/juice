@@ -114,7 +114,7 @@ here on Github and on the [Juice Gitter Channel][gitter-juice].
 
 ## Ecosystem / Extensions
 
-We designed Juice and the other crates of the [Autumn Platform][autumn] to be as modular
+We designed Juice and the other crates of the Autumn Platform to be as modular
 and extensible as possible. More helpful crates you can use with Juice:
 
 - [**Greenglas**][greenglas]: Preprocessing Framework for Machine Learning
