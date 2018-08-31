@@ -2,6 +2,7 @@
 members = [
     "juice",
     "coaster",
+    "coaster-blas",
     "coaster-nn",
 ]
 
