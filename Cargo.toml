@@ -1,9 +1,9 @@
 [package]
 name            = "coaster-blas"
 description     = "Coaster library for full BLAS support"
-version         = "0.2.0"
+version         = "0.2.1"
 authors         = ["Bernhard Schuster <bernhard@ahoi.io>",
-		   "Michael Hirn <mj@autumnai.com>",
+                   "Michael Hirn <mj@autumnai.com>",
                    "Maximilian Goisser <max@autumnai.com>"]
 
 repository      = "https://github.com/spearow/coaster-blas"
