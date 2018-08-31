@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "juice",
+    "coaster",
 ]
 
 [profile.bench]
