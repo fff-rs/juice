@@ -43,10 +43,3 @@ unstable = ["compiletest_rs"] # for travis-cargo
 travis = ["native"]
 lint = ["clippy"]
 
-[profile.bench]
-opt-level = 3
-debug = false
-rpath = false
-lto = false
-debug-assertions = false
-codegen-units = 1
