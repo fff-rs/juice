@@ -28,7 +28,7 @@ compiletest_rs = { version = "0.1", optional = true }
 
 [dev-dependencies]
 rand = "0.3"
-coaster-nn = { version = "^0.4" }
+coaster-nn = { version = "^0.4", path = "../coaster-nn" }
 
 [features]
 default = ["native", "cuda", "opencl"]
