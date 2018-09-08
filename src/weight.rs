@@ -77,7 +77,7 @@ impl WeightConfig {
             }
             // Strict dimension checking -- all dims must be the same.
             DimCheckMode::Strict => {
-                if tensor_one.desc().size() != tensor_two.desc().size() {
+                if tensor_one.desc() != tensor_two.desc() {
                     return Err(format!("Cannot share weight '{}' owned by layer '{}' with layer '{}';
                                 shape mismatch.
                                 Owner layer weight shape is {:?};

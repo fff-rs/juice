@@ -37,6 +37,8 @@ struct LayerConfig {
     negativeLogLikelihood @9 :NegativeLogLikelihoodConfig;
     # Utility layers
     reshape @10 :ReshapeConfig;
+    # Dropout layers
+    dropout @16 :DropoutConfig;
   }
 
   outputs @11 :List(Text);
@@ -71,6 +73,11 @@ struct PoolingConfig {
 enum PoolingMode {
   max @0;
   average @1; # not implemented yet, but we can't create a single variant enum so this is better than a meaningless "Dummy" value.
+}
+
+struct DropoutConfig {
+  probability @0 :Float32;
+  seed @1 :UInt64;
 }
 
 struct SequentialConfig {

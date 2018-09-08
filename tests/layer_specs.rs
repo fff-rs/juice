@@ -5,6 +5,7 @@ extern crate coaster as co;
 mod layer_spec {
     use co::prelude::*;
     use juice::layer::*;
+    use juice::weight::{DimCheckMode, WeightConfig};
     use std::rc::Rc;
     // only used by cuda right now
     #[allow(dead_code)]
@@ -112,6 +113,20 @@ mod layer_spec {
         }
 
         #[test]
+        fn can_create_default_dropout_layer() {
+            let model = DropoutConfig::default();
+            Layer::from_config(cuda_backend(),
+                               &LayerConfig::new("model", LayerType::Dropout(model)));
+        }
+
+        #[test]
+        fn can_create_single_dropout_layer() {
+            let model = DropoutConfig { probability: 0.5, seed: 0 };
+            Layer::from_config(cuda_backend(),
+                               &LayerConfig::new("model", LayerType::Dropout(model)));
+        }
+
+        #[test]
         fn can_create_empty_sequential_layer() {
             let model = SequentialConfig::default();
             Layer::from_config(cuda_backend(),
@@ -135,6 +150,7 @@ mod layer_spec {
             model.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 1568 }));
             model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             model.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
+            model.add_layer(LayerConfig::new("dropout", DropoutConfig { probability: 0.8, seed: 0 }));
 
             let _ = Layer::from_config(cuda_backend(),
                                        &LayerConfig::new("model", LayerType::Sequential(model)));
@@ -162,9 +178,7 @@ mod layer_spec {
 
             let input = vec![1f32, 1f32, 2f32];
             let mut normal_tensor = SharedTensor::<f32>::new(&[3]);
-            // let mut normal_tensor_output = SharedTensor::<f32>::new(native_backend.device(), &(3)).unwrap();
             let mut reshape_tensor = SharedTensor::<f32>::new(&[3]);
-            // let mut reshape_tensor_output = SharedTensor::<f32>::new(native_backend.device(), &(3)).unwrap();
             write_to_memory(normal_tensor.write_only(native_backend.device()).unwrap(),
                             &input);
             write_to_memory(reshape_tensor.write_only(native_backend.device()).unwrap(),
@@ -188,62 +202,62 @@ mod layer_spec {
         }
     }
 
-    // #[test]
-    // fn dim_check_strict() {
-    //     let cfg = WeightConfig { share_mode: DimCheckMode::Strict, ..WeightConfig::default() };
-    //     let blob_one = SharedTensor::<f32>::new(backend().device(), &vec![2, 3, 3]);
-    //     let blob_two = SharedTensor::<f32>::new(backend().device(), &vec![3, 2, 3]);
-    //     let param_name = "foo".to_owned();
-    //     let owner_name = "owner".to_owned();
-    //     let layer_name = "layer".to_owned();
-    //
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_one,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_ok());
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_two,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_err());
-    // }
+    #[test]
+    fn dim_check_strict() {
+        let cfg = WeightConfig { share_mode: DimCheckMode::Strict, ..WeightConfig::default() };
+        let blob_one = SharedTensor::<f32>::new(&vec![2, 3, 3]);
+        let blob_two = SharedTensor::<f32>::new(&vec![3, 2, 3]);
+        let param_name = "foo".to_owned();
+        let owner_name = "owner".to_owned();
+        let layer_name = "layer".to_owned();
 
-    // #[test]
-    // fn dim_check_permissive() {
-    //     let cfg = WeightConfig { share_mode: DimCheckMode::Permissive, ..WeightConfig::default() };
-    //     let blob_one = SharedTensor::<f32>::new(backend().device(), &vec![2, 3, 3]);
-    //     let blob_two = SharedTensor::<f32>::new(backend().device(), &vec![3, 2, 3]);
-    //     let blob_three = SharedTensor::<f32>::new(backend().device(), &vec![3, 10, 3]);
-    //     let param_name = "foo".to_owned();
-    //     let owner_name = "owner".to_owned();
-    //     let layer_name = "layer".to_owned();
-    //
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_one,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_ok());
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_two,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_ok());
-    //     assert!(cfg.check_dimensions(&blob_one,
-    //                                  &blob_three,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_err());
-    //     assert!(cfg.check_dimensions(&blob_two,
-    //                                  &blob_three,
-    //                                  param_name.clone(),
-    //                                  owner_name.clone(),
-    //                                  layer_name.clone())
-    //                .is_err());
-    // }
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_one,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_ok());
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_two,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_err());
+    }
+
+    #[test]
+    fn dim_check_permissive() {
+        let cfg = WeightConfig { share_mode: DimCheckMode::Permissive, ..WeightConfig::default() };
+        let blob_one = SharedTensor::<f32>::new(&vec![2, 3, 3]);
+        let blob_two = SharedTensor::<f32>::new(&vec![3, 2, 3]);
+        let blob_three = SharedTensor::<f32>::new(&vec![3, 10, 3]);
+        let param_name = "foo".to_owned();
+        let owner_name = "owner".to_owned();
+        let layer_name = "layer".to_owned();
+
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_one,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_ok());
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_two,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_ok());
+        assert!(cfg.check_dimensions(&blob_one,
+                                     &blob_three,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_err());
+        assert!(cfg.check_dimensions(&blob_two,
+                                     &blob_three,
+                                     param_name.clone(),
+                                     owner_name.clone(),
+                                     layer_name.clone())
+                   .is_err());
+    }
 }
