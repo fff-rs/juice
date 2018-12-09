@@ -1,0 +1,17 @@
+[workspace]
+members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice"]
+
+[patch.crates-io]
+coaster-nn = { path = "./coaster-nn" }
+coaster-blas = { path = "./coaster-blas" }
+coaster = { path = "./coaster" }
+greenglas = { path = "./greenglas" }
+juice = { path = "./juice" }
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = false
+debug-assertions = false
+codegen-units = 1

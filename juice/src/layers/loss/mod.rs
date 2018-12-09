@@ -1,6 +1,9 @@
 //! Provides methods to calculate the loss (cost) of some output.
 //!
 //! A loss function is also sometimes called cost function.
+
+
+/// macro helper for default loss
 #[macro_export]
 macro_rules! impl_ilayer_loss {
     () => (

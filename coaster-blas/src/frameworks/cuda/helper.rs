@@ -1,32 +1,35 @@
-// Those macros should be removed when read()/read_only()/write() are refactored
-// to return typed memory. For now they remove a lot of visual clutter and
-// lessen probability of stupid mistakes.
+/// Those macros should be removed when read()/read_only()/write() are refactored
+/// to return typed memory. For now they remove a lot of visual clutter and
+/// lessen probability of stupid mistakes.
 macro_rules! read {
     ($x:ident, $slf:ident) => (
         try!($x.read($slf.device()))
     )
 }
 
+/// acquire a tensor as read write
 macro_rules! read_write {
     ($x:ident, $slf:ident) => (
         try!($x.read_write($slf.device()))
     )
 }
 
+/// acquire a tensor as write only
 macro_rules! write_only {
     ($x:ident, $slf:ident) => (
         try!($x.write_only($slf.device()))
     )
 }
 
-// trans! cannot be inlined into macros above, because `$mem` would become
-// intermidiate variable and `*mut $t` will outlive it.
+/// trans! cannot be inlined into macros above, because `$mem` would become
+/// intermidiate variable and `*mut $t` will outlive it.
 macro_rules! trans {
     ($mem:ident, $t:ident) => (
         unsafe { ::std::mem::transmute::<u64, *mut $t>(*$mem.id_c()) }
     )
 }
 
+/// execute something and map the error as a plugin error
 macro_rules! exec {
     ($name:ident, $f:expr) => ({
         let res = $f;
@@ -36,6 +39,7 @@ macro_rules! exec {
 }
 
 
+/// asum with cuda
 #[macro_export]
 macro_rules! iblas_asum_for_cuda {
     ($t:ident) => (
@@ -52,6 +56,7 @@ macro_rules! iblas_asum_for_cuda {
     );
 }
 
+/// axpy with cuda
 #[macro_export]
 macro_rules! iblas_axpy_for_cuda {
     ($t:ident) => (
@@ -71,6 +76,7 @@ macro_rules! iblas_axpy_for_cuda {
     );
 }
 
+/// copy for cuda
 #[macro_export]
 macro_rules! iblas_copy_for_cuda {
     ($t:ident) => (
@@ -87,6 +93,7 @@ macro_rules! iblas_copy_for_cuda {
     );
 }
 
+/// dot product for cuda
 #[macro_export]
 macro_rules! iblas_dot_for_cuda {
     ($t:ident) => (
@@ -106,6 +113,7 @@ macro_rules! iblas_dot_for_cuda {
     );
 }
 
+/// nrm2 for cuda
 #[macro_export]
 macro_rules! iblas_nrm2_for_cuda {
     ($t:ident) => (
@@ -122,6 +130,7 @@ macro_rules! iblas_nrm2_for_cuda {
     );
 }
 
+/// scalar mul for cuda
 #[macro_export]
 macro_rules! iblas_scal_for_cuda {
     ($t:ident) => (
@@ -138,6 +147,7 @@ macro_rules! iblas_scal_for_cuda {
     );
 }
 
+/// swap matrices for cuda
 #[macro_export]
 macro_rules! iblas_swap_for_cuda {
     ($t:ident) => (
@@ -154,6 +164,7 @@ macro_rules! iblas_swap_for_cuda {
     );
 }
 
+/// gemm for cuda
 #[macro_export]
 macro_rules! iblas_gemm_for_cuda {
     ($t:ident) => (

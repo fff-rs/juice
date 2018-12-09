@@ -21,6 +21,10 @@
 //! [mod_sigmoid]: ./sigmoid/index.html
 //! [mod_relu]: ./relu/index.html
 //! [struct_layerconfig]: ../../layer/struct.LayerConfig.html
+
+
+/// macro helper to implement activation trait
+/// TODO see common
 #[macro_export]
 macro_rules! impl_ilayer_activation {
     () => (

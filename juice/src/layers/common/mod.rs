@@ -2,6 +2,10 @@
 //!
 //! For now the layers in common should be discribed as layers that are typical
 //! layers for building neural networks but are not activation or loss layers.
+
+
+/// macro to implement ilayer common
+/// TODO use Some(1) as a default implementation for this trait
 #[macro_export]
 macro_rules! impl_ilayer_common {
     () => (

@@ -24,18 +24,24 @@ pub struct DropoutConfig {
     pub seed: u64,
 }
 
+/// shortcut to reading a tensor as slice
+/// contains unwrap
 macro_rules! read {
     ($x:ident, $t:ident, $slf:ident) => (
         $x.read($slf.device()).unwrap().as_slice::<$t>()
     )
 }
 
+/// shortcut to reading a tensor as mut slice
+/// contains unwrap
 macro_rules! read_write {
     ($x:ident, $t: ident, $slf:ident) => (
         $x.read_write($slf.device()).unwrap().as_mut_slice::<$t>()
     )
 }
 
+/// shortcut to reading a tensor as mut slice
+/// contains unwrap
 macro_rules! write_only {
     ($x:ident, $t: ident, $slf:ident) => (
         $x.write_only($slf.device()).unwrap().as_mut_slice::<$t>()
@@ -93,12 +99,15 @@ pub fn tanh_grad<T: Float>(x: T, dx: T) -> T {
     (T::one() - x.powi(2)) * dx
 }
 
+/// opertion config impl macro
+/// TODO it's never referenced, candidate for removal
 macro_rules! impl_oconf_for_clrn(($($t: ident), +) => (
     $(
         impl NNOperationConfig<$t> for ::frameworks::native::helper::NormalizationConfig { }
     )+
 ));
 
+/// sigmoid impl generation macro
 #[macro_export]
 macro_rules! impl_ops_sigmoid_for {
     ($t:ident, $b:ty) => (
@@ -145,6 +154,7 @@ macro_rules! impl_ops_sigmoid_for {
     );
 }
 
+/// relu impl generation macro
 #[macro_export]
 macro_rules! impl_ops_relu_for {
     ($t:ident, $b:ty) => (
@@ -190,6 +200,7 @@ macro_rules! impl_ops_relu_for {
     );
 }
 
+/// tanh impl generation macro
 #[macro_export]
 macro_rules! impl_ops_tanh_for {
     ($t:ident, $b:ty) => (
@@ -242,6 +253,7 @@ pub struct ConvolutionConfig {
     pub padding: Vec<i32>,
 }
 
+/// softmax impl generation macro
 #[macro_export]
 macro_rules! impl_ops_softmax_for {
     ($t:ident, $b:ty) => (
@@ -285,6 +297,7 @@ macro_rules! impl_ops_softmax_for {
     );
 }
 
+/// log softmax impl generation macro
 #[macro_export]
 macro_rules! impl_ops_log_softmax_for {
     ($t:ident, $b:ty) => (
@@ -323,6 +336,9 @@ macro_rules! impl_ops_log_softmax_for {
     );
 }
 
+
+/// lrn impl generation macro
+/// TODO it's all unimplemented!() right now
 #[macro_export]
 macro_rules! impl_ops_lrn_for {
     ($t:ident, $b:ty) => (
