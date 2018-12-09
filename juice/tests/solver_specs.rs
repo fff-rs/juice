@@ -1,4 +1,4 @@
-extern crate leaf;
+extern crate juice;
 extern crate coaster as co;
 
 #[cfg(all(test, whatever))]
@@ -6,7 +6,7 @@ extern crate coaster as co;
 mod solver_specs {
     use co::backend::Backend;
     use co::frameworks::Native;
-    use leaf::solver::*;
+    use juice::solver::*;
 
     #[test]
     // fixed: always return base_lr.

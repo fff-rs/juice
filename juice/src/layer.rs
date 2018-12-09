@@ -938,6 +938,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
                 Box::new(NegativeLogLikelihood::from_config(&layer_config))
             }
             LayerType::Reshape(layer_config) => Box::new(Reshape::from_config(&layer_config)),
+            LayerType::Dropout(layer_config) => Box::new(Dropout::from_config(&layer_config)),
         }
     }
 }
@@ -1313,6 +1314,8 @@ pub enum LayerType {
     Sequential(SequentialConfig),
     /// Softmax Layer
     Softmax,
+    /// Dropout
+    Dropout(DropoutConfig),
     // Activation layers
     /// ReLU Layer
     ReLU,
@@ -1346,6 +1349,7 @@ impl LayerType {
             LayerType::Reshape(_) => true,
             LayerType::Convolution(_) => false,
             LayerType::Pooling(_) => false,
+            LayerType::Dropout(_) => false,
         }
     }
 }
@@ -1385,6 +1389,10 @@ impl<'a> CapnpWrite<'a> for LayerType {
                 let ref mut config = builder.borrow().init_pooling();
                 cfg.write_capnp(config);
             }
+            &LayerType::Dropout(ref cfg) => {
+                let ref mut config = builder.borrow().init_dropout();
+                cfg.write_capnp(config);
+            }
         }
     }
 }
@@ -1422,6 +1430,10 @@ impl<'a> CapnpRead<'a> for LayerType {
             capnp_layer_type::Which::Convolution(read_config) => {
                 let config = ConvolutionConfig::read_capnp(read_config.unwrap());
                 LayerType::Convolution(config)
+            }
+            capnp_layer_type::Which::Dropout(read_config) => {
+                let config = DropoutConfig::read_capnp(read_config.unwrap());
+                LayerType::Dropout(config)
             }
         }
     }
