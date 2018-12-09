@@ -1,0 +1,39 @@
+[package]
+name            = "coaster-nn"
+description     = "coaster plugin providing Neural Network operations"
+version         = "0.4.1"
+authors         = ["Bernhard Schuster <bernhard@ahoi.io>",
+		   "Michael Hirn <mj@autumnai.com>",
+                   "Maximilian Goisser <max@autumnai.com>"]
+
+repository      = "https://github.com/spearow/coaster-nn"
+homepage        = "https://spearow.io/coaster-nn"
+documentation   = "https://spearow.io/projects/coaster-nn/documentation"
+readme          = "README.md"
+
+keywords        = ["neural-network", "coaster", "computation", "hpc", "plugin"]
+license         = "MIT OR Apache-2.0"
+
+[dependencies]
+coaster = { version = "^0.1", default-features = false}
+rcudnn = { version = "^1.6", optional = true}
+libc = "0.2"
+lazy_static = "0.1"
+log = "0.3.2"
+
+clippy = { version = "0.0.27", optional = true }
+rand = {version = "0.3", optional = true }
+
+[dev-dependencies]
+rand = "0.3"
+
+[features]
+default = ["native", "cuda", "opencl"]
+native = ["coaster/native", "rand"]
+cuda = ["coaster/cuda", "rcudnn"]
+opencl = ["coaster/opencl"]
+unstable = []
+
+travis = ["native"]
+dev = []
+lint = ["clippy"]
