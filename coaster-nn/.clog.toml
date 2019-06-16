@@ -1,7 +1,7 @@
 [clog]
 # A repository link with the trailing '.git' which will be used to generate
 # all commit and issue links
-repository = "https://github.com/autumnai/collenchyma-nn"
+repository = "https://github.com/spearow/coaster-nn"
 
 # specify the style of commit links to generate, defaults to "github" if omitted
 link-style = "github"
