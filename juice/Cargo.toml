@@ -1,0 +1,47 @@
+[package]
+name = "juice"
+description = "Machine Learning Framework for Hackers"
+version = "0.2.3"
+authors = [
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Maximilian Goisser <max@autumnai.com>",
+  "Michael Hirn <mj@autumnai.com>",
+]
+repository = "https://github.com/spearow/juice"
+homepage = "https://spearow.io/projects/juice"
+documentation = "https://spearow.github.io/juice"
+readme = "README.md"
+keywords = ["deep-learning", "neural-networks", "machine-learning", "framework"]
+license = "MIT OR Apache-2.0"
+
+build = "build.rs"
+
+[dependencies]
+coaster = { default-features = false, version = "0.1.0" }
+coaster-blas = { default-features = false, version = "0.2.0" }
+coaster-nn = { default-features = false, version = "0.4.1" }
+
+log = "0.4"
+rand = "0.4"
+num = "0.1"
+capnp = "0.8"
+timeit = "0.1"
+
+clippy = { version = "0.0.187", optional = true }
+
+[build-dependencies]
+capnpc = "0.8"
+
+[dev-dependencies]
+env_logger = "0.3"
+
+[features]
+default = ["native"]
+native = ["coaster-blas/native", "coaster-nn/native"]
+cuda = ["coaster/cuda", "coaster-blas/cuda", "coaster-nn/cuda"]
+opencl = ["coaster/opencl", "coaster-blas/opencl", "coaster-nn/opencl"]
+
+travis = ["native"]
+dev = []
+unstable = [] # for travis-cargo
+lint = ["clippy"]

@@ -1,0 +1,31 @@
+[package]
+name = "greenglas"
+description = "Data Preprocessing library for Machine Learning"
+authors = ["Bernhard Schuster <bernhard@ahoi.io>",
+           "Michael Hirn <mj@autumnai.com>"]
+version = "0.2.0"
+repository = "https://github.com/spearow/greenglas"
+homepage = "https://spearow.io/projects/greenglas"
+documentation = "https://spearow.github.com/greenglas"
+readme = "README.md"
+keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding", "machine-learning"]
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+coaster = { git = "https://github.com/spearow/coaster.git", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+
+image = "0.14"
+murmurhash3 = "0.0.5"
+modifier = "0.1"
+
+clippy = { version = "0.0.54", optional = true }
+
+[features]
+default = ["native"]
+native = []
+cuda = ["coaster/cuda"]
+opencl = ["coaster/opencl"]
+
+dev = []
+lint = ["clippy"]
+travis = []

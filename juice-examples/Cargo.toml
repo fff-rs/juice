@@ -1,0 +1,37 @@
+[package]
+name = "juice-examples"
+description = "Examples for the Machine Learning Framework 'Juice'"
+version = "0.1.1"
+authors = ["Bernhard Schuster <bernhard@ahoi.io>",
+           "Michael Hirn <mj@autumnai.com>",
+           "Maximilian Goisser <max@autumnai.com>"]
+
+[dependencies]
+greenglas = { version = "0.2" }
+juice = { version = "0.2", default-features = false }
+coaster = { version = "0.1", default-features = false }
+
+csv = "0.15"
+hyper = "0.11"
+hyper-tls = "0.2"
+futures = "0.1"
+tokio-core = "0.1.9"
+flate2 = "0.2"
+mnist = "0.4.0"
+
+log = "0.3"
+env_logger = "0.4"
+timeit = "0.1.2"
+
+# CLI tooling
+docopt = "0.6.75"
+rustc-serialize = "0.3"
+
+clippy = { version = "0.0.23", optional = true }
+
+
+[features]
+default = ["native", "opencl", "cuda"]
+native = ["juice/native", "coaster/native"]
+opencl = ["juice/opencl", "coaster/opencl"]
+cuda = ["juice/cuda", "coaster/cuda"]
