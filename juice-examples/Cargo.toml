@@ -7,13 +7,13 @@ authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Maximilian Goisser <max@autumnai.com>"]
 
 [dependencies]
-greenglas = { git = "https://github.com/spearow/greenglas.git" }
-juice = { git = "https://github.com/spearow/juice.git", default-features = false }
-coaster = { git = "https://github.com/spearow/coaster.git", default-features = false }
+greenglas = { version = "0.2" }
+juice = { version = "0.2", default-features = false }
+coaster = { version = "0.1", default-features = false }
 
 csv = "0.15"
 hyper = "0.11"
-hyper-tls = "*"
+hyper-tls = "0.2"
 futures = "0.1"
 tokio-core = "0.1.9"
 flate2 = "0.2"
@@ -35,11 +35,3 @@ default = ["native", "opencl", "cuda"]
 native = ["juice/native", "coaster/native"]
 opencl = ["juice/opencl", "coaster/opencl"]
 cuda = ["juice/cuda", "coaster/cuda"]
-
-[profile.dev]
-opt-level = 0
-debug = true
-rpath = false
-lto = false
-debug-assertions = true
-codegen-units = 2

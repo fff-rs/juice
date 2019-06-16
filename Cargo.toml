@@ -15,3 +15,12 @@ rpath = false
 lto = false
 debug-assertions = false
 codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 2
+
