@@ -30,21 +30,21 @@ impl TensorDescriptor {
 
         let dims_ptr = dims.as_ptr();
         let strides_ptr = strides.as_ptr();
-        let generic_tensor_desc = try!(API::create_tensor_descriptor());
+        let generic_tensor_desc = API::create_tensor_descriptor()?;
         match data_type {
             DataType::Float => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                try!(API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr));
+                API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr)?;
                 Ok(TensorDescriptor::from_c(generic_tensor_desc))
             },
             DataType::Double => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_DOUBLE;
-                try!(API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr));
+                API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr)?;
                 Ok(TensorDescriptor::from_c(generic_tensor_desc))
             },
             DataType::Half => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_HALF;
-                try!(API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr));
+                API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr)?;
                 Ok(TensorDescriptor::from_c(generic_tensor_desc))
             }
         }

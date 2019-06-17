@@ -10,7 +10,7 @@ impl API {
     /// The returned `handle` must be provided to future CUDA cuDNN API calls.
     /// Call this method outside of performance critical routines.
     pub fn init() -> Result<cudnnHandle_t, Error> {
-        Ok(try!( unsafe { API::ffi_create() }))
+        Ok( unsafe { API::ffi_create() }? )
     }
 
     /// Destroys the CUDA cuDNN context and resources associated with the `handle`.

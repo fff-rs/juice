@@ -25,21 +25,21 @@ impl FilterDescriptor {
     pub fn new(filter_dim: &[i32], data_type: DataType) -> Result<FilterDescriptor, Error> {
         let nb_dims = filter_dim.len() as i32;
         let tensor_format = cudnnTensorFormat_t::CUDNN_TENSOR_NCHW;
-        let generic_filter_desc = try!(API::create_filter_descriptor());
+        let generic_filter_desc = API::create_filter_descriptor()?;
         match data_type {
             DataType::Float => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                try!(API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr()));
+                API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr())?;
                 Ok(FilterDescriptor::from_c(generic_filter_desc))
             },
             DataType::Double => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_DOUBLE;
-                try!(API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr()));
+                API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr())?;
                 Ok(FilterDescriptor::from_c(generic_filter_desc))
             },
             DataType::Half => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_HALF;
-                try!(API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr()));
+                API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr())?;
                 Ok(FilterDescriptor::from_c(generic_filter_desc))
             }
         }
