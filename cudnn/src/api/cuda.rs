@@ -1,8 +1,8 @@
 //! Provides utility functionality for the CUDA cuDNN API.
 
-use ffi::*;
+use crate::ffi::*;
 use std::ptr;
-use {Error, API};
+use crate::{Error, API};
 
 impl API {
     /// Initialize the CUDA cuDNN API with needed context and resources.

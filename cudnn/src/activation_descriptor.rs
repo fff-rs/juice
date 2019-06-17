@@ -4,7 +4,7 @@
 //! which describes how to transform the data.
 
 use super::{Error, API};
-use ffi::*;
+use crate::ffi::*;
 
 #[derive(Debug, Clone)]
 /// Describes a ActivationDescriptor.

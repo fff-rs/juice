@@ -1,25 +1,23 @@
 extern crate rcudnn as cudnn;
-
-#[macro_use]
 extern crate coaster as co;
 extern crate libc;
 
 extern crate rcudnn_sys as ffi;
-use ffi::*;
+use crate::ffi::*;
 
 #[cfg(test)]
 #[link(name = "cudart")]
 #[cfg(test)]
 mod cudnn_spec {
 
-    use co::framework::IFramework;
-    use co::frameworks::cuda::*;
-    use co::frameworks::Cuda;
-    use cudnn::cuda::CudaDeviceMemory;
-    use cudnn::utils::DataType;
-    use cudnn::utils::DropoutConfig;
-    use cudnn::{
-        ActivationDescriptor, ConvolutionDescriptor, Cudnn, DropoutDescriptor, FilterDescriptor,
+    use crate::co::framework::IFramework;
+    
+    use crate::co::frameworks::Cuda;
+    use crate::cudnn::cuda::CudaDeviceMemory;
+    use crate::cudnn::utils::DataType;
+    use crate::cudnn::utils::DropoutConfig;
+    use crate::cudnn::{
+        ActivationDescriptor, ConvolutionDescriptor, Cudnn, FilterDescriptor,
         TensorDescriptor, API,
     };
 
@@ -53,7 +51,7 @@ mod cudnn_spec {
         let cudnn = Cudnn::new().unwrap();
         let desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
         let acti =
-            ActivationDescriptor::new(::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID).unwrap();
+            ActivationDescriptor::new(crate::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID).unwrap();
 
         let mut a: u64 = 1;
         let a_ptr: *mut u64 = &mut a;
@@ -61,7 +59,7 @@ mod cudnn_spec {
         let b_ptr: *mut u64 = &mut b;
         unsafe {
             let mut x: *mut ::libc::c_void = ::std::ptr::null_mut();
-            ::cudaHostAlloc(&mut x, 2 * 2 * 2, 0);
+            crate::cudaHostAlloc(&mut x, 2 * 2 * 2, 0);
             match API::activation_forward(
                 *cudnn.id_c(),
                 *acti.id_c(),
@@ -78,7 +76,7 @@ mod cudnn_spec {
                     assert!(false)
                 }
             }
-            ::cudaFreeHost(x);
+            crate::cudaFreeHost(x);
         }
     }
 
@@ -144,7 +142,7 @@ mod cudnn_spec {
         let dest = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
 
         let src_data = CudaDeviceMemory::new(2 * 2 * 2 * 4).unwrap();
-        let mut dest_data = CudaDeviceMemory::new(2 * 2 * 2 * 4).unwrap();
+        let dest_data = CudaDeviceMemory::new(2 * 2 * 2 * 4).unwrap();
 
         match API::dropout_forward(
             *cudnn.id_c(),
