@@ -4,10 +4,10 @@
 //! of dropping a value as well as an initial seed.
 
 use super::{Error, API};
-use cudnn::Cudnn;
-use ffi::*;
+use crate::cudnn::Cudnn;
+use crate::ffi::*;
 
-use cuda::CudaDeviceMemory;
+use crate::cuda::CudaDeviceMemory;
 
 #[derive(Debug, Clone)]
 /// Describes a DropoutDescriptor.

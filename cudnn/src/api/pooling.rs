@@ -2,8 +2,8 @@
 //!
 //! This includes the Pooling Descriptor as well as the Pooling for- and backwar computation.
 
-use ffi::*;
-use {Error, API};
+use crate::ffi::*;
+use crate::{Error, API};
 
 impl API {
     /// Creates a generic CUDA cuDNN Pooling Descriptor.

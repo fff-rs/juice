@@ -4,9 +4,9 @@ use super::{
     ActivationDescriptor, ConvolutionDescriptor, DropoutDescriptor, FilterDescriptor,
     NormalizationDescriptor, PoolingDescriptor,
 };
-use cuda::CudaDeviceMemory;
+use crate::cuda::CudaDeviceMemory;
 
-use ffi::*;
+use crate::ffi::*;
 
 use num::traits::*;
 

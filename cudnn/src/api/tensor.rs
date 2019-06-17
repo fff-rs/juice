@@ -3,8 +3,8 @@
 //! This includes the Tensor Descriptor as well as other Tensor functionality,
 //! such as transformation and co..
 
-use ffi::*;
-use {Error, API};
+use crate::ffi::*;
+use crate::{Error, API};
 
 impl API {
     /// Creates a generic CUDA cuDNN Tensor Descriptor.

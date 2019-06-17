@@ -1,7 +1,7 @@
 //! Provides the softmax functionality from the CUDA cuDNN API.
 
-use ffi::*;
-use {Error, API};
+use crate::ffi::*;
+use crate::{Error, API};
 
 impl API {
     /// Computes an softmax forward function.

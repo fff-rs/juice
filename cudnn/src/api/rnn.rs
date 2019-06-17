@@ -2,8 +2,8 @@
 //!
 //! Includes the RNN functionality.
 
-use ffi::*;
-use {Error, API};
+use crate::ffi::*;
+use crate::{Error, API};
 
 impl API {
     //  ///
