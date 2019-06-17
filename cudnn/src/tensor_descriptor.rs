@@ -6,7 +6,7 @@
 
 use super::utils::DataType;
 use super::{Error, API};
-use ffi::*;
+use crate::ffi::*;
 
 #[derive(Debug, Clone)]
 /// Describes a TensorDescriptor.

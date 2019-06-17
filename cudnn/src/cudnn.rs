@@ -10,7 +10,7 @@ use super::utils::{
 };
 use super::*;
 
-use cuda::CudaDeviceMemory;
+use crate::cuda::CudaDeviceMemory;
 use num::traits::Float;
 use std::mem::transmute_copy;
 

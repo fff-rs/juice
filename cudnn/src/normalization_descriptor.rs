@@ -1,7 +1,7 @@
 //! Defines a LRN Descriptor.
 
 use super::{Error, API};
-use ffi::*;
+use crate::ffi::*;
 
 #[derive(Debug, Clone)]
 /// Describes a LRN Descriptor.

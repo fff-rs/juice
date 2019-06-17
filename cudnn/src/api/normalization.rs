@@ -2,8 +2,8 @@
 //!
 //! This includes divisive normalization and Local Response Normalization.
 
-use ffi::*;
-use {Error, API};
+use crate::ffi::*;
+use crate::{Error, API};
 
 impl API {
     /// Creates a generic CUDA cuDNN LRN Descriptor.

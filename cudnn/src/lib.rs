@@ -83,7 +83,7 @@ pub use self::filter_descriptor::FilterDescriptor;
 pub use self::normalization_descriptor::NormalizationDescriptor;
 pub use self::pooling_descriptor::PoolingDescriptor;
 pub use self::tensor_descriptor::TensorDescriptor;
-pub use ffi::*;
+pub use crate::ffi::*;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines the Cuda cuDNN API.
