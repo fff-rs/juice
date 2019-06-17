@@ -1,6 +1,6 @@
 #![feature(test)]
 
-extern crate collenchyma as co;
+extern crate coaster as co;
 extern crate cudnn;
 extern crate test;
 
