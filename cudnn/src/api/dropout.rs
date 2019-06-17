@@ -2,8 +2,8 @@
 //!
 //! Includes the convolution and filter functionality.
 
-use {API, Error};
 use ffi::*;
+use {Error, API};
 
 impl API {
     //
@@ -49,7 +49,6 @@ impl API {
             )
         }
     }
-
 
     /// Computes the dropout forward function.
     pub fn dropout_forward(
@@ -105,10 +104,12 @@ impl API {
         let mut dropout_desc: cudnnDropoutDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateDropoutDescriptor(&mut dropout_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(dropout_desc),
-            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed(
-                "The resources could not be allocated",
+            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
+                Err(Error::AllocFailed("The resources could not be allocated"))
+            }
+            _ => Err(Error::Unknown(
+                "Unable create generic CUDA cuDNN Dropout Descriptor",
             )),
-            _ => Err(Error::Unknown("Unable create generic CUDA cuDNN Dropout Descriptor")),
         }
     }
     unsafe fn ffi_destroy_dropout_descriptor(
@@ -116,14 +117,18 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnDestroyDropoutDescriptor(dropout_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown("Unable to destroy CUDA cuDNN Dropout Descriptor")),
+            _ => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Dropout Descriptor",
+            )),
         }
     }
     unsafe fn ffi_dropout_get_states_size(handle: cudnnHandle_t) -> Result<usize, Error> {
         let mut size_in_bytes: usize = 0;
         match cudnnDropoutGetStatesSize(handle, &mut size_in_bytes) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size_in_bytes),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Dropout Descriptor states size")),
+            _ => Err(Error::Unknown(
+                "Unable to get CUDA cuDNN Dropout Descriptor states size",
+            )),
         }
     }
     unsafe fn ffi_dropout_get_reserve_space_size(
@@ -132,7 +137,9 @@ impl API {
         let mut size_in_bytes: usize = 0;
         match cudnnDropoutGetReserveSpaceSize(xdesc, &mut size_in_bytes) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size_in_bytes),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Dropout Descriptor reserved space size")),
+            _ => Err(Error::Unknown(
+                "Unable to get CUDA cuDNN Dropout Descriptor reserved space size",
+            )),
         }
     }
     unsafe fn ffi_set_dropout_descriptor(
@@ -158,7 +165,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed(
                 "The function failed to launch on the GPU",
             )),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Dropout Descriptor")),
+            _ => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Dropout Descriptor",
+            )),
         }
     }
 

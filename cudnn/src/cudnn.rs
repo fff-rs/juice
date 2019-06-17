@@ -4,9 +4,11 @@
 //! by initilizing a new `Cudnn` instance. This initilizes the cuDNN resources,
 //! stores the handle and manages future calls.
 
+use super::utils::{
+    ActivationConfig, ConvolutionConfig, DataTypeInfo, DropoutConfig, NormalizationConfig,
+    PoolingConfig, ScalParams,
+};
 use super::*;
-use super::utils::{ConvolutionConfig, DataTypeInfo, NormalizationConfig, PoolingConfig,
-                   ActivationConfig, DropoutConfig, ScalParams};
 
 use cuda::CudaDeviceMemory;
 use num::traits::Float;
@@ -68,7 +70,7 @@ impl Cudnn {
             *src_desc.id_c(),
             *dest_desc.id_c(),
         )?;
-        
+
         let workspace_size_fwd = API::get_convolution_forward_workspace_size(
             *self.id_c(),
             algos_fwd[0].algo,
@@ -130,12 +132,7 @@ impl Cudnn {
         lrn_beta: f64,
         lrn_k: f64,
     ) -> Result<NormalizationConfig, Error> {
-        let norm_desc = NormalizationDescriptor::new(
-            lrn_n,
-            lrn_alpha,
-            lrn_beta,
-            lrn_k,
-        )?;
+        let norm_desc = NormalizationDescriptor::new(lrn_n, lrn_alpha, lrn_beta, lrn_k)?;
         Ok(NormalizationConfig::new(norm_desc))
     }
 
@@ -165,29 +162,17 @@ impl Cudnn {
     /// Initializes the parameters and configurations for running CUDA cuDNN Activation operations.
     pub fn init_activation(&self) -> Result<ActivationConfig, Error> {
         // TODO make the activation function mode an input parameter (enum, so for clipped relu)
-        let sigmoid = ActivationDescriptor::new(
-            cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID,
-        )?;
-        let relu = ActivationDescriptor::new(
-            cudnnActivationMode_t::CUDNN_ACTIVATION_RELU,
-        )?;
-        let clipped_relu = ActivationDescriptor::new(
-            cudnnActivationMode_t::CUDNN_ACTIVATION_CLIPPED_RELU,
-        )?;
-        let tanh = ActivationDescriptor::new(
-            cudnnActivationMode_t::CUDNN_ACTIVATION_TANH,
-        )?;
+        let sigmoid = ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID)?;
+        let relu = ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_RELU)?;
+        let clipped_relu =
+            ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_CLIPPED_RELU)?;
+        let tanh = ActivationDescriptor::new(cudnnActivationMode_t::CUDNN_ACTIVATION_TANH)?;
         Ok(ActivationConfig::new(sigmoid, relu, clipped_relu, tanh))
     }
 
     /// Initializes the parameters and configurations for running CUDA cuDNN dropout operation.
-    pub fn init_dropout(
-        &self,
-        probability : f32,
-        seed : u64,
-        ) -> Result<DropoutConfig, Error> {
-
-        let reserve_required : usize = API::dropout_get_states_size(*self.id_c())?;
+    pub fn init_dropout(&self, probability: f32, seed: u64) -> Result<DropoutConfig, Error> {
+        let reserve_required: usize = API::dropout_get_states_size(*self.id_c())?;
         let reserve = CudaDeviceMemory::new(reserve_required)?;
         let dropout = DropoutDescriptor::new(&self, probability, seed, &reserve)?;
         Ok(DropoutConfig::new(dropout, reserve))

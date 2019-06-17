@@ -3,8 +3,8 @@
 //! A Filter Descriptor is used to hold information about the Filter,
 //! which is needed for forward and backward convolutional operations.
 
-use super::{API, Error};
 use super::utils::DataType;
+use super::{Error, API};
 use ffi::*;
 
 #[derive(Debug, Clone)]
@@ -29,17 +29,35 @@ impl FilterDescriptor {
         match data_type {
             DataType::Float => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr())?;
+                API::set_filter_descriptor(
+                    generic_filter_desc,
+                    d_type,
+                    tensor_format,
+                    nb_dims,
+                    filter_dim.as_ptr(),
+                )?;
                 Ok(FilterDescriptor::from_c(generic_filter_desc))
-            },
+            }
             DataType::Double => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_DOUBLE;
-                API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr())?;
+                API::set_filter_descriptor(
+                    generic_filter_desc,
+                    d_type,
+                    tensor_format,
+                    nb_dims,
+                    filter_dim.as_ptr(),
+                )?;
                 Ok(FilterDescriptor::from_c(generic_filter_desc))
-            },
+            }
             DataType::Half => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_HALF;
-                API::set_filter_descriptor(generic_filter_desc, d_type, tensor_format, nb_dims, filter_dim.as_ptr())?;
+                API::set_filter_descriptor(
+                    generic_filter_desc,
+                    d_type,
+                    tensor_format,
+                    nb_dims,
+                    filter_dim.as_ptr(),
+                )?;
                 Ok(FilterDescriptor::from_c(generic_filter_desc))
             }
         }

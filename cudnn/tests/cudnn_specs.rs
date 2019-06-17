@@ -13,13 +13,15 @@ use ffi::*;
 mod cudnn_spec {
 
     use co::framework::IFramework;
-    use co::frameworks::Cuda;
     use co::frameworks::cuda::*;
-    use cudnn::{Cudnn, API, TensorDescriptor, ActivationDescriptor, FilterDescriptor,
-                ConvolutionDescriptor, DropoutDescriptor};
+    use co::frameworks::Cuda;
     use cudnn::cuda::CudaDeviceMemory;
     use cudnn::utils::DataType;
     use cudnn::utils::DropoutConfig;
+    use cudnn::{
+        ActivationDescriptor, ConvolutionDescriptor, Cudnn, DropoutDescriptor, FilterDescriptor,
+        TensorDescriptor, API,
+    };
 
     #[test]
     fn it_initializes_correctly() {
@@ -50,8 +52,8 @@ mod cudnn_spec {
     fn it_computes_sigmoid() {
         let cudnn = Cudnn::new().unwrap();
         let desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-        let acti = ActivationDescriptor::new(::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID)
-            .unwrap();
+        let acti =
+            ActivationDescriptor::new(::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID).unwrap();
 
         let mut a: u64 = 1;
         let a_ptr: *mut u64 = &mut a;
@@ -79,7 +81,6 @@ mod cudnn_spec {
             ::cudaFreeHost(x);
         }
     }
-
 
     #[test]
     fn it_finds_correct_convolution_algorithm_forward() {
@@ -131,12 +132,10 @@ mod cudnn_spec {
         let _ = CudaDeviceMemory::new(1024).unwrap();
     }
 
-
     #[test]
     fn it_computes_dropout_forward() {
         let cudnn = Cudnn::new().unwrap();
         let src = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
-
 
         let result = cudnn.init_dropout(0.5, 27);
         let cfg: DropoutConfig = result.unwrap();

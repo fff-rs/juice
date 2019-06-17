@@ -3,10 +3,8 @@
 //! A Activation Descriptor is used to hold information about the rule,
 //! which describes how to transform the data.
 
-use super::{API, Error};
+use super::{Error, API};
 use ffi::*;
-
-
 
 #[derive(Debug, Clone)]
 /// Describes a ActivationDescriptor.
@@ -25,11 +23,12 @@ impl ActivationDescriptor {
     /// Initializes a new CUDA cuDNN Activation Descriptor.
     pub fn new(mode: cudnnActivationMode_t) -> Result<ActivationDescriptor, Error> {
         let generic_activation_desc = API::create_activation_descriptor()?;
-        API::set_activation_descriptor(generic_activation_desc,
-                                            mode,
-                                            cudnnNanPropagation_t::CUDNN_NOT_PROPAGATE_NAN, // FIXME check if this makes sense
-                                            ::std::f64::MAX// FIXME make this public API
-                                            )?;
+        API::set_activation_descriptor(
+            generic_activation_desc,
+            mode,
+            cudnnNanPropagation_t::CUDNN_NOT_PROPAGATE_NAN, // FIXME check if this makes sense
+            ::std::f64::MAX,                                // FIXME make this public API
+        )?;
 
         Ok(ActivationDescriptor::from_c(generic_activation_desc))
     }

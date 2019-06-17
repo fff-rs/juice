@@ -18,7 +18,6 @@ impl Default for cudnnConvolutionFwdAlgoPerf_t {
     }
 }
 
-
 impl Default for cudnnConvolutionBwdFilterAlgoPerf_t {
     fn default() -> Self {
         Self {
@@ -32,7 +31,6 @@ impl Default for cudnnConvolutionBwdFilterAlgoPerf_t {
         }
     }
 }
-
 
 impl Default for cudnnConvolutionBwdDataAlgoPerf_t {
     fn default() -> Self {
