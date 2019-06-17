@@ -1,0 +1,21 @@
+[workspace]
+members = ["cudnn", "cudnn-sys"]
+
+[patch.crates-io]
+rcudnn = { path = "./cudnn" }
+rcudnn-sys = { path = "./cudnn-sys" }
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = false
+debug-assertions = false
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
