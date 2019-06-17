@@ -1,13 +1,13 @@
 #![feature(test)]
 
-extern crate test;
-extern crate cudnn;
 extern crate collenchyma as co;
+extern crate cudnn;
+extern crate test;
 
-use test::Bencher;
 use co::backend::{Backend, BackendConfig};
-use co::frameworks::Cuda;
 use co::framework::IFramework;
+use co::frameworks::Cuda;
+use test::Bencher;
 
 #[cfg(test)]
 mod cudnn_spec {

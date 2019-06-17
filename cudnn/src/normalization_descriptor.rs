@@ -1,6 +1,6 @@
 //! Defines a LRN Descriptor.
 
-use super::{API, Error};
+use super::{Error, API};
 use ffi::*;
 
 #[derive(Debug, Clone)]
@@ -18,7 +18,12 @@ impl Drop for NormalizationDescriptor {
 
 impl NormalizationDescriptor {
     /// Initializes a new CUDA cuDNN LRNDescriptor.
-    pub fn new(lrn_n: u32, lrn_alpha: f64, lrn_beta: f64, lrn_k: f64) -> Result<NormalizationDescriptor, Error> {
+    pub fn new(
+        lrn_n: u32,
+        lrn_alpha: f64,
+        lrn_beta: f64,
+        lrn_k: f64,
+    ) -> Result<NormalizationDescriptor, Error> {
         let generic_lrn_desc = API::create_lrn_descriptor()?;
         API::set_lrn_descriptor(generic_lrn_desc, lrn_n, lrn_alpha, lrn_beta, lrn_k)?;
         Ok(NormalizationDescriptor::from_c(generic_lrn_desc))

@@ -3,9 +3,9 @@
 //! A Tensor Descriptor is used to hold information about the probability
 //! of dropping a value as well as an initial seed.
 
-use super::{API, Error};
-use ffi::*;
+use super::{Error, API};
 use cudnn::Cudnn;
+use ffi::*;
 
 use cuda::CudaDeviceMemory;
 
@@ -24,7 +24,12 @@ impl Drop for DropoutDescriptor {
 
 impl DropoutDescriptor {
     /// Initializes a new CUDA cuDNN Dropout Descriptor.
-    pub fn new(handle : &Cudnn, dropout: f32, seed: u64, reserve : &CudaDeviceMemory) -> Result<DropoutDescriptor, Error> {
+    pub fn new(
+        handle: &Cudnn,
+        dropout: f32,
+        seed: u64,
+        reserve: &CudaDeviceMemory,
+    ) -> Result<DropoutDescriptor, Error> {
         let generic_dropout_desc = API::create_dropout_descriptor()?;
         API::set_dropout_descriptor(
             generic_dropout_desc,
@@ -40,7 +45,7 @@ impl DropoutDescriptor {
 
     /// Get the size for a tensor
     pub fn get_required_size() -> usize {
-		unimplemented!()
+        unimplemented!()
     }
 
     /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.

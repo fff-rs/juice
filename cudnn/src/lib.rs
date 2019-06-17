@@ -60,19 +60,24 @@
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
-#![deny(missing_docs,
-        missing_debug_implementations, missing_copy_implementations,
-        trivial_casts, trivial_numeric_casts,
-        unused_import_braces, unused_qualifications)]
+#![deny(
+    missing_docs,
+    missing_debug_implementations,
+    missing_copy_implementations,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_import_braces,
+    unused_qualifications
+)]
 
 extern crate libc;
-extern crate rcudnn_sys as ffi;
 extern crate num;
+extern crate rcudnn_sys as ffi;
 
 pub use self::activation_descriptor::ActivationDescriptor;
 pub use self::convolution_descriptor::ConvolutionDescriptor;
-pub use self::dropout_descriptor::DropoutDescriptor;
 pub use self::cudnn::Cudnn;
+pub use self::dropout_descriptor::DropoutDescriptor;
 pub use self::error::Error;
 pub use self::filter_descriptor::FilterDescriptor;
 pub use self::normalization_descriptor::NormalizationDescriptor;
@@ -84,15 +89,15 @@ pub use ffi::*;
 /// Defines the Cuda cuDNN API.
 pub struct API;
 
-mod cudnn;
+mod activation_descriptor;
+mod api;
+mod convolution_descriptor;
 pub mod cuda;
+mod cudnn;
+mod dropout_descriptor;
 mod error;
-pub mod utils;
-mod tensor_descriptor;
 mod filter_descriptor;
 mod normalization_descriptor;
 mod pooling_descriptor;
-mod convolution_descriptor;
-mod activation_descriptor;
-mod dropout_descriptor;
-mod api;
+mod tensor_descriptor;
+pub mod utils;

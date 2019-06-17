@@ -6,11 +6,11 @@
 
 pub mod activation;
 pub mod convolution;
+pub mod cuda;
 pub mod dropout;
-pub mod rnn;
 pub mod normalization;
 pub mod pooling;
+pub mod rnn;
 pub mod softmax;
 pub mod tensor;
 pub mod utils;
-pub mod cuda;

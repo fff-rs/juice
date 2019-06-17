@@ -1,7 +1,9 @@
 //! Describes utility functionality for CUDA cuDNN.
 
-use super::{ConvolutionDescriptor, NormalizationDescriptor, FilterDescriptor, PoolingDescriptor,
-            ActivationDescriptor, DropoutDescriptor};
+use super::{
+    ActivationDescriptor, ConvolutionDescriptor, DropoutDescriptor, FilterDescriptor,
+    NormalizationDescriptor, PoolingDescriptor,
+};
 use cuda::CudaDeviceMemory;
 
 use ffi::*;
@@ -80,9 +82,13 @@ impl ConvolutionConfig {
     ///
     /// Useful for creating a shared workspace.
     pub fn largest_workspace_size(&self) -> &usize {
-        if self.backward_data_workspace_size() >= self.backward_filter_workspace_size() && self.backward_data_workspace_size() >= self.forward_workspace_size() {
+        if self.backward_data_workspace_size() >= self.backward_filter_workspace_size()
+            && self.backward_data_workspace_size() >= self.forward_workspace_size()
+        {
             self.backward_data_workspace_size()
-        } else if self.backward_filter_workspace_size() >= self.backward_data_workspace_size() && self.backward_filter_workspace_size() >= self.forward_workspace_size() {
+        } else if self.backward_filter_workspace_size() >= self.backward_data_workspace_size()
+            && self.backward_filter_workspace_size() >= self.forward_workspace_size()
+        {
             self.backward_filter_workspace_size()
         } else {
             self.forward_workspace_size()
@@ -141,9 +147,7 @@ pub struct NormalizationConfig {
 impl NormalizationConfig {
     /// Returns a new LRN Config.
     pub fn new(lrn_desc: NormalizationDescriptor) -> NormalizationConfig {
-        NormalizationConfig {
-            lrn_desc: lrn_desc,
-        }
+        NormalizationConfig { lrn_desc: lrn_desc }
     }
 
     /// Returns `lrn_desc`.
@@ -229,7 +233,6 @@ impl ActivationConfig {
     }
 }
 
-
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 /// Provides a convenient interface to access cuDNN's Dropout Descriptor.
 ///
@@ -241,10 +244,7 @@ pub struct DropoutConfig {
 
 impl DropoutConfig {
     /// Returns a new DropoutConfig.
-    pub fn new(
-        dropout_desc: DropoutDescriptor,
-        reserve: CudaDeviceMemory,
-    ) -> DropoutConfig {
+    pub fn new(dropout_desc: DropoutDescriptor, reserve: CudaDeviceMemory) -> DropoutConfig {
         DropoutConfig {
             dropout_desc: dropout_desc,
             reserve_space: reserve,
@@ -257,10 +257,9 @@ impl DropoutConfig {
 
     /// Returns the reserved space ``.
     pub fn reserved_space(&self) -> &CudaDeviceMemory {
-    	&self.reserve_space
+        &self.reserve_space
     }
 }
-
 
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 /// Provides a convenient interface for cuDNN's scaling parameters `alpha` and `beta`.
@@ -274,7 +273,8 @@ impl DropoutConfig {
 /// For improved performance it is advised to use beta[0] = 0.0. Use a non-zero value for
 /// beta[0] only when blending with prior values stored in the output tensor is needed.
 pub struct ScalParams<T>
-    where T: Float + DataTypeInfo,
+where
+    T: Float + DataTypeInfo,
 {
     /// Alpha
     pub a: T,
@@ -283,7 +283,8 @@ pub struct ScalParams<T>
 }
 
 impl<T> Default for ScalParams<T>
-    where T: Float + Zero + One + DataTypeInfo,
+where
+    T: Float + Zero + One + DataTypeInfo,
 {
     /// Provides default values for ScalParams<f32>.
     fn default() -> ScalParams<T> {

@@ -1,8 +1,8 @@
 //! Provides utility functionality for the CUDA cuDNN API.
 
-use ::{API, Error};
 use ffi::*;
 use std::ptr;
+use {Error, API};
 
 impl API {
     /// Initialize the CUDA cuDNN API with needed context and resources.
@@ -10,7 +10,7 @@ impl API {
     /// The returned `handle` must be provided to future CUDA cuDNN API calls.
     /// Call this method outside of performance critical routines.
     pub fn init() -> Result<cudnnHandle_t, Error> {
-        Ok( unsafe { API::ffi_create() }? )
+        Ok(unsafe { API::ffi_create() }?)
     }
 
     /// Destroys the CUDA cuDNN context and resources associated with the `handle`.
@@ -44,8 +44,12 @@ impl API {
     unsafe fn ffi_destroy(handle: cudnnHandle_t) -> Result<(), Error> {
         match cudnnDestroy(handle) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            cudnnStatus_t::CUDNN_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA Driver/Runtime API not initialized.")),
-            _ => Err(Error::Unknown("Unable to destroy the CUDA cuDNN context/resources.")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized(
+                "CUDA Driver/Runtime API not initialized.",
+            )),
+            _ => Err(Error::Unknown(
+                "Unable to destroy the CUDA cuDNN context/resources.",
+            )),
         }
     }
 }

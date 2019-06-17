@@ -4,8 +4,8 @@
 //! which is needed for the operations to obtain information about
 //! the structure and dimensionality of the data.
 
-use super::{API, Error};
 use super::utils::DataType;
+use super::{Error, API};
 use ffi::*;
 
 #[derive(Debug, Clone)]
@@ -23,10 +23,17 @@ impl Drop for TensorDescriptor {
 
 impl TensorDescriptor {
     /// Initializes a new CUDA cuDNN Tensor Descriptor.
-    pub fn new(dims: &[i32], strides: &[i32], data_type: DataType) -> Result<TensorDescriptor, Error> {
-
+    pub fn new(
+        dims: &[i32],
+        strides: &[i32],
+        data_type: DataType,
+    ) -> Result<TensorDescriptor, Error> {
         let nb_dims = dims.len() as i32;
-        if nb_dims < 3 { return Err(Error::BadParam("CUDA cuDNN only supports Tensors with 3 to 8 dimensions.")) }
+        if nb_dims < 3 {
+            return Err(Error::BadParam(
+                "CUDA cuDNN only supports Tensors with 3 to 8 dimensions.",
+            ));
+        }
 
         let dims_ptr = dims.as_ptr();
         let strides_ptr = strides.as_ptr();
@@ -34,17 +41,35 @@ impl TensorDescriptor {
         match data_type {
             DataType::Float => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr)?;
+                API::set_tensor_descriptor(
+                    generic_tensor_desc,
+                    d_type,
+                    nb_dims,
+                    dims_ptr,
+                    strides_ptr,
+                )?;
                 Ok(TensorDescriptor::from_c(generic_tensor_desc))
-            },
+            }
             DataType::Double => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_DOUBLE;
-                API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr)?;
+                API::set_tensor_descriptor(
+                    generic_tensor_desc,
+                    d_type,
+                    nb_dims,
+                    dims_ptr,
+                    strides_ptr,
+                )?;
                 Ok(TensorDescriptor::from_c(generic_tensor_desc))
-            },
+            }
             DataType::Half => {
                 let d_type = cudnnDataType_t::CUDNN_DATA_HALF;
-                API::set_tensor_descriptor(generic_tensor_desc, d_type, nb_dims, dims_ptr, strides_ptr)?;
+                API::set_tensor_descriptor(
+                    generic_tensor_desc,
+                    d_type,
+                    nb_dims,
+                    dims_ptr,
+                    strides_ptr,
+                )?;
                 Ok(TensorDescriptor::from_c(generic_tensor_desc))
             }
         }
