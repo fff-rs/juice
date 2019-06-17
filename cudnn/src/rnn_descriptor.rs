@@ -38,7 +38,7 @@ impl RnnDescriptor {
             .take(array_length as usize)
             .collect();
 
-        let generic_rnn_desc = try!(API::create_rnn_descriptor());
+        let generic_rnn_desc = API::create_rnn_descriptor()?;
         let data_type = match data_type {
             DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
             DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,

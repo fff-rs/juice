@@ -32,7 +32,7 @@ impl Cudnn {
     ///
     /// Make sure your current CUDA device is cuDNN enabled.
     pub fn new() -> Result<Cudnn, Error> {
-        Ok(Cudnn::from_c(try!(API::init())))
+        Ok(Cudnn::from_c(API::init()?))
     }
 
     /// Initializes a new CUDA cuDNN Context from its C type.
@@ -61,53 +61,54 @@ impl Cudnn {
         filter_desc: FilterDescriptor,
         dest_desc: &TensorDescriptor,
     ) -> Result<ConvolutionConfig, Error> {
-        let algos_fwd = try!(API::find_convolution_forward_algorithm(
+        let algos_fwd = API::find_convolution_forward_algorithm(
             *self.id_c(),
             *filter_desc.id_c(),
             *conv_desc.id_c(),
             *src_desc.id_c(),
             *dest_desc.id_c(),
-        ));
-        let workspace_size_fwd = try!(API::get_convolution_forward_workspace_size(
+        )?;
+        
+        let workspace_size_fwd = API::get_convolution_forward_workspace_size(
             *self.id_c(),
             algos_fwd[0].algo,
             *filter_desc.id_c(),
             *conv_desc.id_c(),
             *src_desc.id_c(),
             *dest_desc.id_c(),
-        ));
+        )?;
 
-        let algos_filter_bwd = try!(API::find_convolution_backward_filter_algorithm(
+        let algos_filter_bwd = API::find_convolution_backward_filter_algorithm(
             *self.id_c(),
             *filter_desc.id_c(),
             *conv_desc.id_c(),
             *src_desc.id_c(),
             *dest_desc.id_c(),
-        ));
-        let workspace_filter_size_bwd = try!(API::get_convolution_backward_filter_workspace_size(
+        )?;
+        let workspace_filter_size_bwd = API::get_convolution_backward_filter_workspace_size(
             *self.id_c(),
             algos_filter_bwd[0].algo,
             *filter_desc.id_c(),
             *conv_desc.id_c(),
             *src_desc.id_c(),
             *dest_desc.id_c(),
-        ));
+        )?;
 
-        let algos_data_bwd = try!(API::find_convolution_backward_data_algorithm(
+        let algos_data_bwd = API::find_convolution_backward_data_algorithm(
             *self.id_c(),
             *filter_desc.id_c(),
             *conv_desc.id_c(),
             *src_desc.id_c(),
             *dest_desc.id_c(),
-        ));
-        let workspace_data_size_bwd = try!(API::get_convolution_backward_data_workspace_size(
+        )?;
+        let workspace_data_size_bwd = API::get_convolution_backward_data_workspace_size(
             *self.id_c(),
             algos_data_bwd[0].algo,
             *filter_desc.id_c(),
             *conv_desc.id_c(),
             *src_desc.id_c(),
             *dest_desc.id_c(),
-        ));
+        )?;
 
         Ok(ConvolutionConfig::new(
             algos_fwd[0].algo,
@@ -129,12 +130,12 @@ impl Cudnn {
         lrn_beta: f64,
         lrn_k: f64,
     ) -> Result<NormalizationConfig, Error> {
-        let norm_desc = try!(NormalizationDescriptor::new(
+        let norm_desc = NormalizationDescriptor::new(
             lrn_n,
             lrn_alpha,
             lrn_beta,
             lrn_k,
-        ));
+        )?;
         Ok(NormalizationConfig::new(norm_desc))
     }
 
@@ -146,36 +147,36 @@ impl Cudnn {
         stride: &[i32],
     ) -> Result<PoolingConfig, Error> {
         // TODO make the mode an input parameter
-        let avg = try!(PoolingDescriptor::new(
+        let avg = PoolingDescriptor::new(
             cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING,
             window,
             padding,
             stride,
-        ));
-        let max = try!(PoolingDescriptor::new(
+        )?;
+        let max = PoolingDescriptor::new(
             cudnnPoolingMode_t::CUDNN_POOLING_MAX,
             window,
             padding,
             stride,
-        ));
+        )?;
         Ok(PoolingConfig::new(avg, max))
     }
 
     /// Initializes the parameters and configurations for running CUDA cuDNN Activation operations.
     pub fn init_activation(&self) -> Result<ActivationConfig, Error> {
         // TODO make the activation function mode an input parameter (enum, so for clipped relu)
-        let sigmoid = try!(ActivationDescriptor::new(
+        let sigmoid = ActivationDescriptor::new(
             cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID,
-        ));
-        let relu = try!(ActivationDescriptor::new(
+        )?;
+        let relu = ActivationDescriptor::new(
             cudnnActivationMode_t::CUDNN_ACTIVATION_RELU,
-        ));
-        let clipped_relu = try!(ActivationDescriptor::new(
+        )?;
+        let clipped_relu = ActivationDescriptor::new(
             cudnnActivationMode_t::CUDNN_ACTIVATION_CLIPPED_RELU,
-        ));
-        let tanh = try!(ActivationDescriptor::new(
+        )?;
+        let tanh = ActivationDescriptor::new(
             cudnnActivationMode_t::CUDNN_ACTIVATION_TANH,
-        ));
+        )?;
         Ok(ActivationConfig::new(sigmoid, relu, clipped_relu, tanh))
     }
 
