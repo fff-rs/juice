@@ -2,32 +2,34 @@
 //!
 //! Hold a pointer and size of the cuda device memory.
 //! This is only a convenience wrapper to interact in a
-//! defined mamner with cudnn, which requires scrap/temporary 
+//! defined mamner with cudnn, which requires scrap/temporary
 //! memory for some operations, i.e. dropout.
 
-use super::{API, Error};
-
+use super::{Error, API};
 
 #[derive(Debug)]
 /// A pointer to memory existing on a nvidia GPU
 pub struct CudaDeviceMemory {
-	ptr: *mut ::libc::c_void,
-	size: usize,
+    ptr: *mut ::libc::c_void,
+    size: usize,
 }
 
 impl CudaDeviceMemory {
     /// Saw fun X Y Z
-    pub fn new(size : usize) -> Result<CudaDeviceMemory,Error> {
+    pub fn new(size: usize) -> Result<CudaDeviceMemory, Error> {
         let ptr = API::cuda_allocate_device_memory(size)?;
         Ok(CudaDeviceMemory {
-	        ptr: ptr,
-	        size: size,
-	    })
+            ptr: ptr,
+            size: size,
+        })
     }
 
     /// Initializes a new CUDA Device Memory from its C type.
     pub fn from_c(ptr: *mut ::libc::c_void, size: usize) -> CudaDeviceMemory {
-        CudaDeviceMemory { ptr: ptr, size: size }
+        CudaDeviceMemory {
+            ptr: ptr,
+            size: size,
+        }
     }
 
     /// Returns the CUDA Device Memory ptr as its C type.

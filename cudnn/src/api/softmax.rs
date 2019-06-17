@@ -1,7 +1,7 @@
 //! Provides the softmax functionality from the CUDA cuDNN API.
 
-use ::{API, Error};
 use ffi::*;
+use {Error, API};
 
 impl API {
     /// Computes an softmax forward function.
@@ -14,9 +14,13 @@ impl API {
         src_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
+        dest_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_softmax_forward(handle, algorithm, mode, alpha, src_desc, src_data, beta, dest_desc, dest_data) }
+        unsafe {
+            API::ffi_softmax_forward(
+                handle, algorithm, mode, alpha, src_desc, src_data, beta, dest_desc, dest_data,
+            )
+        }
     }
 
     /// Computes an softmax backward function.
@@ -31,9 +35,23 @@ impl API {
         src_diff_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         dest_diff_desc: cudnnTensorDescriptor_t,
-        dest_diff_data: *mut ::libc::c_void
+        dest_diff_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_softmax_backward(handle, algorithm, mode, alpha, src_desc, src_data, src_diff_desc, src_diff_data, beta, dest_diff_desc, dest_diff_data) }
+        unsafe {
+            API::ffi_softmax_backward(
+                handle,
+                algorithm,
+                mode,
+                alpha,
+                src_desc,
+                src_data,
+                src_diff_desc,
+                src_diff_data,
+                beta,
+                dest_diff_desc,
+                dest_diff_data,
+            )
+        }
     }
 
     unsafe fn ffi_softmax_forward(
@@ -45,7 +63,7 @@ impl API {
         src_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
+        dest_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
         match cudnnSoftmaxForward(handle, algorithm, mode, alpha, src_desc, src_data, beta, dest_desc, dest_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
@@ -66,7 +84,7 @@ impl API {
         src_diff_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         dest_diff_desc: cudnnTensorDescriptor_t,
-        dest_diff_data: *mut ::libc::c_void
+        dest_diff_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
         match cudnnSoftmaxBackward(handle, algorithm, mode, alpha, src_desc, src_data, src_diff_desc, src_diff_data, beta, dest_diff_desc, dest_diff_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),

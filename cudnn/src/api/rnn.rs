@@ -2,31 +2,38 @@
 //!
 //! Includes the RNN functionality.
 
-use ::{API, Error};
 use ffi::*;
+use {Error, API};
 
 impl API {
-//  ///
-//  /// cuDNN RNN Configuration
-//  ///
+    //  ///
+    //  /// cuDNN RNN Configuration
+    //  ///
 
     /// Returns the workspace size in byte, which are needed for the given rnnal algorithm.
     pub fn get_rnn_workspace_size(
-        handle : cudnnHandle_t,
-        rnn_desc : cudnnRNNDescriptor_t,
-        unroll_sequence_length : i32,
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        unroll_sequence_length: i32,
         x_desc: Vec<cudnnTensorDescriptor_t>,
     ) -> Result<usize, Error> {
-        unsafe { API::ffi_get_rnn_workspace_size(handle, rnn_desc, unroll_sequence_length, x_desc.as_slice()) }
+        unsafe {
+            API::ffi_get_rnn_workspace_size(
+                handle,
+                rnn_desc,
+                unroll_sequence_length,
+                x_desc.as_slice(),
+            )
+        }
     }
 
     unsafe fn ffi_get_rnn_workspace_size(
-        handle : cudnnHandle_t,
-        rnn_desc : cudnnRNNDescriptor_t,
-        unroll_sequence_length : i32,
-        x_desc : &[cudnnTensorDescriptor_t]
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        unroll_sequence_length: i32,
+        x_desc: &[cudnnTensorDescriptor_t],
     ) -> Result<::libc::size_t, Error> {
-        let mut size : ::libc::size_t = 0;
+        let mut size: ::libc::size_t = 0;
         let size_ptr: *mut ::libc::size_t = &mut size;
         match cudnnGetRNNWorkspaceSize(handle, rnn_desc, unroll_sequence_length, x_desc.as_ptr(), size_ptr) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
@@ -36,24 +43,23 @@ impl API {
         }
     }
 
-//     cudnnStatus_t
-// cudnnGetRNNParamsSize( cudnnHandle_t
-// const cudnnRNNDescriptor_t
-// const cudnnTensorDescriptor_t
-// size_t
-// cudnnDataType_t dataType)
+    //     cudnnStatus_t
+    // cudnnGetRNNParamsSize( cudnnHandle_t
+    // const cudnnRNNDescriptor_t
+    // const cudnnTensorDescriptor_t
+    // size_t
+    // cudnnDataType_t dataType)
 
-
-// cudnnStatus_t
-// cudnnGetRNNTrainingReserveSize( cudnnHandle_t
-// const cudnnRNNDescriptor_t
-// const int seqLength,
-// const cudnnTensorDescriptor_t
-// size_t
-// handle,
-// rnnDesc,
-// *xDesc,
-// *sizeInBytes)
+    // cudnnStatus_t
+    // cudnnGetRNNTrainingReserveSize( cudnnHandle_t
+    // const cudnnRNNDescriptor_t
+    // const int seqLength,
+    // const cudnnTensorDescriptor_t
+    // size_t
+    // handle,
+    // rnnDesc,
+    // *xDesc,
+    // *sizeInBytes)
 
     //
     // cuDNN RNN
@@ -61,7 +67,6 @@ impl API {
 
     /// Creates a generic CUDA cuDNN RNN Descriptor.
     pub fn create_rnn_descriptor() -> Result<cudnnRNNDescriptor_t, Error> {
-
         unsafe { API::ffi_create_rnn_descriptor() }
     }
 
@@ -76,32 +81,55 @@ impl API {
     pub fn set_rnn_descriptor(
         handle: cudnnHandle_t,
         desc: cudnnRNNDescriptor_t,
-        hidden_size : i32,
-        num_layers : i32,
-        dropout_desc : cudnnDropoutDescriptor_t,
-        input_mode : cudnnRNNInputMode_t,
-        direction : cudnnDirectionMode_t,
-        mode : cudnnRNNMode_t,
-        algorithm : cudnnRNNAlgo_t,
-        data_type : cudnnDataType_t,
+        hidden_size: i32,
+        num_layers: i32,
+        dropout_desc: cudnnDropoutDescriptor_t,
+        input_mode: cudnnRNNInputMode_t,
+        direction: cudnnDirectionMode_t,
+        mode: cudnnRNNMode_t,
+        algorithm: cudnnRNNAlgo_t,
+        data_type: cudnnDataType_t,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_set_rnn_descriptor(handle, desc, hidden_size, num_layers, dropout_desc, input_mode, direction, mode, algorithm, data_type) }
+        unsafe {
+            API::ffi_set_rnn_descriptor(
+                handle,
+                desc,
+                hidden_size,
+                num_layers,
+                dropout_desc,
+                input_mode,
+                direction,
+                mode,
+                algorithm,
+                data_type,
+            )
+        }
     }
-
 
     unsafe fn ffi_set_rnn_descriptor(
         handle: cudnnHandle_t,
         desc: cudnnRNNDescriptor_t,
-        hidden_size : i32,
-        num_layers : i32,
-        dropout_desc : cudnnDropoutDescriptor_t,
-        input_mode : cudnnRNNInputMode_t,
-        direction : cudnnDirectionMode_t,
-        mode : cudnnRNNMode_t,
-        algorithm : cudnnRNNAlgo_t,
-        data_type : cudnnDataType_t,
+        hidden_size: i32,
+        num_layers: i32,
+        dropout_desc: cudnnDropoutDescriptor_t,
+        input_mode: cudnnRNNInputMode_t,
+        direction: cudnnDirectionMode_t,
+        mode: cudnnRNNMode_t,
+        algorithm: cudnnRNNAlgo_t,
+        data_type: cudnnDataType_t,
     ) -> Result<(), Error> {
-        match cudnnSetRNNDescriptor(handle, desc, hidden_size, num_layers, dropout_desc, input_mode, direction, mode, algorithm, data_type) {
+        match cudnnSetRNNDescriptor(
+            handle,
+            desc,
+            hidden_size,
+            num_layers,
+            dropout_desc,
+            input_mode,
+            direction,
+            mode,
+            algorithm,
+            data_type,
+        ) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("FIXME RNN")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
@@ -113,19 +141,21 @@ impl API {
         let mut rnn_desc: cudnnRNNDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateRNNDescriptor(&mut rnn_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_desc),
-            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed(
-                "The resources could not be allocated",
+            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
+                Err(Error::AllocFailed("The resources could not be allocated"))
+            }
+            _ => Err(Error::Unknown(
+                "Unable create generic CUDA cuDNN RNN Descriptor",
             )),
-            _ => Err(Error::Unknown("Unable create generic CUDA cuDNN RNN Descriptor")),
         }
     }
 
-    unsafe fn ffi_destroy_rnn_descriptor(
-        rnn_desc: cudnnRNNDescriptor_t,
-    ) -> Result<(), Error> {
+    unsafe fn ffi_destroy_rnn_descriptor(rnn_desc: cudnnRNNDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyRNNDescriptor(rnn_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown("Unable to destroy CUDA cuDNN Dropout Descriptor")),
+            _ => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Dropout Descriptor",
+            )),
         }
     }
 }
@@ -150,7 +180,6 @@ impl API {
 // void * cy,
 // void * workspace,
 // size_t workSpaceSizeInBytes)
-
 
 // cudnnStatus_t
 // cudnnRNNForwardTraining( cudnnHandle_t handle,
@@ -260,8 +289,6 @@ impl API {
 //             _ => Err(Error::Unknown("Unable to destroy CUDA cuDNN RNN Descriptor.")),
 //         }
 //     }
-
-
 
 //     unsafe fn ffi_rnn_forward(
 //         handle: cudnnHandle_t,

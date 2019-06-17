@@ -3,8 +3,8 @@
 //! This includes the Tensor Descriptor as well as other Tensor functionality,
 //! such as transformation and co..
 
-use ::{API, Error};
 use ffi::*;
+use {Error, API};
 
 impl API {
     /// Creates a generic CUDA cuDNN Tensor Descriptor.
@@ -27,7 +27,9 @@ impl API {
         dim_a: *const ::libc::c_int,
         stride_a: *const ::libc::c_int,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_set_tensor_nd_descriptor(tensor_desc, data_type, nb_dims, dim_a, stride_a) }
+        unsafe {
+            API::ffi_set_tensor_nd_descriptor(tensor_desc, data_type, nb_dims, dim_a, stride_a)
+        }
     }
 
     /// Returns informations about a generic CUDA cuDNN Tensor Descriptor.
@@ -37,9 +39,18 @@ impl API {
         data_type: *mut cudnnDataType_t,
         nb_dims: *mut ::libc::c_int,
         dim_a: *mut ::libc::c_int,
-        stride_a: *mut ::libc::c_int
+        stride_a: *mut ::libc::c_int,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_get_tensor_nd_descriptor(tensor_desc, nb_dims_requested, data_type, nb_dims, dim_a, stride_a) }
+        unsafe {
+            API::ffi_get_tensor_nd_descriptor(
+                tensor_desc,
+                nb_dims_requested,
+                data_type,
+                nb_dims,
+                dim_a,
+                stride_a,
+            )
+        }
     }
 
     /// Transforms a CUDA cuDNN Tensor from to another Tensor with a different layout.
@@ -56,9 +67,13 @@ impl API {
         src_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
+        dest_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_transform_tensor(handle, alpha, src_desc, src_data, beta, dest_desc, dest_data) }
+        unsafe {
+            API::ffi_transform_tensor(
+                handle, alpha, src_desc, src_data, beta, dest_desc, dest_data,
+            )
+        }
     }
 
     /// Adds the scaled values from one a CUDA cuDNN Tensor to another.
@@ -77,9 +92,19 @@ impl API {
         bias_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         src_dest_desc: cudnnTensorDescriptor_t,
-        src_dest_data: *mut ::libc::c_void
+        src_dest_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
-        unsafe { API::ffi_add_tensor(handle, alpha, bias_desc, bias_data, beta, src_dest_desc, src_dest_data) }
+        unsafe {
+            API::ffi_add_tensor(
+                handle,
+                alpha,
+                bias_desc,
+                bias_data,
+                beta,
+                src_dest_desc,
+                src_dest_data,
+            )
+        }
     }
 
     /// Sets all elements of a tensor to a given value.
@@ -87,7 +112,7 @@ impl API {
         handle: cudnnHandle_t,
         src_dest_desc: cudnnTensorDescriptor_t,
         src_dest_data: *mut ::libc::c_void,
-        value: *const ::libc::c_void
+        value: *const ::libc::c_void,
     ) -> Result<(), Error> {
         unsafe { API::ffi_set_tensor(handle, src_dest_desc, src_dest_data, value) }
     }
@@ -97,7 +122,7 @@ impl API {
         handle: cudnnHandle_t,
         src_dest_desc: cudnnTensorDescriptor_t,
         src_dest_data: *mut ::libc::c_void,
-        alpha: *const ::libc::c_void
+        alpha: *const ::libc::c_void,
     ) -> Result<(), Error> {
         unsafe { API::ffi_scale_tensor(handle, src_dest_desc, src_dest_data, alpha) }
     }
@@ -106,15 +131,23 @@ impl API {
         let mut tensor_desc: cudnnTensorDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateTensorDescriptor(&mut tensor_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(tensor_desc),
-            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
-            _ => Err(Error::Unknown("Unable to create generic CUDA cuDNN Tensor Descriptor.")),
+            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
+                Err(Error::AllocFailed("The resources could not be allocated."))
+            }
+            _ => Err(Error::Unknown(
+                "Unable to create generic CUDA cuDNN Tensor Descriptor.",
+            )),
         }
     }
 
-    unsafe fn ffi_destroy_tensor_descriptor(tensor_desc: cudnnTensorDescriptor_t) -> Result<(), Error> {
+    unsafe fn ffi_destroy_tensor_descriptor(
+        tensor_desc: cudnnTensorDescriptor_t,
+    ) -> Result<(), Error> {
         match cudnnDestroyTensorDescriptor(tensor_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown("Unable to destroy CUDA cuDNN Tensor Descriptor context.")),
+            _ => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Tensor Descriptor context.",
+            )),
         }
     }
 
@@ -127,9 +160,15 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnSetTensorNdDescriptor(tensor_desc, data_type, nb_dims, dim_a, stride_a) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`dim_a` invalid due to negative or zero value, or invalid `data_type`.")),
-            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Tensor Descriptor.")),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
+                "`dim_a` invalid due to negative or zero value, or invalid `data_type`.",
+            )),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported(
+                "`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.",
+            )),
+            _ => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Tensor Descriptor.",
+            )),
         }
     }
 
@@ -139,13 +178,26 @@ impl API {
         data_type: *mut cudnnDataType_t,
         nb_dims: *mut ::libc::c_int,
         dim_a: *mut ::libc::c_int,
-        stride_a: *mut ::libc::c_int
+        stride_a: *mut ::libc::c_int,
     ) -> Result<(), Error> {
-        match cudnnGetTensorNdDescriptor(tensor_desc, nb_dims_requested, data_type, nb_dims, dim_a, stride_a) {
+        match cudnnGetTensorNdDescriptor(
+            tensor_desc,
+            nb_dims_requested,
+            data_type,
+            nb_dims,
+            dim_a,
+            stride_a,
+        ) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`dim_a` invalid due to negative or zero value, or invalid `data_type`.")),
-            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Tensor Descriptor.")),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
+                "`dim_a` invalid due to negative or zero value, or invalid `data_type`.",
+            )),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported(
+                "`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.",
+            )),
+            _ => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Tensor Descriptor.",
+            )),
         }
     }
 
@@ -156,7 +208,7 @@ impl API {
         src_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         dest_desc: cudnnTensorDescriptor_t,
-        dest_data: *mut ::libc::c_void
+        dest_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
         match cudnnTransformTensor(handle, alpha, src_desc, src_data, beta, dest_desc, dest_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
@@ -173,7 +225,7 @@ impl API {
         bias_data: *const ::libc::c_void,
         beta: *const ::libc::c_void,
         src_dest_desc: cudnnTensorDescriptor_t,
-        src_dest_data: *mut ::libc::c_void
+        src_dest_data: *mut ::libc::c_void,
     ) -> Result<(), Error> {
         match cudnnAddTensor(handle, alpha, bias_desc, bias_data, beta, src_dest_desc, src_dest_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
@@ -188,12 +240,16 @@ impl API {
         handle: cudnnHandle_t,
         src_dest_desc: cudnnTensorDescriptor_t,
         src_dest_data: *mut ::libc::c_void,
-        value: *const ::libc::c_void
+        value: *const ::libc::c_void,
     ) -> Result<(), Error> {
         match cudnnSetTensor(handle, src_dest_desc, src_dest_data, value) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("One of the provided pointers is NULL.")),
-            cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => {
+                Err(Error::BadParam("One of the provided pointers is NULL."))
+            }
+            cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => {
+                Err(Error::ExecutionFailed("Execution failed to launch on GPU."))
+            }
             _ => Err(Error::Unknown("Unable to set CUDA cuDNN Tensor.")),
         }
     }
@@ -202,12 +258,16 @@ impl API {
         handle: cudnnHandle_t,
         src_dest_desc: cudnnTensorDescriptor_t,
         src_dest_data: *mut ::libc::c_void,
-        alpha: *const ::libc::c_void
+        alpha: *const ::libc::c_void,
     ) -> Result<(), Error> {
         match cudnnScaleTensor(handle, src_dest_desc, src_dest_data, alpha) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("One of the provided pointers is NULL.")),
-            cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => {
+                Err(Error::BadParam("One of the provided pointers is NULL."))
+            }
+            cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => {
+                Err(Error::ExecutionFailed("Execution failed to launch on GPU."))
+            }
             _ => Err(Error::Unknown("Unable to scale CUDA cuDNN Tensor.")),
         }
     }

@@ -1,5 +1,5 @@
-extern crate pkg_config;
 extern crate bindgen;
+extern crate pkg_config;
 use std::env;
 use std::path::PathBuf;
 
@@ -35,7 +35,7 @@ fn main() {
     let libs_env = env::var("CUDNN_LIBS").ok();
     let libs = match libs_env {
         Some(ref v) => v.split(":").collect(),
-        None => vec!["cudnn","cudart","cuda"],
+        None => vec!["cudnn", "cudart", "cuda"],
     };
 
     let mode = if env::var_os("CUDNN_STATIC").is_some() {
@@ -63,16 +63,22 @@ fn main() {
             // unstable features.
             .rust_target(bindgen::RustTarget::Stable_1_19)
             .hide_type("max_align_t") // https://github.com/servo/rust-bindgen/issues/550
-            .raw_line(r"
+            .raw_line(
+                r"
 //! Defines the FFI for CUDA cuDNN.
 //!
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
-            ")
+            ",
+            )
             .ctypes_prefix("::libc")
             .clang_arg("-I")
-            .clang_arg(include_dir.unwrap_or(String::from("/usr/include/cuda")).as_str())
+            .clang_arg(
+                include_dir
+                    .unwrap_or(String::from("/usr/include/cuda"))
+                    .as_str(),
+            )
             // The input header we would like to generate
             // bindings for.
             .header("wrapper.h")

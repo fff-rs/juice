@@ -1,6 +1,6 @@
 //! Provides Rust Errors for CUDA's cuDNN status.
 
-use std::{fmt, error};
+use std::{error, fmt};
 
 #[derive(Debug, Copy, Clone)]
 /// Defines CUDA's cuDNN errors.
@@ -64,7 +64,7 @@ impl error::Error for Error {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             Error::NotInitialized(_) => None,
             Error::AllocFailed(_) => None,
