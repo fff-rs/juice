@@ -1,5 +1,5 @@
 [workspace]
-members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice"]
+members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "juice-examples"]
 
 [patch.crates-io]
 coaster-nn = { path = "./coaster-nn" }

@@ -11,9 +11,9 @@ greenglas = { version = "0.2" }
 juice = { version = "0.2", default-features = false }
 coaster = { version = "0.1", default-features = false }
 
-csv = "0.15"
-hyper = "0.11"
-hyper-tls = "0.2"
+csv = "1"
+hyper = "0.12"
+hyper-tls = "0.3"
 futures = "0.1"
 tokio-core = "0.1.9"
 flate2 = "0.2"
