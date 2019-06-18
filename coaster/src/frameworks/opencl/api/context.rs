@@ -25,9 +25,7 @@ impl API {
     ) -> Result<cl::context_id, Error> {
         let device_ids: Vec<cl::device_id> = devices.iter().map(|device| device.id_c()).collect();
         Ok(
-            try!(
-                unsafe { API::ffi_create_context(properties, device_ids.len() as u32, device_ids.as_ptr(), callback, user_data) }
-            )
+            unsafe { API::ffi_create_context(properties, device_ids.len() as u32, device_ids.as_ptr(), callback, user_data) }?
         )
     }
 

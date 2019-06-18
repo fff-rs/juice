@@ -57,7 +57,7 @@ impl IFramework for Cuda {
     }
 
     fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
-        Ok(try!(Driver::load_devices()))
+        Ok(Driver::load_devices()?)
     }
 
     fn hardwares(&self) -> &[Device] {
@@ -76,7 +76,7 @@ impl IFramework for Cuda {
         let length = hardwares.len();
         match length {
             0 => Err(::framework::Error::Implementation(format!("No device for context specified."))),
-            1 => Ok(try!(Context::new(hardwares[0].clone()))),
+            1 => Ok(Context::new(hardwares[0].clone())?),
             _ => Err(::framework::Error::Implementation(format!("Cuda's `new_device` method currently supports only one Harware for Device creation.")))
         }
     }
@@ -90,6 +90,6 @@ impl IBackend for Backend<Cuda> {
     }
 
     fn synchronize(&self) -> Result<(), ::framework::Error> {
-        Ok(try!(self.device().synchronize()))
+        Ok(self.device().synchronize()?)
     }
 }

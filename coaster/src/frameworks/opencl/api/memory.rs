@@ -17,14 +17,14 @@ impl API {
     /// Returns a memory id for the created buffer, which can now be writen to.
     pub fn create_buffer(context: &Context, flags: MemoryFlags, size: usize, host_pointer: Option<*mut u8>) -> Result<Memory, Error> {
         let host_ptr = host_pointer.unwrap_or(ptr::null_mut());
-        Ok(Memory::from_c(try!(unsafe {
+        Ok(Memory::from_c(unsafe {
             API::ffi_create_buffer(context.id() as *mut libc::c_void, flags.bits(), size, host_ptr as *mut libc::c_void)
-        })))
+        }?))
     }
 
     /// Releases allocated memory from the OpenCL device.
     pub fn release_memory(memory: &mut Memory) -> Result<(), Error> {
-        Ok(try!(unsafe {API::ffi_release_mem_object(memory.id_c())}))
+        Ok(unsafe {API::ffi_release_mem_object(memory.id_c())}?)
     }
 
     /// Reads from a OpenCL memory object to the host memory.

@@ -81,8 +81,8 @@ pub trait Axpby<F>: Axpy<F> + Scal<F> {
              b: &SharedTensor<F>,
              y: &mut SharedTensor<F>)
              -> Result<(), ::co::error::Error> {
-        try!(self.scal(b, y));
-        try!(self.axpy(a, x, y));
+        self.scal(b, y)?;
+        self.axpy(a, x, y)?;
         Ok(())
     }
 }

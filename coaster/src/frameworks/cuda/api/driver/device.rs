@@ -29,7 +29,7 @@ impl API {
     /// Returns a list of available devices for the provided platform.
     pub fn load_device_list() -> Result<Vec<Device>, Error> {
         let mut device_counter = 0;
-        try!(unsafe {API::ffi_device_get_count(&mut device_counter)});
+        unsafe {API::ffi_device_get_count(&mut device_counter)}?;
 
         Ok((0..device_counter).collect::<Vec<i32>>().iter().map(|ordinal| {
             let mut device_id: CUdevice = 0;
@@ -43,7 +43,7 @@ impl API {
         match info {
             CUdevice_attribute::CU_DEVICE_NAME => {
                 let mut name: [i8; 1024] = [0; 1024];
-                try!(unsafe { API::ffi_device_get_name(name.as_mut_ptr(), 1024, device.id_c()) });
+                unsafe { API::ffi_device_get_name(name.as_mut_ptr(), 1024, device.id_c()) }?;
                 let mut buf: Vec<u8> = vec![];
                 // Removes obsolete whitespaces.
                 for (i, char) in name.iter().enumerate() {
@@ -59,7 +59,7 @@ impl API {
             },
             _ => {
                 let mut value: ::libc::c_int = 0;
-                try!(unsafe { API::ffi_device_get_attribute(&mut value, info, device.id_c()) });
+                unsafe { API::ffi_device_get_attribute(&mut value, info, device.id_c()) }?;
                 let mut buf = vec![];
                 buf.write_i32::<LittleEndian>(value).unwrap();
                 Ok(DeviceInfo::new(buf))

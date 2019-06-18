@@ -8,7 +8,7 @@ impl API {
     ///
     /// must be called before any other function from the driver API.
     pub fn init() -> Result<(), Error> {
-        Ok(try!( unsafe { API::ffi_init() }))
+        Ok(unsafe { API::ffi_init() }?)
     }
 
     unsafe fn ffi_init() -> Result<(), Error> {

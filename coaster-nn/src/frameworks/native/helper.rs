@@ -263,7 +263,7 @@ macro_rules! impl_ops_softmax_for {
                 let xs = read!(x, $t, self);
                 let rs = write_only!(result, $t, self);
 
-                try!(map1(xs, rs, |v| v.exp()));
+                map1(xs, rs, |v| v.exp())?;
 
                 let mut sum: $t = 0.0; // iter_arith is not stable yet
                 for r in &*rs {

@@ -648,7 +648,7 @@ impl<B: IBackend> Layer<B> {
     /// ```
     pub fn save<P: AsRef<Path>>(&mut self, path: P) -> io::Result<()> {
         let path = path.as_ref();
-        let ref mut out = try!(File::create(path));
+        let ref mut out = File::create(path)?;
 
         let mut message = ::capnp::message::Builder::new_default();
         {
@@ -701,7 +701,7 @@ impl<B: IBackend> Layer<B> {
                                                                         path: P)
                                                                         -> io::Result<Layer<LB>> {
         let path = path.as_ref();
-        let ref mut file = try!(File::open(path));
+        let ref mut file = File::open(path)?;
         let mut reader = BufReader::new(file);
 
         let message_reader =
@@ -1496,7 +1496,7 @@ impl LayerConfig {
 
     /// Check if the configured parameters make sense.
     pub fn validate(&self) -> Result<(), &'static str> {
-        try!(self.validate_propagate_down_len());
+        self.validate_propagate_down_len()?;
         Ok(())
     }
 

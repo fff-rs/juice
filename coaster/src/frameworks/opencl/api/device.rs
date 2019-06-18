@@ -36,13 +36,13 @@ impl API {
         let mut num_devices = 0;
 
         // load how many devices are available
-        try!(unsafe { API::ffi_get_device_ids(platform.id_c(), cl::CL_DEVICE_TYPE_ALL, 0, ptr::null_mut(), (&mut num_devices)) });
+        unsafe { API::ffi_get_device_ids(platform.id_c(), cl::CL_DEVICE_TYPE_ALL, 0, ptr::null_mut(), (&mut num_devices)) }?;
 
         // prepare device id list
         let mut ids: Vec<cl::device_id> = repeat(0 as cl::device_id).take(num_devices as usize).collect();
 
         // load the specific devices
-        try!(unsafe { API::ffi_get_device_ids(platform.id_c(), cl::CL_DEVICE_TYPE_ALL, ids.len() as cl::uint, ids.as_mut_ptr(), ptr::null_mut()) });
+        unsafe { API::ffi_get_device_ids(platform.id_c(), cl::CL_DEVICE_TYPE_ALL, ids.len() as cl::uint, ids.as_mut_ptr(), ptr::null_mut()) }?;
 
         Ok(ids.iter().map(|id| Device::from_c(*id) ).collect())
     }
@@ -51,12 +51,12 @@ impl API {
     pub fn load_device_info(device: &Device, info: cl::device_info) -> Result<DeviceInfo, Error> {
         let mut size = 0;
 
-        try!(unsafe {API::ffi_get_device_info(device.id_c(), info, 0, ptr::null_mut(), &mut size)});
+        unsafe {API::ffi_get_device_info(device.id_c(), info, 0, ptr::null_mut(), &mut size)}?;
 
         let mut buf: Vec<u8> = repeat(0u8).take(size).collect();
         let buf_ptr = buf.as_mut_ptr() as *mut libc::c_void;
 
-        try!(unsafe {API::ffi_get_device_info(device.id_c(), info, size, buf_ptr, ptr::null_mut())});
+        unsafe {API::ffi_get_device_info(device.id_c(), info, size, buf_ptr, ptr::null_mut())}?;
 
         Ok(DeviceInfo::new(buf))
     }
