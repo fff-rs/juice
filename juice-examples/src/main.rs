@@ -54,6 +54,7 @@ Usage:
 
 Options:
     <model-name>            Which MNIST model to use. Valid values: [linear, mlp, conv]
+    <dataset-name>          Which dataset to download. Valid valuses: [mnist, fashion]
 
     -h --help               Show this screen.
     --version               Show version.
@@ -80,16 +81,15 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
 
         let mut core = tokio_core::reactor::Core::new().unwrap();
 
-        let handle = &core.handle();
-        let response_fut = match uri.scheme() {
+        let response_fut = match uri.scheme_str() {
             Some("https") => {
-                let client = Client::configure()
-                    .connector(HttpsConnector::new(4, &handle).unwrap())
-                    .build(&handle);
+                let client: Client<_, hyper::Body> = Client::builder()
+                    .build(HttpsConnector::new(4).unwrap());
+                
                 client.get(uri)
             }
 
-            Some("http") => Client::new(&handle).get(uri),
+            Some("http") => Client::new().get(uri),
 
             _ => panic!("unsupported scheme"),
         };
@@ -101,16 +101,20 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
             {
                 let _ = File::create(name.clone()).expect("Failed to create file");
             }
-            res.body().for_each(move |chunk| {
+
+            res.into_body()
+                .for_each(move |chunk| {
                     let mut f = OpenOptions::new()
                         .append(true)
                         .open(name.clone())
                         .expect("Failed to open file in append mode");
-                    f.write(&chunk)
-                    .map(|_| ())
-                    .map_err(From::from)
-            })
+                    
+                    f.write(&chunk).unwrap();
+
+                    Ok(())
+                })
         });
+
         core.run(work).unwrap();
     }
 }
@@ -118,6 +122,7 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
 fn unzip_datasets(datasets: &[&str]) {
     for filename in datasets {
         println!("Decompressing: {}", filename);
+        
         // TODO figure out how to specify asset dir
         let mut file_handle = File::open(&format!("./assets/{}", filename)).unwrap();
         let mut in_file: Vec<u8> = Vec::new();
@@ -161,12 +166,13 @@ fn main() {
                     "t10k-images-idx3-ubyte.gz",
                     "t10k-labels-idx1-ubyte.gz",
                 ];
-                // download_datasets(
-                //     &datasets,
-                //     "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com",
-                // );
-                // println!("{}", "Fashion MNIST dataset downloaded".to_string());
-                // TODO avoid repeated effort here
+
+                download_datasets(
+                    &datasets,
+                    "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com",
+                );
+                println!("{}", "Fashion MNIST dataset downloaded".to_string());
+
                 unzip_datasets(&datasets);
                 println!("{}", "Fashion MNIST dataset decompressed".to_string());
             }
@@ -205,6 +211,38 @@ fn main() {
     }
 }
 
+fn get_mnist_iter(pixel_count: usize) -> impl Iterator<Item = (u8, Vec<u8>)> {
+    let rdr = Reader::from_reader(File::open("assets/mnist_train.csv").unwrap());
+
+    rdr
+        .into_deserialize()
+        .map(move |row| {
+            match row {
+                Ok(value) => {
+                    let row_vec: Box<Vec<u8>> = Box::new(value);
+                    let label = row_vec[0];
+                    let mut pixels = vec![0u8; pixel_count];
+                    for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
+                        *place = *element;
+                    }
+                    // TODO: reintroduce Coaster
+                    // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
+                    // match img {
+                    //     Ok(in_img) => {
+                    //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
+                    //     },
+                    //     Err(_) => unimplemented!()
+                    // }
+                    (label, pixels)
+                },
+                _ => {
+                    println!("no value");
+                    panic!();
+                }
+            }
+        })
+}
+
 #[cfg(all(feature = "cuda"))]
 fn run_mnist(
     model_name: Option<String>,
@@ -215,33 +253,6 @@ fn run_mnist(
     let example_count = 60000;
     let pixel_count = 784;
     let pixel_dim = 28;
-
-    let mut rdr = Reader::from_file("assets/mnist_train.csv").unwrap();
-    let mut decoded_images = rdr.decode().map(|row| {
-        match row {
-            Ok(value) => {
-                let row_vec: Box<Vec<u8>> = Box::new(value);
-                let label = row_vec[0];
-                let mut pixels = vec![0u8; pixel_count];
-                for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
-                    *place = *element;
-                }
-                // TODO: reintroduce Coaster
-                // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
-                // match img {
-                //     Ok(in_img) => {
-                //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
-                //     },
-                //     Err(_) => unimplemented!()
-                // }
-                (label, pixels)
-            },
-            _ => {
-                println!("no value");
-                panic!();
-            }
-    }
-    });
 
     let batch_size = batch_size.unwrap_or(1);
     let learning_rate = learning_rate.unwrap_or(0.001f32);
@@ -337,16 +348,17 @@ fn run_mnist(
     solver_cfg.objective = LayerConfig::new("classifier", classifier_cfg);
     let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_cfg);
 
-    // set up confusion matrix
-    let mut confusion = ::juice::solver::ConfusionMatrix::new(10);
-    confusion.set_capacity(Some(1000));
-
     let inp = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
     let label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     let inp_lock = Arc::new(RwLock::new(inp));
     let label_lock = Arc::new(RwLock::new(label));
 
+    // set up confusion matrix
+    let mut confusion = ::juice::solver::ConfusionMatrix::new(10);
+    confusion.set_capacity(Some(1000));
+
+    let mut decoded_images = get_mnist_iter(pixel_count);
     for _ in 0..(example_count / batch_size) {
         // write input
         let mut targets = Vec::new();
@@ -365,11 +377,8 @@ fn run_mnist(
         let predictions = confusion.get_predictions(&mut infered);
 
         confusion.add_samples(&predictions, &targets);
-        println!(
-            "Last sample: {} | Accuracy {}",
-            confusion.samples().iter().last().unwrap(),
-            confusion.accuracy()
-        );
+
+        println!("Accuracy {}", confusion.accuracy());
     }
 }
 
