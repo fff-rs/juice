@@ -44,7 +44,7 @@ fn map2_inplace<T, F>(src1: &[T], src2: &mut [T], f: F) -> Result<(), Error>
     where T: Float,
           F: Fn(T, T) -> T
 {
-    try!(lens_eq(src1, src2));
+    lens_eq(src1, src2)?;
     for i in 0..src2.len() {
         src2[i] = f(src1[i], src2[i]);
     }
@@ -55,7 +55,7 @@ fn map1<T, F>(src: &[T], dst: &mut [T], f: F) -> Result<(), Error>
     where T: Float,
           F: Fn(T) -> T
 {
-    try!(lens_eq(dst, src));
+    lens_eq(dst, src)?;
     for i in 0..dst.len() {
         dst[i] = f(src[i]);
     }
@@ -66,8 +66,8 @@ fn map2<T, F>(src1: &[T], src2: &[T], dst: &mut [T], f: F) -> Result<(), Error>
     where T: Float,
           F: Fn(T, T) -> T
 {
-    try!(lens_eq(dst, src1));
-    try!(lens_eq(dst, src2));
+    lens_eq(dst, src1)?;
+    lens_eq(dst, src2)?;
     for i in 0..dst.len() {
         dst[i] = f(src1[i], src2[i]);
     }

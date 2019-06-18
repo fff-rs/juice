@@ -310,12 +310,12 @@ impl<T> Sigmoid<T> for Backend<Cuda>
                result: &mut ::co::tensor::SharedTensor<T>)
                -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let r_desc = try!(result.cudnn_tensor_desc_flat());
+        let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
         match CUDNN.sigmoid_forward(&CUDNN.init_activation().unwrap(),
 
-        							&try!(x.cudnn_tensor_desc_flat()),
+        							&x.cudnn_tensor_desc_flat()?,
                                     trans!(x_mem),
                                     &r_desc,
                                     trans_mut!(r_mem),
@@ -332,17 +332,17 @@ impl<T> Sigmoid<T> for Backend<Cuda>
                     result_diff: &mut ::co::tensor::SharedTensor<T>)
                     -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc_flat());
+        let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
         match CUDNN.sigmoid_backward(&CUDNN.init_activation().unwrap(),
-        						&try!(x.cudnn_tensor_desc_flat()),
+        						&x.cudnn_tensor_desc_flat()?,
                                      trans!(x_mem),
-                                     &try!(x_diff.cudnn_tensor_desc_flat()),
+                                     &x_diff.cudnn_tensor_desc_flat()?,
                                      trans!(dx_mem),
-                                     &try!(result.cudnn_tensor_desc_flat()),
+                                     &result.cudnn_tensor_desc_flat()?,
                                      trans!(r_mem),
                                      &dr_desc,
                                      trans_mut!(dr_mem),
@@ -374,20 +374,20 @@ impl<T> Convolution<T> for Backend<Cuda>
                               stride: &[i32],
                               zero_padding: &[i32])
                               -> Result<Self::CC, ::co::error::Error> {
-        let src_desc = try!(src.cudnn_tensor_desc());
-        let dest_desc = try!(dest.cudnn_tensor_desc());
-        let filter_desc = try!(filter.cudnn_filter_desc());
+        let src_desc = src.cudnn_tensor_desc()?;
+        let dest_desc = dest.cudnn_tensor_desc()?;
+        let filter_desc = filter.cudnn_filter_desc()?;
         let conv_desc = ::cudnn::ConvolutionDescriptor::new(zero_padding,
                                                             stride,
                                                             <T as DataTypeInfo>::cudnn_data_type())
                 .unwrap();
 
         let useable_algo_fwd =
-            try!(algo_fwd.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
+            algo_fwd.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc)?;
         let useable_algo_bwd_filter =
-            try!(algo_bwd_filter.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
+            algo_bwd_filter.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc)?;
         let useable_algo_bwd_data =
-            try!(algo_bwd_data.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc));
+            algo_bwd_data.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc)?;
 
         let mut workspace_size_fwd =
             API::get_convolution_forward_workspace_size(*CUDNN.id_c(),
@@ -446,7 +446,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                    -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
 
-        let r_desc = try!(result.cudnn_tensor_desc());
+        let r_desc = result.cudnn_tensor_desc()?;
         let f_mem = read!(filter, self);
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -455,7 +455,7 @@ impl<T> Convolution<T> for Backend<Cuda>
         match CUDNN.convolution_forward(config,
                                         trans_mut!(w_mem),
                                         trans!(f_mem),
-                                        &try!(x.cudnn_tensor_desc()), // src_desc
+                                        &x.cudnn_tensor_desc()?, // src_desc
                                         trans!(x_mem),
                                         &r_desc,
                                         trans_mut!(r_mem),
@@ -479,9 +479,9 @@ impl<T> Convolution<T> for Backend<Cuda>
         let w_mem = write_only!(workspace, self);
         match CUDNN.convolution_backward_filter(config,
                                                 trans_mut!(w_mem),
-                                                &try!(src_data.cudnn_tensor_desc()),
+                                                &src_data.cudnn_tensor_desc()?,
                                                 trans!(s_mem),
-                                                &try!(dest_diff.cudnn_tensor_desc()),
+                                                &dest_diff.cudnn_tensor_desc()?,
                                                 trans!(dd_mem),
                                                 trans_mut!(df_mem),
                                                 scal_params) {
@@ -499,7 +499,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                              -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
 
-        let dr_desc = try!(result_diff.cudnn_tensor_desc());
+        let dr_desc = result_diff.cudnn_tensor_desc()?;
         let f_mem = read!(filter, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
@@ -507,7 +507,7 @@ impl<T> Convolution<T> for Backend<Cuda>
         match CUDNN.convolution_backward_data(config,
                                               trans_mut!(w_mem),
                                               trans!(f_mem),
-                                              &try!(x_diff.cudnn_tensor_desc()),
+                                              &x_diff.cudnn_tensor_desc()?,
                                               trans!(dx_mem),
                                               &dr_desc,
                                               trans_mut!(dr_mem),
@@ -525,7 +525,7 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
                          x: &mut ::co::tensor::SharedTensor<T>)
                          -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
+        let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
         match CUDNN.sigmoid_forward(&CUDNN.init_activation().unwrap(),
@@ -544,8 +544,8 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
                               x_diff: &mut ::co::tensor::SharedTensor<T>)
                               -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
-        let dx_desc = try!(x_diff.cudnn_tensor_desc_flat());
+        let x_desc = x.cudnn_tensor_desc_flat()?;
+        let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
         // TODO move config one level up
@@ -573,11 +573,11 @@ impl<T> Relu<T> for Backend<Cuda>
             result: &mut ::co::tensor::SharedTensor<T>)
             -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let r_desc = try!(result.cudnn_tensor_desc_flat());
+        let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
         match CUDNN.relu_forward(&CUDNN.init_activation().unwrap(),
-        						&try!(x.cudnn_tensor_desc_flat()),
+        						&x.cudnn_tensor_desc_flat()?,
                                  trans!(x_mem),
                                  &r_desc,
                                  trans_mut!(r_mem),
@@ -594,18 +594,18 @@ impl<T> Relu<T> for Backend<Cuda>
                  result_diff: &mut ::co::tensor::SharedTensor<T>)
                  -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc_flat());
+        let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
 
         match CUDNN.relu_backward(&CUDNN.init_activation().unwrap(),
-        						&try!(x.cudnn_tensor_desc_flat()),
+        						&x.cudnn_tensor_desc_flat()?,
                                   trans!(x_mem),
-                                  &try!(x_diff.cudnn_tensor_desc_flat()),
+                                  &x_diff.cudnn_tensor_desc_flat()?,
                                   trans!(dx_mem),
-                                  &try!(result.cudnn_tensor_desc_flat()),
+                                  &result.cudnn_tensor_desc_flat()?,
                                   trans!(r_mem),
                                   &dr_desc,
                                   trans_mut!(dr_mem),
@@ -623,7 +623,7 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
                       x: &mut ::co::tensor::SharedTensor<T>)
                       -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
+        let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
         match CUDNN.relu_forward(&CUDNN.init_activation().unwrap(),
@@ -642,8 +642,8 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
                            x_diff: &mut ::co::tensor::SharedTensor<T>)
                            -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
-        let dx_desc = try!(x_diff.cudnn_tensor_desc_flat());
+        let x_desc = x.cudnn_tensor_desc_flat()?;
+        let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
 
@@ -671,11 +671,11 @@ impl<T> Tanh<T> for Backend<Cuda>
             result: &mut ::co::tensor::SharedTensor<T>)
             -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let r_desc = try!(result.cudnn_tensor_desc_flat());
+        let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
         match CUDNN.tanh_forward(&CUDNN.init_activation().unwrap(),
-        						&try!(x.cudnn_tensor_desc_flat()),
+        						&x.cudnn_tensor_desc_flat()?,
                                  trans!(x_mem),
                                  &r_desc,
                                  trans_mut!(r_mem),
@@ -692,17 +692,17 @@ impl<T> Tanh<T> for Backend<Cuda>
                  result_diff: &mut ::co::tensor::SharedTensor<T>)
                  -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc_flat());
+        let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
         match CUDNN.tanh_backward(&CUDNN.init_activation().unwrap(),
-        						&try!(x.cudnn_tensor_desc_flat()),
+        						&x.cudnn_tensor_desc_flat()?,
                                   trans!(x_mem),
-                                  &try!(x_diff.cudnn_tensor_desc_flat()),
+                                  &x_diff.cudnn_tensor_desc_flat()?,
                                   trans!(dx_mem),
-                                  &try!(result.cudnn_tensor_desc_flat()),
+                                  &result.cudnn_tensor_desc_flat()?,
                                   trans!(r_mem),
                                   &dr_desc,
                                   trans_mut!(dr_mem),
@@ -720,7 +720,7 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
                       x: &mut ::co::tensor::SharedTensor<T>)
                       -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
+        let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
         match CUDNN.tanh_forward(&CUDNN.init_activation().unwrap(),
         						&x_desc,
@@ -738,8 +738,8 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
                            x_diff: &mut ::co::tensor::SharedTensor<T>)
                            -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let x_desc = try!(x.cudnn_tensor_desc_flat());
-        let dx_desc = try!(x_diff.cudnn_tensor_desc_flat());
+        let x_desc = x.cudnn_tensor_desc_flat()?;
+        let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
         match CUDNN.tanh_backward(&CUDNN.init_activation().unwrap(),
@@ -766,10 +766,10 @@ impl<T> Softmax<T> for Backend<Cuda>
                result: &mut ::co::tensor::SharedTensor<T>)
                -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let r_desc = try!(result.cudnn_tensor_desc_softmax());
+        let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.softmax_forward(&try!(x.cudnn_tensor_desc_softmax()),
+        match CUDNN.softmax_forward(&x.cudnn_tensor_desc_softmax()?,
                                     trans!(x_mem),
                                     &r_desc,
                                     trans_mut!(r_mem),
@@ -785,13 +785,13 @@ impl<T> Softmax<T> for Backend<Cuda>
                     result_diff: &mut ::co::tensor::SharedTensor<T>)
                     -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc_softmax());
+        let dr_desc = result_diff.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.softmax_backward(&try!(x.cudnn_tensor_desc_softmax()),
+        match CUDNN.softmax_backward(&x.cudnn_tensor_desc_softmax()?,
                                      trans!(x_mem),
-                                     &try!(x_diff.cudnn_tensor_desc_softmax()),
+                                     &x_diff.cudnn_tensor_desc_softmax()?,
                                      trans!(dx_mem),
                                      &dr_desc,
                                      trans_mut!(dr_mem),
@@ -810,10 +810,10 @@ impl<T> LogSoftmax<T> for Backend<Cuda>
                    result: &mut ::co::tensor::SharedTensor<T>)
                    -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let r_desc = try!(result.cudnn_tensor_desc_softmax());
+        let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.log_softmax_forward(&try!(x.cudnn_tensor_desc_softmax()),
+        match CUDNN.log_softmax_forward(&x.cudnn_tensor_desc_softmax()?,
                                     trans!(x_mem),
                                     &r_desc,
                                     trans_mut!(r_mem),
@@ -828,13 +828,13 @@ impl<T> LogSoftmax<T> for Backend<Cuda>
                     result_diff: &mut ::co::tensor::SharedTensor<T>)
                     -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc_softmax());
+        let dr_desc = result_diff.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.log_softmax_backward(&try!(x.cudnn_tensor_desc_softmax()),
+        match CUDNN.log_softmax_backward(&x.cudnn_tensor_desc_softmax()?,
                                      trans!(x_mem),
-                                     &try!(x_diff.cudnn_tensor_desc_softmax()),
+                                     &x_diff.cudnn_tensor_desc_softmax()?,
                                      trans!(dx_mem),
                                      &dr_desc,
                                      trans_mut!(dr_mem),
@@ -864,11 +864,11 @@ impl<T> LRN<T> for Backend<Cuda>
            config: &Self::CLRN)
            -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let r_desc = try!(result.cudnn_tensor_desc());
+        let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
         match CUDNN.lrn_forward(config,
-                                &try!(x.cudnn_tensor_desc()),
+                                &x.cudnn_tensor_desc()?,
                                 trans!(x_mem),
                                 &r_desc,
                                 trans_mut!(r_mem),
@@ -887,17 +887,17 @@ impl<T> LRN<T> for Backend<Cuda>
                 config: &Self::CLRN)
                 -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc());
+        let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
         match CUDNN.lrn_backward(config,
-                                 &try!(x.cudnn_tensor_desc()),
+                                 &x.cudnn_tensor_desc()?,
                                  trans!(x_mem),
-                                 &try!(x_diff.cudnn_tensor_desc()),
+                                 &x_diff.cudnn_tensor_desc()?,
                                  trans!(dx_mem),
-                                 &try!(result.cudnn_tensor_desc()),
+                                 &result.cudnn_tensor_desc()?,
                                  trans!(r_mem),
                                  &dr_desc,
                                  trans_mut!(dr_mem),
@@ -933,11 +933,11 @@ impl<T> Pooling<T> for Backend<Cuda>
                    -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
 
-        let r_desc = try!(result.cudnn_tensor_desc());
+        let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
         match CUDNN.pooling_max_forward(config,
-                                        &try!(x.cudnn_tensor_desc()),
+                                        &x.cudnn_tensor_desc()?,
                                         trans!(x_mem),
                                         &r_desc,
                                         trans_mut!(r_mem),
@@ -957,17 +957,17 @@ impl<T> Pooling<T> for Backend<Cuda>
                         -> Result<(), ::co::error::Error> {
 
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc());
+        let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
         match CUDNN.pooling_max_backward(config,
-                                         &try!(x.cudnn_tensor_desc()),
+                                         &x.cudnn_tensor_desc()?,
                                          trans!(x_mem),
-                                         &try!(x_diff.cudnn_tensor_desc()),
+                                         &x_diff.cudnn_tensor_desc()?,
                                          trans!(dx_mem),
-                                         &try!(result.cudnn_tensor_desc()),
+                                         &result.cudnn_tensor_desc()?,
                                          trans!(r_mem),
                                          &dr_desc,
                                          trans_mut!(dr_mem),
@@ -983,11 +983,11 @@ impl<T> Pooling<T> for Backend<Cuda>
                    config: &Self::CPOOL)
                    -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let r_desc = try!(result.cudnn_tensor_desc());
+        let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
         match CUDNN.pooling_avg_forward(config,
-                                        &try!(x.cudnn_tensor_desc()),
+                                        &x.cudnn_tensor_desc()?,
                                         trans!(x_mem),
                                         &r_desc,
                                         trans_mut!(r_mem),
@@ -1006,17 +1006,17 @@ impl<T> Pooling<T> for Backend<Cuda>
                         config: &Self::CPOOL)
                         -> Result<(), ::co::error::Error> {
         let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
-        let dr_desc = try!(result_diff.cudnn_tensor_desc());
+        let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
         match CUDNN.pooling_avg_backward(config,
-                                         &try!(x.cudnn_tensor_desc()),
+                                         &x.cudnn_tensor_desc()?,
                                          trans!(x_mem),
-                                         &try!(x_diff.cudnn_tensor_desc()),
+                                         &x_diff.cudnn_tensor_desc()?,
                                          trans!(dx_mem),
-                                         &try!(result.cudnn_tensor_desc()),
+                                         &result.cudnn_tensor_desc()?,
                                          trans!(r_mem),
                                          &dr_desc,
                                          trans_mut!(dr_mem),
@@ -1045,11 +1045,11 @@ impl<T> Dropout<T> for Backend<Cuda>
            result: &mut ::co::tensor::SharedTensor<T>,
            config: &Self::CDROP)
            -> Result<(), ::co::error::Error> {
-        let r_desc = try!(result.cudnn_tensor_desc());
+        let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
         match CUDNN.dropout_forward::<f32>(config,
-                                &try!(x.cudnn_tensor_desc()),
+                                &x.cudnn_tensor_desc()?,
                                 trans!(x_mem),
                                 &r_desc,
                                 trans_mut!(r_mem),
@@ -1068,15 +1068,15 @@ impl<T> Dropout<T> for Backend<Cuda>
                 config: &Self::CDROP)
                 -> Result<(), ::co::error::Error> {
         // TODO what to do with the gradient? should be all zeroes since this is supposed to be a `nop` but I am not 100% sure about the nv implementations
-        // let dr_desc = try!(result_diff.cudnn_tensor_desc());
+        // let dr_desc = result_diff.cudnn_tensor_desc()?;
         // let x_mem = read!(x, self);
         // let dx_mem = read!(x_diff, self);
         // let r_mem = write_only!(result, self);
         // let dr_mem = write_only!(result_diff, self);
         // match CUDNN.dropout_backward::<f32>(config,
-        //                          &try!(x.cudnn_tensor_desc()),
+        //                          &x.cudnn_tensor_desc()?,
         //                          trans!(x_mem),
-        //                          &try!(result.cudnn_tensor_desc()),
+        //                          &result.cudnn_tensor_desc()?,
         //                          trans_mut!(r_mem)) {
             // Ok(_) => Ok(()),
         //     Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Dropout Backward."))),

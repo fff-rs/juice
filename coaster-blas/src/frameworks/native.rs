@@ -11,21 +11,21 @@ use rblas;
 
 macro_rules! read {
     ($x:ident, $t:ident, $slf:ident) => (
-        try!($x.read($slf.device()))
+        $x.read($slf.device())?
             .as_slice::<$t>();
     )
 }
 
 macro_rules! read_write {
     ($x:ident, $t: ident, $slf:ident) => (
-        try!($x.read_write($slf.device()))
+        $x.read_write($slf.device())?
             .as_mut_slice::<$t>();
     )
 }
 
 macro_rules! write_only {
     ($x:ident, $t: ident, $slf:ident) => (
-        try!($x.write_only($slf.device()))
+        $x.write_only($slf.device())?
             .as_mut_slice::<$t>();
     )
 }

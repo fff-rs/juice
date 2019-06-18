@@ -339,7 +339,7 @@ impl<T> SharedTensor<T> {
         self.locations.borrow_mut().push(TensorLocation {
             device: Box::new(device.clone()),
             mem_transfer: Box::new(device.clone()),
-            mem: Box::new(try!(D::alloc_memory(device, bytes_n))),
+            mem: Box::new(D::alloc_memory(device, bytes_n)?),
         });
 
         Ok(self.locations.borrow().len() - 1)
@@ -427,8 +427,8 @@ impl<T> SharedTensor<T> {
         if self.up_to_date.get() == 0 {
             return Err(Error::UninitializedMemory);
         }
-        let i = try!(self.get_or_create_location_index(device));
-        try!(self.sync_if_needed(i));
+        let i = self.get_or_create_location_index(device)?;
+        self.sync_if_needed(i)?;
         self.up_to_date.set(self.up_to_date.get() | (1 << i));
 
         let locs = self.locations.borrow();
@@ -445,8 +445,8 @@ impl<T> SharedTensor<T> {
         if self.up_to_date.get() == 0 {
             return Err(Error::UninitializedMemory);
         }
-        let i = try!(self.get_or_create_location_index(device));
-        try!(self.sync_if_needed(i));
+        let i = self.get_or_create_location_index(device)?;
+        self.sync_if_needed(i)?;
         self.up_to_date.set(1 << i);
 
         let mut locs = self.locations.borrow_mut();

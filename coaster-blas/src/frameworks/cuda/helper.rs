@@ -3,21 +3,21 @@
 /// lessen probability of stupid mistakes.
 macro_rules! read {
     ($x:ident, $slf:ident) => (
-        try!($x.read($slf.device()))
+        $x.read($slf.device())?
     )
 }
 
 /// acquire a tensor as read write
 macro_rules! read_write {
     ($x:ident, $slf:ident) => (
-        try!($x.read_write($slf.device()))
+        $x.read_write($slf.device())?
     )
 }
 
 /// acquire a tensor as write only
 macro_rules! write_only {
     ($x:ident, $slf:ident) => (
-        try!($x.write_only($slf.device()))
+        $x.write_only($slf.device())?
     )
 }
 

@@ -33,7 +33,7 @@ impl Context {
     pub fn new(devices: Device) -> Result<Context, DriverError> {
         Ok(
             Context::from_c(
-                try!(Driver::create_context(devices.clone())),
+                Driver::create_context(devices.clone())?,
                 vec!(devices.clone())
             )
         )
@@ -67,7 +67,7 @@ impl Context {
 // impl IDeviceSyncOut<FlatBox> for Context {
 //     type M = Memory;
 //     fn sync_out(&self, source_data: &Memory, dest_data: &mut FlatBox) -> Result<(), DeviceError> {
-//         Ok(try!(Driver::mem_cpy_d_to_h(source_data, dest_data)))
+//         Ok(Driver::mem_cpy_d_to_h(source_data, dest_data)?)
 //     }
 // }
 
@@ -84,7 +84,7 @@ impl IDevice for Context {
     }
 
     fn alloc_memory(&self, size: DriverFFI::size_t) -> Result<Memory, DeviceError> {
-        Ok(try!(Driver::mem_alloc(size)))
+        Ok(Driver::mem_alloc(size)?)
     }
 }
 

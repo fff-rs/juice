@@ -38,7 +38,7 @@ pub trait Transformer {
             return Err(TransformerError::InvalidShape);
         }
         for (index, datum) in data.iter().enumerate() {
-            let old_val = try!(mem_buffer.get_mut(index + offset).ok_or(TransformerError::InvalidShape));
+            let old_val = mem_buffer.get_mut(index + offset).ok_or(TransformerError::InvalidShape)?;
             *old_val = cast(*datum).unwrap();
         }
         Ok(())

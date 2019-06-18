@@ -66,7 +66,7 @@ pub struct Backend<F: IFramework> {
 impl<F: IFramework + Clone> Backend<F> {
     /// Initialize a new native Backend from a BackendConfig.
     pub fn new(config: BackendConfig<F>) -> Result<Backend<F>, Error> {
-        let device = try!(config.framework.new_device(config.hardwares));
+        let device = config.framework.new_device(config.hardwares)?;
         Ok(
             Backend {
                 framework: Box::new(config.framework),
