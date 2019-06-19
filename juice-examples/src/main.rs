@@ -13,8 +13,8 @@ use std::sync::{Arc, RwLock};
 use hyper::Client;
 use hyper::Uri;
 
-extern crate hyper_tls;
-use hyper_tls::HttpsConnector;
+extern crate hyper_rustls;
+use hyper_rustls::HttpsConnector;
 
 use std::str::FromStr;
 use futures::Future;
@@ -84,7 +84,7 @@ fn download_datasets(datasets: &[&str], base_url: &str) {
         let response_fut = match uri.scheme_str() {
             Some("https") => {
                 let client: Client<_, hyper::Body> = Client::builder()
-                    .build(HttpsConnector::new(4).unwrap());
+                    .build(HttpsConnector::new(4));
                 
                 client.get(uri)
             }
