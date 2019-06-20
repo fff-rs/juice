@@ -1,11 +1,3 @@
-extern crate rustc_serialize;
-extern crate docopt;
-extern crate csv;
-extern crate tokio_core;
-extern crate hyper;
-extern crate futures;
-extern crate log;
-
 use std::io::prelude::*;
 use std::fs::{OpenOptions,File};
 use std::sync::{Arc, RwLock};
@@ -13,7 +5,6 @@ use std::sync::{Arc, RwLock};
 use hyper::Client;
 use hyper::Uri;
 
-extern crate hyper_rustls;
 use hyper_rustls::HttpsConnector;
 
 use std::str::FromStr;
@@ -21,6 +12,7 @@ use futures::Future;
 use futures::Stream;
 
 use docopt::Docopt;
+use serde::Deserialize;
 use csv::Reader;
 
 
@@ -60,8 +52,8 @@ Options:
     --version               Show version.
 ";
 
-#[derive(Debug, RustcDecodable)]
-struct MainArgs {
+#[derive(Debug, Deserialize)]
+struct Args {
     arg_dataset_name: Option<String>,
     arg_model_name: Option<String>,
     arg_batch_size: Option<usize>,
@@ -130,7 +122,7 @@ fn unzip_datasets(datasets: &[&str]) {
 
         file_handle.read_to_end(&mut in_file).unwrap();
 
-        let mut decoder = GzDecoder::new(in_file.as_slice()).unwrap();
+        let mut decoder = GzDecoder::new(in_file.as_slice());
 
         decoder.read_to_end(&mut decompressed_file).unwrap();
 
@@ -143,13 +135,16 @@ fn unzip_datasets(datasets: &[&str]) {
     }
 }
 
+
+use serde;
+
 #[cfg(not(test))]
 #[allow(unused_must_use)]
 fn main() {
-    env_logger::init().unwrap();
+    env_logger::init();
     // Parse Arguments
-    let args: MainArgs = Docopt::new(MAIN_USAGE)
-        .and_then(|d| d.decode())
+    let args : Args = Docopt::new(MAIN_USAGE)
+        .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
 
     if args.cmd_load_dataset {

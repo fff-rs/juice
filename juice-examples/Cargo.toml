@@ -5,6 +5,7 @@ version = "0.1.1"
 authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Michael Hirn <mj@autumnai.com>",
            "Maximilian Goisser <max@autumnai.com>"]
+edition = "2018"
 
 [dependencies]
 greenglas = { version = "0.2" }
@@ -15,17 +16,16 @@ csv = "1"
 hyper = "0.12"
 hyper-rustls = "0.16"
 futures = "0.1"
-tokio-core = "0.1.9"
-flate2 = "0.2"
+tokio-core = "0.1"
+flate2 = "1"
 mnist = "0.4.0"
 
-log = "0.3"
-env_logger = "0.4"
+log = "0.4"
+env_logger = "0.6"
 timeit = "0.1.2"
 
-# CLI tooling
-docopt = "0.6.75"
-rustc-serialize = "0.3"
+docopt = "1"
+serde = { version = "1", features = ["derive"] }
 
 
 [features]
