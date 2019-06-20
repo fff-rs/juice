@@ -229,9 +229,10 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         dest_desc: cudnnTensorDescriptor_t,
     ) -> Result<::libc::size_t, Error> {
-        let size: *mut ::libc::size_t = vec![0].as_mut_ptr();
-        match cudnnGetConvolutionForwardWorkspaceSize(handle, src_desc, filter_desc, conv_desc, dest_desc, algo, size) {
-            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(*size),
+        let mut size = 0usize;
+
+        match cudnnGetConvolutionForwardWorkspaceSize(handle, src_desc, filter_desc, conv_desc, dest_desc, algo, &mut size) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
             _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Forward Workspace size.")),
@@ -262,9 +263,9 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         filter_desc: cudnnFilterDescriptor_t,
     ) -> Result<::libc::size_t, Error> {
-        let size: *mut ::libc::size_t = vec![0].as_mut_ptr();
-        match cudnnGetConvolutionBackwardFilterWorkspaceSize(handle, src_desc, dest_desc, conv_desc, filter_desc, algo, size) {
-            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(*size),
+        let mut size = 0usize;
+        match cudnnGetConvolutionBackwardFilterWorkspaceSize(handle, src_desc, dest_desc, conv_desc, filter_desc, algo, &mut size) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
             _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Filter Workspace size.")),
@@ -298,9 +299,9 @@ impl API {
         conv_desc: cudnnConvolutionDescriptor_t,
         src_desc: cudnnTensorDescriptor_t,
     ) -> Result<::libc::size_t, Error> {
-        let size: *mut ::libc::size_t = vec![0].as_mut_ptr();
-        match cudnnGetConvolutionBackwardDataWorkspaceSize(handle, filter_desc, dest_desc, conv_desc, src_desc, algo, size) {
-            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(*size),
+        let mut size = 0usize;
+        match cudnnGetConvolutionBackwardDataWorkspaceSize(handle, filter_desc, dest_desc, conv_desc, src_desc, algo, &mut size) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
             _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Data Workspace size.")),
