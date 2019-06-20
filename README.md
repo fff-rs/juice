@@ -2,12 +2,12 @@
 
 This is the workspace projet for 
 
- * [juice](https://github.com/spearow/juice/juice) - machine learning frameworks for hackers
- * [coaster](https://github.com/spearow/juice/coaster) - underlying math abstraction
- * [coaster-nn](https://github.com/spearow/juice/coaster-nn)
- * [coaster-blas](https://github.com/spearow/juice/coaster-blas)
- * [greenglas](https://github.com/spearow/juice/greenglas) - a data preprocessing framework
- * [juice-examples](https://github.com/spearow/juice/greenglas) - mnist demo
+ * [juice](https://github.com/spearow/juice/blob/master/juice/README.md) - machine learning frameworks for hackers
+ * [coaster](https://github.com/spearow/juice/blob/master/coaster/README.md) - underlying math abstraction
+ * [coaster-nn](https://github.com/spearow/juice/blob/master/coaster-nn/README.md)
+ * [coaster-blas](https://github.com/spearow/juice/blob/master/coaster-blas/README.md)
+ * [greenglas](https://github.com/spearow/juice/blob/master/greenglas/README.md) - a data preprocessing framework
+ * [juice-examples](https://github.com/spearow/juice/blob/master/juice-examples/README.md) - mnist demo
 
  Please conduct the individual README files for more information.
 
@@ -18,8 +18,6 @@ CLI for running [juice](https://github.com/spearow/juice) examples. More example
 ### Install CLI
 
 **DISCLAIMER: Currently both CUDA and cuDNN are required for the examples to build.**
-
-**DISCLAIMER: Openssl 0.9.8 is required, this is known issue.**
 
 Compile and call the build.
 ```bash
