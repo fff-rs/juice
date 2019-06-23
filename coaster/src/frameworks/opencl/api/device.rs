@@ -36,7 +36,7 @@ impl API {
         let mut num_devices = 0;
 
         // load how many devices are available
-        unsafe { API::ffi_get_device_ids(platform.id_c(), cl::CL_DEVICE_TYPE_ALL, 0, ptr::null_mut(), (&mut num_devices)) }?;
+        unsafe { API::ffi_get_device_ids(platform.id_c(), cl::CL_DEVICE_TYPE_ALL, 0, ptr::null_mut(), &mut num_devices) }?;
 
         // prepare device id list
         let mut ids: Vec<cl::device_id> = repeat(0 as cl::device_id).take(num_devices as usize).collect();

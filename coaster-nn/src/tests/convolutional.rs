@@ -130,8 +130,8 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(backend_a: Backend<F>, b
     let width1 = 9;
     let height1 = 9;
     let depth1 = 3;
-    let padding = &[0i32,0];
-    let stride = &[1i32,1];
+    let padding = &[0i32,0i32];
+    let stride = &[1i32,1i32];
     let filter_size = 6;
     let filter_count = 3;
 
