@@ -36,9 +36,9 @@ fn bench_dot_coaster(b: &mut Bencher, n: usize) {
     let shared_a = &mut SharedTensor::<f32>::new(&[n]);
     let shared_b = &mut SharedTensor::<f32>::new(&[n]);
     let shared_res = &mut SharedTensor::<f32>::new(&[1]);
-    shared_a.write_only(backend.device()).unwrap().as_mut_native().unwrap()
+    shared_a.write_only(backend.device()).unwrap()
         .as_mut_slice().clone_from_slice(&slice_a);
-    shared_b.write_only(backend.device()).unwrap().as_mut_native().unwrap()
+    shared_b.write_only(backend.device()).unwrap()
         .as_mut_slice().clone_from_slice(&slice_b);
     let _ = backend.dot(shared_a, shared_b, shared_res);
 

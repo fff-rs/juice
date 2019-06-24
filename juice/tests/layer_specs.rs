@@ -26,7 +26,6 @@ mod layer_spec {
     mod native_cuda {
         use super::{native_backend, cuda_backend};
         use juice::layer::*;
-        use juice::layers::*;
 
         #[test]
         fn create_layer_with_either() {
@@ -76,9 +75,11 @@ mod layer_spec {
         fn save_and_load_layer() {
             let cfg = simple_network();
             let mut original_layer = Layer::from_config(native_backend(), &cfg);
+            let mut tmpfile = std::env::temp_dir();
+            tmpfile.push("tmpnet");
 
-            original_layer.save("target/testnetwork").unwrap();
-            let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), "target/testnetwork").unwrap();
+            original_layer.save(&tmpfile).unwrap();
+            let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), &tmpfile).unwrap();
 
             assert_eq!(original_layer.input_blob_names(),
                        loaded_layer.input_blob_names());

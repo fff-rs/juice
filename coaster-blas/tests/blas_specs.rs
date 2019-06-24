@@ -78,8 +78,8 @@ pub fn test_asum<T, F>(backend: Backend<F>)
             Backend<F>: Asum<T> + IBackend {
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut result = SharedTensor::<T>::new(&[1]);
+    write_to_tensor(&mut x, &[1.0, -2.0, 3.0]);
 
-    write_to_tensor(&mut x, &[1., -2., 3.]);
     backend.asum(&x, &mut result).unwrap();
     tensor_assert_eq(&result, &[6.0], 0.);
 }

@@ -4,12 +4,12 @@ extern crate test;
 #[macro_use]
 extern crate timeit;
 extern crate coaster as co;
-extern crate leaf;
+extern crate juice;
 
 mod benches {
     use co::prelude::*;
-    use leaf::layer::*;
-    use leaf::layers::*;
+    use juice::layer::*;
+    use juice::layers::*;
     use std::rc::Rc;
 
     use std::sync::{Arc, RwLock};

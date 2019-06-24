@@ -28,7 +28,7 @@ rand = {version = "0.3", optional = true }
 rand = "0.3"
 
 [features]
-default = ["native", "cuda", "opencl"]
+default = ["native", "cuda"]
 native = ["coaster/native", "rand"]
 cuda = ["coaster/cuda", "rcudnn"]
 opencl = ["coaster/opencl"]

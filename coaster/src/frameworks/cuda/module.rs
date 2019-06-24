@@ -12,14 +12,14 @@ pub struct Module {
 }
 
 impl Module {
-    /// Initializes a new OpenCL device.
+    /// Initializes a new Cuda Module.
     pub fn from_isize(id: isize) -> Module {
         Module {
             id: id,
         }
     }
 
-    // /// Initializes a new OpenCL device from its C type.
+    // /// Initializes a new Cuda Module from its C type.
     // pub fn from_c(id: cl::kernel_id) -> Module {
     //     Module {
     //         id: id as isize,
