@@ -2,8 +2,8 @@
 use std::any::Any;
 use std::hash::{Hash, Hasher};
 
-use device::{IDevice, MemorySync};
-use device::Error as DeviceError;
+use crate::device::{IDevice, MemorySync};
+use crate::device::Error as DeviceError;
 use super::hardware::Hardware;
 use super::flatbox::FlatBox;
 use super::allocate_boxed_slice;
@@ -45,10 +45,10 @@ impl IDevice for Cpu {
 
 impl MemorySync for Cpu {
     // transfers from/to Cuda and OpenCL are defined on their MemorySync traits
-    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
+    fn sync_in(&self, my_memory: &mut dyn Any, src_device: &dyn Any, src_memory: &dyn Any)
                -> Result<(), DeviceError> {
         if let Some(_) = src_device.downcast_ref::<Cpu>() {
-            let mut my_mem = my_memory.downcast_mut::<FlatBox>().unwrap();
+            let my_mem = my_memory.downcast_mut::<FlatBox>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
             my_mem.as_mut_slice::<u8>().clone_from_slice(src_mem.as_slice::<u8>());
             return Ok(());
@@ -57,11 +57,11 @@ impl MemorySync for Cpu {
         Err(DeviceError::NoMemorySyncRoute)
     }
 
-    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
+    fn sync_out(&self, my_memory: &dyn Any, dst_device: &dyn Any, dst_memory: &mut dyn Any)
                 -> Result<(), DeviceError> {
         if let Some(_) = dst_device.downcast_ref::<Cpu>() {
             let my_mem = my_memory.downcast_ref::<FlatBox>().unwrap();
-            let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
+            let dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
             dst_mem.as_mut_slice::<u8>().clone_from_slice(my_mem.as_slice::<u8>());
             return Ok(());
         }

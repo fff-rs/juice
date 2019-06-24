@@ -47,8 +47,8 @@
 //! # }
 //! ```
 
-use device::{IDevice, MemorySync};
-use device::Error as DeviceError;
+use crate::device::{IDevice, MemorySync};
+use crate::device::Error as DeviceError;
 
 use std::any::Any;
 use std::cell::{Cell, RefCell};
@@ -81,10 +81,10 @@ struct TensorLocation {
     // It may be possible to manually store device in a box and keep two fat
     // pointers to its contents, but it's not obvious how to erase type of
     // the box to store it uniformly.
-    device: Box<Any>,
-    mem_transfer: Box<MemorySync>,
+    device: Box<dyn Any>,
+    mem_transfer: Box<dyn MemorySync>,
 
-    mem: Box<Any>,
+    mem: Box<dyn Any>,
 }
 
 /// Container that handles synchronization of [Memory][1] of type `T`.
@@ -364,7 +364,7 @@ impl<T> SharedTensor<T> {
         // here is workaround.
         assert!(src_i != dst_i);
         let mut locs = self.locations.borrow_mut();
-        let (src_loc, mut dst_loc) = if src_i < dst_i {
+        let (src_loc, dst_loc) = if src_i < dst_i {
             let (left, right) = locs.split_at_mut(dst_i);
             (&left[src_i], &mut right[0])
         } else {
@@ -391,8 +391,8 @@ impl<T> SharedTensor<T> {
 		// If there is no direct path, we take the detour via native
 		// and do an indirect transfer.
 		if cfg!(feature = "Native") {
-			use framework::IFramework;
-			use frameworks::native::Native;
+			use crate::framework::IFramework;
+			use crate::frameworks::native::Native;
 			let native_framework = Native::new();
 			let native_device = native_framework.new_device(native_framework.hardwares()).unwrap(); // FIXME
 			let mut native_mem = native_device.alloc_memory(self.desc.size()).unwrap(); // FIXME calculate size
@@ -559,7 +559,7 @@ impl error::Error for Error {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             Error::DeviceError(ref err) => Some(err),
             Error::InvalidRemove(_) => None,
@@ -576,8 +576,8 @@ impl From<DeviceError> for Error {
     }
 }
 
-impl From<Error> for ::error::Error {
-    fn from(err: Error) -> ::error::Error {
-        ::error::Error::Tensor(err)
+impl From<Error> for crate::error::Error {
+    fn from(err: Error) -> crate::error::Error {
+        crate::error::Error::Tensor(err)
     }
 }

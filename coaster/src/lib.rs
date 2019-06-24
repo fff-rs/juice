@@ -142,12 +142,10 @@
 extern crate alloc;
 
 extern crate libc;
-#[macro_use]
 extern crate bitflags;
-#[macro_use]
 extern crate enum_primitive;
-#[macro_use]
 extern crate lazy_static;
+
 #[cfg(feature = "opencl")]
 extern crate regex;
 extern crate num;
@@ -165,21 +163,21 @@ pub mod error;
 pub mod plugin;
 
 // These will be exported with the prelude.
-pub use backend::*;
-pub use device::{IDevice, IMemory};
-pub use hardware::{IHardware, HardwareType};
-pub use framework::IFramework;
-pub use tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
+pub use crate::backend::*;
+pub use crate::device::{IDevice, IMemory};
+pub use crate::hardware::{IHardware, HardwareType};
+pub use crate::framework::IFramework;
+pub use crate::tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
 #[cfg(feature = "native")]
-pub use frameworks::Native;
+pub use crate::frameworks::Native;
 #[cfg(feature = "cuda")]
-pub use frameworks::Cuda;
+pub use crate::frameworks::Cuda;
 #[cfg(feature = "opencl")]
 pub use frameworks::OpenCL;
 
 // These should only be imported with caution, since they are likely
 // to create a namespace collision.
-pub use error::Error;
+pub use crate::error::Error;
 
 /// A module meant to be glob imported when using Coaster.
 ///
@@ -194,16 +192,16 @@ pub use error::Error;
 /// Another type that is often needed but is likely to cause a name collision
 /// when imported is `coaster::Error`.
 pub mod prelude {
-    pub use backend::*;
-    pub use device::{IDevice, IMemory};
-    pub use hardware::{IHardware, HardwareType};
-    pub use framework::IFramework;
-    pub use frameworks::native::flatbox::FlatBox;
-    pub use tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
+    pub use crate::backend::*;
+    pub use crate::device::{IDevice, IMemory};
+    pub use crate::hardware::{IHardware, HardwareType};
+    pub use crate::framework::IFramework;
+    pub use crate::frameworks::native::flatbox::FlatBox;
+    pub use crate::tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
     #[cfg(feature = "native")]
-    pub use frameworks::Native;
+    pub use crate::frameworks::Native;
     #[cfg(feature = "cuda")]
-    pub use frameworks::Cuda;
+    pub use crate::frameworks::Cuda;
     #[cfg(feature = "opencl")]
     pub use frameworks::OpenCL;
 }

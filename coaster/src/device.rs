@@ -8,13 +8,13 @@
 use std::any::Any;
 use std::error::Error as StdError;
 
-use hardware::IHardware;
+use crate::hardware::IHardware;
 #[cfg(feature = "native")]
-use frameworks::native::Error as NativeError;
+use crate::frameworks::native::Error as NativeError;
 #[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
 #[cfg(feature = "cuda")]
-use frameworks::cuda::DriverError as CudaError;
+use crate::frameworks::cuda::DriverError as CudaError;
 use std::{fmt, error};
 
 /// Marker trait for backing memory.
@@ -42,10 +42,10 @@ pub trait IDevice
 /// so that base crate knows nothing about it at all.
 pub trait MemorySync {
     /// FIXME
-    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
+    fn sync_in(&self, my_memory: &mut dyn Any, src_device: &dyn Any, src_memory: &dyn Any)
                -> Result<(), Error>;
     /// FIXME
-    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
+    fn sync_out(&self, my_memory: &dyn Any, dst_device: &dyn Any, dst_memory: &mut dyn Any)
                 -> Result<(), Error>;
 }
 
@@ -103,7 +103,7 @@ impl error::Error for Error {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             Error::NoMemorySyncRoute => None,
             Error::MemorySyncError => None,

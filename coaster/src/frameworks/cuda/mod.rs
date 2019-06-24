@@ -9,8 +9,8 @@
 
 extern { }
 
-use backend::{Backend, IBackend};
-use framework::IFramework;
+use crate::backend::{Backend, IBackend};
+use crate::framework::IFramework;
 pub use self::memory::Memory;
 pub use self::context::Context;
 pub use self::function::Function;
@@ -56,7 +56,7 @@ impl IFramework for Cuda {
         }
     }
 
-    fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
+    fn load_hardwares() -> Result<Vec<Device>, crate::framework::Error> {
         Ok(Driver::load_devices()?)
     }
 
@@ -72,12 +72,12 @@ impl IFramework for Cuda {
     ///
     /// Cuda's context differs from OpenCL's context. Multi device support works different in Cuda.
     /// This function currently suppports only one device, but should be a wrapper for multi device support.
-    fn new_device(&self, hardwares: &[Device]) -> Result<Self::D, ::framework::Error> {
+    fn new_device(&self, hardwares: &[Device]) -> Result<Self::D, crate::framework::Error> {
         let length = hardwares.len();
         match length {
-            0 => Err(::framework::Error::Implementation(format!("No device for context specified."))),
+            0 => Err(crate::framework::Error::Implementation(format!("No device for context specified."))),
             1 => Ok(Context::new(hardwares[0].clone())?),
-            _ => Err(::framework::Error::Implementation(format!("Cuda's `new_device` method currently supports only one Harware for Device creation.")))
+            _ => Err(crate::framework::Error::Implementation(format!("Cuda's `new_device` method currently supports only one Harware for Device creation.")))
         }
     }
 }
@@ -89,7 +89,7 @@ impl IBackend for Backend<Cuda> {
         &self.device()
     }
 
-    fn synchronize(&self) -> Result<(), ::framework::Error> {
+    fn synchronize(&self) -> Result<(), crate::framework::Error> {
         Ok(self.device().synchronize()?)
     }
 }

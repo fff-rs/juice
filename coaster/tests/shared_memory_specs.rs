@@ -3,12 +3,12 @@ extern crate libc;
 
 #[cfg(test)]
 mod shared_memory_spec {
-    use co::prelude::*;
-    use co::tensor::Error;
-    use co::frameworks::native::flatbox::FlatBox;
+    use crate::co::prelude::*;
+    use crate::co::tensor::Error;
+    use crate::co::frameworks::native::flatbox::FlatBox;
 
     fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
-        let mut mem_buffer = mem.as_mut_slice::<T>();
+        let mem_buffer = mem.as_mut_slice::<T>();
         for (index, datum) in data.iter().enumerate() {
             mem_buffer[index] = *datum;
         }

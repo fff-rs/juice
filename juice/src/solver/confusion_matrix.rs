@@ -1,10 +1,10 @@
 //! TODO: DOC
 
 
-use co::SharedTensor;
+use crate::co::SharedTensor;
 use std::collections::VecDeque;
 use std::fmt;
-use util::native_backend;
+use crate::util::native_backend;
 /// A [ConfusionMatrix][wiki].
 ///
 /// [wiki]: https://en.wikipedia.org/wiki/Confusion_matrix

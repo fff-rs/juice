@@ -1,10 +1,10 @@
 use std::fmt;
 
-use co::prelude::*;
-use co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
+use crate::co::plugin::numeric_helpers::Float;
 
-use plugin::{Softmax, LogSoftmax};
-use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
+use crate::plugin::{Softmax, LogSoftmax};
+use crate::tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
 
 const DIMS: [usize; 3] = [4, 1, 3];
 

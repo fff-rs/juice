@@ -3,12 +3,12 @@
 //! See [Layers][layers]
 //! [layers]: ../layers/index.html
 
-use capnp_util::*;
-use co::prelude::*;
-use layers::*;
-use juice_capnp::layer as capnp_layer;
-use juice_capnp::layer_config as capnp_layer_config;
-use juice_capnp::layer_config::layer_type as capnp_layer_type;
+use crate::capnp_util::*;
+use crate::co::prelude::*;
+use crate::layers::*;
+use crate::juice_capnp::layer as capnp_layer;
+use crate::juice_capnp::layer_config as capnp_layer_config;
+use crate::juice_capnp::layer_config::layer_type as capnp_layer_type;
 use std::cmp;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -17,8 +17,8 @@ use std::io::{self, BufReader};
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use util::{ArcLock, LayerOps};
-use weight::WeightConfig;
+use crate::util::{ArcLock, LayerOps};
+use crate::weight::WeightConfig;
 
 #[derive(Debug)]
 /// The generic Layer
@@ -35,7 +35,7 @@ pub struct Layer<B: IBackend> {
     /// This is the part that does most of the work ([forward][2]/[backward][3]).
     /// [2]: ./trait.ILayer.html#method.forward
     /// [3]: ./trait.ILayer.html#method.backward
-    pub worker: Box<ILayer<B>>,
+    pub worker: Box<dyn ILayer<B>>,
 
     backend: Rc<B>,
 
@@ -223,7 +223,7 @@ impl<B: IBackend> Layer<B> {
                 info!("Output {} = {}", output_id, blob_name);
             }
 
-            let backend: Rc<IBackend<F = B::F>> = self.backend.clone();
+            let backend: Rc<dyn IBackend<F = B::F>> = self.backend.clone();
             blob_data = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
             blob_gradient = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
         }
@@ -249,7 +249,7 @@ impl<B: IBackend> Layer<B> {
 
         info!("{} -> {}", self.name, blob_name);
 
-        let backend: Rc<IBackend<F = B::F>> = self.backend.clone();
+        let backend: Rc<dyn IBackend<F = B::F>> = self.backend.clone();
         let output_data = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
         let output_gradient = Arc::new(RwLock::new(SharedTensor::new(&[1, 1, 1]))); // [1,1,1] for CUDA
         self.output_blobs_data.push(output_data);
@@ -583,9 +583,9 @@ impl<B: IBackend> Layer<B> {
     /// The update value is computed in previous steps according to the [learning rate policy][3]
     ///
     /// [3]: ../solver/enum.LRPolicy.html
-    pub fn update_weights<SolverB: IBackend + ::util::SolverOps<f32>>(&mut self, backend: &SolverB) {
+    pub fn update_weights<SolverB: IBackend + crate::util::SolverOps<f32>>(&mut self, backend: &SolverB) {
         // PERF: allocate this scalar once
-        let shared_a = ::util::native_scalar(-1f32);
+        let shared_a = crate::util::native_scalar(-1f32);
         for (weight_gradient, weight_data) in
             self.learnable_weights_gradients().iter().zip(&mut self.learnable_weights_data()) {
             backend.axpy(&shared_a,
@@ -605,7 +605,7 @@ impl<B: IBackend> Layer<B> {
     /// [2]: ../solver/struct.Solver.html
     pub fn clear_weights_gradients(&mut self) {
         for weight_gradient in &mut self.learnable_weights_gradients().iter() {
-            let filler = ::weight::FillerType::Constant { value: 0f32 };
+            let filler = crate::weight::FillerType::Constant { value: 0f32 };
             filler.fill(&mut weight_gradient.write().unwrap());
         }
     }
@@ -736,7 +736,7 @@ impl<B: IBackend> Layer<B> {
                 }
                 weight_lock.reshape(&shape).unwrap();
 
-                let mut native_slice = weight_lock.write_only(native_backend.device()).unwrap().as_mut_slice::<f32>();
+                let native_slice = weight_lock.write_only(native_backend.device()).unwrap().as_mut_slice::<f32>();
                 let data = capnp_tensor.get_data().unwrap();
                 for k in 0..data.len() {
                     native_slice[k as usize] = data.get(k);
@@ -842,24 +842,24 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
     fn write_capnp(&self, builder: &mut Self::Builder) {
         builder.set_name(&self.name);
         {
-            let mut layer_config = builder.borrow().init_config();
+            let mut layer_config = builder.reborrow().init_config();
             self.config.write_capnp(&mut layer_config);
         }
         {
             let native_backend = Backend::<Native>::default().unwrap();
-            let mut weights = builder.borrow().init_weights_data(self.learnable_weights_names().len() as u32);
+            let mut weights = builder.reborrow().init_weights_data(self.learnable_weights_names().len() as u32);
             let names = self.learnable_weights_names();
             let weights_data = self.learnable_weights_data();
 
             for (i, (name, weight)) in names.iter().zip(weights_data).enumerate() {
-                let mut capnp_weight = weights.borrow().get(i as u32);
+                let mut capnp_weight = weights.reborrow().get(i as u32);
                 capnp_weight.set_name(name);
 
                 let weight_lock = weight.write().unwrap();
 
                 let mut tensor = capnp_weight.init_tensor();
                 {
-                    let mut tensor_shape = tensor.borrow().init_shape(weight_lock.desc().len() as u32);
+                    let mut tensor_shape = tensor.reborrow().init_shape(weight_lock.desc().len() as u32);
                     for (i, dim) in weight_lock.desc().iter().enumerate() {
                         tensor_shape.set(i as u32, *dim as u64);
                     }
@@ -867,7 +867,7 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
                 {
                     let native_slice = weight_lock.read(native_backend.device())
                         .unwrap().as_slice::<f32>();
-                    let mut tensor_data = tensor.borrow().init_data(native_slice.len() as u32);
+                    let mut tensor_data = tensor.reborrow().init_data(native_slice.len() as u32);
                     for (i, datum) in native_slice.iter().enumerate() {
                         tensor_data.set(i as u32, *datum);
                     }
@@ -923,7 +923,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
     /// [1]: #method.from_config
     /// [2]: ./enum.LayerType.html
     /// [3]: ../layers/index.html
-    fn worker_from_config(backend: Rc<B>, config: &LayerConfig) -> Box<ILayer<B>> {
+    fn worker_from_config(backend: Rc<B>, config: &LayerConfig) -> Box<dyn ILayer<B>> {
         match config.layer_type.clone() {
             LayerType::Convolution(layer_config) => Box::new(Convolution::from_config(&layer_config)),
             LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
@@ -1008,8 +1008,8 @@ pub trait ILayer<B: IBackend>
         let weights_data_: Vec<&SharedTensor<f32>> = wgts.iter().map(|val| &**val).collect();
 
         let out_ref = output_data.iter().cloned().collect::<Vec<_>>();
-        let mut out = &mut out_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
-        let mut output_w = &mut out.iter_mut().map(|a| a).collect::<Vec<_>>();
+        let out = &mut out_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
+        let output_w = &mut out.iter_mut().map(|a| a).collect::<Vec<_>>();
         let mut output_data_: Vec<&mut SharedTensor<f32>> = output_w.iter_mut().map(|val| &mut ***val).collect();
 
         self.compute_output(backend, &weights_data_, &input_data_, &mut output_data_);
@@ -1039,8 +1039,8 @@ pub trait ILayer<B: IBackend>
         let inp_data: Vec<_> = input_data.iter().map(|b| b.read().unwrap()).collect();
         let input_data_: Vec<&SharedTensor<f32>> = inp_data.iter().map(|val| &**val).collect();
         let btm_gradient_ref = input_gradients.iter().cloned().collect::<Vec<_>>();
-        let mut btm_gradient = &mut btm_gradient_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
-        let mut input_gradient = &mut btm_gradient.iter_mut().map(|a| a).collect::<Vec<_>>();
+        let btm_gradient = &mut btm_gradient_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
+        let input_gradient = &mut btm_gradient.iter_mut().map(|a| a).collect::<Vec<_>>();
         let mut input_gradients_: Vec<&mut SharedTensor<f32>> =
             input_gradient.iter_mut().map(|val| &mut ***val).collect();
 
@@ -1073,8 +1073,8 @@ pub trait ILayer<B: IBackend>
         let inp_data: Vec<_> = input_data.iter().map(|b| b.read().unwrap()).collect();
         let input_data_: Vec<&SharedTensor<f32>> = inp_data.iter().map(|val| &**val).collect();
         let wgt_gradient_ref = weights_gradients.iter().cloned().collect::<Vec<_>>();
-        let mut wgt_gradient = &mut wgt_gradient_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
-        let mut weights_gradient = &mut wgt_gradient.iter_mut().map(|a| a).collect::<Vec<_>>();
+        let wgt_gradient = &mut wgt_gradient_ref.iter().map(|b| b.write().unwrap()).collect::<Vec<_>>();
+        let weights_gradient = &mut wgt_gradient.iter_mut().map(|a| a).collect::<Vec<_>>();
         let mut weights_gradients_: Vec<&mut SharedTensor<f32>> =
             weights_gradient.iter_mut().map(|val| &mut ***val).collect();
 
@@ -1269,7 +1269,7 @@ pub trait ComputeParametersGradient<T, B: IBackend> {
     }
 }
 
-impl<B: IBackend> fmt::Debug for ILayer<B> {
+impl<B: IBackend> fmt::Debug for dyn ILayer<B> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({})", "ILayer")
     }
@@ -1361,12 +1361,12 @@ impl<'a> CapnpWrite<'a> for LayerType {
     fn write_capnp(&self, builder: &mut Self::Builder) {
         match self {
             &LayerType::Linear(ref cfg) => {
-                let ref mut config = builder.borrow().init_linear();
+                let ref mut config = builder.reborrow().init_linear();
                 cfg.write_capnp(config);
             }
             &LayerType::LogSoftmax => builder.set_log_softmax(()),
             &LayerType::Sequential(ref cfg) => {
-                let ref mut config = builder.borrow().init_sequential();
+                let ref mut config = builder.reborrow().init_sequential();
                 cfg.write_capnp(config);
             }
             &LayerType::Softmax => builder.set_softmax(()),
@@ -1374,23 +1374,23 @@ impl<'a> CapnpWrite<'a> for LayerType {
             &LayerType::TanH => builder.set_tanh(()),
             &LayerType::Sigmoid => builder.set_sigmoid(()),
             &LayerType::NegativeLogLikelihood(ref cfg) => {
-                let ref mut config = builder.borrow().init_negative_log_likelihood();
+                let ref mut config = builder.reborrow().init_negative_log_likelihood();
                 cfg.write_capnp(config);
             }
             &LayerType::Reshape(ref cfg) => {
-                let ref mut config = builder.borrow().init_reshape();
+                let ref mut config = builder.reborrow().init_reshape();
                 cfg.write_capnp(config);
             }
             &LayerType::Convolution(ref cfg) => {
-                let ref mut config = builder.borrow().init_convolution();
+                let ref mut config = builder.reborrow().init_convolution();
                 cfg.write_capnp(config);
             }
             &LayerType::Pooling(ref cfg) => {
-                let ref mut config = builder.borrow().init_pooling();
+                let ref mut config = builder.reborrow().init_pooling();
                 cfg.write_capnp(config);
             }
             &LayerType::Dropout(ref cfg) => {
-                let ref mut config = builder.borrow().init_dropout();
+                let ref mut config = builder.reborrow().init_dropout();
                 cfg.write_capnp(config);
             }
         }
@@ -1517,30 +1517,30 @@ impl<'a> CapnpWrite<'a> for LayerConfig {
     fn write_capnp(&self, builder: &mut Self::Builder) {
         builder.set_name(&self.name);
         {
-            let mut layer_type = builder.borrow().init_layer_type();
+            let mut layer_type = builder.reborrow().init_layer_type();
             self.layer_type.write_capnp(&mut layer_type);
         }
         {
-            let mut outputs = builder.borrow().init_outputs(self.outputs.len() as u32);
+            let mut outputs = builder.reborrow().init_outputs(self.outputs.len() as u32);
             for (i, output) in self.outputs.iter().enumerate() {
                 outputs.set(i as u32, &output);
             }
         }
         {
-            let mut inputs = builder.borrow().init_inputs(self.inputs.len() as u32);
+            let mut inputs = builder.reborrow().init_inputs(self.inputs.len() as u32);
             for (i, input) in self.inputs.iter().enumerate() {
                 inputs.set(i as u32, &input);
             }
         }
         {
-            let mut params = builder.borrow().init_params(self.params.len() as u32);
+            let mut params = builder.reborrow().init_params(self.params.len() as u32);
             for (i, param) in self.params.iter().enumerate() {
-                let ref mut capnp_param = params.borrow().get(i as u32);
+                let ref mut capnp_param = params.reborrow().get(i as u32);
                 param.write_capnp(capnp_param);
             }
         }
         {
-            let mut propagate_down = builder.borrow().init_propagate_down(self.propagate_down.len() as u32);
+            let mut propagate_down = builder.reborrow().init_propagate_down(self.propagate_down.len() as u32);
             for (i, input) in self.propagate_down.iter().enumerate() {
                 propagate_down.set(i as u32, *input);
             }

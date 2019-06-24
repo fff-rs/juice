@@ -1,10 +1,10 @@
 //! Computes the logarithmic softmax of its input.
 //!
 
-use co::{IBackend, SharedTensor};
-use conn;
-use layer::*;
-use util::ArcLock;
+use crate::co::{IBackend, SharedTensor};
+use crate::conn;
+use crate::layer::*;
+use crate::util::ArcLock;
 
 #[derive(Debug, Clone)]
 #[allow(missing_copy_implementations)]

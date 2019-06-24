@@ -12,8 +12,8 @@ use std::fmt;
 use rand::thread_rng;
 use rand::distributions::{range, IndependentSample, Range};
 
-use co::prelude::*;
-use co::plugin::numeric_helpers::{cast, NumCast};
+use crate::co::prelude::*;
+use crate::co::plugin::numeric_helpers::{cast, NumCast};
 
 pub trait Epsilon {
     fn epsilon() -> Self;
@@ -202,13 +202,13 @@ macro_rules! test_cuda {
         #[cfg(feature = "cuda")]
         #[test]
         fn $f32_name() {
-            $test_name::<f32, _>(::tests::get_cuda_backend())
+            $test_name::<f32, _>(crate::tests::get_cuda_backend())
         }
 
         #[cfg(feature = "cuda")]
         #[test]
         fn $f64_name() {
-            $test_name::<f64, _>(::tests::get_cuda_backend())
+            $test_name::<f64, _>(crate::tests::get_cuda_backend())
         }
     }
 }
@@ -219,13 +219,13 @@ macro_rules! test_native {
         #[cfg(feature = "native")]
         #[test]
         fn $f32_name() {
-            $test_name::<f32, _>(::tests::get_native_backend())
+            $test_name::<f32, _>(crate::tests::get_native_backend())
         }
 
         #[cfg(feature = "native")]
         #[test]
         fn $f64_name() {
-            $test_name::<f64, _>(::tests::get_native_backend())
+            $test_name::<f64, _>(crate::tests::get_native_backend())
         }
     }
 }
@@ -235,7 +235,7 @@ macro_rules! test_cross {
         #[cfg(all(feature = "native",feature = "cuda"))]
         #[test]
         fn $f32_name() {
-            $test_name::<_, _>(::tests::get_native_backend(), ::tests::get_cuda_backend())
+            $test_name::<_, _>(crate::tests::get_native_backend(), crate::tests::get_cuda_backend())
         }
     }
 }

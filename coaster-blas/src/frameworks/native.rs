@@ -1,7 +1,7 @@
 //! Provides BLAS for a Native backend.
 
-use ::plugin::*;
-use ::transpose::*;
+use crate::plugin::*;
+use crate::transpose::*;
 use coaster::backend::Backend;
 use coaster::frameworks::native::Native;
 use coaster::tensor::{SharedTensor, ITensorDesc};
@@ -220,7 +220,7 @@ fn read_from_matrix<T: Clone>(mat: &Mat<T>, slice: &mut [T]) {
 
 #[cfg(test)]
 mod test {
-    use coaster::backend::{Backend, IBackend, BackendConfig};
+    use coaster::backend::{Backend, IBackend};
     use coaster::framework::IFramework;
     use coaster::frameworks::Native;
     use coaster::tensor::SharedTensor;
@@ -232,7 +232,7 @@ mod test {
 	}
 
     pub fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
-        let mut mem_buffer = mem.as_mut_slice::<T>();
+        let mem_buffer = mem.as_mut_slice::<T>();
         for (index, datum) in data.iter().enumerate() {
             mem_buffer[index] = *datum;
         }

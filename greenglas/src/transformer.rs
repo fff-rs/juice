@@ -1,5 +1,5 @@
-use co::prelude::*;
-use co::plugin::numeric_helpers::*;
+use crate::co::prelude::*;
+use crate::co::plugin::numeric_helpers::*;
 
 /// The Transformer Trait
 ///
@@ -33,7 +33,7 @@ pub trait Transformer {
 
     /// Write into a native Coaster Memory with a offset.
     fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) -> Result<(), TransformerError> {
-        let mut mem_buffer = mem.as_mut_slice::<f32>();
+        let mem_buffer = mem.as_mut_slice::<f32>();
         if offset == 0 && mem_buffer.len() != data.len() {
             return Err(TransformerError::InvalidShape);
         }

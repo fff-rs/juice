@@ -1,8 +1,8 @@
 //! Provides the Cuda API with its memory/buffer functionality.
 
 use super::{API, Error};
-use frameworks::native::flatbox::FlatBox;
-use frameworks::cuda::Memory;
+use crate::frameworks::native::flatbox::FlatBox;
+use crate::frameworks::cuda::Memory;
 use super::ffi::*;
 
 impl API {

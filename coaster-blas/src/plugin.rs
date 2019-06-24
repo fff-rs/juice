@@ -99,4 +99,4 @@ pub trait BlasBinaryProvider<F, B: IBlasBinary<F> + IBinary> {
     fn binary(&self) -> &B;
 }
 
-impl<F, B: IBlasBinary<F> + IBinary> IBlas<F> for BlasBinaryProvider<F, B> { }
+impl<F, B: IBlasBinary<F> + IBinary> IBlas<F> for dyn BlasBinaryProvider<F, B> { }

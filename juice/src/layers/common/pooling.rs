@@ -12,14 +12,14 @@
 //! or 5D NCDHW (3 spatial dimensions) format.
 
 use super::FilterLayer;
-use capnp_util::*;
-use co::{IBackend, SharedTensor};
-use conn;
-use layer::*;
-use juice_capnp::PoolingMode as CapnpPoolingMode;
-use juice_capnp::pooling_config as capnp_config;
+use crate::capnp_util::*;
+use crate::co::{IBackend, SharedTensor};
+use crate::conn;
+use crate::layer::*;
+use crate::juice_capnp::PoolingMode as CapnpPoolingMode;
+use crate::juice_capnp::pooling_config as capnp_config;
 use std::rc::Rc;
-use util::{ArcLock, cast_vec_usize_to_i32};
+use crate::util::{ArcLock, cast_vec_usize_to_i32};
 
 #[derive(Debug, Clone)]
 /// [Pooling](./index.html) Layer
@@ -132,7 +132,6 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeOutput<f32, B> for Pooling<f32, B>
                 backend.pooling_avg(input_data[0], output_data[0], &*config)
                     .unwrap()
             }
-            _ => panic!("Unknown Parameter {:?} for PoolingMode", self.mode),
         }
     }
 }
@@ -163,7 +162,6 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeInputGradient<f32, B> for Pooling<
                                       config)
                     .unwrap()
             }
-            _ => panic!("Unknown parameter {:?} for PoolingMode", self.mode),
         }
     }
 }
@@ -194,21 +192,21 @@ impl<'a> CapnpWrite<'a> for PoolingConfig {
 
     /// Write the PoolingConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
-        builder.borrow().set_mode(self.mode.to_capnp());
+        builder.reborrow().set_mode(self.mode.to_capnp());
         {
-            let mut filter_shape = builder.borrow().init_filter_shape(self.filter_shape.len() as u32);
+            let mut filter_shape = builder.reborrow().init_filter_shape(self.filter_shape.len() as u32);
             for (i, dim) in self.filter_shape.iter().enumerate() {
                 filter_shape.set(i as u32, *dim as u64);
             }
         }
         {
-            let mut stride = builder.borrow().init_stride(self.stride.len() as u32);
+            let mut stride = builder.reborrow().init_stride(self.stride.len() as u32);
             for (i, dim) in self.stride.iter().enumerate() {
                 stride.set(i as u32, *dim as u64);
             }
         }
         {
-            let mut padding = builder.borrow().init_padding(self.padding.len() as u32);
+            let mut padding = builder.reborrow().init_padding(self.padding.len() as u32);
             for (i, dim) in self.padding.iter().enumerate() {
                 padding.set(i as u32, *dim as u64);
             }

@@ -19,14 +19,14 @@
 //! In the context of convolutional neural networks this layer is also
 //! called a "fully-connected layer" if it is used at the end of the network.
 
-use capnp_util::*;
-use co::backend::IBackend;
-use co::tensor::SharedTensor;
-use coblas::transpose::Transpose;
-use layer::*;
-use juice_capnp::linear_config as capnp_config;
-use util::{ArcLock, native_scalar, LayerOps};
-use weight::FillerType;
+use crate::capnp_util::*;
+use crate::co::backend::IBackend;
+use crate::co::tensor::SharedTensor;
+use crate::coblas::transpose::Transpose;
+use crate::layer::*;
+use crate::juice_capnp::linear_config as capnp_config;
+use crate::util::{ArcLock, native_scalar, LayerOps};
+use crate::weight::FillerType;
 
 #[derive(Debug)]
 /// Linear Layer
@@ -201,7 +201,7 @@ impl<'a> CapnpWrite<'a> for LinearConfig {
 
     /// Write the LinearConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
-        builder.borrow().set_output_size(self.output_size as u64);
+        builder.reborrow().set_output_size(self.output_size as u64);
     }
 }
 

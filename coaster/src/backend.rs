@@ -40,9 +40,9 @@
 //! }
 //! ```
 
-use error::Error;
-use framework::IFramework;
-use device::IDevice;
+use crate::error::Error;
+use crate::framework::IFramework;
+use crate::device::IDevice;
 
 #[derive(Debug, Clone)]
 /// Defines the main and highest struct of Coaster.
@@ -113,7 +113,7 @@ pub trait IBackend
     }
 
     /// Synchronize backend.
-    fn synchronize(&self) -> Result<(), ::framework::Error> { Ok(()) }
+    fn synchronize(&self) -> Result<(), crate::framework::Error> { Ok(()) }
 }
 
 #[derive(Debug, Clone)]

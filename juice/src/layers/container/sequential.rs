@@ -1,15 +1,15 @@
 //! A container layer that runs operations sequentially on the contained layers.
 
-use capnp_util::*;
-use co::{IBackend, SharedTensor};
-use layer::*;
-use juice_capnp::sequential_config as capnp_config;
-use juice_capnp::shaped_input as capnp_shaped_input;
+use crate::capnp_util::*;
+use crate::co::{IBackend, SharedTensor};
+use crate::layer::*;
+use crate::juice_capnp::sequential_config as capnp_config;
+use crate::juice_capnp::shaped_input as capnp_shaped_input;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use util::{ArcLock, LayerOps};
+use crate::util::{ArcLock, LayerOps};
 
 #[derive(Debug)]
 /// Sequential Layer
@@ -165,7 +165,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
         } else {
             info!("Input {} -> {}", self.input_data_tensors.len(), tensor_name);
 
-            let ibackend: Rc<IBackend<F = B::F>> = backend;
+            let ibackend: Rc<dyn IBackend<F = B::F>> = backend;
             let data_tensor: ArcLock<SharedTensor<f32>> = Arc::new(RwLock::new(SharedTensor::new(&input_shape)));
             let gradient_tensor: ArcLock<SharedTensor<f32>> = Arc::new(RwLock::new(SharedTensor::new(&input_shape)));
 
@@ -410,7 +410,7 @@ impl SequentialConfig {
         let ref name = input.0;
         let ref shape = input.1;
         builder.set_name(name);
-        let mut dimensions = builder.borrow().init_shape(shape.len() as u32);
+        let mut dimensions = builder.reborrow().init_shape(shape.len() as u32);
         for (i, dim) in shape.iter().enumerate() {
             dimensions.set(i as u32, *dim as u64);
         }
@@ -423,16 +423,16 @@ impl<'a> CapnpWrite<'a> for SequentialConfig {
     /// Write the SequentialConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
         {
-            let mut layers = builder.borrow().init_layers(self.layers.len() as u32);
+            let mut layers = builder.reborrow().init_layers(self.layers.len() as u32);
             for (i, layer) in self.layers.iter().enumerate() {
-                let mut layer_config = layers.borrow().get(i as u32);
+                let mut layer_config = layers.reborrow().get(i as u32);
                 layer.write_capnp(&mut layer_config);
             }
         }
         {
-            let mut inputs = builder.borrow().init_inputs(self.inputs.len() as u32);
+            let mut inputs = builder.reborrow().init_inputs(self.inputs.len() as u32);
             for (i, _) in self.inputs.iter().enumerate() {
-                let mut shaped_input = inputs.borrow().get(i as u32);
+                let mut shaped_input = inputs.reborrow().get(i as u32);
                 self.write_capnp_shaped_input(&mut shaped_input, i);
             }
         }

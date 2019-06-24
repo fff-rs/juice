@@ -12,11 +12,11 @@ extern crate coaster as co;
 extern crate murmurhash3 as murmur3;
 extern crate image as image_crate;
 
-pub use image::Image;
-pub use word::Word;
-pub use transformer::Transformer;
+pub use crate::image::Image;
+pub use crate::word::Word;
+pub use crate::transformer::Transformer;
 
-pub use modifier::Set;
+pub use crate::modifier::Set;
 
 /// Transformer
 pub mod transformer;

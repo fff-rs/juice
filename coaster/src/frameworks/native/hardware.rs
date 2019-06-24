@@ -1,6 +1,6 @@
 //! Provides a hardware aka. the host CPU.
 
-use hardware::{IHardware, HardwareType};
+use crate::hardware::{IHardware, HardwareType};
 
 #[derive(Debug, Clone)]
 /// Defines the host CPU Hardware.

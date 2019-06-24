@@ -6,14 +6,14 @@
 pub mod confusion_matrix;
 
 pub use self::confusion_matrix::ConfusionMatrix;
-use co::prelude::*;
-use layer::*;
-use layers::SequentialConfig;
-use solvers::*;
+use crate::co::prelude::*;
+use crate::layer::*;
+use crate::layers::SequentialConfig;
+use crate::solvers::*;
 use std::marker::PhantomData;
 
 use std::rc::Rc;
-use util::{ArcLock, LayerOps, SolverOps};
+use crate::util::{ArcLock, LayerOps, SolverOps};
 
 #[derive(Debug)]
 /// Solver that optimizes a [Layer][1] with a given objective.
@@ -22,7 +22,7 @@ pub struct Solver<SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32
     net: Layer<B>,
     objective: Layer<SolverB>,
     /// The implementation of the Solver
-    pub worker: Box<ISolver<SolverB, B>>,
+    pub worker: Box<dyn ISolver<SolverB, B>>,
 
     config: SolverConfig,
 
@@ -130,7 +130,7 @@ pub trait ISolver<SolverB, B: IBackend + LayerOps<f32>> {
     fn backend(&self) -> &SolverB;
 }
 
-impl<SolverB, B: IBackend + LayerOps<f32>> ::std::fmt::Debug for ISolver<SolverB, B> {
+impl<SolverB, B: IBackend + LayerOps<f32>> ::std::fmt::Debug for dyn ISolver<SolverB, B> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "({})", "ILayer")
     }
@@ -339,7 +339,7 @@ impl SolverKind {
         (&self,
          backend: Rc<B>,
          config: &SolverConfig)
-         -> Box<ISolver<B, NetB>> {
+         -> Box<dyn ISolver<B, NetB>> {
         match *self {
             SolverKind::SGD(sgd) => sgd.with_config(backend, config),
         }
@@ -360,7 +360,7 @@ impl SGDKind {
         (&self,
          backend: Rc<B>,
          config: &SolverConfig)
-         -> Box<ISolver<B, NetB>> {
+         -> Box<dyn ISolver<B, NetB>> {
         match *self {
             SGDKind::Momentum => Box::new(Momentum::<B>::new(backend)),
         }

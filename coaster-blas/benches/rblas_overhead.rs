@@ -7,8 +7,8 @@ extern crate rblas;
 extern crate rand;
 
 use test::Bencher;
-use co::prelude::*;
-use co_blas::plugin::*;
+use crate::co::prelude::*;
+use crate::co_blas::plugin::*;
 
 use rand::{thread_rng, Rng};
 

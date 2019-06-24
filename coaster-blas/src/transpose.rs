@@ -2,7 +2,7 @@
 #[cfg(feature = "cuda")]
 use std::convert::From;
 #[cfg(feature = "cuda")]
-use cublas::api::Operation;
+use crate::cublas::api::Operation;
 
 #[derive(Debug, Copy, Clone)]
 /// Possible transpose operations that can be applied in Level 2 and Level 3 BLAS operations.
