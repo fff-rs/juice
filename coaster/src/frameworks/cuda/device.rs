@@ -3,7 +3,7 @@
 use hardware::{IHardware, HardwareType};
 use super::api::{Driver, DriverFFI};
 use std::io::Cursor;
-use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
+use byteorder::{LittleEndian, ReadBytesExt};
 
 #[derive(Debug, Clone)]
 /// Defines a Cuda Device.

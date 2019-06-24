@@ -21,7 +21,7 @@ modifier = "0.1"
 clippy = { version = "0.0.54", optional = true }
 
 [features]
-default = ["native"]
+default = ["native", "cuda"]
 native = []
 cuda = ["coaster/cuda"]
 opencl = ["coaster/opencl"]

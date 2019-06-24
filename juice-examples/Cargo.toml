@@ -29,7 +29,7 @@ serde = { version = "1", features = ["derive"] }
 
 
 [features]
-default = ["native", "opencl", "cuda"]
+default = ["native", "cuda"]
 native = ["juice/native", "coaster/native"]
 opencl = ["juice/opencl", "coaster/opencl"]
 cuda = ["juice/cuda", "coaster/cuda"]

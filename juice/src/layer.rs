@@ -39,7 +39,7 @@ pub struct Layer<B: IBackend> {
 
     backend: Rc<B>,
 
-    /// Determines if layer will skip comutations for [backward][1] step.
+    /// Determines if layer will skip computations for [backward][1] step.
     /// [1]: ./trait.ILayer.html#method.backward
     needs_backward: bool,
 

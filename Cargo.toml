@@ -24,3 +24,6 @@ lto = false
 debug-assertions = true
 codegen-units = 2
 
+
+[profile.test]
+default = ["native", "cuda"]
