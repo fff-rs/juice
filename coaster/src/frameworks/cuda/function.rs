@@ -1,6 +1,6 @@
 //! Provides a Rust wrapper around Cuda's Function.
 
-use operation::IOperation;
+use crate::operation::IOperation;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Function.

@@ -1,10 +1,10 @@
 use std::fmt;
 
-use co::prelude::*;
-use co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
+use crate::co::plugin::numeric_helpers::Float;
 
-use plugin::Dropout;
-use tests::{Epsilon, filled_tensor, tensor_assert_eq_tensor, tensor_assert_ne_tensor};
+use crate::plugin::Dropout;
+use crate::tests::{Epsilon, filled_tensor, tensor_assert_eq_tensor, tensor_assert_ne_tensor};
 
 pub fn test_dropout<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,
@@ -13,7 +13,7 @@ pub fn test_dropout<T, F: IFramework>(backend: Backend<F>)
     let test = |dims : &[usize],
                 probability : f32,
                 seed : u64,
-                tensor_assert_func : &Fn(&SharedTensor<T>, &SharedTensor<T>, f64) | {
+                tensor_assert_func : &dyn Fn(&SharedTensor<T>, &SharedTensor<T>, f64) | {
 
         let conf = Dropout::<T>::new_dropout_config(&backend, probability, seed)
             .unwrap();

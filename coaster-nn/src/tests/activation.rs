@@ -4,11 +4,11 @@
 // evil by itself and they'd add another level of indirection. Not nice.
 use std::fmt;
 
-use co::prelude::*;
-use co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
+use crate::co::plugin::numeric_helpers::Float;
 
-use plugin::{Relu, ReluPointwise, Sigmoid, SigmoidPointwise, Tanh, TanhPointwise};
-use tests::{Epsilon, filled_tensor, tensor_assert_eq};
+use crate::plugin::{Relu, ReluPointwise, Sigmoid, SigmoidPointwise, Tanh, TanhPointwise};
+use crate::tests::{Epsilon, filled_tensor, tensor_assert_eq};
 
 const DIMS:   [usize; 4] = [3, 1, 2, 2];
 

@@ -18,13 +18,13 @@
 //! // let backend: Backend = framework.create_backend();
 //! ```
 
-use hardware::IHardware;
-use device::IDevice;
-use binary::IBinary;
+use crate::hardware::IHardware;
+use crate::device::IDevice;
+use crate::binary::IBinary;
 #[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
 #[cfg(feature = "cuda")]
-use frameworks::cuda::DriverError as CudaError;
+use crate::frameworks::cuda::DriverError as CudaError;
 use std::error;
 use std::fmt;
 
@@ -59,7 +59,7 @@ pub trait IFramework {
     fn binary(&self) -> &Self::B;
 
     /// Initializes a new Device from the provided hardwares.
-    fn new_device(&self, &[Self::H]) -> Result<Self::D, Error>;
+    fn new_device(&self, _: &[Self::H]) -> Result<Self::D, Error>;
 }
 
 #[derive(Debug)]
@@ -98,7 +98,7 @@ impl error::Error for Error {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => Some(err),
@@ -123,8 +123,8 @@ impl From<CudaError> for Error {
     }
 }
 
-impl From<Error> for ::error::Error {
-    fn from(err: Error) -> ::error::Error {
-        ::error::Error::Framework(err)
+impl From<Error> for crate::error::Error {
+    fn from(err: Error) -> crate::error::Error {
+        crate::error::Error::Framework(err)
     }
 }

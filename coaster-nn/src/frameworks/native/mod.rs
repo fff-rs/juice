@@ -4,12 +4,12 @@
 #![allow(unused_variables)]
 #![allow(unreachable_code)]
 
-use co::Error;
-use co::plugin::Error as PluginError;
-use co::plugin::numeric_helpers::Float;
-use co::plugin::numeric_helpers::Bounded;
-use co::prelude::*;
-use plugin::*;
+use crate::co::Error;
+use crate::co::plugin::Error as PluginError;
+use crate::co::plugin::numeric_helpers::Float;
+use crate::co::plugin::numeric_helpers::Bounded;
+use crate::co::prelude::*;
+use crate::plugin::*;
 use std::cmp::PartialOrd;
 use std::fmt::Debug;
 use rand::{Rng,SeedableRng};
@@ -112,7 +112,7 @@ impl<T> NNOperationConfig<T> for helper::DropoutConfig
 {
 }
 
-impl<T> ::plugin::Convolution<T> for Backend<Native>
+impl<T> Convolution<T> for Backend<Native>
     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
     fn new_convolution_config(&self,
@@ -396,7 +396,7 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
                                filter_diff: &mut SharedTensor<T>,
                                workspace: &mut SharedTensor<u8>,
                                config: &Self::CC)
-                               -> Result<(), ::co::error::Error> {
+                               -> Result<(), Error> {
         unimplemented!()
     }
 
@@ -406,20 +406,20 @@ impl<T> ::plugin::Convolution<T> for Backend<Native>
                              result_diff: &mut SharedTensor<T>,
                              workspace: &mut SharedTensor<u8>,
                              config: &Self::CC)
-                             -> Result<(), ::co::error::Error> {
+                             -> Result<(), Error> {
         unimplemented!()
     }
 }
 
 
-impl<T> ::plugin::Pooling<T> for Backend<Native>
+impl<T> Pooling<T> for Backend<Native>
     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
 {
     fn new_pooling_config(&self,
                           window: &[i32],
                           stride: &[i32],
                           padding: &[i32])
-                          -> Result<Self::CPOOL, ::co::error::Error> {
+                          -> Result<Self::CPOOL, Error> {
         Ok(helper::PoolingConfig {
                window: window.to_vec(),
                stride: stride.to_vec(),
@@ -431,7 +431,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                    x: &SharedTensor<T>,
                    result: &mut SharedTensor<T>,
                    config: &Self::CPOOL)
-                   -> Result<(), ::co::error::Error> {
+                   -> Result<(), Error> {
         let dev = self.device();
 
         let input_dim = x.desc(); // [4, 4, 4, 4]
@@ -613,7 +613,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                         result: &SharedTensor<T>,
                         result_diff: &mut SharedTensor<T>,
                         config: &Self::CPOOL)
-                        -> Result<(), ::co::error::Error> {
+                        -> Result<(), Error> {
 
         let dev = self.device();
 
@@ -805,7 +805,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                    x: &SharedTensor<T>,
                    result: &mut SharedTensor<T>,
                    config: &Self::CPOOL)
-                   -> Result<(), ::co::error::Error> {
+                   -> Result<(), Error> {
         return Err(Error::Plugin(PluginError::Plugin("Unimplemented.")));
     }
 
@@ -815,7 +815,7 @@ impl<T> ::plugin::Pooling<T> for Backend<Native>
                         result: &SharedTensor<T>,
                         result_diff: &mut SharedTensor<T>,
                         config: &Self::CPOOL)
-                        -> Result<(), ::co::error::Error> {
+                        -> Result<(), Error> {
         return Err(Error::Plugin(PluginError::Plugin("Unimplemented.")));
     }
 }
@@ -828,16 +828,16 @@ impl<T> Dropout<T> for Backend<Native>
                       probability: f32,
                       seed: u64,
                       )
-                      -> Result<Self::CDROP, ::co::error::Error> {
+                      -> Result<Self::CDROP, Error> {
         Ok(helper::DropoutConfig{probability, seed})
     }
 
     // TODO this is supposed to be an in place operation
     fn dropout(&self,
-           x: &::co::tensor::SharedTensor<T>,
-           result: &mut ::co::tensor::SharedTensor<T>,
+           x: &SharedTensor<T>,
+           result: &mut SharedTensor<T>,
            config: &Self::CDROP)
-           -> Result<(), ::co::error::Error> {
+           -> Result<(), Error> {
         let dev = self.device();
 
         let input_dim = x.desc(); // [4, 4, 4, 4]
@@ -867,12 +867,12 @@ impl<T> Dropout<T> for Backend<Native>
 
     #[allow(unused_variables)]
     fn dropout_grad(&self,
-                x: &::co::tensor::SharedTensor<T>,
-                x_diff: &::co::tensor::SharedTensor<T>,
-                result: &::co::tensor::SharedTensor<T>,
-                result_diff: &mut ::co::tensor::SharedTensor<T>,
+                x: &SharedTensor<T>,
+                x_diff: &SharedTensor<T>,
+                result: &SharedTensor<T>,
+                result_diff: &mut SharedTensor<T>,
                 config: &Self::CDROP)
-                -> Result<(), ::co::error::Error> {
+                -> Result<(), Error> {
         // TODO check if there is anything to do here?
         Ok(())
     }

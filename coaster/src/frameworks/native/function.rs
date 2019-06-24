@@ -1,6 +1,6 @@
 //! Provides a operation on native CPU.
 
-use operation::IOperation;
+use crate::operation::IOperation;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a host CPU operation.

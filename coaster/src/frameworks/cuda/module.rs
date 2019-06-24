@@ -1,6 +1,6 @@
 //! Provides a Rust wrapper around Cuda's Module.
 
-use binary::IBinary;
+use crate::binary::IBinary;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a Cuda Module.

@@ -3,7 +3,7 @@ extern crate coaster as co;
 #[cfg(test)]
 #[cfg(feature = "native")]
 mod framework_native_spec {
-    use co::prelude::*;
+    use crate::co::prelude::*;
 
     #[test]
     fn it_works() {

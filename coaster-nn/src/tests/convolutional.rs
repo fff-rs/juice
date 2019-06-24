@@ -1,10 +1,10 @@
 use std::fmt;
 
-use co::prelude::*;
-use co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
+use crate::co::plugin::numeric_helpers::Float;
 
-use plugin::{Convolution, LRN, ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo, ConvolutionConfig};
-use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
+use crate::plugin::{Convolution, LRN, ConvForwardAlgo, ConvBackwardFilterAlgo, ConvBackwardDataAlgo, ConvolutionConfig};
+use crate::tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor};
 
 pub fn test_lrn<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,

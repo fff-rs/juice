@@ -16,11 +16,11 @@
 //! - `H` : height
 //! - `W` : width
 
-use capnp_util::*;
-use co::{IBackend, SharedTensor};
-use layer::*;
-use juice_capnp::reshape_config as capnp_config;
-use util::ArcLock;
+use crate::capnp_util::*;
+use crate::co::{IBackend, SharedTensor};
+use crate::layer::*;
+use crate::juice_capnp::reshape_config as capnp_config;
+use crate::util::ArcLock;
 
 #[derive(Debug, Clone)]
 /// Reshape Utility Layer
@@ -102,7 +102,7 @@ impl<'a> CapnpWrite<'a> for ReshapeConfig {
 
     /// Write the ReshapeConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
-        let mut shape = builder.borrow().init_shape(self.shape.len() as u32);
+        let mut shape = builder.reborrow().init_shape(self.shape.len() as u32);
         for (i, dim) in self.shape.iter().enumerate() {
             shape.set(i as u32, *dim as u64);
         }

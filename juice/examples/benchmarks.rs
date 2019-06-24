@@ -5,7 +5,7 @@ extern crate env_logger;
 extern crate coaster as co;
 extern crate juice;
 
-use co::prelude::*;
+use crate::co::prelude::*;
 use std::env;
 
 use std::rc::Rc;

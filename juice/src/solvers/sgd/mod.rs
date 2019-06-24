@@ -33,7 +33,7 @@ macro_rules! impl_isolver_sgd {
                     let shape = weight_gradient.read().unwrap().desc().clone();
                     let mut tensor = SharedTensor::new(&shape);
 
-                    let filler = ::weight::FillerType::Constant { value: 0f32 };
+                    let filler = crate::weight::FillerType::Constant { value: 0f32 };
                     filler.fill(&mut tensor);
 
                     let history_tensor = Arc::new(RwLock::new(tensor));

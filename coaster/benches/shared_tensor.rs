@@ -5,17 +5,17 @@ extern crate coaster as co;
 extern crate rand;
 
 use test::Bencher;
-use co::device::IDevice;
-use co::backend::{Backend, BackendConfig};
-use co::framework::IFramework;
-use co::tensor::SharedTensor;
+use crate::co::device::IDevice;
+use crate::co::backend::{Backend, BackendConfig};
+use crate::co::framework::IFramework;
+use crate::co::tensor::SharedTensor;
 
 #[cfg(feature = "native")]
-use co::frameworks::Native;
+use crate::co::frameworks::Native;
 #[cfg(feature = "opencl")]
 use co::frameworks::OpenCL;
 #[cfg(feature = "cuda")]
-use co::frameworks::Cuda;
+use crate::co::frameworks::Cuda;
 
 #[cfg(feature = "native")]
 fn native_backend() -> Backend<Native> {

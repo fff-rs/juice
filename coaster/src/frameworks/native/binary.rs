@@ -1,6 +1,6 @@
 //! Provides a binary on native CPU.
 
-use binary::IBinary;
+use crate::binary::IBinary;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a host CPU binary.

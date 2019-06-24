@@ -1,8 +1,8 @@
 use std::path::Path;
-use image_crate::{DynamicImage, ImageBuffer, open, load_from_memory};
+use crate::image_crate::{DynamicImage, ImageBuffer, open, load_from_memory};
 
-use {Set, Transformer};
-use transformer::TransformerError;
+use crate::{Set, Transformer};
+use crate::transformer::TransformerError;
 pub use self::modifiers::*;
 
 /// The Modifiers form `Image`

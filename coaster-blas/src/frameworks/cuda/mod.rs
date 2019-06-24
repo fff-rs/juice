@@ -4,9 +4,9 @@ use coaster::backend::Backend;
 use coaster::tensor::{SharedTensor, ITensorDesc};
 use coaster::plugin::Error as PluginError;
 use coaster::frameworks::cuda::Cuda;
-use cublas;
-use ::plugin::*;
-use ::transpose::Transpose;
+use crate::cublas;
+use crate::plugin::*;
+use crate::transpose::Transpose;
 
 #[macro_use]
 pub mod helper;

@@ -6,7 +6,7 @@ mod backend_spec {
     #[cfg(feature = "native")]
     mod native {
         use std::rc::Rc;
-        use co::prelude::*;
+        use crate::co::prelude::*;
 
         #[test]
         fn it_can_create_default_backend() {
@@ -23,14 +23,14 @@ mod backend_spec {
         }
 
         fn use_ibackend<B: IBackend>(backend: Rc<B>) {
-            let backend: Rc<IBackend<F=B::F>> = backend.clone();
+            let backend: Rc<dyn IBackend<F=B::F>> = backend.clone();
             backend.device();
         }
     }
 
     #[cfg(feature = "cuda")]
     mod cuda {
-        use co::*;
+        use crate::co::*;
 
         #[test]
         fn it_can_create_default_backend() {

@@ -31,10 +31,10 @@
 pub use self::sgd::Momentum;
 pub mod sgd;
 
-use co::{IBackend, SharedTensor};
-use layer::*;
-use solver::*;
-use util::*;
+use crate::co::{IBackend, SharedTensor};
+use crate::layer::*;
+use crate::solver::*;
+use crate::util::*;
 
 trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32>>
     : ISolver<SolverB, NetB> {

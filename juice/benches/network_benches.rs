@@ -7,7 +7,7 @@ extern crate coaster as co;
 extern crate juice;
 
 mod benches {
-    use co::prelude::*;
+    use crate::co::prelude::*;
     use juice::layer::*;
     use juice::layers::*;
     use std::rc::Rc;

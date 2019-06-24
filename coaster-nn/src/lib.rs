@@ -114,12 +114,11 @@ extern crate rcudnn as cudnn;
 extern crate libc;
 #[macro_use]
 extern crate lazy_static;
-#[macro_use]
 extern crate log;
 
 extern crate rand;
 
-pub use plugin::*;
+pub use crate::plugin::*;
 
 mod plugin;
 pub mod frameworks;

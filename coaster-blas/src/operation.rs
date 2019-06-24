@@ -2,7 +2,7 @@
 
 use coaster::tensor::SharedTensor;
 use coaster::plugin::Error;
-use ::transpose::Transpose;
+use crate::transpose::Transpose;
 
 /// Describes a Asum Operation.
 pub trait IOperationAsum<F> {

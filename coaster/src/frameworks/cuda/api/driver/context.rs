@@ -3,7 +3,7 @@
 //! A Coaster device can be understood as a synonym to Cuda's context.
 
 use super::{API, Error};
-use frameworks::cuda::Device;
+use crate::frameworks::cuda::Device;
 use super::ffi::*;
 use std::ptr;
 

@@ -1,10 +1,10 @@
 extern crate coaster as co;
 extern crate coaster_nn as nn;
-use co::prelude::*;
-use nn::*;
+use crate::co::prelude::*;
+use crate::nn::*;
 
 fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
-	let mut mem_buffer = mem.as_mut_slice::<T>();
+	let mem_buffer = mem.as_mut_slice::<T>();
 	for (index, datum) in data.iter().enumerate() {
 	    mem_buffer[index] = *datum;
 	}

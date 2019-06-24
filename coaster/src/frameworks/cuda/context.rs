@@ -1,12 +1,12 @@
 //! Provides a Rust wrapper around Cuda's context.
 
-use device::{IDevice, MemorySync};
-use device::Error as DeviceError;
+use crate::device::{IDevice, MemorySync};
+use crate::device::Error as DeviceError;
 use super::api::DriverFFI;
 use super::{Driver, DriverError, Device};
 use super::memory::*;
-use frameworks::native::flatbox::FlatBox;
-use frameworks::native::device::Cpu;
+use crate::frameworks::native::flatbox::FlatBox;
+use crate::frameworks::native::device::Cpu;
 use std::any::Any;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
@@ -89,10 +89,10 @@ impl IDevice for Context {
 }
 
 impl MemorySync for Context {
-    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
+    fn sync_in(&self, my_memory: &mut dyn Any, src_device: &dyn Any, src_memory: &dyn Any)
                -> Result<(), DeviceError> {
         if let Some(_) = src_device.downcast_ref::<Cpu>() {
-            let mut my_mem = my_memory.downcast_mut::<Memory>().unwrap();
+            let my_mem = my_memory.downcast_mut::<Memory>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
 
             Ok(Driver::mem_cpy_h_to_d(src_mem, my_mem)?)
@@ -101,11 +101,11 @@ impl MemorySync for Context {
         }
     }
 
-    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
+    fn sync_out(&self, my_memory: &dyn Any, dst_device: &dyn Any, dst_memory: &mut dyn Any)
                 -> Result<(), DeviceError> {
         if let Some(_) = dst_device.downcast_ref::<Cpu>() {
             let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
-            let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
+            let dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
             Ok(Driver::mem_cpy_d_to_h(my_mem, dst_mem)?)
         } else {
             Err(DeviceError::NoMemorySyncRoute)

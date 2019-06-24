@@ -3,7 +3,7 @@ extern crate coaster as co;
 
 #[cfg(test)]
 mod layer_spec {
-    use co::prelude::*;
+    use crate::co::prelude::*;
     use juice::layer::*;
     use juice::weight::{DimCheckMode, WeightConfig};
     use std::rc::Rc;
@@ -40,7 +40,7 @@ mod layer_spec {
     #[cfg(feature="native")]
     mod native {
         use super::native_backend;
-        use co::prelude::*;
+        use crate::co::prelude::*;
         use juice::layer::*;
         use juice::layers::*;
 
@@ -101,7 +101,7 @@ mod layer_spec {
     #[cfg(feature="cuda")]
     mod cuda {
         use super::{native_backend, cuda_backend};
-        use co::prelude::*;
+        use crate::co::prelude::*;
         use juice::layer::*;
         use juice::layers::*;
         use juice::util::write_to_memory;

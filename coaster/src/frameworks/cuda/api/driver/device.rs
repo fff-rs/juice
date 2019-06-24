@@ -1,7 +1,7 @@
 //! Provides the Cuda API with its device functionality.
 
-use frameworks::cuda::{Device, DeviceInfo};
-use byteorder::{ByteOrder, LittleEndian, WriteBytesExt};
+use crate::frameworks::cuda::{Device, DeviceInfo};
+use byteorder::{LittleEndian, WriteBytesExt};
 use super::ffi::*;
 use super::{API, Error};
 

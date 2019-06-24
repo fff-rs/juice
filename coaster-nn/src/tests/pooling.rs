@@ -1,11 +1,11 @@
 use std::fmt;
 
-use co::prelude::*;
-use co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
+use crate::co::plugin::numeric_helpers::Float;
 
-use plugin::Pooling;
-use tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, uniformly_random_tensor};
-use rand::distributions::{range, IndependentSample, Range};
+use crate::plugin::Pooling;
+use crate::tests::{Epsilon, filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, uniformly_random_tensor};
+
 
 pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
     where T: Float + Epsilon + fmt::Debug,

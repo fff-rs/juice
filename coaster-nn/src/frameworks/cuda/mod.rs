@@ -1,14 +1,14 @@
 //! Provides NN for a CUDA backend.
 #![allow(missing_docs)]
 
-use co::Error;
-use co::plugin::Error as PluginError;
-use co::plugin::numeric_helpers::Float;
-use co::prelude::*;
-use cudnn::*;
+use crate::co::Error;
+use crate::co::plugin::Error as PluginError;
+use crate::co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
+use crate::cudnn::*;
 
-pub use cudnn::utils::DataTypeInfo;
-use plugin::*;
+pub use crate::cudnn::utils::DataTypeInfo;
+use crate::plugin::*;
 
 #[macro_use]
 pub mod helper;
@@ -39,8 +39,8 @@ pub trait ICudnnDesc<T> {
 impl ConvForwardAlgo {
     /// Tries to return the matching cuDNN type for the enum value.
     fn as_cudnn(&self) -> Result<cudnnConvolutionFwdAlgo_t, Error> {
-        use ConvForwardAlgo::*;
-        use cudnn::cudnnConvolutionFwdAlgo_t::*;
+        use crate::ConvForwardAlgo::*;
+        use crate::cudnn::cudnnConvolutionFwdAlgo_t::*;
         Ok(match *self {
                Auto => {
                    return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution forward algorithm from \
@@ -59,8 +59,8 @@ impl ConvForwardAlgo {
 
     /// Returns the matching enum value for a cuDNN algo.
     fn from_cudnn(algo: &cudnnConvolutionFwdAlgo_t) -> ConvForwardAlgo {
-        use ConvForwardAlgo::*;
-        use cudnn::cudnnConvolutionFwdAlgo_t::*;
+        use crate::ConvForwardAlgo::*;
+        use crate::cudnn::cudnnConvolutionFwdAlgo_t::*;
         match *algo {
             CUDNN_CONVOLUTION_FWD_ALGO_GEMM => GEMM,
             CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM => ImplicitGEMM,
@@ -101,8 +101,8 @@ impl ConvForwardAlgo {
 impl ConvBackwardFilterAlgo {
     /// Tries to return the matching cuDNN type for the enum value.
     fn as_cudnn(&self) -> Result<cudnnConvolutionBwdFilterAlgo_t, Error> {
-        use ConvBackwardFilterAlgo::*;
-        use cudnn::cudnnConvolutionBwdFilterAlgo_t::*;
+        use crate::ConvBackwardFilterAlgo::*;
+        use crate::cudnn::cudnnConvolutionBwdFilterAlgo_t::*;
         Ok(match *self {
                Auto => {
                    return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution backward filter algorithm from \
@@ -119,8 +119,8 @@ impl ConvBackwardFilterAlgo {
 
     /// Returns the matching enum value for a cuDNN algo.
     fn from_cudnn(algo: &cudnnConvolutionBwdFilterAlgo_t) -> ConvBackwardFilterAlgo {
-        use ConvBackwardFilterAlgo::*;
-        use cudnn::cudnnConvolutionBwdFilterAlgo_t::*;
+        use crate::ConvBackwardFilterAlgo::*;
+        use crate::cudnn::cudnnConvolutionBwdFilterAlgo_t::*;
         match *algo {
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0 => ImplicitGEMMSum,
             CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 => ImplicitGEMM,
@@ -158,8 +158,8 @@ impl ConvBackwardFilterAlgo {
 impl ConvBackwardDataAlgo {
     /// Tries to return the matching cuDNN type for the enum value.
     fn as_cudnn(&self) -> Result<cudnnConvolutionBwdDataAlgo_t, Error> {
-        use ConvBackwardDataAlgo::*;
-        use cudnn::cudnnConvolutionBwdDataAlgo_t::*;
+        use crate::ConvBackwardDataAlgo::*;
+        use crate::cudnn::cudnnConvolutionBwdDataAlgo_t::*;
         Ok(match *self {
                Auto => {
                    return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution backward data algorithm from \
@@ -177,8 +177,8 @@ impl ConvBackwardDataAlgo {
 
     /// Returns the matching enum value for a cuDNN algo.
     fn from_cudnn(algo: &cudnnConvolutionBwdDataAlgo_t) -> ConvBackwardDataAlgo {
-        use ConvBackwardDataAlgo::*;
-        use cudnn::cudnnConvolutionBwdDataAlgo_t::*;
+        use crate::ConvBackwardDataAlgo::*;
+        use crate::cudnn::cudnnConvolutionBwdDataAlgo_t::*;
         match *algo {
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 => ImplicitGEMMSum,
             CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 => ImplicitGEMM,
@@ -306,10 +306,10 @@ impl<T> Sigmoid<T> for Backend<Cuda>
     where T: Float + DataTypeInfo + Default
 {
     fn sigmoid(&self,
-               x: &::co::tensor::SharedTensor<T>,
-               result: &mut ::co::tensor::SharedTensor<T>)
-               -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+               x: &SharedTensor<T>,
+               result: &mut SharedTensor<T>)
+               -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -326,12 +326,12 @@ impl<T> Sigmoid<T> for Backend<Cuda>
     }
 
     fn sigmoid_grad(&self,
-                    x: &::co::tensor::SharedTensor<T>,
-                    x_diff: &::co::tensor::SharedTensor<T>,
-                    result: &::co::tensor::SharedTensor<T>,
-                    result_diff: &mut ::co::tensor::SharedTensor<T>)
-                    -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                    x: &SharedTensor<T>,
+                    x_diff: &SharedTensor<T>,
+                    result: &SharedTensor<T>,
+                    result_diff: &mut SharedTensor<T>)
+                    -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -353,7 +353,7 @@ impl<T> Sigmoid<T> for Backend<Cuda>
     }
 }
 
-impl<T> ConvolutionConfig<T> for ::cudnn::utils::ConvolutionConfig
+impl<T> ConvolutionConfig<T> for crate::cudnn::utils::ConvolutionConfig
     where T: Float + DataTypeInfo
 {
     fn workspace_size(&self) -> usize {
@@ -373,11 +373,11 @@ impl<T> Convolution<T> for Backend<Cuda>
                               algo_bwd_data: ConvBackwardDataAlgo,
                               stride: &[i32],
                               zero_padding: &[i32])
-                              -> Result<Self::CC, ::co::error::Error> {
+                              -> Result<Self::CC, Error> {
         let src_desc = src.cudnn_tensor_desc()?;
         let dest_desc = dest.cudnn_tensor_desc()?;
         let filter_desc = filter.cudnn_filter_desc()?;
-        let conv_desc = ::cudnn::ConvolutionDescriptor::new(zero_padding,
+        let conv_desc = crate::cudnn::ConvolutionDescriptor::new(zero_padding,
                                                             stride,
                                                             <T as DataTypeInfo>::cudnn_data_type())
                 .unwrap();
@@ -428,7 +428,7 @@ impl<T> Convolution<T> for Backend<Cuda>
             workspace_size_bwd_data = 8;
         }
 
-        Ok(::cudnn::utils::ConvolutionConfig::new(useable_algo_fwd.as_cudnn().unwrap(),
+        Ok(crate::cudnn::utils::ConvolutionConfig::new(useable_algo_fwd.as_cudnn().unwrap(),
                                                   workspace_size_fwd,
                                                   useable_algo_bwd_filter.as_cudnn().unwrap(),
                                                   workspace_size_bwd_filter,
@@ -443,8 +443,8 @@ impl<T> Convolution<T> for Backend<Cuda>
                    result: &mut SharedTensor<T>,
                    workspace: &mut SharedTensor<u8>,
                    config: &Self::CC)
-                   -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                   -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
 
         let r_desc = result.cudnn_tensor_desc()?;
         let f_mem = read!(filter, self);
@@ -471,8 +471,8 @@ impl<T> Convolution<T> for Backend<Cuda>
                                filter_diff: &mut SharedTensor<T>,
                                workspace: &mut SharedTensor<u8>,
                                config: &Self::CC)
-                               -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                               -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let s_mem = read!(src_data, self);
         let dd_mem = read!(dest_diff, self);
         let df_mem = write_only!(filter_diff, self);
@@ -496,8 +496,8 @@ impl<T> Convolution<T> for Backend<Cuda>
                              result_diff: &mut SharedTensor<T>,
                              workspace: &mut SharedTensor<u8>,
                              config: &Self::CC)
-                             -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                             -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
 
         let dr_desc = result_diff.cudnn_tensor_desc()?;
         let f_mem = read!(filter, self);
@@ -522,9 +522,9 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
     where T: Float + Default + DataTypeInfo
 {
     fn sigmoid_pointwise(&self,
-                         x: &mut ::co::tensor::SharedTensor<T>)
-                         -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                         x: &mut SharedTensor<T>)
+                         -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
@@ -540,10 +540,10 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
     }
 
     fn sigmoid_pointwise_grad(&self,
-                              x: &::co::tensor::SharedTensor<T>,
-                              x_diff: &mut ::co::tensor::SharedTensor<T>)
-                              -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                              x: &SharedTensor<T>,
+                              x_diff: &mut SharedTensor<T>)
+                              -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
@@ -569,10 +569,10 @@ impl<T> Relu<T> for Backend<Cuda>
     where T: Float + Default + DataTypeInfo
 {
     fn relu(&self,
-            x: &::co::tensor::SharedTensor<T>,
-            result: &mut ::co::tensor::SharedTensor<T>)
-            -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+            x: &SharedTensor<T>,
+            result: &mut SharedTensor<T>)
+            -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -588,12 +588,12 @@ impl<T> Relu<T> for Backend<Cuda>
     }
 
     fn relu_grad(&self,
-                 x: &::co::tensor::SharedTensor<T>,
-                 x_diff: &::co::tensor::SharedTensor<T>,
-                 result: &::co::tensor::SharedTensor<T>,
-                 result_diff: &mut ::co::tensor::SharedTensor<T>)
-                 -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                 x: &SharedTensor<T>,
+                 x_diff: &SharedTensor<T>,
+                 result: &SharedTensor<T>,
+                 result_diff: &mut SharedTensor<T>)
+                 -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -620,9 +620,9 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
     where T: Float + Default + DataTypeInfo
 {
     fn relu_pointwise(&self,
-                      x: &mut ::co::tensor::SharedTensor<T>)
-                      -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                      x: &mut SharedTensor<T>)
+                      -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
@@ -638,10 +638,10 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
     }
 
     fn relu_pointwise_grad(&self,
-                           x: &::co::tensor::SharedTensor<T>,
-                           x_diff: &mut ::co::tensor::SharedTensor<T>)
-                           -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                           x: &SharedTensor<T>,
+                           x_diff: &mut SharedTensor<T>)
+                           -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
@@ -667,10 +667,10 @@ impl<T> Tanh<T> for Backend<Cuda>
     where T: Float + Default + DataTypeInfo
 {
     fn tanh(&self,
-            x: &::co::tensor::SharedTensor<T>,
-            result: &mut ::co::tensor::SharedTensor<T>)
-            -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+            x: &SharedTensor<T>,
+            result: &mut SharedTensor<T>)
+            -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -686,12 +686,12 @@ impl<T> Tanh<T> for Backend<Cuda>
     }
 
     fn tanh_grad(&self,
-                 x: &::co::tensor::SharedTensor<T>,
-                 x_diff: &::co::tensor::SharedTensor<T>,
-                 result: &::co::tensor::SharedTensor<T>,
-                 result_diff: &mut ::co::tensor::SharedTensor<T>)
-                 -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                 x: &SharedTensor<T>,
+                 x_diff: &SharedTensor<T>,
+                 result: &SharedTensor<T>,
+                 result_diff: &mut SharedTensor<T>)
+                 -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -717,9 +717,9 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
     where T: Float + Default + DataTypeInfo
 {
     fn tanh_pointwise(&self,
-                      x: &mut ::co::tensor::SharedTensor<T>)
-                      -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                      x: &mut SharedTensor<T>)
+                      -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
         match CUDNN.tanh_forward(&CUDNN.init_activation().unwrap(),
@@ -734,10 +734,10 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
     }
 
     fn tanh_pointwise_grad(&self,
-                           x: &::co::tensor::SharedTensor<T>,
-                           x_diff: &mut ::co::tensor::SharedTensor<T>)
-                           -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                           x: &SharedTensor<T>,
+                           x_diff: &mut SharedTensor<T>)
+                           -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
@@ -762,10 +762,10 @@ impl<T> Softmax<T> for Backend<Cuda>
     where T: Float + Default + DataTypeInfo
 {
     fn softmax(&self,
-               x: &::co::tensor::SharedTensor<T>,
-               result: &mut ::co::tensor::SharedTensor<T>)
-               -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+               x: &SharedTensor<T>,
+               result: &mut SharedTensor<T>)
+               -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -780,11 +780,11 @@ impl<T> Softmax<T> for Backend<Cuda>
     }
 
     fn softmax_grad(&self,
-                    x: &::co::tensor::SharedTensor<T>,
-                    x_diff: &::co::tensor::SharedTensor<T>,
-                    result_diff: &mut ::co::tensor::SharedTensor<T>)
-                    -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                    x: &SharedTensor<T>,
+                    x_diff: &SharedTensor<T>,
+                    result_diff: &mut SharedTensor<T>)
+                    -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -806,10 +806,10 @@ impl<T> LogSoftmax<T> for Backend<Cuda>
     where T: Float + Default + DataTypeInfo
 {
     fn log_softmax(&self,
-                   x: &::co::tensor::SharedTensor<T>,
-                   result: &mut ::co::tensor::SharedTensor<T>)
-                   -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                   x: &SharedTensor<T>,
+                   result: &mut SharedTensor<T>)
+                   -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -823,11 +823,11 @@ impl<T> LogSoftmax<T> for Backend<Cuda>
         }
     }
     fn log_softmax_grad(&self,
-                    x: &::co::tensor::SharedTensor<T>,
-                    x_diff: &::co::tensor::SharedTensor<T>,
-                    result_diff: &mut ::co::tensor::SharedTensor<T>)
-                    -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                    x: &SharedTensor<T>,
+                    x_diff: &SharedTensor<T>,
+                    result_diff: &mut SharedTensor<T>)
+                    -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -854,16 +854,16 @@ impl<T> LRN<T> for Backend<Cuda>
                       alpha: f64,
                       beta: f64,
                       k: f64)
-                      -> Result<Self::CLRN, ::co::error::Error> {
+                      -> Result<Self::CLRN, Error> {
         Ok(CUDNN.init_normalization(n, alpha, beta, k).unwrap())
     }
 
     fn lrn(&self,
-           x: &::co::tensor::SharedTensor<T>,
-           result: &mut ::co::tensor::SharedTensor<T>,
+           x: &SharedTensor<T>,
+           result: &mut SharedTensor<T>,
            config: &Self::CLRN)
-           -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+           -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -880,13 +880,13 @@ impl<T> LRN<T> for Backend<Cuda>
 
     #[allow(unused_variables)]
     fn lrn_grad(&self,
-                x: &::co::tensor::SharedTensor<T>,
-                x_diff: &::co::tensor::SharedTensor<T>,
-                result: &::co::tensor::SharedTensor<T>,
-                result_diff: &mut ::co::tensor::SharedTensor<T>,
+                x: &SharedTensor<T>,
+                x_diff: &SharedTensor<T>,
+                result: &SharedTensor<T>,
+                result_diff: &mut SharedTensor<T>,
                 config: &Self::CLRN)
-                -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -915,23 +915,23 @@ impl<T> Pooling<T> for Backend<Cuda>
                           window: &[i32],
                           stride: &[i32],
                           padding: &[i32])
-                          -> Result<Self::CPOOL, ::co::error::Error> {
-        let pooling_avg = ::cudnn::PoolingDescriptor::new(::cudnn::cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING, window, padding, stride).unwrap();
+                          -> Result<Self::CPOOL, Error> {
+        let pooling_avg = crate::cudnn::PoolingDescriptor::new(crate::cudnn::cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_EXCLUDE_PADDING, window, padding, stride).unwrap();
         let pooling_max =
-            ::cudnn::PoolingDescriptor::new(::cudnn::cudnnPoolingMode_t::CUDNN_POOLING_MAX,
+            crate::cudnn::PoolingDescriptor::new(crate::cudnn::cudnnPoolingMode_t::CUDNN_POOLING_MAX,
                                             window,
                                             padding,
                                             stride)
                     .unwrap();
-        Ok(::cudnn::utils::PoolingConfig::new(pooling_avg, pooling_max))
+        Ok(crate::cudnn::utils::PoolingConfig::new(pooling_avg, pooling_max))
     }
 
     fn pooling_max(&self,
-                   x: &::co::tensor::SharedTensor<T>,
-                   result: &mut ::co::tensor::SharedTensor<T>,
+                   x: &SharedTensor<T>,
+                   result: &mut SharedTensor<T>,
                    config: &Self::CPOOL)
-                   -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                   -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
 
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
@@ -949,14 +949,14 @@ impl<T> Pooling<T> for Backend<Cuda>
 
     #[allow(unused_variables)]
     fn pooling_max_grad(&self,
-                        x: &::co::tensor::SharedTensor<T>,
-                        x_diff: &::co::tensor::SharedTensor<T>,
-                        result: &::co::tensor::SharedTensor<T>,
-                        result_diff: &mut ::co::tensor::SharedTensor<T>,
+                        x: &SharedTensor<T>,
+                        x_diff: &SharedTensor<T>,
+                        result: &SharedTensor<T>,
+                        result_diff: &mut SharedTensor<T>,
                         config: &Self::CPOOL)
-                        -> Result<(), ::co::error::Error> {
+                        -> Result<(), Error> {
 
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -978,11 +978,11 @@ impl<T> Pooling<T> for Backend<Cuda>
     }
 
     fn pooling_avg(&self,
-                   x: &::co::tensor::SharedTensor<T>,
-                   result: &mut ::co::tensor::SharedTensor<T>,
+                   x: &SharedTensor<T>,
+                   result: &mut SharedTensor<T>,
                    config: &Self::CPOOL)
-                   -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                   -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -999,13 +999,13 @@ impl<T> Pooling<T> for Backend<Cuda>
 
     #[allow(unused_variables)]
     fn pooling_avg_grad(&self,
-                        x: &::co::tensor::SharedTensor<T>,
-                        x_diff: &::co::tensor::SharedTensor<T>,
-                        result: &::co::tensor::SharedTensor<T>,
-                        result_diff: &mut ::co::tensor::SharedTensor<T>,
+                        x: &SharedTensor<T>,
+                        x_diff: &SharedTensor<T>,
+                        result: &SharedTensor<T>,
+                        result_diff: &mut SharedTensor<T>,
                         config: &Self::CPOOL)
-                        -> Result<(), ::co::error::Error> {
-        let scal_params: ::cudnn::utils::ScalParams<T> = ::cudnn::utils::ScalParams::default();
+                        -> Result<(), Error> {
+        let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
@@ -1036,15 +1036,15 @@ impl<T> Dropout<T> for Backend<Cuda>
                       probability: f32,
                       seed: u64,
                       )
-                      -> Result<Self::CDROP, ::co::error::Error> {
+                      -> Result<Self::CDROP, Error> {
         Ok(CUDNN.init_dropout(probability, seed).unwrap())
     }
 
     fn dropout(&self,
-           x: &::co::tensor::SharedTensor<T>,
-           result: &mut ::co::tensor::SharedTensor<T>,
+           x: &SharedTensor<T>,
+           result: &mut SharedTensor<T>,
            config: &Self::CDROP)
-           -> Result<(), ::co::error::Error> {
+           -> Result<(), Error> {
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
@@ -1061,12 +1061,12 @@ impl<T> Dropout<T> for Backend<Cuda>
 
     #[allow(unused_variables)]
     fn dropout_grad(&self,
-                x: &::co::tensor::SharedTensor<T>,
-                x_diff: &::co::tensor::SharedTensor<T>,
-                result: &::co::tensor::SharedTensor<T>,
-                result_diff: &mut ::co::tensor::SharedTensor<T>,
+                x: &SharedTensor<T>,
+                x_diff: &SharedTensor<T>,
+                result: &SharedTensor<T>,
+                result_diff: &mut SharedTensor<T>,
                 config: &Self::CDROP)
-                -> Result<(), ::co::error::Error> {
+                -> Result<(), Error> {
         // TODO what to do with the gradient? should be all zeroes since this is supposed to be a `nop` but I am not 100% sure about the nv implementations
         // let dr_desc = result_diff.cudnn_tensor_desc()?;
         // let x_mem = read!(x, self);

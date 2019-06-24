@@ -6,13 +6,13 @@ use std::{error, fmt};
 /// Defines the set of available Coaster error types.
 pub enum Error {
     /// Failure related to the Framework implementation.
-    Framework(::framework::Error),
+    Framework(crate::framework::Error),
     /// Failure related to the Tensor.
-    Tensor(::tensor::Error),
+    Tensor(crate::tensor::Error),
     /// Failure at Plugin Operation.
-    Plugin(::plugin::Error),
+    Plugin(crate::plugin::Error),
     /// Failure related to a Device.
-    Device(::device::Error),
+    Device(crate::device::Error),
 }
 
 impl fmt::Display for Error {
@@ -36,7 +36,7 @@ impl error::Error for Error {
         }
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             Error::Framework(ref err) => Some(err),
             Error::Tensor(ref err) => Some(err),

@@ -2,7 +2,7 @@ extern crate coaster as co;
 
 #[cfg(test)]
 mod tensor_spec {
-    use co::prelude::*;
+    use crate::co::prelude::*;
 
     #[test]
     fn it_returns_correct_tensor_desc_stride() {

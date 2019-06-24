@@ -4,19 +4,19 @@ extern crate coaster_blas as co_blas;
 extern crate coaster as co;
 
 use std::fmt;
-use co::backend::{Backend, IBackend};
-use co::framework::{IFramework};
+use crate::co::backend::{Backend, IBackend};
+use crate::co::framework::{IFramework};
 
-use co::plugin::numeric_helpers::{cast, Float, NumCast};
-use co::tensor::{SharedTensor,ITensorDesc};
-use co_blas::plugin::*;
-use co_blas::transpose::Transpose;
+use crate::co::plugin::numeric_helpers::{cast, Float, NumCast};
+use crate::co::tensor::{SharedTensor,ITensorDesc};
+use crate::co_blas::plugin::*;
+use crate::co_blas::transpose::Transpose;
 
 #[cfg(feature = "native")]
-use co::frameworks::Native;
+use crate::co::frameworks::Native;
 
 #[cfg(feature = "cuda")]
-use co::frameworks::Cuda;
+use crate::co::frameworks::Cuda;
 
 #[cfg(feature = "native")]
 fn get_native_backend() -> Backend<Native> {
@@ -40,7 +40,7 @@ pub fn write_to_tensor<T>(xs: &mut SharedTensor<T>, data: &[f64])
     let native_dev = native.device();
     {
         let mem = xs.write_only(native_dev).unwrap();
-        let mut mem_buffer = mem.as_mut_slice::<T>();
+        let mem_buffer = mem.as_mut_slice::<T>();
         for (i, x) in data.iter().enumerate() {
             mem_buffer[i] = cast::<_, T>(*x).unwrap();
         }

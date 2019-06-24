@@ -13,13 +13,13 @@
 //! into the same direction you will reach the optimum faster.
 //! It also makes solving more stable.
 
-use co::prelude::*;
-use layer::*;
-use solver::*;
-use solvers::SGDSolver;
+use crate::co::prelude::*;
+use crate::layer::*;
+use crate::solver::*;
+use crate::solvers::SGDSolver;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use util::*;
+use crate::util::*;
 
 #[derive(Debug)]
 /// Stochastic Gradient Descent with Momentum.
@@ -64,9 +64,9 @@ impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGD
                             global_lr: &f32,
                             blob_lr: &f32) {
         // PERF: check if value is changed before writing it
-        ::weight::FillerType::Constant { value: global_lr * blob_lr }.fill(&mut self.lr);
+        crate::weight::FillerType::Constant { value: global_lr * blob_lr }.fill(&mut self.lr);
 
-        ::weight::FillerType::Constant { value: config.momentum }.fill(&mut self.momentum);
+        crate::weight::FillerType::Constant { value: config.momentum }.fill(&mut self.momentum);
 
         let backend = ISolver::<B, NetB>::backend(self);
         let device = IBackend::device(backend);

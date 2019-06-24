@@ -13,16 +13,16 @@
 //! [cs231n_convnets]: https://cs231n.github.io/convolutional-networks
 
 use super::FilterLayer;
-use capnp_util::*;
-use co::prelude::*;
-use conn;
-use conn::ConvolutionConfig as connConvolutionConfig;
-use layer::*;
-use juice_capnp::convolution_config as capnp_config;
+use crate::capnp_util::*;
+use crate::co::prelude::*;
+use crate::conn;
+use crate::conn::ConvolutionConfig as connConvolutionConfig;
+use crate::layer::*;
+use crate::juice_capnp::convolution_config as capnp_config;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use util::{ArcLock, cast_vec_usize_to_i32};
-use weight::FillerType;
+use crate::util::{ArcLock, cast_vec_usize_to_i32};
+use crate::weight::FillerType;
 
 #[derive(Debug, Clone)]
 /// Convolution Layer
@@ -268,21 +268,21 @@ impl<'a> CapnpWrite<'a> for ConvolutionConfig {
 
     /// Write the ConvolutionConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
-        builder.borrow().set_num_output(self.num_output as u64);
+        builder.reborrow().set_num_output(self.num_output as u64);
         {
-            let mut filter_shape = builder.borrow().init_filter_shape(self.filter_shape.len() as u32);
+            let mut filter_shape = builder.reborrow().init_filter_shape(self.filter_shape.len() as u32);
             for (i, dim) in self.filter_shape.iter().enumerate() {
                 filter_shape.set(i as u32, *dim as u64);
             }
         }
         {
-            let mut stride = builder.borrow().init_stride(self.stride.len() as u32);
+            let mut stride = builder.reborrow().init_stride(self.stride.len() as u32);
             for (i, dim) in self.stride.iter().enumerate() {
                 stride.set(i as u32, *dim as u64);
             }
         }
         {
-            let mut padding = builder.borrow().init_padding(self.padding.len() as u32);
+            let mut padding = builder.reborrow().init_padding(self.padding.len() as u32);
             for (i, dim) in self.padding.iter().enumerate() {
                 padding.set(i as u32, *dim as u64);
             }
@@ -325,7 +325,7 @@ impl<'a> CapnpRead<'a> for ConvolutionConfig {
 mod tests {
     use super::{Convolution, ConvolutionConfig};
     use super::super::FilterLayer;
-    use co::*;
+    use crate::co::*;
 
     #[test]
     #[cfg(feature="cuda")]

@@ -1,11 +1,11 @@
 //! Provides configuration of weights and their initialization.
 
-use capnp_util::*;
-use co::{ITensorDesc, SharedTensor};
-use juice_capnp::weight_config as capnp_config;
+use crate::capnp_util::*;
+use crate::co::{ITensorDesc, SharedTensor};
+use crate::juice_capnp::weight_config as capnp_config;
 use rand;
 use rand::distributions::{IndependentSample, Range};
-use util::native_backend;
+use crate::util::native_backend;
 
 #[derive(Debug, Clone)]
 /// Specifies training configuration for a weight blob.
@@ -116,7 +116,7 @@ impl<'a> CapnpWrite<'a> for WeightConfig {
     /// Write the WeightConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
         // TODO: incomplete since WeightConfig isn't really used internally in Juice at the moment.
-        builder.borrow().set_name(&self.name);
+        builder.reborrow().set_name(&self.name);
     }
 }
 

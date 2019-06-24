@@ -1,9 +1,9 @@
 //! Provides common utility functions
 
-use co::prelude::*;
-use co::frameworks::native::flatbox::FlatBox;
-use coblas::plugin::*;
-use conn;
+use crate::co::prelude::*;
+use crate::co::frameworks::native::flatbox::FlatBox;
+use crate::coblas::plugin::*;
+use crate::conn;
 use num::traits::{NumCast, cast};
 use std::sync::{Arc, RwLock};
 
@@ -27,7 +27,7 @@ pub fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data
 
 /// Write into a native Coaster Memory with a offset.
 pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) {
-    let mut mem_buffer = mem.as_mut_slice::<f32>();
+    let mem_buffer = mem.as_mut_slice::<f32>();
     for (index, datum) in data.iter().enumerate() {
         // mem_buffer[index + offset] = *datum;
         mem_buffer[index + offset] = cast(*datum).unwrap();
@@ -80,7 +80,7 @@ pub trait Axpby<F>: Axpy<F> + Scal<F> {
              x: &SharedTensor<F>,
              b: &SharedTensor<F>,
              y: &mut SharedTensor<F>)
-             -> Result<(), ::co::error::Error> {
+             -> Result<(), crate::co::error::Error> {
         self.scal(b, y)?;
         self.axpy(a, x, y)?;
         Ok(())

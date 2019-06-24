@@ -6,14 +6,14 @@
 //! - `x`: input value
 //! - `p`: dropout probability
 
-use super::FilterLayer;
-use capnp_util::*;
-use co::{IBackend, SharedTensor};
-use conn;
-use layer::*;
-use juice_capnp::dropout_config as capnp_config;
+
+use crate::capnp_util::*;
+use crate::co::{IBackend, SharedTensor};
+use crate::conn;
+use crate::layer::*;
+use crate::juice_capnp::dropout_config as capnp_config;
 use std::rc::Rc;
-use util::ArcLock;
+use crate::util::ArcLock;
 
 #[derive(Debug, Clone)]
 /// [Dropout](./index.html) Layer
@@ -116,8 +116,8 @@ impl<'a> CapnpWrite<'a> for DropoutConfig {
 
     /// Write the DropoutConfig into a capnp message.
     fn write_capnp(&self, builder: &mut Self::Builder) {
-        builder.borrow().set_probability(self.probability);
-        builder.borrow().set_seed(self.seed);
+        builder.reborrow().set_probability(self.probability);
+        builder.reborrow().set_seed(self.seed);
     }
 }
 
