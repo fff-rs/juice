@@ -13,7 +13,7 @@ use crate::plugin::*;
 use std::cmp::PartialOrd;
 use std::fmt::Debug;
 use rand::{Rng,SeedableRng};
-use rand::isaac::Isaac64Rng;
+use rand_hc as hc128;
 
 use std::ops::*;
 
@@ -853,10 +853,14 @@ impl<T> Dropout<T> for Backend<Native>
 
         output.clone_from_slice(input);
 
-        let mut rng : Isaac64Rng = SeedableRng::from_seed(&[config.seed.clone()][..]);
+
+        let seed : [u8;8] = config.seed.to_le_bytes();
+        let mut extrapolated_seed = [0u8; 32];
+        extrapolated_seed[0..8].copy_from_slice(&seed[..]);
+        let mut rng = hc128::Hc128Rng::from_seed(extrapolated_seed);
 
         for i in 0..output.len() {
-            if rng.gen_range::<f32>(0f32,1f32) >= config.probability {
+            if rng.gen_range(0f32,1f32) >= config.probability {
                 output[i] = input[i];
             } else {
                 output[i] = T::zero();

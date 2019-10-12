@@ -26,7 +26,7 @@ impl Drop for Memory {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
         API::release_memory(self);
-        if self.memory_flags.contains(MEM_USE_HOST_PTR) {
+        if self.memory_flags.contains(MemoryFlags::MEM_USE_HOST_PTR) {
             unsafe {
                 Box::from_raw(self.host_ptr);
             }
@@ -35,19 +35,19 @@ impl Drop for Memory {
 }
 
 bitflags! {
-    flags MemoryFlags: cl::bitfield {
-        const MEM_READ_WRITE       = 1 << 0,
-        const MEM_WRITE_ONLY       = 1 << 1,
-        const MEM_READ_ONLY        = 1 << 2,
-        const MEM_USE_HOST_PTR     = 1 << 3,
-        const MEM_ALLOC_HOST_PTR   = 1 << 4,
-        const MEM_COPY_HOST_PTR    = 1 << 5,
+    pub struct MemoryFlags: cl::bitfield {
+        const MEM_READ_WRITE       = 1 << 0;
+        const MEM_WRITE_ONLY       = 1 << 1;
+        const MEM_READ_ONLY        = 1 << 2;
+        const MEM_USE_HOST_PTR     = 1 << 3;
+        const MEM_ALLOC_HOST_PTR   = 1 << 4;
+        const MEM_COPY_HOST_PTR    = 1 << 5;
     }
 }
 
 impl Default for MemoryFlags {
     fn default() -> MemoryFlags {
-        MEM_READ_WRITE
+        MemoryFlags::MEM_READ_WRITE
     }
 }
 

@@ -117,6 +117,7 @@ extern crate lazy_static;
 extern crate log;
 
 extern crate rand;
+extern crate rand_hc;
 
 pub use crate::plugin::*;
 
