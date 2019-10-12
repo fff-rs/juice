@@ -15,7 +15,7 @@ git clone git@github.com:spearow/juice-examples.git && cd juice-examples
 # build the binary
 cargo build --release
 # and you should see the CLI help page
-target/release/juice-examples --help
+../target/release/juice-examples --help
 # which means, you can run the examples from below
 ```
 *Note for OSX El Capitan users: `openssl` no longer ships with OSX by default. `brew link --force openssl` should fix the problem. If not, [see this Github issue](https://github.com/sfackler/rust-openssl/issues/255) for more details.*
@@ -27,14 +27,14 @@ CLI.
 
 ```bash
 # download the MNIST dataset.
-target/release/juice-examples load-dataset mnist
+../target/release/juice-examples load-dataset mnist
 
 # run the MNIST linear example
-target/release/juice-examples mnist linear --batch-size 10
+../target/release/juice-examples mnist linear --batch-size 10
 # run the MNIST MLP (Multilayer Perceptron) example
-target/release/juice-examples mnist mlp --batch-size 5 --learning-rate 0.001
+../target/release/juice-examples mnist mlp --batch-size 5 --learning-rate 0.001
 # run the MNIST Convolutional Neural Network example
-target/release/juice-examples mnist conv --batch-size 10 --learning-rate 0.002
+../target/release/juice-examples mnist conv --batch-size 10 --learning-rate 0.002
 ```
 
 ## Fashion-MNIST
@@ -44,12 +44,12 @@ also too big to be included, but it can be downloaded in the same way as MNIST:
 
 ```bash
 # download the fashion-MNIST dataset.
-target/release/juice-examples load-dataset fashion
+../target/release/juice-examples load-dataset fashion
 
 # run the fashion-MNIST linear example
-target/release/juice-examples fashion linear --batch-size 10
+../target/release/juice-examples fashion linear --batch-size 10
 # run the fashion-MNIST MLP (Multilayer Perceptron) example
-target/release/juice-examples fashion mlp --batch-size 5 --learning-rate 0.001
+../target/release/juice-examples fashion mlp --batch-size 5 --learning-rate 0.001
 # run the fashion-MNIST Convolutional Neural Network example
-target/release/juice-examples fashion conv --batch-size 10 --learning-rate 0.002
+../target/release/juice-examples fashion conv --batch-size 10 --learning-rate 0.002
 ```
