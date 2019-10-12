@@ -14,14 +14,14 @@ coaster = { version = "0.1", default-features = false }
 
 csv = "1"
 hyper = "0.12"
-hyper-rustls = "0.16"
+hyper-rustls = "^0.17"
 futures = "0.1"
 tokio-core = "0.1"
 flate2 = "1"
 mnist = "0.4.0"
 
 log = "0.4"
-env_logger = "0.6"
+env_logger = "0.7"
 timeit = "0.1.2"
 
 docopt = "1"
