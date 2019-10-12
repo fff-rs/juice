@@ -12,13 +12,13 @@ keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding",
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-coaster = { git = "https://github.com/spearow/coaster.git", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+coaster = { version = "0.1", default-features = false, features = ["native"] } # native feature to read/write data into tensors
 
-image = "0.14"
+image = "0.22"
 murmurhash3 = "0.0.5"
 modifier = "0.1"
 
-clippy = { version = "0.0.54", optional = true }
+clippy = { version = "0.0.302", optional = true }
 
 [features]
 default = ["native", "cuda"]
