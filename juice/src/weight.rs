@@ -3,8 +3,7 @@
 use crate::capnp_util::*;
 use crate::co::{ITensorDesc, SharedTensor};
 use crate::juice_capnp::weight_config as capnp_config;
-use rand;
-use rand::distributions::{IndependentSample, Range};
+use rand::{self,prelude::*};
 use crate::util::native_backend;
 
 #[derive(Debug, Clone)]
@@ -190,10 +189,10 @@ impl FillerType {
         let native_weight = weight.write_only(native.device()).unwrap();
         let init_range = (6.0f32 / (num_inputs as f32 + num_outputs as f32)).sqrt();
 
-        let between = Range::new(-init_range, init_range);
-        let mut rng = rand::thread_rng();
+        let mut rng = thread_rng();
+        let between = rand::distributions::Uniform::from(-init_range..=init_range);
         for e in native_weight.as_mut_slice::<f32>() {
-            *e = between.ind_sample(&mut rng);
+            *e = between.sample(&mut rng);
         }
     }
 }
