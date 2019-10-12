@@ -70,11 +70,11 @@ impl Queue {
 
 bitflags! {
     #[allow(missing_docs)]
-    flags QueueFlags: cl::bitfield {
+    pub struct QueueFlags: cl::bitfield {
         #[allow(missing_docs)]
-        const CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE = 1 << 0,
+        const CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE = 1 << 0;
         #[allow(missing_docs)]
-        const CL_QUEUE_PROFILING_ENABLE              = 1 << 1,
+        const CL_QUEUE_PROFILING_ENABLE              = 1 << 1;
     }
 }
 
