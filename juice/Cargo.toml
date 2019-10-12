@@ -22,18 +22,18 @@ coaster-blas = { default-features = false, version = "0.2.0" }
 coaster-nn = { default-features = false, version = "0.4.1" }
 
 log = "0.4"
-rand = "0.4"
-num = "0.1"
-capnp = "0.8"
+rand = "0.6"
+num = "0.2"
+capnp = "0.10"
 timeit = "0.1"
 
-clippy = { version = "0.0.187", optional = true }
+clippy = { version = "0.0.302", optional = true }
 
 [build-dependencies]
-capnpc = "0.8"
+capnpc = "0.10"
 
 [dev-dependencies]
-env_logger = "0.3"
+env_logger = "0.6"
 
 [features]
 default = ["native", "cuda"]
