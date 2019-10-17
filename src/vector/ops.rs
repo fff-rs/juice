@@ -17,7 +17,7 @@ pub trait Copy: Sized {
     /// Copies `src.len()` elements of `src` into `dst`.
     fn copy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(src: &V, dst: &mut W);
     /// Copies the entire matrix `dst` into `src`.
-    fn copy_mat(src: &Matrix<Self>, dst: &mut Matrix<Self>);
+    fn copy_mat(src: &dyn Matrix<Self>, dst: &mut dyn Matrix<Self>);
 }
 
 macro_rules! copy_impl(($($t: ident), +) => (
@@ -31,7 +31,7 @@ macro_rules! copy_impl(($($t: ident), +) => (
                 }
             }
 
-            fn copy_mat(src: &Matrix<Self>, dst: &mut Matrix<Self>) {
+            fn copy_mat(src: &dyn Matrix<Self>, dst: &mut dyn Matrix<Self>) {
                 let len = dst.rows() * dst.cols();
 
                 unsafe {
@@ -49,7 +49,7 @@ copy_impl!(f32, f64, Complex32, Complex64);
 /// Computes `a * x + y` and stores the result in `y`.
 pub trait Axpy: Sized {
     fn axpy<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &mut W);
-    fn axpy_mat(alpha: &Self, x: &Matrix<Self>, y: &mut Matrix<Self>);
+    fn axpy_mat(alpha: &Self, x: &dyn Matrix<Self>, y: &mut dyn Matrix<Self>);
 }
 
 macro_rules! axpy_impl(($($t: ident), +) => (
@@ -66,7 +66,7 @@ macro_rules! axpy_impl(($($t: ident), +) => (
                 }
             }
 
-            fn axpy_mat(alpha: &$t, x: &Matrix<$t>, y: &mut Matrix<$t>) {
+            fn axpy_mat(alpha: &$t, x: &dyn Matrix<$t>, y: &mut dyn Matrix<$t>) {
                 unsafe {
                     let x_len = x.rows() * x.cols();
                     let y_len = y.rows() * y.cols();
@@ -126,7 +126,7 @@ mod axpy_tests {
 /// Computes `a * x` and stores the result in `x`.
 pub trait Scal: Sized {
     fn scal<V: ?Sized + Vector<Self>>(alpha: &Self, x: &mut V);
-    fn scal_mat(alpha: &Self, x: &mut Matrix<Self>);
+    fn scal_mat(alpha: &Self, x: &mut dyn Matrix<Self>);
 }
 
 macro_rules! scal_impl(($($t: ident), +) => (
@@ -141,7 +141,7 @@ macro_rules! scal_impl(($($t: ident), +) => (
                 }
             }
 
-            fn scal_mat(alpha: &$t, x: &mut Matrix<$t>) {
+            fn scal_mat(alpha: &$t, x: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, scal)(x.rows() * x.cols(),
                         alpha.as_const(),

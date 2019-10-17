@@ -24,7 +24,7 @@ pub trait Vector<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
-impl<'a, T> Into<Vec<T>> for &'a Vector<T>
+impl<'a, T> Into<Vec<T>> for &'a dyn Vector<T>
     where T: Copy {
 
     fn into(self) -> Vec<T> {
@@ -42,7 +42,7 @@ pub trait VectorOperations<T>: Sized + Vector<T>
     where T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax {
 
     #[inline]
-    fn update(&mut self, alpha: &T, x: &Vector<T>) -> &mut Self {
+    fn update(&mut self, alpha: &T, x: &dyn Vector<T>) -> &mut Self {
         Axpy::axpy(alpha, x, self);
         self
     }
@@ -54,7 +54,7 @@ pub trait VectorOperations<T>: Sized + Vector<T>
     }
 
     #[inline]
-    fn dot(&self, x: &Vector<T>) -> T {
+    fn dot(&self, x: &dyn Vector<T>) -> T {
         Dot::dot(self, x)
     }
 
