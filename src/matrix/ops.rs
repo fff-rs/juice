@@ -10,7 +10,6 @@ use pointer::CPtr;
 use scalar::Scalar;
 use matrix::ll::*;
 use matrix::Matrix;
-use vector::Vector;
 
 pub trait Gemm: Sized {
     fn gemm(alpha: &Self, at: Transpose, a: &dyn Matrix<Self>, bt: Transpose, b: &dyn Matrix<Self>, beta: &Self, c: &mut dyn Matrix<Self>);
