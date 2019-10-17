@@ -2,7 +2,13 @@ extern crate pkg_config;
 use std::env;
 
 fn main() {
-    let variant = env::var("BLAS_VARIANT").unwrap_or("openblas".to_string());
+    let variant = env::var("BLAS_VARIANT").unwrap_or_else(|_| {
+        if let Ok("x86_64-apple-darwin") = std::env::var("TARGET").as_ref().map(|s| &s[..]) {
+            "BLAS".to_string()
+        } else {
+            "openblas".to_string()
+        }
+    });
     let lib_dir = env::var("BLAS_LIB_DIR").ok();
     let include_dir = env::var("BLAS_INCLUDE_DIR").ok();
 
