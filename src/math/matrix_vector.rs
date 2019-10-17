@@ -13,12 +13,12 @@ use matrix::Matrix;
 use math::Trans;
 use math::Mat;
 
-impl<'a, T> Mul<&'a Vector<T>> for &'a Matrix<T>
+impl<'a, T> Mul<&'a dyn Vector<T>> for &'a dyn Matrix<T>
     where T: Default + Copy + Gemv
 {
     type Output = Vec<T>;
 
-    fn mul(self, x: &Vector<T>) -> Vec<T> {
+    fn mul(self, x: &dyn Vector<T>) -> Vec<T> {
         let n = self.rows() as usize;
         let mut result = Vec::with_capacity(n);
         unsafe { result.set_len(n); }
@@ -31,12 +31,12 @@ impl<'a, T> Mul<&'a Vector<T>> for &'a Matrix<T>
     }
 }
 
-impl<'a, T> Mul<Trans<&'a Vector<T>>> for &'a Vector<T>
+impl<'a, T> Mul<Trans<&'a dyn Vector<T>>> for &'a dyn Vector<T>
     where T: Default + Ger + Gerc + Clone,
 {
     type Output = Mat<T>;
 
-    fn mul(self, x: Trans<&Vector<T>>) -> Mat<T> {
+    fn mul(self, x: Trans<&dyn Vector<T>>) -> Mat<T> {
         let n = self.len() as usize;
         let m = (*x).len() as usize;
         let mut result = Mat::fill(Default::zero(), n, m);
@@ -64,8 +64,8 @@ mod tests {
         let x = vec![2f32, 1.0];
 
         let y = {
-            let ar = &a as &Matrix<f32>;
-            let xr = &x as &Vector<f32>;
+            let ar = &a as &dyn Matrix<f32>;
+            let xr = &x as &dyn Vector<f32>;
             ar * xr
         };
 
@@ -78,8 +78,8 @@ mod tests {
         let y = vec![3.0, 6.0, -1.0];
 
         let a = {
-            let xr = &x as &Vector<_>;
-            let yr = &y as &Vector<_>;
+            let xr = &x as &dyn Vector<_>;
+            let yr = &y as &dyn Vector<_>;
 
             xr * (yr ^ T)
         };

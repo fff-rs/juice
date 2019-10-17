@@ -16,13 +16,13 @@ use vector::Vector;
 ///
 /// A ← αA<sup>OP</sup>x + βy
 pub trait Gemv: Sized {
-    fn gemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn gemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &Self, a: &dyn Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 macro_rules! gemv_impl(($($t: ident), +) => (
     $(
         impl Gemv for $t {
-            fn gemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &$t, a: &Matrix<$t>, x: &V, beta: &$t, y: &mut W){
+            fn gemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &$t, a: &dyn Matrix<$t>, x: &V, beta: &$t, y: &mut W){
                 unsafe {
                     prefix!($t, gemv)(a.order(), trans,
                         a.rows(), a.cols(),
@@ -93,20 +93,20 @@ mod gemv_tests {
 ///
 /// A ← αAx + βy
 pub trait Symv: Sized {
-    fn symv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn symv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &dyn Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 /// Hermitian multiply with vector
 ///
 /// A ← αAx + βy
 pub trait Hemv: Sized {
-    fn hemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn hemv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &dyn Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 macro_rules! symv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, a: &Matrix<$t>, x: &V, beta: &$t, y: &mut W){
+            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, a: &dyn Matrix<$t>, x: &V, beta: &$t, y: &mut W){
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
                         a.rows(),
@@ -171,14 +171,14 @@ mod symv_tests {
 ///
 /// A ← A + αxy<sup>T</sup>
 pub trait Ger: Sized {
-    fn ger<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
+    fn ger<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &W, a: &mut dyn Matrix<Self>);
 }
 
 /// General rank-1 update (using hermitian conjugate)
 ///
 /// A ← A + αxy<sup>H</sup>
 pub trait Gerc: Ger {
-    fn gerc<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>) {
+    fn gerc<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &Self, x: &V, y: &W, a: &mut dyn Matrix<Self>) {
         Ger::ger(alpha, x, y, a);
     }
 }
@@ -186,7 +186,7 @@ pub trait Gerc: Ger {
 macro_rules! ger_impl(
     ($trait_name: ident, $fn_name: ident, $t: ty, $ger_fn: expr) => (
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &$t, x: &V, y: &W, a: &mut Matrix<$t>) {
+            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(alpha: &$t, x: &V, y: &W, a: &mut dyn Matrix<$t>) {
                 unsafe {
                     $ger_fn(a.order(),
                         a.rows(), a.cols(),
@@ -233,20 +233,20 @@ mod ger_tests {
 ///
 /// A ← A + αxx<sup>T</sup>
 pub trait Syr: Sized {
-    fn syr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Self>);
+    fn syr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut dyn Matrix<Self>);
 }
 
 /// Hermitian rank-1 update
 ///
 /// A ← A + αxx<sup>H</sup>
 pub trait Her: Sized {
-    fn her<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Complex<Self>>);
+    fn her<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut dyn Matrix<Complex<Self>>);
 }
 
 macro_rules! her_impl(($($t: ident), +) => (
     $(
         impl Her for $t {
-            fn her<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut Matrix<Complex<$t>>) {
+            fn her<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut dyn Matrix<Complex<$t>>) {
                 unsafe {
                     prefix!(Complex<$t>, her)(a.order(), symmetry,
                         a.rows(),
@@ -264,7 +264,7 @@ her_impl!(f32, f64);
 macro_rules! syr_impl(($($t: ident), +) => (
     $(
         impl Syr for $t {
-            fn syr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut Matrix<$t>) {
+            fn syr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, syr)(a.order(), symmetry,
                         a.rows(),
@@ -283,20 +283,20 @@ syr_impl!(f32, f64);
 ///
 /// A ← A + αxy<sup>T</sup> + αyx<sup>T</sup>
 pub trait Syr2: Sized {
-    fn syr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
+    fn syr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut dyn Matrix<Self>);
 }
 
 /// Hermitian rank-2 update
 ///
 /// A ← A + αxy<sup>H</sup> + y(αx)<sup>H</sup>
 pub trait Her2: Sized {
-    fn her2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
+    fn her2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut dyn Matrix<Self>);
 }
 
 macro_rules! syr2_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, y: &W, a: &mut Matrix<$t>) {
+            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, y: &W, a: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
                         a.rows(),
@@ -317,13 +317,13 @@ syr2_impl!(Her2, her2, Complex32, Complex64);
 ///
 /// A ← αA<sup>OP</sup>x + βy
 pub trait Gbmv: Sized {
-    fn gbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &Self, a: &BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn gbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &Self, a: &dyn BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 macro_rules! gbmv_impl(($($t: ident), +) => (
     $(
         impl Gbmv for $t {
-            fn gbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &$t, a: &BandMatrix<$t>, x: &V, beta: &$t, y: &mut W){
+            fn gbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(trans: Transpose, alpha: &$t, a: &dyn BandMatrix<$t>, x: &V, beta: &$t, y: &mut W){
                 unsafe {
                     prefix!($t, gbmv)(a.order(), trans,
                         a.rows(), a.cols(),
@@ -345,20 +345,20 @@ gbmv_impl!(f32, f64, Complex32, Complex64);
 ///
 /// A ← αAx + βy
 pub trait Sbmv: Sized {
-    fn sbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn sbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &dyn BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 /// Hermitian band matrix multiply with vector
 ///
 /// A ← αAx + βy
 pub trait Hbmv: Sized {
-    fn hbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn hbmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &dyn BandMatrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 macro_rules! sbmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, a: &BandMatrix<$t>, x: &V, beta: &$t, y: &mut W) {
+            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, a: &dyn BandMatrix<$t>, x: &V, beta: &$t, y: &mut W) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
                         a.rows(), a.sub_diagonals(),
@@ -380,20 +380,20 @@ sbmv_impl!(Hbmv, hbmv, Complex32, Complex64);
 ///
 /// A ← A<sup>OP</sup>x
 pub trait Tbmv: Sized {
-    fn tbmv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut V);
+    fn tbmv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &dyn BandMatrix<Self>, x: &mut V);
 }
 
 /// Solve triangular band matrix system
 ///
 /// A ← A<sup>-1 OP</sup>x
 pub trait Tbsv: Sized {
-    fn tbsv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<Self>, x: &mut V);
+    fn tbsv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &dyn BandMatrix<Self>, x: &mut V);
 }
 
 macro_rules! tbmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &BandMatrix<$t>, x: &mut V) {
+            fn $fn_name<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &dyn BandMatrix<$t>, x: &mut V) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
                         trans, diagonal,
@@ -413,20 +413,20 @@ tbmv_impl!(Tbsv, tbsv, f32, f64, Complex32, Complex64);
 ///
 /// A ← αAx + βy
 pub trait Spmv: Sized {
-    fn spmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn spmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &dyn Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 /// Hermitian packed matrix multiply with vector
 ///
 /// A ← αAx + βy
 pub trait Hpmv: Sized {
-    fn hpmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &Matrix<Self>, x: &V, beta: &Self, y: &mut W);
+    fn hpmv<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, a: &dyn Matrix<Self>, x: &V, beta: &Self, y: &mut W);
 }
 
 macro_rules! spmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, a: &Matrix<$t>, x: &V, beta: &$t, y: &mut W) {
+            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, a: &dyn Matrix<$t>, x: &V, beta: &$t, y: &mut W) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
                         a.rows(),
@@ -448,20 +448,20 @@ spmv_impl!(Hpmv, hpmv, Complex32, Complex64);
 ///
 /// A ← A<sup>OP</sup>x
 pub trait Tpmv: Sized {
-    fn tpmv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut V);
+    fn tpmv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &dyn Matrix<Self>, x: &mut V);
 }
 
 /// Solve triangular packed matrix system
 ///
 /// A ← A<sup>-1 OP</sup>x
 pub trait Tpsv: Sized {
-    fn tpsv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<Self>, x: &mut V);
+    fn tpsv<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &dyn Matrix<Self>, x: &mut V);
 }
 
 macro_rules! tpmv_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &Matrix<$t>, x: &mut V) {
+            fn $fn_name<V: ?Sized + Vector<Self>>(symmetry: Symmetry, trans: Transpose, diagonal: Diagonal, a: &dyn Matrix<$t>, x: &mut V) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
                         trans, diagonal,
@@ -481,13 +481,13 @@ tpmv_impl!(Tpsv, tpsv, f32, f64, Complex32, Complex64);
 ///
 /// A ← A + αxx<sup>H</sup>
 pub trait Hpr: Sized {
-    fn hpr<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Complex<Self>>);
+    fn hpr<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut dyn Matrix<Complex<Self>>);
 }
 
 macro_rules! hpr_impl(($($t: ident), +) => (
     $(
         impl Hpr for $t {
-            fn hpr<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut Matrix<Complex<$t>>) {
+            fn hpr<V: ?Sized + Vector<Complex<Self>>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut dyn Matrix<Complex<$t>>) {
                 unsafe {
                     prefix!(Complex<$t>, hpr)(a.order(), symmetry,
                         a.rows(),
@@ -506,13 +506,13 @@ hpr_impl!(f32, f64);
 ///
 /// A ← A + αxx<sup>T</sup>
 pub trait Spr: Sized {
-    fn spr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut Matrix<Self>);
+    fn spr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, a: &mut dyn Matrix<Self>);
 }
 
 macro_rules! spr_impl(($($t: ident), +) => (
     $(
         impl Spr for $t {
-            fn spr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut Matrix<$t>) {
+            fn spr<V: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, a: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, spr)(a.order(), symmetry,
                         a.rows(),
@@ -531,20 +531,20 @@ spr_impl!(f32, f64);
 ///
 /// A ← A + αxy<sup>T</sup> + αyx<sup>T</sup>
 pub trait Spr2: Sized {
-    fn spr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
+    fn spr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut dyn Matrix<Self>);
 }
 
 /// Hermitian packed matrix rank-2 update
 ///
 /// A ← A + αxy<sup>H</sup> + y(αx)<sup>H</sup>
 pub trait Hpr2: Sized {
-    fn hpr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut Matrix<Self>);
+    fn hpr2<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &Self, x: &V, y: &W, a: &mut dyn Matrix<Self>);
 }
 
 macro_rules! spr2_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
     $(
         impl $trait_name for $t {
-            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, y: &W, a: &mut Matrix<$t>) {
+            fn $fn_name<V: ?Sized + Vector<Self>, W: ?Sized + Vector<Self>>(symmetry: Symmetry, alpha: &$t, x: &V, y: &W, a: &mut dyn Matrix<$t>) {
                 unsafe {
                     prefix!($t, $fn_name)(a.order(), symmetry,
                         a.rows(),

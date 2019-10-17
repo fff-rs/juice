@@ -37,11 +37,11 @@ pub enum Marker {
     H,
 }
 
-impl<'a, T> BitXor<Marker> for &'a Vector<T>
+impl<'a, T> BitXor<Marker> for &'a dyn Vector<T>
 {
-    type Output = Trans<&'a Vector<T>>;
+    type Output = Trans<&'a dyn Vector<T>>;
 
-    fn bitxor(self, m: Marker) -> Trans<&'a Vector<T>> {
+    fn bitxor(self, m: Marker) -> Trans<&'a dyn Vector<T>> {
         match m {
             Marker::T => Trans::T(self),
             Marker::H => Trans::H(self),
@@ -49,11 +49,11 @@ impl<'a, T> BitXor<Marker> for &'a Vector<T>
     }
 }
 
-impl<'a, T> BitXor<Marker> for &'a Matrix<T>
+impl<'a, T> BitXor<Marker> for &'a dyn Matrix<T>
 {
-    type Output = Trans<&'a Matrix<T>>;
+    type Output = Trans<&'a dyn Matrix<T>>;
 
-    fn bitxor(self, m: Marker) -> Trans<&'a Matrix<T>> {
+    fn bitxor(self, m: Marker) -> Trans<&'a dyn Matrix<T>> {
         match m {
             Marker::T => Trans::T(self),
             Marker::H => Trans::H(self),

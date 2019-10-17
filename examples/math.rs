@@ -6,9 +6,9 @@ use blas::math::Marker::T;
 
 fn main() {
     let x = vec![1.0, 2.0];
-    let xr = &x as &Vector<_>;
+    let xr = &x as &dyn Vector<_>;
     let i = mat![1.0, 0.0; 0.0, 1.0];
-    let ir = &i as &Matrix<_>;
+    let ir = &i as &dyn Matrix<_>;
 
     assert!(xr + &x == 2.0 * xr);
     assert!(ir * xr == x);
