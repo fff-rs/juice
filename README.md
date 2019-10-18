@@ -1,7 +1,7 @@
-# RBLAS
+# rust-blas
 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![crates.io](http://meritbadge.herokuapp.com/rblas)](https://crates.io/crates/rblas)
+[![crates.io](http://meritbadge.herokuapp.com/rust-blas)](https://crates.io/crates/rust-blas)
 
 Rust bindings and wrappers for BLAS (Basic Linear Algebra Subprograms).
 
