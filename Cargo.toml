@@ -1,12 +1,11 @@
 [package]
-
-name = "rblas"
-version = "0.0.13"
+name = "rust-blas"
+version = "0.1.0"
 authors = ["Michael Yang <mikkyangg@gmail.com>"]
-description = "BLAS bindings and wrappers"
+description = "BLAS bindings and wrappers, fork of rblas"
 documentation = "http://mikkyang.github.io/rust-blas/doc/rblas/index.html"
-homepage = "http://github.com/mikkyang/rust-blas"
-repository = "http://github.com/mikkyang/rust-blas"
+homepage = "http://github.com/spearo/rust-blas"
+repository = "http://github.com/spearow/rust-blas"
 readme = "README.md"
 keywords = ["BLAS"]
 license = "MIT"
