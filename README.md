@@ -1,6 +1,6 @@
 # Juice
 
-This is the workspace projet for 
+This is the workspace project for 
 
  * [juice](https://github.com/spearow/juice/blob/master/juice/README.md) - machine learning frameworks for hackers
  * [coaster](https://github.com/spearow/juice/blob/master/coaster/README.md) - underlying math abstraction
