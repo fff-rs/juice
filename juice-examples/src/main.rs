@@ -47,7 +47,7 @@ Usage:
 
 Options:
     <model-name>            Which MNIST model to use. Valid values: [linear, mlp, conv]
-    <dataset-name>          Which dataset to download. Valid values: [mnist, fashion, mackey-glass]
+    <dataset-name>          Which dataset to download. Valid values: [mnist, fashion]
 
     -h --help               Show this screen.
     --version               Show version.
