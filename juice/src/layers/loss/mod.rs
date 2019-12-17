@@ -22,5 +22,6 @@ macro_rules! impl_ilayer_loss {
 }
 
 pub use self::negative_log_likelihood::{NegativeLogLikelihood, NegativeLogLikelihoodConfig};
-
+pub use self::mean_squared_error::MeanSquaredError;
 pub mod negative_log_likelihood;
+pub mod mean_squared_error;

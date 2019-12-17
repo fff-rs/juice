@@ -936,7 +936,8 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
             LayerType::Sigmoid => Box::new(Sigmoid),
             LayerType::NegativeLogLikelihood(layer_config) => {
                 Box::new(NegativeLogLikelihood::from_config(&layer_config))
-            }
+            },
+            LayerType::MeanSquaredError => Box::new(MeanSquaredError),
             LayerType::Reshape(layer_config) => Box::new(Reshape::from_config(&layer_config)),
             LayerType::Dropout(layer_config) => Box::new(Dropout::from_config(&layer_config)),
         }
@@ -1326,6 +1327,8 @@ pub enum LayerType {
     // Loss layers
     /// NegativeLogLikelihood Layer
     NegativeLogLikelihood(NegativeLogLikelihoodConfig),
+    /// MeanSquaredError Layer
+    MeanSquaredError,
     // Utility layers
     /// Reshape Layer
     Reshape(ReshapeConfig),
@@ -1346,6 +1349,7 @@ impl LayerType {
             LayerType::TanH => true,
             LayerType::Sigmoid => true,
             LayerType::NegativeLogLikelihood(_) => false,
+            LayerType::MeanSquaredError => false,
             LayerType::Reshape(_) => true,
             LayerType::Convolution(_) => false,
             LayerType::Pooling(_) => false,
@@ -1376,7 +1380,8 @@ impl<'a> CapnpWrite<'a> for LayerType {
             &LayerType::NegativeLogLikelihood(ref cfg) => {
                 let ref mut config = builder.reborrow().init_negative_log_likelihood();
                 cfg.write_capnp(config);
-            }
+            },
+            &LayerType::MeanSquaredError => builder.set_mean_squared_error(()),
             &LayerType::Reshape(ref cfg) => {
                 let ref mut config = builder.reborrow().init_reshape();
                 cfg.write_capnp(config);
@@ -1418,7 +1423,8 @@ impl<'a> CapnpRead<'a> for LayerType {
             capnp_layer_type::Which::NegativeLogLikelihood(read_config) => {
                 let config = NegativeLogLikelihoodConfig::read_capnp(read_config.unwrap());
                 LayerType::NegativeLogLikelihood(config)
-            }
+            },
+            capnp_layer_type::Which::MeanSquaredError(_) => LayerType::MeanSquaredError,
             capnp_layer_type::Which::Reshape(read_config) => {
                 let config = ReshapeConfig::read_capnp(read_config.unwrap());
                 LayerType::Reshape(config)

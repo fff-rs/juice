@@ -35,6 +35,7 @@ struct LayerConfig {
     tanh @15 :Void;
     # Loss layers
     negativeLogLikelihood @9 :NegativeLogLikelihoodConfig;
+    meanSquaredError @17 :Void;
     # Utility layers
     reshape @10 :ReshapeConfig;
     # Dropout layers
