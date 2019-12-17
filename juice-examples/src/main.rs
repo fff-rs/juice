@@ -40,13 +40,14 @@ Usage:
     juice-examples load-dataset <dataset-name>
     juice-examples mnist <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
     juice-examples fashion <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
+    juice-examples mackey-glass <model-name> [--batch-size <batch-size>] [--learning-rate <learning-rate>] [--momentum <momentum>]
     juice-examples (-h | --help)
     juice-examples --version
 
 
 Options:
     <model-name>            Which MNIST model to use. Valid values: [linear, mlp, conv]
-    <dataset-name>          Which dataset to download. Valid valuses: [mnist, fashion]
+    <dataset-name>          Which dataset to download. Valid values: [mnist, fashion, mackey-glass]
 
     -h --help               Show this screen.
     --version               Show version.
@@ -62,6 +63,7 @@ struct Args {
     cmd_load_dataset: bool,
     cmd_mnist: bool,
     cmd_fashion: bool,
+    cmd_mackey_glass: bool
 }
 
 fn download_datasets(datasets: &[&str], base_url: &str) {
@@ -170,7 +172,7 @@ fn main() {
 
                 unzip_datasets(&datasets);
                 println!("{}", "Fashion MNIST dataset decompressed".to_string());
-            }
+            },
             _ => println!("{}", "Failed to download MNIST dataset!".to_string()),
         }
     } else if args.cmd_mnist {
@@ -203,6 +205,21 @@ fn main() {
             );
             panic!()
         }
+    } else if args.cmd_mackey_glass {
+        #[cfg(all(feature = "cuda"))]
+        run_mackey_glass(
+            args.arg_model_name,
+            args.arg_batch_size,
+            args.arg_learning_rate,
+            args.arg_momentum
+        );
+        #[cfg(not(feature = "cuda"))]
+            {
+                println!(
+                    "Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda."
+                );
+                panic!()
+            }
     }
 }
 
@@ -239,6 +256,7 @@ fn get_mnist_iter(pixel_count: usize) -> impl Iterator<Item = (u8, Vec<u8>)> {
 }
 
 #[cfg(all(feature = "cuda"))]
+#[allow(dead_code)]
 fn run_mnist(
     model_name: Option<String>,
     batch_size: Option<usize>,
@@ -533,4 +551,119 @@ fn run_fashion(
             confusion.accuracy()
         );
     }
+}
+
+#[cfg(all(feature = "cuda"))]
+#[allow(dead_code)]
+fn run_mackey_glass(
+    model_name: Option<String>,
+    batch_size: Option<usize>,
+    learning_rate: Option<f32>,
+    momentum: Option<f32>,
+) {
+    let example_count : usize = 11751;
+    let columns : usize  = 10;
+
+    let batch_size = batch_size.unwrap_or(65);
+    let learning_rate = learning_rate.unwrap_or(0.03f32);
+    let momentum = momentum.unwrap_or(0f32);
+
+    let mut net_cfg = SequentialConfig::default();
+    net_cfg.add_input("data", &[batch_size, 1_usize, columns]);
+    net_cfg.force_backward = true;
+
+    match &*model_name.unwrap_or("none".to_owned()) {
+        "linear" => {
+            net_cfg.add_layer(LayerConfig::new(
+                "linear1",
+                LinearConfig { output_size: 50 },
+            ));
+            net_cfg.add_layer(LayerConfig::new(
+                "linear2",
+                LinearConfig { output_size: 10 },
+            ));
+            net_cfg.add_layer(LayerConfig::new(
+                "linear3",
+                LinearConfig { output_size: 1 },
+            ));
+            net_cfg.add_layer(LayerConfig::new(
+                "sigmoid",
+                LayerType::Sigmoid
+            ));
+        },
+        _ => panic!("Only linear models are currently implemented for mackey-glass")
+    }
+
+    let mut regressor_cfg = SequentialConfig::default();
+    regressor_cfg.add_input("network_out", &[batch_size, 1]);
+    regressor_cfg.add_input("label", &[batch_size, 1]);
+    // set up mse loss
+    let mse_layer_cfg = LayerConfig::new("mse", LayerType::MeanSquaredError);
+    regressor_cfg.add_layer(mse_layer_cfg);
+
+    // set up backends
+    let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
+
+    // set up solver
+    let mut solver_cfg = SolverConfig {
+        minibatch_size: batch_size,
+        base_lr: learning_rate,
+        momentum,
+        ..SolverConfig::default()
+    };
+    solver_cfg.network = LayerConfig::new("network", net_cfg);
+    solver_cfg.objective = LayerConfig::new("regressor", regressor_cfg);
+    let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_cfg);
+
+    let inp = SharedTensor::<f32>::new(&[batch_size, 1, columns]);
+    let label = SharedTensor::<f32>::new(&[batch_size, 1]);
+
+    let inp_lock = Arc::new(RwLock::new(inp));
+    let label_lock = Arc::new(RwLock::new(label));
+
+    // set up evaluator for regression
+    let mut regr_eval = ::juice::solver::RegressionEvaluator::new(Some("mse".to_owned()));
+    regr_eval.set_capacity(Some(500));
+
+    let mut data_rows = get_regr_iter();
+    for _ in 0..(example_count / batch_size) {
+        // write input
+        let mut targets = Vec::new();
+        for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
+            let mut inp = inp_lock.write().unwrap();
+            let mut label = label_lock.write().unwrap();
+            write_batch_sample(&mut inp, &input, batch_n);
+            write_batch_sample(&mut label, &[label_val], batch_n);
+            targets.push(label_val);
+        }
+        // train the network!
+        let inferred_out = solver.train_minibatch(inp_lock.clone(), label_lock.clone());
+
+        let mut inferred = inferred_out.write().unwrap();
+        let predictions = regr_eval.get_predictions(&mut inferred);
+        regr_eval.add_samples(&predictions, &targets);
+        println!("Mean Squared Error {}", &regr_eval.accuracy() as & dyn RegressionLoss);
+    }
+}
+
+fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
+    let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass.csv").unwrap());
+    let columns: usize = 10;
+
+    rdr
+        .into_deserialize()
+        .map(move |row| {
+            match row {
+                Ok(value) => {
+                    let row_vec: Box<Vec<f32>> = Box::new(value);
+                    let label = row_vec[0];
+                    let columns = row_vec[1..=columns].to_vec();
+                    (label, columns)
+                },
+                _ => {
+                    println!("no value");
+                    panic!();
+                }
+            }
+        })
 }
