@@ -4,8 +4,10 @@
 //! [solvers]: ../solvers/index.html
 
 pub mod confusion_matrix;
+pub mod regression_evaluator;
 
 pub use self::confusion_matrix::ConfusionMatrix;
+pub use self::regression_evaluator::{RegressionEvaluator, RegressionLoss};
 use crate::co::prelude::*;
 use crate::layer::*;
 use crate::layers::SequentialConfig;
