@@ -63,7 +63,7 @@ pub use self::common::{Convolution, ConvolutionConfig,
 
 pub use self::container::{Sequential, SequentialConfig};
 
-pub use self::loss::{NegativeLogLikelihood, NegativeLogLikelihoodConfig};
+pub use self::loss::{NegativeLogLikelihood, NegativeLogLikelihoodConfig, MeanSquaredError};
 
 pub use self::utility::{Flatten, Reshape, ReshapeConfig};
 
