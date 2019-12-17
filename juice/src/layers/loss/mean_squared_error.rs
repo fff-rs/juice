@@ -1,12 +1,13 @@
-//! [Mean Squared Error][1]
-//! [1]: https://en.wikipedia.org/wiki/Mean_squared_error
+//! Provides Loss & Gradient for Mean Squared Error
 //!
+//! Calculation of [Mean Squared Error][1] for regression problems.
+//!
+//! [1]: https://en.wikipedia.org/wiki/Mean_squared_error
 
 use crate::co::prelude::*;
 use crate::layer::*;
 use crate::util::*;
 use crate::util::{native_backend, ArcLock};
-use coblas::transpose::Transpose;
 use util::{native_scalar, LayerOps};
 
 #[derive(Debug, Clone)]
