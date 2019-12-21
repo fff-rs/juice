@@ -53,7 +53,7 @@ extern crate lazy_static;
 
 extern crate coaster;
 #[cfg(feature = "native")]
-extern crate rblas;
+extern crate rust_blas as rblas;
 #[cfg(feature = "cuda")]
 extern crate rcublas as cublas;
 
