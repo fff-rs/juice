@@ -18,7 +18,7 @@ license         = "MIT OR Apache-2.0"
 coaster = { version = "0.1", default-features = false}
 rcudnn = { version = "1.6", optional = true}
 libc = "0.2"
-lazy_static = "1.3"
+lazy_static = "1"
 log = "0.4"
 
 clippy = { version = "0.0.302", optional = true }
@@ -26,7 +26,7 @@ rand = {version = "0.7", optional = true }
 rand_hc = "0.2.0"
 
 [dev-dependencies]
-rand = "0.6"
+rand = "0.7"
 
 [features]
 default = ["native", "cuda"]
