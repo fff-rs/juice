@@ -19,7 +19,7 @@ coaster = { version = "0.1", default-features = false }
 lazy_static = "1"
 
 # native
-rblas = { version = "0.0", optional = true }
+rust-blas = { version = "0.1", optional = true }
 
 # cuda
 rcublas = { version = "0.2",  optional = true }
@@ -32,7 +32,7 @@ rand = "0.6"
 
 [features]
 default = ["native", "cuda"]
-native = ["coaster/native", "rblas"]
+native = ["coaster/native", "rust-blas"]
 cuda = ["coaster/cuda", "rcublas"]
 opencl = ["coaster/opencl"]
 
