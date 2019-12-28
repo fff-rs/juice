@@ -181,6 +181,8 @@ macro_rules! impl_iblas_for {
             iblas_swap_for_native!($t);
         }
 
+        // Level 3
+
         impl Gemm<$t> for $b {
             iblas_gemm_for_native!($t);
         }
