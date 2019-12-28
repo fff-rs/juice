@@ -22,6 +22,7 @@
 use crate::capnp_util::*;
 use crate::co::backend::IBackend;
 use crate::co::tensor::SharedTensor;
+use crate::coblas::plugin::Copy;
 use crate::coblas::transpose::Transpose;
 use crate::layer::*;
 use crate::juice_capnp::linear_config as capnp_config;
@@ -68,7 +69,6 @@ impl Linear {
 }
 
 impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
-    impl_ilayer_common!();
 
     fn auto_weight_blobs(&self) -> bool {
         true
@@ -101,6 +101,23 @@ impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
         if let Some(weight) = weights_gradient.get(0) {
             weight.write().unwrap().resize(&weight_shape).unwrap();
         }
+
+        // Fill the bias
+        if let Some(weight) = weights_data.get(1) {
+            weight.write().unwrap().resize(&(1, self.output_size)).unwrap();
+            let filler = FillerType::Glorot {
+                input_size: 1,
+                output_size: self.output_size,
+            };
+            filler.fill(&mut weight.write().unwrap());
+        }
+        if let Some(weight) = weights_gradient.get(1) {
+            weight.write().unwrap().resize(&(1, self.output_size)).unwrap();
+        }
+    }
+
+    fn exact_num_output_blobs(&self) -> Option<usize> {
+        Some(1)
     }
 }
 
@@ -110,24 +127,26 @@ impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
                       weights: &[&SharedTensor<f32>],
                       input_data: &[&SharedTensor<f32>],
                       output_data: &mut [&mut SharedTensor<f32>]) {
+
+        let mut ones_tensor = SharedTensor::<f32>::new(output_data[0].desc());
+        FillerType::fill_constant(&mut ones_tensor, 1f32);
+        backend.gemm(&self.one,
+                     Transpose::NoTrans,
+                     &ones_tensor,
+                     Transpose::Trans,
+                     weights[1],
+                     &self.zero,
+                     output_data[0])
+            .unwrap();
+
         backend.gemm(&self.one,
                   Transpose::NoTrans,
                   input_data[0],
                   Transpose::Trans,
                   weights[0],
-                  &self.zero,
+                  &self.one,
                   output_data[0])
             .unwrap();
-        // let has_bias_term = false; // TODO: implement bias term
-        // if has_bias_term {
-        //     let bias_multiplier = unimplemented!();
-        //     let bias_data = unimplemented!();
-        //     backend.gemm(&self.one,
-        //                  Transpose::NoTrans, bias_multiplier,
-        //                  Transpose::NoTrans, bias_data,
-        //                  &self.one,
-        //                  output_data[0]).unwrap();
-        // }
     }
 }
 
@@ -151,7 +170,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
+impl<B: IBackend + LayerOps<f32> + Copy<f32>> ComputeParametersGradient<f32, B> for Linear {
     fn compute_parameters_gradient(&self,
                                    backend: &B,
                                    output_data: &[&SharedTensor<f32>],
@@ -167,6 +186,11 @@ impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
                   &self.zero,
                   parameters_gradients[0])
             .unwrap();
+
+        // gradient w.r.t bias
+        // Technically, the gradient of vector b of length n to itself is the I_n identity matrix,
+        // so instead we'll just copy the output_gradient[0] vector into
+        backend.copy(&output_gradients[0], &mut parameters_gradients[1]);
 
         // TODO: implement gradient w.r.t bias
         // if (bias_term_ && this->param_propagate_down_[1]) {
