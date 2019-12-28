@@ -83,6 +83,7 @@ pub use self::filter_descriptor::FilterDescriptor;
 pub use self::normalization_descriptor::NormalizationDescriptor;
 pub use self::pooling_descriptor::PoolingDescriptor;
 pub use self::tensor_descriptor::TensorDescriptor;
+pub use self::rnn_descriptor::RnnDescriptor;
 pub use crate::ffi::*;
 
 #[derive(Debug, Copy, Clone)]
@@ -100,4 +101,5 @@ mod filter_descriptor;
 mod normalization_descriptor;
 mod pooling_descriptor;
 mod tensor_descriptor;
+mod rnn_descriptor;
 pub mod utils;
