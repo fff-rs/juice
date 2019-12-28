@@ -2,7 +2,7 @@
 
 use super::{
     ActivationDescriptor, ConvolutionDescriptor, DropoutDescriptor, FilterDescriptor,
-    NormalizationDescriptor, PoolingDescriptor,
+    NormalizationDescriptor, PoolingDescriptor, RnnDescriptor
 };
 use crate::cuda::CudaDeviceMemory;
 
@@ -262,9 +262,97 @@ impl DropoutConfig {
 }
 
 #[allow(missing_debug_implementations, missing_copy_implementations)]
+/// Provides an interfaces for CUDNN's Rnn Descriptor
+/// # Arguments
+/// * `rnn_desc` Previously created descriptor
+/// * `hidden_size` Size of the hidden layer
+/// * `num_layers` Number of layers
+/// * `dropout_desc` Descriptor to a previously created & initialized dropout descriptor, applied
+/// between layers. 
+/// * `input_mode` Specifies behaviour at the input to the first layer
+/// * `direction_mode` Specifies the recurrence pattern - i.e bidirectional
+/// * `rnn_mode` Type of network used in routines ForwardInference, ForwardTraining, BackwardData,
+/// BackwardWeights. Can be ReLU, tanh, LSTM (Long Short Term Memory), or GRU (Gated Recurrent Unit).
+/// * `algo` - Only required in v6 implementation FIXME: Should this be checked in compilation?
+/// * `data_type` Math Precision - default f32
+/// 
+/// The LSTM network offered by CUDNN is a four-gate network that does not use peephole connections.
+/// Greff, et al. (2015)[1] suggests it doesn't matter what kind of network it is, although
+/// Jozefowicz, et al. (2015)[2] suggests that the most important gates are the forget and input,
+/// followed by the output gate, so the peephole connection isn't as important to be concerned with.
+/// A positive bias, as encouraged in the paper, can be achieved by setting `bias_mode` to
+/// CUDNN_RNN_DOUBLE_BIAS, which is the default, or CUDN_RNN_SINGLE_INP_BIAS or
+/// CUDNN_RNN_SINGLE_REC_BIAS
+///
+/// [1]: arxiv.org/pdf/1503.04069.pdf
+/// [2]: jmlr.org/proceedings/papers/v37/jozefowicz15.pdf
+pub struct RnnConfig {
+    rnn_desc: RnnDescriptor,
+    hidden_size: ::libc::c_int,
+    num_layers: ::libc::c_int,
+    sequence_length: ::libc::c_int,
+    dropout_desc: cudnnDropoutDescriptor_t,
+    input_mode: cudnnRNNInputMode_t,
+    direction_mode: cudnnDirectionMode_t,
+    rnn_mode: cudnnRNNMode_t,
+    algo: cudnnRNNAlgo_t,
+    data_type: cudnnDataType_t,
+    workspace_size: usize
+}
+
+impl RnnConfig {
+    /// Initialise a RNN Config
+    pub fn new(
+        rnn_desc: RnnDescriptor,
+        hidden_size: i32,
+        num_layers: i32,
+        sequence_length: i32,
+        dropout_desc: cudnnDropoutDescriptor_t,
+        input_mode: cudnnRNNInputMode_t,
+        direction_mode: cudnnDirectionMode_t,
+        rnn_mode: cudnnRNNMode_t,
+        // Requires v6
+        algo: cudnnRNNAlgo_t,
+        data_type: cudnnDataType_t,
+        workspace_size: usize,
+    ) -> RnnConfig {
+        RnnConfig {
+            rnn_desc,
+            hidden_size,
+            num_layers,
+            sequence_length,
+            dropout_desc,
+            input_mode,
+            direction_mode,
+            rnn_mode,
+            algo,
+            data_type,
+            workspace_size
+        }
+    }
+
+    /// Workspace Size required for RNN Operations
+    pub fn rnn_workspace_size(&self) -> &usize {
+        &self.workspace_size
+    }
+    /// Largest Workspace Size for RNN
+    pub fn largest_workspace_size(&self) -> &usize {
+        self.rnn_workspace_size()
+    }
+
+    pub fn rnn_desc(&self) -> &RnnDescriptor {
+        &self.rnn_desc
+    }
+
+    pub fn sequence_length(&self) -> &i32 {
+        &self.sequence_length
+    }
+}
+
+#[allow(missing_debug_implementations, missing_copy_implementations)]
 /// Provides a convenient interface for cuDNN's scaling parameters `alpha` and `beta`.
 ///
-/// Scaling paramarters lend the source value with prior value in the destination
+/// Scaling parameters lend the source value with prior value in the destination
 /// tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue. When beta[0] is
 /// zero, the output is not read and can contain any uninitialized data (including NaN). The
 /// storage data type for alpha[0], beta[0] is float for HALF and SINGLE tensors, and double
