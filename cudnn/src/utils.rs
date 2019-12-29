@@ -297,7 +297,8 @@ pub struct RnnConfig {
     rnn_mode: cudnnRNNMode_t,
     algo: cudnnRNNAlgo_t,
     data_type: cudnnDataType_t,
-    workspace_size: usize
+    workspace_size: usize,
+    training_reserve_size: usize,
 }
 
 impl RnnConfig {
@@ -315,6 +316,7 @@ impl RnnConfig {
         algo: cudnnRNNAlgo_t,
         data_type: cudnnDataType_t,
         workspace_size: usize,
+        training_reserve_size: usize
     ) -> RnnConfig {
         RnnConfig {
             rnn_desc,
@@ -327,7 +329,8 @@ impl RnnConfig {
             rnn_mode,
             algo,
             data_type,
-            workspace_size
+            workspace_size,
+            training_reserve_size
         }
     }
 
@@ -339,11 +342,15 @@ impl RnnConfig {
     pub fn largest_workspace_size(&self) -> &usize {
         self.rnn_workspace_size()
     }
+    /// Training Reserve Size for RNN
+    pub fn training_reserve_size(&self) -> &usize { &self.training_reserve_size }
 
+    /// Accessor function for Rnn Descriptor
     pub fn rnn_desc(&self) -> &RnnDescriptor {
         &self.rnn_desc
     }
 
+    /// Accessor function for Sequence Length
     pub fn sequence_length(&self) -> &i32 {
         &self.sequence_length
     }
