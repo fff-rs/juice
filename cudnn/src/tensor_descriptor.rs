@@ -14,6 +14,12 @@ pub struct TensorDescriptor {
     id: cudnnTensorDescriptor_t,
 }
 
+pub fn tensor_vec_id_c(tensor_vec: &[TensorDescriptor]) -> Vec<cudnnTensorDescriptor_t> {
+    tensor_vec.iter().map(|tensor| {
+        *(*tensor).id_c()
+    }).collect()
+}
+
 impl Drop for TensorDescriptor {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
@@ -85,3 +91,4 @@ impl TensorDescriptor {
         &self.id
     }
 }
+
