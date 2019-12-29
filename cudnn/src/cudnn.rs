@@ -6,13 +6,15 @@
 
 use super::utils::{
     ActivationConfig, ConvolutionConfig, DataTypeInfo, DropoutConfig, NormalizationConfig,
-    PoolingConfig, ScalParams,
+    PoolingConfig, ScalParams, RnnConfig
 };
 use super::*;
 
 use crate::cuda::CudaDeviceMemory;
 use num::traits::Float;
 use std::mem::transmute_copy;
+use utils::DataType;
+use tensor_descriptor::tensor_vec_id_c;
 
 #[derive(Debug, Clone)]
 /// Provides a the high-level interface to CUDA's cuDNN.
@@ -176,6 +178,116 @@ impl Cudnn {
         let reserve = CudaDeviceMemory::new(reserve_required)?;
         let dropout = DropoutDescriptor::new(&self, probability, seed, &reserve)?;
         Ok(DropoutConfig::new(dropout, reserve))
+    }
+
+    /// Initialize RNN
+    pub fn init_rnn(
+        &self,
+        rnn_desc: RnnDescriptor,
+        x_desc: Vec<TensorDescriptor>,
+        hidden_size: i32,
+        num_layers: i32,
+        seq_length: i32,
+        dropout_desc: &DropoutDescriptor,
+        input_mode: cudnnRNNInputMode_t,
+        direction_mode: cudnnDirectionMode_t,
+        network_mode: cudnnRNNMode_t,
+        algorithm: cudnnRNNAlgo_t,
+        data_type: DataType,
+        math_type: cudnnMathType_t
+    ) -> Result<RnnConfig, Error> {
+
+        let data_type =  match data_type {
+            DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
+            DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
+            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF
+        };
+
+        API::set_rnn_matrix_math_type(
+            *rnn_desc.id_c(),
+            math_type
+        )?;
+
+
+        let workspace_size : usize = API::get_rnn_workspace_size(
+            *self.id_c(),
+            *rnn_desc.id_c(),
+            num_layers * hidden_size,
+            tensor_vec_id_c(&x_desc)
+        )?;
+
+        let training_reserve_size : usize = API::get_rnn_training_reserve_size(
+            *self.id_c(),
+            *rnn_desc.id_c(),
+            num_layers * hidden_size,
+            tensor_vec_id_c(&x_desc)
+        )?;
+
+        Ok(RnnConfig::new(
+            rnn_desc,
+            hidden_size,
+            num_layers,
+            seq_length,
+            *dropout_desc.id_c(),
+            input_mode,
+            direction_mode,
+            network_mode,
+            algorithm,
+            data_type,
+            workspace_size,
+            training_reserve_size
+        ))
+    }
+
+    /// Train & Return Results for RNN
+    pub fn rnn_forward<T>(
+        &self,
+        rnn_config: &RnnConfig,
+        src_desc: Vec<TensorDescriptor>,
+        src: *const ::libc::c_void,
+        dest_desc: &TensorDescriptor,
+        dest: *const ::libc::c_void,
+        hidden_desc: &TensorDescriptor,
+        // Planning to initially pass NULLs to this
+        hidden: *const ::libc::c_void,
+        cell_desc: &TensorDescriptor,
+        // Planning to initially pass NULLs to this
+        cell: *const ::libc::c_void,
+        weight_desc: &FilterDescriptor,
+        weight: *const ::libc::c_void,
+        output_desc: Vec<TensorDescriptor>,
+        output: *mut ::libc::c_void,
+        hidden_output_desc: TensorDescriptor,
+        hidden_output: *mut ::libc::c_void,
+        cell_output_desc: TensorDescriptor,
+        cell_output: *mut ::libc::c_void,
+        workspace: *mut ::libc::c_void,
+        reserve_data: *mut ::libc::c_void
+    ) -> Result<(), Error>
+    where T: Float + DataTypeInfo {
+        API::rnn_forward_training(
+            *self.id_c(),
+            *(rnn_config.rnn_desc().id_c()),
+            *rnn_config.sequence_length(),
+            tensor_vec_id_c(&src_desc),
+            src,
+            *hidden_desc.id_c(),
+            hidden,
+            *cell_desc.id_c(),
+            cell,
+            *weight_desc.id_c(),
+            weight,
+            tensor_vec_id_c(&output_desc),
+            output,
+            *hidden_output_desc.id_c(),
+            hidden_output,
+            *cell_output_desc.id_c(),
+            cell_output,
+            workspace,
+            *rnn_config.rnn_workspace_size(),
+            reserve_data,
+            *rnn_config.training_reserve_size()
+        )
     }
 
     /// Computes the forward Sigmoid Activation function.
