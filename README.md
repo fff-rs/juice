@@ -31,4 +31,3 @@ cargo build --release
 ../target/release/juice-examples --help
 # which means, you can run the examples from the juice-examples README
 ```
-*Note for OSX El Capitan users: `openssl` no longer ships with OSX by default. `brew link --force openssl` should fix the problem. If not, [see this Github issue](https://github.com/sfackler/rust-openssl/issues/255) for more details.*
