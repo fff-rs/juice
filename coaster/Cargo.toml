@@ -27,7 +27,7 @@ clippy = { version = "0.0", optional = true }
 compiletest_rs = { version = "0.3", optional = true }
 
 [dev-dependencies]
-rand = "0.6"
+rand = "0.7"
 coaster-nn = { version = "0.4" }
 
 [features]

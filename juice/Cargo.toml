@@ -22,7 +22,7 @@ coaster-blas = { default-features = false, version = "0.2.0" }
 coaster-nn = { default-features = false, version = "0.4.1" }
 
 log = "0.4"
-rand = "0.6"
+rand = "0.7"
 num = "0.2"
 capnp = "0.11"
 timeit = "0.1"
