@@ -34,7 +34,6 @@ impl API {
             )
         }
     }
-
     unsafe fn ffi_get_rnn_workspace_size(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -48,6 +47,42 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `src_desc` is not supported for RNN.")),
             _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Forward Workspace size.")),
+        }
+    }
+
+    /// Size of Reserve Space for RNN Training [cudnnGetRNNTrainingReserveSize][1]
+    /// # Arguments
+    /// * `handle` Handle to cudNN Library Descriptor
+    /// * `rnn_desc` Previously initialised RNN Descriptor
+    /// * `seq_length` Number of iterations to unroll over - must not exceed workspace size seq_len
+    /// * `x_desc` Array of tensor descriptors describing each recurrent iteration - one per element
+    /// in the RNN sequence
+    /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnGetRNNTrainingReserveSize
+    pub fn get_rnn_training_reserve_size(
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        seq_length: ::libc::c_int,
+        x_desc: Vec<cudnnTensorDescriptor_t>
+    ) -> Result<usize, Error> {
+        unsafe {
+            API::ffi_get_rnn_training_reserve_size(
+                handle, rnn_desc, seq_length, x_desc.as_slice()
+            )
+        }
+    }
+    unsafe fn ffi_get_rnn_training_reserve_size(
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        seq_length: ::libc::c_int,
+        x_desc: &[cudnnTensorDescriptor_t]
+    ) -> Result<::libc::size_t, Error> {
+        let mut size: ::libc::size_t = 0;
+        let size_ptr : *mut ::libc::size_t = &mut size;
+        match cudnnGetRNNTrainingReserveSize(handle, rnn_desc,seq_length, x_desc.as_ptr(), size_ptr) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `src_desc` is not supported for RNN.")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Training Reserve size.")),
         }
     }
 }
@@ -213,7 +248,7 @@ impl API {
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         seq_length: ::libc::c_int,
-        x_desc: *const cudnnTensorDescriptor_t,
+        x_desc: Vec<cudnnTensorDescriptor_t>,
         x: *const ::libc::c_void,
         hx_desc: cudnnTensorDescriptor_t,
         hx: *const ::libc::c_void,
@@ -221,7 +256,7 @@ impl API {
         cx: *const ::libc::c_void,
         w_desc: cudnnFilterDescriptor_t,
         w: *const ::libc::c_void,
-        y_desc: *const cudnnTensorDescriptor_t,
+        y_desc: Vec<cudnnTensorDescriptor_t>,
         y: *mut ::libc::c_void,
         hy_desc: cudnnTensorDescriptor_t,
         hy: *mut ::libc::c_void,
@@ -237,7 +272,7 @@ impl API {
                 handle,
                 rnn_desc,
                 seq_length,
-                x_desc,
+                x_desc.as_slice(),
                 x,
                 hx_desc,
                 hx,
@@ -245,7 +280,7 @@ impl API {
                 cx,
                 w_desc,
                 w,
-                y_desc,
+                y_desc.as_slice(),
                 y,
                 hy_desc,
                 hy,
@@ -262,7 +297,7 @@ impl API {
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         seq_length: ::libc::c_int,
-        x_desc: *const cudnnTensorDescriptor_t,
+        x_desc: &[cudnnTensorDescriptor_t],
         x: *const ::libc::c_void,
         hx_desc: cudnnTensorDescriptor_t,
         hx: *const ::libc::c_void,
@@ -270,7 +305,7 @@ impl API {
         cx: *const ::libc::c_void,
         w_desc: cudnnFilterDescriptor_t,
         w: *const ::libc::c_void,
-        y_desc: *const cudnnTensorDescriptor_t,
+        y_desc: &[cudnnTensorDescriptor_t],
         y: *mut ::libc::c_void,
         hy_desc: cudnnTensorDescriptor_t,
         hy: *mut ::libc::c_void,
@@ -285,7 +320,7 @@ impl API {
             handle,
             rnn_desc,
             seq_length,
-            x_desc,
+            x_desc.as_ptr(),
             x,
             hx_desc,
             hx,
@@ -293,7 +328,7 @@ impl API {
             cx,
             w_desc,
             w,
-            y_desc,
+            y_desc.as_ptr(),
             y,
             hy_desc,
             hy,
