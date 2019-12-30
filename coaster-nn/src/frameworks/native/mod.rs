@@ -83,6 +83,7 @@ impl<T> NN<T> for Backend<Native>
     type CPOOL = helper::PoolingConfig;
     // type CACTI = helper::ActivationConfig;
     type CDROP = helper::DropoutConfig;
+    type RC = helper::RnnConfig;
 
     fn init_nn() {}
 }
@@ -93,6 +94,10 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig
 }
 impl<'a, T> ConvolutionConfig<T> for helper::ConvolutionConfig
     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
+{
+}
+impl<'a, T> RnnConfig<T> for helper::RnnConfig
+where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
 }
 impl<T> NNOperationConfig<T> for helper::NormalizationConfig
@@ -108,6 +113,11 @@ impl<T> NNOperationConfig<T> for helper::PoolingConfig
 // {
 // }
 impl<T> NNOperationConfig<T> for helper::DropoutConfig
+    where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
+{
+}
+
+impl<T> NNOperationConfig<T> for helper::RnnConfig
     where T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
 }
@@ -820,6 +830,22 @@ impl<T> Pooling<T> for Backend<Native>
     }
 }
 
+impl<T> Rnn<T> for Backend<Native>
+    where T: Float + Default + Copy + PartialOrd + Bounded {
+    fn new_rnn_config(&self, src: &SharedTensor<T>, dest: &SharedTensor<T>, dropout_probability: Option<f32>, dropout_seed: Option<u64>, sequence_length: usize, network_mode: RnnNetworkMode, input_mode: RnnInputMode, direction_mode: DirectionMode, algorithm: RnnAlgorithm, hidden_size: i32, num_layers: i32) -> Result<Self::RC, Error> {
+        unimplemented!()
+    }
+
+    fn rnn_forward(
+        &self,
+        src: &SharedTensor<T>,
+        rnn_config: &Self::RC,
+        weight: *const ::libc::c_void,
+        workspace: &mut SharedTensor<u8>,
+    ) -> Result<(), Error> {
+        unimplemented!()
+    }
+}
 
 impl<T> Dropout<T> for Backend<Native>
     where T: Float + Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
