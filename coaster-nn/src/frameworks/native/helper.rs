@@ -253,6 +253,17 @@ pub struct ConvolutionConfig {
     pub padding: Vec<i32>,
 }
 
+
+#[derive(Debug, Clone, Copy)]
+#[allow(missing_docs)]
+// TODO: Keep parallel with impl in Cuda
+pub struct RnnConfig {
+    pub output_size: usize,
+    pub hidden_size: usize,
+    pub cell_size: usize,
+    pub num_layers: usize
+}
+
 /// softmax impl generation macro
 #[macro_export]
 macro_rules! impl_ops_softmax_for {
