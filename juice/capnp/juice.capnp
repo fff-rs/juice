@@ -33,11 +33,12 @@ struct LayerConfig {
     relu @7 :Void;
     sigmoid @8 :Void;
     tanh @15 :Void;
+    rnn @18 :RnnConfig;
     # Loss layers
     negativeLogLikelihood @9 :NegativeLogLikelihoodConfig;
     meanSquaredError @17 :Void;
     # Utility layers
-    reshape @10 :ReshapeConfig;
+   reshape @10 :ReshapeConfig;
     # Dropout layers
     dropout @16 :DropoutConfig;
   }
@@ -58,6 +59,13 @@ struct ConvolutionConfig {
   filterShape @1 :List(UInt64);
   stride @2 :List(UInt64);
   padding @3 :List(UInt64);
+}
+
+struct RnnConfig {
+	outputSize @0 :UInt64;
+	cellSize @1 :UInt64;
+	hiddenSize @2 :UInt64;
+	numLayers @3 :UInt64;
 }
 
 struct LinearConfig {

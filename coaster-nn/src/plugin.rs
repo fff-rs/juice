@@ -147,6 +147,15 @@ pub trait ConvolutionConfig<F> {
     }
 }
 
+/// Provides Rnn Config functionality.
+///
+/// Needs to be implemented for Operation specific configurations.
+pub trait RnnConfig<F> {
+    /// Returns the largest workspace size in bytes needed
+    /// for any of the convolution operations.
+    fn workspace_size(&self) -> usize {0}
+}
+
 /// Provides the functionality for a backend to support Neural Network related operations.
 pub trait NN<F> {
     /// The Convolution Operation Config representation for this Plugin.
@@ -159,6 +168,8 @@ pub trait NN<F> {
     // type CACTI: NNOperationConfig<F>;
     /// The Dropout Operation Config representation for this Plugin.
     type CDROP: NNOperationConfig<F>;
+    /// The RNN Operation Config representation for this Plugin
+    type RC: NNOperationConfig<F> + RnnConfig<F>;
 
     /// Initializes the Plugin.
     fn init_nn();
@@ -265,6 +276,113 @@ pub trait TanhPointwise<F> : NN<F> {
     /// Saves the result back to `x_diff`.
     fn tanh_pointwise_grad(&self, x: &SharedTensor<F>, x_diff: &mut SharedTensor<F>)
                            -> Result<(), crate::co::error::Error>;
+}
+
+/// Provide the functionality for a Backend to support RNN operations
+pub trait Rnn<F> : NN<F> {
+    /// Create a RnnConfig
+    fn new_rnn_config(
+        &self,
+        src: &SharedTensor<F>,
+        dest: &SharedTensor<F>,
+        dropout_probability: Option<f32>,
+        dropout_seed: Option<u64>,
+        sequence_length: usize,
+        network_mode: RnnNetworkMode,
+        input_mode: RnnInputMode,
+        direction_mode: DirectionMode,
+        algorithm: RnnAlgorithm,
+        hidden_size: i32,
+        num_layers: i32
+        // RC being RNNConfig
+    ) -> Result<Self::RC, crate::co::error::Error>;
+
+    /// Train a LSTM Network and Return Results
+    // TODO: Create alternate rnn_forward or alternate path to work with pretrained networks
+    /// # Arguments
+    /// * `weight_desc` Previously initialised FilterDescriptor for Weights
+    fn rnn_forward(
+        &self,
+        src: &SharedTensor<F>,
+        rnn_config: &Self::RC,
+        weight: *const ::libc::c_void,
+        workspace: &mut SharedTensor<u8>,
+    ) -> Result<(),crate::co::error::Error>;
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Network Type for RNN Networks [cudnnRNNMOde_t][1]
+/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNMode_t
+pub enum RnnNetworkMode {
+    /// CUDNN_RNN_RELU - Single gate RNN with a ReLU activation function
+    ReLU,
+    /// Single-gate RNN with a tanh activation function
+    Tanh,
+    /// Four-gate LSTM Network with no peephole connection
+    LSTM,
+    /// Three-gate network with Gated Recurrent Units
+    GRU
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Input Modes for RNN [cudnnRNNInputMode_t][1]
+/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNInputMode_t
+pub enum RnnInputMode {
+    /// CUDNN_LINEAR_INPUT - A biased matrix multiplication is performed at the input of the first
+    /// recurrent layer
+    LinearInput,
+    /// CUDNN_SKIP_INPUT - No operation is performed at the input of the first recurrent layer -
+    /// if this is used then the leading dimension of the input tensor must be equal to the hidden
+    /// state size of the network.
+    SkipInput
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Direction Mode for RNN [cudnnDirectionMode_t][1]
+/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnDirectionMode_t
+pub enum DirectionMode {
+    /// CUDNN_UNIDIRECTIONAL - The network iterates from first to last
+    UniDirectional,
+    /// CUDNN_BIDIRECTION - Concats recurrent output of First -> Last && Last -> First
+    BiDirectional
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Algorithm for RNN [cudnnRNNAlgo_t][1]
+/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNAlgo_t
+///
+/// Persist Static requires v6+
+pub enum RnnAlgorithm {
+    /// Sequence of Operations for each RNN Layer
+    Standard,
+    /// Uses a Persistent Kernel - fast when the first D of the input is small
+    PersistStatic,
+    /// RNN parts use a persistent kernel. Fast when the first dimension is small, and when it can
+    /// reuse plans in repeated calls.
+    PersistDynamic
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Enables/Disables the padded input/output [cudnnRNNPaddingMode_t][1]
+/// FIXME: This isn't found in generated.rs - Is this needed?
+/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNPaddingMode_t
+pub enum RnnPaddingMode {
+    /// Padding disabled
+    Disabled,
+    /// Padding enabled
+    Enabled
+}
+
+#[derive(Debug, Copy, Clone)]
+/// Indicate if Tensor Core Operations are permitted [cudnnMathType_t][1]
+/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnMathType_t
+pub enum MathType {
+    /// No Tensor Core ops
+    Default,
+    /// Uses Tensor Core ops
+    TensorOPMath,
+    /// Uses FP32 Tensors for input/output
+    TensorOPMathAllowConversion
 }
 
 /// Provides the functionality for a Backend to support Convolution operations.

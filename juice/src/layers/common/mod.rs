@@ -15,6 +15,7 @@ macro_rules! impl_ilayer_common {
 }
 
 pub use self::convolution::{Convolution, ConvolutionConfig};
+pub use self::rnn::{Rnn, RnnConfig};
 pub use self::linear::{Linear, LinearConfig};
 pub use self::log_softmax::LogSoftmax;
 pub use self::pooling::{Pooling, PoolingConfig, PoolingMode};
@@ -22,6 +23,7 @@ pub use self::softmax::Softmax;
 pub use self::dropout::{Dropout,DropoutConfig};
 
 pub mod convolution;
+pub mod rnn;
 pub mod linear;
 pub mod log_softmax;
 pub mod pooling;
