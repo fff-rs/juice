@@ -5,7 +5,7 @@
 //! - `y`: output value
 //! - `a`: weight (a trainable weight in a neural network)
 //! - `x`: input value
-//! - `b`: bias (not implemented yet)
+//! - `b`: bias (only for Backends with the `coblas::plugin::Copy trait`)
 //!
 //! ## Input Data
 //!
@@ -68,7 +68,7 @@ impl Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
+impl<B: IBackend + LayerOps<f32> + Copy<f32>> ILayer<B> for Linear {
 
     fn auto_weight_blobs(&self) -> bool {
         true
@@ -192,14 +192,6 @@ impl<B: IBackend + LayerOps<f32> + Copy<f32>> ComputeParametersGradient<f32, B> 
         // so instead we'll just copy the output_gradient[0] vector into
         backend.copy(&output_gradients[0], &mut parameters_gradients[1]);
 
-        // TODO: implement gradient w.r.t bias
-        // if (bias_term_ && this->param_propagate_down_[1]) {
-        //     const Dtype* top_diff = top[0]->gpu_diff();
-        //     // Gradient with respect to bias
-        //     caffe_gpu_gemv<Dtype>(CblasTrans, M_, N_, (Dtype)1., top_diff,
-        //         bias_multiplier_.gpu_data(), (Dtype)1.,
-        //         this->blobs_[1]->mutable_gpu_diff());
-        // }
     }
 }
 

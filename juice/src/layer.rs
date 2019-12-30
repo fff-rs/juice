@@ -697,7 +697,7 @@ impl<B: IBackend> Layer<B> {
     /// #    }
     /// # }
     /// ```
-    pub fn load<LB: IBackend + LayerOps<f32> + 'static, P: AsRef<Path>>(backend: Rc<LB>,
+    pub fn load<LB: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static, P: AsRef<Path>>(backend: Rc<LB>,
                                                                         path: P)
                                                                         -> io::Result<Layer<LB>> {
         let path = path.as_ref();
@@ -877,7 +877,7 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> {
+impl<B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> Layer<B> {
     /// Creates a new Layer from a [LayerConfig][1].
     /// [1]: ./struct.LayerConfig.html
     pub fn from_config(backend: Rc<B>, config: &LayerConfig) -> Layer<B> {

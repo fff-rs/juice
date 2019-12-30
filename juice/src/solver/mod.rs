@@ -34,7 +34,7 @@ pub struct Solver<SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32
     solver_backend: PhantomData<SolverB>,
 }
 
-impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + 'static> Solver<SolverB, B> {
+impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> Solver<SolverB, B> {
     /// Create Solver from [SolverConfig][1]
     /// [1]: ./struct.SolverConfig.html
     ///
@@ -56,7 +56,7 @@ impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> +
     }
 }
 
-impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + 'static> Solver<SolverB, B> {
+impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> Solver<SolverB, B> {
     fn init(&mut self, backend: Rc<B>) {
         info!("Initializing solver from configuration");
 
