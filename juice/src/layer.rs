@@ -932,6 +932,7 @@ impl<B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> L
     fn worker_from_config(backend: Rc<B>, config: &LayerConfig) -> Box<dyn ILayer<B>> {
         match config.layer_type.clone() {
             LayerType::Convolution(layer_config) => Box::new(Convolution::from_config(&layer_config)),
+            LayerType::Rnn(layer_config) => Box::new(Rnn::from_config(&layer_config)),
             LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
             LayerType::LogSoftmax => Box::new(LogSoftmax::default()),
             LayerType::Pooling(layer_config) => Box::new(Pooling::from_config(&layer_config)),
@@ -1311,6 +1312,8 @@ pub enum LayerType {
     // Common layers
     /// Convolution Layer
     Convolution(ConvolutionConfig),
+    /// RNN Layer
+    Rnn(RnnConfig),
     /// Linear Layer
     Linear(LinearConfig),
     /// LogSoftmax Layer
@@ -1358,6 +1361,7 @@ impl LayerType {
             LayerType::MeanSquaredError => false,
             LayerType::Reshape(_) => true,
             LayerType::Convolution(_) => false,
+            LayerType::Rnn(_) => false,
             LayerType::Pooling(_) => false,
             LayerType::Dropout(_) => false,
         }
@@ -1394,6 +1398,10 @@ impl<'a> CapnpWrite<'a> for LayerType {
             }
             &LayerType::Convolution(ref cfg) => {
                 let ref mut config = builder.reborrow().init_convolution();
+                cfg.write_capnp(config);
+            },
+            &LayerType::Rnn(ref cfg) => {
+                let ref mut config = builder.reborrow().init_rnn();
                 cfg.write_capnp(config);
             }
             &LayerType::Pooling(ref cfg) => {
@@ -1442,6 +1450,10 @@ impl<'a> CapnpRead<'a> for LayerType {
             capnp_layer_type::Which::Convolution(read_config) => {
                 let config = ConvolutionConfig::read_capnp(read_config.unwrap());
                 LayerType::Convolution(config)
+            }
+            capnp_layer_type::Which::Rnn(read_config) => {
+                let config = RnnConfig::read_capnp(read_config.unwrap());
+                LayerType::Rnn(config)
             }
             capnp_layer_type::Which::Dropout(read_config) => {
                 let config = DropoutConfig::read_capnp(read_config.unwrap());

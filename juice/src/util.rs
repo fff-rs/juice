@@ -99,6 +99,7 @@ impl<T: LayerOps<f32> + Axpby<f32> + Dot<f32> + Copy<f32>> SolverOps<f32> for T 
 
 /// Encapsulates all traits used in Layers.
 pub trait LayerOps<F> : conn::Convolution<F>
+                      + conn::Rnn<F>
                       + conn::Pooling<F>
                       + conn::Relu<F> + conn::ReluPointwise<F>
                       + conn::Sigmoid<F> + conn::SigmoidPointwise<F>
@@ -110,6 +111,7 @@ pub trait LayerOps<F> : conn::Convolution<F>
                       + Copy<F> {}
 
 impl<T: conn::Convolution<f32>
+      + conn::Rnn<f32>
       + conn::Pooling<f32>
       + conn::Relu<f32> + conn::ReluPointwise<f32>
       + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>
