@@ -1,5 +1,5 @@
+use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
-use std::fs::{OpenOptions,File};
 use std::sync::{Arc, RwLock};
 
 use hyper::Client;
@@ -8,16 +8,18 @@ use hyper::Uri;
 use hyper_rustls::HttpsConnector;
 
 use std::str::FromStr;
-use futures::Future;
-use futures::Stream;
 
 use docopt::Docopt;
-use serde::Deserialize;
+
 use csv::Reader;
+use serde::Deserialize;
 
+use tokio;
 
-extern crate env_logger;
+use futures_util::stream::TryStreamExt;
+
 extern crate coaster as co;
+extern crate env_logger;
 extern crate juice;
 
 use co::prelude::*;
@@ -63,60 +65,57 @@ struct Args {
     cmd_load_dataset: bool,
     cmd_mnist: bool,
     cmd_fashion: bool,
-    cmd_mackey_glass: bool
+    cmd_mackey_glass: bool,
+}
+
+async fn download_dataset(dataset: &str, base_url: &str) -> Result<(), hyper::Error> {
+    let uri = Uri::from_str(&format!("{}/{}", base_url, dataset)).unwrap();
+    println!("URL: {}", &uri);
+
+    let res = match uri.scheme_str() {
+        Some("https") => {
+            let client: Client<_, hyper::Body> = Client::builder().build(HttpsConnector::new());
+
+            client.get(uri)
+        }
+
+        Some("http") => Client::new().get(uri),
+
+        _ => panic!("unsupported scheme"),
+    }
+    .await?;
+
+    println!("Response: {}", res.status());
+
+    let name = format!("assets/{}", dataset);
+    {
+        let _ = File::create(name.clone()).expect("Failed to create file");
+    }
+
+    let mut x = res.into_body();
+    while let Some(chunk) = x.try_next().await? {
+        let mut f = OpenOptions::new()
+            .append(true)
+            .open(name.clone())
+            .expect("Failed to open file in append mode");
+
+        f.write(&chunk).unwrap();
+    }
+    Ok(())
 }
 
 fn download_datasets(datasets: &[&str], base_url: &str) {
+    let mut rt = tokio::runtime::Runtime::new().unwrap();
     for (i, v) in datasets.iter().enumerate() {
         println!("Downloading... {}/{}: {}", i + 1, datasets.len(), v);
-
-        let uri = Uri::from_str(&format!("{}/{}", base_url, v)).unwrap();
-        println!("URL: {}", &uri);
-
-        let mut core = tokio_core::reactor::Core::new().unwrap();
-
-        let response_fut = match uri.scheme_str() {
-            Some("https") => {
-                let client: Client<_, hyper::Body> = Client::builder()
-                    .build(HttpsConnector::new(4));
-                
-                client.get(uri)
-            }
-
-            Some("http") => Client::new().get(uri),
-
-            _ => panic!("unsupported scheme"),
-        };
-
-        let work = response_fut.and_then(|res| {
-            println!("Response: {}", res.status());
-
-            let name = format!("assets/{}", v);
-            {
-                let _ = File::create(name.clone()).expect("Failed to create file");
-            }
-
-            res.into_body()
-                .for_each(move |chunk| {
-                    let mut f = OpenOptions::new()
-                        .append(true)
-                        .open(name.clone())
-                        .expect("Failed to open file in append mode");
-                    
-                    f.write(&chunk).unwrap();
-
-                    Ok(())
-                })
-        });
-
-        core.run(work).unwrap();
+        let _ = rt.block_on(async { download_dataset(*v, base_url) });
     }
 }
 
 fn unzip_datasets(datasets: &[&str]) {
     for filename in datasets {
         println!("Decompressing: {}", filename);
-        
+
         // TODO figure out how to specify asset dir
         let mut file_handle = File::open(&format!("./assets/{}", filename)).unwrap();
         let mut in_file: Vec<u8> = Vec::new();
@@ -137,7 +136,6 @@ fn unzip_datasets(datasets: &[&str]) {
     }
 }
 
-
 use serde;
 
 #[cfg(not(test))]
@@ -145,7 +143,7 @@ use serde;
 fn main() {
     env_logger::init();
     // Parse Arguments
-    let args : Args = Docopt::new(MAIN_USAGE)
+    let args: Args = Docopt::new(MAIN_USAGE)
         .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
 
@@ -172,7 +170,7 @@ fn main() {
 
                 unzip_datasets(&datasets);
                 println!("{}", "Fashion MNIST dataset decompressed".to_string());
-            },
+            }
             _ => println!("{}", "Failed to download MNIST dataset!".to_string()),
         }
     } else if args.cmd_mnist {
@@ -211,48 +209,46 @@ fn main() {
             args.arg_model_name,
             args.arg_batch_size,
             args.arg_learning_rate,
-            args.arg_momentum
+            args.arg_momentum,
         );
         #[cfg(not(feature = "cuda"))]
-            {
-                println!(
+        {
+            println!(
                     "Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda."
                 );
-                panic!()
-            }
+            panic!()
+        }
     }
 }
 
 fn get_mnist_iter(pixel_count: usize) -> impl Iterator<Item = (u8, Vec<u8>)> {
     let rdr = Reader::from_reader(File::open("assets/mnist_train.csv").unwrap());
 
-    rdr
-        .into_deserialize()
-        .map(move |row| {
-            match row {
-                Ok(value) => {
-                    let row_vec: Box<Vec<u8>> = Box::new(value);
-                    let label = row_vec[0];
-                    let mut pixels = vec![0u8; pixel_count];
-                    for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
-                        *place = *element;
-                    }
-                    // TODO: reintroduce Coaster
-                    // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
-                    // match img {
-                    //     Ok(in_img) => {
-                    //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
-                    //     },
-                    //     Err(_) => unimplemented!()
-                    // }
-                    (label, pixels)
-                },
-                _ => {
-                    println!("no value");
-                    panic!();
+    rdr.into_deserialize().map(move |row| {
+        match row {
+            Ok(value) => {
+                let row_vec: Box<Vec<u8>> = Box::new(value);
+                let label = row_vec[0];
+                let mut pixels = vec![0u8; pixel_count];
+                for (place, element) in pixels.iter_mut().zip(row_vec.iter().skip(1)) {
+                    *place = *element;
                 }
+                // TODO: reintroduce Coaster
+                // let img = Image::from_luma_pixels(pixel_dim, pixel_dim, pixels);
+                // match img {
+                //     Ok(in_img) => {
+                //         println!("({}): {:?}", label, in_img.transform(vec![pixel_dim, pixel_dim]));
+                //     },
+                //     Err(_) => unimplemented!()
+                // }
+                (label, pixels)
             }
-        })
+            _ => {
+                println!("no value");
+                panic!();
+            }
+        }
+    })
 }
 
 #[cfg(all(feature = "cuda"))]
@@ -279,9 +275,7 @@ fn run_mnist(
         "conv" => {
             net_cfg.add_layer(LayerConfig::new(
                 "reshape",
-                ReshapeConfig::of_shape(
-                    &[batch_size, 1, pixel_dim, pixel_dim],
-                ),
+                ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
             ));
             net_cfg.add_layer(LayerConfig::new(
                 "conv",
@@ -314,9 +308,7 @@ fn run_mnist(
         "mlp" => {
             net_cfg.add_layer(LayerConfig::new(
                 "reshape",
-                LayerType::Reshape(
-                    ReshapeConfig::of_shape(&[batch_size, pixel_count]),
-                ),
+                LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
             ));
             net_cfg.add_layer(LayerConfig::new(
                 "linear1",
@@ -407,18 +399,19 @@ fn run_fashion(
     let pixel_count = 784;
     let pixel_dim = 28;
 
-    let Mnist { trn_img, trn_lbl, .. } = MnistBuilder::new()
+    let Mnist {
+        trn_img, trn_lbl, ..
+    } = MnistBuilder::new()
         .base_path("./assets/")
         .label_format_digit()
         .training_set_length(example_count)
         .test_set_length(test_count)
         .finalize();
 
-    let mut decoded_images = trn_img.chunks(pixel_count).enumerate().map(
-        |(ind, pixels)| {
-            (trn_lbl[ind], pixels.to_vec())
-        },
-    );
+    let mut decoded_images = trn_img
+        .chunks(pixel_count)
+        .enumerate()
+        .map(|(ind, pixels)| (trn_lbl[ind], pixels.to_vec()));
 
     let batch_size = batch_size.unwrap_or(1);
     let learning_rate = learning_rate.unwrap_or(0.001f32);
@@ -432,9 +425,7 @@ fn run_fashion(
         "conv" => {
             net_cfg.add_layer(LayerConfig::new(
                 "reshape",
-                ReshapeConfig::of_shape(
-                    &[batch_size, 1, pixel_dim, pixel_dim],
-                ),
+                ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
             ));
             net_cfg.add_layer(LayerConfig::new(
                 "conv",
@@ -467,9 +458,7 @@ fn run_fashion(
         "mlp" => {
             net_cfg.add_layer(LayerConfig::new(
                 "reshape",
-                LayerType::Reshape(
-                    ReshapeConfig::of_shape(&[batch_size, pixel_count]),
-                ),
+                LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
             ));
             net_cfg.add_layer(LayerConfig::new(
                 "linear1",
@@ -561,8 +550,8 @@ fn run_mackey_glass(
     learning_rate: Option<f32>,
     momentum: Option<f32>,
 ) {
-    let example_count : usize = 11751;
-    let columns : usize  = 10;
+    let example_count: usize = 11751;
+    let columns: usize = 10;
 
     let batch_size = batch_size.unwrap_or(65);
     let learning_rate = learning_rate.unwrap_or(0.03f32);
@@ -582,16 +571,10 @@ fn run_mackey_glass(
                 "linear2",
                 LinearConfig { output_size: 10 },
             ));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear3",
-                LinearConfig { output_size: 1 },
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "sigmoid",
-                LayerType::Sigmoid
-            ));
-        },
-        _ => panic!("Only linear models are currently implemented for mackey-glass")
+            net_cfg.add_layer(LayerConfig::new("linear3", LinearConfig { output_size: 1 }));
+            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+        }
+        _ => panic!("Only linear models are currently implemented for mackey-glass"),
     }
 
     let mut regressor_cfg = SequentialConfig::default();
@@ -642,7 +625,10 @@ fn run_mackey_glass(
         let mut inferred = inferred_out.write().unwrap();
         let predictions = regr_eval.get_predictions(&mut inferred);
         regr_eval.add_samples(&predictions, &targets);
-        println!("Mean Squared Error {}", &regr_eval.accuracy() as & dyn RegressionLoss);
+        println!(
+            "Mean Squared Error {}",
+            &regr_eval.accuracy() as &dyn RegressionLoss
+        );
     }
 }
 
@@ -650,20 +636,16 @@ fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
     let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass.csv").unwrap());
     let columns: usize = 10;
 
-    rdr
-        .into_deserialize()
-        .map(move |row| {
-            match row {
-                Ok(value) => {
-                    let row_vec: Box<Vec<f32>> = Box::new(value);
-                    let label = row_vec[0];
-                    let columns = row_vec[1..=columns].to_vec();
-                    (label, columns)
-                },
-                _ => {
-                    println!("no value");
-                    panic!();
-                }
-            }
-        })
+    rdr.into_deserialize().map(move |row| match row {
+        Ok(value) => {
+            let row_vec: Box<Vec<f32>> = Box::new(value);
+            let label = row_vec[0];
+            let columns = row_vec[1..=columns].to_vec();
+            (label, columns)
+        }
+        _ => {
+            println!("no value");
+            panic!();
+        }
+    })
 }

@@ -13,10 +13,12 @@ juice = { version = "0.2", default-features = false }
 coaster = { version = "0.1", default-features = false }
 
 csv = "1"
-hyper = "0.12"
-hyper-rustls = "^0.17"
-futures = "0.1"
-tokio-core = "0.1"
+hyper = "0.13"
+hyper-rustls = "0.19"
+futures = "0.3"
+futures-util = "0.3"
+
+tokio = "0.2"
 flate2 = "1"
 mnist = "0.4.0"
 
