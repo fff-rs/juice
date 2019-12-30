@@ -7,7 +7,8 @@ use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 use crate::cudnn::*;
 
-pub use crate::cudnn::utils::DataTypeInfo;
+pub use crate::cudnn::utils::{DataType, DataTypeInfo};
+
 use crate::plugin::*;
 
 #[macro_use]
@@ -34,6 +35,15 @@ pub trait ICudnnDesc<T> {
     fn cudnn_convolution_desc(&self,
                               filter: &SharedTensor<T>)
                               -> Result<ConvolutionDescriptor, PluginError>;
+
+    fn cudnn_rnn_desc( &self,
+                       hidden_size: i32,
+                       num_layers: i32,
+                       dropout_desc: DropoutDescriptor,
+                       input_mode: cudnnRNNInputMode_t,
+                       direction: cudnnDirectionMode_t,
+                       mode: cudnnRNNMode_t,
+                       algorithm: cudnnRNNAlgo_t) -> Result<RnnDescriptor, PluginError>;
 }
 
 impl ConvForwardAlgo {
@@ -42,19 +52,19 @@ impl ConvForwardAlgo {
         use crate::ConvForwardAlgo::*;
         use crate::cudnn::cudnnConvolutionFwdAlgo_t::*;
         Ok(match *self {
-               Auto => {
-                   return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution forward algorithm from \
+            Auto => {
+                return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution forward algorithm from \
                  ConvForwardAlgo::Auto. Use `find_cudnn_algo` to find an algorithm.")))
-               }
-               GEMM => CUDNN_CONVOLUTION_FWD_ALGO_GEMM,
-               ImplicitGEMM => CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
-               ImplicitPrecompiledGEMM => CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM,
-               FFT => CUDNN_CONVOLUTION_FWD_ALGO_FFT,
-               FFTTiling => CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
-               Direct => CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
-               Winograd => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD,
-               WinogradNonFused => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED,
-           })
+            }
+            GEMM => CUDNN_CONVOLUTION_FWD_ALGO_GEMM,
+            ImplicitGEMM => CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
+            ImplicitPrecompiledGEMM => CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM,
+            FFT => CUDNN_CONVOLUTION_FWD_ALGO_FFT,
+            FFTTiling => CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING,
+            Direct => CUDNN_CONVOLUTION_FWD_ALGO_DIRECT,
+            Winograd => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD,
+            WinogradNonFused => CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED,
+        })
     }
 
     /// Returns the matching enum value for a cuDNN algo.
@@ -89,7 +99,7 @@ impl ConvForwardAlgo {
                                                             *conv_desc.id_c(),
                                                             *src_desc.id_c(),
                                                             *dest_desc.id_c())
-                .unwrap();
+            .unwrap();
         let algo = match algos.len() {
             0 => return Err(Error::Plugin(PluginError::Operation("Unable to find CUDA cuDNN convolution forward algorithm."))),
             _ => algos[0].algo,
@@ -104,17 +114,17 @@ impl ConvBackwardFilterAlgo {
         use crate::ConvBackwardFilterAlgo::*;
         use crate::cudnn::cudnnConvolutionBwdFilterAlgo_t::*;
         Ok(match *self {
-               Auto => {
-                   return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution backward filter algorithm from \
+            Auto => {
+                return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution backward filter algorithm from \
                  ConvBackwardFilterAlgo::Auto. Use `find_cudnn_algo` to find an \
                  algorithm.")))
-               }
-               ImplicitGEMM => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1,
-               ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0,
-               ImplicitPrecompiledGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3,
-               FFT => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT,
-               WinogradNonFused => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED,
-           })
+            }
+            ImplicitGEMM => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1,
+            ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0,
+            ImplicitPrecompiledGEMMSum => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3,
+            FFT => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT,
+            WinogradNonFused => CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED,
+        })
     }
 
     /// Returns the matching enum value for a cuDNN algo.
@@ -146,7 +156,7 @@ impl ConvBackwardFilterAlgo {
                                                                     *conv_desc.id_c(),
                                                                     *src_desc.id_c(),
                                                                     *dest_desc.id_c())
-                .unwrap();
+            .unwrap();
         let algo = match algos.len() {
             0 => return Err(Error::Plugin(PluginError::Operation("Unable to find CUDA cuDNN convolution backward filter algorithm."))),
             _ => algos[0].algo,
@@ -161,18 +171,18 @@ impl ConvBackwardDataAlgo {
         use crate::ConvBackwardDataAlgo::*;
         use crate::cudnn::cudnnConvolutionBwdDataAlgo_t::*;
         Ok(match *self {
-               Auto => {
-                   return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution backward data algorithm from \
+            Auto => {
+                return Err(Error::Plugin(PluginError::Plugin("Can't create cuDNN convolution backward data algorithm from \
                  ConvBackwardDataAlgo::Auto. Use `find_cudnn_algo` to find \
                  an algorithm.")))
-               }
-               ImplicitGEMM => CUDNN_CONVOLUTION_BWD_DATA_ALGO_1,
-               ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
-               FFT => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT,
-               FFTTiling => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING,
-               Winograd => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD,
-               WinogradNonFused => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED,
-           })
+            }
+            ImplicitGEMM => CUDNN_CONVOLUTION_BWD_DATA_ALGO_1,
+            ImplicitGEMMSum => CUDNN_CONVOLUTION_BWD_DATA_ALGO_0,
+            FFT => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT,
+            FFTTiling => CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING,
+            Winograd => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD,
+            WinogradNonFused => CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED,
+        })
     }
 
     /// Returns the matching enum value for a cuDNN algo.
@@ -205,7 +215,7 @@ impl ConvBackwardDataAlgo {
                                                                   *conv_desc.id_c(),
                                                                   *src_desc.id_c(),
                                                                   *dest_desc.id_c())
-                .unwrap();
+            .unwrap();
 
         let algo = match algos.len() {
             0 => return Err(Error::Plugin(PluginError::Operation("Unable to find CUDA cuDNN convolution backward data algorithm."))),
@@ -272,6 +282,11 @@ impl<T> ICudnnDesc<T> for SharedTensor<T>
         }
     }
 
+    //fn cudnn_tensor_desc_rnn(&self) -> Result<TensorDescriptor, PluginError> {
+    //    let actual_desc : Vec<usize> = self.desc().clone();
+    //    unimplemented!()
+    //}
+
     fn cudnn_convolution_desc(&self,
                               filter: &SharedTensor<T>)
                               -> Result<ConvolutionDescriptor, PluginError> {
@@ -280,6 +295,32 @@ impl<T> ICudnnDesc<T> for SharedTensor<T>
                                          <T as DataTypeInfo>::cudnn_data_type()) {
             Ok(desc) => Ok(desc),
             Err(_) => Err(PluginError::Plugin("Unable to create CuDNN ConvolutionDescriptor.")),
+        }
+    }
+
+    fn cudnn_rnn_desc(
+        &self,
+        hidden_size: i32,
+        num_layers: i32,
+        dropout_desc: DropoutDescriptor,
+        input_mode: cudnnRNNInputMode_t,
+        direction: cudnnDirectionMode_t,
+        mode: cudnnRNNMode_t,
+        algorithm: cudnnRNNAlgo_t
+    ) -> Result<RnnDescriptor, PluginError> {
+        match RnnDescriptor::new(
+            *CUDNN.id_c(),
+            hidden_size,
+            num_layers,
+            &dropout_desc,
+            input_mode,
+            direction,
+            mode,
+            algorithm,
+            <T as DataTypeInfo>::cudnn_data_type()
+        ) {
+            Ok(desc) => Ok(desc),
+            Err(_) => Err(PluginError::Plugin("Unable to create CuDNN RNNDescriptor")),
         }
     }
 }
@@ -291,6 +332,7 @@ impl<T> NN<T> for Backend<Cuda>
     type CLRN = utils::NormalizationConfig;
     type CPOOL = utils::PoolingConfig;
     type CDROP = utils::DropoutConfig;
+    type RC = utils::RnnConfig;
 
     fn init_nn() {
         let _ = CUDNN.id_c();
@@ -298,6 +340,7 @@ impl<T> NN<T> for Backend<Cuda>
 }
 
 impl<'a, T> NNOperationConfig<T> for utils::ConvolutionConfig where T: Float + DataTypeInfo {}
+impl<T> NNOperationConfig<T> for utils::RnnConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::NormalizationConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::PoolingConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::DropoutConfig where T: Float + DataTypeInfo {}
@@ -315,7 +358,7 @@ impl<T> Sigmoid<T> for Backend<Cuda>
         let r_mem = write_only!(result, self);
         match CUDNN.sigmoid_forward(&CUDNN.init_activation().unwrap(),
 
-        							&x.cudnn_tensor_desc_flat()?,
+                                    &x.cudnn_tensor_desc_flat()?,
                                     trans!(x_mem),
                                     &r_desc,
                                     trans_mut!(r_mem),
@@ -338,7 +381,7 @@ impl<T> Sigmoid<T> for Backend<Cuda>
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
         match CUDNN.sigmoid_backward(&CUDNN.init_activation().unwrap(),
-        						&x.cudnn_tensor_desc_flat()?,
+                                     &x.cudnn_tensor_desc_flat()?,
                                      trans!(x_mem),
                                      &x_diff.cudnn_tensor_desc_flat()?,
                                      trans!(dx_mem),
@@ -378,9 +421,9 @@ impl<T> Convolution<T> for Backend<Cuda>
         let dest_desc = dest.cudnn_tensor_desc()?;
         let filter_desc = filter.cudnn_filter_desc()?;
         let conv_desc = crate::cudnn::ConvolutionDescriptor::new(zero_padding,
-                                                            stride,
-                                                            <T as DataTypeInfo>::cudnn_data_type())
-                .unwrap();
+                                                                 stride,
+                                                                 <T as DataTypeInfo>::cudnn_data_type())
+            .unwrap();
 
         let useable_algo_fwd =
             algo_fwd.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc)?;
@@ -396,7 +439,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                                                         *conv_desc.id_c(),
                                                         *src_desc.id_c(),
                                                         *dest_desc.id_c())
-                    .unwrap();
+                .unwrap();
         let mut workspace_size_bwd_filter =
             API::get_convolution_backward_filter_workspace_size(*CUDNN.id_c(),
                                                                 useable_algo_bwd_filter
@@ -406,7 +449,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                                                                 *conv_desc.id_c(),
                                                                 *src_desc.id_c(),
                                                                 *dest_desc.id_c())
-                    .unwrap();
+                .unwrap();
         let mut workspace_size_bwd_data =
             API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(),
                                                               useable_algo_bwd_data
@@ -416,7 +459,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                                                               *conv_desc.id_c(),
                                                               *src_desc.id_c(),
                                                               *dest_desc.id_c())
-                    .unwrap();
+                .unwrap();
 
         if workspace_size_fwd == 0 {
             workspace_size_fwd = 8;
@@ -515,6 +558,191 @@ impl<T> Convolution<T> for Backend<Cuda>
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Operation("Unable to execute CUDA cuDNN Activation convolution Backward."))),
         }
+    }
+}
+
+impl<T> RnnConfig<T> for crate::cudnn::utils::RnnConfig where T: Float + DataTypeInfo
+{
+    fn workspace_size(&self) -> usize { *self.largest_workspace_size()}
+}
+
+impl RnnInputMode {
+    fn as_cudnn(&self) -> Result<cudnnRNNInputMode_t, Error> {
+        Ok(match self {
+            RnnInputMode::LinearInput => cudnnRNNInputMode_t::CUDNN_LINEAR_INPUT,
+            RnnInputMode::SkipInput => cudnnRNNInputMode_t::CUDNN_SKIP_INPUT
+        })
+    }
+
+    fn from_cudnn(input: cudnnRNNInputMode_t) -> Self {
+        match input {
+            cudnnRNNInputMode_t::CUDNN_LINEAR_INPUT => RnnInputMode::LinearInput,
+            cudnnRNNInputMode_t::CUDNN_SKIP_INPUT => RnnInputMode::SkipInput
+        }
+    }
+}
+
+impl DirectionMode {
+    fn as_cudnn(&self) -> Result<cudnnDirectionMode_t, Error> {
+        Ok(match self {
+            DirectionMode::BiDirectional => cudnnDirectionMode_t::CUDNN_BIDIRECTIONAL,
+            DirectionMode::UniDirectional => cudnnDirectionMode_t::CUDNN_UNIDIRECTIONAL
+        })
+    }
+
+    fn from_cudnn(direction: cudnnDirectionMode_t) -> Self {
+        match direction {
+            cudnnDirectionMode_t::CUDNN_BIDIRECTIONAL => DirectionMode::BiDirectional,
+            cudnnDirectionMode_t::CUDNN_UNIDIRECTIONAL => DirectionMode::UniDirectional
+        }
+    }
+}
+
+impl RnnNetworkMode {
+    fn as_cudnn(&self) -> Result<cudnnRNNMode_t, Error> {
+        Ok(match self {
+            RnnNetworkMode::ReLU => cudnnRNNMode_t::CUDNN_RNN_RELU,
+            RnnNetworkMode::Tanh => cudnnRNNMode_t::CUDNN_RNN_TANH,
+            RnnNetworkMode::LSTM => cudnnRNNMode_t::CUDNN_LSTM,
+            RnnNetworkMode::GRU => cudnnRNNMode_t::CUDNN_GRU
+        })
+    }
+
+    fn from_cudnn(network_mode: cudnnRNNMode_t) -> Self {
+        match network_mode {
+            cudnnRNNMode_t::CUDNN_RNN_RELU => RnnNetworkMode::ReLU,
+            cudnnRNNMode_t::CUDNN_RNN_TANH => RnnNetworkMode::Tanh,
+            cudnnRNNMode_t::CUDNN_LSTM => RnnNetworkMode::LSTM,
+            cudnnRNNMode_t::CUDNN_GRU => RnnNetworkMode::GRU
+        }
+    }
+}
+
+impl RnnAlgorithm {
+    fn as_cudnn(&self) -> Result<cudnnRNNAlgo_t, Error> {
+        Ok(match self {
+            RnnAlgorithm::PersistDynamic => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_DYNAMIC,
+            RnnAlgorithm::PersistStatic => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_STATIC,
+            RnnAlgorithm::Standard => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_STANDARD
+        })
+    }
+
+    fn from_cudnn(algorithm: cudnnRNNAlgo_t) -> Self {
+        match algorithm {
+            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_DYNAMIC => RnnAlgorithm::PersistDynamic,
+            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_STATIC => RnnAlgorithm::PersistStatic,
+            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_STANDARD => RnnAlgorithm::Standard
+        }
+    }
+}
+
+impl MathType {
+    fn as_cudnn(&self) -> Result<cudnnMathType_t, Error> {
+        match self {
+            MathType::Default => Ok(cudnnMathType_t::CUDNN_DEFAULT_MATH),
+            MathType::TensorOPMath => Ok(cudnnMathType_t::CUDNN_TENSOR_OP_MATH),
+            MathType::TensorOPMathAllowConversion => Err(Error::Plugin(PluginError::Plugin("TensorOPMathAllowConversion not yet supported.")))
+        }
+    }
+
+    fn from_cudnn(math_type: cudnnMathType_t) -> MathType {
+        match math_type {
+            cudnnMathType_t::CUDNN_DEFAULT_MATH => MathType::Default,
+            cudnnMathType_t::CUDNN_TENSOR_OP_MATH => MathType::TensorOPMath
+        }
+    }
+}
+
+impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
+    fn new_rnn_config(
+        &self,
+        src: &SharedTensor<T>,
+        dest: &SharedTensor<T>,
+        dropout_probability: Option<f32>,
+        dropout_seed: Option<u64>,
+        sequence_length: usize,
+        network_mode: RnnNetworkMode,
+        input_mode: RnnInputMode,
+        direction_mode: DirectionMode,
+        algorithm: RnnAlgorithm,
+        hidden_size: i32,
+        num_layers: i32
+    ) -> Result<Self::RC, Error> {
+        let src_desc = src.cudnn_tensor_desc()?;
+        let dest_desc = dest.cudnn_tensor_desc()?;
+        let drop_desc = match CUDNN.init_dropout(
+            dropout_probability.unwrap_or(0.5),
+            dropout_seed.unwrap_or(0)
+        ) {
+            Ok(DropoutObject) => Ok(DropoutObject),
+            Err(E) =>  Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
+        }?;
+
+        let input_mode = input_mode.as_cudnn()?;
+        let direction_mode = direction_mode.as_cudnn()?;
+        let network_mode = network_mode.as_cudnn()?;
+        let algorithm = algorithm.as_cudnn()?;
+
+        let x_desc = vec![
+            src.cudnn_tensor_desc()?
+        ];
+
+        let rnn_desc = match RnnDescriptor::new(
+            *CUDNN.id_c(),
+            hidden_size,
+            num_layers,
+            drop_desc.dropout_desc(),
+            input_mode,
+            direction_mode,
+            network_mode,
+            algorithm,
+            <T as DataTypeInfo>::cudnn_data_type()
+        ) {
+            Ok(desc) => desc,
+            Err(_) => return Err(Error::Plugin(PluginError::Plugin("Could not create RNN Descriptor.")))
+        };
+
+        match CUDNN.init_rnn(
+            rnn_desc,
+            x_desc,
+            hidden_size,
+            sequence_length as i32,
+            num_layers,
+            drop_desc.dropout_desc(),
+            input_mode,
+            direction_mode,
+            network_mode,
+            algorithm,
+            <T as DataTypeInfo>::cudnn_data_type(),
+            MathType::TensorOPMath.as_cudnn()?
+        ) {
+            Ok(rnn_config) => Ok(rnn_config),
+            Err(_) => return Err(Error::Plugin(PluginError::Plugin("Could not create RNNConfig")))
+        }
+    }
+
+    /// Train and Output a RNN Network
+    fn rnn_forward(
+        &self,
+        src: &SharedTensor<T>,
+        rnn_config: &Self::RC,
+        weight: *const ::libc::c_void,
+        workspace: &mut SharedTensor<u8>,
+    ) -> Result<(), Error> {
+        // Create memory for dest - Create descriptor for dest
+        // Create descriptor for input? Conv Config has stride etc, so putting it in there
+        // makes sense. Stride docs are in the RNN help manual, as they're a bit weird in formulation.
+        // Hidden is created here, going to pass a NULL.
+        // Cell is created here, going to pass a NULL,
+        // Weights are created here? It's a Filter Descriptor, which is new to me. ISSUE
+        // How does dest differ to output?
+
+       //CUDNN.rnn_forward_training(
+       //    config,
+       //    src_desc,
+       //)
+
+        unimplemented!()
     }
 }
 
