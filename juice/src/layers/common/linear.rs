@@ -122,6 +122,9 @@ impl<B: IBackend + LayerOps<f32> + Copy<f32>> ILayer<B> for Linear {
 }
 
 impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
+    /// Basically, x has the shape (k, n) where k is the batch size. Given W with shape (m, n) where
+    /// m is output vector length, we compute the output with the formula xW^T which will give us a
+    /// matrix of size (k, m) with the outputs.
     fn compute_output(&self,
                       backend: &B,
                       weights: &[&SharedTensor<f32>],
@@ -151,6 +154,11 @@ impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
 }
 
 impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for Linear {
+    /// Since we have row vectors instead of columns, xW^T = (Wx^T)^T. Take the derivative with
+    /// respect to x^T (gives us a column vector of dimension (n, 1)), we get d((Wx^T)^T)/d(x^T) =
+    /// W^T of dims (n, m). In backpropagation with column vectors, we would take W^T * output_grad,
+    /// and in terms of row vectors, that would be output_grad^T * W which produces a vector of
+    /// dims (1, n)
     fn compute_input_gradient(&self,
                               backend: &B,
                               weights_data: &[&SharedTensor<f32>],
@@ -234,5 +242,141 @@ impl<'a> CapnpRead<'a> for LinearConfig {
 impl Into<LayerType> for LinearConfig {
     fn into(self) -> LayerType {
         LayerType::Linear(self)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::layers::{LinearConfig, Linear};
+    use crate::co::tensor::SharedTensor;
+    use crate::layer::{ComputeOutput, ComputeParametersGradient, ComputeInputGradient};
+    use util::native_backend;
+
+
+    fn get_sample_W() -> &'static [f32] {
+        [
+            1f32, 0f32, 3f32, 0f32,
+            1.5f32, 4f32, 2f32, 0f32,
+            0f32, 2f32, 1.5f32, 4f32,
+        ].as_ref()
+    }
+
+    fn get_sample_x() -> &'static [f32] {
+        [1f32, 2f32, 3f32, 4f32].as_ref()
+    }
+
+    fn get_sample_b() -> &'static [f32] {
+        [-1f32, 1f32, 0f32].as_ref()
+    }
+
+    fn get_sample_output_gradient() -> &'static [f32] {
+        [-1f32, 0.5f32, 0.2f32].as_ref()
+    }
+
+    #[test]
+    fn forward_pass_test() {
+        let ref config = LinearConfig { output_size: 3 };
+        let layer = Linear::from_config(config);
+        let backend = native_backend();
+
+        let ref W_shape = (3, 4);
+        let ref x_shape = (1, 4);
+        let ref output_shape = (1, 3);
+        let b_shape = output_shape;
+
+        let mut W = SharedTensor::<f32>::new(W_shape);
+        let mut x = SharedTensor::<f32>::new(x_shape);
+        let mut b = SharedTensor::<f32>::new(b_shape);
+
+        W.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_W());
+        x.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_x());
+        b.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_b());
+
+        let mut output = SharedTensor::<f32>::new(output_shape);
+
+        layer.compute_output(&backend, &[&W, &b], &[&x], &mut [&mut output]);
+
+        let result_slice: &[f32] = output.read(backend.device()).unwrap().as_slice();
+        assert_eq!(result_slice, &[9f32, 16.5f32, 24.5f32])
+    }
+
+    #[test]
+    fn input_gradient_test() {
+        let ref config = LinearConfig { output_size: 3 };
+        let layer = Linear::from_config(config);
+        let backend = native_backend();
+
+        let ref W_shape = (3, 4);
+        let ref x_shape = (1, 4);
+        let ref output_shape = (1, 3);
+        let b_shape = output_shape;
+
+        let mut W = SharedTensor::<f32>::new(W_shape);
+        let mut x = SharedTensor::<f32>::new(x_shape);
+        let mut b = SharedTensor::<f32>::new(b_shape);
+
+        W.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_W());
+        x.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_x());
+        b.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_b());
+
+        let mut input_gradient = SharedTensor::<f32>::new(x_shape);
+        let mut output_gradient = SharedTensor::<f32>::new(output_shape);
+        output_gradient.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_output_gradient());
+        // The output_data tensor doesn't really matter since it's not used.
+        let mut output_data = SharedTensor::<f32>::new(&(1, 1));
+
+        layer.compute_input_gradient(
+            &backend,
+            &[&W, &b],
+            &[&output_data],
+            &[&output_gradient],
+            &[&x],
+            &mut [&mut input_gradient]
+        );
+
+        let result_slice: &[f32] = input_gradient.read(backend.device()).unwrap().as_slice();
+        assert_eq!(result_slice, &[-0.25f32, 2.4f32, -1.7f32, 0.8f32]);
+    }
+
+    #[test]
+    fn parameter_gradient_test() {
+        let ref config = LinearConfig { output_size: 3 };
+        let layer = Linear::from_config(config);
+        let backend = native_backend();
+
+        let ref W_shape = (3, 4);
+        let ref x_shape = (1, 4);
+        let ref output_shape = (1, 3);
+        let b_shape = output_shape;
+
+        let mut W_grad = SharedTensor::<f32>::new(W_shape);
+        let mut x = SharedTensor::<f32>::new(x_shape);
+        let mut b_grad = SharedTensor::<f32>::new(b_shape);
+
+        x.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_x());
+
+        let mut input_gradient = SharedTensor::<f32>::new(x_shape);
+        let mut output_gradient = SharedTensor::<f32>::new(output_shape);
+        output_gradient.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_output_gradient());
+        // The output_data tensor doesn't really matter since it's not used.
+        let mut output_data = SharedTensor::<f32>::new(&(1, 1));
+
+        layer.compute_parameters_gradient(
+            &backend,
+            &[&output_data],
+            &[&output_gradient],
+            &[&x],
+            &mut [&mut W_grad, &mut b_grad]
+        );
+
+        let w_grad_result: &[f32] = W_grad.read(backend.device()).unwrap().as_slice();
+        let b_grad_result: &[f32] = b_grad.read(backend.device()).unwrap().as_slice();
+
+        assert_eq!(w_grad_result, &[
+            -1f32, -2f32, -3f32, -4f32,
+            0.5f32, 1f32, 1.5f32, 2f32,
+            0.2f32, 0.4f32, 0.6f32, 0.8f32
+        ]);
+        assert_eq!(b_grad_result, &[-1f32, 0.5f32, 0.2f32]);
     }
 }
