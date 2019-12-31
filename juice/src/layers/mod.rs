@@ -55,7 +55,7 @@
 pub use self::activation::{ReLU, Sigmoid, TanH};
 
 pub use self::common::{Convolution, ConvolutionConfig,
-                       Rnn, RnnConfig,
+                       Rnn, RnnConfig, RnnType,
                        Pooling, PoolingConfig, PoolingMode,
                        Linear, LinearConfig,
                        LogSoftmax,

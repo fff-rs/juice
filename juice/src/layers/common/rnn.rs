@@ -14,6 +14,48 @@ use crate::util::{ArcLock, cast_vec_usize_to_i32};
 use crate::weight::FillerType;
 use capnp::ErrorKind::Unimplemented;
 
+#[derive(Clone, Copy)]
+#[allow(non_camel_case_types)]
+/// Types of Supported RNNs
+pub enum RnnType {
+    /// Long Short Term Memory
+    LSTM,
+    /// Gated Recurrent Unit
+    GRU,
+    /// ReLU Recursive Unit
+    ReLU,
+    /// Tanh Recursive Unit
+    tanh
+}
+
+impl RnnType {
+    fn to_text(&self) -> String {
+        match self {
+            RnnType::GRU => "GRU",
+            RnnType::LSTM => "LSTM",
+            RnnType::ReLU => "ReLU",
+            RnnType::tanh => "tanh"
+        }.to_string()
+    }
+
+    fn from_text(input: &str) -> Result<Self, &str> {
+        match input {
+            "GRU" => Ok(RnnType::GRU),
+            "LSTM" => Ok(RnnType::LSTM),
+            "ReLU" => Ok(RnnType::ReLU),
+            "tanh" => Ok(RnnType::tanh),
+            _ => Err("Unknown RnnType used - variants are GRU, LSTM, ReLU, and tanh")
+        }
+    }
+}
+
+impl std::fmt::Debug for RnnType {
+    fn fmt(&self,f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_text())
+    }
+}
+
+
 #[derive(Debug, Clone)]
 ///
 pub struct Rnn<B: conn::Rnn<f32>> {
@@ -114,7 +156,6 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
 #[derive(Debug, Clone, Copy)]
 /// Specifies configuration parameters for a RNN Layer.
 /// TODO: Update to RnnConfig in CUDA Layer
-// TODO: Add in LSTM Type
 pub struct RnnConfig {
     /// Number of field outputs
     pub output_size: usize,
@@ -123,7 +164,9 @@ pub struct RnnConfig {
     /// Size of the Hidden Layer
     pub hidden_size: usize,
     /// Number of Hidden Layers
-    pub num_layers: usize
+    pub num_layers: usize,
+    /// Type of RNN
+    pub rnn_type : RnnType
 }
 
 impl Into<LayerType> for RnnConfig {
@@ -141,6 +184,7 @@ impl<'a> CapnpWrite<'a> for RnnConfig{
         builder.reborrow().set_cell_size(self.cell_size as u64);
         builder.reborrow().set_hidden_size(self.hidden_size as u64);
         builder.reborrow().set_num_layers(self.num_layers as u64);
+        builder.reborrow().set_rnn_type(&self.rnn_type.to_text());
     }
 }
 
@@ -152,19 +196,24 @@ impl<'a> CapnpRead<'a> for RnnConfig{
         let read_cell_size = reader.get_cell_size() as usize;
         let read_num_layers = reader.get_num_layers() as usize;
         let read_hidden_size = reader.get_hidden_size() as usize;
+        let read_rnn_type = RnnType::from_text(
+            reader.get_rnn_type()
+                .unwrap())
+            .unwrap();
 
         RnnConfig {
             output_size: read_output_size,
             cell_size : read_cell_size,
             hidden_size: read_hidden_size,
-            num_layers: read_num_layers
+            num_layers: read_num_layers,
+            rnn_type: read_rnn_type
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Rnn, RnnConfig};
+    use super::{Rnn, RnnType, RnnConfig};
     use crate::co::*;
 
     #[test]
@@ -174,7 +223,8 @@ mod tests {
             output_size: 64,
             cell_size: 10,
             hidden_size: 10,
-            num_layers: 10
+            num_layers: 10,
+            rnn_type: RnnType::LSTM
         };
         let layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
         unimplemented!()
