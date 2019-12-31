@@ -66,6 +66,7 @@ struct RnnConfig {
 	cellSize @1 :UInt64;
 	hiddenSize @2 :UInt64;
 	numLayers @3 :UInt64;
+	rnnType @4 :Text;
 }
 
 struct LinearConfig {
