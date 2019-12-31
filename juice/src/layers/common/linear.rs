@@ -128,12 +128,12 @@ impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
                       input_data: &[&SharedTensor<f32>],
                       output_data: &mut [&mut SharedTensor<f32>]) {
 
-        let mut ones_tensor = SharedTensor::<f32>::new(output_data[0].desc());
+        let mut ones_tensor = SharedTensor::<f32>::new(&[input_data[0].desc().as_slice()[0], 1]);
         FillerType::fill_constant(&mut ones_tensor, 1f32);
         backend.gemm(&self.one,
                      Transpose::NoTrans,
                      &ones_tensor,
-                     Transpose::Trans,
+                     Transpose::NoTrans,
                      weights[1],
                      &self.zero,
                      output_data[0])
