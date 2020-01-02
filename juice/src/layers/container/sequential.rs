@@ -26,7 +26,7 @@ pub struct Sequential<B: IBackend + LayerOps<f32>> {
     registry: HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>,
 }
 
-impl<B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> Sequential<B> {
+impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
     /// Create a empty Sequential container layer.
     pub fn empty() -> Sequential<B> {
         Sequential {

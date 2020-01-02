@@ -697,7 +697,7 @@ impl<B: IBackend> Layer<B> {
     /// #    }
     /// # }
     /// ```
-    pub fn load<LB: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static, P: AsRef<Path>>(backend: Rc<LB>,
+    pub fn load<LB: IBackend + LayerOps<f32> + 'static, P: AsRef<Path>>(backend: Rc<LB>,
                                                                         path: P)
                                                                         -> io::Result<Layer<LB>> {
         let path = path.as_ref();

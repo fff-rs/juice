@@ -106,7 +106,8 @@ pub trait LayerOps<F> : conn::Convolution<F>
                       + conn::Softmax<F> + conn::LogSoftmax<F>
                       + conn::Dropout<F>
                       + Gemm<F>
-                      + Axpby<F> {}
+                      + Axpby<F>
+                      + Copy<F> {}
 
 impl<T: conn::Convolution<f32>
       + conn::Pooling<f32>
@@ -116,4 +117,5 @@ impl<T: conn::Convolution<f32>
       + conn::Softmax<f32> + conn::LogSoftmax<f32>
       + conn::Dropout<f32>
       + Gemm<f32>
-      + Axpby<f32>> LayerOps<f32> for T {}
+      + Axpby<f32>
+      + Copy<f32>> LayerOps<f32> for T {}
