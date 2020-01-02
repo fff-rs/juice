@@ -68,7 +68,7 @@ impl Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + Copy<f32>> ILayer<B> for Linear {
+impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
 
     fn auto_weight_blobs(&self) -> bool {
         true
@@ -178,7 +178,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + Copy<f32>> ComputeParametersGradient<f32, B> for Linear {
+impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
     fn compute_parameters_gradient(&self,
                                    backend: &B,
                                    output_data: &[&SharedTensor<f32>],
