@@ -9,8 +9,7 @@
 use std;
 use std::fmt;
 
-use rand::thread_rng;
-use rand::distributions::{range, IndependentSample, Range};
+use rand::{thread_rng, Rng};
 
 use crate::co::prelude::*;
 use crate::co::plugin::numeric_helpers::{cast, NumCast};
@@ -79,7 +78,7 @@ pub fn filled_tensor<T,F>(backend: &Backend<F>, dims: &[usize], data: &[f64]) ->
 // verification or cross tests (Native <-> Cuda), but they aren't implemented
 // yet.
 pub fn uniformly_random_tensor<T,F>(_backend: &Backend<F>, dims: &[usize], low: T, high: T) -> SharedTensor<T>
-    where T: Copy + PartialEq + PartialOrd + range::SampleRange,
+    where T: Copy + PartialEq + PartialOrd + rand::distributions::uniform::SampleUniform,
           F: IFramework,
           Backend<F>: IBackend {
 
@@ -92,9 +91,8 @@ pub fn uniformly_random_tensor<T,F>(_backend: &Backend<F>, dims: &[usize], low: 
             let mem_slice = mem.as_mut_slice::<T>();
 
             let mut rng = thread_rng();
-            let distr = Range::new(low, high);
             for x in mem_slice {
-                *x = distr.ind_sample(&mut rng);
+                *x = Rng::gen_range(&mut rng, low, high);
             }
         }
   // not functional since, PartialEq has yet to be implemented for Device
