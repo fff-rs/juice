@@ -44,7 +44,7 @@ impl API {
         let size_ptr: *mut ::libc::size_t = &mut size;
         match cudnnGetRNNWorkspaceSize(handle, rnn_desc, unroll_sequence_length, x_desc.as_ptr(), size_ptr) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `src_desc` is not supported for RNN.")),
             _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Forward Workspace size.")),
         }
@@ -83,6 +83,44 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `src_desc` is not supported for RNN.")),
             _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Training Reserve size.")),
+        }
+    }
+    /// cudnnGetRNNParamsSize[1]
+    /// Query the amount of parameter space needed to execute the RNN for rnnDesc, given xDesc
+    /// # Parameters
+    /// * `handle` CUDNN Handle
+    /// * `rnn_desc` Descriptor for the RNN
+    /// * `x_desc` Input Tensor
+    /// * `dataType` Data Type for the Input Tensor
+    /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnGetRNNParamsSize
+    pub fn get_rnn_params_size(
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        x_desc: cudnnTensorDescriptor_t,
+        data_type: DataType
+    ) -> Result<usize, Error> {
+        unsafe {
+            API::ffi_get_rnn_params_size(
+                handle,
+                rnn_desc,
+                x_desc,
+                API::to_cudnn_data_type(data_type)
+            )
+        }
+    }
+    unsafe fn ffi_get_rnn_params_size(
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        x_desc: cudnnTensorDescriptor_t,
+        data_type: cudnnDataType_t
+    ) -> Result<::libc::size_t, Error> {
+        let mut size: ::libc::size_t = 0;
+        let size_ptr: *mut ::libc::size_t = &mut size;
+        match cudnnGetRNNParamsSize(handle, rnn_desc,x_desc, size_ptr, data_type) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("One of the following; rnnDesc is invalid, x_desc is invalid, x_desc isn't fully packed, dataType & tensor Description type don't match")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `rnn_desc` is not supported for RNN.")),
+            _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Params Size")),
         }
     }
 }
