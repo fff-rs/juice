@@ -183,8 +183,8 @@ impl Cudnn {
     /// Initialize RNN
     pub fn init_rnn(
         &self,
+        x_desc: &[TensorDescriptor],
         rnn_desc: RnnDescriptor,
-        x_desc: Vec<TensorDescriptor>,
         hidden_size: i32,
         num_layers: i32,
         seq_length: i32,
@@ -208,20 +208,21 @@ impl Cudnn {
             math_type
         )?;
 
-
         let workspace_size : usize = API::get_rnn_workspace_size(
             *self.id_c(),
             *rnn_desc.id_c(),
-            num_layers * hidden_size,
-            tensor_vec_id_c(&x_desc)
+            seq_length,
+            tensor_vec_id_c(x_desc)
         )?;
 
         let training_reserve_size : usize = API::get_rnn_training_reserve_size(
             *self.id_c(),
             *rnn_desc.id_c(),
-            num_layers * hidden_size,
-            tensor_vec_id_c(&x_desc)
+            seq_length,
+            tensor_vec_id_c(x_desc)
         )?;
+
+        let training_reserve : CudaDeviceMemory = CudaDeviceMemory::new(training_reserve_size)?;
 
         Ok(RnnConfig::new(
             rnn_desc,
@@ -235,7 +236,8 @@ impl Cudnn {
             algorithm,
             data_type,
             workspace_size,
-            training_reserve_size
+            training_reserve_size,
+            training_reserve
         ))
     }
 
@@ -245,8 +247,8 @@ impl Cudnn {
         rnn_config: &RnnConfig,
         src_desc: Vec<TensorDescriptor>,
         src: *const ::libc::c_void,
-        dest_desc: &TensorDescriptor,
-        dest: *const ::libc::c_void,
+        output_desc: Vec<TensorDescriptor>,
+        output: *mut ::libc::c_void,
         hidden_desc: &TensorDescriptor,
         // Planning to initially pass NULLs to this
         hidden: *const ::libc::c_void,
@@ -255,11 +257,9 @@ impl Cudnn {
         cell: *const ::libc::c_void,
         weight_desc: &FilterDescriptor,
         weight: *const ::libc::c_void,
-        output_desc: Vec<TensorDescriptor>,
-        output: *mut ::libc::c_void,
-        hidden_output_desc: TensorDescriptor,
+        hidden_output_desc: &TensorDescriptor,
         hidden_output: *mut ::libc::c_void,
-        cell_output_desc: TensorDescriptor,
+        cell_output_desc: &TensorDescriptor,
         cell_output: *mut ::libc::c_void,
         workspace: *mut ::libc::c_void,
         reserve_data: *mut ::libc::c_void
