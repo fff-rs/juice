@@ -288,9 +288,11 @@ impl DropoutConfig {
 /// [2]: jmlr.org/proceedings/papers/v37/jozefowicz15.pdf
 pub struct RnnConfig {
     rnn_desc: RnnDescriptor,
-    hidden_size: ::libc::c_int,
+    /// Size of Hidden Layer
+    pub hidden_size: ::libc::c_int,
     num_layers: ::libc::c_int,
-    sequence_length: ::libc::c_int,
+    /// Length of Sequence
+    pub sequence_length: ::libc::c_int,
     dropout_desc: cudnnDropoutDescriptor_t,
     input_mode: cudnnRNNInputMode_t,
     direction_mode: cudnnDirectionMode_t,
@@ -299,6 +301,7 @@ pub struct RnnConfig {
     data_type: cudnnDataType_t,
     workspace_size: usize,
     training_reserve_size: usize,
+    training_reserve: CudaDeviceMemory,
 }
 
 impl RnnConfig {
@@ -316,7 +319,8 @@ impl RnnConfig {
         algo: cudnnRNNAlgo_t,
         data_type: cudnnDataType_t,
         workspace_size: usize,
-        training_reserve_size: usize
+        training_reserve_size: usize,
+        training_reserve: CudaDeviceMemory
     ) -> RnnConfig {
         RnnConfig {
             rnn_desc,
@@ -330,7 +334,8 @@ impl RnnConfig {
             algo,
             data_type,
             workspace_size,
-            training_reserve_size
+            training_reserve_size,
+            training_reserve
         }
     }
 
@@ -344,6 +349,10 @@ impl RnnConfig {
     }
     /// Training Reserve Size for RNN
     pub fn training_reserve_size(&self) -> &usize { &self.training_reserve_size }
+    /// Training Reserve Space on GPU for RNN
+    pub fn training_reserve(&self) -> &CudaDeviceMemory {
+         &self.training_reserve
+    }
 
     /// Accessor function for Rnn Descriptor
     pub fn rnn_desc(&self) -> &RnnDescriptor {
