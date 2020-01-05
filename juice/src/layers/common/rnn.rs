@@ -2,17 +2,22 @@
 //!
 //! TODO: Add Docs
 
+use std::rc::Rc;
+use std::sync::{Arc, RwLock};
+
+use capnp::ErrorKind::Unimplemented;
+
+use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
+use util::native_backend;
+
 use crate::capnp_util::*;
 use crate::co::prelude::*;
 use crate::conn;
 use crate::conn::RnnConfig as connRnnConfig;
-use crate::layer::*;
 use crate::juice_capnp::rnn_config as capnp_config;
-use std::rc::Rc;
-use std::sync::{Arc, RwLock};
+use crate::layer::*;
 use crate::util::{ArcLock, cast_vec_usize_to_i32};
 use crate::weight::FillerType;
-use capnp::ErrorKind::Unimplemented;
 
 #[derive(Clone, Copy)]
 #[allow(non_camel_case_types)]
@@ -62,6 +67,8 @@ pub struct Rnn<B: conn::Rnn<f32>> {
     num_output: usize,
     hidden_size: usize,
     num_layers: usize,
+    // dropout_probability: f32,
+    // dropout_seed: f32,
     workspace: Option<ArcLock<SharedTensor<u8>>>,
     rnn_config: Option<Rc<B::RC>>,
 }
@@ -73,15 +80,18 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
             num_output: config.output_size,
             hidden_size: config.hidden_size,
             num_layers: config.num_layers,
+            // dropout_probability: config.dropout_probability,
+            // dropout_seed: config.dropout_seed,
             workspace: None,
-            rnn_config : None
+            rnn_config: None,
         }
     }
-
 }
 
 impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
     impl_ilayer_common!();
+
+    fn auto_weight_blobs(&self) -> bool { true }
 
     fn reshape(&mut self,
                backend: Rc<B>,
@@ -91,7 +101,46 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
                weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
                output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
                output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
-            unimplemented!()
+        let input = input_data[0].read().unwrap();
+        let input_shape = input.desc();
+        let sequence_length = input_shape[1];
+        let output_data = output_data[0].write().unwrap();
+        //let mut output_gradient = output_gradient[0].write().unwrap();
+        let stride = cast_vec_usize_to_i32(vec![sequence_length, 1, 1]);
+        let config = backend.new_rnn_config(
+            &input,
+            // TODO: implement dropout options
+            None,
+            None,
+            sequence_length as i32,
+            RnnNetworkMode::LSTM,
+            RnnInputMode::LinearInput,
+            DirectionMode::UniDirectional,
+            RnnAlgorithm::PersistStatic,
+            self.hidden_size as i32,
+            self.num_layers as i32,
+            input_shape[0] as i32,
+        ).unwrap();
+
+        let x_desc = backend.rnn_sequence_descriptors(
+            &input,
+            sequence_length as i32,
+            self.hidden_size as i32,
+            input_shape[0] as i32,
+        ).unwrap().x_desc;
+
+        let filter_dimensions: TensorDesc = backend.generate_rnn_weight_description(
+            &config,
+            &x_desc,
+        ).unwrap();
+        weights_data[0].write().unwrap().resize(&filter_dimensions);
+        let filler = FillerType::Glorot {
+            input_size: filter_dimensions[1],
+            output_size: self.num_output,
+        };
+
+        filler.fill(&mut weights_data[0].write().unwrap());
+        self.rnn_config = Some(Rc::new(config));
     }
 
     fn resize_shared_workspace(&mut self,
@@ -122,9 +171,15 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
                       weights: &[&SharedTensor<f32>],
                       input_data: &[&SharedTensor<f32>],
                       output_data: &mut [&mut SharedTensor<f32>]) {
-        let filter_data = weights[0];
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
+        backend.rnn_forward(
+            input_data[0],
+            output_data[0],
+            rnn_config,
+            weights[0],
+            &mut workspace,
+        );
         unimplemented!()
     }
 }
@@ -213,11 +268,12 @@ impl<'a> CapnpRead<'a> for RnnConfig{
 
 #[cfg(test)]
 mod tests {
-    use super::{Rnn, RnnType, RnnConfig};
     use crate::co::*;
 
+    use super::{Rnn, RnnConfig, RnnType};
+
     #[test]
-    #[cfg(feature="cuda")]
+    #[cfg(feature = "cuda")]
     fn correct_shapes() {
         let cfg = RnnConfig {
             output_size: 64,
