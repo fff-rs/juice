@@ -14,6 +14,7 @@ pub struct TensorDescriptor {
     id: cudnnTensorDescriptor_t,
 }
 
+/// Return C Handle for a Vector of Tensor Descriptors
 pub fn tensor_vec_id_c(tensor_vec: &[TensorDescriptor]) -> Vec<cudnnTensorDescriptor_t> {
     tensor_vec.iter().map(|tensor| {
         *(*tensor).id_c()
