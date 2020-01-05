@@ -6,9 +6,7 @@ use crate::co::plugin::Error as PluginError;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 use crate::cudnn::*;
-
 pub use crate::cudnn::utils::{DataType, DataTypeInfo};
-
 use crate::plugin::*;
 
 #[macro_use]
@@ -653,39 +651,134 @@ impl MathType {
     }
 }
 
+#[derive(Debug)]
+// All RNN Sequence Descriptors are generated on a single pass in CUDNN example code
+// As such, defining them all in one function appears to be the simplest method of reproducing
+// this work in Rust, but passing back a tuple is unwieldy as the tuple grows beyond 2 - 3 values.
+pub struct RnnSequenceDescriptors {
+    pub x_desc: Vec<TensorDescriptor>,
+    y_desc: Vec<TensorDescriptor>,
+    dx_desc: Vec<TensorDescriptor>,
+    dy_desc: Vec<TensorDescriptor>,
+    hx_desc: TensorDescriptor,
+    cx_desc: TensorDescriptor,
+    hy_desc: TensorDescriptor,
+    cy_desc: TensorDescriptor,
+    dhx_desc: TensorDescriptor,
+    dcx_desc: TensorDescriptor,
+    dhy_desc: TensorDescriptor,
+    dcy_desc: TensorDescriptor,
+}
+
 impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
+    fn rnn_sequence_descriptors(&self, sec: &SharedTensor<T>,
+                                sequence_length: i32,
+                                hidden_size: i32,
+                                batch_size: i32)
+                                -> Result<RnnSequenceDescriptors, Error> {
+        let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+        let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+        let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+        let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+        let dimA = vec![batch_size, sequence_length, 1];
+        let strideA = vec![dimA[2] * dimA[1], 1, 1];
+
+        // FIXME: Ensure hidden_size*2 is used for bidirectional models
+        let dimB = vec![batch_size, hidden_size, 1];
+        let strideB = vec![dimA[2] * dimA[1], dimA[2], 1];
+        let tensor_description_a = TensorDescriptor::new(
+            &dimA,
+            &strideA,
+            <T as DataTypeInfo>::cudnn_data_type(),
+        ).unwrap();
+        for _ in 0..sequence_length {
+            x_desc.push(tensor_description_a.clone());
+            y_desc.push(tensor_description_a.clone());
+            dxdesc.push(tensor_description_a.clone());
+            dydesc.push(tensor_description_a.clone());
+        }
+        let tensor_description_b = TensorDescriptor::new(
+            &dimB,
+            &strideB,
+            <T as DataTypeInfo>::cudnn_data_type(),
+        ).unwrap();
+
+        Ok(RnnSequenceDescriptors {
+            x_desc,
+            y_desc,
+            dx_desc: dxdesc,
+            dy_desc: dydesc,
+            hx_desc: tensor_description_b.clone(),
+            hy_desc: tensor_description_b.clone(),
+            cx_desc: tensor_description_b.clone(),
+            cy_desc: tensor_description_b.clone(),
+            dhx_desc: tensor_description_b.clone(),
+            dhy_desc: tensor_description_b.clone(),
+            dcx_desc: tensor_description_b.clone(),
+            dcy_desc: tensor_description_b.clone(),
+        })
+    }
+
+    fn generate_rnn_weight_description(
+        &self,
+        rnn_config: &Self::RC,
+        x_desc: &[TensorDescriptor]) -> Result<Vec<usize>, Error> {
+        let weight_size: usize = match API::get_rnn_params_size(
+            *CUDNN.id_c(),
+            *rnn_config.rnn_desc().id_c(),
+            // TODO: Cover cases where a user is requesting different batch sizes or other cases
+            // throughout the iteration. Currently this only uses the first iteration, as the implementation
+            // is fixed to using the same iteration description throughout in ```rnn_sequence_descriptors```
+            *x_desc[0].id_c(),
+            <T as DataTypeInfo>::cudnn_data_type()) {
+            Ok(size) => Ok(size),
+            Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to get CudNN Rnn Params Size."))),
+        }?;
+        let dim_w: Vec<usize> = vec![weight_size, 1, 1];
+        /*      let w_desc : FilterDescriptor = match FilterDescriptor::new(
+                  &dim_w,
+                  <T as DataTypeInfo>::cudnn_data_type()
+              ) {
+                  Ok(filter) => Ok(filter),
+                  Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to create a Filter")))
+              }?;*/
+
+        Ok(dim_w)
+    }
+
     fn new_rnn_config(
         &self,
         src: &SharedTensor<T>,
-        dest: &SharedTensor<T>,
         dropout_probability: Option<f32>,
         dropout_seed: Option<u64>,
-        sequence_length: usize,
+        sequence_length: i32,
         network_mode: RnnNetworkMode,
         input_mode: RnnInputMode,
         direction_mode: DirectionMode,
         algorithm: RnnAlgorithm,
         hidden_size: i32,
-        num_layers: i32
+        num_layers: i32,
+        batch_size: i32,
     ) -> Result<Self::RC, Error> {
-        let src_desc = src.cudnn_tensor_desc()?;
-        let dest_desc = dest.cudnn_tensor_desc()?;
-        let drop_desc = match CUDNN.init_dropout(
-            dropout_probability.unwrap_or(0.5),
-            dropout_seed.unwrap_or(0)
-        ) {
-            Ok(DropoutObject) => Ok(DropoutObject),
-            Err(E) =>  Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
-        }?;
-
         let input_mode = input_mode.as_cudnn()?;
         let direction_mode = direction_mode.as_cudnn()?;
         let network_mode = network_mode.as_cudnn()?;
         let algorithm = algorithm.as_cudnn()?;
 
-        let x_desc = vec![
-            src.cudnn_tensor_desc()?
-        ];
+        let drop_desc = match CUDNN.init_dropout(
+            dropout_probability.unwrap_or(0.5),
+            dropout_seed.unwrap_or(0),
+        ) {
+            Ok(dropout_object) => Ok(dropout_object),
+            Err(E) => Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
+        }?;
+
+        let x_desc = self.rnn_sequence_descriptors(
+            src,
+            sequence_length,
+            hidden_size,
+            batch_size,
+        )?.x_desc;
 
         let rnn_desc = match RnnDescriptor::new(
             *CUDNN.id_c(),
@@ -699,14 +792,14 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             <T as DataTypeInfo>::cudnn_data_type()
         ) {
             Ok(desc) => desc,
-            Err(_) => return Err(Error::Plugin(PluginError::Plugin("Could not create RNN Descriptor.")))
+            Err(e) => panic!("Error {:?}", e)
         };
 
         match CUDNN.init_rnn(
+            &x_desc,
             rnn_desc,
-            x_desc,
             hidden_size,
-            sequence_length as i32,
+            sequence_length,
             num_layers,
             drop_desc.dropout_desc(),
             input_mode,
@@ -714,10 +807,10 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             network_mode,
             algorithm,
             <T as DataTypeInfo>::cudnn_data_type(),
-            MathType::TensorOPMath.as_cudnn()?
+            MathType::TensorOPMath.as_cudnn()?,
         ) {
             Ok(rnn_config) => Ok(rnn_config),
-            Err(_) => return Err(Error::Plugin(PluginError::Plugin("Could not create RNNConfig")))
+            Err(e) => panic!("Error {:?}", e)
         }
     }
 
@@ -725,23 +818,48 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
     fn rnn_forward(
         &self,
         src: &SharedTensor<T>,
+        output: &mut SharedTensor<T>,
+        // Mutable due to the training reserve being kept on the config.
         rnn_config: &Self::RC,
-        weight: *const ::libc::c_void,
+        weight: &SharedTensor<T>,
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
-        // Create memory for dest - Create descriptor for dest
-        // Create descriptor for input? Conv Config has stride etc, so putting it in there
-        // makes sense. Stride docs are in the RNN help manual, as they're a bit weird in formulation.
-        // Hidden is created here, going to pass a NULL.
-        // Cell is created here, going to pass a NULL,
-        // Weights are created here? It's a Filter Descriptor, which is new to me. ISSUE
-        // How does dest differ to output?
+        let src_dimensions = src.desc().clone();
+        let sequence_descriptors = self.rnn_sequence_descriptors(
+            src,
+            *rnn_config.sequence_length(),
+            rnn_config.hidden_size,
+            src_dimensions[0] as i32,
+        )?;
+        let weight_desc = weight.cudnn_filter_desc()?;
 
-       //CUDNN.rnn_forward_training(
-       //    config,
-       //    src_desc,
-       //)
-
+        let src_mem = read!(src, self);
+        let weight_mem = read!(weight, self);
+        let output_mem = write_only!(output, self);
+        let workspace_mem = write_only!(workspace, self);
+        let reserve_space = rnn_config.training_reserve();
+        match CUDNN.rnn_forward::<f32>(
+            rnn_config,
+            sequence_descriptors.x_desc,
+            trans!(src_mem),
+            sequence_descriptors.y_desc,
+            trans_mut!(output_mem),
+            &sequence_descriptors.hx_desc,
+            std::ptr::null(),
+            &sequence_descriptors.cx_desc,
+            std::ptr::null(),
+            &weight_desc,
+            trans_mut!(weight_mem),
+            &sequence_descriptors.hy_desc,
+            // May need to pass hidden at some point for training.
+            std::ptr::null_mut(),
+            &sequence_descriptors.cy_desc,
+            std::ptr::null_mut(),
+            trans_mut!(workspace_mem),
+            *reserve_space.id_c(),
+        ) {
+            _ => {}
+        };
         unimplemented!()
     }
 }
