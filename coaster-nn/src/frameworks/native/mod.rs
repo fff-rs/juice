@@ -4,18 +4,22 @@
 #![allow(unused_variables)]
 #![allow(unreachable_code)]
 
-use crate::co::Error;
-use crate::co::plugin::Error as PluginError;
-use crate::co::plugin::numeric_helpers::Float;
-use crate::co::plugin::numeric_helpers::Bounded;
-use crate::co::prelude::*;
-use crate::plugin::*;
 use std::cmp::PartialOrd;
 use std::fmt::Debug;
-use rand::{Rng,SeedableRng};
+use std::ops::*;
+
+use rand::{Rng, SeedableRng};
 use rand_hc as hc128;
 
-use std::ops::*;
+use frameworks::cuda::RnnSequenceDescriptors;
+
+use crate::co::Error;
+use crate::co::plugin::Error as PluginError;
+use crate::co::plugin::numeric_helpers::Bounded;
+use crate::co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
+use crate::cudnn::{FilterDescriptor, TensorDescriptor};
+use crate::plugin::*;
 
 #[macro_use]
 pub mod helper;
@@ -832,15 +836,31 @@ impl<T> Pooling<T> for Backend<Native>
 
 impl<T> Rnn<T> for Backend<Native>
     where T: Float + Default + Copy + PartialOrd + Bounded {
-    fn new_rnn_config(&self, src: &SharedTensor<T>, dest: &SharedTensor<T>, dropout_probability: Option<f32>, dropout_seed: Option<u64>, sequence_length: usize, network_mode: RnnNetworkMode, input_mode: RnnInputMode, direction_mode: DirectionMode, algorithm: RnnAlgorithm, hidden_size: i32, num_layers: i32) -> Result<Self::RC, Error> {
+    fn new_rnn_config(&self, src: &SharedTensor<T>, dropout_probability: Option<f32>, dropout_seed: Option<u64>, sequence_length: i32, network_mode: RnnNetworkMode, input_mode: RnnInputMode, direction_mode: DirectionMode, algorithm: RnnAlgorithm, hidden_size: i32, num_layers: i32, batch_size: i32) -> Result<Self::RC, Error> {
+        unimplemented!()
+    }
+
+    fn rnn_sequence_descriptors(&self, sec: &SharedTensor<T>,
+                                sequence_length: i32,
+                                hidden_size: i32,
+                                batch_size: i32)
+                                -> Result<RnnSequenceDescriptors, Error> {
+        unimplemented!()
+    }
+
+    fn generate_rnn_weight_description(
+        &self,
+        rnn_desc: &Self::RC,
+        x_desc: &[TensorDescriptor]) -> Result<Vec<usize>, Error> {
         unimplemented!()
     }
 
     fn rnn_forward(
         &self,
         src: &SharedTensor<T>,
+        output: &mut SharedTensor<T>,
         rnn_config: &Self::RC,
-        weight: *const ::libc::c_void,
+        weight: &SharedTensor<T>,
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         unimplemented!()

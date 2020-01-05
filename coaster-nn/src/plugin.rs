@@ -1,6 +1,9 @@
 //! Provides the INn Plugin trait for Coaster implementation.
 
+use frameworks::cuda::RnnSequenceDescriptors;
+
 use crate::co::tensor::SharedTensor;
+use crate::cudnn::{FilterDescriptor, TensorDescriptor};
 
 #[derive(Debug, Copy, Clone)]
 /// Different algorithms to compute the convolution forward algorithm.
@@ -284,18 +287,31 @@ pub trait Rnn<F> : NN<F> {
     fn new_rnn_config(
         &self,
         src: &SharedTensor<F>,
-        dest: &SharedTensor<F>,
         dropout_probability: Option<f32>,
         dropout_seed: Option<u64>,
-        sequence_length: usize,
+        sequence_length: i32,
         network_mode: RnnNetworkMode,
         input_mode: RnnInputMode,
         direction_mode: DirectionMode,
         algorithm: RnnAlgorithm,
         hidden_size: i32,
-        num_layers: i32
+        num_layers: i32,
+        batch_size: i32,
         // RC being RNNConfig
     ) -> Result<Self::RC, crate::co::error::Error>;
+
+    /// Describe a RNN Sequence for the Input Tensor
+    fn rnn_sequence_descriptors(&self, sec: &SharedTensor<F>,
+                                sequence_length: i32,
+                                hidden_size: i32,
+                                batch_size: i32)
+                                -> Result<RnnSequenceDescriptors, crate::co::error::Error>;
+
+    /// Generate Weights for RNN
+    fn generate_rnn_weight_description(
+        &self,
+        rnn_desc: &Self::RC,
+        x_desc: &[TensorDescriptor]) -> Result<Vec<usize>, crate::co::error::Error>;
 
     /// Train a LSTM Network and Return Results
     // TODO: Create alternate rnn_forward or alternate path to work with pretrained networks
@@ -304,8 +320,9 @@ pub trait Rnn<F> : NN<F> {
     fn rnn_forward(
         &self,
         src: &SharedTensor<F>,
+        output: &mut SharedTensor<F>,
         rnn_config: &Self::RC,
-        weight: *const ::libc::c_void,
+        weight: &SharedTensor<F>,
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(),crate::co::error::Error>;
 }
