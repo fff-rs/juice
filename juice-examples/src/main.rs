@@ -571,10 +571,30 @@ fn run_mackey_glass(
                 "linear2",
                 LinearConfig { output_size: 10 },
             ));
-            net_cfg.add_layer(LayerConfig::new("linear3", LinearConfig { output_size: 1 }));
-            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+            net_cfg.add_layer(LayerConfig::new(
+                "linear3",
+                LinearConfig { output_size: 1 },
+            ));
+            net_cfg.add_layer(LayerConfig::new(
+                "sigmoid",
+                LayerType::Sigmoid
+            ));
+        },
+        "lstm-dense" => {
+            net_cfg.add_layer(LayerConfig::new(
+                "LSTMInitial",
+                RnnConfig { output_size: 10, cell_size: 10, hidden_size: 10, num_layers: 10, rnn_type: RnnType::LSTM }
+            ));
+            net_cfg.add_layer(LayerConfig::new(
+                "linear1",
+                LinearConfig { output_size: 1}
+            ));
+            net_cfg.add_layer(LayerConfig::new(
+                "sigmoid",
+                LayerType::Sigmoid
+            ));
         }
-        _ => panic!("Only linear models are currently implemented for mackey-glass"),
+        _ => panic!("Only linear & lstm-dense models are currently implemented for mackey-glass"),
     }
 
     let mut regressor_cfg = SequentialConfig::default();
@@ -648,4 +668,26 @@ fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
             panic!();
         }
     })
+}
+
+fn get_packed_regr_iter() -> impl Iterator<Item = (f32, Vec<Vec<f32>>)> {
+    let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass_lstm.csv").unwrap());
+    let columns: usize = 10;
+
+    rdr
+        .into_deserialize()
+        .map( move | row| {
+            match row {
+                Ok(value) => {
+                    let row_vec: Box <Vec<f32>> = Box::new(value);
+                    let label = row_vec[0];
+                    let columns = row_vec[1..=columns].to_vec();
+                    (label, vec![columns])
+                },
+                _ => {
+                    println ! ("no value");
+                    panic ! ();
+                }
+            }
+        })
 }
