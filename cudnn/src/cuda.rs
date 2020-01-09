@@ -38,8 +38,8 @@ impl CudaDeviceMemory {
     }
 
     /// Returns the size of the CUDA Device Memory chunk.
-    pub fn size(&self) -> &usize {
-        &self.size
+    pub fn size(&self) -> usize {
+        self.size
     }
 }
 
