@@ -81,7 +81,7 @@ impl ConvolutionConfig {
     /// Returns the largest workspace size out of the three.
     ///
     /// Useful for creating a shared workspace.
-    pub fn largest_workspace_size(&self) -> &usize {
+    pub fn largest_workspace_size(&self) -> usize {
         if self.backward_data_workspace_size() >= self.backward_filter_workspace_size()
             && self.backward_data_workspace_size() >= self.forward_workspace_size()
         {
@@ -101,8 +101,8 @@ impl ConvolutionConfig {
     }
 
     /// Returns `forward_workspace_size`.
-    pub fn forward_workspace_size(&self) -> &usize {
-        &self.forward_workspace_size
+    pub fn forward_workspace_size(&self) -> usize {
+        self.forward_workspace_size
     }
 
     /// Returns `backward_filter_algo`.
@@ -111,8 +111,8 @@ impl ConvolutionConfig {
     }
 
     /// Returns `backward_filter_workspace_size`.
-    pub fn backward_filter_workspace_size(&self) -> &usize {
-        &self.backward_filter_workspace_size
+    pub fn backward_filter_workspace_size(&self) -> usize {
+        self.backward_filter_workspace_size
     }
 
     /// Returns `backward_data_algo`.
@@ -121,8 +121,8 @@ impl ConvolutionConfig {
     }
 
     /// Returns `backward_data_workspace_size`.
-    pub fn backward_data_workspace_size(&self) -> &usize {
-        &self.backward_data_workspace_size
+    pub fn backward_data_workspace_size(&self) -> usize {
+        self.backward_data_workspace_size
     }
 
     /// Returns `conv_desc`.
@@ -340,15 +340,15 @@ impl RnnConfig {
     }
 
     /// Workspace Size required for RNN Operations
-    pub fn rnn_workspace_size(&self) -> &usize {
-        &self.workspace_size
+    pub fn rnn_workspace_size(&self) -> usize {
+        self.workspace_size
     }
     /// Largest Workspace Size for RNN
-    pub fn largest_workspace_size(&self) -> &usize {
+    pub fn largest_workspace_size(&self) -> usize {
         self.rnn_workspace_size()
     }
     /// Training Reserve Size for RNN
-    pub fn training_reserve_size(&self) -> &usize { &self.training_reserve_size }
+    pub fn training_reserve_size(&self) -> usize { self.training_reserve_size }
     /// Training Reserve Space on GPU for RNN
     pub fn training_reserve(&self) -> &CudaDeviceMemory {
          &self.training_reserve
