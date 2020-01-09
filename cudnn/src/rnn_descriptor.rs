@@ -24,7 +24,7 @@ impl Drop for RnnDescriptor {
 impl RnnDescriptor {
     /// Initializes a new CUDA cuDNN RnnDescriptor.
     pub fn new(
-        handle: cudnnHandle_t,
+        handle: &Cudnn,
         hidden_size: i32,
         num_layers: i32,
         dropout_desc: &DropoutDescriptor,
@@ -36,7 +36,7 @@ impl RnnDescriptor {
     ) -> Result<RnnDescriptor, Error> {
         let generic_rnn_desc = API::create_rnn_descriptor()?;
          API::set_rnn_descriptor(
-            handle,
+            *handle.id_c(),
             generic_rnn_desc,
             hidden_size,
             num_layers,
