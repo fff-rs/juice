@@ -284,9 +284,9 @@ impl Cudnn {
             *cell_output_desc.id_c(),
             cell_output,
             workspace,
-            *rnn_config.rnn_workspace_size(),
+            rnn_config.rnn_workspace_size(),
             reserve_data,
-            *rnn_config.training_reserve_size()
+            rnn_config.training_reserve_size()
         )
     }
 
@@ -498,7 +498,7 @@ impl Cudnn {
             *conv_config.forward_algo(),
             *conv_config.conv_desc().id_c(),
             workspace,
-            *conv_config.forward_workspace_size(),
+            conv_config.forward_workspace_size(),
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(),
             src_data,
@@ -557,7 +557,7 @@ impl Cudnn {
             *conv_config.backward_filter_algo(),
             *conv_config.conv_desc().id_c(),
             workspace,
-            *conv_config.backward_filter_workspace_size(),
+            conv_config.backward_filter_workspace_size(),
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(),
             src_data,
@@ -591,7 +591,7 @@ impl Cudnn {
             *conv_config.backward_data_algo(),
             *conv_config.conv_desc().id_c(),
             workspace,
-            *conv_config.backward_data_workspace_size(),
+            conv_config.backward_data_workspace_size(),
             unsafe { transmute_copy(&&scale.a) },
             *conv_config.filter_desc().id_c(),
             filter_data,
@@ -929,7 +929,7 @@ impl Cudnn {
             *dest_desc.id_c(),
             dest_data,
             *dropout_conf.reserved_space().id_c(),
-            *dropout_conf.reserved_space().size(),
+            dropout_conf.reserved_space().size(),
         )
     }
 
@@ -955,7 +955,7 @@ impl Cudnn {
             *dest_desc.id_c(),
             dest_data,
             *dropout_conf.reserved_space().id_c(),
-            *dropout_conf.reserved_space().size(),
+            dropout_conf.reserved_space().size(),
         )
     }
 }
