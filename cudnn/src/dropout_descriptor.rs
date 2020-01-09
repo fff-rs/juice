@@ -36,7 +36,7 @@ impl DropoutDescriptor {
             *handle.id_c(),
             dropout,
             *reserve.id_c(),
-            *reserve.size(),
+            reserve.size(),
             seed,
         )?;
 
