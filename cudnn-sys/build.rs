@@ -62,7 +62,7 @@ fn main() {
             // requires a nightly rustc and enabling
             // unstable features.
             .rust_target(bindgen::RustTarget::Stable_1_19)
-            .hide_type("max_align_t") // https://github.com/servo/rust-bindgen/issues/550
+            .blacklist_type("max_align_t") // https://github.com/servo/rust-bindgen/issues/550
             .raw_line(
                 r"
 //! Defines the FFI for CUDA cuDNN.
