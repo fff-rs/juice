@@ -103,7 +103,8 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
                output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
         let input = input_data[0].read().unwrap();
         let input_shape = input.desc();
-        let sequence_length = input_shape[1];
+        // Input is Batch, Number of Inputs, Sequence Length
+        let sequence_length = input_shape[2];
         let output_data = output_data[0].write().unwrap();
         //let mut output_gradient = output_gradient[0].write().unwrap();
         let stride = cast_vec_usize_to_i32(vec![sequence_length, 1, 1]);
