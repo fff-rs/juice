@@ -315,7 +315,7 @@ impl<T> ICudnnDesc<T> for SharedTensor<T>
             direction,
             mode,
             algorithm,
-            <T as DataTypeInfo>::cudnn_data_type()
+            <T as DataTypeInfo>::cudnn_data_type(),
         ) {
             Ok(desc) => Ok(desc),
             Err(_) => Err(PluginError::Plugin("Unable to create CuDNN RNNDescriptor")),
@@ -671,7 +671,8 @@ pub struct RnnSequenceDescriptors {
 }
 
 impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
-    fn rnn_sequence_descriptors(&self, sec: &SharedTensor<T>,
+    fn rnn_sequence_descriptors(&self,
+                                src: &SharedTensor<T>,
                                 sequence_length: i32,
                                 hidden_size: i32,
                                 batch_size: i32)
@@ -680,22 +681,29 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-        let dimA = vec![batch_size, sequence_length, 1];
-        let strideA = vec![dimA[2] * dimA[1], 1, 1];
+        let dimA = vec![batch_size, hidden_size, 1];
+        let strideA = vec![1 * hidden_size, 1, 1];
 
         // FIXME: Ensure hidden_size*2 is used for bidirectional models
         let dimB = vec![batch_size, hidden_size, 1];
-        let strideB = vec![dimA[2] * dimA[1], dimA[2], 1];
-        let tensor_description_a = TensorDescriptor::new(
-            &dimA,
-            &strideA,
-            <T as DataTypeInfo>::cudnn_data_type(),
-        ).unwrap();
+        let strideB = vec![dimA[2] * dimA[2], dimA[2], 1];
+        let data_type = <T as DataTypeInfo>::cudnn_data_type();
+        let tensor_description_a = || {
+            TensorDescriptor::new(
+                &dimA,
+                &strideA,
+                data_type,
+            ).unwrap()
+        };
         for _ in 0..sequence_length {
-            x_desc.push(tensor_description_a.clone());
-            y_desc.push(tensor_description_a.clone());
-            dxdesc.push(tensor_description_a.clone());
-            dydesc.push(tensor_description_a.clone());
+            x_desc.push(TensorDescriptor::new(
+                &dimA,
+                &strideA,
+                data_type,
+            ).unwrap());
+            y_desc.push(tensor_description_a());
+            dxdesc.push(tensor_description_a());
+            dydesc.push(tensor_description_a());
         }
         let tensor_description_b = TensorDescriptor::new(
             &dimB,
@@ -789,7 +797,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             direction_mode,
             network_mode,
             algorithm,
-            <T as DataTypeInfo>::cudnn_data_type()
+            <T as DataTypeInfo>::cudnn_data_type(),
         ) {
             Ok(desc) => desc,
             Err(e) => panic!("Error {:?}", e)
