@@ -307,7 +307,7 @@ impl<T> ICudnnDesc<T> for SharedTensor<T>
         algorithm: cudnnRNNAlgo_t
     ) -> Result<RnnDescriptor, PluginError> {
         match RnnDescriptor::new(
-            *CUDNN.id_c(),
+            &CUDNN,
             hidden_size,
             num_layers,
             &dropout_desc,
@@ -561,7 +561,7 @@ impl<T> Convolution<T> for Backend<Cuda>
 
 impl<T> RnnConfig<T> for crate::cudnn::utils::RnnConfig where T: Float + DataTypeInfo
 {
-    fn workspace_size(&self) -> usize { *self.largest_workspace_size()}
+    fn workspace_size(&self) -> usize { self.largest_workspace_size() }
 }
 
 impl RnnInputMode {
@@ -781,7 +781,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         )?.x_desc;
 
         let rnn_desc = match RnnDescriptor::new(
-            *CUDNN.id_c(),
+            &CUDNN,
             hidden_size,
             num_layers,
             drop_desc.dropout_desc(),
@@ -799,6 +799,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             &x_desc,
             rnn_desc,
             hidden_size,
+            batch_size,
             sequence_length,
             num_layers,
             drop_desc.dropout_desc(),
