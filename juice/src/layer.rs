@@ -291,9 +291,15 @@ impl<B: IBackend> Layer<B> {
                    &layer_config.name,
                    output_data.desc());
             let weight_data = Arc::new(RwLock::new(SharedTensor::new(output_data.desc())));
+            let weight_bias = Arc::new(RwLock::new(SharedTensor::new(output_data.desc())));
             let weight_gradient = Arc::new(RwLock::new(SharedTensor::new(output_data.desc())));
+            let weight_bias_gradient = Arc::new(RwLock::new(SharedTensor::new(output_data.desc())));
             self.weights_data.push(weight_data.clone());
+            // Add Bias
+            self.weights_data.push(weight_bias.clone());
             self.weights_gradient.push(weight_gradient.clone());
+            // Add Bias
+            self.weights_gradient.push(weight_bias_gradient.clone());
 
             let mut weight_config = &WeightConfig::default();
             if layer_config.params_len() > weight_id {
