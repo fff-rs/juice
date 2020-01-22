@@ -12,4 +12,4 @@
 - [Backend](./backend.md)
 - [Glossary](./deep-learning-glossary.md)
 -----------
-- [Rust API Documentation](http://spearow.github.io/juice/juice/index.html)
+- [Rust API Documentation](./api-docs.md)
