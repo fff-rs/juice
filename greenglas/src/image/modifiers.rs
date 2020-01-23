@@ -13,7 +13,7 @@ pub struct Resize {
 
 impl Modifier<Image> for Resize {
     fn modify(self, image: &mut Image) {
-        image.value = image.value.resize(self.width, self.height, FilterType::Nearest)
+        image.value = image.value.resize(self.width, self.height, FilterType::Triangle)
     }
 }
 
