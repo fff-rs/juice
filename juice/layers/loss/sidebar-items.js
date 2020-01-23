@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["negative_log_likelihood","TODO: DOC"]]});
+initSidebarItems({"mod":[["mean_squared_error","Provides Loss & Gradient for Mean Squared Error"],["negative_log_likelihood","TODO: DOC"]]});

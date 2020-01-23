@@ -1,60 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/layers/loss/negative_log_likelihood.rs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang">
-
-    <title>negative_log_likelihood.rs.html -- source</title>
-
-    <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle">
-    
-    <link rel="stylesheet" type="text/css" href="../../../../dark.css">
-    <link rel="stylesheet" type="text/css" href="../../../../main.css" id="themeStyle">
-    <script src="../../../../storage.js"></script>
-    
-
-    
-    
-</head>
-<body class="rustdoc source">
-    <!--[if lte IE 8]>
-    <div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-    </div>
-    <![endif]-->
-
-    
-
-    <nav class="sidebar">
-        <div class="sidebar-menu">&#9776;</div>
-        
-        
-    </nav>
-
-    <div class="theme-picker">
-        <button id="theme-picker" aria-label="Pick another theme!">
-            <img src="../../../../brush.svg" width="18" alt="Pick another theme!">
-        </button>
-        <div id="theme-choices"></div>
-    </div>
-    <script src="../../../../theme.js"></script>
-    <nav class="sub">
-        <form class="search-form js-only">
-            <div class="search-container">
-                <input class="search-input" name="search"
-                       autocomplete="off"
-                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-                       type="search">
-            </div>
-        </form>
-    </nav>
-
-    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `juice/src/layers/loss/negative_log_likelihood.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>negative_log_likelihood.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../juice/index.html'><div class='logo-container'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -208,15 +152,15 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
-</pre><pre class="rust ">
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! TODO: DOC</span>
 <span class="doccomment">//!</span>
 
-<span class="kw">use</span> <span class="ident">capnp_util</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">co</span>::{<span class="ident">IBackend</span>, <span class="ident">ITensorDesc</span>, <span class="ident">SharedTensor</span>};
-<span class="kw">use</span> <span class="ident">layer</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">juice_capnp</span>::<span class="ident">negative_log_likelihood_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
-<span class="kw">use</span> <span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">native_backend</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">capnp_util</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::{<span class="ident">IBackend</span>, <span class="ident">ITensorDesc</span>, <span class="ident">SharedTensor</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">negative_log_likelihood_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">native_backend</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_copy_implementations</span>)]</span>
@@ -227,23 +171,23 @@
 
 <span class="kw">impl</span> <span class="ident">NegativeLogLikelihood</span> {
     <span class="doccomment">/// Create a NegativeLogLikelihood layer from a NegativeLogLikelihoodConfig.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">NegativeLogLikelihoodConfig</span>) <span class="op">-&gt;</span> <span class="ident">NegativeLogLikelihood</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">NegativeLogLikelihoodConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NegativeLogLikelihood</span> {
         <span class="ident">NegativeLogLikelihood</span> { <span class="ident">num_classes</span>: <span class="ident">config</span>.<span class="ident">num_classes</span> }
     }
 
-    <span class="kw">fn</span> <span class="ident">calculate_outer_num</span>(<span class="ident">softmax_axis</span>: <span class="ident">usize</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">calculate_outer_num</span>(<span class="ident">softmax_axis</span>: <span class="ident">usize</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">input_shape</span>.<span class="ident">iter</span>().<span class="ident">take</span>(<span class="ident">softmax_axis</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">fold</span>(<span class="number">1</span>, <span class="op">|</span><span class="ident">prod</span>, <span class="ident">i</span><span class="op">|</span> <span class="ident">prod</span> <span class="op">*</span> <span class="ident">i</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">calculate_inner_num</span>(<span class="ident">softmax_axis</span>: <span class="ident">usize</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">calculate_inner_num</span>(<span class="ident">softmax_axis</span>: <span class="ident">usize</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">input_shape</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="ident">softmax_axis</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">fold</span>(<span class="number">1</span>, <span class="op">|</span><span class="ident">prod</span>, <span class="ident">i</span><span class="op">|</span> <span class="ident">prod</span> <span class="op">*</span> <span class="ident">i</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">batch_size</span>(<span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">batch_size</span>(<span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="ident">input_shape</span>.<span class="ident">len</span>() {
-            <span class="number">1</span> <span class="op">=&gt;</span> <span class="number">1</span>,
-            <span class="number">2</span> <span class="op">=&gt;</span> <span class="ident">input_shape</span>[<span class="number">0</span>],
-            _ <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;NegativeLogLikelihood layer only supports 1D/2D inputs&quot;</span>),
+            <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
+            <span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">input_shape</span>[<span class="number">0</span>],
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;NegativeLogLikelihood layer only supports 1D/2D inputs&quot;</span>),
         }
     }
 }
@@ -251,18 +195,18 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span><span class="op">&gt;</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NegativeLogLikelihood</span> {
     <span class="macro">impl_ilayer_loss</span><span class="macro">!</span>();
 
-    <span class="kw">fn</span> <span class="ident">sync_native</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">sync_native</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
 
     <span class="kw">fn</span> <span class="ident">reshape</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
                <span class="ident">backend</span>: ::<span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-               <span class="ident">input_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">input_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">output_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>) {
+               <span class="ident">input_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+               <span class="ident">input_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+               <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+               <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+               <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+               <span class="ident">output_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">input_data</span>[<span class="number">0</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">label</span> <span class="op">=</span> <span class="ident">input_data</span>[<span class="number">1</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>();
 
@@ -298,7 +242,7 @@
         <span class="ident">loss</span> <span class="op">=</span> <span class="ident">loss</span> <span class="op">/</span> (<span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">f32</span>);
         <span class="ident">writable_loss</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">loss</span>];
 
-        ::<span class="ident">util</span>::<span class="ident">write_to_memory</span>(<span class="ident">output_data</span>[<span class="number">0</span>].<span class="ident">write_only</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>(),
+        <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">write_to_memory</span>(<span class="ident">output_data</span>[<span class="number">0</span>].<span class="ident">write_only</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>(),
                                 <span class="kw-2">&amp;</span><span class="ident">writable_loss</span>);
     }
 }
@@ -324,7 +268,7 @@
             <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> (<span class="ident">num_classes</span> <span class="op">*</span> <span class="ident">batch_n</span>) <span class="op">+</span> <span class="ident">label_value</span> <span class="kw">as</span> <span class="ident">usize</span>;
             <span class="ident">writable_gradient</span>[<span class="ident">index</span>] <span class="op">=</span> <span class="op">-</span><span class="number">1f32</span>;
         }
-        ::<span class="ident">util</span>::<span class="ident">write_to_memory</span>(<span class="ident">input_gradients</span>[<span class="number">0</span>].<span class="ident">write_only</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>(),
+        <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">write_to_memory</span>(<span class="ident">input_gradients</span>[<span class="number">0</span>].<span class="ident">write_only</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>(),
                                 <span class="kw-2">&amp;</span><span class="ident">writable_gradient</span>);
     }
 }
@@ -351,7 +295,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpRead</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NegativeLogLikelihoodConfig</span> {
     <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_config</span>::<span class="ident">Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">num_classes</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_num_classes</span>() <span class="kw">as</span> <span class="ident">usize</span>;
 
         <span class="ident">NegativeLogLikelihoodConfig</span> { <span class="ident">num_classes</span>: <span class="ident">num_classes</span> }
@@ -359,73 +303,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">LayerType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NegativeLogLikelihoodConfig</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">LayerType</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LayerType</span> {
         <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="self">self</span>)
     }
 }
-</pre>
-</section>
-    <section id='search' class="content hidden"></section>
-
-    <section class="footer"></section>
-
-    <aside id="help" class="hidden">
-        <div>
-            <h1 class="hidden">Help</h1>
-
-            <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-
-                <dl>
-                    <dt><kbd>?</kbd></dt>
-                    <dd>Show this help dialog</dd>
-                    <dt><kbd>S</kbd></dt>
-                    <dd>Focus the search field</dd>
-                    <dt><kbd>↑</kbd></dt>
-                    <dd>Move up in search results</dd>
-                    <dt><kbd>↓</kbd></dt>
-                    <dd>Move down in search results</dd>
-                    <dt><kbd>↹</kbd></dt>
-                    <dd>Switch tab</dd>
-                    <dt><kbd>&#9166;</kbd></dt>
-                    <dd>Go to active search result</dd>
-                    <dt><kbd>+</kbd></dt>
-                    <dd>Expand all sections</dd>
-                    <dt><kbd>-</kbd></dt>
-                    <dd>Collapse all sections</dd>
-                </dl>
-            </div>
-
-            <div class="infos">
-                <h2>Search Tricks</h2>
-
-                <p>
-                    Prefix searches with a type followed by a colon (e.g.
-                    <code>fn:</code>) to restrict the search to a given type.
-                </p>
-
-                <p>
-                    Accepted types are: <code>fn</code>, <code>mod</code>,
-                    <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
-                </p>
-
-                <p>
-                    Search functions by type signature (e.g.
-                    <code>vec -> usize</code> or <code>* -> vec</code>)
-                </p>
-            </div>
-        </div>
-    </aside>
-
-    
-
-    <script>
-        window.rootPath = "../../../../";
-        window.currentCrate = "juice";
-    </script>
-    <script src="../../../../main.js"></script>
-    <script defer src="../../../../search-index.js"></script>
-</body>
-</html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "juice";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

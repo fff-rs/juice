@@ -1,60 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/solver/mod.rs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang">
-
-    <title>mod.rs.html -- source</title>
-
-    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle">
-    
-    <link rel="stylesheet" type="text/css" href="../../../dark.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css" id="themeStyle">
-    <script src="../../../storage.js"></script>
-    
-
-    
-    
-</head>
-<body class="rustdoc source">
-    <!--[if lte IE 8]>
-    <div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-    </div>
-    <![endif]-->
-
-    
-
-    <nav class="sidebar">
-        <div class="sidebar-menu">&#9776;</div>
-        
-        
-    </nav>
-
-    <div class="theme-picker">
-        <button id="theme-picker" aria-label="Pick another theme!">
-            <img src="../../../brush.svg" width="18" alt="Pick another theme!">
-        </button>
-        <div id="theme-choices"></div>
-    </div>
-    <script src="../../../theme.js"></script>
-    <nav class="sub">
-        <form class="search-form js-only">
-            <div class="search-container">
-                <input class="search-input" name="search"
-                       autocomplete="off"
-                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-                       type="search">
-            </div>
-        </form>
-    </nav>
-
-    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `juice/src/solver/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../juice/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -462,32 +406,36 @@
 <span id="406">406</span>
 <span id="407">407</span>
 <span id="408">408</span>
-</pre><pre class="rust ">
+<span id="409">409</span>
+<span id="410">410</span>
+</pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the generics and interfaces for the specific Solvers.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! See [Solvers][solvers]</span>
 <span class="doccomment">//! [solvers]: ../solvers/index.html</span>
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">confusion_matrix</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">regression_evaluator</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">confusion_matrix</span>::<span class="ident">ConfusionMatrix</span>;
-<span class="kw">use</span> <span class="ident">co</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">layer</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">layers</span>::<span class="ident">SequentialConfig</span>;
-<span class="kw">use</span> <span class="ident">solvers</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">regression_evaluator</span>::{<span class="ident">RegressionEvaluator</span>, <span class="ident">RegressionLoss</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layers</span>::<span class="ident">SequentialConfig</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">solvers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
-<span class="kw">use</span> <span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>, <span class="ident">SolverOps</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>, <span class="ident">SolverOps</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// Solver that optimizes a [Layer][1] with a given objective.</span>
 <span class="doccomment">/// [1]: ../layer/index.html</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Solver</span><span class="op">&lt;</span><span class="ident">SolverB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Solver</span><span class="op">&lt;</span><span class="ident">SolverB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="ident">net</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
     <span class="ident">objective</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">SolverB</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The implementation of the Solver</span>
-    <span class="kw">pub</span> <span class="ident">worker</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">worker</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="ident">config</span>: <span class="ident">SolverConfig</span>,
 
@@ -502,7 +450,7 @@
     <span class="doccomment">/// [1]: ./struct.SolverConfig.html</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is the **preferred method** to create a Solver for training a neural network.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">net_backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">obj_backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">SolverB</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>) <span class="op">-&gt;</span> <span class="ident">Solver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">net_backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">obj_backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">SolverB</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Solver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">network</span> <span class="op">=</span> <span class="ident">Layer</span>::<span class="ident">from_config</span>(<span class="ident">net_backend</span>, <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">network</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">worker</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">solver</span>.<span class="ident">with_config</span>(<span class="ident">obj_backend</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">config</span>);
         <span class="ident">worker</span>.<span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="ident">network</span>);
@@ -534,12 +482,12 @@
 
     <span class="doccomment">/// Train the network with one minibatch</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">train_minibatch</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-                           <span class="ident">mb_data</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>,
-                           <span class="ident">mb_target</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>)
-                           <span class="op">-&gt;</span> <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> {
+                           <span class="ident">mb_data</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+                           <span class="ident">mb_target</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)
+                           <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// forward through network and classifier</span>
         <span class="kw">let</span> <span class="ident">network_out</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">net</span>.<span class="ident">forward</span>(<span class="kw-2">&amp;</span>[<span class="ident">mb_data</span>])[<span class="number">0</span>].<span class="ident">clone</span>();
-        <span class="kw">let</span> _ <span class="op">=</span> <span class="self">self</span>.<span class="ident">objective</span>.<span class="ident">forward</span>(<span class="kw-2">&amp;</span>[<span class="ident">network_out</span>.<span class="ident">clone</span>(), <span class="ident">mb_target</span>]);
+        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">objective</span>.<span class="ident">forward</span>(<span class="kw-2">&amp;</span>[<span class="ident">network_out</span>.<span class="ident">clone</span>(), <span class="ident">mb_target</span>]);
 
         <span class="comment">// forward through network and classifier</span>
         <span class="kw">let</span> <span class="ident">classifier_gradient</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">objective</span>.<span class="ident">backward</span>(<span class="kw-2">&amp;</span>[]);
@@ -547,7 +495,7 @@
 
         <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">compute_update</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">config</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">net</span>, <span class="self">self</span>.<span class="ident">iter</span>);
         <span class="self">self</span>.<span class="ident">net</span>.<span class="ident">update_weights</span>(<span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">backend</span>());
-        <span class="self">self</span>.<span class="ident">iter</span> <span class="op">+=</span> <span class="number">1</span>;
+        <span class="self">self</span>.<span class="ident">iter</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 
         <span class="ident">network_out</span>
     }
@@ -555,7 +503,7 @@
     <span class="doccomment">/// Returns the network trained by the solver.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is the recommended method to get a usable trained network.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">network</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">network</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">net</span>
     }
 
@@ -565,7 +513,7 @@
     <span class="doccomment">/// if you want to alter the network. Keep in mind that altering the network</span>
     <span class="doccomment">/// might render the solver unusable and continuing training the network with it will yield</span>
     <span class="doccomment">/// unexpected results.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mut_network</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mut_network</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">net</span>
     }
 }
@@ -574,7 +522,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// See [Solvers][1]</span>
 <span class="doccomment">/// [1]: ../solvers/index.html</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Initialize the solver, setting up any network related data.</span>
     <span class="kw">fn</span> <span class="ident">init</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">net</span>: <span class="kw-2">&amp;</span><span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {}
 
@@ -592,11 +540,11 @@
     <span class="kw">fn</span> <span class="ident">compute_update</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">param</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>, <span class="ident">network</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">iter</span>: <span class="ident">usize</span>);
 
     <span class="doccomment">/// Returns the backend used by the solver.</span>
-    <span class="kw">fn</span> <span class="ident">backend</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SolverB</span>;
+    <span class="kw">fn</span> <span class="ident">backend</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SolverB</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;({})&quot;</span>, <span class="string">&quot;ILayer&quot;</span>)
     }
 }
@@ -683,7 +631,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SolverConfig</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">SolverConfig</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SolverConfig</span> {
         <span class="ident">SolverConfig</span> {
             <span class="ident">name</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_owned</span>(),
             <span class="ident">network</span>: <span class="ident">LayerConfig</span>::<span class="ident">new</span>(<span class="string">&quot;default&quot;</span>, <span class="ident">SequentialConfig</span>::<span class="ident">default</span>()),
@@ -720,10 +668,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [2]: ./struct.Solver.html</span>
     <span class="doccomment">/// [3]: ../solvers/index.html</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_learning_rate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">f32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_learning_rate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f32</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">lr_policy</span>() {
-            <span class="ident">LRPolicy</span>::<span class="ident">Fixed</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">base_lr</span>(),
-            <span class="ident">LRPolicy</span>::<span class="ident">Step</span> <span class="op">=&gt;</span> {
+            <span class="ident">LRPolicy</span>::<span class="ident">Fixed</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">base_lr</span>(),
+            <span class="ident">LRPolicy</span>::<span class="ident">Step</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">current_step</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">step</span>(<span class="ident">iter</span>);
                 <span class="self">self</span>.<span class="ident">base_lr</span>() <span class="op">*</span> <span class="self">self</span>.<span class="ident">gamma</span>().<span class="ident">powf</span>(<span class="ident">current_step</span> <span class="kw">as</span> <span class="ident">f32</span>)
             }
@@ -739,7 +687,7 @@
             <span class="comment">//     //       pow(this-&gt;param_.gamma(), this-&gt;current_step_);</span>
             <span class="comment">//     unimplemented!();</span>
             <span class="comment">// }</span>
-            <span class="ident">LRPolicy</span>::<span class="ident">Exp</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">base_lr</span>() <span class="op">*</span> <span class="self">self</span>.<span class="ident">gamma</span>().<span class="ident">powf</span>(<span class="ident">iter</span> <span class="kw">as</span> <span class="ident">f32</span>),
+            <span class="ident">LRPolicy</span>::<span class="ident">Exp</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">base_lr</span>() <span class="op">*</span> <span class="self">self</span>.<span class="ident">gamma</span>().<span class="ident">powf</span>(<span class="ident">iter</span> <span class="kw">as</span> <span class="ident">f32</span>),
             <span class="comment">// LRPolicy::Inv =&gt; {</span>
             <span class="comment">//     //   rate = this-&gt;param_.base_lr() *</span>
             <span class="comment">//     //       pow(Dtype(1) + this-&gt;param_.gamma() * this-&gt;iter_,</span>
@@ -764,27 +712,27 @@
     <span class="doccomment">/// Return current step at iteration `iter`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Small helper for learning rate calculation.</span>
-    <span class="kw">fn</span> <span class="ident">step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">step</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="ident">iter</span> <span class="op">/</span> <span class="self">self</span>.<span class="ident">stepsize</span>()
     }
 
     <span class="doccomment">/// Return learning rate policy.</span>
-    <span class="kw">fn</span> <span class="ident">lr_policy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">LRPolicy</span> {
+    <span class="kw">fn</span> <span class="ident">lr_policy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LRPolicy</span> {
         <span class="self">self</span>.<span class="ident">lr_policy</span>
     }
 
     <span class="doccomment">/// Return the base learning rate.</span>
-    <span class="kw">fn</span> <span class="ident">base_lr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">f32</span> {
+    <span class="kw">fn</span> <span class="ident">base_lr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f32</span> {
         <span class="self">self</span>.<span class="ident">base_lr</span>
     }
 
     <span class="doccomment">/// Return the gamma for learning rate calculations.</span>
-    <span class="kw">fn</span> <span class="ident">gamma</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">f32</span> {
+    <span class="kw">fn</span> <span class="ident">gamma</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f32</span> {
         <span class="self">self</span>.<span class="ident">gamma</span>
     }
 
     <span class="doccomment">/// Return the stepsize for learning rate calculations.</span>
-    <span class="kw">fn</span> <span class="ident">stepsize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">stepsize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">stepsize</span>
     }
 }
@@ -804,9 +752,9 @@
         (<span class="kw-2">&amp;</span><span class="self">self</span>,
          <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
          <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>)
-         <span class="op">-&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;&gt;</span> {
+         <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">SolverKind</span>::<span class="ident">SGD</span>(<span class="ident">sgd</span>) <span class="op">=&gt;</span> <span class="ident">sgd</span>.<span class="ident">with_config</span>(<span class="ident">backend</span>, <span class="ident">config</span>),
+            <span class="ident">SolverKind</span>::<span class="ident">SGD</span>(<span class="ident">sgd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sgd</span>.<span class="ident">with_config</span>(<span class="ident">backend</span>, <span class="ident">config</span>),
         }
     }
 }
@@ -825,9 +773,9 @@
         (<span class="kw-2">&amp;</span><span class="self">self</span>,
          <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
          <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>)
-         <span class="op">-&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;&gt;</span> {
+         <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">SGDKind</span>::<span class="ident">Momentum</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Momentum</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">backend</span>)),
+            <span class="ident">SGDKind</span>::<span class="ident">Momentum</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Momentum</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">backend</span>)),
         }
     }
 }
@@ -871,69 +819,5 @@
     <span class="doccomment">/// L2 regularization</span>
     <span class="ident">L2</span>,
 }
-</pre>
-</section>
-    <section id='search' class="content hidden"></section>
-
-    <section class="footer"></section>
-
-    <aside id="help" class="hidden">
-        <div>
-            <h1 class="hidden">Help</h1>
-
-            <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-
-                <dl>
-                    <dt><kbd>?</kbd></dt>
-                    <dd>Show this help dialog</dd>
-                    <dt><kbd>S</kbd></dt>
-                    <dd>Focus the search field</dd>
-                    <dt><kbd>↑</kbd></dt>
-                    <dd>Move up in search results</dd>
-                    <dt><kbd>↓</kbd></dt>
-                    <dd>Move down in search results</dd>
-                    <dt><kbd>↹</kbd></dt>
-                    <dd>Switch tab</dd>
-                    <dt><kbd>&#9166;</kbd></dt>
-                    <dd>Go to active search result</dd>
-                    <dt><kbd>+</kbd></dt>
-                    <dd>Expand all sections</dd>
-                    <dt><kbd>-</kbd></dt>
-                    <dd>Collapse all sections</dd>
-                </dl>
-            </div>
-
-            <div class="infos">
-                <h2>Search Tricks</h2>
-
-                <p>
-                    Prefix searches with a type followed by a colon (e.g.
-                    <code>fn:</code>) to restrict the search to a given type.
-                </p>
-
-                <p>
-                    Accepted types are: <code>fn</code>, <code>mod</code>,
-                    <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
-                </p>
-
-                <p>
-                    Search functions by type signature (e.g.
-                    <code>vec -> usize</code> or <code>* -> vec</code>)
-                </p>
-            </div>
-        </div>
-    </aside>
-
-    
-
-    <script>
-        window.rootPath = "../../../";
-        window.currentCrate = "juice";
-    </script>
-    <script src="../../../main.js"></script>
-    <script defer src="../../../search-index.js"></script>
-</body>
-</html>
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "juice";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

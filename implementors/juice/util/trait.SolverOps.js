@@ -6,5 +6,4 @@ implementors["juice"] = [];
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()

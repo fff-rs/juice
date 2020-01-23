@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MeanSquaredErrorAccuracy","Provides loss calculated by Mean Squared Error for sampled data"],["RegressionEvaluator","Sampled Evaluator for Regression Problems"],["Sample","A single prediction sample."]],"trait":[["RegressionLoss","Trait to show loss & metric for a Regression Evaluator"]]});
