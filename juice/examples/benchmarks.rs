@@ -11,7 +11,7 @@ use std::env;
 use std::rc::Rc;
 
 fn main() {
-    env_logger::init().unwrap();
+    env_logger::init();
 
     let nets: Vec<String> = vec!["alexnet".to_string(), "overfeat".to_string(), "vgg".to_string()];
     if let Some(net) = env::args().nth(1) {
