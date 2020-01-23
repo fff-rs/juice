@@ -1,7 +1,6 @@
 [book]
 title = "juice documentation"
 description = "Introduction book to the juice framework"
-authors = ["Bernhard Schuster <bernhard@ahoi.io>"]
 authors = [
 	"Maximilian Goisser <max@autumnai.com>",
 	"Michael Hirn <mj@autumnai.com>",
