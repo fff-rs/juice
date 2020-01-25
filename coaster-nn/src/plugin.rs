@@ -324,7 +324,18 @@ pub trait Rnn<F> : NN<F> {
         rnn_config: &Self::RC,
         weight: &SharedTensor<F>,
         workspace: &mut SharedTensor<u8>,
-    ) -> Result<(),crate::co::error::Error>;
+    ) -> Result<(), crate::co::error::Error>;
+
+    /// Calculates RNN Gradients for Input/Hidden/Cell
+    fn rnn_grad_data(&self,
+                     src: &SharedTensor<F>,
+                     src_gradient: &mut SharedTensor<F>,
+                     output: &SharedTensor<F>,
+                     output_gradient: &SharedTensor<F>,
+                     rnn_config: &Self::RC,
+                     weight: &SharedTensor<F>,
+                     workspace: &mut SharedTensor<u8>)
+                     -> Result<(), crate::co::error::Error>;
 }
 
 #[derive(Debug, Copy, Clone)]

@@ -705,25 +705,27 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             dxdesc.push(tensor_description_a());
             dydesc.push(tensor_description_a());
         }
-        let tensor_description_b = TensorDescriptor::new(
-            &dimB,
-            &strideB,
-            <T as DataTypeInfo>::cudnn_data_type(),
-        ).unwrap();
+        let tensor_description_b = || {
+            TensorDescriptor::new(
+                &dimB,
+                &strideB,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap()
+        };
 
         Ok(RnnSequenceDescriptors {
             x_desc,
             y_desc,
             dx_desc: dxdesc,
             dy_desc: dydesc,
-            hx_desc: tensor_description_b.clone(),
-            hy_desc: tensor_description_b.clone(),
-            cx_desc: tensor_description_b.clone(),
-            cy_desc: tensor_description_b.clone(),
-            dhx_desc: tensor_description_b.clone(),
-            dhy_desc: tensor_description_b.clone(),
-            dcx_desc: tensor_description_b.clone(),
-            dcy_desc: tensor_description_b.clone(),
+            hx_desc: tensor_description_b(),
+            hy_desc: tensor_description_b(),
+            cx_desc: tensor_description_b(),
+            cy_desc: tensor_description_b(),
+            dhx_desc: tensor_description_b(),
+            dhy_desc: tensor_description_b(),
+            dcx_desc: tensor_description_b(),
+            dcy_desc: tensor_description_b(),
         })
     }
 
@@ -734,23 +736,12 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let weight_size: usize = match API::get_rnn_params_size(
             *CUDNN.id_c(),
             *rnn_config.rnn_desc().id_c(),
-            // TODO: Cover cases where a user is requesting different batch sizes or other cases
-            // throughout the iteration. Currently this only uses the first iteration, as the implementation
-            // is fixed to using the same iteration description throughout in ```rnn_sequence_descriptors```
             *x_desc[0].id_c(),
             <T as DataTypeInfo>::cudnn_data_type()) {
             Ok(size) => Ok(size),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to get CudNN Rnn Params Size."))),
         }?;
         let dim_w: Vec<usize> = vec![weight_size, 1, 1];
-        /*      let w_desc : FilterDescriptor = match FilterDescriptor::new(
-                  &dim_w,
-                  <T as DataTypeInfo>::cudnn_data_type()
-              ) {
-                  Ok(filter) => Ok(filter),
-                  Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to create a Filter")))
-              }?;*/
-
         Ok(dim_w)
     }
 
@@ -828,10 +819,9 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         &self,
         src: &SharedTensor<T>,
         output: &mut SharedTensor<T>,
-        // Mutable due to the training reserve being kept on the config.
         rnn_config: &Self::RC,
         weight: &SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
+        workspace: &mut SharedTensor<u8>
     ) -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = self.rnn_sequence_descriptors(
@@ -867,9 +857,67 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             trans_mut!(workspace_mem),
             *reserve_space.id_c(),
         ) {
-            _ => {}
-        };
-        unimplemented!()
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to perform RNN Forward")))
+        }
+    }
+
+    fn rnn_grad_data(&self,
+                     src: &SharedTensor<T>,
+                     src_gradient: &mut SharedTensor<T>,
+                     output: &SharedTensor<T>,
+                     output_gradient: &SharedTensor<T>,
+                     rnn_config: &Self::RC,
+                     weight: &SharedTensor<T>,
+                     workspace: &mut SharedTensor<u8>)
+                     -> Result<(), Error> {
+        let src_dimensions = src.desc().clone();
+        let sequence_descriptors = self.rnn_sequence_descriptors(
+            src,
+            *rnn_config.sequence_length(),
+            rnn_config.hidden_size,
+            src_dimensions[0] as i32,
+        )?;
+        let weight_desc = weight.cudnn_filter_desc()?;
+
+        let src_mem = read!(src, self);
+        let src_gradient_mem = read!(src_gradient, self);
+        let weight_mem = read!(weight, self);
+        let output_mem = read!(output, self);
+        let workspace_mem = write_only!(workspace, self);
+        let reserve_space = rnn_config.training_reserve();
+        dbg!("Running Backward Data");
+        match CUDNN.rnn_backward_data::<f32>(
+            rnn_config,
+            sequence_descriptors.y_desc,
+            trans!(output_mem),
+            sequence_descriptors.dy_desc,
+            //output_gradient,
+            std::ptr::null_mut(),
+            sequence_descriptors.dhy_desc,
+            //final_hidden_gradient,
+            std::ptr::null_mut(),
+            sequence_descriptors.dcy_desc,
+            //final_cell_gradient,
+            std::ptr::null_mut(),
+            &weight_desc,
+            trans!(weight_mem),
+            sequence_descriptors.hx_desc,
+            std::ptr::null(),
+            sequence_descriptors.cx_desc,
+            std::ptr::null(),
+            sequence_descriptors.dx_desc,
+            trans_mut!(src_gradient_mem),
+            sequence_descriptors.dhx_desc,
+            std::ptr::null_mut(),
+            sequence_descriptors.dcx_desc,
+            std::ptr::null_mut(),
+            trans_mut!(workspace_mem),
+            *reserve_space.id_c(),
+        ) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::Plugin(PluginError::Operation("Unable to execute CUDA cuDNN RNN Backward Data"))),
+        }
     }
 }
 

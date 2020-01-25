@@ -16,7 +16,7 @@ use crate::conn;
 use crate::conn::RnnConfig as connRnnConfig;
 use crate::juice_capnp::rnn_config as capnp_config;
 use crate::layer::*;
-use crate::util::{ArcLock, cast_vec_usize_to_i32};
+use crate::util::{cast_vec_usize_to_i32, ArcLock};
 use crate::weight::FillerType;
 
 #[derive(Clone, Copy)]
@@ -30,7 +30,7 @@ pub enum RnnType {
     /// ReLU Recursive Unit
     ReLU,
     /// Tanh Recursive Unit
-    tanh
+    tanh,
 }
 
 impl RnnType {
@@ -39,8 +39,9 @@ impl RnnType {
             RnnType::GRU => "GRU",
             RnnType::LSTM => "LSTM",
             RnnType::ReLU => "ReLU",
-            RnnType::tanh => "tanh"
-        }.to_string()
+            RnnType::tanh => "tanh",
+        }
+            .to_string()
     }
 
     fn from_text(input: &str) -> Result<Self, &str> {
@@ -49,22 +50,23 @@ impl RnnType {
             "LSTM" => Ok(RnnType::LSTM),
             "ReLU" => Ok(RnnType::ReLU),
             "tanh" => Ok(RnnType::tanh),
-            _ => Err("Unknown RnnType used - variants are GRU, LSTM, ReLU, and tanh")
+            _ => Err("Unknown RnnType used - variants are GRU, LSTM, ReLU, and tanh"),
         }
     }
 }
 
 impl std::fmt::Debug for RnnType {
-    fn fmt(&self,f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.to_text())
     }
 }
 
-
 #[derive(Debug, Clone)]
 ///
 pub struct Rnn<B: conn::Rnn<f32>> {
+    // TODO: Remove num_output
     num_output: usize,
+    // TODO: Add Cell_Size
     hidden_size: usize,
     num_layers: usize,
     // dropout_probability: f32,
@@ -91,63 +93,89 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
 impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
     impl_ilayer_common!();
 
-    fn auto_weight_blobs(&self) -> bool { true }
+    fn auto_weight_blobs(&self) -> bool {
+        true
+    }
 
-    fn reshape(&mut self,
-               backend: Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    fn reshape(
+        &mut self,
+        backend: Rc<B>,
+        input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+    ) {
         let input = input_data[0].read().unwrap();
+        let mut output_data = output_data[0].write().unwrap();
+        let mut output_gradient = output_gradient[0].write().unwrap();
+
+        // Input Shape is Batch, Number of Inputs, Sequence Length
         let input_shape = input.desc();
-        // Input is Batch, Number of Inputs, Sequence Length
         let sequence_length = input_shape[2];
-        let output_data = output_data[0].write().unwrap();
-        //let mut output_gradient = output_gradient[0].write().unwrap();
+
+        let output_shape = &[input_shape[0], input_shape[1], self.num_layers];
+        output_data.resize(output_shape).unwrap();
+        output_gradient.resize(output_shape).unwrap();
+
         let stride = cast_vec_usize_to_i32(vec![sequence_length, 1, 1]);
-        let config = backend.new_rnn_config(
-            &input,
-            // TODO: implement dropout options
-            None,
-            None,
-            sequence_length as i32,
-            RnnNetworkMode::LSTM,
-            RnnInputMode::LinearInput,
-            DirectionMode::UniDirectional,
-            RnnAlgorithm::PersistStatic,
-            self.hidden_size as i32,
-            self.num_layers as i32,
-            input_shape[0] as i32,
-        ).unwrap();
 
-        let x_desc = backend.rnn_sequence_descriptors(
-            &input,
-            sequence_length as i32,
-            self.hidden_size as i32,
-            input_shape[0] as i32,
-        ).unwrap().x_desc;
+        let input_shape = input.desc();
+        let sequence_length = input_shape[2];
+        let stride = cast_vec_usize_to_i32(vec![sequence_length, 1, 1]);
+        let config = backend
+            .new_rnn_config(
+                &input,
+                // TODO: implement dropout options
+                None,
+                None,
+                sequence_length as i32,
+                RnnNetworkMode::LSTM,
+                RnnInputMode::LinearInput,
+                DirectionMode::UniDirectional,
+                RnnAlgorithm::PersistStatic,
+                self.hidden_size as i32,
+                self.num_layers as i32,
+                input_shape[0] as i32,
+            )
+            .unwrap();
 
-        let filter_dimensions: TensorDesc = backend.generate_rnn_weight_description(
-            &config,
-            &x_desc,
-        ).unwrap();
-        weights_data[0].write().unwrap().resize(&filter_dimensions);
+        let x_desc = backend
+            .rnn_sequence_descriptors(
+                &input,
+                sequence_length as i32,
+                self.hidden_size as i32,
+                input_shape[0] as i32,
+            )
+            .unwrap()
+            .x_desc;
+
+        let filter_dimensions: TensorDesc = backend.generate_rnn_weight_description(&config, &x_desc).unwrap();
+
+        weights_data[0].write().unwrap().resize(&filter_dimensions).unwrap();
+        weights_data[1].write().unwrap().resize(&(1, self.num_output)).unwrap();
         let filler = FillerType::Glorot {
             input_size: filter_dimensions[1],
             output_size: self.num_output,
         };
 
         filler.fill(&mut weights_data[0].write().unwrap());
+        filler.fill(&mut weights_data[1].write().unwrap());
+        weights_gradient[0].write().unwrap().resize(&filter_dimensions).unwrap();
+        weights_gradient[1]
+            .write()
+            .unwrap()
+            .resize(&(1, self.num_output))
+            .unwrap();
         self.rnn_config = Some(Rc::new(config));
     }
 
-    fn resize_shared_workspace(&mut self,
-                               backend: Rc<B>,
-                               workspace: Option<ArcLock<SharedTensor<u8>>>)
-                               -> Option<ArcLock<SharedTensor<u8>>> {
+    fn resize_shared_workspace(
+        &mut self,
+        backend: Rc<B>,
+        workspace: Option<ArcLock<SharedTensor<u8>>>,
+    ) -> Option<ArcLock<SharedTensor<u8>>> {
         let required_size = self.rnn_config.as_ref().unwrap().workspace_size();
         let new_workspace = if workspace.is_none() {
             Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
@@ -167,47 +195,64 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
 }
 
 impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
-    fn compute_output(&self,
-                      backend: &B,
-                      weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
+    fn compute_output(
+        &self,
+        backend: &B,
+        weights: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        output_data: &mut [&mut SharedTensor<f32>],
+    ) {
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
-        backend.rnn_forward(
-            input_data[0],
-            output_data[0],
-            rnn_config,
-            weights[0],
-            &mut workspace,
-        );
-        unimplemented!()
+        backend
+            .rnn_forward(input_data[0], output_data[0], rnn_config, weights[0], &mut workspace)
+            .unwrap();
     }
 }
 
 impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              weights_data: &[&SharedTensor<f32>],
-                              _output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
-        unimplemented!()
+    fn compute_input_gradient(
+        &self,
+        backend: &B,
+        weights_data: &[&SharedTensor<f32>],
+        output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        input_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
+        let weight_data = weights_data[0];
+        let rnn_config = self.rnn_config.as_ref().unwrap();
+        let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
+        // Weight Gradient requires cudnnRnnBackwardWeights during backprop
+        // cudnnRnnBackwardData is also used
+        // CNN uses w_desc, w, dy_desc, dy, dx_desc, dx
+        //
+        backend
+            .rnn_grad_data(
+                input_data[0],
+                input_gradients[0],
+                output_data[0],
+                output_gradients[0],
+                rnn_config,
+                weight_data,
+                &mut workspace,
+            )
+            .unwrap();
     }
 }
 
 impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> {
-    fn compute_parameters_gradient(&self,
-                                   backend: &B,
-                                   _output_data: &[&SharedTensor<f32>],
-                                   output_gradients: &[&SharedTensor<f32>],
-                                   input_data: &[&SharedTensor<f32>],
-                                   parameters_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_parameters_gradient(
+        &self,
+        backend: &B,
+        _output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        parameters_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         unimplemented!()
     }
 }
-
 
 #[derive(Debug, Clone, Copy)]
 /// Specifies configuration parameters for a RNN Layer.
@@ -222,7 +267,7 @@ pub struct RnnConfig {
     /// Number of Hidden Layers
     pub num_layers: usize,
     /// Type of RNN
-    pub rnn_type : RnnType
+    pub rnn_type: RnnType,
 }
 
 impl Into<LayerType> for RnnConfig {
@@ -231,7 +276,7 @@ impl Into<LayerType> for RnnConfig {
     }
 }
 
-impl<'a> CapnpWrite<'a> for RnnConfig{
+impl<'a> CapnpWrite<'a> for RnnConfig {
     type Builder = capnp_config::Builder<'a>;
 
     /// Write the RnnConfig into a capnp message.
@@ -244,7 +289,7 @@ impl<'a> CapnpWrite<'a> for RnnConfig{
     }
 }
 
-impl<'a> CapnpRead<'a> for RnnConfig{
+impl<'a> CapnpRead<'a> for RnnConfig {
     type Reader = capnp_config::Reader<'a>;
 
     fn read_capnp(reader: Self::Reader) -> Self {
@@ -252,38 +297,167 @@ impl<'a> CapnpRead<'a> for RnnConfig{
         let read_cell_size = reader.get_cell_size() as usize;
         let read_num_layers = reader.get_num_layers() as usize;
         let read_hidden_size = reader.get_hidden_size() as usize;
-        let read_rnn_type = RnnType::from_text(
-            reader.get_rnn_type()
-                .unwrap())
-            .unwrap();
+        let read_rnn_type = RnnType::from_text(reader.get_rnn_type().unwrap()).unwrap();
 
         RnnConfig {
             output_size: read_output_size,
-            cell_size : read_cell_size,
+            cell_size: read_cell_size,
             hidden_size: read_hidden_size,
             num_layers: read_num_layers,
-            rnn_type: read_rnn_type
+            rnn_type: read_rnn_type,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use conn::Rnn as coRnn;
+    use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
+    use util::{cast_vec_usize_to_i32, native_backend, native_scalar, write_batch_sample};
+
     use crate::co::*;
 
     use super::{Rnn, RnnConfig, RnnType};
+    use layer::ILayer;
+    use std::rc::Rc;
+    use weight::FillerType;
+
+    fn sample_input() -> &'static [f32] {
+        [
+            0f32, 0.1f32, 0.2f32, 0.3f32, 0.4f32, 0.5f32, 6f32, 7f32, 0.2f32, 0.3f32, 0.4f32, 5f32, 0.6f32, 0.7f32,
+            0.8f32, 0.9f32,
+        ]
+            .as_ref()
+    }
+
+    #[cfg(feature = "cuda")]
+    fn cuda_backend() -> Backend<Cuda> {
+        let framework = Cuda::new();
+        let hardwares = framework.hardwares()[0..1].to_vec();
+        let backend_config = BackendConfig::new(framework, &hardwares);
+        Backend::new(backend_config).unwrap()
+    }
+
+    fn sample_output() -> &'static [f32] {
+        [0.4f32, 0.8f32, 0.6f32, 1.0f32].as_ref()
+    }
 
     #[test]
     #[cfg(feature = "cuda")]
-    fn correct_shapes() {
+    fn create_layer() {
         let cfg = RnnConfig {
-            output_size: 64,
-            cell_size: 10,
-            hidden_size: 10,
-            num_layers: 10,
-            rnn_type: RnnType::LSTM
+            output_size: 5,
+            cell_size: 5,
+            hidden_size: 5,
+            num_layers: 4,
+            rnn_type: RnnType::LSTM,
         };
+        let native_backend = native_backend();
+        let backend = cuda_backend();
+        let sequence_length = 4;
+        let hidden_size = 5;
+        let num_layers = 5;
+        let input_shape = &(4, 1, 4);
         let layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
-        unimplemented!()
+    }
+
+    #[test]
+    #[cfg(feature = "cuda")]
+    fn rnn_forward_pass() {
+        let cfg = RnnConfig {
+            output_size: 5,
+            cell_size: 5,
+            hidden_size: 5,
+            num_layers: 4,
+            rnn_type: RnnType::LSTM,
+        };
+        let native_backend = native_backend();
+        let backend = cuda_backend();
+        let sequence_length = 4;
+        let hidden_size = 5;
+        let num_layers = 4;
+        let input_shape = &(4, 1, 4);
+        let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
+
+        let mut input_data = SharedTensor::<f32>::new(input_shape);
+        input_data
+            .write_only(native_backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(sample_input());
+        let input_shape = input_data.desc();
+
+        let output_shape = &[input_shape[0], input_shape[1], num_layers];
+        let mut output_data = SharedTensor::<f32>::new(output_shape);
+
+        let sequence_length = input_shape[2];
+        let x_desc = backend
+            .rnn_sequence_descriptors(&input_data, sequence_length as i32, hidden_size, input_shape[0] as i32)
+            .unwrap()
+            .x_desc;
+
+        layer.rnn_config = Some(Rc::from(
+            backend
+                .new_rnn_config(
+                    &input_data,
+                    None,
+                    None,
+                    sequence_length as i32,
+                    RnnNetworkMode::LSTM,
+                    RnnInputMode::LinearInput,
+                    DirectionMode::UniDirectional,
+                    RnnAlgorithm::PersistStatic,
+                    hidden_size,
+                    num_layers as i32,
+                    input_shape[0] as i32,
+                )
+                .unwrap(),
+        ));
+
+        let filter_dimensions: TensorDesc = conn::Rnn::<f32>::generate_rnn_weight_description(
+            &backend,
+            match layer.rnn_config {
+                Some(ref config) => &Rc::from(&config),
+                None => panic!(""),
+            },
+            &x_desc,
+        )
+            .unwrap();
+
+        let mut weights_data = Vec::new();
+        weights_data.push(SharedTensor::<f32>::new(&filter_dimensions));
+        weights_data.push(SharedTensor::<f32>::new(&(1, cfg.output_size)));
+
+        let mut weights_gradient = Vec::new();
+        weights_gradient.push(SharedTensor::<f32>::new(&filter_dimensions));
+        weights_gradient.push(SharedTensor::<f32>::new(&(1, cfg.output_size)));
+
+        let filler = FillerType::Glorot {
+            input_size: filter_dimensions[1],
+            output_size: cfg.output_size,
+        };
+
+        filler.fill(&mut weights_data[0]);
+        filler.fill(&mut weights_data[1]);
+
+        layer.resize_shared_workspace(Rc::from(cuda_backend()), None);
+        let mut workspace_forward = match layer.workspace.as_ref() {
+            Some(workspace) => match workspace.write() {
+                Ok(workspace) => workspace,
+                Err(_) => panic!("Couldn't unwrap write for workspace"),
+            },
+            None => panic!("No workspace found"),
+        };
+
+        match backend.rnn_forward(
+            &input_data,
+            &mut output_data,
+            &layer.rnn_config.unwrap(),
+            &weights_data[0],
+            &mut workspace_forward,
+        ) {
+            Ok(_) => {}
+            Err(e) => panic!("Couldn't complete RNN Forward"),
+        };
     }
 }
