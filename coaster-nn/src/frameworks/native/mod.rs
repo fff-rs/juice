@@ -865,6 +865,18 @@ impl<T> Rnn<T> for Backend<Native>
     ) -> Result<(), Error> {
         unimplemented!()
     }
+
+    fn rnn_grad_data(&self,
+                     src: &SharedTensor<T>,
+                     src_gradient: &mut SharedTensor<T>,
+                     output: &SharedTensor<T>,
+                     output_gradient: &SharedTensor<T>,
+                     rnn_config: &Self::RC,
+                     weight: &SharedTensor<T>,
+                     workspace: &mut SharedTensor<u8>)
+                     -> Result<(), Error> {
+        unimplemented!()
+    }
 }
 
 impl<T> Dropout<T> for Backend<Native>
