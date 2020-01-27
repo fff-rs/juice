@@ -36,6 +36,8 @@ pub trait Matrix<T> {
 pub trait BandMatrix<T>: Matrix<T> {
     fn sub_diagonals(&self) -> c_int;
     fn sup_diagonals(&self) -> c_int;
+
+    fn as_matrix(&self) -> &dyn Matrix<T>;
 }
 
 #[cfg(test)]
