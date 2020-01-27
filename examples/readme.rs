@@ -1,6 +1,7 @@
-extern crate rblas;
+extern crate rust_blas;
+use rust_blas as blas;
 
-use rblas::Dot;
+use blas::Dot;
 
 fn main() {
     let x = vec![1.0, -2.0, 3.0, 4.0];

@@ -1,5 +1,7 @@
 #[macro_use]
-extern crate rblas as blas;
+extern crate rust_blas;
+use rust_blas as blas;
+
 use blas::math::Mat;
 use blas::{Matrix, Vector};
 use blas::math::Marker::T;
