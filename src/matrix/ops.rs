@@ -4,15 +4,23 @@
 
 //! Wrappers for matrix functions.
 
-use num::complex::{Complex, Complex32, Complex64};
-use attribute::{Diagonal, Side, Symmetry, Transpose};
-use pointer::CPtr;
-use scalar::Scalar;
-use matrix::ll::*;
-use matrix::Matrix;
+use crate::attribute::{Diagonal, Side, Symmetry, Transpose};
+use crate::matrix::ll::*;
+use crate::matrix::Matrix;
+use crate::pointer::CPtr;
+use crate::scalar::Scalar;
+use num_complex::{Complex, Complex32, Complex64};
 
 pub trait Gemm: Sized {
-    fn gemm(alpha: &Self, at: Transpose, a: &dyn Matrix<Self>, bt: Transpose, b: &dyn Matrix<Self>, beta: &Self, c: &mut dyn Matrix<Self>);
+    fn gemm(
+        alpha: &Self,
+        at: Transpose,
+        a: &dyn Matrix<Self>,
+        bt: Transpose,
+        b: &dyn Matrix<Self>,
+        beta: &Self,
+        c: &mut dyn Matrix<Self>,
+    );
 }
 
 macro_rules! gemm_impl(($($t: ident), +) => (
@@ -48,10 +56,10 @@ gemm_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod gemm_tests {
+    use crate::attribute::Transpose;
+    use crate::matrix::ops::Gemm;
+    use crate::matrix::tests::M;
     use std::iter::repeat;
-    use attribute::Transpose;
-    use matrix::ops::Gemm;
-    use matrix::tests::M;
 
     #[test]
     fn real() {
@@ -67,13 +75,8 @@ mod gemm_tests {
 
     #[test]
     fn transpose() {
-        let a = M(3, 2, vec![
-                 1.0, 2.0,
-                 3.0, 4.0,
-                 5.0, 6.0, ]);
-        let b = M(2, 3, vec![
-                 -1.0, 3.0, 1.0,
-                 1.0, 1.0, 1.0]);
+        let a = M(3, 2, vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        let b = M(2, 3, vec![-1.0, 3.0, 1.0, 1.0, 1.0, 1.0]);
         let t = Transpose::Trans;
 
         let mut c = M(2, 2, repeat(0.0).take(4).collect());
@@ -84,11 +87,27 @@ mod gemm_tests {
 }
 
 pub trait Symm: Sized {
-    fn symm(side: Side, symmetry: Symmetry, alpha: &Self, a: &dyn Matrix<Self>, b: &dyn Matrix<Self>, beta: &Self, c: &mut dyn Matrix<Self>);
+    fn symm(
+        side: Side,
+        symmetry: Symmetry,
+        alpha: &Self,
+        a: &dyn Matrix<Self>,
+        b: &dyn Matrix<Self>,
+        beta: &Self,
+        c: &mut dyn Matrix<Self>,
+    );
 }
 
 pub trait Hemm: Sized {
-    fn hemm(side: Side, symmetry: Symmetry, alpha: &Self, a: &dyn Matrix<Self>, b: &dyn Matrix<Self>, beta: &Self, c: &mut dyn Matrix<Self>);
+    fn hemm(
+        side: Side,
+        symmetry: Symmetry,
+        alpha: &Self,
+        a: &dyn Matrix<Self>,
+        b: &dyn Matrix<Self>,
+        beta: &Self,
+        c: &mut dyn Matrix<Self>,
+    );
 }
 
 macro_rules! symm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
@@ -114,11 +133,27 @@ symm_impl!(Symm, symm, f32, f64, Complex32, Complex64);
 symm_impl!(Hemm, hemm, Complex32, Complex64);
 
 pub trait Trmm: Sized {
-    fn trmm(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &Self, a: &dyn Matrix<Self>, b: &mut dyn Matrix<Self>);
+    fn trmm(
+        side: Side,
+        symmetry: Symmetry,
+        trans: Transpose,
+        diag: Diagonal,
+        alpha: &Self,
+        a: &dyn Matrix<Self>,
+        b: &mut dyn Matrix<Self>,
+    );
 }
 
 pub trait Trsm: Sized {
-    fn trsm(side: Side, symmetry: Symmetry, trans: Transpose, diag: Diagonal, alpha: &Self, a: &dyn Matrix<Self>, b: &mut dyn Matrix<Self>);
+    fn trsm(
+        side: Side,
+        symmetry: Symmetry,
+        trans: Transpose,
+        diag: Diagonal,
+        alpha: &Self,
+        a: &dyn Matrix<Self>,
+        b: &mut dyn Matrix<Self>,
+    );
 }
 
 macro_rules! trmm_impl(($trait_name: ident, $fn_name: ident, $($t: ident), +) => (
@@ -142,11 +177,26 @@ trmm_impl!(Trmm, trmm, f32, f64, Complex32, Complex64);
 trmm_impl!(Trsm, trsm, Complex32, Complex64);
 
 pub trait Herk: Sized {
-    fn herk(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &dyn Matrix<Complex<Self>>, beta: &Self, c: &mut dyn Matrix<Complex<Self>>);
+    fn herk(
+        symmetry: Symmetry,
+        trans: Transpose,
+        alpha: &Self,
+        a: &dyn Matrix<Complex<Self>>,
+        beta: &Self,
+        c: &mut dyn Matrix<Complex<Self>>,
+    );
 }
 
 pub trait Her2k: Sized {
-    fn her2k(symmetry: Symmetry, trans: Transpose, alpha: Complex<Self>, a: &dyn Matrix<Complex<Self>>, b: &dyn Matrix<Complex<Self>>, beta: &Self, c: &mut dyn Matrix<Complex<Self>>);
+    fn her2k(
+        symmetry: Symmetry,
+        trans: Transpose,
+        alpha: Complex<Self>,
+        a: &dyn Matrix<Complex<Self>>,
+        b: &dyn Matrix<Complex<Self>>,
+        beta: &Self,
+        c: &mut dyn Matrix<Complex<Self>>,
+    );
 }
 
 macro_rules! herk_impl(($($t: ident), +) => (
@@ -185,11 +235,26 @@ macro_rules! herk_impl(($($t: ident), +) => (
 herk_impl!(f32, f64);
 
 pub trait Syrk: Sized {
-    fn syrk(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &dyn Matrix<Self>, beta: &Self, c: &mut dyn Matrix<Self>);
+    fn syrk(
+        symmetry: Symmetry,
+        trans: Transpose,
+        alpha: &Self,
+        a: &dyn Matrix<Self>,
+        beta: &Self,
+        c: &mut dyn Matrix<Self>,
+    );
 }
 
 pub trait Syr2k: Sized {
-    fn syr2k(symmetry: Symmetry, trans: Transpose, alpha: &Self, a: &dyn Matrix<Self>, b: &dyn Matrix<Self>, beta: &Self, c: &mut dyn Matrix<Self>);
+    fn syr2k(
+        symmetry: Symmetry,
+        trans: Transpose,
+        alpha: &Self,
+        a: &dyn Matrix<Self>,
+        b: &dyn Matrix<Self>,
+        beta: &Self,
+        c: &mut dyn Matrix<Self>,
+    );
 }
 
 macro_rules! syrk_impl(($($t: ident), +) => (
