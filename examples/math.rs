@@ -2,9 +2,9 @@
 extern crate rust_blas;
 use rust_blas as blas;
 
+use blas::math::Marker::T;
 use blas::math::Mat;
 use blas::{Matrix, Vector};
-use blas::math::Marker::T;
 
 fn main() {
     let x = vec![1.0, 2.0];

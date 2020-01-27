@@ -1,16 +1,16 @@
 // Copyright 2015 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-use libc::c_int as c_int;
+use crate::math::Mat;
+use crate::matrix::BandMatrix;
+use crate::vector::ops::Copy;
+use crate::Matrix;
+use libc::c_int;
 use num::traits::NumCast;
 use std::fmt;
 use std::iter::repeat;
 use std::ops::Index;
 use std::slice;
-use vector::ops::Copy;
-use matrix::BandMatrix;
-use Matrix;
-use math::Mat;
 
 #[derive(Debug, PartialEq)]
 pub struct BandMat<T> {
@@ -62,7 +62,11 @@ impl<T> BandMat<T> {
         self.data.push(val);
     }
 
-    pub unsafe fn from_matrix(mut mat: Mat<T>, sub_diagonals: c_int, sup_diagonals: c_int) -> BandMat<T> {
+    pub unsafe fn from_matrix(
+        mut mat: Mat<T>,
+        sub_diagonals: c_int,
+        sup_diagonals: c_int,
+    ) -> BandMat<T> {
         let data = mat.as_mut_ptr();
         let length = mat.cols() * mat.rows();
         BandMat {
@@ -149,7 +153,9 @@ impl<T> BandMatrix<T> for BandMat<T> {
         self.sup_diagonals
     }
 
-    fn as_matrix(&self) -> &dyn Matrix<T> { self }
+    fn as_matrix(&self) -> &dyn Matrix<T> {
+        self
+    }
 }
 
 impl<'a, T> From<&'a dyn BandMatrix<T>> for BandMat<T>
