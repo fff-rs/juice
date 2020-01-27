@@ -2,21 +2,19 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-use std::ops::{
-    Add,
-    Mul,
-};
-use num::complex::{Complex32, Complex64};
-use attribute::Transpose;
-use default::Default;
-use math::Trans;
-use matrix::ops::*;
-use matrix::Matrix;
-use math::Mat;
-use vector::ops::*;
+use crate::attribute::Transpose;
+use crate::default::Default;
+use crate::math::Mat;
+use crate::math::Trans;
+use crate::matrix::ops::*;
+use crate::matrix::Matrix;
+use crate::vector::ops::*;
+use num_complex::{Complex32, Complex64};
+use std::ops::{Add, Mul};
 
 impl<'a, T> Add for &'a dyn Matrix<T>
-    where T: Axpy + Copy + Default
+where
+    T: Axpy + Copy + Default,
 {
     type Output = Mat<T>;
 
@@ -33,7 +31,8 @@ impl<'a, T> Add for &'a dyn Matrix<T>
 }
 
 impl<'a, T> Mul<T> for &'a dyn Matrix<T>
-    where T: Sized + Copy + Scal
+where
+    T: Sized + Copy + Scal,
 {
     type Output = Mat<T>;
 
@@ -62,7 +61,8 @@ macro_rules! left_scale(($($t: ident), +) => (
 left_scale!(f32, f64, Complex32, Complex64);
 
 impl<'a, T> Mul<&'a dyn Matrix<T>> for &'a dyn Matrix<T>
-    where T: Default + Gemm,
+where
+    T: Default + Gemm,
 {
     type Output = Mat<T>;
 
@@ -76,13 +76,22 @@ impl<'a, T> Mul<&'a dyn Matrix<T>> for &'a dyn Matrix<T>
         let mut result = Mat::new(n, m);
         let t = Transpose::NoTrans;
 
-        Gemm::gemm(&Default::one(), t, self, t, b, &Default::zero(), &mut result);
+        Gemm::gemm(
+            &Default::one(),
+            t,
+            self,
+            t,
+            b,
+            &Default::zero(),
+            &mut result,
+        );
         result
     }
 }
 
 impl<'a, T> Mul<&'a dyn Matrix<T>> for Trans<&'a dyn Matrix<T>>
-    where T: Default + Gemm,
+where
+    T: Default + Gemm,
 {
     type Output = Mat<T>;
 
@@ -107,7 +116,8 @@ impl<'a, T> Mul<&'a dyn Matrix<T>> for Trans<&'a dyn Matrix<T>>
 }
 
 impl<'a, T> Mul<Trans<&'a dyn Matrix<T>>> for &'a dyn Matrix<T>
-    where T: Default + Gemm,
+where
+    T: Default + Gemm,
 {
     type Output = Mat<T>;
 
@@ -126,13 +136,22 @@ impl<'a, T> Mul<Trans<&'a dyn Matrix<T>>> for &'a dyn Matrix<T>
         let mut result = Mat::new(n, m);
         let at = Transpose::NoTrans;
 
-        Gemm::gemm(&Default::one(), at, self, bt, b, &Default::zero(), &mut result);
+        Gemm::gemm(
+            &Default::one(),
+            at,
+            self,
+            bt,
+            b,
+            &Default::zero(),
+            &mut result,
+        );
         result
     }
 }
 
 impl<'a, T> Mul<Trans<&'a dyn Matrix<T>>> for Trans<&'a dyn Matrix<T>>
-    where T: Default + Gemm,
+where
+    T: Default + Gemm,
 {
     type Output = Mat<T>;
 
@@ -162,9 +181,9 @@ impl<'a, T> Mul<Trans<&'a dyn Matrix<T>>> for Trans<&'a dyn Matrix<T>>
 
 #[cfg(test)]
 mod tests {
-    use Matrix;
-    use math::Mat;
-    use math::Marker::T;
+    use crate::math::Marker::T;
+    use crate::math::Mat;
+    use crate::Matrix;
 
     #[test]
     fn add() {

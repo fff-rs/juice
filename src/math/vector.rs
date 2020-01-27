@@ -2,18 +2,16 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-use std::ops::{
-    Add,
-    Mul,
-};
-use num::complex::{Complex32, Complex64};
-use default::Default;
-use vector::ops::*;
-use vector::Vector;
-use math::Trans;
+use crate::default::Default;
+use crate::math::Trans;
+use crate::vector::ops::*;
+use crate::vector::Vector;
+use num_complex::{Complex32, Complex64};
+use std::ops::{Add, Mul};
 
 impl<'a, T> Add for &'a dyn Vector<T>
-    where T: Axpy + Copy + Default
+where
+    T: Axpy + Copy + Default,
 {
     type Output = Vec<T>;
 
@@ -27,7 +25,8 @@ impl<'a, T> Add for &'a dyn Vector<T>
 }
 
 impl<'a, T> Mul<&'a dyn Vector<T>> for Trans<&'a dyn Vector<T>>
-    where T: Sized + Copy + Dot + Dotc
+where
+    T: Sized + Copy + Dot + Dotc,
 {
     type Output = T;
 
@@ -40,7 +39,8 @@ impl<'a, T> Mul<&'a dyn Vector<T>> for Trans<&'a dyn Vector<T>>
 }
 
 impl<'a, T> Mul<T> for &'a dyn Vector<T>
-    where T: Sized + Copy + Scal
+where
+    T: Sized + Copy + Scal,
 {
     type Output = Vec<T>;
 
@@ -70,9 +70,9 @@ left_scale!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod tests {
-    use Vector;
-    use math::Marker::{T, H};
-    use num::complex::Complex;
+    use crate::math::Marker::{H, T};
+    use crate::Vector;
+    use num_complex::Complex;
 
     #[test]
     fn add() {

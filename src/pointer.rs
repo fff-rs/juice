@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-use num::complex::{Complex32, Complex64};
-use libc::{c_double, c_int, c_float, c_long, c_void};
+use libc::{c_double, c_float, c_int, c_long, c_void};
+use num_complex::{Complex32, Complex64};
 
 pub trait CPtr<T> {
     fn as_c_ptr(self) -> T;
