@@ -12,6 +12,7 @@ use std::slice;
 use vector::ops::Copy;
 use matrix::BandMatrix;
 use Matrix;
+use math::Mat;
 
 #[derive(Debug, PartialEq)]
 pub struct BandMat<T> {
@@ -61,6 +62,18 @@ impl<T> BandMat<T> {
 
     pub unsafe fn push(&mut self, val: T) {
         self.data.push(val);
+    }
+
+    pub unsafe fn from_matrix(mut mat: Mat<T>, sub_diagonals: c_int, sup_diagonals: c_int) -> BandMat<T> {
+        let data = mat.as_mut_ptr();
+        let length = mat.cols() * mat.rows();
+        BandMat {
+            cols: mat.cols(),
+            rows: mat.rows(),
+            data: Vec::from_raw_parts(data, length, length),
+            sub_diagonals: sub_diagonals,
+            sup_diagonals: sup_diagonals,
+        }
     }
 }
 
