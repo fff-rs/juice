@@ -1,8 +1,6 @@
 // Copyright 2015 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-#![macro_use]
-
 use libc::c_int as c_int;
 use num::traits::NumCast;
 use std::fmt;
