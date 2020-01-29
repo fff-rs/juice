@@ -5,7 +5,6 @@ use crate::math::Mat;
 use crate::matrix::BandMatrix;
 use crate::vector::ops::Copy;
 use crate::Matrix;
-use libc::c_int;
 use num::traits::NumCast;
 use std::fmt;
 use std::iter::repeat;
@@ -16,13 +15,13 @@ use std::slice;
 pub struct BandMat<T> {
     rows: usize,
     cols: usize,
-    sub_diagonals: c_int,
-    sup_diagonals: c_int,
+    sub_diagonals: u32,
+    sup_diagonals: u32,
     data: Vec<T>,
 }
 
 impl<T> BandMat<T> {
-    pub fn new(n: usize, m: usize, sub: c_int, sup: c_int) -> BandMat<T> {
+    pub fn new(n: usize, m: usize, sub: u32, sup: u32) -> BandMat<T> {
         let len = n * m;
         let mut data = Vec::with_capacity(len);
         unsafe {
@@ -51,10 +50,10 @@ impl<T> BandMat<T> {
         self.cols = n;
     }
 
-    pub unsafe fn set_sub_diagonals(&mut self, n: c_int) {
+    pub unsafe fn set_sub_diagonals(&mut self, n: u32) {
         self.sub_diagonals = n;
     }
-    pub unsafe fn set_sup_diagonals(&mut self, n: c_int) {
+    pub unsafe fn set_sup_diagonals(&mut self, n: u32) {
         self.sup_diagonals = n;
     }
 
@@ -62,11 +61,7 @@ impl<T> BandMat<T> {
         self.data.push(val);
     }
 
-    pub unsafe fn from_matrix(
-        mut mat: Mat<T>,
-        sub_diagonals: c_int,
-        sup_diagonals: c_int,
-    ) -> BandMat<T> {
+    pub unsafe fn from_matrix(mut mat: Mat<T>, sub_diagonals: u32, sup_diagonals: u32) -> BandMat<T> {
         let data = mat.as_mut_ptr();
         let length = mat.cols() * mat.rows();
         BandMat {
@@ -85,8 +80,8 @@ impl<T: Clone> BandMat<T> {
             rows: n,
             cols: m,
             data: repeat(value).take(n * m).collect(),
-            sub_diagonals: n as c_int,
-            sup_diagonals: m as c_int,
+            sub_diagonals: n as u32,
+            sup_diagonals: m as u32,
         }
     }
 }
@@ -125,13 +120,13 @@ impl<T: fmt::Display> fmt::Display for BandMat<T> {
 }
 
 impl<T> Matrix<T> for BandMat<T> {
-    fn rows(&self) -> i32 {
-        let n: Option<i32> = NumCast::from(self.rows);
+    fn rows(&self) -> u32 {
+        let n: Option<u32> = NumCast::from(self.rows);
         n.unwrap()
     }
 
-    fn cols(&self) -> i32 {
-        let n: Option<i32> = NumCast::from(self.cols);
+    fn cols(&self) -> u32 {
+        let n: Option<u32> = NumCast::from(self.cols);
         n.unwrap()
     }
 
@@ -145,11 +140,11 @@ impl<T> Matrix<T> for BandMat<T> {
 }
 
 impl<T> BandMatrix<T> for BandMat<T> {
-    fn sub_diagonals(&self) -> i32 {
+    fn sub_diagonals(&self) -> u32 {
         self.sub_diagonals
     }
 
-    fn sup_diagonals(&self) -> i32 {
+    fn sup_diagonals(&self) -> u32 {
         self.sup_diagonals
     }
 
@@ -167,8 +162,8 @@ where
         let m = a.cols() as usize;
         let len = n * m;
 
-        let sub = a.sub_diagonals() as c_int;
-        let sup = a.sup_diagonals() as c_int;
+        let sub = a.sub_diagonals() as u32;
+        let sup = a.sup_diagonals() as u32;
 
         let mut result = BandMat {
             rows: n,

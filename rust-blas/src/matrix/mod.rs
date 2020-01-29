@@ -3,8 +3,9 @@
 // license that can be found in the LICENSE file.
 
 //! Matrix operations.
-use crate::attribute::Order;
-use libc::c_int;
+use crate::attribute::{
+    Order,
+};
 
 pub mod ll;
 pub mod ops;
@@ -13,7 +14,7 @@ pub mod ops;
 pub trait Matrix<T> {
     /// The leading dimension of the matrix. Defaults to `cols` for `RowMajor`
     /// order and 'rows' for `ColMajor` order.
-    fn lead_dim(&self) -> c_int {
+    fn lead_dim(&self) -> u32 {
         match self.order() {
             Order::RowMajor => self.cols(),
             Order::ColMajor => self.rows(),
@@ -24,9 +25,9 @@ pub trait Matrix<T> {
         Order::RowMajor
     }
     /// Returns the number of rows.
-    fn rows(&self) -> c_int;
+    fn rows(&self) -> u32;
     /// Returns the number of columns.
-    fn cols(&self) -> c_int;
+    fn cols(&self) -> u32;
     /// An unsafe pointer to a contiguous block of memory.
     fn as_ptr(&self) -> *const T;
     /// An unsafe pointer to a contiguous block of memory.
@@ -34,8 +35,8 @@ pub trait Matrix<T> {
 }
 
 pub trait BandMatrix<T>: Matrix<T> {
-    fn sub_diagonals(&self) -> c_int;
-    fn sup_diagonals(&self) -> c_int;
+    fn sub_diagonals(&self) -> u32;
+    fn sup_diagonals(&self) -> u32;
 
     fn as_matrix(&self) -> &dyn Matrix<T>;
 }
@@ -43,16 +44,15 @@ pub trait BandMatrix<T>: Matrix<T> {
 #[cfg(test)]
 pub mod tests {
     use crate::Matrix;
-    use libc::c_int;
 
-    pub struct M<T>(pub c_int, pub c_int, pub Vec<T>);
+    pub struct M<T>(pub u32, pub u32, pub Vec<T>);
 
     impl<T> Matrix<T> for M<T> {
-        fn rows(&self) -> c_int {
+        fn rows(&self) -> u32 {
             self.0
         }
 
-        fn cols(&self) -> c_int {
+        fn cols(&self) -> u32 {
             self.1
         }
 
