@@ -4,7 +4,6 @@
 
 //! Vector operations.
 use crate::vector::ops::{Asum, Axpy, Copy, Dot, Iamax, Nrm2, Scal};
-use libc::c_int;
 use num::traits::NumCast;
 use num_complex::{Complex32, Complex64};
 
@@ -15,11 +14,11 @@ pub mod ops;
 pub trait Vector<T> {
     /// The stride within the vector. For example, if `inc` returns 7, every
     /// 7th element is used. Defaults to 1.
-    fn inc(&self) -> c_int {
+    fn inc(&self) -> u32 {
         1
     }
     /// The number of elements in the vector.
-    fn len(&self) -> c_int;
+    fn len(&self) -> u32;
     /// An unsafe pointer to a contiguous block of memory.
     fn as_ptr(&self) -> *const T;
     /// An unsafe mutable pointer to a contiguous block of memory.
@@ -82,8 +81,8 @@ where
 
 impl<T> Vector<T> for Vec<T> {
     #[inline]
-    fn len(&self) -> c_int {
-        let l: Option<c_int> = NumCast::from(Vec::len(self));
+    fn len(&self) -> u32 {
+        let l: Option<u32> = NumCast::from(Vec::len(self));
         match l {
             Some(l) => l,
             None => panic!(),
@@ -103,8 +102,8 @@ impl<T> Vector<T> for Vec<T> {
 
 impl<T> Vector<T> for [T] {
     #[inline]
-    fn len(&self) -> c_int {
-        let l: Option<c_int> = NumCast::from(<[T]>::len(self));
+    fn len(&self) -> u32 {
+        let l: Option<u32> = NumCast::from(<[T]>::len(self));
         match l {
             Some(l) => l,
             None => panic!(),

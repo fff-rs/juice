@@ -95,13 +95,13 @@ impl<T: fmt::Display> fmt::Display for Mat<T> {
 }
 
 impl<T> Matrix<T> for Mat<T> {
-    fn rows(&self) -> i32 {
-        let n: Option<i32> = NumCast::from(self.rows);
+    fn rows(&self) -> u32 {
+        let n: Option<u32> = NumCast::from(self.rows);
         n.unwrap()
     }
 
-    fn cols(&self) -> i32 {
-        let n: Option<i32> = NumCast::from(self.cols);
+    fn cols(&self) -> u32 {
+        let n: Option<u32> = NumCast::from(self.cols);
         n.unwrap()
     }
 
