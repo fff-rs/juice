@@ -1,5 +1,7 @@
 [workspace]
-members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "juice-examples"]
+members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "juice-examples", "rust-blas", "rcudnn/cudnn", "rcudnn/cudnn-sys", "rcublas/cublas", "rcublas/cublas-sys"]
+
+exclude = [ "./rcudnn", "./rcublas" ]
 
 [patch.crates-io]
 coaster-nn = { path = "./coaster-nn" }
@@ -7,6 +9,11 @@ coaster-blas = { path = "./coaster-blas" }
 coaster = { path = "./coaster" }
 greenglas = { path = "./greenglas" }
 juice = { path = "./juice" }
+rust-blas = { path = "./rust-blas" }
+rcublas = { path = "./rcublas/cublas" }
+rcublas-sys = { path = "./rcublas/cublas-sys" }
+rcudnn = { path = "./rcudnn/cudnn" }
+rcudnn-sys = { path = "./rcudnn/cudnn-sys" }
 
 [profile.bench]
 opt-level = 3
