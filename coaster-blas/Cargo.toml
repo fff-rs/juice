@@ -19,10 +19,10 @@ coaster = { version = "0.1", default-features = false }
 lazy_static = "1"
 
 # native
-rust-blas = { version = "0.1", optional = true }
+rust-blas = { version = "^0.1", optional = true }
 
 # cuda
-rcublas = { version = "0.2",  optional = true }
+rcublas = { version = "^0.3",  optional = true }
 
 clippy = { version = "0.0.302", optional = true }
 

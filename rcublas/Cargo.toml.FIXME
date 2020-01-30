@@ -1,3 +1,7 @@
+# until
+# https://github.com/rust-lang/cargo/issues/5042
+# is resolved
+# nested workspaces are unuseable
 [workspace]
 members = ["cublas", "cublas-sys"]
 
