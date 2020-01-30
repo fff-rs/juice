@@ -357,7 +357,7 @@ impl<T> ConvolutionConfig<T> for crate::cudnn::utils::ConvolutionConfig
     where T: Float + DataTypeInfo
 {
     fn workspace_size(&self) -> usize {
-        *self.largest_workspace_size()
+        self.largest_workspace_size()
     }
 }
 

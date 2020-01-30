@@ -1,0 +1,29 @@
+# until
+# https://github.com/rust-lang/cargo/issues/5042
+# is resolved
+# nested workspaces are unuseable
+[workspace]
+members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "juice-examples"]
+
+[patch.crates-io]
+coaster-nn = { path = "./coaster-nn" }
+coaster-blas = { path = "./coaster-blas" }
+coaster = { path = "./coaster" }
+greenglas = { path = "./greenglas" }
+juice = { path = "./juice" }
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = false
+debug-assertions = false
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 2
