@@ -266,7 +266,7 @@ mod test {
     use API;
     use api::context::Context;
     use api::enums::PointerMode;
-    use co::backend::{Backend, IBackend, BackendConfig};
+    use co::backend::{Backend, IBackend};
     use co::framework::IFramework;
     use co::frameworks::{Cuda, Native};
     use co::frameworks::native::flatbox::FlatBox;
@@ -280,13 +280,13 @@ mod test {
     }
 
     fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
-        let mut mem_buffer = mem.as_mut_slice::<T>();
+        let mem_buffer = mem.as_mut_slice::<T>();
         for (index, datum) in data.iter().enumerate() {
             mem_buffer[index] = *datum;
         }
     }
 
-    fn filled_tensor<B: IBackend, T: Copy>(backend: &B, n: usize, val: T) -> SharedTensor<T> {
+    fn filled_tensor<B: IBackend, T: Copy>(_backend: &B, n: usize, val: T) -> SharedTensor<T> {
         let mut x = SharedTensor::<T>::new(&vec![n]);
         let values: &[T] = &::std::iter::repeat(val)
             .take(x.capacity())
@@ -303,7 +303,7 @@ mod test {
         // set up input
         let n = 20i32;
         let val = 2f32;
-        let mut x = filled_tensor(&native, n as usize, val);
+        let x = filled_tensor(&native, n as usize, val);
 
 
 
@@ -334,12 +334,12 @@ mod test {
         let cuda = get_cuda_backend();
 
         // set up alpha
-        let mut alpha = filled_tensor(&native, 1, 1.5f32);
+        let alpha = filled_tensor(&native, 1, 1.5f32);
 
         // set up x
         let n = 5i32;
         let val = 2f32;
-        let mut x = filled_tensor(&native, n as usize, val);
+        let x = filled_tensor(&native, n as usize, val);
 
         // set up y
         let val = 4f32;
@@ -372,7 +372,7 @@ mod test {
         // set up x
         let n = 5i32;
         let val = 2f32;
-        let mut x = filled_tensor(&native, n as usize, val);
+        let x = filled_tensor(&native, n as usize, val);
 
         // set up y
         let val = 4f32;
@@ -403,11 +403,11 @@ mod test {
         // set up x
         let n = 5i32;
         let val = 2f32;
-        let mut x = filled_tensor(&native, n as usize, val);
+        let x = filled_tensor(&native, n as usize, val);
 
         // set up y
         let val = 4f32;
-        let mut y = filled_tensor(&native, n as usize, val);
+        let y = filled_tensor(&native, n as usize, val);
 
         // set up result
         let mut result = SharedTensor::<f32>::new(&vec![1]);
@@ -468,7 +468,7 @@ mod test {
         let cuda = get_cuda_backend();
 
         // set up alpha
-        let mut alpha = filled_tensor(&native, 1, 2.5f32);
+        let alpha = filled_tensor(&native, 1, 2.5f32);
 
         // set up x
         let n = 3i32;
