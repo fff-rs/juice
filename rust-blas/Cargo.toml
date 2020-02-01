@@ -1,0 +1,21 @@
+[package]
+name = "rust-blas"
+version = "0.1.2"
+authors = ["Michael Yang <mikkyangg@gmail.com>", "Bernhard Schuster <bernhard@ahoi.io>"]
+description = "BLAS bindings and wrappers, fork of rblas"
+documentation = "http://mikkyang.github.io/rust-blas/doc/rblas/index.html"
+homepage = "http://github.com/spearow/rust-blas"
+repository = "http://github.com/spearow/rust-blas"
+readme = "README.md"
+keywords = ["BLAS"]
+license = "MIT"
+build = "build.rs"
+edition = "2018"
+
+[dependencies]
+num = "0.2"
+num-complex = "0.2"
+libc = "0.2"
+
+[build-dependencies]
+pkg-config = "0.3"
