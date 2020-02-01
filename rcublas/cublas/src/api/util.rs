@@ -11,7 +11,7 @@ impl API {
     /// Creating contexts all the time can lead to performance problems.
     /// Generally one Context per GPU device and configuration is recommended.
     pub fn create() -> Result<Context, Error> {
-        Ok(Context::from_c(try!(unsafe { API::ffi_create() })))
+        Ok(Context::from_c(unsafe { API::ffi_create() }?))
     }
 
     /// Destroys the cuBLAS context, freeing its resources.
@@ -19,21 +19,21 @@ impl API {
     /// Should generally not be called directly.
     /// Automatically called when dropping a Context.
     pub unsafe fn destroy(context: &mut Context) -> Result<(), Error> {
-        Ok(try!(API::ffi_destroy(*context.id_c())))
+        Ok(API::ffi_destroy(*context.id_c())?)
     }
 
     /// Retrieve the pointer mode for a given cuBLAS context.
     pub fn get_pointer_mode(context: &Context) -> Result<PointerMode, Error> {
         Ok(PointerMode::from_c(
-            try!(unsafe { API::ffi_get_pointer_mode(*context.id_c()) }),
+            unsafe { API::ffi_get_pointer_mode(*context.id_c()) }?,
         ))
     }
 
     /// Set the pointer mode for a given cuBLAS context.
     pub fn set_pointer_mode(context: &mut Context, pointer_mode: PointerMode) -> Result<(), Error> {
-        Ok(try!(unsafe {
+        Ok(unsafe {
             API::ffi_set_pointer_mode(*context.id_c(), pointer_mode.as_c())
-        }))
+        }?)
     }
 
     unsafe fn ffi_create() -> Result<cublasHandle_t, Error> {
