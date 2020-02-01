@@ -8,6 +8,7 @@ use crate::co::prelude::*;
 use crate::cudnn::*;
 pub use crate::cudnn::utils::{DataType, DataTypeInfo};
 use crate::plugin::*;
+use std::sync::{Arc, RwLock};
 
 #[macro_use]
 pub mod helper;
@@ -674,41 +675,54 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
     fn rnn_sequence_descriptors(&self,
                                 src: &SharedTensor<T>,
                                 sequence_length: i32,
-                                hidden_size: i32,
+                                input_size: i32,
                                 batch_size: i32)
                                 -> Result<RnnSequenceDescriptors, Error> {
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-        let dimA = vec![batch_size, hidden_size, 1];
-        let strideA = vec![1 * hidden_size, 1, 1];
+        let dim_a = vec![batch_size, input_size, 1];
+        let stride_a = vec![dim_a[2] * dim_a[1], dim_a[2], 1];
 
         // FIXME: Ensure hidden_size*2 is used for bidirectional models
-        let dimB = vec![batch_size, hidden_size, 1];
-        let strideB = vec![dimA[2] * dimA[2], dimA[2], 1];
+        let dim_b = vec![batch_size, input_size, 1];
+        let stride_b = vec![dim_b[2] * dim_b[1], dim_b[2], 1];
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
         let tensor_description_a = || {
             TensorDescriptor::new(
-                &dimA,
-                &strideA,
+                &dim_a,
+                &stride_a,
                 data_type,
             ).unwrap()
         };
+        // TODO: Move back to using closure when this finally passes.
         for _ in 0..sequence_length {
             x_desc.push(TensorDescriptor::new(
-                &dimA,
-                &strideA,
+                &dim_a,
+                &stride_a,
                 data_type,
             ).unwrap());
-            y_desc.push(tensor_description_a());
-            dxdesc.push(tensor_description_a());
-            dydesc.push(tensor_description_a());
+            y_desc.push(TensorDescriptor::new(
+                &dim_a,
+                &stride_a,
+                data_type,
+            ).unwrap());
+            dxdesc.push(TensorDescriptor::new(
+                &dim_a,
+                &stride_a,
+                data_type,
+            ).unwrap());
+            dydesc.push(TensorDescriptor::new(
+                &dim_a,
+                &stride_a,
+                data_type,
+            ).unwrap());
         }
         let tensor_description_b = || {
             TensorDescriptor::new(
-                &dimB,
-                &strideB,
+                &dim_b,
+                &stride_b,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap()
         };
@@ -718,14 +732,46 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             y_desc,
             dx_desc: dxdesc,
             dy_desc: dydesc,
-            hx_desc: tensor_description_b(),
-            hy_desc: tensor_description_b(),
-            cx_desc: tensor_description_b(),
-            cy_desc: tensor_description_b(),
-            dhx_desc: tensor_description_b(),
-            dhy_desc: tensor_description_b(),
-            dcx_desc: tensor_description_b(),
-            dcy_desc: tensor_description_b(),
+            hx_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
+            hy_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
+            cx_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
+            cy_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
+            dhx_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
+            dhy_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
+            dcx_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
+            dcy_desc: TensorDescriptor::new(
+                &dim_b,
+                &stride_b,
+                <T as DataTypeInfo>::cudnn_data_type(),
+            ).unwrap(),
         })
     }
 
@@ -741,6 +787,10 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             Ok(size) => Ok(size),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to get CudNN Rnn Params Size."))),
         }?;
+        //let linLayerMat = match API::get_rnn_lin_layer_matrix_params();
+        dbg!(weight_size);
+        // This is taken from https://github.com/Hardware-Alchemy/cuDNN-sample/blob/master/cudnn_samples_v7/RNN/RNN_example.cu#L302-L305
+        // Where [weight_size, 1, 1] is used to define the filter for wDesc and dwDesc.
         let dim_w: Vec<usize> = vec![weight_size, 1, 1];
         Ok(dim_w)
     }
@@ -831,12 +881,16 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             src_dimensions[0] as i32,
         )?;
         let weight_desc = weight.cudnn_filter_desc()?;
+        let reserve = Some(Arc::new(RwLock::new(
+            SharedTensor::<u8>::new(&[rnn_config.training_reserve_size()]))));
+        let reserve_space = &mut reserve.as_ref().unwrap().write().unwrap();
 
         let src_mem = read!(src, self);
         let weight_mem = read!(weight, self);
         let output_mem = write_only!(output, self);
         let workspace_mem = write_only!(workspace, self);
-        let reserve_space = rnn_config.training_reserve();
+        let reserve_mem = write_only!(reserve_space, self);
+
         match CUDNN.rnn_forward::<f32>(
             rnn_config,
             sequence_descriptors.x_desc,
@@ -848,14 +902,13 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             &sequence_descriptors.cx_desc,
             std::ptr::null(),
             &weight_desc,
-            trans_mut!(weight_mem),
+            trans!(weight_mem),
             &sequence_descriptors.hy_desc,
-            // May need to pass hidden at some point for training.
             std::ptr::null_mut(),
             &sequence_descriptors.cy_desc,
             std::ptr::null_mut(),
             trans_mut!(workspace_mem),
-            *reserve_space.id_c(),
+            trans_mut!(reserve_mem),
         ) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to perform RNN Forward")))
@@ -885,7 +938,8 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let weight_mem = read!(weight, self);
         let output_mem = read!(output, self);
         let workspace_mem = write_only!(workspace, self);
-        let reserve_space = rnn_config.training_reserve();
+        unimplemented!()
+        /*let reserve_space = rnn_config.training_reserve();
         dbg!("Running Backward Data");
         match CUDNN.rnn_backward_data::<f32>(
             rnn_config,
@@ -917,7 +971,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         ) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Operation("Unable to execute CUDA cuDNN RNN Backward Data"))),
-        }
+        }*/
     }
 }
 

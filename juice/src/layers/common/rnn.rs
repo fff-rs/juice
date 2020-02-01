@@ -324,8 +324,10 @@ mod tests {
 
     fn sample_input() -> &'static [f32] {
         [
-            0f32, 0.1f32, 0.2f32, 0.3f32, 0.4f32, 0.5f32, 6f32, 7f32, 0.2f32, 0.3f32, 0.4f32, 5f32, 0.6f32, 0.7f32,
-            0.8f32, 0.9f32,
+            0f32, 0.1f32, 0.2f32, 0.3f32,
+            0.4f32, 0.5f32, 6f32, 7f32,
+            0.2f32, 0.3f32, 0.4f32, 5f32,
+            0.6f32, 0.7f32, 0.8f32, 0.9f32,
         ]
             .as_ref()
     }
@@ -346,7 +348,7 @@ mod tests {
     #[cfg(feature = "cuda")]
     fn create_layer() {
         let cfg = RnnConfig {
-            output_size: 5,
+            output_size: 4,
             cell_size: 5,
             hidden_size: 5,
             num_layers: 4,
@@ -355,8 +357,8 @@ mod tests {
         let native_backend = native_backend();
         let backend = cuda_backend();
         let sequence_length = 4;
-        let hidden_size = 5;
-        let num_layers = 5;
+        let hidden_size = cfg.hidden_size;
+        let num_layers = cfg.num_layers;
         let input_shape = &(4, 1, 4);
         let layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
     }
@@ -365,17 +367,17 @@ mod tests {
     #[cfg(feature = "cuda")]
     fn rnn_forward_pass() {
         let cfg = RnnConfig {
-            output_size: 5,
-            cell_size: 5,
-            hidden_size: 5,
+            output_size: 4,
+            cell_size: 4,
+            hidden_size: 8,
             num_layers: 4,
             rnn_type: RnnType::LSTM,
         };
         let native_backend = native_backend();
         let backend = cuda_backend();
-        let sequence_length = 4;
-        let hidden_size = 5;
-        let num_layers = 4;
+        let sequence_length: i32 = 4;
+        let hidden_size = cfg.hidden_size;
+        let num_layers = cfg.num_layers;
         let input_shape = &(4, 1, 4);
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
@@ -390,9 +392,8 @@ mod tests {
         let output_shape = &[input_shape[0], input_shape[1], num_layers];
         let mut output_data = SharedTensor::<f32>::new(output_shape);
 
-        let sequence_length = input_shape[2];
         let x_desc = backend
-            .rnn_sequence_descriptors(&input_data, sequence_length as i32, hidden_size, input_shape[0] as i32)
+            .rnn_sequence_descriptors(&input_data, sequence_length, cfg.hidden_size as i32, input_shape[0] as i32)
             .unwrap()
             .x_desc;
 
@@ -402,12 +403,12 @@ mod tests {
                     &input_data,
                     None,
                     None,
-                    sequence_length as i32,
+                    sequence_length,
                     RnnNetworkMode::LSTM,
                     RnnInputMode::LinearInput,
                     DirectionMode::UniDirectional,
                     RnnAlgorithm::PersistStatic,
-                    hidden_size,
+                    hidden_size as i32,
                     num_layers as i32,
                     input_shape[0] as i32,
                 )
@@ -421,8 +422,7 @@ mod tests {
                 None => panic!(""),
             },
             &x_desc,
-        )
-            .unwrap();
+        ).unwrap();
 
         let mut weights_data = Vec::new();
         weights_data.push(SharedTensor::<f32>::new(&filter_dimensions));
@@ -456,7 +456,7 @@ mod tests {
             &weights_data[0],
             &mut workspace_forward,
         ) {
-            Ok(_) => {}
+            Ok(_) => { dbg!("Completed Forward Pass"); }
             Err(e) => panic!("Couldn't complete RNN Forward"),
         };
     }
