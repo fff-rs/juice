@@ -41,7 +41,7 @@ pub fn train_minibatch(&mut self, mb_data: ArcLock<SharedTensor<f32>>, mb_target
 Using the `.train_minibatch` is straight forward. We pass the data as well as the
 expected result of the `network` to the `.train_minibatch` method of the
 initialized `Solver` struct. A more detailed example can be found at the
-[spearow/juice-examples](https://github.com/spearow/juice-examples) repository.
+[spearow/juice-examples](https://github.com/spearow/juice/blob/master/juice-examples) repository.
 
 ```rust
 let inp_lock = Arc::new(RwLock::new(inp));
@@ -76,4 +76,4 @@ println!("Last sample: {} | Accuracy {}", confusion.samples().iter().last().unwr
 ```
 
 A more detailed example can be found at the
-[spearow/juice-examples](https://github.com/spearow/juice-examples) repository.
+[spearow/juice-examples](https://github.com/spearow/juice/blob/master/juice-examples) repository.

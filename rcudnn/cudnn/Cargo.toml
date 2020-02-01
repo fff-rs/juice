@@ -6,9 +6,9 @@ authors         = ["Bernhard Schuster <bernhard@ahoi.io>",
                    "MichaelHirn <mj@autumnai.com>",
                    "Maximilian Goisser <max@autumnai.com>"]
 
-repository      = "https://github.com/spearow/rust-cudnn"
-homepage        = "https://spearow.io/projects/rust-cudnn"
-documentation   = "https://spearow.github.com/rust-cudnn"
+repository      = "https://github.com/spearow/juice"
+homepage        = "https://github.com/spearow/juice/tree/master/rcudnn"
+
 readme          = "../README.md"
 
 keywords        = ["cudnn", "cuda", "nvidia", "neural-network"]
