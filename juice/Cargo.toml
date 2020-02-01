@@ -8,8 +8,9 @@ authors = [
   "Michael Hirn <mj@autumnai.com>",
 ]
 repository = "https://github.com/spearow/juice"
-homepage = "https://spearow.io/projects/juice"
-documentation = "https://spearow.github.io/juice"
+# TODO get the website back on track
+homepage = "https://github.com/spearow/juice"
+#documentation = "https://spearow.github.io/juice"
 readme = "README.md"
 keywords = ["deep-learning", "neural-networks", "machine-learning", "framework"]
 license = "MIT OR Apache-2.0"

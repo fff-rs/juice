@@ -5,9 +5,8 @@ version = "0.2.0"
 authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Maximilian Goisser <maximilian.goisser@autumnai.com>"]
 
-repository      = "https://github.com/spearow/rust-cublas"
-homepage        = "https://spearow.io/projects/rust-cublas"
-documentation   = "https://spearow.github.com/rust-cublas"
+homepage        = "https://github.com/spearow/juice/tree/master/rust-cublas"
+repository      = "https://github.com/spearow/juice"
 
 keywords        = ["cublas", "cuda", "nvidia", "sys"]
 license         = "MIT OR Apache-2.0"
