@@ -1,0 +1,30 @@
+[package]
+name            = "rcudnn"
+description     = "safe Rust wrapper for CUDA's cuDNN"
+version         = "1.6.0"
+authors         = ["Bernhard Schuster <bernhard@ahoi.io>",
+                   "MichaelHirn <mj@autumnai.com>",
+                   "Maximilian Goisser <max@autumnai.com>"]
+
+repository      = "https://github.com/spearow/rust-cudnn"
+homepage        = "https://spearow.io/projects/rust-cudnn"
+documentation   = "https://spearow.github.com/rust-cudnn"
+readme          = "../README.md"
+
+keywords        = ["cudnn", "cuda", "nvidia", "neural-network"]
+license         = "MIT OR Apache-2.0"
+
+[dependencies]
+libc = "0.2"
+rcudnn-sys = { version = "0.2.0" }
+num = "0.1.31"
+
+clippy = { version = "0.0.27", optional = true }
+
+[dev-dependencies]
+coaster = { default-features = false, features = ["native", "cuda"], version = "0.1" }
+
+[features]
+dev = []
+travis = []
+lint = ["clippy"]
