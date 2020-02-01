@@ -494,7 +494,7 @@ pub fn train_minibatch(&amp;mut self, mb_data: ArcLock&lt;SharedTensor&lt;f32&gt
 <p>Using the <code>.train_minibatch</code> is straight forward. We pass the data as well as the
 expected result of the <code>network</code> to the <code>.train_minibatch</code> method of the
 initialized <code>Solver</code> struct. A more detailed example can be found at the
-<a href="https://github.com/spearow/juice-examples">spearow/juice-examples</a> repository.</p>
+<a href="https://github.com/spearow/juice/blob/master/juice-examples">spearow/juice-examples</a> repository.</p>
 <pre><pre class="playpen"><code class="language-rust"># #![allow(unused_variables)]
 #fn main() {
 let inp_lock = Arc::new(RwLock::new(inp));
@@ -528,7 +528,7 @@ println!(&quot;Last sample: {} | Accuracy {}&quot;, confusion.samples().iter().l
 
 #}</code></pre></pre>
 <p>A more detailed example can be found at the
-<a href="https://github.com/spearow/juice-examples">spearow/juice-examples</a> repository.</p>
+<a href="https://github.com/spearow/juice/blob/master/juice-examples">spearow/juice-examples</a> repository.</p>
 <a class="header" href="print.html#multi-device-optimization" id="multi-device-optimization"><h1>Multi-Device Optimization</h1></a>
 <p>Optimization of a Layer over multiple devices is planned for the Juice 0.3
 release. Thanks to the decoupling of computation and representation through
