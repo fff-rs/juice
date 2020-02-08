@@ -3,9 +3,7 @@
 // license that can be found in the LICENSE file.
 
 //! Matrix operations.
-use crate::attribute::{
-    Order,
-};
+use crate::attribute::Order;
 
 pub mod ll;
 pub mod ops;

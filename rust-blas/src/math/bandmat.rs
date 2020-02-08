@@ -61,7 +61,11 @@ impl<T> BandMat<T> {
         self.data.push(val);
     }
 
-    pub unsafe fn from_matrix(mut mat: Mat<T>, sub_diagonals: u32, sup_diagonals: u32) -> BandMat<T> {
+    pub unsafe fn from_matrix(
+        mut mat: Mat<T>,
+        sub_diagonals: u32,
+        sup_diagonals: u32,
+    ) -> BandMat<T> {
         let data = mat.as_mut_ptr();
         let length = mat.cols() * mat.rows();
         BandMat {

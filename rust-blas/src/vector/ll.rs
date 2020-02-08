@@ -22,21 +22,62 @@ pub mod cblas_s {
     pub use self::cblas_sscal as scal;
     pub use self::cblas_sswap as swap;
 
-    extern {
-        pub fn cblas_scopy(n: u32, x: *const c_float,  inc_x: u32, y: *mut c_float,  inc_y: u32);
-        pub fn cblas_saxpy(n: u32, alpha: c_float,       x: *const c_float,  inc_x: u32, y: *mut c_float,  inc_y: u32);
-        pub fn cblas_sscal(n: u32, alpha: c_float,       x: *mut c_float,  inc_x: u32);
-        pub fn cblas_sswap(n: u32, x: *mut c_float,  inc_x: u32, y: *mut c_float,  inc_y: u32);
-        pub fn cblas_sdsdot(n: u32, alpha: c_float, x: *const c_float, inc_x: u32, y: *const c_float, inc_y: u32) -> c_float;
-        pub fn cblas_sdot(n: u32, x: *const c_float,  inc_x: u32, y: *const c_float,  inc_y: u32) -> c_float;
-        pub fn cblas_sasum(n: u32, x: *const c_float,  inc_x: u32) -> c_float;
-        pub fn cblas_scasum(n: u32, x: *const c_void,   inc_x: u32) -> c_float;
-        pub fn cblas_snrm2(n: u32, x: *const c_float,  inc_x: u32) -> c_float;
-        pub fn cblas_scnrm2(n: u32, x: *const c_void,   inc_x: u32) -> c_float;
-        pub fn cblas_srot(n: u32, x: *mut c_float,  inc_x: u32, y: *mut c_float,  inc_y: u32, c: c_float,  s: c_float);
-        pub fn cblas_srotm(n: u32, x: *mut c_float,  inc_x: u32, y: *mut c_float,  inc_y: u32, p: *const c_float);
-        pub fn cblas_srotg(a: *mut c_float,  b: *mut c_float,  c: *mut c_float,  s: *mut c_float);
-        pub fn cblas_srotmg(d1: *mut c_float,  d2: *mut c_float,  b1: *mut c_float,  b2: c_float,  p: *mut c_float);
+    extern "C" {
+        pub fn cblas_scopy(n: u32, x: *const c_float, inc_x: u32, y: *mut c_float, inc_y: u32);
+        pub fn cblas_saxpy(
+            n: u32,
+            alpha: c_float,
+            x: *const c_float,
+            inc_x: u32,
+            y: *mut c_float,
+            inc_y: u32,
+        );
+        pub fn cblas_sscal(n: u32, alpha: c_float, x: *mut c_float, inc_x: u32);
+        pub fn cblas_sswap(n: u32, x: *mut c_float, inc_x: u32, y: *mut c_float, inc_y: u32);
+        pub fn cblas_sdsdot(
+            n: u32,
+            alpha: c_float,
+            x: *const c_float,
+            inc_x: u32,
+            y: *const c_float,
+            inc_y: u32,
+        ) -> c_float;
+        pub fn cblas_sdot(
+            n: u32,
+            x: *const c_float,
+            inc_x: u32,
+            y: *const c_float,
+            inc_y: u32,
+        ) -> c_float;
+        pub fn cblas_sasum(n: u32, x: *const c_float, inc_x: u32) -> c_float;
+        pub fn cblas_scasum(n: u32, x: *const c_void, inc_x: u32) -> c_float;
+        pub fn cblas_snrm2(n: u32, x: *const c_float, inc_x: u32) -> c_float;
+        pub fn cblas_scnrm2(n: u32, x: *const c_void, inc_x: u32) -> c_float;
+        pub fn cblas_srot(
+            n: u32,
+            x: *mut c_float,
+            inc_x: u32,
+            y: *mut c_float,
+            inc_y: u32,
+            c: c_float,
+            s: c_float,
+        );
+        pub fn cblas_srotm(
+            n: u32,
+            x: *mut c_float,
+            inc_x: u32,
+            y: *mut c_float,
+            inc_y: u32,
+            p: *const c_float,
+        );
+        pub fn cblas_srotg(a: *mut c_float, b: *mut c_float, c: *mut c_float, s: *mut c_float);
+        pub fn cblas_srotmg(
+            d1: *mut c_float,
+            d2: *mut c_float,
+            b1: *mut c_float,
+            b2: c_float,
+            p: *mut c_float,
+        );
     }
 }
 
@@ -58,19 +99,53 @@ pub mod cblas_d {
     pub use self::cblas_dzasum as zasum;
     pub use self::cblas_dznrm2 as znrm2;
 
-    extern {
+    extern "C" {
         pub fn cblas_dcopy(n: u32, x: *const c_double, inc_x: u32, y: *mut c_double, inc_y: u32);
-        pub fn cblas_daxpy(n: u32, alpha: c_double,      x: *const c_double, inc_x: u32, y: *mut c_double, inc_y: u32);
-        pub fn cblas_dscal (n: u32, alpha: c_double,      x: *mut c_double, inc_x: u32);
+        pub fn cblas_daxpy(
+            n: u32,
+            alpha: c_double,
+            x: *const c_double,
+            inc_x: u32,
+            y: *mut c_double,
+            inc_y: u32,
+        );
+        pub fn cblas_dscal(n: u32, alpha: c_double, x: *mut c_double, inc_x: u32);
         pub fn cblas_dswap(n: u32, x: *mut c_double, inc_x: u32, y: *mut c_double, inc_y: u32);
-        pub fn cblas_dsdot(n: u32, x: *const c_float,  inc_x: u32, y: *const c_float,  inc_y: u32) -> c_double;
-        pub fn cblas_ddot (n: u32, x: *const c_double, inc_x: u32, y: *const c_double, inc_y: u32) -> c_double;
-        pub fn cblas_dasum (n: u32, x: *const c_double, inc_x: u32) -> c_double;
-        pub fn cblas_dzasum(n: u32, x: *const c_void,   inc_x: u32) -> c_double;
-        pub fn cblas_dnrm2 (n: u32, x: *const c_double, inc_x: u32) -> c_double;
-        pub fn cblas_dznrm2(n: u32, x: *const c_void,   inc_x: u32) -> c_double;
-        pub fn cblas_drot(n: u32, x: *mut c_double, inc_x: u32, y: *mut c_double, inc_y: u32, c: c_double, s: c_double);
-        pub fn cblas_drotm(n: u32, x: *mut c_double, inc_x: u32, y: *mut c_double, inc_y: u32, p: *const c_double);
+        pub fn cblas_dsdot(
+            n: u32,
+            x: *const c_float,
+            inc_x: u32,
+            y: *const c_float,
+            inc_y: u32,
+        ) -> c_double;
+        pub fn cblas_ddot(
+            n: u32,
+            x: *const c_double,
+            inc_x: u32,
+            y: *const c_double,
+            inc_y: u32,
+        ) -> c_double;
+        pub fn cblas_dasum(n: u32, x: *const c_double, inc_x: u32) -> c_double;
+        pub fn cblas_dzasum(n: u32, x: *const c_void, inc_x: u32) -> c_double;
+        pub fn cblas_dnrm2(n: u32, x: *const c_double, inc_x: u32) -> c_double;
+        pub fn cblas_dznrm2(n: u32, x: *const c_void, inc_x: u32) -> c_double;
+        pub fn cblas_drot(
+            n: u32,
+            x: *mut c_double,
+            inc_x: u32,
+            y: *mut c_double,
+            inc_y: u32,
+            c: c_double,
+            s: c_double,
+        );
+        pub fn cblas_drotm(
+            n: u32,
+            x: *mut c_double,
+            inc_x: u32,
+            y: *mut c_double,
+            inc_y: u32,
+            p: *const c_double,
+        );
         pub fn cblas_drotg(a: *mut c_double, b: *mut c_double, c: *mut c_double, s: *mut c_double);
         pub fn cblas_drotmg(
             d1: *mut c_double,
@@ -93,14 +168,35 @@ pub mod cblas_c {
     pub use self::cblas_csscal as sscal;
     pub use self::cblas_cswap as swap;
 
-    extern {
-        pub fn cblas_ccopy(n: u32, x: *const c_void,   inc_x: u32, y: *mut c_void,   inc_y: u32);
-        pub fn cblas_caxpy(n: u32, alpha: *const c_void, x: *const c_void,   inc_x: u32, y: *mut c_void,   inc_y: u32);
-        pub fn cblas_cscal (n: u32, alpha: *const c_void, x: *mut c_void,   inc_x: u32);
-        pub fn cblas_csscal(n: u32, alpha: c_float,       x: *mut c_void,   inc_x: u32);
-        pub fn cblas_cswap(n: u32, x: *mut c_void,   inc_x: u32, y: *mut c_void,   inc_y: u32);
-        pub fn cblas_cdotu_sub(n: u32, x: *const c_void, inc_x: u32, y: *const c_void, inc_y: u32, dotu: *mut c_void);
-        pub fn cblas_cdotc_sub(n: u32, x: *const c_void, inc_x: u32, y: *const c_void, inc_y: u32, dotc: *mut c_void);
+    extern "C" {
+        pub fn cblas_ccopy(n: u32, x: *const c_void, inc_x: u32, y: *mut c_void, inc_y: u32);
+        pub fn cblas_caxpy(
+            n: u32,
+            alpha: *const c_void,
+            x: *const c_void,
+            inc_x: u32,
+            y: *mut c_void,
+            inc_y: u32,
+        );
+        pub fn cblas_cscal(n: u32, alpha: *const c_void, x: *mut c_void, inc_x: u32);
+        pub fn cblas_csscal(n: u32, alpha: c_float, x: *mut c_void, inc_x: u32);
+        pub fn cblas_cswap(n: u32, x: *mut c_void, inc_x: u32, y: *mut c_void, inc_y: u32);
+        pub fn cblas_cdotu_sub(
+            n: u32,
+            x: *const c_void,
+            inc_x: u32,
+            y: *const c_void,
+            inc_y: u32,
+            dotu: *mut c_void,
+        );
+        pub fn cblas_cdotc_sub(
+            n: u32,
+            x: *const c_void,
+            inc_x: u32,
+            y: *const c_void,
+            inc_y: u32,
+            dotc: *mut c_void,
+        );
     }
 }
 
@@ -115,14 +211,35 @@ pub mod cblas_z {
     pub use self::cblas_zscal as scal;
     pub use self::cblas_zswap as swap;
 
-    extern {
-        pub fn cblas_zcopy(n: u32, x: *const c_void,   inc_x: u32, y: *mut c_void,   inc_y: u32);
-        pub fn cblas_zaxpy(n: u32, alpha: *const c_void, x: *const c_void,   inc_x: u32, y: *mut c_void,   inc_y: u32);
-        pub fn cblas_zscal (n: u32, alpha: *const c_void, x: *mut c_void,   inc_x: u32);
-        pub fn cblas_zdscal(n: u32, alpha: c_double,      x: *mut c_void,   inc_x: u32);
-        pub fn cblas_zswap(n: u32, x: *mut c_void,   inc_x: u32, y: *mut c_void,   inc_y: u32);
-        pub fn cblas_zdotu_sub(n: u32, x: *const c_void, inc_x: u32, y: *const c_void, inc_y: u32, dotu: *mut c_void);
-        pub fn cblas_zdotc_sub(n: u32, x: *const c_void, inc_x: u32, y: *const c_void, inc_y: u32, dotc: *mut c_void);
+    extern "C" {
+        pub fn cblas_zcopy(n: u32, x: *const c_void, inc_x: u32, y: *mut c_void, inc_y: u32);
+        pub fn cblas_zaxpy(
+            n: u32,
+            alpha: *const c_void,
+            x: *const c_void,
+            inc_x: u32,
+            y: *mut c_void,
+            inc_y: u32,
+        );
+        pub fn cblas_zscal(n: u32, alpha: *const c_void, x: *mut c_void, inc_x: u32);
+        pub fn cblas_zdscal(n: u32, alpha: c_double, x: *mut c_void, inc_x: u32);
+        pub fn cblas_zswap(n: u32, x: *mut c_void, inc_x: u32, y: *mut c_void, inc_y: u32);
+        pub fn cblas_zdotu_sub(
+            n: u32,
+            x: *const c_void,
+            inc_x: u32,
+            y: *const c_void,
+            inc_y: u32,
+            dotu: *mut c_void,
+        );
+        pub fn cblas_zdotc_sub(
+            n: u32,
+            x: *const c_void,
+            inc_x: u32,
+            y: *const c_void,
+            inc_y: u32,
+            dotc: *mut c_void,
+        );
     }
 }
 
@@ -134,10 +251,10 @@ pub mod cblas_i {
     pub use self::cblas_isamax as samax;
     pub use self::cblas_izamax as zamax;
 
-    extern {
-        pub fn cblas_isamax(n: u32, x: *const c_float,  inc_x: u32) -> size_t;
+    extern "C" {
+        pub fn cblas_isamax(n: u32, x: *const c_float, inc_x: u32) -> size_t;
         pub fn cblas_idamax(n: u32, x: *const c_double, inc_x: u32) -> size_t;
-        pub fn cblas_icamax(n: u32, x: *const c_void,   inc_x: u32) -> size_t;
-        pub fn cblas_izamax(n: u32, x: *const c_void,   inc_x: u32) -> size_t;
+        pub fn cblas_icamax(n: u32, x: *const c_void, inc_x: u32) -> size_t;
+        pub fn cblas_izamax(n: u32, x: *const c_void, inc_x: u32) -> size_t;
     }
 }
