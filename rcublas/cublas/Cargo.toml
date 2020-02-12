@@ -16,7 +16,7 @@ license         = "MIT OR Apache-2.0"
 libc = "0.2"
 rcublas-sys = { version = "0.2" }
 
-clippy = { version = "0.0.35", optional = true }
+clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]
 coaster = { git = "https://github.com/spearow/coaster.git", default-features = false, features = ["cuda", "native"], version = "0.1.0" }
