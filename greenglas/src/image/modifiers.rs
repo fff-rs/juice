@@ -1,5 +1,5 @@
 use crate::modifier::Modifier;
-use crate::image_crate::FilterType;
+use crate::image_crate::imageops::FilterType;
 use super::Image;
 
 #[derive(Debug, Clone, Copy)]
