@@ -18,7 +18,7 @@ impl Set for Image {}
 
 impl Transformer for Image {
     fn transform_to_vec(&self) -> Vec<f32> {
-        self.value.raw_pixels().iter().map(|&e| e as f32).collect()
+        self.value.to_bytes().iter().map(|&e| e as f32).collect()
     }
 }
 
