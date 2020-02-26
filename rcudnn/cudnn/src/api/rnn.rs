@@ -144,6 +144,21 @@ impl API {
         }
     }
 
+    /// cudnnCreateRNNDataDescriptor()
+    /// https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnCreateRNNDataDescriptor
+    pub fn create_rnn_data_descriptor() -> Result<cudnnRNNDataDescriptor_t, Error> {
+        unsafe {
+            API::ffi_create_rnn_data_descriptor()
+        }
+    }
+    unsafe fn ffi_create_rnn_data_descriptor() -> Result<cudnnRNNDataDescriptor_t, Error> {
+        let mut rnn_data_descriptor: cudnnRNNDataDescriptor_t = ::std::ptr::null_mut();
+        match cudnnCreateRNNDataDescriptor(&mut rnn_data_descriptor) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_data_descriptor),
+            _ => Err(Error::Unknown("Unable to create Data Descriptor"))
+        }
+    }
+
     /// Destroys a CUDA cuDNN RNN Descriptor.
     ///
     /// Should be called when freeing a CUDA::Descriptor to not trash up the CUDA device.
@@ -205,8 +220,7 @@ impl API {
         algorithm: cudnnRNNAlgo_t,
         data_type: cudnnDataType_t,
     ) -> Result<(), Error> {
-
-        match cudnnSetRNNDescriptor(
+        match cudnnSetRNNDescriptor_v6(
             handle,
             desc,
             hidden_size,
@@ -245,6 +259,30 @@ impl API {
              cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
              _ => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Matrix Math Type.")),
          }
+    }
+
+    /// Set RNN Padding Model [cudnnSetRNNPaddingMode][1]
+    /// This function enables or disables the padded RNN input/output for a previously created
+    /// and initialized RNN descriptor. This information is required before calling
+    /// the cudnnGetRNNWorkspaceSize() and cudnnGetRNNTrainingReserveSize() functions,
+    /// to determine whether additional workspace and training reserve space is needed.
+    /// By default, the padded RNN input/output is not enabled.
+    ///
+    /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnSetRNNPaddingMode
+    pub fn set_rnn_padding_mode(rnn_desc: cudnnRNNDescriptor_t, padding_mode: cudnnRNNPaddingMode_t) -> Result<(), Error> {
+        unsafe {
+            API::ffi_set_rnn_padding_mode(rnn_desc, padding_mode)
+        }
+    }
+    unsafe fn ffi_set_rnn_padding_mode(rnn_desc: cudnnRNNDescriptor_t, padding_mode: cudnnRNNPaddingMode_t) -> Result<(), Error> {
+        match cudnnSetRNNPaddingMode(
+            rnn_desc,
+            padding_mode,
+        ) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("cudnnSetRnnPaddingMode - Bad Param - Either RNN Desc is Null or paddingMode has an invalid enum (Unlikely due to Bindgen. Likely RNN Desc is somehow NULL")),
+            _ => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Padding Mode.")),
+        }
     }
 }
 
