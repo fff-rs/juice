@@ -28,15 +28,16 @@ impl DropoutDescriptor {
         handle: &Cudnn,
         dropout: f32,
         seed: u64,
-        reserve: &CudaDeviceMemory,
+        reserve: *mut libc::c_void,
+        reserve_size: usize,
     ) -> Result<DropoutDescriptor, Error> {
         let generic_dropout_desc = API::create_dropout_descriptor()?;
         API::set_dropout_descriptor(
             generic_dropout_desc,
             *handle.id_c(),
             dropout,
-            *reserve.id_c(),
-            reserve.size(),
+            reserve,
+            reserve_size,
             seed,
         )?;
 
@@ -50,7 +51,9 @@ impl DropoutDescriptor {
 
     /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.
     pub fn from_c(id: cudnnDropoutDescriptor_t) -> DropoutDescriptor {
-        DropoutDescriptor { id: id }
+        DropoutDescriptor {
+            id
+        }
     }
 
     /// Returns the CUDA cuDNN Tensor Descriptor as its C type.
