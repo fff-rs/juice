@@ -991,7 +991,47 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         ) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Operation("Unable to execute CUDA cuDNN RNN Backward Data"))),
-        }*/
+        }
+    }
+
+    fn rnn_backward_weights(&self,
+                            src: &SharedTensor<T>,
+                            output: &SharedTensor<T>,
+                            filter: &mut SharedTensor<T>,
+                            rnn_config: &Self::RC,
+                            workspace: &mut SharedTensor<u8>)
+                            -> Result<(), Error> {
+        let src_dimensions = src.desc().clone();
+        let sequence_descriptors = self.rnn_sequence_descriptors(
+            src,
+            *rnn_config.sequence_length(),
+            src_dimensions[1] as i32,
+            rnn_config.hidden_size,
+            src_dimensions[0] as i32,
+            rnn_config.num_layers,
+        )?;
+        let filter_desc = filter.cudnn_filter_desc()?;
+        let src_mem = read!(src, self);
+        let output_mem = read!(output, self);
+        let workspace_mem = write_only!(workspace, self);
+        let filter_mem = write_only!(filter, self);
+        let reserve_space = rnn_config.training_reserve();
+        match CUDNN.rnn_backward_weights::<f32>(
+            rnn_config,
+            sequence_descriptors.x_desc,
+            trans!(src_mem),
+            &sequence_descriptors.hx_desc,
+            std::ptr::null_mut(),
+            sequence_descriptors.y_desc,
+            trans!(output_mem),
+            filter_desc,
+            trans_mut!(filter_mem),
+            trans_mut!(workspace_mem),
+            *reserve_space.id_c(),
+        ) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::Plugin(PluginError::Operation("Unable to execute CUDA cuDNN RNN Backward Data"))),
+        }
     }
 }
 
