@@ -64,8 +64,6 @@ impl std::fmt::Debug for RnnType {
 #[derive(Debug, Clone)]
 ///
 pub struct Rnn<B: conn::Rnn<f32>> {
-    // TODO: Remove num_output
-    num_output: usize,
     // TODO: Add Cell_Size
     hidden_size: usize,
     num_layers: usize,
@@ -79,7 +77,6 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
     /// Create a RNN from a RNNConfig
     pub fn from_config(config: &RnnConfig) -> Rnn<B> {
         Rnn {
-            num_output: config.output_size,
             hidden_size: config.hidden_size,
             num_layers: config.num_layers,
             // dropout_probability: config.dropout_probability,
@@ -113,17 +110,15 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
 
         // Input Shape is Batch, Number of Inputs, Sequence Length
         let input_shape = input.desc();
+        let batch_size = input_shape[0];
+        let hidden_size = input_shape[1];
         let sequence_length = input_shape[2];
 
-        let output_shape = &[input_shape[0], input_shape[1], self.num_layers];
+        let output_shape = &[batch_size, hidden_size, self.num_layers];
+        input_gradient[0].write().unwrap().resize(input_shape).unwrap();
         output_data.resize(output_shape).unwrap();
         output_gradient.resize(output_shape).unwrap();
 
-        let stride = cast_vec_usize_to_i32(vec![sequence_length, 1, 1]);
-
-        let input_shape = input.desc();
-        let sequence_length = input_shape[2];
-        let stride = cast_vec_usize_to_i32(vec![sequence_length, 1, 1]);
         let config = backend
             .new_rnn_config(
                 &input,
@@ -135,39 +130,42 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
                 RnnInputMode::LinearInput,
                 DirectionMode::UniDirectional,
                 RnnAlgorithm::PersistStatic,
-                self.hidden_size as i32,
+                hidden_size as i32,
                 self.num_layers as i32,
-                input_shape[0] as i32,
+                batch_size as i32,
             )
             .unwrap();
 
-        let x_desc = backend
+        let sequence_descriptors = backend
             .rnn_sequence_descriptors(
                 &input,
                 sequence_length as i32,
+                input_shape[1] as i32,
                 self.hidden_size as i32,
                 input_shape[0] as i32,
+                self.num_layers as i32,
             )
-            .unwrap()
-            .x_desc;
+            .unwrap();
 
-        let filter_dimensions: TensorDesc = backend.generate_rnn_weight_description(&config, &x_desc).unwrap();
+        let filter_dimensions: TensorDesc = backend.generate_rnn_weight_description(
+            &config,
+            &sequence_descriptors.x_desc,
+        ).unwrap();
 
         weights_data[0].write().unwrap().resize(&filter_dimensions).unwrap();
-        weights_data[1].write().unwrap().resize(&(1, self.num_output)).unwrap();
+        weights_data[1].write().unwrap().resize(&(1, self.hidden_size)).unwrap();
+
         let filler = FillerType::Glorot {
             input_size: filter_dimensions[1],
-            output_size: self.num_output,
+            output_size: self.hidden_size,
         };
 
         filler.fill(&mut weights_data[0].write().unwrap());
         filler.fill(&mut weights_data[1].write().unwrap());
+
         weights_gradient[0].write().unwrap().resize(&filter_dimensions).unwrap();
-        weights_gradient[1]
-            .write()
-            .unwrap()
-            .resize(&(1, self.num_output))
-            .unwrap();
+        weights_gradient[1].write().unwrap().resize(&filter_dimensions).unwrap();
+
         self.rnn_config = Some(Rc::new(config));
     }
 
@@ -223,12 +221,8 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
         let weight_data = weights_data[0];
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
-        // Weight Gradient requires cudnnRnnBackwardWeights during backprop
-        // cudnnRnnBackwardData is also used
-        // CNN uses w_desc, w, dy_desc, dy, dx_desc, dx
-        //
         backend
-            .rnn_grad_data(
+            .rnn_backward_data(
                 input_data[0],
                 input_gradients[0],
                 output_data[0],
@@ -250,7 +244,21 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
         input_data: &[&SharedTensor<f32>],
         parameters_gradients: &mut [&mut SharedTensor<f32>],
     ) {
-        unimplemented!()
+        let rnn_config = self.rnn_config.as_ref().unwrap();
+        let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
+
+        backend.rnn_backward_weights(input_data[0],
+                                     _output_data[0],
+                                     &mut parameters_gradients[0],
+                                     rnn_config,
+                                     &mut workspace)
+            .unwrap();
+        backend.rnn_backward_weights(input_data[0],
+                                     _output_data[0],
+                                     &mut parameters_gradients[1],
+                                     rnn_config,
+                                     &mut workspace)
+            .unwrap();
     }
 }
 
@@ -324,10 +332,7 @@ mod tests {
 
     fn sample_input() -> &'static [f32] {
         [
-            0f32, 0.1f32, 0.2f32, 0.3f32,
-            0.4f32, 0.5f32, 6f32, 7f32,
-            0.2f32, 0.3f32, 0.4f32, 5f32,
-            0.6f32, 0.7f32, 0.8f32, 0.9f32,
+            1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32, 1.0_f32
         ]
             .as_ref()
     }
@@ -341,44 +346,26 @@ mod tests {
     }
 
     fn sample_output() -> &'static [f32] {
-        [0.4f32, 0.8f32, 0.6f32, 1.0f32].as_ref()
+        [0.99, 0.99, 0.99, 0.99,
+            0.99, 0.99, 0.99, 0.99].as_ref()
     }
 
     #[test]
     #[cfg(feature = "cuda")]
-    fn create_layer() {
+    fn rnn_create_layer() {
         let cfg = RnnConfig {
-            output_size: 4,
-            cell_size: 5,
-            hidden_size: 5,
-            num_layers: 4,
-            rnn_type: RnnType::LSTM,
-        };
-        let native_backend = native_backend();
-        let backend = cuda_backend();
-        let sequence_length = 4;
-        let hidden_size = cfg.hidden_size;
-        let num_layers = cfg.num_layers;
-        let input_shape = &(4, 1, 4);
-        let layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
-    }
-
-    #[test]
-    #[cfg(feature = "cuda")]
-    fn rnn_forward_pass() {
-        let cfg = RnnConfig {
-            output_size: 4,
-            cell_size: 4,
+            output_size: 8,
+            cell_size: 8,
             hidden_size: 8,
-            num_layers: 4,
+            num_layers: 8,
             rnn_type: RnnType::LSTM,
         };
         let native_backend = native_backend();
         let backend = cuda_backend();
-        let sequence_length: i32 = 4;
+        let sequence_length: i32 = 8;
         let hidden_size = cfg.hidden_size;
         let num_layers = cfg.num_layers;
-        let input_shape = &(4, 1, 4);
+        let input_shape = &(8, 8, 8);
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
         let mut input_data = SharedTensor::<f32>::new(input_shape);
@@ -393,9 +380,17 @@ mod tests {
         let mut output_data = SharedTensor::<f32>::new(output_shape);
 
         let x_desc = backend
-            .rnn_sequence_descriptors(&input_data, sequence_length, cfg.hidden_size as i32, input_shape[0] as i32)
+            .rnn_sequence_descriptors(
+                &input_data,
+                sequence_length,
+                input_shape[1] as i32,
+                cfg.hidden_size as i32,
+                input_shape[0] as i32,
+                cfg.num_layers as i32)
             .unwrap()
             .x_desc;
+
+        assert_eq!(input_shape[2] * input_shape[1] * input_shape[0], sample_input().len());
 
         layer.rnn_config = Some(Rc::from(
             backend
@@ -414,6 +409,70 @@ mod tests {
                 )
                 .unwrap(),
         ));
+    }
+
+    #[test]
+    #[cfg(feature = "cuda")]
+    fn rnn_forward_pass() {
+        let backend = cuda_backend();
+        let cfg = RnnConfig {
+            output_size: 8,
+            cell_size: 8,
+            hidden_size: 8,
+            num_layers: 8,
+            rnn_type: RnnType::LSTM,
+        };
+        let native_backend = native_backend();
+
+
+        let sequence_length = 8;
+        let num_layers = cfg.num_layers;
+        let hidden_size = cfg.hidden_size;
+        let input_size = 8;
+        let batch_size = 8;
+
+        let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
+
+        let input_shape = vec![batch_size, input_size, sequence_length];
+        let mut input_data = SharedTensor::<f32>::new(&input_shape);
+
+        assert_eq!(input_shape[2] * input_shape[1] * input_shape[0], sample_input().len());
+        input_data
+            .write_only(native_backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(sample_input());
+
+        let output_shape = vec![batch_size, hidden_size, sequence_length];
+        let mut output_data = SharedTensor::<f32>::new(&output_shape);
+
+        let sequence_descriptors = backend
+            .rnn_sequence_descriptors(
+                &input_data,
+                sequence_length as i32,
+                input_size as i32,
+                cfg.hidden_size as i32,
+                batch_size as i32,
+                cfg.num_layers as i32)
+            .unwrap();
+
+        layer.rnn_config = Some(Rc::from(
+            backend
+                .new_rnn_config(
+                    &input_data,
+                    None,
+                    None,
+                    sequence_length as i32,
+                    RnnNetworkMode::LSTM,
+                    RnnInputMode::LinearInput,
+                    DirectionMode::UniDirectional,
+                    RnnAlgorithm::PersistStatic,
+                    hidden_size as i32,
+                    num_layers as i32,
+                    batch_size as i32,
+                )
+                .unwrap(),
+        ));
 
         let filter_dimensions: TensorDesc = conn::Rnn::<f32>::generate_rnn_weight_description(
             &backend,
@@ -421,7 +480,7 @@ mod tests {
                 Some(ref config) => &Rc::from(&config),
                 None => panic!(""),
             },
-            &x_desc,
+            &sequence_descriptors.x_desc,
         ).unwrap();
 
         let mut weights_data = Vec::new();
@@ -432,9 +491,8 @@ mod tests {
         weights_gradient.push(SharedTensor::<f32>::new(&filter_dimensions));
         weights_gradient.push(SharedTensor::<f32>::new(&(1, cfg.output_size)));
 
-        let filler = FillerType::Glorot {
-            input_size: filter_dimensions[1],
-            output_size: cfg.output_size,
+        let filler = FillerType::Constant {
+            value: 0.02,
         };
 
         filler.fill(&mut weights_data[0]);
@@ -452,7 +510,10 @@ mod tests {
         match backend.rnn_forward(
             &input_data,
             &mut output_data,
-            &layer.rnn_config.unwrap(),
+            match layer.rnn_config {
+                Some(ref config) => &Rc::from(&config),
+                None => panic!(""),
+            },
             &weights_data[0],
             &mut workspace_forward,
         ) {
