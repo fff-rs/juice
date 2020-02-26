@@ -736,13 +736,6 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                 data_type,
             ).unwrap());
         }
-        let tensor_description_b = || {
-            TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap()
-        };
 
         Ok(RnnSequenceDescriptors {
             x_desc,
