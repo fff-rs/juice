@@ -4,7 +4,7 @@ extern crate test;
 extern crate coaster as co;
 extern crate coaster_blas as co_blas;
 extern crate rblas;
-extern crate rand;
+extern crate rust_blas as rblas;
 
 use test::Bencher;
 use crate::co::prelude::*;
