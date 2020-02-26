@@ -27,9 +27,7 @@ rcublas = { version = "^0.3",  optional = true }
 clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]
-
 rand = "0.7"
-rblas = { version = "0.0.13" } # Needed for benchmarking
 
 [features]
 default = ["native", "cuda"]
