@@ -625,7 +625,8 @@ impl RnnAlgorithm {
         Ok(match self {
             RnnAlgorithm::PersistDynamic => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_DYNAMIC,
             RnnAlgorithm::PersistStatic => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_STATIC,
-            RnnAlgorithm::Standard => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_STANDARD
+            RnnAlgorithm::Standard => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_STANDARD,
+            RnnAlgorithm::Count => cudnnRNNAlgo_t::CUDNN_RNN_ALGO_COUNT
         })
     }
 
@@ -633,7 +634,8 @@ impl RnnAlgorithm {
         match algorithm {
             cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_DYNAMIC => RnnAlgorithm::PersistDynamic,
             cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_STATIC => RnnAlgorithm::PersistStatic,
-            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_STANDARD => RnnAlgorithm::Standard
+            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_STANDARD => RnnAlgorithm::Standard,
+            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_COUNT => RnnAlgorithm::Count
         }
     }
 }
@@ -643,14 +645,31 @@ impl MathType {
         match self {
             MathType::Default => Ok(cudnnMathType_t::CUDNN_DEFAULT_MATH),
             MathType::TensorOPMath => Ok(cudnnMathType_t::CUDNN_TENSOR_OP_MATH),
-            MathType::TensorOPMathAllowConversion => Err(Error::Plugin(PluginError::Plugin("TensorOPMathAllowConversion not yet supported.")))
+            MathType::TensorOPMathAllowConversion => Ok(cudnnMathType_t::CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION)
         }
     }
 
     fn from_cudnn(math_type: cudnnMathType_t) -> MathType {
         match math_type {
             cudnnMathType_t::CUDNN_DEFAULT_MATH => MathType::Default,
-            cudnnMathType_t::CUDNN_TENSOR_OP_MATH => MathType::TensorOPMath
+            cudnnMathType_t::CUDNN_TENSOR_OP_MATH => MathType::TensorOPMath,
+            cudnnMathType_t::CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION => MathType::TensorOPMathAllowConversion
+        }
+    }
+}
+
+impl RnnPaddingMode {
+    fn as_cudnn(&self) -> Result<cudnnRNNPaddingMode_t, Error> {
+        match self {
+            RnnPaddingMode::Enabled => Ok(cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_ENABLED),
+            RnnPaddingMode::Disabled => Ok(cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_DISABLED)
+        }
+    }
+
+    fn from_cudnn(padding_type: cudnnRNNPaddingMode_t) -> RnnPaddingMode {
+        match padding_type {
+            cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_ENABLED => RnnPaddingMode::Enabled,
+            cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_DISABLED => RnnPaddingMode::Disabled
         }
     }
 }
@@ -679,46 +698,41 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                                 src: &SharedTensor<T>,
                                 sequence_length: i32,
                                 input_size: i32,
-                                batch_size: i32)
+                                hidden_size: i32,
+                                batch_size: i32,
+                                num_layers: i32)
                                 -> Result<RnnSequenceDescriptors, Error> {
+        let data_type = <T as DataTypeInfo>::cudnn_data_type();
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-        let dim_a = vec![batch_size, input_size, 1];
-        let stride_a = vec![dim_a[2] * dim_a[1], dim_a[2], 1];
-
-        // FIXME: Ensure hidden_size*2 is used for bidirectional models
-        let dim_b = vec![batch_size, input_size, 1];
-        let stride_b = vec![dim_b[2] * dim_b[1], dim_b[2], 1];
-        let data_type = <T as DataTypeInfo>::cudnn_data_type();
-        let tensor_description_a = || {
-            TensorDescriptor::new(
-                &dim_a,
-                &stride_a,
-                data_type,
-            ).unwrap()
-        };
-        // TODO: Move back to using closure when this finally passes.
+        let dim_input = vec![batch_size, input_size, 1];
+        let dim_output = vec![batch_size, hidden_size, 1];
+        let dim_hidden_cell = vec![num_layers, batch_size, hidden_size];
+        let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
+        let stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
+        let stride_hidden_cell = vec![dim_hidden_cell[2] * dim_hidden_cell[1], dim_hidden_cell[2], 1];
+        //  FIXME: Ensure hidden_size*2 is used for bidirectional models
         for _ in 0..sequence_length {
             x_desc.push(TensorDescriptor::new(
-                &dim_a,
-                &stride_a,
-                data_type,
-            ).unwrap());
-            y_desc.push(TensorDescriptor::new(
-                &dim_a,
-                &stride_a,
+                &dim_input,
+                &stride_input,
                 data_type,
             ).unwrap());
             dxdesc.push(TensorDescriptor::new(
-                &dim_a,
-                &stride_a,
+                &dim_input,
+                &stride_input,
+                data_type,
+            ).unwrap());
+            y_desc.push(TensorDescriptor::new(
+                &dim_output,
+                &stride_output,
                 data_type,
             ).unwrap());
             dydesc.push(TensorDescriptor::new(
-                &dim_a,
-                &stride_a,
+                &dim_output,
+                &stride_output,
                 data_type,
             ).unwrap());
         }
@@ -736,43 +750,43 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             dx_desc: dxdesc,
             dy_desc: dydesc,
             hx_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
             hy_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
             cx_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
             cy_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
             dhx_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
             dhy_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
             dcx_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
             dcy_desc: TensorDescriptor::new(
-                &dim_b,
-                &stride_b,
+                &dim_hidden_cell,
+                &stride_hidden_cell,
                 <T as DataTypeInfo>::cudnn_data_type(),
             ).unwrap(),
         })
@@ -790,11 +804,8 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             Ok(size) => Ok(size),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to get CudNN Rnn Params Size."))),
         }?;
-        //let linLayerMat = match API::get_rnn_lin_layer_matrix_params();
-        dbg!(weight_size);
-        // This is taken from https://github.com/Hardware-Alchemy/cuDNN-sample/blob/master/cudnn_samples_v7/RNN/RNN_example.cu#L302-L305
-        // Where [weight_size, 1, 1] is used to define the filter for wDesc and dwDesc.
-        let dim_w: Vec<usize> = vec![weight_size, 1, 1];
+        // TODO: Update for different sizing
+        let dim_w: Vec<usize> = vec![weight_size / 4, 1, 1];
         Ok(dim_w)
     }
 
@@ -816,6 +827,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let direction_mode = direction_mode.as_cudnn()?;
         let network_mode = network_mode.as_cudnn()?;
         let algorithm = algorithm.as_cudnn()?;
+        let src_description = src.desc();
 
         let drop_desc = match CUDNN.init_dropout(
             dropout_probability.unwrap_or(0.5),
@@ -830,8 +842,10 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let x_desc = self.rnn_sequence_descriptors(
             src,
             sequence_length,
+            src_description[1] as i32,
             hidden_size,
             batch_size,
+            num_layers,
         )?.x_desc;
 
         let rnn_desc = match RnnDescriptor::new(
@@ -844,6 +858,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             network_mode,
             algorithm,
             <T as DataTypeInfo>::cudnn_data_type(),
+            (RnnPaddingMode::Disabled).as_cudnn().unwrap(),
         ) {
             Ok(desc) => desc,
             Err(e) => panic!("Error {:?}", e)
@@ -853,7 +868,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             &x_desc,
             rnn_desc,
             hidden_size,
-            batch_size,
+            num_layers,
             sequence_length,
             dropout_memory_pointer,
             input_mode,
@@ -861,7 +876,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             network_mode,
             algorithm,
             <T as DataTypeInfo>::cudnn_data_type(),
-            MathType::TensorOPMath.as_cudnn()?,
+            MathType::TensorOPMathAllowConversion.as_cudnn()?,
         ) {
             Ok(rnn_config) => Ok(rnn_config),
             Err(e) => panic!("Error {:?}", e)
@@ -881,19 +896,19 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let sequence_descriptors = self.rnn_sequence_descriptors(
             src,
             *rnn_config.sequence_length(),
+            src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
+            rnn_config.num_layers,
         )?;
+
         let weight_desc = weight.cudnn_filter_desc()?;
-        let reserve = Some(Arc::new(RwLock::new(
-            SharedTensor::<u8>::new(&[rnn_config.training_reserve_size()]))));
-        let reserve_space = &mut reserve.as_ref().unwrap().write().unwrap();
+        let reserve = rnn_config.training_reserve();
 
         let src_mem = read!(src, self);
-        let weight_mem = read!(weight, self);
-        let output_mem = write_only!(output, self);
-        let workspace_mem = write_only!(workspace, self);
-        let reserve_mem = write_only!(reserve_space, self);
+        let weight_mem = weight.read(self.device()).unwrap();
+        let output_mem = output.write_only(self.device()).unwrap();
+        let workspace_mem = workspace.write_only(self.device()).unwrap();
 
         match CUDNN.rnn_forward::<f32>(
             rnn_config,
@@ -912,63 +927,64 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             &sequence_descriptors.cy_desc,
             std::ptr::null_mut(),
             trans_mut!(workspace_mem),
-            trans_mut!(reserve_mem),
+            *reserve.id_c(),
         ) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to perform RNN Forward")))
         }
     }
 
-    fn rnn_grad_data(&self,
-                     src: &SharedTensor<T>,
-                     src_gradient: &mut SharedTensor<T>,
-                     output: &SharedTensor<T>,
-                     output_gradient: &SharedTensor<T>,
-                     rnn_config: &Self::RC,
-                     weight: &SharedTensor<T>,
-                     workspace: &mut SharedTensor<u8>)
-                     -> Result<(), Error> {
+    fn rnn_backward_data(&self,
+                         src: &SharedTensor<T>,
+                         src_gradient: &mut SharedTensor<T>,
+                         output: &SharedTensor<T>,
+                         output_gradient: &SharedTensor<T>,
+                         rnn_config: &Self::RC,
+                         weight: &SharedTensor<T>,
+                         workspace: &mut SharedTensor<u8>)
+                         -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = self.rnn_sequence_descriptors(
             src,
             *rnn_config.sequence_length(),
+            src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
+            rnn_config.num_layers,
         )?;
         let weight_desc = weight.cudnn_filter_desc()?;
 
         let src_mem = read!(src, self);
-        let src_gradient_mem = read!(src_gradient, self);
+        let src_gradient_mem = write_only!(src_gradient, self);
         let weight_mem = read!(weight, self);
         let output_mem = read!(output, self);
+        let output_gradient_mem = read!(output_gradient, self);
         let workspace_mem = write_only!(workspace, self);
-        unimplemented!()
-        /*let reserve_space = rnn_config.training_reserve();
-        dbg!("Running Backward Data");
+        let reserve_space = rnn_config.training_reserve();
         match CUDNN.rnn_backward_data::<f32>(
             rnn_config,
             sequence_descriptors.y_desc,
             trans!(output_mem),
             sequence_descriptors.dy_desc,
             //output_gradient,
-            std::ptr::null_mut(),
-            sequence_descriptors.dhy_desc,
+            trans!(output_gradient_mem),
+            &sequence_descriptors.dhy_desc,
             //final_hidden_gradient,
             std::ptr::null_mut(),
-            sequence_descriptors.dcy_desc,
+            &sequence_descriptors.dcy_desc,
             //final_cell_gradient,
             std::ptr::null_mut(),
             &weight_desc,
             trans!(weight_mem),
-            sequence_descriptors.hx_desc,
+            &sequence_descriptors.hx_desc,
             std::ptr::null(),
-            sequence_descriptors.cx_desc,
+            &sequence_descriptors.cx_desc,
             std::ptr::null(),
             sequence_descriptors.dx_desc,
             trans_mut!(src_gradient_mem),
-            sequence_descriptors.dhx_desc,
+            &sequence_descriptors.dhx_desc,
             std::ptr::null_mut(),
-            sequence_descriptors.dcx_desc,
+            &sequence_descriptors.dcx_desc,
             std::ptr::null_mut(),
             trans_mut!(workspace_mem),
             *reserve_space.id_c(),
