@@ -236,7 +236,8 @@ impl ActivationConfig {
 #[allow(missing_debug_implementations, missing_copy_implementations)]
 /// Provides a convenient interface to access cuDNN's Dropout Descriptor.
 ///
-/// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_dropout()`.
+/// You wouldn't use this struct yourself, but rather obtain it through `Cudnn.init_dropout()`.
+#[derive(Debug)]
 pub struct DropoutConfig {
     dropout_desc: DropoutDescriptor,
     reserve_space: CudaDeviceMemory,

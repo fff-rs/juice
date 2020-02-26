@@ -290,6 +290,103 @@ impl Cudnn {
         )
     }
 
+    /// Train & Return Results for RNN
+    pub fn rnn_backward_data<T>(
+        &self,
+        rnn_config: &RnnConfig,
+        output_desc: Vec<TensorDescriptor>,
+        output: *const ::libc::c_void,
+        output_gradient_desc: Vec<TensorDescriptor>,
+        output_gradient: *const ::libc::c_void,
+        hidden_gradient_desc: &TensorDescriptor,
+        hidden_gradient: *const ::libc::c_void,
+        cell_gradient_desc: &TensorDescriptor,
+        cell_gradient: *const ::libc::c_void,
+        weight_desc: &FilterDescriptor,
+        weight: *const ::libc::c_void,
+        hidden_desc: &TensorDescriptor,
+        // Planning to initially pass NULLs to this
+        hidden: *const ::libc::c_void,
+        cell_desc: &TensorDescriptor,
+        // Planning to initially pass NULLs to this
+        cell: *const ::libc::c_void,
+        input_gradient_desc: Vec<TensorDescriptor>,
+        input_gradient: *mut ::libc::c_void,
+        input_hidden_gradient_desc: &TensorDescriptor,
+        input_hidden_gradient: *mut ::libc::c_void,
+        input_cell_gradient_desc: &TensorDescriptor,
+        input_cell_gradient: *mut ::libc::c_void,
+        workspace: *mut ::libc::c_void,
+        reserve_data: *mut ::libc::c_void,
+    ) -> Result<(), Error>
+        where T: Float + DataTypeInfo {
+        API::rnn_backward_data(
+            *self.id_c(),
+            *(rnn_config.rnn_desc().id_c()),
+            *rnn_config.sequence_length(),
+            tensor_vec_id_c(&output_desc).as_slice().as_ptr(),
+            output,
+            tensor_vec_id_c(&output_gradient_desc).as_slice().as_ptr(),
+            output_gradient,
+            *hidden_gradient_desc.id_c(),
+            hidden_gradient,
+            *cell_gradient_desc.id_c(),
+            cell_gradient,
+            *weight_desc.id_c(),
+            weight,
+            *hidden_desc.id_c(),
+            hidden,
+            *cell_desc.id_c(),
+            cell,
+            tensor_vec_id_c(&input_gradient_desc).as_slice().as_ptr(),
+            input_gradient,
+            *input_hidden_gradient_desc.id_c(),
+            input_hidden_gradient,
+            *input_cell_gradient_desc.id_c(),
+            input_cell_gradient,
+            workspace,
+            rnn_config.rnn_workspace_size(),
+            reserve_data,
+            rnn_config.training_reserve_size(),
+        )
+    }
+
+    /// Train & Return Results for RNN
+    pub fn rnn_backward_weights<T>(
+        &self,
+        rnn_config: &RnnConfig,
+        src_desc: Vec<TensorDescriptor>,
+        src: *const ::libc::c_void,
+        hidden_desc: &TensorDescriptor,
+        // Planning to initially pass NULLs to this
+        hidden: *const ::libc::c_void,
+        output_desc: Vec<TensorDescriptor>,
+        output: *const ::libc::c_void,
+        weight_desc: FilterDescriptor,
+        weight: *mut ::libc::c_void,
+        workspace: *mut ::libc::c_void,
+        reserve_data: *mut ::libc::c_void,
+    ) -> Result<(), Error>
+        where T: Float + DataTypeInfo {
+        API::rnn_backward_weights(
+            *self.id_c(),
+            *(rnn_config.rnn_desc().id_c()),
+            *rnn_config.sequence_length(),
+            tensor_vec_id_c(&src_desc).as_slice().as_ptr(),
+            src,
+            *hidden_desc.id_c(),
+            hidden,
+            tensor_vec_id_c(&output_desc).as_slice().as_ptr(),
+            output,
+            workspace,
+            rnn_config.rnn_workspace_size(),
+            *weight_desc.id_c(),
+            weight,
+            reserve_data,
+            rnn_config.training_reserve_size(),
+        )
+    }
+
     /// Computes the forward Sigmoid Activation function.
     ///
     /// Writes the result of the computation to `dest_data`.
