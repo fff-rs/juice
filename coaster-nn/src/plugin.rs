@@ -301,10 +301,13 @@ pub trait Rnn<F> : NN<F> {
     ) -> Result<Self::RC, crate::co::error::Error>;
 
     /// Describe a RNN Sequence for the Input Tensor
-    fn rnn_sequence_descriptors(&self, sec: &SharedTensor<F>,
+    fn rnn_sequence_descriptors(&self,
+                                src: &SharedTensor<F>,
                                 sequence_length: i32,
+                                input_size: i32,
                                 hidden_size: i32,
-                                batch_size: i32)
+                                batch_size: i32,
+                                num_layers: i32)
                                 -> Result<RnnSequenceDescriptors, crate::co::error::Error>;
 
     /// Generate Weights for RNN
@@ -327,15 +330,24 @@ pub trait Rnn<F> : NN<F> {
     ) -> Result<(), crate::co::error::Error>;
 
     /// Calculates RNN Gradients for Input/Hidden/Cell
-    fn rnn_grad_data(&self,
-                     src: &SharedTensor<F>,
-                     src_gradient: &mut SharedTensor<F>,
-                     output: &SharedTensor<F>,
-                     output_gradient: &SharedTensor<F>,
-                     rnn_config: &Self::RC,
-                     weight: &SharedTensor<F>,
-                     workspace: &mut SharedTensor<u8>)
-                     -> Result<(), crate::co::error::Error>;
+    fn rnn_backward_data(&self,
+                         src: &SharedTensor<F>,
+                         src_gradient: &mut SharedTensor<F>,
+                         output: &SharedTensor<F>,
+                         output_gradient: &SharedTensor<F>,
+                         rnn_config: &Self::RC,
+                         weight: &SharedTensor<F>,
+                         workspace: &mut SharedTensor<u8>)
+                         -> Result<(), crate::co::error::Error>;
+
+    /// Calculates RNN Gradients for Weights
+    fn rnn_backward_weights(&self,
+                            src: &SharedTensor<F>,
+                            output: &SharedTensor<F>,
+                            filter: &mut SharedTensor<F>,
+                            rnn_config: &Self::RC,
+                            workspace: &mut SharedTensor<u8>)
+                            -> Result<(), crate::co::error::Error>;
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -387,12 +399,13 @@ pub enum RnnAlgorithm {
     PersistStatic,
     /// RNN parts use a persistent kernel. Fast when the first dimension is small, and when it can
     /// reuse plans in repeated calls.
-    PersistDynamic
+    PersistDynamic,
+    /// Count - Cannot find in docs but is in Generated - FIXME
+    Count,
 }
 
 #[derive(Debug, Copy, Clone)]
 /// Enables/Disables the padded input/output [cudnnRNNPaddingMode_t][1]
-/// FIXME: This isn't found in generated.rs - Is this needed?
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNPaddingMode_t
 pub enum RnnPaddingMode {
     /// Padding disabled

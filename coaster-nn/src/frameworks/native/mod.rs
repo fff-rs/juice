@@ -840,10 +840,13 @@ impl<T> Rnn<T> for Backend<Native>
         unimplemented!()
     }
 
-    fn rnn_sequence_descriptors(&self, sec: &SharedTensor<T>,
+    fn rnn_sequence_descriptors(&self,
+                                src: &SharedTensor<T>,
                                 sequence_length: i32,
+                                input_size: i32,
                                 hidden_size: i32,
-                                batch_size: i32)
+                                batch_size: i32,
+                                num_layers: i32)
                                 -> Result<RnnSequenceDescriptors, Error> {
         unimplemented!()
     }
@@ -866,17 +869,25 @@ impl<T> Rnn<T> for Backend<Native>
         unimplemented!()
     }
 
-    fn rnn_grad_data(&self,
-                     src: &SharedTensor<T>,
-                     src_gradient: &mut SharedTensor<T>,
-                     output: &SharedTensor<T>,
-                     output_gradient: &SharedTensor<T>,
-                     rnn_config: &Self::RC,
-                     weight: &SharedTensor<T>,
-                     workspace: &mut SharedTensor<u8>)
-                     -> Result<(), Error> {
+    fn rnn_backward_data(&self,
+                         src: &SharedTensor<T>,
+                         src_gradient: &mut SharedTensor<T>,
+                         output: &SharedTensor<T>,
+                         output_gradient: &SharedTensor<T>,
+                         rnn_config: &Self::RC,
+                         weight: &SharedTensor<T>,
+                         workspace: &mut SharedTensor<u8>)
+                         -> Result<(), Error> {
         unimplemented!()
     }
+
+    fn rnn_backward_weights(&self,
+                            src: &SharedTensor<T>,
+                            output: &SharedTensor<T>,
+                            filter: &mut SharedTensor<T>,
+                            rnn_config: &Self::RC,
+                            workspace: &mut SharedTensor<u8>)
+                            -> Result<(), Error> { unimplemented!() }
 }
 
 impl<T> Dropout<T> for Backend<Native>
