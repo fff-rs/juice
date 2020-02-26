@@ -61,7 +61,7 @@ fn main() {
             // Do not generate unstable Rust code that
             // requires a nightly rustc and enabling
             // unstable features.
-            .rust_target(bindgen::RustTarget::Stable_1_19)
+            .rust_target(bindgen::RustTarget::Stable_1_40)
             .blacklist_type("max_align_t") // https://github.com/servo/rust-bindgen/issues/550
             .raw_line(
                 r"
@@ -70,6 +70,7 @@ fn main() {
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
+
             ",
             )
             .ctypes_prefix("::libc")
@@ -82,6 +83,11 @@ fn main() {
             // The input header we would like to generate
             // bindings for.
             .header("wrapper.h")
+            // Consistency with old behaviour.
+            .size_t_is_usize(true)
+            // Make some of the enums readable for Rust
+            .rustified_enum("cudnn[A-Za-z]+_t")
+            .rustified_enum("cudaError")
             // Finish the builder and generate the bindings.
             .generate()
             // Unwrap the Result and panic on failure.
