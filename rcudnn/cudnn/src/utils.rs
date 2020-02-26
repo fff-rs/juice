@@ -246,7 +246,7 @@ impl DropoutConfig {
     /// Returns a new DropoutConfig.
     pub fn new(dropout_desc: DropoutDescriptor, reserve: CudaDeviceMemory) -> DropoutConfig {
         DropoutConfig {
-            dropout_desc: dropout_desc,
+            dropout_desc,
             reserve_space: reserve,
         }
     }
@@ -255,7 +255,12 @@ impl DropoutConfig {
         &self.dropout_desc
     }
 
-    /// Returns the reserved space ``.
+    /// Take the Reserve Memory of the DropoutDescriptor
+    pub fn take_mem(self) -> CudaDeviceMemory {
+        self.reserve_space
+    }
+
+    /// Returns the reserved space.
     pub fn reserved_space(&self) -> &CudaDeviceMemory {
         &self.reserve_space
     }
@@ -290,7 +295,8 @@ pub struct RnnConfig {
     rnn_desc: RnnDescriptor,
     /// Size of Hidden Layer
     pub hidden_size: ::libc::c_int,
-    num_layers: ::libc::c_int,
+    /// Number of Hidden Layers
+    pub num_layers: ::libc::c_int,
     /// Length of Sequence
     pub sequence_length: ::libc::c_int,
     dropout_desc: cudnnDropoutDescriptor_t,

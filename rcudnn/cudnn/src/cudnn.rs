@@ -176,7 +176,7 @@ impl Cudnn {
     pub fn init_dropout(&self, probability: f32, seed: u64) -> Result<DropoutConfig, Error> {
         let reserve_required: usize = API::dropout_get_states_size(*self.id_c())?;
         let reserve = CudaDeviceMemory::new(reserve_required)?;
-        let dropout = DropoutDescriptor::new(&self, probability, seed, &reserve)?;
+        let dropout = DropoutDescriptor::new(&self, probability, seed, *reserve.id_c(), reserve.size())?;
         Ok(DropoutConfig::new(dropout, reserve))
     }
 
@@ -188,7 +188,7 @@ impl Cudnn {
         hidden_size: i32,
         num_layers: i32,
         seq_length: i32,
-        dropout_desc: &DropoutDescriptor,
+        dropout_memory_ptr: *mut cudnnDropoutStruct,
         input_mode: cudnnRNNInputMode_t,
         direction_mode: cudnnDirectionMode_t,
         network_mode: cudnnRNNMode_t,
@@ -229,7 +229,7 @@ impl Cudnn {
             hidden_size,
             num_layers,
             seq_length,
-            *dropout_desc.id_c(),
+            dropout_memory_ptr,
             input_mode,
             direction_mode,
             network_mode,

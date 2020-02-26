@@ -35,14 +35,15 @@ pub trait ICudnnDesc<T> {
                               filter: &SharedTensor<T>)
                               -> Result<ConvolutionDescriptor, PluginError>;
 
-    fn cudnn_rnn_desc( &self,
-                       hidden_size: i32,
-                       num_layers: i32,
-                       dropout_desc: DropoutDescriptor,
-                       input_mode: cudnnRNNInputMode_t,
-                       direction: cudnnDirectionMode_t,
-                       mode: cudnnRNNMode_t,
-                       algorithm: cudnnRNNAlgo_t) -> Result<RnnDescriptor, PluginError>;
+    fn cudnn_rnn_desc(&self,
+                      hidden_size: i32,
+                      num_layers: i32,
+                      dropout_desc: utils::DropoutConfig,
+                      input_mode: cudnnRNNInputMode_t,
+                      direction: cudnnDirectionMode_t,
+                      mode: cudnnRNNMode_t,
+                      algorithm: cudnnRNNAlgo_t,
+                      padding_mode: cudnnRNNPaddingMode_t) -> Result<RnnDescriptor, PluginError>;
 }
 
 impl ConvForwardAlgo {
@@ -301,22 +302,24 @@ impl<T> ICudnnDesc<T> for SharedTensor<T>
         &self,
         hidden_size: i32,
         num_layers: i32,
-        dropout_desc: DropoutDescriptor,
+        dropout_desc: utils::DropoutConfig,
         input_mode: cudnnRNNInputMode_t,
         direction: cudnnDirectionMode_t,
         mode: cudnnRNNMode_t,
-        algorithm: cudnnRNNAlgo_t
+        algorithm: cudnnRNNAlgo_t,
+        padding_mode: cudnnRNNPaddingMode_t,
     ) -> Result<RnnDescriptor, PluginError> {
         match RnnDescriptor::new(
             &CUDNN,
             hidden_size,
             num_layers,
-            &dropout_desc,
+            dropout_desc,
             input_mode,
             direction,
             mode,
             algorithm,
             <T as DataTypeInfo>::cudnn_data_type(),
+            padding_mode,
         ) {
             Ok(desc) => Ok(desc),
             Err(_) => Err(PluginError::Plugin("Unable to create CuDNN RNNDescriptor")),
@@ -822,6 +825,8 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             Err(E) => Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
         }?;
 
+        let dropout_memory_pointer: *mut cudnnDropoutStruct = *drop_desc.dropout_desc().id_c();
+
         let x_desc = self.rnn_sequence_descriptors(
             src,
             sequence_length,
@@ -833,7 +838,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             &CUDNN,
             hidden_size,
             num_layers,
-            drop_desc.dropout_desc(),
+            drop_desc,
             input_mode,
             direction_mode,
             network_mode,
@@ -850,8 +855,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             hidden_size,
             batch_size,
             sequence_length,
-            num_layers,
-            drop_desc.dropout_desc(),
+            dropout_memory_pointer,
             input_mode,
             direction_mode,
             network_mode,
