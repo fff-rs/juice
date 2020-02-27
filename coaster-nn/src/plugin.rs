@@ -1,7 +1,4 @@
 //! Provides the INn Plugin trait for Coaster implementation.
-
-use frameworks::cuda::RnnSequenceDescriptors;
-
 use crate::co::tensor::SharedTensor;
 use crate::cudnn::{FilterDescriptor, TensorDescriptor};
 
@@ -281,8 +278,40 @@ pub trait TanhPointwise<F> : NN<F> {
                            -> Result<(), crate::co::error::Error>;
 }
 
+#[derive(Debug)]
+// All RNN Sequence Descriptors are generated on a single pass in CUDNN example code
+// As such, defining them all in one function appears to be the simplest method of reproducing
+// this work in Rust, but passing back a tuple is unwieldy as the tuple grows beyond 2 - 3 values.
+/// Struct to hold all Sequence Descriptors for an RNN Pass
+pub struct RnnSequenceDescriptors {
+    /// Input Descriptor
+    pub x_desc: Vec<TensorDescriptor>,
+    /// Output Descriptor
+    pub y_desc: Vec<TensorDescriptor>,
+    /// Gradient Input Descriptor
+    pub dx_desc: Vec<TensorDescriptor>,
+    /// Gradient Output Descriptor
+    pub dy_desc: Vec<TensorDescriptor>,
+    /// Hidden Input Descriptor
+    pub hx_desc: TensorDescriptor,
+    /// Cell Input Descriptor
+    pub cx_desc: TensorDescriptor,
+    /// Hidden Output Descriptor
+    pub hy_desc: TensorDescriptor,
+    /// Cell Output Descriptor
+    pub cy_desc: TensorDescriptor,
+    /// Gradient Hidden Input Descriptor
+    pub dhx_desc: TensorDescriptor,
+    /// Gradient Cell Input Descriptor
+    pub dcx_desc: TensorDescriptor,
+    /// Gradient Hidden Output Descriptor
+    pub dhy_desc: TensorDescriptor,
+    /// Gradient Cell Output Descriptor
+    pub dcy_desc: TensorDescriptor,
+}
+
 /// Provide the functionality for a Backend to support RNN operations
-pub trait Rnn<F> : NN<F> {
+pub trait Rnn<F>: NN<F> {
     /// Create a RnnConfig
     fn new_rnn_config(
         &self,
