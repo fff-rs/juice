@@ -11,8 +11,6 @@ use std::ops::*;
 use rand::{Rng, SeedableRng};
 use rand_hc as hc128;
 
-use frameworks::cuda::RnnSequenceDescriptors;
-
 use crate::co::Error;
 use crate::co::plugin::Error as PluginError;
 use crate::co::plugin::numeric_helpers::Bounded;

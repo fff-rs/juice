@@ -674,25 +674,6 @@ impl RnnPaddingMode {
     }
 }
 
-#[derive(Debug)]
-// All RNN Sequence Descriptors are generated on a single pass in CUDNN example code
-// As such, defining them all in one function appears to be the simplest method of reproducing
-// this work in Rust, but passing back a tuple is unwieldy as the tuple grows beyond 2 - 3 values.
-pub struct RnnSequenceDescriptors {
-    pub x_desc: Vec<TensorDescriptor>,
-    y_desc: Vec<TensorDescriptor>,
-    dx_desc: Vec<TensorDescriptor>,
-    dy_desc: Vec<TensorDescriptor>,
-    hx_desc: TensorDescriptor,
-    cx_desc: TensorDescriptor,
-    hy_desc: TensorDescriptor,
-    cy_desc: TensorDescriptor,
-    dhx_desc: TensorDescriptor,
-    dcx_desc: TensorDescriptor,
-    dhy_desc: TensorDescriptor,
-    dcy_desc: TensorDescriptor,
-}
-
 impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
     fn rnn_sequence_descriptors(&self,
                                 src: &SharedTensor<T>,
