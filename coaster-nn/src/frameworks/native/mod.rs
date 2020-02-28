@@ -16,7 +16,6 @@ use crate::co::plugin::Error as PluginError;
 use crate::co::plugin::numeric_helpers::Bounded;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
-use crate::cudnn::{FilterDescriptor, TensorDescriptor};
 use crate::plugin::*;
 
 #[macro_use]
@@ -839,17 +838,6 @@ impl<T> Rnn<T> for Backend<Native>
         unimplemented!()
     }
 
-    fn rnn_sequence_descriptors(&self,
-                                src: &SharedTensor<T>,
-                                sequence_length: i32,
-                                input_size: i32,
-                                hidden_size: i32,
-                                batch_size: i32,
-                                num_layers: i32)
-                                -> Result<RnnSequenceDescriptors, Error> {
-        unimplemented!()
-    }
-
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
@@ -869,6 +857,7 @@ impl<T> Rnn<T> for Backend<Native>
         weight: &SharedTensor<T>,
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
+        // TODO: Implement RNN Forward Pass
         unimplemented!()
     }
 
@@ -881,6 +870,7 @@ impl<T> Rnn<T> for Backend<Native>
                          weight: &SharedTensor<T>,
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), Error> {
+        // TODO: Implement Backward Pass for RNN for the Input
         unimplemented!()
     }
 
@@ -890,7 +880,10 @@ impl<T> Rnn<T> for Backend<Native>
                             filter: &mut SharedTensor<T>,
                             rnn_config: &Self::CRNN,
                             workspace: &mut SharedTensor<u8>)
-                            -> Result<(), Error> { unimplemented!() }
+                            -> Result<(), Error> {
+        // TODO: Implement Backward Pass with respect to Weights
+        unimplemented!()
+    }
 }
 
 impl<T> Dropout<T> for Backend<Native>
