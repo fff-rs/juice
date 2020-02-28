@@ -1,6 +1,40 @@
 //! Create a Recursive Layer
 //!
-//! TODO: Add Docs
+//! Recurrent Neural Network Layer
+//! A type of Neural Network that can process data in sequence, with temporal understanding of
+//! one element of data flowing into the next. This type of understanding is suitable for tasks such
+//! as translating a sentence, mimicking the patterns in a musical piece, or time series forecasting.
+//!
+//! Currently this is implemented in CUDA, but not in native or opencl.
+//!
+//! ## CUDA Specific Notes - Using Juice
+//! CUDA currently supports GRU, LSTM, ReLU, and tanh for LSTM operations.
+//! All of these can be uni or bi-directional.
+//!
+//! All of these perform better when Tensor Core are available, this has some pretty stringent
+//! requirements (https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#tensor_ops);
+//!
+//! For Standard Algorithm - CUDNN_RNN_ALGO_STANDARD in Cuda Docs or RnnAlgorithm::Standard in Juice,
+//! * hidden size, input size, and batch size must be a multiple of 8
+//! * All user-provided tensors, workspace, and reserve space are aligned to 128 bit boundaries.
+//! * Math Type CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION (MathType::TensorOPMathAllowConversion) is selected.
+// TODO: Ensure workspace & reserve-space are aligned to 128 bit boundaries.
+//!
+//! ## CUDA Specific Notes - Developing Juice
+//! The following resources are your best bet for debugging an issue within Juice.
+//! Generic Docs https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html
+//! API Docs https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html
+//!
+//! We're aiming to support the latest features in CUDNN, and promise no support for outdated
+//! versions of CUDA or CUDNN. Current code has been tested with
+//! | CUDA            | CUDNN              |
+//! |---                   |---                |
+//! | 10.2              | 7.6.5 |
+//!
+//! And the following graphics cards
+//! | Card            |
+//! |---              |
+//! | NVIDIA GeForce GTX 1070 |
 
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
