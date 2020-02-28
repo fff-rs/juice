@@ -70,7 +70,7 @@ pub struct Rnn<B: conn::Rnn<f32>> {
     // dropout_probability: f32,
     // dropout_seed: f32,
     workspace: Option<ArcLock<SharedTensor<u8>>>,
-    rnn_config: Option<Rc<B::RC>>,
+    rnn_config: Option<Rc<B::CRNN>>,
 }
 
 impl<B: conn::Rnn<f32>> Rnn<B> {

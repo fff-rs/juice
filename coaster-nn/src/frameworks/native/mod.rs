@@ -85,7 +85,7 @@ impl<T> NN<T> for Backend<Native>
     type CPOOL = helper::PoolingConfig;
     // type CACTI = helper::ActivationConfig;
     type CDROP = helper::DropoutConfig;
-    type RC = helper::RnnConfig;
+    type CRNN = helper::RnnConfig;
 
     fn init_nn() {}
 }
@@ -834,7 +834,8 @@ impl<T> Pooling<T> for Backend<Native>
 
 impl<T> Rnn<T> for Backend<Native>
     where T: Float + Default + Copy + PartialOrd + Bounded {
-    fn new_rnn_config(&self, src: &SharedTensor<T>, dropout_probability: Option<f32>, dropout_seed: Option<u64>, sequence_length: i32, network_mode: RnnNetworkMode, input_mode: RnnInputMode, direction_mode: DirectionMode, algorithm: RnnAlgorithm, hidden_size: i32, num_layers: i32, batch_size: i32) -> Result<Self::RC, Error> {
+    fn new_rnn_config(&self, src: &SharedTensor<T>, dropout_probability: Option<f32>, dropout_seed: Option<u64>, sequence_length: i32, network_mode: RnnNetworkMode, input_mode: RnnInputMode, direction_mode: DirectionMode, algorithm: RnnAlgorithm, hidden_size: i32, num_layers: i32, batch_size: i32) -> Result<Self::CRNN, Error> {
+        // TODO: Implement Config to hold parameters regarding the RNN
         unimplemented!()
     }
 
@@ -851,8 +852,12 @@ impl<T> Rnn<T> for Backend<Native>
 
     fn generate_rnn_weight_description(
         &self,
-        rnn_desc: &Self::RC,
-        x_desc: &[TensorDescriptor]) -> Result<Vec<usize>, Error> {
+        rnn_config: &Self::CRNN,
+        sequence_length: i32,
+        batch_size: i32,
+        input_size: i32,
+    ) -> Result<Vec<usize>, Error> {
+        // This will end up being the tensor descriptor for the weights associated with the RNN pass
         unimplemented!()
     }
 
@@ -860,7 +865,7 @@ impl<T> Rnn<T> for Backend<Native>
         &self,
         src: &SharedTensor<T>,
         output: &mut SharedTensor<T>,
-        rnn_config: &Self::RC,
+        rnn_config: &Self::CRNN,
         weight: &SharedTensor<T>,
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
@@ -872,7 +877,7 @@ impl<T> Rnn<T> for Backend<Native>
                          src_gradient: &mut SharedTensor<T>,
                          output: &SharedTensor<T>,
                          output_gradient: &SharedTensor<T>,
-                         rnn_config: &Self::RC,
+                         rnn_config: &Self::CRNN,
                          weight: &SharedTensor<T>,
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), Error> {
@@ -883,7 +888,7 @@ impl<T> Rnn<T> for Backend<Native>
                             src: &SharedTensor<T>,
                             output: &SharedTensor<T>,
                             filter: &mut SharedTensor<T>,
-                            rnn_config: &Self::RC,
+                            rnn_config: &Self::CRNN,
                             workspace: &mut SharedTensor<u8>)
                             -> Result<(), Error> { unimplemented!() }
 }
