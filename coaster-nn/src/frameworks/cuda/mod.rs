@@ -17,6 +17,96 @@ lazy_static! {
     static ref CUDNN: Cudnn = Cudnn::new().unwrap();
 }
 
+fn rnn_sequence_descriptors<T>(src: &SharedTensor<T>,
+                               sequence_length: i32,
+                               input_size: i32,
+                               hidden_size: i32,
+                               batch_size: i32,
+                               num_layers: i32,
+                               data_type: DataType)
+                               -> Result<RnnSequenceDescriptors, Error> {
+    let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+    let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+    let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+    let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
+    let dim_input = vec![batch_size, input_size, 1];
+    let dim_output = vec![batch_size, hidden_size, 1];
+    let dim_hidden_cell = vec![num_layers, batch_size, hidden_size];
+    let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
+    let stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
+    let stride_hidden_cell = vec![dim_hidden_cell[2] * dim_hidden_cell[1], dim_hidden_cell[2], 1];
+    //  FIXME: Ensure hidden_size*2 is used for bidirectional models
+    for _ in 0..sequence_length {
+        x_desc.push(TensorDescriptor::new(
+            &dim_input,
+            &stride_input,
+            data_type,
+        ).unwrap());
+        dxdesc.push(TensorDescriptor::new(
+            &dim_input,
+            &stride_input,
+            data_type,
+        ).unwrap());
+        y_desc.push(TensorDescriptor::new(
+            &dim_output,
+            &stride_output,
+            data_type,
+        ).unwrap());
+        dydesc.push(TensorDescriptor::new(
+            &dim_output,
+            &stride_output,
+            data_type,
+        ).unwrap());
+    }
+
+    Ok(RnnSequenceDescriptors {
+        x_desc,
+        y_desc,
+        dx_desc: dxdesc,
+        dy_desc: dydesc,
+        hx_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+        hy_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+        cx_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+        cy_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+        dhx_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+        dhy_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+        dcx_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+        dcy_desc: TensorDescriptor::new(
+            &dim_hidden_cell,
+            &stride_hidden_cell,
+            data_type,
+        ).unwrap(),
+    })
+}
+
 pub trait ICudnnDesc<T> {
     fn cudnn_tensor_desc(&self) -> Result<TensorDescriptor, PluginError>;
     /// Creates a TensorDescriptor similar to `cudnn_tensor_desc`,
@@ -674,98 +764,39 @@ impl RnnPaddingMode {
     }
 }
 
+#[derive(Debug)]
+// All RNN Sequence Descriptors are generated on a single pass in CUDNN example code
+// As such, defining them all in one function appears to be the simplest method of reproducing
+// this work in Rust, but passing back a tuple is unwieldy as the tuple grows beyond 2 - 3 values.
+/// Struct to hold all Sequence Descriptors for an RNN Pass
+pub struct RnnSequenceDescriptors {
+    /// Input Descriptor
+    pub x_desc: Vec<TensorDescriptor>,
+    /// Output Descriptor
+    pub y_desc: Vec<TensorDescriptor>,
+    /// Gradient Input Descriptor
+    pub dx_desc: Vec<TensorDescriptor>,
+    /// Gradient Output Descriptor
+    pub dy_desc: Vec<TensorDescriptor>,
+    /// Hidden Input Descriptor
+    pub hx_desc: TensorDescriptor,
+    /// Cell Input Descriptor
+    pub cx_desc: TensorDescriptor,
+    /// Hidden Output Descriptor
+    pub hy_desc: TensorDescriptor,
+    /// Cell Output Descriptor
+    pub cy_desc: TensorDescriptor,
+    /// Gradient Hidden Input Descriptor
+    pub dhx_desc: TensorDescriptor,
+    /// Gradient Cell Input Descriptor
+    pub dcx_desc: TensorDescriptor,
+    /// Gradient Hidden Output Descriptor
+    pub dhy_desc: TensorDescriptor,
+    /// Gradient Cell Output Descriptor
+    pub dcy_desc: TensorDescriptor,
+}
+
 impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
-    fn rnn_sequence_descriptors(&self,
-                                src: &SharedTensor<T>,
-                                sequence_length: i32,
-                                input_size: i32,
-                                hidden_size: i32,
-                                batch_size: i32,
-                                num_layers: i32)
-                                -> Result<RnnSequenceDescriptors, Error> {
-        let data_type = <T as DataTypeInfo>::cudnn_data_type();
-        let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-        let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-        let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-        let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-        let dim_input = vec![batch_size, input_size, 1];
-        let dim_output = vec![batch_size, hidden_size, 1];
-        let dim_hidden_cell = vec![num_layers, batch_size, hidden_size];
-        let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
-        let stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
-        let stride_hidden_cell = vec![dim_hidden_cell[2] * dim_hidden_cell[1], dim_hidden_cell[2], 1];
-        //  FIXME: Ensure hidden_size*2 is used for bidirectional models
-        for _ in 0..sequence_length {
-            x_desc.push(TensorDescriptor::new(
-                &dim_input,
-                &stride_input,
-                data_type,
-            ).unwrap());
-            dxdesc.push(TensorDescriptor::new(
-                &dim_input,
-                &stride_input,
-                data_type,
-            ).unwrap());
-            y_desc.push(TensorDescriptor::new(
-                &dim_output,
-                &stride_output,
-                data_type,
-            ).unwrap());
-            dydesc.push(TensorDescriptor::new(
-                &dim_output,
-                &stride_output,
-                data_type,
-            ).unwrap());
-        }
-
-        Ok(RnnSequenceDescriptors {
-            x_desc,
-            y_desc,
-            dx_desc: dxdesc,
-            dy_desc: dydesc,
-            hx_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-            hy_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-            cx_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-            cy_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-            dhx_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-            dhy_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-            dcx_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-            dcy_desc: TensorDescriptor::new(
-                &dim_hidden_cell,
-                &stride_hidden_cell,
-                <T as DataTypeInfo>::cudnn_data_type(),
-            ).unwrap(),
-        })
-    }
-
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
@@ -791,7 +822,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             *CUDNN.id_c(),
             *rnn_config.rnn_desc().id_c(),
             *x_desc[0].id_c(),
-            <T as DataTypeInfo>::cudnn_data_type()) {
+            data_type) {
             Ok(size) => Ok(size),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to get CudNN Rnn Params Size."))),
         }?;
@@ -830,13 +861,14 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
 
         let dropout_memory_pointer: *mut cudnnDropoutStruct = *drop_desc.dropout_desc().id_c();
 
-        let x_desc = self.rnn_sequence_descriptors(
+        let x_desc = rnn_sequence_descriptors(
             src,
             sequence_length,
             src_description[1] as i32,
             hidden_size,
             batch_size,
             num_layers,
+            <T as DataTypeInfo>::cudnn_data_type(),
         )?.x_desc;
 
         let rnn_desc = match RnnDescriptor::new(
@@ -881,16 +913,17 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         output: &mut SharedTensor<T>,
         rnn_config: &Self::CRNN,
         weight: &SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>
+        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
-        let sequence_descriptors = self.rnn_sequence_descriptors(
+        let sequence_descriptors = rnn_sequence_descriptors(
             src,
             *rnn_config.sequence_length(),
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
             rnn_config.num_layers,
+            <T as DataTypeInfo>::cudnn_data_type(),
         )?;
 
         let weight_desc = weight.cudnn_filter_desc()?;
@@ -935,13 +968,14 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
-        let sequence_descriptors = self.rnn_sequence_descriptors(
+        let sequence_descriptors = rnn_sequence_descriptors(
             src,
             *rnn_config.sequence_length(),
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
             rnn_config.num_layers,
+            <T as DataTypeInfo>::cudnn_data_type(),
         )?;
         let weight_desc = weight.cudnn_filter_desc()?;
 
@@ -993,13 +1027,14 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                             workspace: &mut SharedTensor<u8>)
                             -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
-        let sequence_descriptors = self.rnn_sequence_descriptors(
+        let sequence_descriptors = rnn_sequence_descriptors(
             src,
             *rnn_config.sequence_length(),
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
             rnn_config.num_layers,
+            <T as DataTypeInfo>::cudnn_data_type(),
         )?;
         let filter_desc = filter.cudnn_filter_desc()?;
         let src_mem = read!(src, self);
