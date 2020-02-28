@@ -169,7 +169,7 @@ pub trait NN<F> {
     /// The Dropout Operation Config representation for this Plugin.
     type CDROP: NNOperationConfig<F>;
     /// The RNN Operation Config representation for this Plugin
-    type RC: NNOperationConfig<F> + RnnConfig<F>;
+    type CRNN: NNOperationConfig<F> + RnnConfig<F>;
 
     /// Initializes the Plugin.
     fn init_nn();
@@ -327,23 +327,16 @@ pub trait Rnn<F>: NN<F> {
         num_layers: i32,
         batch_size: i32,
         // RC being RNNConfig
-    ) -> Result<Self::RC, crate::co::error::Error>;
-
-    /// Describe a RNN Sequence for the Input Tensor
-    fn rnn_sequence_descriptors(&self,
-                                src: &SharedTensor<F>,
-                                sequence_length: i32,
-                                input_size: i32,
-                                hidden_size: i32,
-                                batch_size: i32,
-                                num_layers: i32)
-                                -> Result<RnnSequenceDescriptors, crate::co::error::Error>;
+    ) -> Result<Self::CRNN, crate::co::error::Error>;
 
     /// Generate Weights for RNN
     fn generate_rnn_weight_description(
         &self,
-        rnn_desc: &Self::RC,
-        x_desc: &[TensorDescriptor]) -> Result<Vec<usize>, crate::co::error::Error>;
+        rnn_config: &Self::CRNN,
+        sequence_length: i32,
+        batch_size: i32,
+        input_size: i32,
+    ) -> Result<Vec<usize>, crate::co::error::Error>;
 
     /// Train a LSTM Network and Return Results
     // TODO: Create alternate rnn_forward or alternate path to work with pretrained networks
@@ -353,7 +346,7 @@ pub trait Rnn<F>: NN<F> {
         &self,
         src: &SharedTensor<F>,
         output: &mut SharedTensor<F>,
-        rnn_config: &Self::RC,
+        rnn_config: &Self::CRNN,
         weight: &SharedTensor<F>,
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), crate::co::error::Error>;
@@ -364,7 +357,7 @@ pub trait Rnn<F>: NN<F> {
                          src_gradient: &mut SharedTensor<F>,
                          output: &SharedTensor<F>,
                          output_gradient: &SharedTensor<F>,
-                         rnn_config: &Self::RC,
+                         rnn_config: &Self::CRNN,
                          weight: &SharedTensor<F>,
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), crate::co::error::Error>;
@@ -374,7 +367,7 @@ pub trait Rnn<F>: NN<F> {
                             src: &SharedTensor<F>,
                             output: &SharedTensor<F>,
                             filter: &mut SharedTensor<F>,
-                            rnn_config: &Self::RC,
+                            rnn_config: &Self::CRNN,
                             workspace: &mut SharedTensor<u8>)
                             -> Result<(), crate::co::error::Error>;
 }
