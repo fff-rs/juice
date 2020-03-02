@@ -859,7 +859,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             Err(E) => Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
         }?;
 
-        let dropout_memory_pointer: *mut cudnnDropoutStruct = *drop_desc.dropout_desc().id_c();
+        let dropout_memory: cudnnDropoutDescriptor_t = *drop_desc.dropout_desc().id_c();
 
         let x_desc = rnn_sequence_descriptors(
             src,
@@ -893,7 +893,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             hidden_size,
             num_layers,
             sequence_length,
-            dropout_memory_pointer,
+            dropout_memory,
             input_mode,
             direction_mode,
             network_mode,
