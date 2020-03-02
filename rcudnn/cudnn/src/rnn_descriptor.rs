@@ -6,9 +6,9 @@
 use super::{API, Error};
 use super::utils::DataType;
 use ffi::*;
-use ::{Cudnn, DropoutDescriptor};
+use ::{Cudnn};
 
-use crate::cuda::CudaDeviceMemory;
+
 use utils::DropoutConfig;
 
 /// Describes a Recurrent Descriptor.
