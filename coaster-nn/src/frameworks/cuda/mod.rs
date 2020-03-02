@@ -8,7 +8,7 @@ use crate::co::prelude::*;
 use crate::cudnn::*;
 pub use crate::cudnn::utils::{DataType, DataTypeInfo};
 use crate::plugin::*;
-use std::sync::{Arc, RwLock};
+
 
 #[macro_use]
 pub mod helper;
@@ -17,7 +17,7 @@ lazy_static! {
     static ref CUDNN: Cudnn = Cudnn::new().unwrap();
 }
 
-fn rnn_sequence_descriptors<T>(src: &SharedTensor<T>,
+fn rnn_sequence_descriptors<T>(_src: &SharedTensor<T>,
                                sequence_length: i32,
                                input_size: i32,
                                hidden_size: i32,
@@ -856,7 +856,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             dropout_seed.unwrap_or(0),
         ) {
             Ok(dropout_object) => Ok(dropout_object),
-            Err(E) => Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
+            Err(_e) => Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
         }?;
 
         let dropout_memory: cudnnDropoutDescriptor_t = *drop_desc.dropout_desc().id_c();
@@ -979,7 +979,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         )?;
         let weight_desc = weight.cudnn_filter_desc()?;
 
-        let src_mem = read!(src, self);
+        let _src_mem = read!(src, self);
         let src_gradient_mem = write_only!(src_gradient, self);
         let weight_mem = read!(weight, self);
         let output_mem = read!(output, self);
