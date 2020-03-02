@@ -46,41 +46,34 @@ pub trait VectorOperations<T>: Sized + Vector<T>
 where
     T: Copy + Axpy + Scal + Dot + Nrm2 + Asum + Iamax,
 {
-    #[inline]
     fn update(&mut self, alpha: &T, x: &dyn Vector<T>) -> &mut Self {
         Axpy::axpy(alpha, x, self);
         self
     }
 
-    #[inline]
     fn scale(&mut self, alpha: &T) -> &mut Self {
         Scal::scal(alpha, self);
         self
     }
 
-    #[inline]
     fn dot(&self, x: &dyn Vector<T>) -> T {
         Dot::dot(self, x)
     }
 
-    #[inline]
     fn abs_sum(&self) -> T {
         Asum::asum(self)
     }
 
-    #[inline]
     fn norm(&self) -> T {
         Nrm2::nrm2(self)
     }
 
-    #[inline]
     fn max_index(&self) -> usize {
         Iamax::iamax(self)
     }
 }
 
 impl<T> Vector<T> for Vec<T> {
-    #[inline]
     fn len(&self) -> u32 {
         let l: Option<u32> = NumCast::from(Vec::len(self));
         match l {
@@ -89,19 +82,16 @@ impl<T> Vector<T> for Vec<T> {
         }
     }
 
-    #[inline]
     fn as_ptr(&self) -> *const T {
         self[..].as_ptr()
     }
 
-    #[inline]
     fn as_mut_ptr(&mut self) -> *mut T {
         (&mut self[..]).as_mut_ptr()
     }
 }
 
 impl<T> Vector<T> for [T] {
-    #[inline]
     fn len(&self) -> u32 {
         let l: Option<u32> = NumCast::from(<[T]>::len(self));
         match l {
@@ -110,12 +100,10 @@ impl<T> Vector<T> for [T] {
         }
     }
 
-    #[inline]
     fn as_ptr(&self) -> *const T {
         <[T]>::as_ptr(self)
     }
 
-    #[inline]
     fn as_mut_ptr(&mut self) -> *mut T {
         <[T]>::as_mut_ptr(self)
     }
