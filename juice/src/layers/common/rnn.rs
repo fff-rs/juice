@@ -39,10 +39,10 @@
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
-use capnp::ErrorKind::Unimplemented;
+
 
 use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
-use util::native_backend;
+
 
 use crate::capnp_util::*;
 use crate::co::prelude::*;
