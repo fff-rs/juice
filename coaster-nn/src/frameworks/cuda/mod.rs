@@ -8,7 +8,6 @@ use crate::co::prelude::*;
 use crate::cudnn::*;
 pub use crate::cudnn::utils::{DataType, DataTypeInfo};
 use crate::plugin::*;
-use std::sync::{Arc, RwLock};
 
 #[macro_use]
 pub mod helper;
@@ -17,14 +16,13 @@ lazy_static! {
     static ref CUDNN: Cudnn = Cudnn::new().unwrap();
 }
 
-fn rnn_sequence_descriptors<T>(src: &SharedTensor<T>,
-                               sequence_length: i32,
-                               input_size: i32,
-                               hidden_size: i32,
-                               batch_size: i32,
-                               num_layers: i32,
-                               data_type: DataType)
-                               -> Result<RnnSequenceDescriptors, Error> {
+fn rnn_sequence_descriptors(sequence_length: i32,
+                            input_size: i32,
+                            hidden_size: i32,
+                            batch_size: i32,
+                            num_layers: i32,
+                            data_type: DataType)
+                            -> Result<RnnSequenceDescriptors, Error> {
     let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
     let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
     let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
@@ -802,7 +800,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         rnn_config: &Self::CRNN,
         sequence_length: i32,
         batch_size: i32,
-        input_size: i32,
+        input_size: i32
     ) -> Result<Vec<usize>, Error> {
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
@@ -862,7 +860,6 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let dropout_memory_pointer: *mut cudnnDropoutStruct = *drop_desc.dropout_desc().id_c();
 
         let x_desc = rnn_sequence_descriptors(
-            src,
             sequence_length,
             src_description[1] as i32,
             hidden_size,
@@ -917,7 +914,6 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
     ) -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
-            src,
             *rnn_config.sequence_length(),
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
@@ -969,7 +965,6 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                          -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
-            src,
             *rnn_config.sequence_length(),
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
@@ -1028,7 +1023,6 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                             -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
-            src,
             *rnn_config.sequence_length(),
             src_dimensions[1] as i32,
             rnn_config.hidden_size,

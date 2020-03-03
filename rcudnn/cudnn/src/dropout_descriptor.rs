@@ -7,8 +7,6 @@ use super::{Error, API};
 use crate::cudnn::Cudnn;
 use crate::ffi::*;
 
-use crate::cuda::CudaDeviceMemory;
-
 #[derive(Debug, Clone)]
 /// Describes a DropoutDescriptor.
 pub struct DropoutDescriptor {
