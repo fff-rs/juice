@@ -3,8 +3,8 @@
 extern crate test;
 extern crate coaster as co;
 extern crate coaster_blas as co_blas;
-extern crate rblas;
 extern crate rust_blas as rblas;
+extern crate rand;
 
 use test::Bencher;
 use crate::co::prelude::*;
@@ -18,7 +18,7 @@ fn backend() -> Backend<Native> {
 }
 
 fn bench_dot_rblas(b: &mut Bencher, n: usize) {
-    let mut rng = thread_rng();
+    let rng = thread_rng();
     let slice_a: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
     let slice_b: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
 
@@ -29,7 +29,7 @@ fn bench_dot_rblas(b: &mut Bencher, n: usize) {
 }
 
 fn bench_dot_coaster(b: &mut Bencher, n: usize) {
-    let mut rng = thread_rng();
+    let rng = thread_rng();
     let slice_a: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
     let slice_b: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
 

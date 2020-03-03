@@ -41,6 +41,7 @@ use std::sync::{Arc, RwLock};
 
 use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
 
+
 use crate::capnp_util::*;
 use crate::co::prelude::*;
 use crate::conn;
@@ -324,7 +325,6 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
         input_data: &[&SharedTensor<f32>],
         output_data: &mut [&mut SharedTensor<f32>],
     ) {
-        let src = input_data[0];
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         backend
@@ -507,8 +507,8 @@ mod tests {
             .copy_from_slice(sample_input());
         let input_shape = input_data.desc();
 
-        let output_shape = &[input_shape[0], cfg.hidden_size, cfg.num_layers];
-        let mut output_data = SharedTensor::<f32>::new(output_shape);
+        let output_shape = &[input_shape[0], input_shape[1], num_layers];
+        let output_data = SharedTensor::<f32>::new(output_shape);
 
         layer.rnn_config = Some(Rc::from(
             backend
@@ -561,7 +561,8 @@ mod tests {
         let output_shape = vec![batch_size, cfg.hidden_size, cfg.num_layers];
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
 
-        layer.rnn_config = Some(Rc::from(
+
+        let config =
             backend
                 .new_rnn_config(
                     &input_data,
@@ -576,15 +577,26 @@ mod tests {
                     cfg.num_layers as i32,
                     batch_size as i32,
                 )
-                .unwrap(),
-        ));
+                .unwrap();
+
         let filter_dimensions = <Backend<Cuda> as conn::Rnn<f32>>::generate_rnn_weight_description(
             &backend,
-            &layer.rnn_config.as_ref().unwrap(),
+            &config,
             sequence_length,
+            batch_size as i32,
+            cfg.hidden_size as i32
+        ).unwrap();
+
+        let filter_dimensions: TensorDesc = coRnn::<f32>::generate_rnn_weight_description(&backend,
+            &config,
+            sequence_length as i32,
             batch_size as i32,
             cfg.hidden_size as i32,
         ).unwrap();
+
+        layer.rnn_config = Some(Rc::from(
+            config
+        ));
 
         let mut weights_data: Vec<SharedTensor<f32>> = Vec::new();
         weights_data.push(SharedTensor::<f32>::new(&filter_dimensions));

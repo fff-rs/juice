@@ -58,26 +58,22 @@ pub fn write_to_memory<T: Iterator>(mem: &mut FlatBox, data: T)
     }
 }
 
-#[inline]
 /// Computes the Sigmoid Function on the CPU
 pub fn sigmoid<T: Float>(x: T) -> T {
     (T::one()) / (T::one() + (-x).exp())
 }
 
-#[inline]
 /// Computes the Sigmoid Gradient on the CPU
 pub fn sigmoid_grad<T: Float>(x: T, dx: T) -> T {
     x * (T::one() - x) * dx
 }
 
-#[inline]
 /// Computes the ReLU Function on the CPU
 pub fn relu<T: Float>(x: T) -> T {
     let x: T = x.clone();
     x.max(T::zero())
 }
 
-#[inline]
 /// Computes the ReLU Gradient on the CPU
 pub fn relu_grad<T: Float>(x: T, dx: T) -> T {
     if x > T::zero() {
@@ -86,13 +82,11 @@ pub fn relu_grad<T: Float>(x: T, dx: T) -> T {
     T::zero()
 }
 
-#[inline]
 /// Computes the Tanh Function on the CPU
 pub fn tanh<T: Float>(x: T) -> T {
     x.tanh()
 }
 
-#[inline]
 // d/dx tanh x = sech2 x = 1 + tanh2 x
 /// Computes the Tanh Gradient on the CPU
 pub fn tanh_grad<T: Float>(x: T, dx: T) -> T {

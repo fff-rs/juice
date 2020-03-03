@@ -6,7 +6,8 @@
 use super::{API, Error};
 use super::utils::DataType;
 use ffi::*;
-use ::Cudnn;
+use crate::Cudnn;
+
 
 use utils::DropoutConfig;
 

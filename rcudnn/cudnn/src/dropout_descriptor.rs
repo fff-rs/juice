@@ -7,6 +7,8 @@ use super::{Error, API};
 use crate::cudnn::Cudnn;
 use crate::ffi::*;
 
+
+
 #[derive(Debug, Clone)]
 /// Describes a DropoutDescriptor.
 pub struct DropoutDescriptor {

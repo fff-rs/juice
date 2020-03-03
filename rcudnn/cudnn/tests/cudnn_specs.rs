@@ -152,7 +152,7 @@ mod cudnn_spec {
             *dest.id_c(),
             *dest_data.id_c(),
             *reserve.id_c(),
-            *reserve.size(),
+            reserve.size(),
         ) {
             Ok(_) => {}
             Err(err) => {

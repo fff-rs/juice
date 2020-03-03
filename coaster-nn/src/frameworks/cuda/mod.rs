@@ -9,6 +9,7 @@ use crate::cudnn::*;
 pub use crate::cudnn::utils::{DataType, DataTypeInfo};
 use crate::plugin::*;
 
+
 #[macro_use]
 pub mod helper;
 
@@ -800,7 +801,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         rnn_config: &Self::CRNN,
         sequence_length: i32,
         batch_size: i32,
-        input_size: i32
+        input_size: i32,
     ) -> Result<Vec<usize>, Error> {
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
@@ -854,10 +855,10 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             dropout_seed.unwrap_or(0),
         ) {
             Ok(dropout_object) => Ok(dropout_object),
-            Err(E) => Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
+            Err(_e) => Err(Error::Plugin(PluginError::Plugin("Unable to create Dropout Layer")))
         }?;
 
-        let dropout_memory_pointer: *mut cudnnDropoutStruct = *drop_desc.dropout_desc().id_c();
+        let dropout_memory: cudnnDropoutDescriptor_t = *drop_desc.dropout_desc().id_c();
 
         let x_desc = rnn_sequence_descriptors(
             sequence_length,
@@ -890,7 +891,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             hidden_size,
             num_layers,
             sequence_length,
-            dropout_memory_pointer,
+            dropout_memory,
             input_mode,
             direction_mode,
             network_mode,
@@ -974,7 +975,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         )?;
         let weight_desc = weight.cudnn_filter_desc()?;
 
-        let src_mem = read!(src, self);
+        let _src_mem = read!(src, self);
         let src_gradient_mem = write_only!(src_gradient, self);
         let weight_mem = read!(weight, self);
         let output_mem = read!(output, self);
