@@ -9,7 +9,7 @@ use hyper_rustls::HttpsConnector;
 
 use std::str::FromStr;
 
-use docopt::Docopt;
+
 
 use csv::Reader;
 use serde::Deserialize;
@@ -143,7 +143,7 @@ use serde;
 fn main() {
     env_logger::init();
     // Parse Arguments
-    let args: Args = Docopt::new(MAIN_USAGE)
+    let args: Args = docopt::Docopt::new(MAIN_USAGE)
         .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
 
