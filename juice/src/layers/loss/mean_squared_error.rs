@@ -66,7 +66,7 @@ impl<B: IBackend> ComputeOutput<f32, B> for MeanSquaredError {
 
         write_to_memory(
             output_data[0].write_only(native.device()).unwrap(),
-            &vec![writable_loss/batch_size as f32],
+            &vec![writable_loss / batch_size as f32]
         );
     }
 }
@@ -94,9 +94,9 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for MeanSquaredEr
         // Gradient is calculated as 2 * (Predictions - Labels)
         Axpby::axpby(
             backend,
-            &native_scalar(2f32),
-            &predictions,
             &native_scalar(-2f32),
+            &predictions,
+            &native_scalar(2f32),
             &mut writable_input,
         )
         .unwrap();
