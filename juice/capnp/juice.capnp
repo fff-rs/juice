@@ -62,11 +62,13 @@ struct ConvolutionConfig {
 }
 
 struct RnnConfig {
-	outputSize @0 :UInt64;
-	cellSize @1 :UInt64;
-	hiddenSize @2 :UInt64;
-	numLayers @3 :UInt64;
-	rnnType @4 :Text;
+	hiddenSize @0 :UInt64;
+	numLayers @1 :UInt64;
+	rnnType @2 :Text;
+	dropoutProbability @3 :Float32;
+	dropoutSeed @4 :UInt64;
+	inputMode @5 :Text;
+	directionMode @6 :Text;
 }
 
 struct LinearConfig {

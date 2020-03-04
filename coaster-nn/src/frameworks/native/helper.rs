@@ -252,10 +252,10 @@ pub struct ConvolutionConfig {
 #[allow(missing_docs)]
 // TODO: Keep parallel with impl in Cuda
 pub struct RnnConfig {
-    pub output_size: usize,
     pub hidden_size: usize,
-    pub cell_size: usize,
-    pub num_layers: usize
+    pub num_layers: usize,
+    pub dropout_probability: f32,
+    pub dropout_seed: f32,
 }
 
 /// softmax impl generation macro

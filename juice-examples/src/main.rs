@@ -137,6 +137,7 @@ fn unzip_datasets(datasets: &[&str]) {
 }
 
 use serde;
+use juice::layers::common::rnn::{RnnInputMode_UserInput, DirectionMode_UserInput};
 
 #[cfg(not(test))]
 #[allow(unused_must_use)]
@@ -550,12 +551,12 @@ fn run_mackey_glass(
     learning_rate: Option<f32>,
     momentum: Option<f32>,
 ) {
-    let example_count: usize = 11751;
+    let example_count: usize = 44000;
     let columns: usize = 10;
 
-    let batch_size = batch_size.unwrap_or(65);
-    let learning_rate = learning_rate.unwrap_or(0.03f32);
-    let momentum = momentum.unwrap_or(0f32);
+    let batch_size = batch_size.unwrap_or(200);
+    let learning_rate = learning_rate.unwrap_or(0.01f32);
+    let momentum = momentum.unwrap_or(0.00f32);
 
     let mut net_cfg = SequentialConfig::default();
     net_cfg.add_input("data", &[batch_size, 1_usize, columns]);
@@ -583,7 +584,15 @@ fn run_mackey_glass(
         "lstm-dense" => {
             net_cfg.add_layer(LayerConfig::new(
                 "LSTMInitial",
-                RnnConfig { output_size: 10, cell_size: 10, hidden_size: 10, num_layers: 10, rnn_type: RnnType::LSTM }
+                RnnConfig {
+                    hidden_size: 200,
+                    num_layers: 10,
+                    dropout_seed: 123,
+                    dropout_probability: 0.5,
+                    rnn_type: RnnNetworkMode_UserInput::LSTM,
+                    input_mode: RnnInputMode_UserInput::Linear,
+                    direction_mode: DirectionMode_UserInput::UniDirectional,
+                },
             ));
             net_cfg.add_layer(LayerConfig::new(
                 "linear1",
@@ -626,7 +635,7 @@ fn run_mackey_glass(
 
     // set up evaluator for regression
     let mut regr_eval = ::juice::solver::RegressionEvaluator::new(Some("mse".to_owned()));
-    regr_eval.set_capacity(Some(500));
+    regr_eval.set_capacity(Some(2000));
 
     let mut data_rows = get_regr_iter();
     for _ in 0..(example_count / batch_size) {
@@ -641,7 +650,6 @@ fn run_mackey_glass(
         }
         // train the network!
         let inferred_out = solver.train_minibatch(inp_lock.clone(), label_lock.clone());
-
         let mut inferred = inferred_out.write().unwrap();
         let predictions = regr_eval.get_predictions(&mut inferred);
         regr_eval.add_samples(&predictions, &targets);
@@ -653,7 +661,7 @@ fn run_mackey_glass(
 }
 
 fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
-    let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass.csv").unwrap());
+    let rdr = Reader::from_reader(File::open("assets/lstm_equiv.csv").unwrap());
     let columns: usize = 10;
 
     rdr.into_deserialize().map(move |row| match row {
@@ -671,7 +679,7 @@ fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
 }
 
 fn get_packed_regr_iter() -> impl Iterator<Item = (f32, Vec<Vec<f32>>)> {
-    let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass_lstm.csv").unwrap());
+    let rdr = Reader::from_reader(File::open("assets/minified_lstm.csv").unwrap());
     let columns: usize = 10;
 
     rdr
