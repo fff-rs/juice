@@ -123,7 +123,7 @@ pub struct MeanSquaredErrorAccuracy {
 impl fmt::Display for dyn RegressionLoss {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f,
-               " {:.2?}",
+               " {:.6?}",
                self.loss()
         )
     }
