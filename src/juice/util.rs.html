@@ -119,6 +119,8 @@
 <span id="119">119</span>
 <span id="120">120</span>
 <span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides common utility functions</span>
 
@@ -221,6 +223,7 @@
 
 <span class="doccomment">/// Encapsulates all traits used in Layers.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> : <span class="ident">conn</span>::<span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>
+                      <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Rnn</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>
                       <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Pooling</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>
                       <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Relu</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">ReluPointwise</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>
                       <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Sigmoid</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">SigmoidPointwise</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>
@@ -232,6 +235,7 @@
                       <span class="op">+</span> <span class="ident">Copy</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> {}
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">conn</span>::<span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>
+      <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Rnn</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>
       <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Pooling</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>
       <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Relu</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">ReluPointwise</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>
       <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Sigmoid</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">SigmoidPointwise</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>

@@ -1600,6 +1600,18 @@
 <span id="1600">1600</span>
 <span id="1601">1601</span>
 <span id="1602">1602</span>
+<span id="1603">1603</span>
+<span id="1604">1604</span>
+<span id="1605">1605</span>
+<span id="1606">1606</span>
+<span id="1607">1607</span>
+<span id="1608">1608</span>
+<span id="1609">1609</span>
+<span id="1610">1610</span>
+<span id="1611">1611</span>
+<span id="1612">1612</span>
+<span id="1613">1613</span>
+<span id="1614">1614</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the generics and interfaces for the specific Layers.</span>
 <span class="doccomment">//!</span>
@@ -2535,6 +2547,7 @@
     <span class="kw">fn</span> <span class="ident">worker_from_config</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">config</span>.<span class="ident">layer_type</span>.<span class="ident">clone</span>() {
             <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Convolution</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Rnn</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
             <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Linear</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
             <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">LogSoftmax</span>::<span class="ident">default</span>()),
             <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Pooling</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
@@ -2914,6 +2927,8 @@
     <span class="comment">// Common layers</span>
     <span class="doccomment">/// Convolution Layer</span>
     <span class="ident">Convolution</span>(<span class="ident">ConvolutionConfig</span>),
+    <span class="doccomment">/// RNN Layer</span>
+    <span class="ident">Rnn</span>(<span class="ident">RnnConfig</span>),
     <span class="doccomment">/// Linear Layer</span>
     <span class="ident">Linear</span>(<span class="ident">LinearConfig</span>),
     <span class="doccomment">/// LogSoftmax Layer</span>
@@ -2961,6 +2976,7 @@
             <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
             <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
             <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
             <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
             <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
@@ -2997,6 +3013,10 @@
             }
             <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_convolution</span>();
+                <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
+            },
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_rnn</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
             <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
@@ -3045,6 +3065,10 @@
             <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Convolution</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ConvolutionConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="ident">config</span>)
+            }
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Rnn</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">RnnConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="ident">config</span>)
             }
             <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Dropout</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">DropoutConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());

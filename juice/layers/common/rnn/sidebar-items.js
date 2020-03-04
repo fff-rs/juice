@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["DirectionMode_UserInput","Types of Supported RNN DirectionModel"],["RnnInputMode_UserInput","Types of Supported RNN Input Modes"],["RnnNetworkMode_UserInput","Types of Supported RNNs"]],"struct":[["Rnn",""],["RnnConfig","Specifies configuration parameters for a RNN Layer. TODO: Update to RnnConfig in CUDA Layer"]]});

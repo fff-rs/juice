@@ -120,6 +120,8 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides common neural network layers.</span>
 <span class="doccomment">//!</span>
@@ -138,6 +140,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">convolution</span>::{<span class="ident">Convolution</span>, <span class="ident">ConvolutionConfig</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">rnn</span>::{<span class="ident">Rnn</span>, <span class="ident">RnnConfig</span>, <span class="ident">RnnNetworkMode_UserInput</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">linear</span>::{<span class="ident">Linear</span>, <span class="ident">LinearConfig</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">log_softmax</span>::<span class="ident">LogSoftmax</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">pooling</span>::{<span class="ident">Pooling</span>, <span class="ident">PoolingConfig</span>, <span class="ident">PoolingMode</span>};
@@ -145,6 +148,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">dropout</span>::{<span class="ident">Dropout</span>,<span class="ident">DropoutConfig</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">convolution</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">rnn</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">linear</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">log_softmax</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pooling</span>;
