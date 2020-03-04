@@ -661,7 +661,7 @@ fn run_mackey_glass(
 }
 
 fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
-    let rdr = Reader::from_reader(File::open("assets/lstm_equiv.csv").unwrap());
+    let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass_lstm.csv").unwrap());
     let columns: usize = 10;
 
     rdr.into_deserialize().map(move |row| match row {
@@ -679,7 +679,7 @@ fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
 }
 
 fn get_packed_regr_iter() -> impl Iterator<Item = (f32, Vec<Vec<f32>>)> {
-    let rdr = Reader::from_reader(File::open("assets/minified_lstm.csv").unwrap());
+    let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass_lstm.csv").unwrap());
     let columns: usize = 10;
 
     rdr
