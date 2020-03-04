@@ -589,7 +589,7 @@ mod tests {
 
         let filter_dimensions: TensorDesc = coRnn::<f32>::generate_rnn_weight_description(&backend,
             &config,
-            sequence_length as i32,
+            sequence_length,
             batch_size as i32,
             cfg.hidden_size as i32,
         ).unwrap();
