@@ -15,7 +15,7 @@ macro_rules! impl_ilayer_common {
 }
 
 pub use self::convolution::{Convolution, ConvolutionConfig};
-pub use self::rnn::{Rnn, RnnConfig, RnnType};
+pub use self::rnn::{Rnn, RnnConfig, RnnNetworkMode_UserInput};
 pub use self::linear::{Linear, LinearConfig};
 pub use self::log_softmax::LogSoftmax;
 pub use self::pooling::{Pooling, PoolingConfig, PoolingMode};

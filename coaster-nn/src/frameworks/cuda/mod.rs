@@ -9,7 +9,6 @@ use crate::cudnn::*;
 pub use crate::cudnn::utils::{DataType, DataTypeInfo};
 use crate::plugin::*;
 
-
 #[macro_use]
 pub mod helper;
 
