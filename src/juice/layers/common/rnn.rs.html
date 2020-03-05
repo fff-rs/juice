@@ -496,140 +496,6 @@
 <span id="496">496</span>
 <span id="497">497</span>
 <span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
-<span id="512">512</span>
-<span id="513">513</span>
-<span id="514">514</span>
-<span id="515">515</span>
-<span id="516">516</span>
-<span id="517">517</span>
-<span id="518">518</span>
-<span id="519">519</span>
-<span id="520">520</span>
-<span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
-<span id="525">525</span>
-<span id="526">526</span>
-<span id="527">527</span>
-<span id="528">528</span>
-<span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
-<span id="536">536</span>
-<span id="537">537</span>
-<span id="538">538</span>
-<span id="539">539</span>
-<span id="540">540</span>
-<span id="541">541</span>
-<span id="542">542</span>
-<span id="543">543</span>
-<span id="544">544</span>
-<span id="545">545</span>
-<span id="546">546</span>
-<span id="547">547</span>
-<span id="548">548</span>
-<span id="549">549</span>
-<span id="550">550</span>
-<span id="551">551</span>
-<span id="552">552</span>
-<span id="553">553</span>
-<span id="554">554</span>
-<span id="555">555</span>
-<span id="556">556</span>
-<span id="557">557</span>
-<span id="558">558</span>
-<span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
-<span id="599">599</span>
-<span id="600">600</span>
-<span id="601">601</span>
-<span id="602">602</span>
-<span id="603">603</span>
-<span id="604">604</span>
-<span id="605">605</span>
-<span id="606">606</span>
-<span id="607">607</span>
-<span id="608">608</span>
-<span id="609">609</span>
-<span id="610">610</span>
-<span id="611">611</span>
-<span id="612">612</span>
-<span id="613">613</span>
-<span id="614">614</span>
-<span id="615">615</span>
-<span id="616">616</span>
-<span id="617">617</span>
-<span id="618">618</span>
-<span id="619">619</span>
-<span id="620">620</span>
-<span id="621">621</span>
-<span id="622">622</span>
-<span id="623">623</span>
-<span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
-<span id="627">627</span>
-<span id="628">628</span>
-<span id="629">629</span>
-<span id="630">630</span>
-<span id="631">631</span>
-<span id="632">632</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Create a Recursive Layer</span>
 <span class="doccomment">//!</span>
@@ -683,139 +549,6 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">ArcLock</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">FillerType</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_camel_case_types</span>)]</span>
-<span class="doccomment">/// Types of Supported RNNs</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RnnNetworkMode_UserInput</span> {
-    <span class="doccomment">/// Long Short Term Memory</span>
-    <span class="ident">LSTM</span>,
-    <span class="doccomment">/// Gated Recurrent Unit</span>
-    <span class="ident">GRU</span>,
-    <span class="doccomment">/// ReLU Recursive Unit</span>
-    <span class="ident">ReLU</span>,
-    <span class="doccomment">/// Tanh Recursive Unit</span>
-    <span class="ident">tanh</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">RnnNetworkMode_UserInput</span> {
-    <span class="kw">fn</span> <span class="ident">to_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">GRU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;GRU&quot;</span>,
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">LSTM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;LSTM&quot;</span>,
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;ReLU&quot;</span>,
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">tanh</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;tanh&quot;</span>,
-        }
-            .<span class="ident">to_string</span>()
-    }
-
-    <span class="kw">fn</span> <span class="ident">from_text</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">input</span> {
-            <span class="string">&quot;GRU&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">GRU</span>),
-            <span class="string">&quot;LSTM&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">LSTM</span>),
-            <span class="string">&quot;ReLU&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">ReLU</span>),
-            <span class="string">&quot;tanh&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">tanh</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnType used - variants are GRU, LSTM, ReLU, and tanh&quot;</span>),
-        }
-    }
-
-    <span class="kw">fn</span> <span class="ident">to_cudnn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">GRU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span>,
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">LSTM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">ReLU</span>,
-            <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">tanh</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">Tanh</span>,
-        }
-    }
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_camel_case_types</span>)]</span>
-<span class="doccomment">/// Types of Supported RNN Input Modes</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RnnInputMode_UserInput</span> {
-    <span class="doccomment">/// Linear Input - A biased matrix multiplication is performed at the input of the first recurrent layer.</span>
-    <span class="ident">Linear</span>,
-    <span class="doccomment">/// Skip Input - No operation is performed to the input of the first recurrent layer</span>
-    <span class="ident">Skip</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">RnnInputMode_UserInput</span> {
-    <span class="kw">fn</span> <span class="ident">to_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Skip</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Skip&quot;</span>,
-            <span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Linear</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Linear&quot;</span>,
-        }
-            .<span class="ident">to_string</span>()
-    }
-
-    <span class="kw">fn</span> <span class="ident">from_text</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">input</span> {
-            <span class="string">&quot;Linear&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Linear</span>),
-            <span class="string">&quot;Skip&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Skip</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnInputMode used - variants are Linear, Skip&quot;</span>),
-        }
-    }
-
-    <span class="kw">fn</span> <span class="ident">to_cudnn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RnnInputMode</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Linear</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>,
-            <span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Skip</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span>,
-        }
-    }
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_camel_case_types</span>)]</span>
-<span class="doccomment">/// Types of Supported RNN DirectionModel</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DirectionMode_UserInput</span> {
-    <span class="doccomment">/// The network iterates recurrently from the first input to the last.</span>
-    <span class="ident">UniDirectional</span>,
-    <span class="doccomment">/// Each layer of the network iterates recurrently from the first input to the last and separately from the last input to the first. The outputs of the two are concatenated at each iteration giving the output of the layer.</span>
-    <span class="ident">BiDirectional</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">DirectionMode_UserInput</span> {
-    <span class="kw">fn</span> <span class="ident">to_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">DirectionMode_UserInput</span>::<span class="ident">UniDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UniDirectional&quot;</span>,
-            <span class="ident">DirectionMode_UserInput</span>::<span class="ident">BiDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;BiDirectional&quot;</span>,
-        }
-            .<span class="ident">to_string</span>()
-    }
-
-    <span class="kw">fn</span> <span class="ident">from_text</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">input</span> {
-            <span class="string">&quot;UniDirectional&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">DirectionMode_UserInput</span>::<span class="ident">UniDirectional</span>),
-            <span class="string">&quot;BiDirectional&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">DirectionMode_UserInput</span>::<span class="ident">BiDirectional</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown DirectionMode used - variants are UniDirectional, BiDirectional&quot;</span>),
-        }
-    }
-
-    <span class="kw">fn</span> <span class="ident">to_cudnn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DirectionMode</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">DirectionMode_UserInput</span>::<span class="ident">UniDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>,
-            <span class="ident">DirectionMode_UserInput</span>::<span class="ident">BiDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">DirectionMode</span>::<span class="ident">BiDirectional</span>,
-        }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">RnnNetworkMode_UserInput</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">to_text</span>())
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">RnnInputMode_UserInput</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">to_text</span>())
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">DirectionMode_UserInput</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">to_text</span>())
-    }
-}
-
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="doccomment">///</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Rnn</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">conn</span>::<span class="ident">Rnn</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -823,9 +556,9 @@
     <span class="ident">num_layers</span>: <span class="ident">usize</span>,
     <span class="ident">dropout_probability</span>: <span class="ident">f32</span>,
     <span class="ident">dropout_seed</span>: <span class="ident">u64</span>,
-    <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode_UserInput</span>,
-    <span class="ident">input_mode</span>: <span class="ident">RnnInputMode_UserInput</span>,
-    <span class="ident">direction_mode</span>: <span class="ident">DirectionMode_UserInput</span>,
+    <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>,
+    <span class="ident">input_mode</span>: <span class="ident">RnnInputMode</span>,
+    <span class="ident">direction_mode</span>: <span class="ident">DirectionMode</span>,
     <span class="ident">workspace</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">rnn_config</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span>::<span class="ident">CRNN</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
@@ -887,9 +620,9 @@
                 <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">dropout_probability</span>),
                 <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">dropout_seed</span>),
                 <span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">i32</span>,
-                <span class="self">self</span>.<span class="ident">rnn_type</span>.<span class="ident">to_cudnn</span>(),
-                <span class="self">self</span>.<span class="ident">input_mode</span>.<span class="ident">to_cudnn</span>(),
-                <span class="self">self</span>.<span class="ident">direction_mode</span>.<span class="ident">to_cudnn</span>(),
+                <span class="self">self</span>.<span class="ident">rnn_type</span>,
+                <span class="self">self</span>.<span class="ident">input_mode</span>,
+                <span class="self">self</span>.<span class="ident">direction_mode</span>,
                 <span class="comment">// Standard is likely to be effective across most parameters. This should be</span>
                 <span class="comment">// calculated internal to Juice if modified, allowing user input is likely to be</span>
                 <span class="comment">// more confusing than helpful to the end user.</span>
@@ -1032,11 +765,11 @@
     <span class="doccomment">/// Dropout Seed</span>
     <span class="kw">pub</span> <span class="ident">dropout_seed</span>: <span class="ident">u64</span>,
     <span class="doccomment">/// Type of RNN</span>
-    <span class="kw">pub</span> <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode_UserInput</span>,
+    <span class="kw">pub</span> <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>,
     <span class="doccomment">/// Input Mode</span>
-    <span class="kw">pub</span> <span class="ident">input_mode</span>: <span class="ident">RnnInputMode_UserInput</span>,
+    <span class="kw">pub</span> <span class="ident">input_mode</span>: <span class="ident">RnnInputMode</span>,
     <span class="doccomment">/// RNN Direction</span>
-    <span class="kw">pub</span> <span class="ident">direction_mode</span>: <span class="ident">DirectionMode_UserInput</span>,
+    <span class="kw">pub</span> <span class="ident">direction_mode</span>: <span class="ident">DirectionMode</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">LayerType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RnnConfig</span> {
@@ -1052,7 +785,7 @@
     <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>::<span class="ident">Builder</span>) {
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_hidden_size</span>(<span class="self">self</span>.<span class="ident">hidden_size</span> <span class="kw">as</span> <span class="ident">u64</span>);
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_num_layers</span>(<span class="self">self</span>.<span class="ident">num_layers</span> <span class="kw">as</span> <span class="ident">u64</span>);
-        <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_rnn_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">rnn_type</span>.<span class="ident">to_text</span>());
+        <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_rnn_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">rnn_type</span>.<span class="ident">to_string</span>());
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_dropout_probability</span>(<span class="self">self</span>.<span class="ident">dropout_probability</span>);
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_dropout_seed</span>(<span class="self">self</span>.<span class="ident">dropout_seed</span>);
     }
@@ -1066,9 +799,9 @@
         <span class="kw">let</span> <span class="ident">read_hidden_size</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_hidden_size</span>() <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">read_dropout_probability</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_dropout_probability</span>();
         <span class="kw">let</span> <span class="ident">read_dropout_seed</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_dropout_seed</span>();
-        <span class="kw">let</span> <span class="ident">read_rnn_type</span> <span class="op">=</span> <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">from_text</span>(<span class="ident">reader</span>.<span class="ident">get_rnn_type</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">read_input_mode</span> <span class="op">=</span> <span class="ident">RnnInputMode_UserInput</span>::<span class="ident">from_text</span>(<span class="ident">reader</span>.<span class="ident">get_input_mode</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">read_direction_mode</span> <span class="op">=</span> <span class="ident">DirectionMode_UserInput</span>::<span class="ident">from_text</span>(<span class="ident">reader</span>.<span class="ident">get_direction_mode</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">read_rnn_type</span> <span class="op">=</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">from_string</span>(<span class="ident">reader</span>.<span class="ident">get_rnn_type</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">read_input_mode</span> <span class="op">=</span> <span class="ident">RnnInputMode</span>::<span class="ident">from_string</span>(<span class="ident">reader</span>.<span class="ident">get_input_mode</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">read_direction_mode</span> <span class="op">=</span> <span class="ident">DirectionMode</span>::<span class="ident">from_string</span>(<span class="ident">reader</span>.<span class="ident">get_direction_mode</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
 
         <span class="ident">RnnConfig</span> {
             <span class="ident">hidden_size</span>: <span class="ident">read_hidden_size</span>,
@@ -1090,11 +823,10 @@
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Rnn</span>, <span class="ident">RnnConfig</span>, <span class="ident">RnnNetworkMode_UserInput</span>};
+    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Rnn</span>, <span class="ident">RnnConfig</span>};
     <span class="kw">use</span> <span class="ident">layer</span>::<span class="ident">ILayer</span>;
     <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
     <span class="kw">use</span> <span class="ident">weight</span>::<span class="ident">FillerType</span>;
-    <span class="kw">use</span> <span class="ident">layers</span>::<span class="ident">common</span>::<span class="ident">rnn</span>::{<span class="ident">RnnInputMode_UserInput</span>, <span class="ident">DirectionMode_UserInput</span>};
 
     <span class="kw">fn</span> <span class="ident">sample_input</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">f32</span>] { [<span class="number">1.0_f32</span>; <span class="number">512</span>].<span class="ident">as_ref</span>() }
 
@@ -1119,9 +851,9 @@
             <span class="ident">num_layers</span>: <span class="number">8</span>,
             <span class="ident">dropout_probability</span>: <span class="number">0.5</span>,
             <span class="ident">dropout_seed</span>: <span class="number">0</span>,
-            <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">LSTM</span>,
-            <span class="ident">input_mode</span>: <span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Linear</span>,
-            <span class="ident">direction_mode</span>: <span class="ident">DirectionMode_UserInput</span>::<span class="ident">UniDirectional</span>,
+            <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
+            <span class="ident">input_mode</span>: <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>,
+            <span class="ident">direction_mode</span>: <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>,
         };
 
         <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">native_backend</span>();
@@ -1171,9 +903,9 @@
             <span class="ident">num_layers</span>: <span class="number">8</span>,
             <span class="ident">dropout_probability</span>: <span class="number">0.0</span>,
             <span class="ident">dropout_seed</span>: <span class="number">0</span>,
-            <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode_UserInput</span>::<span class="ident">LSTM</span>,
-            <span class="ident">input_mode</span>: <span class="ident">RnnInputMode_UserInput</span>::<span class="ident">Linear</span>,
-            <span class="ident">direction_mode</span>: <span class="ident">DirectionMode_UserInput</span>::<span class="ident">UniDirectional</span>,
+            <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
+            <span class="ident">input_mode</span>: <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>,
+            <span class="ident">direction_mode</span>: <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>,
         };
 
         <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="number">8</span>;
@@ -1214,7 +946,7 @@
 
         <span class="kw">let</span> <span class="ident">filter_dimensions</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">conn</span>::<span class="ident">Rnn</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">generate_rnn_weight_description</span>(
             <span class="kw-2">&amp;</span><span class="ident">backend</span>,
-            <span class="kw-2">&amp;</span><span class="ident">layer</span>.<span class="ident">rnn_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>(),
+            <span class="kw-2">&amp;</span><span class="ident">config</span>,
             <span class="ident">sequence_length</span>,
             <span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">i32</span>,
             <span class="ident">cfg</span>.<span class="ident">hidden_size</span> <span class="kw">as</span> <span class="ident">i32</span>,
