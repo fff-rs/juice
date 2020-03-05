@@ -9,8 +9,6 @@ use hyper_rustls::HttpsConnector;
 
 use std::str::FromStr;
 
-
-
 use csv::Reader;
 use serde::Deserialize;
 
@@ -19,6 +17,7 @@ use tokio;
 use futures_util::stream::TryStreamExt;
 
 extern crate coaster as co;
+extern crate coaster_nn as conn;
 extern crate env_logger;
 extern crate juice;
 
@@ -137,7 +136,6 @@ fn unzip_datasets(datasets: &[&str]) {
 }
 
 use serde;
-use juice::layers::common::rnn::{RnnInputMode_UserInput, DirectionMode_UserInput};
 
 #[cfg(not(test))]
 #[allow(unused_must_use)]
@@ -543,7 +541,9 @@ fn run_fashion(
     }
 }
 
+
 #[cfg(all(feature = "cuda"))]
+use conn::{RnnNetworkMode, DirectionMode, RnnInputMode};
 #[allow(dead_code)]
 fn run_mackey_glass(
     model_name: Option<String>,
@@ -589,9 +589,9 @@ fn run_mackey_glass(
                     num_layers: 10,
                     dropout_seed: 123,
                     dropout_probability: 0.5,
-                    rnn_type: RnnNetworkMode_UserInput::LSTM,
-                    input_mode: RnnInputMode_UserInput::Linear,
-                    direction_mode: DirectionMode_UserInput::UniDirectional,
+                    rnn_type: RnnNetworkMode::LSTM,
+                    input_mode: RnnInputMode::LinearInput,
+                    direction_mode: DirectionMode::UniDirectional,
                 },
             ));
             net_cfg.add_layer(LayerConfig::new(

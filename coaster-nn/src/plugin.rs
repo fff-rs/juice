@@ -1,5 +1,6 @@
 //! Provides the INn Plugin trait for Coaster implementation.
 use crate::co::tensor::SharedTensor;
+use std::fmt::{Formatter, Error};
 
 #[derive(Debug, Copy, Clone)]
 /// Different algorithms to compute the convolution forward algorithm.
@@ -353,6 +354,31 @@ pub enum RnnNetworkMode {
     GRU
 }
 
+impl std::fmt::Display for RnnNetworkMode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let result = match &self {
+            RnnNetworkMode::ReLU => "RelU",
+            RnnNetworkMode::Tanh => "Tanh",
+            RnnNetworkMode::LSTM => "LSTM",
+            RnnNetworkMode::GRU => "GRU",
+        }.to_owned();
+        write!(f, "{}", result)
+    }
+}
+
+impl RnnNetworkMode {
+    /// Convert RnnNetworkMode to String Representation
+    pub fn from_string(input: &str) -> Result<Self, &str> {
+        match input {
+            "GRU" => Ok(RnnNetworkMode::GRU),
+            "LSTM" => Ok(RnnNetworkMode::LSTM),
+            "ReLU" => Ok(RnnNetworkMode::ReLU),
+            "Tanh" => Ok(RnnNetworkMode::Tanh),
+            _ => Err("Unknown RnnType used - variants are GRU, LSTM, ReLU, and Tanhd"),
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone)]
 /// Input Modes for RNN [cudnnRNNInputMode_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNInputMode_t
@@ -363,7 +389,28 @@ pub enum RnnInputMode {
     /// CUDNN_SKIP_INPUT - No operation is performed at the input of the first recurrent layer -
     /// if this is used then the leading dimension of the input tensor must be equal to the hidden
     /// state size of the network.
-    SkipInput
+    SkipInput,
+}
+
+impl std::fmt::Display for RnnInputMode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let result = match &self {
+            RnnInputMode::LinearInput => "LinearInput",
+            RnnInputMode::SkipInput => "SkipInput"
+        }.to_owned();
+        write!(f, "{}", result)
+    }
+}
+
+impl RnnInputMode {
+    /// Convert to RnnInputMode from String Representation
+    pub fn from_string(input: &str) -> Result<Self, &str> {
+        match input {
+            "LinearInput" => Ok(RnnInputMode::LinearInput),
+            "SkipInput" => Ok(RnnInputMode::SkipInput),
+            _ => Err("Unknown RnnInputMode used - variants are LinearInput, SkipInput"),
+        }
+    }
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -373,7 +420,28 @@ pub enum DirectionMode {
     /// CUDNN_UNIDIRECTIONAL - The network iterates from first to last
     UniDirectional,
     /// CUDNN_BIDIRECTION - Concats recurrent output of First -> Last && Last -> First
-    BiDirectional
+    BiDirectional,
+}
+
+impl std::fmt::Display for DirectionMode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let result = match &self {
+            DirectionMode::UniDirectional => "UniDirectional",
+            DirectionMode::BiDirectional => "BiDirectional"
+        }.to_owned();
+        write!(f, "{}", result)
+    }
+}
+
+impl DirectionMode {
+    /// Convert to DirectionMode from String Representation
+    pub fn from_string(input: &str) -> Result<Self, &str> {
+        match input {
+            "UniDirectional" => Ok(DirectionMode::UniDirectional),
+            "BiDirectional" => Ok(DirectionMode::BiDirectional),
+            _ => Err("Unknown DirectionMode used - variants are UniDirectional, BiDirectional"),
+        }
+    }
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -393,6 +461,30 @@ pub enum RnnAlgorithm {
     Count,
 }
 
+impl std::fmt::Display for RnnAlgorithm {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let result = match &self {
+            RnnAlgorithm::Standard => "Standard",
+            RnnAlgorithm::PersistStatic => "PersistStatic",
+            RnnAlgorithm::PersistDynamic => "PersistDynamic",
+            RnnAlgorithm::Count => unreachable!()
+        }.to_owned();
+        write!(f, "{}", result)
+    }
+}
+
+impl RnnAlgorithm {
+    /// Convert to RnnAlgorithm from String Representation
+    fn from_string(input: &str) -> Result<Self, &str> {
+        match input {
+            "Standard" => Ok(RnnAlgorithm::Standard),
+            "PersistStatic" => Ok(RnnAlgorithm::PersistStatic),
+            "PersistDynamic" => Ok(RnnAlgorithm::PersistDynamic),
+            _ => Err("Unknown RnnAlgorithm used - variants are Standard, PersistStatic, PersistDynamic"),
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone)]
 /// Enables/Disables the padded input/output [cudnnRNNPaddingMode_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNPaddingMode_t
@@ -400,7 +492,7 @@ pub enum RnnPaddingMode {
     /// Padding disabled
     Disabled,
     /// Padding enabled
-    Enabled
+    Enabled,
 }
 
 #[derive(Debug, Copy, Clone)]
