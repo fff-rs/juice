@@ -50,139 +50,6 @@ use crate::layer::*;
 use crate::util::ArcLock;
 use crate::weight::FillerType;
 
-#[derive(Clone, Copy)]
-#[allow(non_camel_case_types)]
-/// Types of Supported RNNs
-pub enum RnnNetworkMode_UserInput {
-    /// Long Short Term Memory
-    LSTM,
-    /// Gated Recurrent Unit
-    GRU,
-    /// ReLU Recursive Unit
-    ReLU,
-    /// Tanh Recursive Unit
-    tanh,
-}
-
-impl RnnNetworkMode_UserInput {
-    fn to_text(&self) -> String {
-        match self {
-            RnnNetworkMode_UserInput::GRU => "GRU",
-            RnnNetworkMode_UserInput::LSTM => "LSTM",
-            RnnNetworkMode_UserInput::ReLU => "ReLU",
-            RnnNetworkMode_UserInput::tanh => "tanh",
-        }
-            .to_string()
-    }
-
-    fn from_text(input: &str) -> Result<Self, &str> {
-        match input {
-            "GRU" => Ok(RnnNetworkMode_UserInput::GRU),
-            "LSTM" => Ok(RnnNetworkMode_UserInput::LSTM),
-            "ReLU" => Ok(RnnNetworkMode_UserInput::ReLU),
-            "tanh" => Ok(RnnNetworkMode_UserInput::tanh),
-            _ => Err("Unknown RnnType used - variants are GRU, LSTM, ReLU, and tanh"),
-        }
-    }
-
-    fn to_cudnn(&self) -> RnnNetworkMode {
-        match self {
-            RnnNetworkMode_UserInput::GRU => RnnNetworkMode::GRU,
-            RnnNetworkMode_UserInput::LSTM => RnnNetworkMode::LSTM,
-            RnnNetworkMode_UserInput::ReLU => RnnNetworkMode::ReLU,
-            RnnNetworkMode_UserInput::tanh => RnnNetworkMode::Tanh,
-        }
-    }
-}
-
-#[derive(Clone, Copy)]
-#[allow(non_camel_case_types)]
-/// Types of Supported RNN Input Modes
-pub enum RnnInputMode_UserInput {
-    /// Linear Input - A biased matrix multiplication is performed at the input of the first recurrent layer.
-    Linear,
-    /// Skip Input - No operation is performed to the input of the first recurrent layer
-    Skip,
-}
-
-impl RnnInputMode_UserInput {
-    fn to_text(&self) -> String {
-        match self {
-            RnnInputMode_UserInput::Skip => "Skip",
-            RnnInputMode_UserInput::Linear => "Linear",
-        }
-            .to_string()
-    }
-
-    fn from_text(input: &str) -> Result<Self, &str> {
-        match input {
-            "Linear" => Ok(RnnInputMode_UserInput::Linear),
-            "Skip" => Ok(RnnInputMode_UserInput::Skip),
-            _ => Err("Unknown RnnInputMode used - variants are Linear, Skip"),
-        }
-    }
-
-    fn to_cudnn(&self) -> RnnInputMode {
-        match self {
-            RnnInputMode_UserInput::Linear => RnnInputMode::LinearInput,
-            RnnInputMode_UserInput::Skip => RnnInputMode::SkipInput,
-        }
-    }
-}
-
-#[derive(Clone, Copy)]
-#[allow(non_camel_case_types)]
-/// Types of Supported RNN DirectionModel
-pub enum DirectionMode_UserInput {
-    /// The network iterates recurrently from the first input to the last.
-    UniDirectional,
-    /// Each layer of the network iterates recurrently from the first input to the last and separately from the last input to the first. The outputs of the two are concatenated at each iteration giving the output of the layer.
-    BiDirectional,
-}
-
-impl DirectionMode_UserInput {
-    fn to_text(&self) -> String {
-        match self {
-            DirectionMode_UserInput::UniDirectional => "UniDirectional",
-            DirectionMode_UserInput::BiDirectional => "BiDirectional",
-        }
-            .to_string()
-    }
-
-    fn from_text(input: &str) -> Result<Self, &str> {
-        match input {
-            "UniDirectional" => Ok(DirectionMode_UserInput::UniDirectional),
-            "BiDirectional" => Ok(DirectionMode_UserInput::BiDirectional),
-            _ => Err("Unknown DirectionMode used - variants are UniDirectional, BiDirectional"),
-        }
-    }
-
-    fn to_cudnn(&self) -> DirectionMode {
-        match self {
-            DirectionMode_UserInput::UniDirectional => DirectionMode::UniDirectional,
-            DirectionMode_UserInput::BiDirectional => DirectionMode::BiDirectional,
-        }
-    }
-}
-
-impl std::fmt::Debug for RnnNetworkMode_UserInput {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_text())
-    }
-}
-
-impl std::fmt::Debug for RnnInputMode_UserInput {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_text())
-    }
-}
-
-impl std::fmt::Debug for DirectionMode_UserInput {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_text())
-    }
-}
-
 #[derive(Debug, Clone)]
 ///
 pub struct Rnn<B: conn::Rnn<f32>> {
@@ -190,9 +57,9 @@ pub struct Rnn<B: conn::Rnn<f32>> {
     num_layers: usize,
     dropout_probability: f32,
     dropout_seed: u64,
-    rnn_type: RnnNetworkMode_UserInput,
-    input_mode: RnnInputMode_UserInput,
-    direction_mode: DirectionMode_UserInput,
+    rnn_type: RnnNetworkMode,
+    input_mode: RnnInputMode,
+    direction_mode: DirectionMode,
     workspace: Option<ArcLock<SharedTensor<u8>>>,
     rnn_config: Option<Rc<B::CRNN>>,
 }
@@ -254,9 +121,9 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
                 Some(self.dropout_probability),
                 Some(self.dropout_seed),
                 sequence_length as i32,
-                self.rnn_type.to_cudnn(),
-                self.input_mode.to_cudnn(),
-                self.direction_mode.to_cudnn(),
+                self.rnn_type,
+                self.input_mode,
+                self.direction_mode,
                 // Standard is likely to be effective across most parameters. This should be
                 // calculated internal to Juice if modified, allowing user input is likely to be
                 // more confusing than helpful to the end user.
@@ -399,11 +266,11 @@ pub struct RnnConfig {
     /// Dropout Seed
     pub dropout_seed: u64,
     /// Type of RNN
-    pub rnn_type: RnnNetworkMode_UserInput,
+    pub rnn_type: RnnNetworkMode,
     /// Input Mode
-    pub input_mode: RnnInputMode_UserInput,
+    pub input_mode: RnnInputMode,
     /// RNN Direction
-    pub direction_mode: DirectionMode_UserInput,
+    pub direction_mode: DirectionMode,
 }
 
 impl Into<LayerType> for RnnConfig {
@@ -419,7 +286,7 @@ impl<'a> CapnpWrite<'a> for RnnConfig {
     fn write_capnp(&self, builder: &mut Self::Builder) {
         builder.reborrow().set_hidden_size(self.hidden_size as u64);
         builder.reborrow().set_num_layers(self.num_layers as u64);
-        builder.reborrow().set_rnn_type(&self.rnn_type.to_text());
+        builder.reborrow().set_rnn_type(&self.rnn_type.to_string());
         builder.reborrow().set_dropout_probability(self.dropout_probability);
         builder.reborrow().set_dropout_seed(self.dropout_seed);
     }
@@ -433,9 +300,9 @@ impl<'a> CapnpRead<'a> for RnnConfig {
         let read_hidden_size = reader.get_hidden_size() as usize;
         let read_dropout_probability = reader.get_dropout_probability();
         let read_dropout_seed = reader.get_dropout_seed();
-        let read_rnn_type = RnnNetworkMode_UserInput::from_text(reader.get_rnn_type().unwrap()).unwrap();
-        let read_input_mode = RnnInputMode_UserInput::from_text(reader.get_input_mode().unwrap()).unwrap();
-        let read_direction_mode = DirectionMode_UserInput::from_text(reader.get_direction_mode().unwrap()).unwrap();
+        let read_rnn_type = RnnNetworkMode::from_string(reader.get_rnn_type().unwrap()).unwrap();
+        let read_input_mode = RnnInputMode::from_string(reader.get_input_mode().unwrap()).unwrap();
+        let read_direction_mode = DirectionMode::from_string(reader.get_direction_mode().unwrap()).unwrap();
 
         RnnConfig {
             hidden_size: read_hidden_size,
@@ -457,11 +324,10 @@ mod tests {
 
     use crate::co::*;
 
-    use super::{Rnn, RnnConfig, RnnNetworkMode_UserInput};
+    use super::{Rnn, RnnConfig};
     use layer::ILayer;
     use std::rc::Rc;
     use weight::FillerType;
-    use layers::common::rnn::{RnnInputMode_UserInput, DirectionMode_UserInput};
 
     fn sample_input() -> &'static [f32] { [1.0_f32; 512].as_ref() }
 
@@ -486,9 +352,9 @@ mod tests {
             num_layers: 8,
             dropout_probability: 0.5,
             dropout_seed: 0,
-            rnn_type: RnnNetworkMode_UserInput::LSTM,
-            input_mode: RnnInputMode_UserInput::Linear,
-            direction_mode: DirectionMode_UserInput::UniDirectional,
+            rnn_type: RnnNetworkMode::LSTM,
+            input_mode: RnnInputMode::LinearInput,
+            direction_mode: DirectionMode::UniDirectional,
         };
 
         let native_backend = native_backend();
@@ -538,9 +404,9 @@ mod tests {
             num_layers: 8,
             dropout_probability: 0.0,
             dropout_seed: 0,
-            rnn_type: RnnNetworkMode_UserInput::LSTM,
-            input_mode: RnnInputMode_UserInput::Linear,
-            direction_mode: DirectionMode_UserInput::UniDirectional,
+            rnn_type: RnnNetworkMode::LSTM,
+            input_mode: RnnInputMode::LinearInput,
+            direction_mode: DirectionMode::UniDirectional,
         };
 
         let batch_size = 8;
@@ -581,7 +447,7 @@ mod tests {
 
         let filter_dimensions = <Backend<Cuda> as conn::Rnn<f32>>::generate_rnn_weight_description(
             &backend,
-            &layer.rnn_config.as_ref().unwrap(),
+            &config,
             sequence_length,
             batch_size as i32,
             cfg.hidden_size as i32,
