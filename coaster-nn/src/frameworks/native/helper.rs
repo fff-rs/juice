@@ -4,15 +4,19 @@ use crate::co;
 use crate::co::plugin::Error as PluginError;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::frameworks::native::flatbox::FlatBox;
+use ::{DirectionMode, RnnInputMode};
+use RnnNetworkMode;
 
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
 pub struct NormalizationConfig;
+
 #[derive(Debug, Clone)]
 #[allow(missing_docs)]
 pub struct PoolingConfig {
     pub window: Vec<i32>,
-    pub padding: Vec<i32>, //TODO: check datatype
+    pub padding: Vec<i32>,
+    //TODO: check datatype
     pub stride: Vec<i32>,
 }
 
@@ -252,10 +256,20 @@ pub struct ConvolutionConfig {
 #[allow(missing_docs)]
 // TODO: Keep parallel with impl in Cuda
 pub struct RnnConfig {
+    /// Size of the Hidden Layer
     pub hidden_size: usize,
+    /// Number of Hidden Layers
     pub num_layers: usize,
+    /// Dropout Probability
     pub dropout_probability: f32,
-    pub dropout_seed: f32,
+    /// Dropout Seed
+    pub dropout_seed: u64,
+    /// Type of RNN
+    pub rnn_type: RnnNetworkMode,
+    /// Input Mode
+    pub input_mode: RnnInputMode,
+    /// RNN Direction
+    pub direction_mode: DirectionMode,
 }
 
 /// softmax impl generation macro
