@@ -31,7 +31,7 @@ impl NormalizationDescriptor {
 
     /// Initializes a new CUDA cuDNN NormalizationDescriptor from its C type.
     pub fn from_c(id: cudnnLRNDescriptor_t) -> NormalizationDescriptor {
-        NormalizationDescriptor { id: id }
+        NormalizationDescriptor { id }
     }
 
     /// Returns the CUDA cuDNN NormalizationDescriptor as its C type.

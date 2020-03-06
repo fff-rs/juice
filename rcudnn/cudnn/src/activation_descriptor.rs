@@ -35,7 +35,7 @@ impl ActivationDescriptor {
 
     /// Initializes a new CUDA cuDNN Activation Descriptor from its C type.
     pub fn from_c(id: cudnnActivationDescriptor_t) -> ActivationDescriptor {
-        ActivationDescriptor { id: id }
+        ActivationDescriptor { id }
     }
 
     /// Returns the CUDA cuDNN Activation Descriptor as its C type.

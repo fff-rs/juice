@@ -19,16 +19,16 @@ impl CudaDeviceMemory {
     pub fn new(size: usize) -> Result<CudaDeviceMemory, Error> {
         let ptr = API::cuda_allocate_device_memory(size)?;
         Ok(CudaDeviceMemory {
-            ptr: ptr,
-            size: size,
+            ptr,
+            size,
         })
     }
 
     /// Initializes a new CUDA Device Memory from its C type.
     pub fn from_c(ptr: *mut ::libc::c_void, size: usize) -> CudaDeviceMemory {
         CudaDeviceMemory {
-            ptr: ptr,
-            size: size,
+            ptr,
+            size,
         }
     }
 

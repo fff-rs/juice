@@ -5,6 +5,7 @@ use crate::{Error, API};
 
 impl API {
     /// Computes an softmax forward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn softmax_forward(
         handle: cudnnHandle_t,
         algorithm: cudnnSoftmaxAlgorithm_t,
@@ -24,6 +25,7 @@ impl API {
     }
 
     /// Computes an softmax backward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn softmax_backward(
         handle: cudnnHandle_t,
         algorithm: cudnnSoftmaxAlgorithm_t,
@@ -54,6 +56,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_softmax_forward(
         handle: cudnnHandle_t,
         algorithm: cudnnSoftmaxAlgorithm_t,
@@ -73,6 +76,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_softmax_backward(
         handle: cudnnHandle_t,
         algorithm: cudnnSoftmaxAlgorithm_t,

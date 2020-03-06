@@ -28,7 +28,7 @@ impl Context {
 
     /// Create a new cuBLAS Context from its C type.
     pub fn from_c(id: cublasHandle_t) -> Context {
-        Context { id: id }
+        Context { id }
     }
 
     /// Returns the cuBLAS Context as its C type.
@@ -123,7 +123,8 @@ impl Context {
     }
 
     // Level 3 operations
-
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::many_single_char_names)]
     pub fn gemm(
         &self,
         transa: Operation,

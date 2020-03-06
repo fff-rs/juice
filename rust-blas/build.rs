@@ -15,7 +15,7 @@ fn main() {
     if lib_dir.is_none() && include_dir.is_none() {
         if let Ok(info) = pkg_config::find_library(variant.as_str()) {
             // avoid empty include paths as they are not supported by GCC
-            if info.include_paths.len() > 0 {
+            if !info.include_paths.is_empty() {
                 let paths = env::join_paths(info.include_paths).unwrap();
                 println!("cargo:include={}", paths.to_str().unwrap());
             }
@@ -35,7 +35,7 @@ fn main() {
 
     println!("cargo:rustc-link-lib={}={}", mode, variant);
 
-    if let Some(include_dir) = include_dir.clone() {
+    if let Some(include_dir) = include_dir {
         println!("cargo:include={}", include_dir);
     }
 }

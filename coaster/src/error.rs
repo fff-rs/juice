@@ -27,16 +27,7 @@ impl fmt::Display for Error {
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Framework(ref err) => err.description(),
-            Error::Tensor(ref err) => err.description(),
-            Error::Plugin(ref err) => err.description(),
-            Error::Device(ref err) => err.description(),
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             Error::Framework(ref err) => Some(err),
             Error::Tensor(ref err) => Some(err),

@@ -30,15 +30,15 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::NotInitialized => write!(f, "{:?}", error::Error::description(self)),
-            Error::AllocFailed => write!(f, "{:?}", error::Error::description(self)),
+            Error::NotInitialized => write!(f, "{:?}", self.to_string()),
+            Error::AllocFailed => write!(f, "{:?}", self.to_string()),
             Error::InternalError(ref err) => write!(f, "{:?}", err),
             Error::InvalidValue(ref err) => write!(f, "{:?}", err),
-            Error::ArchMismatch => write!(f, "{:?}", error::Error::description(self)),
-            Error::MappingError => write!(f, "{:?}", error::Error::description(self)),
-            Error::ExecutionFailed => write!(f, "{:?}", error::Error::description(self)),
+            Error::ArchMismatch => write!(f, "{:?}", self.to_string()),
+            Error::MappingError => write!(f, "{:?}", self.to_string()),
+            Error::ExecutionFailed => write!(f, "{:?}", self.to_string()),
             Error::NotSupported(ref err) => write!(f, "{:?}", err),
-            Error::LicenseError => write!(f, "{:?}", error::Error::description(self)),
+            Error::LicenseError => write!(f, "{:?}", self.to_string()),
             Error::Unknown(ref err) => write!(f, "{:?}", err),
         }
     }

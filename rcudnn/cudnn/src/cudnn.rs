@@ -41,7 +41,7 @@ impl Cudnn {
 
     /// Initializes a new CUDA cuDNN Context from its C type.
     pub fn from_c(id: cudnnHandle_t) -> Cudnn {
-        Cudnn { id: id }
+        Cudnn { id }
     }
 
     /// Returns the CUDA cuDNN Context as its C type.
@@ -181,6 +181,7 @@ impl Cudnn {
     }
 
     /// Initialize RNN
+    #[allow(clippy::too_many_arguments)]
     pub fn init_rnn(
         &self,
         x_desc: &[TensorDescriptor],
@@ -242,6 +243,7 @@ impl Cudnn {
     }
 
     /// Train & Return Results for RNN
+    #[allow(clippy::too_many_arguments)]
     pub fn rnn_forward<T>(
         &self,
         rnn_config: &RnnConfig,
@@ -291,6 +293,7 @@ impl Cudnn {
     }
 
     /// Train & Return Results for RNN
+    #[allow(clippy::too_many_arguments)]
     pub fn rnn_backward_data<T>(
         &self,
         rnn_config: &RnnConfig,
@@ -352,6 +355,7 @@ impl Cudnn {
     }
 
     /// Train & Return Results for RNN
+    #[allow(clippy::too_many_arguments)]
     pub fn rnn_backward_weights<T>(
         &self,
         rnn_config: &RnnConfig,
@@ -417,6 +421,7 @@ impl Cudnn {
     /// Computes the backward Sigmoid Activation function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn sigmoid_backward<T>(
         &self,
         activation_conf: &ActivationConfig,
@@ -479,6 +484,7 @@ impl Cudnn {
     /// Computes the backward Rectified Linear Activation function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn relu_backward<T>(
         &self,
         activation_conf: &ActivationConfig,
@@ -541,6 +547,7 @@ impl Cudnn {
     /// Computes the backward Hyperbolic Tangent Activation function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn tanh_backward<T>(
         &self,
         activation_conf: &ActivationConfig,
@@ -576,6 +583,7 @@ impl Cudnn {
     /// Computes the forward Convolution function.
     ///
     /// Writes the result of the computation to `dest_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn convolution_forward<T>(
         &self,
         conv_config: &ConvolutionConfig,
@@ -635,6 +643,7 @@ impl Cudnn {
     /// Computes the backward Convolution function w.r.t the filter.
     ///
     /// Writes the result of the computation to `filter_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn convolution_backward_filter<T>(
         &self,
         conv_config: &ConvolutionConfig,
@@ -669,6 +678,7 @@ impl Cudnn {
     /// Computes the backward Convolution function w.r.t the data.
     ///
     /// Writes the result of the computation to `src_grad_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn convolution_backward_data<T>(
         &self,
         conv_config: &ConvolutionConfig,
@@ -730,6 +740,7 @@ impl Cudnn {
     /// Computes the backward softmax function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn softmax_backward<T>(
         &self,
         src_desc: &TensorDescriptor,
@@ -788,6 +799,7 @@ impl Cudnn {
     /// Computes the backward logarithmic softmax function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn log_softmax_backward<T>(
         &self,
         src_desc: &TensorDescriptor,
@@ -847,6 +859,7 @@ impl Cudnn {
     /// Computes the backward local response normalization function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn lrn_backward<T>(
         &self,
         normalization_conf: &NormalizationConfig,
@@ -910,6 +923,7 @@ impl Cudnn {
     /// Computes the backward average pooling function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn pooling_avg_backward<T>(
         &self,
         pooling_conf: &PoolingConfig,
@@ -972,6 +986,7 @@ impl Cudnn {
     /// Computes the backward max pooling function.
     ///
     /// Writes the result of the computation to `dest_diff_data`.
+    #[allow(clippy::too_many_arguments)]
     pub fn pooling_max_backward<T>(
         &self,
         pooling_conf: &PoolingConfig,

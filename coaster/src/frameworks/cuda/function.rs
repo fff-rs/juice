@@ -14,7 +14,7 @@ pub struct Function {
 impl Function {
     /// Initializes a new OpenCL device.
     pub fn from_isize(id: isize) -> Function {
-        Function { id: id }
+        Function { id }
     }
 
     /*

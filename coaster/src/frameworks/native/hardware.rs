@@ -28,7 +28,7 @@ impl Default for Hardware {
 impl Hardware {
     /// Initializes a new OpenCL hardware.
     pub fn new(id: isize) -> Hardware {
-        Hardware { id: id, ..Hardware::default() }
+        Hardware { id, ..Hardware::default() }
     }
 }
 

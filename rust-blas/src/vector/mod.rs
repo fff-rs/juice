@@ -23,6 +23,10 @@ pub trait Vector<T> {
     fn as_ptr(&self) -> *const T;
     /// An unsafe mutable pointer to a contiguous block of memory.
     fn as_mut_ptr(&mut self) -> *mut T;
+    /// Check if Vector is empty
+    fn is_empty(&self) -> bool {
+        self.len() == 0u32
+    }
 }
 
 impl<'a, T> Into<Vec<T>> for &'a dyn Vector<T>

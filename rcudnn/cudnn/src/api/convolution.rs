@@ -348,6 +348,7 @@ impl API {
     }
 
     /// Computes a convolution forward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn convolution_forward(
         handle: cudnnHandle_t,
         algo: cudnnConvolutionFwdAlgo_t,
@@ -400,6 +401,7 @@ impl API {
     }
 
     /// Computes a convolution backward function w.r.t filter coefficient.
+    #[allow(clippy::too_many_arguments)]
     pub fn convolution_backward_filter(
         handle: cudnnHandle_t,
         algo: cudnnConvolutionBwdFilterAlgo_t,
@@ -435,6 +437,7 @@ impl API {
     }
 
     /// Computes a convolution backward function w.r.t the output tensor.
+    #[allow(clippy::too_many_arguments)]
     pub fn convolution_backward_data(
         handle: cudnnHandle_t,
         algo: cudnnConvolutionBwdDataAlgo_t,
@@ -510,6 +513,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_convolution_forward(
         handle: cudnnHandle_t,
         alpha: *const ::libc::c_void,
@@ -564,6 +568,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_convolution_backward_filter(
         handle: cudnnHandle_t,
         alpha: *const ::libc::c_void,
@@ -589,6 +594,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_convolution_backward_data(
         handle: cudnnHandle_t,
         alpha: *const ::libc::c_void,

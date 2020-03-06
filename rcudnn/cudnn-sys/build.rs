@@ -10,21 +10,21 @@ fn main() {
     if lib_dir.is_none() && include_dir.is_none() {
         if let Ok(info) = pkg_config::find_library("cudart") {
             // avoid empty include paths as they are not supported by GCC
-            if info.include_paths.len() > 0 {
+            if !info.include_paths.is_empty() {
                 let paths = env::join_paths(info.include_paths).unwrap();
                 println!("cargo:include={}", paths.to_str().unwrap());
             }
         }
         if let Ok(info) = pkg_config::find_library("cuda") {
             // avoid empty include paths as they are not supported by GCC
-            if info.include_paths.len() > 0 {
+            if !info.include_paths.is_empty() {
                 let paths = env::join_paths(info.include_paths).unwrap();
                 println!("cargo:include={}", paths.to_str().unwrap());
             }
         }
         if let Ok(info) = pkg_config::find_library("cudnn") {
             // avoid empty include paths as they are not supported by GCC
-            if info.include_paths.len() > 0 {
+            if !info.include_paths.is_empty() {
                 let paths = env::join_paths(info.include_paths).unwrap();
                 println!("cargo:include={}", paths.to_str().unwrap());
             }
@@ -34,7 +34,7 @@ fn main() {
 
     let libs_env = env::var("CUDNN_LIBS").ok();
     let libs = match libs_env {
-        Some(ref v) => v.split(":").collect(),
+        Some(ref v) => v.split(':').collect(),
         None => vec!["cudnn", "cudart", "cuda"],
     };
 
@@ -77,7 +77,7 @@ fn main() {
             .clang_arg("-I")
             .clang_arg(
                 include_dir
-                    .unwrap_or(String::from("/usr/include/cuda"))
+                    .unwrap_or_else(|| String::from("/usr/include/cuda"))
                     .as_str(),
             )
             // The input header we would like to generate

@@ -48,8 +48,8 @@ impl IFramework for Cuda {
         match Cuda::load_hardwares() {
             Ok(hardwares) => {
                 Cuda {
-                    hardwares: hardwares,
-                    binary: Module::from_isize(1)
+                    hardwares,
+                    binary: Module::from_isize(1),
                 }
             },
             Err(err) => panic!("Could not initialize Cuda Framework, due to: {}", err)
@@ -75,9 +75,9 @@ impl IFramework for Cuda {
     fn new_device(&self, hardwares: &[Device]) -> Result<Self::D, crate::framework::Error> {
         let length = hardwares.len();
         match length {
-            0 => Err(crate::framework::Error::Implementation(format!("No device for context specified."))),
+            0 => Err(crate::framework::Error::Implementation("No device for context specified.".to_string())),
             1 => Ok(Context::new(hardwares[0].clone())?),
-            _ => Err(crate::framework::Error::Implementation(format!("Cuda's `new_device` method currently supports only one Harware for Device creation.")))
+            _ => Err(crate::framework::Error::Implementation("Cuda's `new_device` method currently supports only one Harware for Device creation.".to_string()))
         }
     }
 }

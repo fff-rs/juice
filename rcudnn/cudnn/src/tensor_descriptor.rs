@@ -84,7 +84,7 @@ impl TensorDescriptor {
 
     /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.
     pub fn from_c(id: cudnnTensorDescriptor_t) -> TensorDescriptor {
-        TensorDescriptor { id: id }
+        TensorDescriptor { id }
     }
 
     /// Returns the CUDA cuDNN Tensor Descriptor as its C type.

@@ -14,8 +14,8 @@ impl PointerMode {
         }
     }
 
-    pub fn as_c(&self) -> cublasPointerMode_t {
-        match *self {
+    pub fn as_c(self) -> cublasPointerMode_t {
+        match self {
             PointerMode::Host => cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST,
             PointerMode::Device => cublasPointerMode_t::CUBLAS_POINTER_MODE_DEVICE,
         }
@@ -38,8 +38,8 @@ impl Operation {
         }
     }
 
-    pub fn as_c(&self) -> cublasOperation_t {
-        match *self {
+    pub fn as_c(self) -> cublasOperation_t {
+        match self {
             Operation::NoTrans => cublasOperation_t::CUBLAS_OP_N,
             Operation::Trans => cublasOperation_t::CUBLAS_OP_T,
             Operation::ConjTrans => cublasOperation_t::CUBLAS_OP_C,

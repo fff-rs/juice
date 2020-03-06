@@ -1,6 +1,6 @@
 //! Provides the INn Plugin trait for Coaster implementation.
 use crate::co::tensor::SharedTensor;
-use std::fmt::{Formatter, Error};
+use std::fmt::Formatter;
 
 #[derive(Debug, Copy, Clone)]
 /// Different algorithms to compute the convolution forward algorithm.

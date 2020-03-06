@@ -18,6 +18,11 @@ impl API {
     ///
     /// Should generally not be called directly.
     /// Automatically called when dropping a Context.
+    ///
+    /// # Safety
+    /// Instructs CUDA to remove the cuBLAS handle, causing any further instructions to fail.
+    /// This should be called at the end of using cuBLAS and should ideally be handled by drop
+    /// exclusively, and never called by the user.
     pub unsafe fn destroy(context: &mut Context) -> Result<(), Error> {
         Ok(API::ffi_destroy(*context.id_c())?)
     }
