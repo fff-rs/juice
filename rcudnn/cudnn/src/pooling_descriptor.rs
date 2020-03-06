@@ -40,7 +40,7 @@ impl PoolingDescriptor {
 
     /// Initializes a new CUDA cuDNN PoolingDescriptor from its C type.
     pub fn from_c(id: cudnnPoolingDescriptor_t) -> PoolingDescriptor {
-        PoolingDescriptor { id: id }
+        PoolingDescriptor { id }
     }
 
     /// Returns the CUDA cuDNN Pooling Descriptor as its C type.

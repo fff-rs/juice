@@ -30,6 +30,7 @@ impl API {
     }
 
     /// Computes an LRN cross channel forward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn lrn_cross_channel_forward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -49,6 +50,7 @@ impl API {
     }
 
     /// Computes an LRN cross channel backward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn lrn_cross_channel_backward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -73,6 +75,7 @@ impl API {
     }
 
     /// Computes an devisive normalization forward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn divisive_normalization_forward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -95,6 +98,7 @@ impl API {
     }
 
     /// Computes an devisive normalization backward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn divisive_normalization_backward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -171,6 +175,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_lrn_cross_channel_forward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -191,6 +196,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_lrn_cross_channel_backward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -215,6 +221,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_divisive_normalization_forward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,
@@ -238,6 +245,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_divisive_normalization_backward(
         handle: cudnnHandle_t,
         norm_desc: cudnnLRNDescriptor_t,

@@ -6,7 +6,6 @@
 //!
 //! [backend]: ../backend/index.html
 use std::any::Any;
-use std::error::Error as StdError;
 
 use crate::hardware::IHardware;
 #[cfg(feature = "native")]
@@ -73,9 +72,9 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::NoMemorySyncRoute => write!(f, "{}", self.description()),
-            Error::MemorySyncError => write!(f, "{}", self.description()),
-            Error::MemoryAllocationError => write!(f, "{}", self.description()),
+            Error::NoMemorySyncRoute => write!(f, "{}", self.to_string()),
+            Error::MemorySyncError => write!(f, "{}", self.to_string()),
+            Error::MemoryAllocationError => write!(f, "{}", self.to_string()),
 
             #[cfg(feature = "native")]
             Error::Native(ref err) => write!(f, "Native error: {}", err),
@@ -88,22 +87,7 @@ impl fmt::Display for Error {
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::NoMemorySyncRoute => "No available memory synchronization route",
-            Error::MemorySyncError => "Memory syncronization failed",
-            Error::MemoryAllocationError => "Memory allocation failed",
-
-            #[cfg(feature = "native")]
-            Error::Native(ref err) => err.description(),
-            #[cfg(feature = "opencl")]
-            Error::OpenCL(ref err) => err.description(),
-            #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => err.description(),
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             Error::NoMemorySyncRoute => None,
             Error::MemorySyncError => None,

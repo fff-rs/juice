@@ -56,6 +56,7 @@ pub struct ConvolutionConfig {
 
 impl ConvolutionConfig {
     /// Returns a new ConvolutionConfig
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         algo_fwd: cudnnConvolutionFwdAlgo_t,
         workspace_size_fwd: usize,
@@ -73,8 +74,8 @@ impl ConvolutionConfig {
             backward_filter_workspace_size: workspace_filter_size_bwd,
             backward_data_algo: algo_data_bwd,
             backward_data_workspace_size: workspace_data_size_bwd,
-            conv_desc: conv_desc,
-            filter_desc: filter_desc,
+            conv_desc,
+            filter_desc,
         }
     }
 
@@ -147,7 +148,7 @@ pub struct NormalizationConfig {
 impl NormalizationConfig {
     /// Returns a new LRN Config.
     pub fn new(lrn_desc: NormalizationDescriptor) -> NormalizationConfig {
-        NormalizationConfig { lrn_desc: lrn_desc }
+        NormalizationConfig { lrn_desc }
     }
 
     /// Returns `lrn_desc`.
@@ -172,8 +173,8 @@ impl PoolingConfig {
         pooling_max_desc: PoolingDescriptor,
     ) -> PoolingConfig {
         PoolingConfig {
-            pooling_avg_desc: pooling_avg_desc,
-            pooling_max_desc: pooling_max_desc,
+            pooling_avg_desc,
+            pooling_max_desc,
         }
     }
 
@@ -208,10 +209,10 @@ impl ActivationConfig {
         activation_tanh_desc: ActivationDescriptor,
     ) -> ActivationConfig {
         ActivationConfig {
-            activation_sigmoid_desc: activation_sigmoid_desc,
-            activation_relu_desc: activation_relu_desc,
-            activation_clipped_relu_desc: activation_clipped_relu_desc,
-            activation_tanh_desc: activation_tanh_desc,
+            activation_sigmoid_desc,
+            activation_relu_desc,
+            activation_clipped_relu_desc,
+            activation_tanh_desc,
         }
     }
 
@@ -313,6 +314,7 @@ pub struct RnnConfig {
 
 impl RnnConfig {
     /// Initialise a RNN Config
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         rnn_desc: RnnDescriptor,
         hidden_size: i32,

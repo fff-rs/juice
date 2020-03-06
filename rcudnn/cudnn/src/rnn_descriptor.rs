@@ -27,6 +27,7 @@ impl Drop for RnnDescriptor {
 
 impl RnnDescriptor {
     /// Initializes a new CUDA cuDNN RnnDescriptor.
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         handle: &Cudnn,
         hidden_size: i32,

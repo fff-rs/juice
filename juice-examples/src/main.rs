@@ -10,9 +10,8 @@ use hyper_rustls::HttpsConnector;
 use std::str::FromStr;
 
 use csv::Reader;
-use serde::Deserialize;
 
-use tokio;
+use serde::Deserialize;
 
 use futures_util::stream::TryStreamExt;
 
@@ -34,7 +33,7 @@ use flate2::read::GzDecoder;
 extern crate mnist;
 use mnist::{Mnist, MnistBuilder};
 
-const MAIN_USAGE: &'static str = "
+const MAIN_USAGE: &str = "
 Juice Examples
 
 Usage:
@@ -134,8 +133,6 @@ fn unzip_datasets(datasets: &[&str]) {
             .unwrap();
     }
 }
-
-use serde;
 
 #[cfg(not(test))]
 #[allow(unused_must_use)]
@@ -345,7 +342,7 @@ fn run_mnist(
     let mut solver_cfg = SolverConfig {
         minibatch_size: batch_size,
         base_lr: learning_rate,
-        momentum: momentum,
+        momentum,
         ..SolverConfig::default()
     };
     solver_cfg.network = LayerConfig::new("network", net_cfg);
@@ -495,7 +492,7 @@ fn run_fashion(
     let mut solver_cfg = SolverConfig {
         minibatch_size: batch_size,
         base_lr: learning_rate,
-        momentum: momentum,
+        momentum,
         ..SolverConfig::default()
     };
     solver_cfg.network = LayerConfig::new("network", net_cfg);
@@ -572,15 +569,9 @@ fn run_mackey_glass(
                 "linear2",
                 LinearConfig { output_size: 10 },
             ));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear3",
-                LinearConfig { output_size: 1 },
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "sigmoid",
-                LayerType::Sigmoid
-            ));
-        },
+            net_cfg.add_layer(LayerConfig::new("linear3", LinearConfig { output_size: 1 }));
+            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+        }
         "lstm-dense" => {
             net_cfg.add_layer(LayerConfig::new(
                 "LSTMInitial",
@@ -594,14 +585,8 @@ fn run_mackey_glass(
                     direction_mode: DirectionMode::UniDirectional,
                 },
             ));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear1",
-                LinearConfig { output_size: 1}
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "sigmoid",
-                LayerType::Sigmoid
-            ));
+            net_cfg.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 1 }));
+            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
         }
         _ => panic!("Only linear & lstm-dense models are currently implemented for mackey-glass"),
     }
@@ -682,20 +667,16 @@ fn get_packed_regr_iter() -> impl Iterator<Item = (f32, Vec<Vec<f32>>)> {
     let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass_lstm.csv").unwrap());
     let columns: usize = 10;
 
-    rdr
-        .into_deserialize()
-        .map( move | row| {
-            match row {
-                Ok(value) => {
-                    let row_vec: Box <Vec<f32>> = Box::new(value);
-                    let label = row_vec[0];
-                    let columns = row_vec[1..=columns].to_vec();
-                    (label, vec![columns])
-                },
-                _ => {
-                    println ! ("no value");
-                    panic ! ();
-                }
-            }
-        })
+    rdr.into_deserialize().map(move |row| match row {
+        Ok(value) => {
+            let row_vec: Box<Vec<f32>> = Box::new(value);
+            let label = row_vec[0];
+            let columns = row_vec[1..=columns].to_vec();
+            (label, vec![columns])
+        }
+        _ => {
+            println!("no value");
+            panic!();
+        }
+    })
 }

@@ -22,7 +22,6 @@
 use crate::capnp_util::*;
 use crate::co::backend::IBackend;
 use crate::co::tensor::SharedTensor;
-use crate::coblas::plugin::Copy;
 use crate::coblas::transpose::Transpose;
 use crate::layer::*;
 use crate::juice_capnp::linear_config as capnp_config;
@@ -47,8 +46,8 @@ impl Linear {
         Linear {
             output_size: config.output_size,
 
-            one: one,
-            zero: zero,
+            one,
+            zero,
         }
     }
 

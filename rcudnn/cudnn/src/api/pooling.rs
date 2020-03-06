@@ -42,6 +42,7 @@ impl API {
     }
 
     /// Return information about a generic CUDA cuDNN Pooling Descriptor.
+    #[allow(clippy::too_many_arguments)]
     pub fn get_pooling_descriptor(
         desc: cudnnPoolingDescriptor_t,
         nb_dims_requested: ::libc::c_int,
@@ -67,6 +68,7 @@ impl API {
     }
 
     /// Initializes a generic CUDA cuDNN Pooling Descriptor with specific properties.
+    #[allow(clippy::too_many_arguments)]
     pub fn set_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: cudnnPoolingMode_t,
@@ -94,6 +96,7 @@ impl API {
     }
 
     /// Return information about a generic CUDA cuDNN Pooling Descriptor.
+    #[allow(clippy::too_many_arguments)]
     pub fn get_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: *mut cudnnPoolingMode_t,
@@ -133,6 +136,7 @@ impl API {
     }
 
     /// Computes a pooling forward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn pooling_forward(
         handle: cudnnHandle_t,
         pooling_desc: cudnnPoolingDescriptor_t,
@@ -158,6 +162,7 @@ impl API {
     }
 
     /// Computes a pooling backward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn pooling_backward(
         handle: cudnnHandle_t,
         pooling_desc: cudnnPoolingDescriptor_t,
@@ -240,6 +245,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_get_pooling_nd_descriptor(
         desc: cudnnPoolingDescriptor_t,
         nb_dims_requested: ::libc::c_int,
@@ -270,6 +276,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_set_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: cudnnPoolingMode_t,
@@ -302,6 +309,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_get_pooling_2d_descriptor(
         desc: cudnnPoolingDescriptor_t,
         mode: *mut cudnnPoolingMode_t,
@@ -347,6 +355,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_pooling_forward(
         handle: cudnnHandle_t,
         desc: cudnnPoolingDescriptor_t,
@@ -366,6 +375,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_pooling_backward(
         handle: cudnnHandle_t,
         desc: cudnnPoolingDescriptor_t,
