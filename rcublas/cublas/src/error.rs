@@ -30,15 +30,15 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::NotInitialized => write!(f, "{:?}", self.to_string()),
-            Error::AllocFailed => write!(f, "{:?}", self.to_string()),
+            Error::NotInitialized => write!(f, "{:?}", "Failure with cuBLAS initialization.".to_string()),
+            Error::AllocFailed => write!(f, "{:?}", "Failure with allocation.".to_string()),
             Error::InternalError(ref err) => write!(f, "{:?}", err),
             Error::InvalidValue(ref err) => write!(f, "{:?}", err),
-            Error::ArchMismatch => write!(f, "{:?}", self.to_string()),
-            Error::MappingError => write!(f, "{:?}", self.to_string()),
-            Error::ExecutionFailed => write!(f, "{:?}", self.to_string()),
+            Error::ArchMismatch => write!(f, "{:?}", "Failure with the hardware architecture.".to_string()),
+            Error::MappingError => write!(f, "{:?}", "Failure with memory access or internal error/bug.".to_string()),
+            Error::ExecutionFailed => write!(f, "{:?}", "Failure with Kernel execution.".to_string()),
             Error::NotSupported(ref err) => write!(f, "{:?}", err),
-            Error::LicenseError => write!(f, "{:?}", self.to_string()),
+            Error::LicenseError => write!(f, "{:?}", "Failure CUDA License".to_string()),
             Error::Unknown(ref err) => write!(f, "{:?}", err),
         }
     }
