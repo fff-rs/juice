@@ -72,9 +72,9 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::NoMemorySyncRoute => write!(f, "{}", self.to_string()),
-            Error::MemorySyncError => write!(f, "{}", self.to_string()),
-            Error::MemoryAllocationError => write!(f, "{}", self.to_string()),
+            Error::NoMemorySyncRoute => write!(f, "{}", "No available memory synchronization route".to_string()),
+            Error::MemorySyncError => write!(f, "{}", "Memory synchronization failed".to_string()),
+            Error::MemoryAllocationError => write!(f, "{}", "Memory allocation failed".to_string()),
 
             #[cfg(feature = "native")]
             Error::Native(ref err) => write!(f, "Native error: {}", err),
