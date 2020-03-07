@@ -819,7 +819,7 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">conn</span>::<span class="ident">Rnn</span> <span class="kw">as</span> <span class="ident">coRnn</span>;
     <span class="kw">use</span> <span class="ident">conn</span>::{<span class="ident">DirectionMode</span>, <span class="ident">RnnAlgorithm</span>, <span class="ident">RnnInputMode</span>, <span class="ident">RnnNetworkMode</span>};
-    <span class="kw">use</span> <span class="ident">util</span>::{<span class="ident">cast_vec_usize_to_i32</span>, <span class="ident">native_backend</span>, <span class="ident">native_scalar</span>, <span class="ident">write_batch_sample</span>};
+    <span class="kw">use</span> <span class="ident">util</span>::<span class="ident">native_backend</span>;
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="kw-2">*</span>;
 
@@ -990,7 +990,7 @@
             <span class="kw-2">&amp;</span><span class="ident">weights_data</span>[<span class="number">0</span>],
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace_forward</span>,
         ) {
-            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="macro">dbg</span><span class="macro">!</span>(<span class="string">&quot;Completed Forward Pass&quot;</span>); }
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> {}
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Couldn&#39;t complete RNN Forward&quot;</span>),
         };
     }

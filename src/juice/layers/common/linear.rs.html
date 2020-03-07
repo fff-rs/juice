@@ -379,7 +379,6 @@
 <span id="379">379</span>
 <span id="380">380</span>
 <span id="381">381</span>
-<span id="382">382</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Applies a linear transformation to the input data `y = a * x + b`</span>
 <span class="doccomment">//!</span>
@@ -405,7 +404,6 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">capnp_util</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">backend</span>::<span class="ident">IBackend</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">tensor</span>::<span class="ident">SharedTensor</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">coblas</span>::<span class="ident">plugin</span>::<span class="ident">Copy</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">coblas</span>::<span class="ident">transpose</span>::<span class="ident">Transpose</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">linear_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
@@ -430,8 +428,8 @@
         <span class="ident">Linear</span> {
             <span class="ident">output_size</span>: <span class="ident">config</span>.<span class="ident">output_size</span>,
 
-            <span class="ident">one</span>: <span class="ident">one</span>,
-            <span class="ident">zero</span>: <span class="ident">zero</span>,
+            <span class="ident">one</span>,
+            <span class="ident">zero</span>,
         }
     }
 
