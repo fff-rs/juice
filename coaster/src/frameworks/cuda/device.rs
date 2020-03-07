@@ -127,7 +127,13 @@ pub struct DeviceInfo {
 
 impl std::fmt::Display for DeviceInfo {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", unsafe { String::from_utf8_unchecked((*self.info).to_owned()) })
+        let msg = match String::from_utf8((*self.info).to_owned()) {
+            Ok(res) => res,
+            Err(e) => {
+                format!("Failed to parse DeviceInfo: {}", e.to_string())
+            }
+        };
+        write!(f, "{}", msg)
     }
 }
 
