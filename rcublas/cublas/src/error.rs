@@ -32,14 +32,14 @@ impl fmt::Display for Error {
         let msg = match *self {
             Error::NotInitialized => "Failure with cuBLAS initialization.".to_string(),
             Error::AllocFailed => "Failure with allocation.".to_string(),
-            Error::InternalError(ref err) => err,
-            Error::InvalidValue(ref err) => err,
+            Error::InternalError(ref err) => (*err).to_string(),
+            Error::InvalidValue(ref err) => (*err).to_string(),
             Error::ArchMismatch => "Failure with the hardware architecture.".to_string(),
             Error::MappingError => "Failure with memory access or internal error/bug.".to_string(),
             Error::ExecutionFailed => "Failure with Kernel execution.".to_string(),
-            Error::NotSupported(ref err) => err,
+            Error::NotSupported(ref err) => (*err).to_string(),
             Error::LicenseError => "Failure CUDA License".to_string(),
-            Error::Unknown(ref err) => err,
+            Error::Unknown(ref err) => (*err).to_string(),
         };
         write!(f, "{:?}", msg)
     }
