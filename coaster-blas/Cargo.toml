@@ -15,11 +15,11 @@ keywords        = ["blas", "coaster", "computation", "hpc", "plugin"]
 license         = "MIT OR Apache-2.0"
 
 [dependencies]
-coaster = { version = "0.1", default-features = false }
+coaster = { path = "../coaster", default-features = false }
 lazy_static = "1"
 
 # native
-rust-blas = { version = "^0.1", optional = true }
+rust-blas = { path = "../rust-blas" , optional = true }
 
 # cuda
 rcublas = { version = "^0.3",  optional = true }
