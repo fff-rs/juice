@@ -54,8 +54,8 @@ impl IFramework for Native {
     fn new() -> Native {
         match Native::load_hardwares() {
             Ok(hardwares) => Native {
-                hardwares: hardwares,
-                binary: Binary::new()
+                hardwares,
+                binary: Binary::new(),
             },
             Err(err) => panic!(err)
         }

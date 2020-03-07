@@ -70,7 +70,7 @@ impl<F: IFramework + Clone> Backend<F> {
         Ok(
             Backend {
                 framework: Box::new(config.framework),
-                device: device,
+                device,
             }
         )
     }
@@ -81,7 +81,7 @@ impl<F: IFramework + Clone> Backend<F> {
     }
 
     /// Returns the backend framework.
-    pub fn framework(&self) -> &Box<F> {
+    pub fn framework(&self) -> &F {
         &self.framework
     }
 
@@ -129,8 +129,8 @@ impl<'a, F: IFramework + Clone> BackendConfig<'a, F> {
     /// Creates a new BackendConfig.
     pub fn new(framework: F, hardwares: &'a [F::H]) -> BackendConfig<'a, F> {
         BackendConfig {
-            framework: framework.clone(),
-            hardwares: hardwares,
+            framework,
+            hardwares,
         }
     }
 }

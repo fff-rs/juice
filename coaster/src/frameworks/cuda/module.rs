@@ -15,7 +15,7 @@ impl Module {
     /// Initializes a new Cuda Module.
     pub fn from_isize(id: isize) -> Module {
         Module {
-            id: id,
+            id,
         }
     }
 

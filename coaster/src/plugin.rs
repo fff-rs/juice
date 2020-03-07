@@ -60,15 +60,7 @@ impl ::std::fmt::Display for Error {
 }
 
 impl ::std::error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::SharedTensor(ref err) => err.description(),
-            Error::Operation(ref err) => err,
-            Error::Plugin(ref err) => err,
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn (::std::error::Error)> {
+    fn source(&self) -> Option<&(dyn (::std::error::Error) + 'static)> {
         match *self {
             Error::SharedTensor(ref err) => err.source(),
             Error::Operation(_) => None,

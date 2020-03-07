@@ -86,6 +86,7 @@ pub trait Gemm<F> {
     ///
     /// Saves the result into `c`.
     /// This is a Level 3 BLAS operation.
+    #[allow(clippy::too_many_arguments)]
     fn gemm(&self, alpha: &SharedTensor<F>,
             at: Transpose, a: &SharedTensor<F>,
             bt: Transpose, b: &SharedTensor<F>,

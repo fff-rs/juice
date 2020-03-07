@@ -55,7 +55,6 @@ use std::cell::{Cell, RefCell};
 use std::marker::PhantomData;
 use std::{fmt, mem, error};
 use std::ops::Deref;
-use std::error::Error as StdError;
 
 /// Describes the Descriptor of a SharedTensor.
 pub type TensorDesc = Vec<usize>;
@@ -136,7 +135,7 @@ pub trait ITensorDesc {
             _ => {
                 let imp_dims = &self.dims()[1..dim_length];
                 for (i, _) in imp_dims.iter().enumerate() {
-                    strides.push(imp_dims[i..imp_dims.len()].iter().fold(1, |prod, &x| prod * x))
+                    strides.push(imp_dims[i..imp_dims.len()].iter().product())
                 }
                 strides.push(1);
                 strides
@@ -253,7 +252,7 @@ impl ITensorDesc for TensorDesc {
     fn size(&self) -> usize {
         match self.rank() {
             0 => 1,
-            _ => self.iter().fold(1, |s, &a| s * a)
+            _ => self.iter().product()
         }
     }
 
@@ -542,24 +541,19 @@ pub enum Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.description())
+        let msg = match self {
+            Error::DeviceError(e) => e.to_string(),
+            Error::InvalidRemove(e) => e.to_string(),
+            Error::InvalidShape(e) => e.to_string(),
+            Error::CapacityExceeded => "CapacityExceeded".to_string(),
+            Error::UninitializedMemory => "UninitializedMemory".to_string()
+        };
+        write!(f, "{}", msg)
     }
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::DeviceError(ref err) => err.description(),
-            Error::InvalidRemove(ref err) => err,
-            Error::InvalidShape(ref err) => err,
-            Error::CapacityExceeded =>
-                "Max number of backing memories has been reached",
-            Error::UninitializedMemory =>
-                "Uninitialized memory is requested for reading",
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             Error::DeviceError(ref err) => Some(err),
             Error::InvalidRemove(_) => None,

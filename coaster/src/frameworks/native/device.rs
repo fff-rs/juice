@@ -20,7 +20,7 @@ pub struct Cpu {
 impl Cpu {
     /// Initializes a new OpenCL hardware.
     pub fn new(hardwares: Vec<Hardware>) -> Cpu {
-        Cpu { hardwares: hardwares }
+        Cpu { hardwares }
     }
 }
 
@@ -47,7 +47,7 @@ impl MemorySync for Cpu {
     // transfers from/to Cuda and OpenCL are defined on their MemorySync traits
     fn sync_in(&self, my_memory: &mut dyn Any, src_device: &dyn Any, src_memory: &dyn Any)
                -> Result<(), DeviceError> {
-        if let Some(_) = src_device.downcast_ref::<Cpu>() {
+        if src_device.downcast_ref::<Cpu>().is_some() {
             let my_mem = my_memory.downcast_mut::<FlatBox>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
             my_mem.as_mut_slice::<u8>().clone_from_slice(src_mem.as_slice::<u8>());
@@ -59,7 +59,7 @@ impl MemorySync for Cpu {
 
     fn sync_out(&self, my_memory: &dyn Any, dst_device: &dyn Any, dst_memory: &mut dyn Any)
                 -> Result<(), DeviceError> {
-        if let Some(_) = dst_device.downcast_ref::<Cpu>() {
+        if dst_device.downcast_ref::<Cpu>().is_some() {
             let my_mem = my_memory.downcast_ref::<FlatBox>().unwrap();
             let dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
             dst_mem.as_mut_slice::<u8>().clone_from_slice(my_mem.as_slice::<u8>());

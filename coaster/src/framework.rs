@@ -88,17 +88,7 @@ impl fmt::Display for Error {
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            #[cfg(feature = "opencl")]
-            Error::OpenCL(ref err) => err.description(),
-            #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => err.description(),
-            Error::Implementation(ref err) => err,
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => Some(err),

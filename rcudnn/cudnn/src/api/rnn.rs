@@ -104,7 +104,7 @@ impl API {
                 handle,
                 rnn_desc,
                 x_desc,
-                API::to_cudnn_data_type(data_type)
+                API::cudnn_data_type(data_type)
             )
         }
     }
@@ -175,6 +175,7 @@ impl API {
     }
 
     /// Initializes a generic CUDA cuDNN RNN Descriptor with specific properties.
+    #[allow(clippy::too_many_arguments)]
     pub fn set_rnn_descriptor(
         handle: cudnnHandle_t,
         desc: cudnnRNNDescriptor_t,
@@ -208,6 +209,7 @@ impl API {
             )
         }
     }
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_set_rnn_descriptor(
         handle: cudnnHandle_t,
         desc: cudnnRNNDescriptor_t,
@@ -320,6 +322,7 @@ impl API {
     /// [0] https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t
     /// [1] https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t
     /// [2] https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnFilterDescriptor_t
+    #[allow(clippy::too_many_arguments)]
     pub fn rnn_forward_training(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -369,6 +372,7 @@ impl API {
             )
         }
     }
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_rnn_forward_training(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -456,6 +460,7 @@ impl API {
     /// `workspace_in_bytes` Size in bytes of the provided workspace
     /// [0] https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t
     /// [1] https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t
+    #[allow(clippy::too_many_arguments)]
     pub fn rnn_forward_inference(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -502,6 +507,7 @@ impl API {
            )
        } 
     }
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_rnn_forward_inference(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -598,6 +604,7 @@ impl API {
     /// `reserve_space_in_bytes` Size in bytes for `reserve_space`
     /// [0]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t
     /// [1]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t
+    #[allow(clippy::too_many_arguments)]
     pub fn rnn_backward_data(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -659,6 +666,7 @@ impl API {
             )
         }
     }
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_rnn_backward_data(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -753,6 +761,7 @@ impl API {
    /// `reserve_space_in_bytes` Size in bytes for `reserve_space`
    /// [0]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t
    /// [1]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t
+    #[allow(clippy::too_many_arguments)]
     pub fn rnn_backward_weights(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
@@ -790,6 +799,7 @@ impl API {
             )
         }
     }
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_rnn_backward_weights(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,

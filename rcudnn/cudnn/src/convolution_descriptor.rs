@@ -78,7 +78,7 @@ impl ConvolutionDescriptor {
 
     /// Initializes a new CUDA cuDNN ConvolutionDescriptor from its C type.
     pub fn from_c(id: cudnnConvolutionDescriptor_t) -> ConvolutionDescriptor {
-        ConvolutionDescriptor { id: id }
+        ConvolutionDescriptor { id }
     }
 
     /// Returns the CUDA cuDNN ConvolutionDescriptor as its C type.

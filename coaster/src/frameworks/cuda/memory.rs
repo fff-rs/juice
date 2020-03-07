@@ -35,7 +35,7 @@ impl Memory {
     /// Initializes a new Cuda memory from its C type.
     pub fn from_c(id: DriverFFI::CUdeviceptr) -> Memory {
         Memory {
-            id: id,
+            id,
             host_ptr: ptr::null_mut(),
         }
     }
