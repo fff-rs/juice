@@ -25,7 +25,8 @@ macro_rules! write_only {
 /// intermidiate variable and `*mut $t` will outlive it.
 macro_rules! trans {
     ($mem:ident, $t:ident) => (
-        unsafe { ::std::mem::transmute::<u64, *mut $t>(*$mem.id_c()) }
+        *$mem.id_c() as *mut f32
+        //::std::mem::transmute::<u64, *mut $t>(*$mem.id_c()) }
     )
 }
 

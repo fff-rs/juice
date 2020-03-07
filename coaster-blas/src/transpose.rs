@@ -18,8 +18,8 @@ pub enum Transpose {
 #[cfg(feature = "native")]
 impl Transpose {
     /// Create a rust-blas `Transpose` from coaster-blas `Transpose`.
-    pub fn to_rblas(&self) -> ::rblas::attribute::Transpose {
-        match *self {
+    pub fn to_rblas(self) -> ::rblas::attribute::Transpose {
+        match self {
             Transpose::NoTrans => ::rblas::attribute::Transpose::NoTrans,
             Transpose::Trans => ::rblas::attribute::Transpose::Trans,
             Transpose::ConjTrans => ::rblas::attribute::Transpose::ConjTrans,

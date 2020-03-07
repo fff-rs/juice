@@ -320,7 +320,7 @@ impl<'a> CapnpRead<'a> for RnnConfig {
 mod tests {
     use conn::Rnn as coRnn;
     use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
-    use util::{cast_vec_usize_to_i32, native_backend, native_scalar, write_batch_sample};
+    use util::native_backend;
 
     use crate::co::*;
 
@@ -491,7 +491,7 @@ mod tests {
             &weights_data[0],
             &mut workspace_forward,
         ) {
-            Ok(_) => { dbg!("Completed Forward Pass"); }
+            Ok(_) => {}
             Err(e) => panic!("Couldn't complete RNN Forward"),
         };
     }

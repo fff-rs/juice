@@ -27,6 +27,7 @@ impl API {
     }
 
     /// Computes an activation forward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn activation_forward(
         handle: cudnnHandle_t,
         activation_desc: cudnnActivationDescriptor_t,
@@ -43,6 +44,7 @@ impl API {
     }
 
     /// Computes an activation backward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn activation_backward(
         handle: cudnnHandle_t,
         activation_desc: cudnnActivationDescriptor_t,
@@ -75,6 +77,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_activation_forward(
         handle: cudnnHandle_t,
         activation_desc: cudnnActivationDescriptor_t,
@@ -93,6 +96,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_activation_backward(
         handle: cudnnHandle_t,
         activation_desc: cudnnActivationDescriptor_t,

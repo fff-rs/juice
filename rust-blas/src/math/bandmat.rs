@@ -12,6 +12,10 @@ use std::ops::Index;
 use std::slice;
 
 #[derive(Debug, PartialEq)]
+/// Banded Matrix
+/// A banded matrix is a matrix where only the diagonal, a number of super-diagonals and a number of
+/// sub-diagonals are non-zero.
+/// https://en.wikipedia.org/wiki/Band_matrix
 pub struct BandMat<T> {
     rows: usize,
     cols: usize,
@@ -31,7 +35,7 @@ impl<T> BandMat<T> {
         BandMat {
             rows: n,
             cols: m,
-            data: data,
+            data,
             sub_diagonals: sub,
             sup_diagonals: sup,
         }
@@ -43,13 +47,20 @@ impl<T> BandMat<T> {
     pub fn cols(&self) -> usize {
         self.cols
     }
+    /// Set Rows Manually
+    /// # Safety
+    /// No guarantees are made about rows x columns being equivalent to data length after this
+    /// operation
     pub unsafe fn set_rows(&mut self, n: usize) {
         self.rows = n;
     }
+    /// Set Columns Manually
+    /// # Safety
+    /// No guarantees are made about rows x columns being equivalent to data length after this
+    /// operation
     pub unsafe fn set_cols(&mut self, n: usize) {
         self.cols = n;
     }
-
     pub unsafe fn set_sub_diagonals(&mut self, n: u32) {
         self.sub_diagonals = n;
     }
@@ -72,8 +83,8 @@ impl<T> BandMat<T> {
             cols: mat.cols(),
             rows: mat.rows(),
             data: Vec::from_raw_parts(data, length, length),
-            sub_diagonals: sub_diagonals,
-            sup_diagonals: sup_diagonals,
+            sub_diagonals,
+            sup_diagonals,
         }
     }
 }
@@ -93,7 +104,7 @@ impl<T: Clone> BandMat<T> {
 impl<T> Index<usize> for BandMat<T> {
     type Output = [T];
 
-    fn index<'a>(&'a self, index: usize) -> &'a [T] {
+    fn index(&self, index: usize) -> &[T] {
         let offset = (index * self.cols) as isize;
 
         unsafe {
@@ -113,7 +124,7 @@ impl<T: fmt::Display> fmt::Display for BandMat<T> {
                 }
             }
 
-            match writeln!(f, "") {
+            match writeln!(f) {
                 Ok(_) => (),
                 x => return x,
             }

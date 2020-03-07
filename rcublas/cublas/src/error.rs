@@ -29,18 +29,19 @@ pub enum Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::NotInitialized => write!(f, "{:?}", error::Error::description(self)),
-            Error::AllocFailed => write!(f, "{:?}", error::Error::description(self)),
-            Error::InternalError(ref err) => write!(f, "{:?}", err),
-            Error::InvalidValue(ref err) => write!(f, "{:?}", err),
-            Error::ArchMismatch => write!(f, "{:?}", error::Error::description(self)),
-            Error::MappingError => write!(f, "{:?}", error::Error::description(self)),
-            Error::ExecutionFailed => write!(f, "{:?}", error::Error::description(self)),
-            Error::NotSupported(ref err) => write!(f, "{:?}", err),
-            Error::LicenseError => write!(f, "{:?}", error::Error::description(self)),
-            Error::Unknown(ref err) => write!(f, "{:?}", err),
-        }
+        let msg = match *self {
+            Error::NotInitialized => "Failure with cuBLAS initialization.".to_string(),
+            Error::AllocFailed => "Failure with allocation.".to_string(),
+            Error::InternalError(ref err) => err,
+            Error::InvalidValue(ref err) => err,
+            Error::ArchMismatch => "Failure with the hardware architecture.".to_string(),
+            Error::MappingError => "Failure with memory access or internal error/bug.".to_string(),
+            Error::ExecutionFailed => "Failure with Kernel execution.".to_string(),
+            Error::NotSupported(ref err) => err,
+            Error::LicenseError => "Failure CUDA License".to_string(),
+            Error::Unknown(ref err) => err,
+        };
+        write!(f, "{:?}", msg)
     }
 }
 

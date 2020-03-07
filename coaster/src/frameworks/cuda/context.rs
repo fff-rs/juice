@@ -21,8 +21,8 @@ pub struct Context {
 impl Drop for Context {
     #[allow(unused_must_use)]
     fn drop(&mut self) {
-        let id_c = self.id_c().clone();
-        if let Some(_) = Rc::get_mut(&mut self.id) {
+        let id_c = self.id_c();
+        if Rc::get_mut(&mut self.id).is_some() {
             Driver::destroy_context(id_c);
         }
     }
@@ -34,7 +34,7 @@ impl Context {
         Ok(
             Context::from_c(
                 Driver::create_context(devices.clone())?,
-                vec!(devices.clone())
+                vec!(devices)
             )
         )
     }
@@ -43,7 +43,7 @@ impl Context {
     pub fn from_c(id: DriverFFI::CUcontext, devices: Vec<Device>) -> Context {
         Context {
             id: Rc::new(id as isize),
-            devices: devices
+            devices
         }
     }
 
@@ -91,7 +91,7 @@ impl IDevice for Context {
 impl MemorySync for Context {
     fn sync_in(&self, my_memory: &mut dyn Any, src_device: &dyn Any, src_memory: &dyn Any)
                -> Result<(), DeviceError> {
-        if let Some(_) = src_device.downcast_ref::<Cpu>() {
+        if src_device.downcast_ref::<Cpu>().is_some() {
             let my_mem = my_memory.downcast_mut::<Memory>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
 
@@ -103,7 +103,7 @@ impl MemorySync for Context {
 
     fn sync_out(&self, my_memory: &dyn Any, dst_device: &dyn Any, dst_memory: &mut dyn Any)
                 -> Result<(), DeviceError> {
-        if let Some(_) = dst_device.downcast_ref::<Cpu>() {
+        if dst_device.downcast_ref::<Cpu>().is_some() {
             let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
             let dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
             Ok(Driver::mem_cpy_d_to_h(my_mem, dst_mem)?)

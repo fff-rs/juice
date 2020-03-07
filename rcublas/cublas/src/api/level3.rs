@@ -7,6 +7,8 @@ impl API {
     /// Performs a general matrix-matrix multiplication.
     ///
     /// Note: the matrices are expected to be ordered column-major (FORTRAN-style).
+    #[allow(clippy::many_single_char_names)]
+    #[allow(clippy::too_many_arguments)]
     pub fn gemm(
         context: &Context,
         transa: Operation,
@@ -44,6 +46,8 @@ impl API {
     }
 
     /// Note: the matrices are expected to be ordered column-major (FORTRAN-style).
+    #[allow(clippy::many_single_char_names)]
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_sgemm(
         handle: cublasHandle_t,
         transa: cublasOperation_t,

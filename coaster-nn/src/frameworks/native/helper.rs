@@ -97,14 +97,6 @@ pub fn tanh_grad<T: Float>(x: T, dx: T) -> T {
     (T::one() - x.powi(2)) * dx
 }
 
-/// opertion config impl macro
-/// TODO it's never referenced, candidate for removal
-macro_rules! impl_oconf_for_clrn(($($t: ident), +) => (
-    $(
-        impl NNOperationConfig<$t> for ::frameworks::native::helper::NormalizationConfig { }
-    )+
-));
-
 /// sigmoid impl generation macro
 #[macro_export]
 macro_rules! impl_ops_sigmoid_for {

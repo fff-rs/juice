@@ -6,7 +6,6 @@
 //!
 //! [backend]: ../backend/index.html
 use std::any::Any;
-use std::error::Error as StdError;
 
 use crate::hardware::IHardware;
 #[cfg(feature = "native")]
@@ -72,38 +71,25 @@ pub enum Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::NoMemorySyncRoute => write!(f, "{}", self.description()),
-            Error::MemorySyncError => write!(f, "{}", self.description()),
-            Error::MemoryAllocationError => write!(f, "{}", self.description()),
+        let msg = match *self {
+            Error::NoMemorySyncRoute => "No available memory synchronization route".to_string(),
+            Error::MemorySyncError => "Memory synchronization failed".to_string(),
+            Error::MemoryAllocationError => "Memory allocation failed".to_string(),
 
             #[cfg(feature = "native")]
-            Error::Native(ref err) => write!(f, "Native error: {}", err),
+            Error::Native(ref err) => format!("Native error: {}", err.to_string()),
             #[cfg(feature = "opencl")]
-            Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
+            Error::OpenCL(ref err) => format!("OpenCL error: {}", err.to_string()),
             #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
-        }
+            Error::Cuda(ref err) => format!("Cuda error: {}", err.to_string())
+        };
+
+        write!(f, "{}", msg)
     }
 }
 
 impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::NoMemorySyncRoute => "No available memory synchronization route",
-            Error::MemorySyncError => "Memory syncronization failed",
-            Error::MemoryAllocationError => "Memory allocation failed",
-
-            #[cfg(feature = "native")]
-            Error::Native(ref err) => err.description(),
-            #[cfg(feature = "opencl")]
-            Error::OpenCL(ref err) => err.description(),
-            #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => err.description(),
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
             Error::NoMemorySyncRoute => None,
             Error::MemorySyncError => None,

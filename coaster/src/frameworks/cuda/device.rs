@@ -30,7 +30,7 @@ impl Default for Device {
 impl Device {
     /// Initializes a new Cuda device.
     pub fn from_isize(id: isize) -> Device {
-        Device { id: id, ..Device::default() }
+        Device { id, ..Device::default() }
     }
 
     /// Initializes a new Cuda device from its C type.
@@ -125,20 +125,26 @@ pub struct DeviceInfo {
     info: Vec<u8>,
 }
 
-impl DeviceInfo {
+impl std::fmt::Display for DeviceInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let msg = match String::from_utf8((*self.info).to_owned()) {
+            Ok(res) => res,
+            Err(e) => {
+                format!("Failed to parse DeviceInfo: {}", e.to_string())
+            }
+        };
+        write!(f, "{}", msg)
+    }
+}
 
+impl DeviceInfo {
     /// Initializes a new Device Info
     pub fn new(info: Vec<u8>) -> DeviceInfo {
-        DeviceInfo { info: info }
+        DeviceInfo { info }
     }
 
     #[allow(missing_docs)]
-    pub fn to_string(self) -> String {
-        unsafe { String::from_utf8_unchecked(self.info) }
-    }
-
-    #[allow(missing_docs)]
-    pub fn to_isize(self) -> isize {
+    pub fn to_isize(&self) -> isize {
         let mut bytes = Cursor::new(&self.info);
         bytes.read_u32::<LittleEndian>().unwrap() as isize
     }

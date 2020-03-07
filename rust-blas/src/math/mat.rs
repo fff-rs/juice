@@ -29,7 +29,7 @@ impl<T> Mat<T> {
         Mat {
             rows: n,
             cols: m,
-            data: data,
+            data,
         }
     }
 
@@ -39,13 +39,23 @@ impl<T> Mat<T> {
     pub fn cols(&self) -> usize {
         self.cols
     }
+    /// Set Matrix Rows Manually
+    /// # Safety
+    /// This only sets the value for rows, and does not include any guarantees that the
+    /// number of elements is equal to rows x columns after the operation takes place.
     pub unsafe fn set_rows(&mut self, n: usize) {
         self.rows = n;
     }
+    /// Set Matrix Columns Manually
+    /// # Safety
+    /// This only sets the value for columns, and does not include any guarantees that the
+    /// number of elements is equal to rows x columns after the operation takes place.
     pub unsafe fn set_cols(&mut self, n: usize) {
         self.cols = n;
     }
-
+    /// Push a single value to matrix data backing
+    /// # Safety
+    /// This makes no checks that rows x columns remains equivalent to the length of pushed elements
     pub unsafe fn push(&mut self, val: T) {
         self.data.push(val);
     }
@@ -64,7 +74,7 @@ impl<T: Clone> Mat<T> {
 impl<T> Index<usize> for Mat<T> {
     type Output = [T];
 
-    fn index<'a>(&'a self, index: usize) -> &'a [T] {
+    fn index(&self, index: usize) -> &[T] {
         let offset = (index * self.cols) as isize;
 
         unsafe {
@@ -84,7 +94,7 @@ impl<T: fmt::Display> fmt::Display for Mat<T> {
                 }
             }
 
-            match writeln!(f, "") {
+            match writeln!(f) {
                 Ok(_) => (),
                 x => return x,
             }

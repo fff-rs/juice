@@ -51,6 +51,7 @@ impl API {
     }
 
     /// Computes the dropout forward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn dropout_forward(
         handle: cudnnHandle_t,
         dropout_desc: cudnnDropoutDescriptor_t,
@@ -76,6 +77,7 @@ impl API {
     }
 
     /// Computes the dropout backward function.
+    #[allow(clippy::too_many_arguments)]
     pub fn dropout_backward(
         handle: cudnnHandle_t,
         dropout_desc: cudnnDropoutDescriptor_t,
@@ -171,6 +173,7 @@ impl API {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_dropout_forward(
         handle: cudnnHandle_t,
         dropout_desc: cudnnDropoutDescriptor_t,
@@ -202,9 +205,10 @@ impl API {
                 "The function failed to launch on the GPU.",
             )),
             _ => Err(Error::Unknown("Unable to calculate CUDA cuDNN Dropout forward")),
-
         }
     }
+
+    #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_dropout_backward(
         handle: cudnnHandle_t,
         dropout_desc: cudnnDropoutDescriptor_t,

@@ -65,7 +65,7 @@ impl FilterDescriptor {
 
     /// Initializes a new CUDA cuDNN FilterDescriptor from its C type.
     pub fn from_c(id: cudnnFilterDescriptor_t) -> FilterDescriptor {
-        FilterDescriptor { id: id }
+        FilterDescriptor { id }
     }
 
     /// Returns the CUDA cuDNN FilterDescriptor as its C type.

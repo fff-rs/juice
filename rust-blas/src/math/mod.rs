@@ -23,9 +23,9 @@ impl<A> Deref for Trans<A> {
     type Target = A;
 
     fn deref(&self) -> &A {
-        match self {
-            &Trans::T(ref v) => v,
-            &Trans::H(ref v) => v,
+        match *self {
+            Trans::T(ref v) => v,
+            Trans::H(ref v) => v,
         }
     }
 }

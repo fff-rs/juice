@@ -49,5 +49,7 @@ pub trait IOperationSwap<F> {
 /// Describes a Gemm Operation.
 pub trait IOperationGemm<F> {
     /// Computes the Gemm operation.
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::many_single_char_names)]
     fn compute(&self, alpha: &SharedTensor<F>, at: Transpose, a_dims: &[usize], a: &SharedTensor<F>, bt: Transpose, b_dims: &[usize], b: &SharedTensor<F>, beta: &SharedTensor<F>, c_dims: &[usize], c: &mut SharedTensor<F>) -> Result<(), ::coaster::error::Error>;
 }

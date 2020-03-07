@@ -1,6 +1,6 @@
 //! Describes the foreign function interface of the CUDA DRIVER API
 //!
-#![allow(non_camel_case_types, non_snake_case)]
+#![allow(non_camel_case_types, non_snake_case, clippy::all)]
 // Created by bindgen
 
 pub type size_t = ::libc::size_t;
