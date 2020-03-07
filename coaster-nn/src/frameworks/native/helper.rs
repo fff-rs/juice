@@ -4,7 +4,7 @@ use crate::co;
 use crate::co::plugin::Error as PluginError;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::frameworks::native::flatbox::FlatBox;
-use ::{DirectionMode, RnnInputMode};
+use crate::{DirectionMode, RnnInputMode};
 use RnnNetworkMode;
 
 #[derive(Debug, Copy, Clone)]
