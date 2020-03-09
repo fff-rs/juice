@@ -86,12 +86,18 @@ pub trait Gbmv<F> {
     ///
     /// Saves the resulting vector into `c`.
     /// This is a Level 2 BLAS operation.
-   #[allow(clippy::too_many_arguments)]
-   fn gbmv(&self, alpha: &SharedTensor<F>,
-       at: Transpose, a: &SharedTensor<F>,
-       kl: &SharedTensor<F>, ku: &SharedTensor<F>,
-       x: &SharedTensor<F>, beta: &SharedTensor<F>, 
-       c: &mut SharedTensor<F>) -> Result<(), ::coaster::error::Error>;
+    #[allow(clippy::too_many_arguments)]
+    fn gbmv(
+        &self,
+        alpha: &SharedTensor<F>,
+        at: Transpose,
+        a: &SharedTensor<F>,
+        kl: &SharedTensor<u32>,
+        ku: &SharedTensor<u32>,
+        x: &SharedTensor<F>,
+        beta: &SharedTensor<F>,
+        c: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the gemm operation.

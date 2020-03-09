@@ -165,6 +165,26 @@ macro_rules! iblas_swap_for_cuda {
     );
 }
 
+/// gbmv for cuda
+#[macro_export]
+macro_rules! iblas_gbmv_for_cuda {
+    ($t:ident) => {
+        fn gbmv(
+            &self,
+            alpha: &SharedTensor<$t>,
+            at: Transpose,
+            a: &SharedTensor<$t>,
+            kl: &SharedTensor<u32>,
+            ku: &SharedTensor<u32>,
+            x: &SharedTensor<$t>,
+            beta: &SharedTensor<$t>,
+            c: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
+            unimplemented!();
+        }
+    }
+}
+
 /// gemm for cuda
 #[macro_export]
 macro_rules! iblas_gemm_for_cuda {
