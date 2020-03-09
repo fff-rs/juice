@@ -120,8 +120,8 @@ macro_rules! iblas_gbmv_for_native {
             alpha: &SharedTensor<$t>,
             at: Transpose,
             a: &SharedTensor<$t>,
-            kl: &SharedTensor<$t>,
-            ku: &SharedTensor<$t>,
+            kl: &SharedTensor<u32>,
+            ku: &SharedTensor<u32>,
             x: &SharedTensor<$t>,
             beta: &SharedTensor<$t>,
             c: &mut SharedTensor<$t>) -> Result<(), ::coaster::error::Error> {
@@ -133,21 +133,17 @@ macro_rules! iblas_gbmv_for_native {
             let kl: u32 = read!(kl, u32, self)[0];
             let ku: u32 = read!(ku, u32, self)[0]; 
 
-            unsafe {
-                let a_matrix = as_matrix(a_slice, a.desc().dims());
-                let a_matrix = BandMat::from_matrix(a_matrix, kl, ku);
+            let a_matrix = as_matrix(a_slice, a.desc().dims());
+            let a_matrix = BandMat::from_matrix(a_matrix, kl, ku);
 
-                rblas::Gbmv::gbmv(
-                    at.to_rblas(),
-                    &read!(alpha, $t, self)[0],
-                    &a_matrix,
-                    x_slice,
-                    &read!(beta, $t, self)[0],
-                    c_slice
-                );
-
-                Ok(())
-            }
+            rblas::Gbmv::gbmv(
+                at.to_rblas(),
+                &read!(alpha, $t, self)[0],
+                &a_matrix,
+                x_slice,
+                &read!(beta, $t, self)[0],
+                c_slice,
+            );
         }
     }
 }

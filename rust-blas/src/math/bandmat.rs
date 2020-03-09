@@ -1,6 +1,7 @@
 // Copyright 2015 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
+use std::fmt::Display;
 use crate::math::Mat;
 use crate::matrix::BandMatrix;
 use crate::vector::ops::Copy;
@@ -10,6 +11,7 @@ use std::fmt;
 use std::iter::repeat;
 use std::ops::Index;
 use std::slice;
+use std::mem::ManuallyDrop;
 
 #[derive(Debug, PartialEq)]
 /// Banded Matrix
@@ -25,6 +27,7 @@ pub struct BandMat<T> {
 }
 
 impl<T> BandMat<T> {
+
     pub fn new(n: usize, m: usize, sub: u32, sup: u32) -> BandMat<T> {
         let len = n * m;
         let mut data = Vec::with_capacity(len);
@@ -72,17 +75,23 @@ impl<T> BandMat<T> {
         self.data.push(val);
     }
 
-    pub unsafe fn from_matrix(
-        mut mat: Mat<T>,
+    pub fn from_matrix(
+        mat: Mat<T>,
         sub_diagonals: u32,
         sup_diagonals: u32,
     ) -> BandMat<T> {
-        let data = mat.as_mut_ptr();
-        let length = mat.cols() * mat.rows();
+        let mut mat = ManuallyDrop::new(mat);
+        
+        let v = unsafe {
+            let length = mat.cols() * mat.rows();
+            //Self::put_in_band_fmt(&mut data, mat.rows(), mat.cols(), sub_diagonals, sup_diagonals);
+            Vec::from_raw_parts(mat.as_mut_ptr(), length, length)
+        };
+
         BandMat {
             cols: mat.cols(),
             rows: mat.rows(),
-            data: Vec::from_raw_parts(data, length, length),
+            data: v,
             sub_diagonals,
             sup_diagonals,
         }
@@ -135,6 +144,10 @@ impl<T: fmt::Display> fmt::Display for BandMat<T> {
 }
 
 impl<T> Matrix<T> for BandMat<T> {
+    fn lead_dim(&self) -> u32 {
+        self.sub_diagonals + self.sup_diagonals + 1
+    }
+
     fn rows(&self) -> u32 {
         let n: Option<u32> = NumCast::from(self.rows);
         n.unwrap()

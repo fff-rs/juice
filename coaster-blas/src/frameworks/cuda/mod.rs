@@ -47,6 +47,10 @@ impl Swap<f32> for Backend<Cuda> {
     iblas_swap_for_cuda!(f32);
 }
 
+impl Gbmv<f32> for Backend<Cuda> {
+    iblas_gbmv_for_cuda!(f32);
+}
+
 impl Gemm<f32> for Backend<Cuda> {
     iblas_gemm_for_cuda!(f32);
 }

@@ -944,6 +944,7 @@ name = "juice-examples"
 version = "0.1.1"
 dependencies = [
  "coaster",
+ "coaster-nn",
  "csv",
  "docopt",
  "env_logger 0.7.1",
