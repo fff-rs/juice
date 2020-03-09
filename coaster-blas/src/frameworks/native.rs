@@ -167,7 +167,7 @@ macro_rules! iblas_gemm_for_native {
 
             let a_slice = read!(a, $t, self);
             let b_slice = read!(b, $t, self);
-            let c_slice = read_write!(c, $t, self);
+            let c_slice = write_only!(c, $t, self);
 
             let a_matrix = as_matrix(a_slice, a.desc().dims());
             let b_matrix = as_matrix(b_slice, b.desc().dims());
