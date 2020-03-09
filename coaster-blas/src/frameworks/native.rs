@@ -6,6 +6,7 @@ use coaster::backend::Backend;
 use coaster::frameworks::native::Native;
 use coaster::tensor::{SharedTensor, ITensorDesc};
 use rblas::math::mat::Mat;
+use rblas::math::bandmat::BandMat;
 use rblas::matrix::Matrix;
 use rblas;
 
@@ -113,6 +114,44 @@ macro_rules! iblas_swap_for_native {
     );
 }
 
+macro_rules! iblas_gbmv_for_native {
+    ($t: ident) => {
+        fn gbmv(&self,
+            alpha: &SharedTensor<$t>,
+            at: Transpose,
+            a: &SharedTensor<$t>,
+            kl: &SharedTensor<$t>,
+            ku: &SharedTensor<$t>,
+            x: &SharedTensor<$t>,
+            beta: &SharedTensor<$t>,
+            c: &mut SharedTensor<$t>) -> Result<(), ::coaster::error::Error> {
+            let a_slice = read!(a, $t, self);
+            let x_slice = read!(x, $t, self);
+            let c_slice = read_write!(c, $t, self);
+
+            // These values will always be u32
+            let kl: u32 = read!(kl, u32, self)[0];
+            let ku: u32 = read!(ku, u32, self)[0]; 
+
+            unsafe {
+                let a_matrix = as_matrix(a_slice, a.desc().dims());
+                let a_matrix = BandMat::from_matrix(a_matrix, kl, ku);
+
+                rblas::Gbmv::gbmv(
+                    at.to_rblas(),
+                    &read!(alpha, $t, self)[0],
+                    &a_matrix,
+                    x_slice,
+                    &read!(beta, $t, self)[0],
+                    c_slice
+                );
+
+                Ok(())
+            }
+        }
+    }
+}
+
 macro_rules! iblas_gemm_for_native {
     ($t:ident) => (
         fn gemm(&self,
@@ -128,7 +167,7 @@ macro_rules! iblas_gemm_for_native {
 
             let a_slice = read!(a, $t, self);
             let b_slice = read!(b, $t, self);
-            let c_slice = write_only!(c, $t, self);
+            let c_slice = read_write!(c, $t, self);
 
             let a_matrix = as_matrix(a_slice, a.desc().dims());
             let b_matrix = as_matrix(b_slice, b.desc().dims());
@@ -179,6 +218,12 @@ macro_rules! impl_iblas_for {
 
         impl Swap<$t> for $b {
             iblas_swap_for_native!($t);
+        }
+
+        // Level 2
+        
+        impl Gbmv<$t> for $b {
+           iblas_gbmv_for_native!($t);  
         }
 
         // Level 3
