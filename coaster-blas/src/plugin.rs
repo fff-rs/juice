@@ -80,6 +80,20 @@ pub trait Swap<F> {
             -> Result<(), ::coaster::error::Error>;
 }
 
+/// Provides the gbmv operation
+pub trait Gbmv<F> {
+    /// Computes a matrix-vector product with a band matrix
+    ///
+    /// Saves the resulting vector into `c`.
+    /// This is a Level 2 BLAS operation.
+   #[allow(clippy::too_many_arguments)]
+   fn gbmv(&self, alpha: &SharedTensor<F>,
+       at: Transpose, a: &SharedTensor<F>,
+       kl: &SharedTensor<F>, ku: &SharedTensor<F>,
+       x: &SharedTensor<F>, beta: &SharedTensor<F>, 
+       c: &mut SharedTensor<F>) -> Result<(), ::coaster::error::Error>;
+}
+
 /// Provides the gemm operation.
 pub trait Gemm<F> {
     /// Computes a matrix-matrix product with general matrices.
