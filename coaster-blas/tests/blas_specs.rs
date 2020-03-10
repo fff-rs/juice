@@ -1,14 +1,14 @@
 #![cfg(feature = "native")] // required for data i/o
 
-extern crate coaster_blas as co_blas;
 extern crate coaster as co;
+extern crate coaster_blas as co_blas;
 
-use std::fmt;
 use crate::co::backend::{Backend, IBackend};
-use crate::co::framework::{IFramework};
+use crate::co::framework::IFramework;
+use std::fmt;
 
 use crate::co::plugin::numeric_helpers::{cast, Float, NumCast};
-use crate::co::tensor::{SharedTensor,ITensorDesc};
+use crate::co::tensor::{ITensorDesc, SharedTensor};
 use crate::co_blas::plugin::*;
 use crate::co_blas::transpose::Transpose;
 
@@ -33,8 +33,9 @@ fn get_cuda_backend() -> Backend<Cuda> {
 
 // TODO reuse the coaster-nn methods
 pub fn write_to_tensor<T>(xs: &mut SharedTensor<T>, data: &[f64])
-    where T: ::std::marker::Copy + NumCast {
-
+where
+    T: ::std::marker::Copy + NumCast,
+{
     assert_eq!(xs.desc().size(), data.len());
     let native = get_native_backend();
     let native_dev = native.device();
@@ -49,9 +50,10 @@ pub fn write_to_tensor<T>(xs: &mut SharedTensor<T>, data: &[f64])
 
 // TODO reuse the coaster-nn methods
 pub fn tensor_assert_eq<T>(xs: &SharedTensor<T>, data: &[f64], epsilon_mul: f64)
-    where T: Float + fmt::Debug + PartialEq + NumCast {
-
-	let e = 0. * epsilon_mul;
+where
+    T: Float + fmt::Debug + PartialEq + NumCast,
+{
+    let e = 0. * epsilon_mul;
 
     let native = get_native_backend();
     let native_dev = native.device();
@@ -65,17 +67,25 @@ pub fn tensor_assert_eq<T>(xs: &SharedTensor<T>, data: &[f64], epsilon_mul: f64)
         let diff = (x1_t - x2).abs();
         let max_diff = e * (x1_t.abs() + x2.abs()) * 0.5;
         if (x1_t - x2).abs() > e * (x1_t.abs() + x2.abs()) * 0.5 {
-            println!("Results differ: {:?} != {:?} ({:.2?} in {:?} and {:?}",
-                     x1_t, x2, diff / max_diff, mem_slice, data);
+            println!(
+                "Results differ: {:?} != {:?} ({:.2?} in {:?} and {:?}",
+                x1_t,
+                x2,
+                diff / max_diff,
+                mem_slice,
+                data
+            );
             assert!(false);
         }
     }
 }
 
 pub fn test_asum<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Asum<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Asum<T> + IBackend,
+{
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut result = SharedTensor::<T>::new(&[1]);
     write_to_tensor(&mut x, &[1.0, -2.0, 3.0]);
@@ -85,9 +95,11 @@ pub fn test_asum<T, F>(backend: Backend<F>)
 }
 
 pub fn test_axpy<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Axpy<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Axpy<T> + IBackend,
+{
     let mut a = SharedTensor::<T>::new(&[1]);
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
@@ -101,9 +113,11 @@ pub fn test_axpy<T, F>(backend: Backend<F>)
 }
 
 pub fn test_copy<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Copy<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Copy<T> + IBackend,
+{
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
     write_to_tensor(&mut x, &[1., 2., 3.]);
@@ -113,9 +127,11 @@ pub fn test_copy<T, F>(backend: Backend<F>)
 }
 
 pub fn test_dot<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Dot<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Dot<T> + IBackend,
+{
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
     let mut result = SharedTensor::<T>::new(&[1]);
@@ -127,9 +143,11 @@ pub fn test_dot<T, F>(backend: Backend<F>)
 }
 
 pub fn test_nrm2<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Nrm2<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Nrm2<T> + IBackend,
+{
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut result = SharedTensor::<T>::new(&[1]);
     write_to_tensor(&mut x, &[1., 2., 2.]);
@@ -139,9 +157,11 @@ pub fn test_nrm2<T, F>(backend: Backend<F>)
 }
 
 pub fn test_scal<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Scal<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Scal<T> + IBackend,
+{
     let mut a = SharedTensor::<T>::new(&[1]);
     let mut y = SharedTensor::<T>::new(&[3]);
     write_to_tensor(&mut a, &[2.]);
@@ -153,9 +173,11 @@ pub fn test_scal<T, F>(backend: Backend<F>)
 }
 
 pub fn test_swap<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Swap<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Swap<T> + IBackend,
+{
     let mut x = SharedTensor::<T>::new(&[3]);
     let mut y = SharedTensor::<T>::new(&[3]);
     write_to_tensor(&mut x, &[1., 2., 3.]);
@@ -217,36 +239,47 @@ where
 }
 
 pub fn test_gemm<T, F>(backend: Backend<F>)
-    where T: Float + fmt::Debug,
-            F: IFramework,
-            Backend<F>: Gemm<T> + IBackend {
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Gemm<T> + IBackend,
+{
     let mut alpha = SharedTensor::<T>::new(&[1]);
     let mut beta = SharedTensor::<T>::new(&[1]);
     let mut a = SharedTensor::<T>::new(&[3, 2]);
     let mut b = SharedTensor::<T>::new(&[2, 3]);
     write_to_tensor(&mut alpha, &[1.]);
     write_to_tensor(&mut beta, &[0.]);
-    write_to_tensor(&mut a, &[2., 5., 2.,  5., 2., 5.]);
-    write_to_tensor(&mut b, &[4., 1., 1.,  4., 1., 1.]);
+    write_to_tensor(&mut a, &[2., 5., 2., 5., 2., 5.]);
+    write_to_tensor(&mut b, &[4., 1., 1., 4., 1., 1.]);
 
     let mut c = SharedTensor::<T>::new(&[3, 3]);
-    backend.gemm(&alpha,
-                    Transpose::NoTrans, &a,
-                    Transpose::NoTrans, &b,
-                    &beta,
-                    &mut c).unwrap();
+    backend
+        .gemm(
+            &alpha,
+            Transpose::NoTrans,
+            &a,
+            Transpose::NoTrans,
+            &b,
+            &beta,
+            &mut c,
+        )
+        .unwrap();
 
-    tensor_assert_eq(&c, &[
-        28.0, 7.0, 7.0,
-        28.0, 7.0, 7.0,
-        28.0, 7.0, 7.0], 0.);
+    tensor_assert_eq(&c, &[28.0, 7.0, 7.0, 28.0, 7.0, 7.0, 28.0, 7.0, 7.0], 0.);
 
     let mut d = SharedTensor::<T>::new(&[2, 2]);
-    backend.gemm(&alpha,
-                    Transpose::Trans, &a,
-                    Transpose::Trans, &b,
-                    &beta,
-                    &mut d).unwrap();
+    backend
+        .gemm(
+            &alpha,
+            Transpose::Trans,
+            &a,
+            Transpose::Trans,
+            &b,
+            &beta,
+            &mut d,
+        )
+        .unwrap();
 
     tensor_assert_eq(&d, &[12.0, 12.0, 30.0, 30.0], 0.);
 }
@@ -292,11 +325,6 @@ macro_rules! test_blas {
             }
 
             #[test]
-            fn it_computes_correct_gbmv() {
-                test_gbmv::<$t, _>($backend_getter());
-            }
-
-            #[test]
             fn it_computes_correct_gemm() {
                 test_gemm::<$t, _>($backend_getter());
             }
@@ -304,8 +332,25 @@ macro_rules! test_blas {
     };
 }
 
+macro_rules! test_blas_gbmv {
+    ($mod_name:ident, $backend_getter:ident, $t:ident) => {
+        mod $mod_name {
+            use super::*;
+
+            #[test]
+            fn it_computes_correct_gbmv() {
+                test_gbmv::<$t, _>($backend_getter());
+            }
+        }
+    }
+}
+
 test_blas!(native_f32, get_native_backend, f32);
 test_blas!(native_f64, get_native_backend, f64);
+
+// This is temporary until CUDA impelements Gbmv trait
+test_blas_gbmv!(native_f32_gbmv, get_native_backend, f32);
+test_blas_gbmv!(native_f64_gbmv, get_native_backend, f64);
 
 #[cfg(feature = "cuda")]
 test_blas!(cuda_f32, get_cuda_backend, f32);

@@ -144,6 +144,8 @@ macro_rules! iblas_gbmv_for_native {
                 &read!(beta, $t, self)[0],
                 c_slice,
             );
+
+            Ok(())
         }
     }
 }
