@@ -9,7 +9,7 @@ edition = "2018"
 
 [dependencies]
 greenglas = { version = "0.2" }
-juice = { version = "0.2", default-features = false }
+juice = { version = "0.2.3", default-features = false }
 coaster = { version = "0.1", default-features = false }
 coaster-nn = { version = "0.4.1", default-features = false }
 
