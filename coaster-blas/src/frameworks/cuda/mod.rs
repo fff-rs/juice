@@ -1,12 +1,12 @@
 //! Provides BLAS for a CUDA backend.
 #![allow(missing_docs)]
-use coaster::backend::Backend;
-use coaster::tensor::{SharedTensor, ITensorDesc};
-use coaster::plugin::Error as PluginError;
-use coaster::frameworks::cuda::Cuda;
 use crate::cublas;
 use crate::plugin::*;
 use crate::transpose::Transpose;
+use coaster::backend::Backend;
+use coaster::frameworks::cuda::Cuda;
+use coaster::plugin::Error as PluginError;
+use coaster::tensor::{ITensorDesc, SharedTensor};
 
 #[macro_use]
 pub mod helper;
@@ -14,7 +14,9 @@ pub mod helper;
 lazy_static! {
     static ref CONTEXT: cublas::Context = {
         let mut context = cublas::Context::new().unwrap();
-        context.set_pointer_mode(cublas::api::PointerMode::Device).unwrap();
+        context
+            .set_pointer_mode(cublas::api::PointerMode::Device)
+            .unwrap();
         context
     };
 }

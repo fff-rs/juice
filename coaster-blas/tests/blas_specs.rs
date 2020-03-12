@@ -207,15 +207,12 @@ where
     write_to_tensor(&mut alpha, &[1.]);
     write_to_tensor(&mut beta, &[2.]);
 
-    write_to_tensor(&mut a, 
+    write_to_tensor(
+        &mut a,
         &[
-          0.0, 0.5, 2.0, 
-          2.0, 0.5, 2.0, 
-          2.0, 0.5, 2.0, 
-          2.0, 0.5, 0.0,
-          0.0, 0.0, 0.0, 
-          0.0
-        ]);
+            0.0, 0.5, 2.0, 2.0, 0.5, 2.0, 2.0, 0.5, 2.0, 2.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0,
+        ],
+    );
 
     write_to_tensor(&mut x, &[1., 2., 2., 1.]);
     write_to_tensor(&mut y, &[0.5, 1., 2., 3.]);
@@ -223,18 +220,10 @@ where
     write_to_tensor(&mut kl, &[1.0]);
     write_to_tensor(&mut ku, &[1.0]);
 
-    backend.gbmv(
-       &alpha,
-       Transpose::NoTrans,
-       &a,
-       &kl,
-       &ku,
-       &x,
-       &beta,
-       &mut y,
-    ).unwrap();
+    backend
+        .gbmv(&alpha, Transpose::NoTrans, &a, &kl, &ku, &x, &beta, &mut y)
+        .unwrap();
 
-    
     tensor_assert_eq(&y, &[5.5, 9., 11., 10.5], 0.5);
 }
 
@@ -342,7 +331,7 @@ macro_rules! test_blas_gbmv {
                 test_gbmv::<$t, _>($backend_getter());
             }
         }
-    }
+    };
 }
 
 test_blas!(native_f32, get_native_backend, f32);

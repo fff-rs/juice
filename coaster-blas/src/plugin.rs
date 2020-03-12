@@ -6,7 +6,7 @@ use coaster::binary::IBinary;
 use coaster::tensor::SharedTensor;
 
 /// Provides the functionality for a backend to support Basic Linear Algebra Subprogram operations.
-pub trait IBlas<F> { }
+pub trait IBlas<F> {}
 
 /// Provides the asum operation.
 pub trait Asum<F> {
@@ -14,8 +14,11 @@ pub trait Asum<F> {
     ///
     /// Saves the result to `result`.
     /// This is a Level 1 BLAS operation.
-    fn asum(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>)
-            -> Result<(), ::coaster::error::Error>;
+    fn asum(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the axpy operation.
@@ -24,8 +27,12 @@ pub trait Axpy<F> {
     ///
     /// Saves the resulting vector back into `y`.
     /// This is a Level 1 BLAS operation.
-    fn axpy(&self, a: &SharedTensor<F>, x: &SharedTensor<F>, y: &mut SharedTensor<F>)
-            -> Result<(), ::coaster::error::Error>;
+    fn axpy(
+        &self,
+        a: &SharedTensor<F>,
+        x: &SharedTensor<F>,
+        y: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the copy operation.
@@ -34,8 +41,11 @@ pub trait Copy<F> {
     ///
     /// Saves the result to `y`.
     /// This is a Level 1 BLAS operation.
-    fn copy(&self, x: &SharedTensor<F>, y: &mut SharedTensor<F>)
-            -> Result<(), ::coaster::error::Error>;
+    fn copy(
+        &self,
+        x: &SharedTensor<F>,
+        y: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the dot operation.
@@ -45,9 +55,12 @@ pub trait Dot<F> {
     ///
     /// Saves the resulting value into `result`.
     /// This is a Level 1 BLAS operation.
-    fn dot(&self, x: &SharedTensor<F>, y: &SharedTensor<F>,
-           result: &mut SharedTensor<F>)
-           -> Result<(), ::coaster::error::Error>;
+    fn dot(
+        &self,
+        x: &SharedTensor<F>,
+        y: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the nrm2 operation.
@@ -56,8 +69,11 @@ pub trait Nrm2<F> {
     ///
     /// Saves the result to `result`.
     /// This is a Level 1 BLAS operation.
-    fn nrm2(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>)
-            -> Result<(), ::coaster::error::Error>;
+    fn nrm2(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the scal operation.
@@ -66,8 +82,11 @@ pub trait Scal<F> {
     ///
     /// Saves the resulting vector back into `x`.
     /// This is a Level 1 BLAS operation.
-    fn scal(&self, a: &SharedTensor<F>, x: &mut SharedTensor<F>)
-            -> Result<(), ::coaster::error::Error>;
+    fn scal(
+        &self,
+        a: &SharedTensor<F>,
+        x: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the swap operation.
@@ -76,8 +95,11 @@ pub trait Swap<F> {
     ///
     /// Saves the resulting vector back into `x`.
     /// This is a Level 1 BLAS operation.
-    fn swap(&self, x: &mut SharedTensor<F>, y: &mut SharedTensor<F>)
-            -> Result<(), ::coaster::error::Error>;
+    fn swap(
+        &self,
+        x: &mut SharedTensor<F>,
+        y: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Provides the gbmv operation
@@ -107,11 +129,16 @@ pub trait Gemm<F> {
     /// Saves the result into `c`.
     /// This is a Level 3 BLAS operation.
     #[allow(clippy::too_many_arguments)]
-    fn gemm(&self, alpha: &SharedTensor<F>,
-            at: Transpose, a: &SharedTensor<F>,
-            bt: Transpose, b: &SharedTensor<F>,
-            beta: &SharedTensor<F>,
-            c: &mut SharedTensor<F>) -> Result<(), ::coaster::error::Error>;
+    fn gemm(
+        &self,
+        alpha: &SharedTensor<F>,
+        at: Transpose,
+        a: &SharedTensor<F>,
+        bt: Transpose,
+        b: &SharedTensor<F>,
+        beta: &SharedTensor<F>,
+        c: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Allows a BlasBinary to be provided which is used for a IBlas implementation.
@@ -120,4 +147,4 @@ pub trait BlasBinaryProvider<F, B: IBlasBinary<F> + IBinary> {
     fn binary(&self) -> &B;
 }
 
-impl<F, B: IBlasBinary<F> + IBinary> IBlas<F> for dyn BlasBinaryProvider<F, B> { }
+impl<F, B: IBlasBinary<F> + IBinary> IBlas<F> for dyn BlasBinaryProvider<F, B> {}
