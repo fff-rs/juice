@@ -75,6 +75,38 @@ impl<T> BandMat<T> {
         self.data.push(val);
     }
 
+    /// Converts a standard matrix into a band matrix
+    ///
+    /// TODO: write a conversion utility
+    /// DOES NOT PERFORM CONVERSION INTO BAND MATRIX FORMAT
+    ///
+    /// The actual conversion can be done by hand once one
+    /// understands the pattern of the band matrix. Say you
+    /// have an MxN band matrix in standard form. Say you 
+    /// have ku upper diagonals and kl sub diagonals. Then
+    /// the band matrix representation will have dimensions 
+    /// Nx(ku+kl+1), and will have the all of the relevant 
+    /// values of each row, concatenated starting at position
+    /// kl. An example is probably useful:
+    ///
+    /// Say our initial matrix is the following:
+    ///
+    /// [ 1 2 0 0 ]
+    /// [ 3 1 2 0 ]
+    /// [ 0 3 1 2 ]
+    /// [ 0 0 3 1 ]
+    ///
+    /// Then the band matrix representation would be:
+    ///
+    /// [ x 1 2 ]
+    /// [ 3 1 2 ]
+    /// [ 3 1 2 ]
+    /// [ 3 1 x ]
+    ///
+    /// "x" represent values that aren't relevant to the 
+    /// calculations: the values in those slots won't be
+    /// read or modified by the underlying BLAS program.
+    ///
     pub fn from_matrix(
         mat: Mat<T>,
         sub_diagonals: u32,
@@ -84,7 +116,6 @@ impl<T> BandMat<T> {
         
         let v = unsafe {
             let length = mat.cols() * mat.rows();
-            //Self::put_in_band_fmt(&mut data, mat.rows(), mat.cols(), sub_diagonals, sup_diagonals);
             Vec::from_raw_parts(mat.as_mut_ptr(), length, length)
         };
 
