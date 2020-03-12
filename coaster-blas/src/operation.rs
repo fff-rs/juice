@@ -1,8 +1,8 @@
 //! Provides the IOperationX operation traits for Coaster's Framework implementation.
 
-use coaster::tensor::SharedTensor;
-use coaster::plugin::Error;
 use crate::transpose::Transpose;
+use coaster::plugin::Error;
+use coaster::tensor::SharedTensor;
 
 /// Describes a Asum Operation.
 pub trait IOperationAsum<F> {
@@ -13,7 +13,12 @@ pub trait IOperationAsum<F> {
 /// Describes a Axpy Operation.
 pub trait IOperationAxpy<F> {
     /// Computes the Axpy operation.
-    fn compute(&self, a: &SharedTensor<F>, x: & SharedTensor<F>, y: &mut SharedTensor<F>) -> Result<(), Error>;
+    fn compute(
+        &self,
+        a: &SharedTensor<F>,
+        x: &SharedTensor<F>,
+        y: &mut SharedTensor<F>,
+    ) -> Result<(), Error>;
 }
 
 /// Describes a Copy Operation.
@@ -25,7 +30,12 @@ pub trait IOperationCopy<F> {
 /// Describes a Dot Operation.
 pub trait IOperationDot<F> {
     /// Computes the Dot operation.
-    fn compute(&self, x: &SharedTensor<F>, y: &SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), Error>;
+    fn compute(
+        &self,
+        x: &SharedTensor<F>,
+        y: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), Error>;
 }
 
 /// Describes a Nrm2 Operation.
@@ -51,5 +61,17 @@ pub trait IOperationGemm<F> {
     /// Computes the Gemm operation.
     #[allow(clippy::too_many_arguments)]
     #[allow(clippy::many_single_char_names)]
-    fn compute(&self, alpha: &SharedTensor<F>, at: Transpose, a_dims: &[usize], a: &SharedTensor<F>, bt: Transpose, b_dims: &[usize], b: &SharedTensor<F>, beta: &SharedTensor<F>, c_dims: &[usize], c: &mut SharedTensor<F>) -> Result<(), ::coaster::error::Error>;
+    fn compute(
+        &self,
+        alpha: &SharedTensor<F>,
+        at: Transpose,
+        a_dims: &[usize],
+        a: &SharedTensor<F>,
+        bt: Transpose,
+        b_dims: &[usize],
+        b: &SharedTensor<F>,
+        beta: &SharedTensor<F>,
+        c_dims: &[usize],
+        c: &mut SharedTensor<F>,
+    ) -> Result<(), ::coaster::error::Error>;
 }

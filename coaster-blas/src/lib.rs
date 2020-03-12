@@ -43,22 +43,27 @@
 #![cfg_attr(lint, feature(plugin))]
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
-#![deny(missing_docs,
-        missing_debug_implementations, missing_copy_implementations,
-        trivial_casts, trivial_numeric_casts,
-        unused_import_braces, unused_qualifications)]
+#![deny(
+    missing_docs,
+    missing_debug_implementations,
+    missing_copy_implementations,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_import_braces,
+    unused_qualifications
+)]
 
 #[macro_use]
 extern crate lazy_static;
 
 extern crate coaster;
-#[cfg(feature = "native")]
-extern crate rust_blas as rblas;
 #[cfg(feature = "cuda")]
 extern crate rcublas as cublas;
+#[cfg(feature = "native")]
+extern crate rust_blas as rblas;
 
-pub mod plugin;
 pub mod binary;
-pub mod operation;
-pub mod transpose;
 pub mod frameworks;
+pub mod operation;
+pub mod plugin;
+pub mod transpose;

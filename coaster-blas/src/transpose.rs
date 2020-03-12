@@ -1,8 +1,8 @@
 //! Provides the Transpose functionality for Matrix operations.
 #[cfg(feature = "cuda")]
-use std::convert::From;
-#[cfg(feature = "cuda")]
 use crate::cublas::api::Operation;
+#[cfg(feature = "cuda")]
+use std::convert::From;
 
 #[derive(Debug, Copy, Clone)]
 /// Possible transpose operations that can be applied in Level 2 and Level 3 BLAS operations.

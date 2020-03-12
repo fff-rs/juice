@@ -4,119 +4,134 @@ use crate::plugin::*;
 use crate::transpose::*;
 use coaster::backend::Backend;
 use coaster::frameworks::native::Native;
-use coaster::tensor::{SharedTensor, ITensorDesc};
-use rblas::math::mat::Mat;
-use rblas::math::bandmat::BandMat;
-use rblas::matrix::Matrix;
+use coaster::tensor::{ITensorDesc, SharedTensor};
 use rblas;
+use rblas::math::bandmat::BandMat;
+use rblas::math::mat::Mat;
+use rblas::matrix::Matrix;
 
 macro_rules! read {
-    ($x:ident, $t:ident, $slf:ident) => (
-        $x.read($slf.device())?
-            .as_slice::<$t>();
-    )
+    ($x:ident, $t:ident, $slf:ident) => {
+        $x.read($slf.device())?.as_slice::<$t>();
+    };
 }
 
 macro_rules! read_write {
-    ($x:ident, $t: ident, $slf:ident) => (
-        $x.read_write($slf.device())?
-            .as_mut_slice::<$t>();
-    )
+    ($x:ident, $t: ident, $slf:ident) => {
+        $x.read_write($slf.device())?.as_mut_slice::<$t>();
+    };
 }
 
 macro_rules! write_only {
-    ($x:ident, $t: ident, $slf:ident) => (
-        $x.write_only($slf.device())?
-            .as_mut_slice::<$t>();
-    )
+    ($x:ident, $t: ident, $slf:ident) => {
+        $x.write_only($slf.device())?.as_mut_slice::<$t>();
+    };
 }
 
-
 macro_rules! iblas_asum_for_native {
-    ($t:ident) => (
-        fn asum(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                -> Result<(), ::coaster::error::Error> {
+    ($t:ident) => {
+        fn asum(
+            &self,
+            x: &SharedTensor<$t>,
+            result: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
             let r_slice = write_only!(result, $t, self);
             r_slice[0] = rblas::Asum::asum(read!(x, $t, self));
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! iblas_axpy_for_native {
-    ($t:ident) => (
-        fn axpy(&self, a: &SharedTensor<$t>, x: &SharedTensor<$t>,
-                y: &mut SharedTensor<$t>)
-                -> Result<(), ::coaster::error::Error> {
+    ($t:ident) => {
+        fn axpy(
+            &self,
+            a: &SharedTensor<$t>,
+            x: &SharedTensor<$t>,
+            y: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
             rblas::Axpy::axpy(
                 &read!(a, $t, self)[0],
                 read!(x, $t, self),
-                read_write!(y, $t, self));
+                read_write!(y, $t, self),
+            );
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! iblas_copy_for_native {
-    ($t:ident) => (
-        fn copy(&self, x: &SharedTensor<$t>, y: &mut SharedTensor<$t>)
-                -> Result<(), ::coaster::error::Error> {
-            rblas::Copy::copy(
-                read!(x, $t, self),
-                write_only!(y, $t, self));
+    ($t:ident) => {
+        fn copy(
+            &self,
+            x: &SharedTensor<$t>,
+            y: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
+            rblas::Copy::copy(read!(x, $t, self), write_only!(y, $t, self));
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! iblas_dot_for_native {
-    ($t:ident) => (
-        fn dot(&self, x: &SharedTensor<$t>, y: &SharedTensor<$t>,
-               result: &mut SharedTensor<$t>
-               ) -> Result<(), ::coaster::error::Error> {
+    ($t:ident) => {
+        fn dot(
+            &self,
+            x: &SharedTensor<$t>,
+            y: &SharedTensor<$t>,
+            result: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
             let r_slice = write_only!(result, $t, self);
             r_slice[0] = rblas::Dot::dot(read!(x, $t, self), read!(y, $t, self));
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! iblas_nrm2_for_native {
-    ($t:ident) => (
-        fn nrm2(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                -> Result<(), ::coaster::error::Error> {
+    ($t:ident) => {
+        fn nrm2(
+            &self,
+            x: &SharedTensor<$t>,
+            result: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
             let r_slice = write_only!(result, $t, self);
             r_slice[0] = rblas::Nrm2::nrm2(read!(x, $t, self));
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! iblas_scal_for_native {
-    ($t:ident) => (
-        fn scal(&self, a: &SharedTensor<$t>, x: &mut SharedTensor<$t>)
-                -> Result<(), ::coaster::error::Error> {
-            rblas::Scal::scal(
-                &read!(a, $t, self)[0],
-                read_write!(x, $t, self));
+    ($t:ident) => {
+        fn scal(
+            &self,
+            a: &SharedTensor<$t>,
+            x: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
+            rblas::Scal::scal(&read!(a, $t, self)[0], read_write!(x, $t, self));
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! iblas_swap_for_native {
-    ($t:ident) => (
-        fn swap(&self, x: &mut SharedTensor<$t>, y: &mut SharedTensor<$t>)
-                -> Result<(), ::coaster::error::Error> {
+    ($t:ident) => {
+        fn swap(
+            &self,
+            x: &mut SharedTensor<$t>,
+            y: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
             rblas::Swap::swap(read_write!(x, $t, self), read_write!(y, $t, self));
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! iblas_gbmv_for_native {
     ($t: ident) => {
-        fn gbmv(&self,
+        fn gbmv(
+            &self,
             alpha: &SharedTensor<$t>,
             at: Transpose,
             a: &SharedTensor<$t>,
@@ -124,14 +139,15 @@ macro_rules! iblas_gbmv_for_native {
             ku: &SharedTensor<u32>,
             x: &SharedTensor<$t>,
             beta: &SharedTensor<$t>,
-            c: &mut SharedTensor<$t>) -> Result<(), ::coaster::error::Error> {
+            c: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
             let a_slice = read!(a, $t, self);
             let x_slice = read!(x, $t, self);
             let c_slice = read_write!(c, $t, self);
 
             // These values will always be u32
             let kl: u32 = read!(kl, u32, self)[0];
-            let ku: u32 = read!(ku, u32, self)[0]; 
+            let ku: u32 = read!(ku, u32, self)[0];
 
             let a_matrix = as_matrix(a_slice, a.desc().dims());
             let a_matrix = BandMat::from_matrix(a_matrix, kl, ku);
@@ -147,19 +163,20 @@ macro_rules! iblas_gbmv_for_native {
 
             Ok(())
         }
-    }
+    };
 }
 
 macro_rules! iblas_gemm_for_native {
-    ($t:ident) => (
-        fn gemm(&self,
-                alpha: &SharedTensor<$t>,
-                at: Transpose,
-                a: &SharedTensor<$t>,
-                bt: Transpose,
-                b: &SharedTensor<$t>,
-                beta: &SharedTensor<$t>,
-                c: &mut SharedTensor<$t>
+    ($t:ident) => {
+        fn gemm(
+            &self,
+            alpha: &SharedTensor<$t>,
+            at: Transpose,
+            a: &SharedTensor<$t>,
+            bt: Transpose,
+            b: &SharedTensor<$t>,
+            beta: &SharedTensor<$t>,
+            c: &mut SharedTensor<$t>,
         ) -> Result<(), ::coaster::error::Error> {
             let c_dims = c.desc().clone(); // FIXME: clone() can be removed
 
@@ -177,16 +194,17 @@ macro_rules! iblas_gemm_for_native {
                 bt.to_rblas(),
                 &b_matrix,
                 &read!(beta, $t, self)[0],
-                &mut c_matrix);
+                &mut c_matrix,
+            );
             read_from_matrix(&c_matrix, c_slice);
             Ok(())
         }
-    );
+    };
 }
 
 macro_rules! impl_iblas_for {
-    ($t:ident, $b:ty) => (
-        impl IBlas<$t> for $b { }
+    ($t:ident, $b:ty) => {
+        impl IBlas<$t> for $b {}
 
         // Level 1
 
@@ -219,9 +237,9 @@ macro_rules! impl_iblas_for {
         }
 
         // Level 2
-        
+
         impl Gbmv<$t> for $b {
-           iblas_gbmv_for_native!($t);  
+            iblas_gbmv_for_native!($t);
         }
 
         // Level 3
@@ -229,7 +247,7 @@ macro_rules! impl_iblas_for {
         impl Gemm<$t> for $b {
             iblas_gemm_for_native!($t);
         }
-    );
+    };
 }
 
 impl_iblas_for!(f32, Backend<Native>);
@@ -265,16 +283,16 @@ fn read_from_matrix<T: Clone>(mat: &Mat<T>, slice: &mut [T]) {
 
 #[cfg(test)]
 mod test {
+    use super::as_matrix;
     use coaster::backend::{Backend, IBackend};
     use coaster::framework::IFramework;
+    use coaster::frameworks::native::flatbox::FlatBox;
     use coaster::frameworks::Native;
     use coaster::tensor::SharedTensor;
-	use coaster::frameworks::native::flatbox::FlatBox;
-    use super::as_matrix;
 
-	fn get_native_backend() -> Backend<Native> {
-		Backend::<Native>::default().unwrap()
-	}
+    fn get_native_backend() -> Backend<Native> {
+        Backend::<Native>::default().unwrap()
+    }
 
     pub fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
         let mem_buffer = mem.as_mut_slice::<T>();
@@ -288,10 +306,10 @@ mod test {
     fn it_converts_correctly_to_and_from_matrix() {
         let backend = get_native_backend();
         let mut a = SharedTensor::<f32>::new(&vec![3, 2]);
-        write_to_memory(a.write_only(backend.device()).unwrap(),
-            &[2f32, 5f32,
-              2f32, 5f32,
-              2f32, 5f32]);
+        write_to_memory(
+            a.write_only(backend.device()).unwrap(),
+            &[2f32, 5f32, 2f32, 5f32, 2f32, 5f32],
+        );
 
         {
             let a_slice_in = a.read(backend.device()).unwrap().as_slice::<f32>();
