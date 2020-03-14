@@ -248,6 +248,52 @@ where
     tensor_assert_eq(&y, &[6.0, 9.0, 11., 11.5], 0.5);
 }
 
+pub fn test_gbmv2<T, F>(backend: Backend<F>)
+where
+    T: Float + fmt::Debug,
+    F: IFramework,
+    Backend<F>: Gbmv<T> + IBackend,
+{
+    let mut alpha = SharedTensor::<T>::new(&[1]);
+    let mut beta = SharedTensor::<T>::new(&[1]);
+    let mut a = SharedTensor::<T>::new(&[4, 7]);
+    let mut x = SharedTensor::<T>::new(&[7]);
+    let mut y = SharedTensor::<T>::new(&[4]);
+
+    let mut kl = SharedTensor::<u32>::new(&[1]);
+    let mut ku = SharedTensor::<u32>::new(&[1]);
+
+    write_to_tensor(&mut alpha, &[1.]);
+    write_to_tensor(&mut beta, &[0.]);
+
+    write_to_tensor(&mut a, 
+        &[ 0.5, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0,
+           1.0, 0.5, 2.0, 3.0, 0.0, 0.0, 0.0,
+           0.0, 1.0, 0.5, 2.0, 3.0, 0.0, 0.0,
+           0.0, 0.0, 1.0, 0.5, 2.0, 3.0, 0.0,
+        ]);
+
+
+    write_to_tensor(&mut x, &[1., 2., 3., 4., 5., 6., 7.]);
+    write_to_tensor(&mut y, &[0., 0., 0., 0.]);
+
+    write_to_tensor(&mut kl, &[1.0]); 
+    write_to_tensor(&mut ku, &[2.0]);
+
+    backend.gbmv(
+       &alpha,
+       Transpose::NoTrans,
+       &a,
+       &kl,
+       &ku,
+       &x,
+       &beta,
+       &mut y,
+    ).unwrap();
+
+    tensor_assert_eq(&y, &[13.5, 20.0, 26.5, 33.0], 0.5);
+}
+
 pub fn test_gemm<T, F>(backend: Backend<F>)
 where
     T: Float + fmt::Debug,
@@ -350,6 +396,11 @@ macro_rules! test_blas_gbmv {
             #[test]
             fn it_computes_correct_gbmv_square() {
                 test_gbmv1::<$t, _>($backend_getter());
+            }
+
+            #[test]
+            fn it_computes_correct_gbmv_nonsquare() {
+                test_gbmv2::<$t, _>($backend_getter());
             }
         }
     }
