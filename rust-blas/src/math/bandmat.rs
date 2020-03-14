@@ -80,43 +80,11 @@ impl<T> BandMat<T> {
 
 impl<T: std::marker::Copy> BandMat<T> {
     /// Converts a standard matrix into a band matrix
-    ///
-    /// TODO: write a conversion utility
-    /// DOES NOT PERFORM CONVERSION INTO BAND MATRIX FORMAT
-    ///
-    /// The actual conversion can be done by hand once one
-    /// understands the pattern of the band matrix. Say you
-    /// have an MxN band matrix in standard form. Say you 
-    /// have ku upper diagonals and kl sub diagonals. Then
-    /// the band matrix representation will have dimensions 
-    /// Nx(ku+kl+1), and will have the all of the relevant 
-    /// values of each row, concatenated starting at position
-    /// kl. An example is probably useful:
-    ///
-    /// Say our initial matrix is the following:
-    ///
-    /// [ 1 2 0 0 ]
-    /// [ 3 1 2 0 ]
-    /// [ 0 3 1 2 ]
-    /// [ 0 0 3 1 ]
-    ///
-    /// Then the band matrix representation would be:
-    ///
-    /// [ x 1 2 ]
-    /// [ 3 1 2 ]
-    /// [ 3 1 2 ]
-    /// [ 3 1 x ]
-    ///
-    /// "x" represent values that aren't relevant to the 
-    /// calculations: the values in those slots won't be
-    /// read or modified by the underlying BLAS program.
-    ///
     pub fn from_matrix(
         mat: Mat<T>,
         sub_diagonals: u32,
         sup_diagonals: u32,
     ) -> BandMat<T> 
-    where T: std::fmt::Debug
     {
         let original_dims = vec![mat.rows(), mat.cols()];
         let mut mat = ManuallyDrop::new(mat);
@@ -129,20 +97,10 @@ impl<T: std::marker::Copy> BandMat<T> {
             Vec::from_raw_parts(mat.as_mut_ptr(), length, length)
         };
 
-
         /*
-        let mut i = (sup_diagonals) as usize;
-        let square_dim = rows;
-        for r in 0..square_dim {
-            let start = (r * original_cols) + max(0, r as isize - (sub_diagonals as isize)) as usize;
-            let end = (r * original_cols) + min(square_dim, r + (sup_diagonals as usize) + 1usize);
-            (&mut v).copy_within(start..end, i);
-            i = i + (end - start);
-        }
-        */
-
-        //println!("{:?}", v);
-
+         * TODO: Write comment explaining what's going on here
+         *
+         */
         for r in 0..rows {
             let s = (r * cols) + max(0, r as isize - sub_diagonals as isize) as usize;
             let e = (r * cols) + min(cols, r + sup_diagonals as usize + 1usize);
@@ -309,9 +267,9 @@ mod tests {
     fn basic_conversion_test() {
         let v: Vec<f32> = vec![
            0.5, 2.0, 0.0, 0.0,
-           2.0, 0.5, 2.0, 0.0,
-           0.0, 2.0, 0.5, 2.0,
-           0.0, 0.0, 2.0, 0.5,
+           1.0, 0.5, 2.0, 0.0,
+           0.0, 1.0, 0.5, 2.0,
+           0.0, 0.0, 1.0, 0.5,
         ];
 
         let mut m: Mat<f32> = Mat::new(4, 4);
@@ -321,7 +279,42 @@ mod tests {
 
         let mut band_m = BandMat::from_matrix(m, 1, 1); 
 
-        println!("{:?}", retrieve_memory(&mut band_m, length));
+        let result_vec = retrieve_memory(&mut band_m, length);
 
+        // Check random values in position to make sure that they're correct, since it's hard to
+        // actualy predict the real vector values
+        assert_eq!(result_vec[1], 0.5f32);
+        assert_eq!(result_vec[2], 2.0f32);
+        assert_eq!(result_vec[3], 1.0f32);
+        assert_eq!(result_vec[7], 0.5f32);
+        assert_eq!(result_vec[9], 1.0f32);
+    }
+
+    #[test]
+    fn nonsquare_conversion_test() {
+        let v: Vec<f32> = vec![
+            0.5, 1.0, 0.0, 0.0,
+            2.0, 0.5, 1.0, 0.0,
+            3.0, 2.0, 0.5, 1.0,
+            0.0, 3.0, 2.0, 0.5,
+            0.0, 0.0, 3.0, 2.0,
+            0.0, 0.0, 0.0, 3.0,
+        ];
+
+        let mut m: Mat<f32> = Mat::new(6, 4);
+        let length = m.rows() * m.cols();
+
+        write_to_memory(m.as_mut_ptr(), &v);
+
+        let mut band_m = BandMat::from_matrix(m, 2, 1);
+
+        let result_vec = retrieve_memory(&mut band_m, length);
+
+        assert_eq!(result_vec[2], 0.5);
+        assert_eq!(result_vec[5], 2.0);
+        assert_eq!(result_vec[7], 1.0);
+        assert_eq!(result_vec[8], 3.0);
+        assert_eq!(result_vec[16], 3.0);
+        assert_eq!(result_vec[20], 3.0);
     }
 }
