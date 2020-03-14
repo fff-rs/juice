@@ -1,7 +1,6 @@
 // Copyright 2015 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-use std::fmt::Display;
 use crate::math::Mat;
 use crate::matrix::BandMatrix;
 use crate::vector::ops::Copy;
@@ -12,6 +11,7 @@ use std::iter::repeat;
 use std::ops::Index;
 use std::slice;
 use std::mem::ManuallyDrop;
+use std::cmp::{max, min};
 
 #[derive(Debug, PartialEq)]
 /// Banded Matrix
@@ -24,10 +24,10 @@ pub struct BandMat<T> {
     sub_diagonals: u32,
     sup_diagonals: u32,
     data: Vec<T>,
+    original_dims: Vec<usize>,
 }
 
 impl<T> BandMat<T> {
-
     pub fn new(n: usize, m: usize, sub: u32, sup: u32) -> BandMat<T> {
         let len = n * m;
         let mut data = Vec::with_capacity(len);
@@ -41,6 +41,7 @@ impl<T> BandMat<T> {
             data,
             sub_diagonals: sub,
             sup_diagonals: sup,
+            original_dims: vec![n, m],
         }
     }
 
@@ -75,6 +76,9 @@ impl<T> BandMat<T> {
         self.data.push(val);
     }
 
+}
+
+impl<T: std::marker::Copy> BandMat<T> {
     /// Converts a standard matrix into a band matrix
     ///
     /// TODO: write a conversion utility
@@ -111,20 +115,51 @@ impl<T> BandMat<T> {
         mat: Mat<T>,
         sub_diagonals: u32,
         sup_diagonals: u32,
-    ) -> BandMat<T> {
+    ) -> BandMat<T> 
+    where T: std::fmt::Debug
+    {
+        let original_dims = vec![mat.rows(), mat.cols()];
         let mut mat = ManuallyDrop::new(mat);
         
-        let v = unsafe {
-            let length = mat.cols() * mat.rows();
+        let cols = mat.cols();
+        let rows = mat.rows();
+        let lda = (sub_diagonals + 1 + sup_diagonals) as usize;
+        let mut v = unsafe {
+            let length = rows * cols;
             Vec::from_raw_parts(mat.as_mut_ptr(), length, length)
         };
 
+
+        /*
+        let mut i = (sup_diagonals) as usize;
+        let square_dim = rows;
+        for r in 0..square_dim {
+            let start = (r * original_cols) + max(0, r as isize - (sub_diagonals as isize)) as usize;
+            let end = (r * original_cols) + min(square_dim, r + (sup_diagonals as usize) + 1usize);
+            (&mut v).copy_within(start..end, i);
+            i = i + (end - start);
+        }
+        */
+
+        //println!("{:?}", v);
+
+        for r in 0..rows {
+            let s = (r * cols) + max(0, r as isize - sub_diagonals as isize) as usize;
+            let e = (r * cols) + min(cols, r + sup_diagonals as usize + 1usize);
+
+            let offset = max(0, (lda as isize) - sup_diagonals as isize - r as isize - 1) as usize;
+            let i = (r * lda) + offset;
+            let i = i as usize;
+            (&mut v).copy_within(s..e, i); 
+        }
+
         BandMat {
-            cols: mat.cols(),
-            rows: mat.rows(),
+            cols,
+            rows,
             data: v,
             sub_diagonals,
             sup_diagonals,
+            original_dims,
         }
     }
 }
@@ -137,6 +172,7 @@ impl<T: Clone> BandMat<T> {
             data: repeat(value).take(n * m).collect(),
             sub_diagonals: n as u32,
             sup_diagonals: m as u32,
+            original_dims: vec![n as usize, m as usize],
         }
     }
 }
@@ -210,6 +246,10 @@ impl<T> BandMatrix<T> for BandMat<T> {
     fn as_matrix(&self) -> &dyn Matrix<T> {
         self
     }
+
+    fn original_dims(&self) -> &Vec<usize> {
+        self.original_dims.as_ref()
+    }
 }
 
 impl<'a, T> From<&'a dyn BandMatrix<T>> for BandMat<T>
@@ -230,6 +270,7 @@ where
             data: Vec::with_capacity(len),
             sub_diagonals: sub,
             sup_diagonals: sup,
+            original_dims: a.original_dims().clone(),
         };
         unsafe {
             result.data.set_len(len);
@@ -237,5 +278,50 @@ where
 
         Copy::copy_mat(a.as_matrix(), &mut result);
         result
+    }
+}
+
+mod tests {
+    use super::*;
+
+    fn write_to_memory<T: Clone>(dest: *mut T, source: &Vec<T>) -> () {
+        let mut v1 = vec![];
+        unsafe {
+            v1 = Vec::from_raw_parts(dest, source.len(), source.len());
+            v1.clone_from(source);
+        }
+        let _ = ManuallyDrop::new(v1);
+    }
+
+    fn retrieve_memory<T: Clone>(t: &mut dyn Matrix<T>, l: usize) -> Vec<T> {
+        let mut v: Vec<T> = vec![];
+
+        unsafe {
+            let v1 = Vec::from_raw_parts(t.as_mut_ptr(), l, l);
+            v.clone_from(&v1);
+            let _ = ManuallyDrop::new(v1);
+        }
+
+        v
+    }
+
+    #[test]
+    fn basic_conversion_test() {
+        let v: Vec<f32> = vec![
+           0.5, 2.0, 0.0, 0.0,
+           2.0, 0.5, 2.0, 0.0,
+           0.0, 2.0, 0.5, 2.0,
+           0.0, 0.0, 2.0, 0.5,
+        ];
+
+        let mut m: Mat<f32> = Mat::new(4, 4);
+        let length = m.rows() * m.cols();
+
+        write_to_memory(m.as_mut_ptr(), &v);
+
+        let mut band_m = BandMat::from_matrix(m, 1, 1); 
+
+        println!("{:?}", retrieve_memory(&mut band_m, length));
+
     }
 }

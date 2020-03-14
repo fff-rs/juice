@@ -189,7 +189,7 @@ where
     tensor_assert_eq(&y, &[1.0, 2.0, 3.0], 0.);
 }
 
-pub fn test_gbmv<T, F>(backend: Backend<F>)
+pub fn test_gbmv1<T, F>(backend: Backend<F>)
 where
     T: Float + fmt::Debug,
     F: IFramework,
@@ -205,14 +205,28 @@ where
     let mut ku = SharedTensor::<u32>::new(&[1]);
 
     write_to_tensor(&mut alpha, &[1.]);
-    write_to_tensor(&mut beta, &[2.]);
+    write_to_tensor(&mut beta, &[3.]);
 
-    write_to_tensor(
-        &mut a,
+    /*
+     * The band matrix should look like this
+    write_to_tensor(&mut a, 
         &[
-            0.0, 0.5, 2.0, 2.0, 0.5, 2.0, 2.0, 0.5, 2.0, 2.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0,
-        ],
-    );
+          0.0, 0.5, 2.0, 
+          1.0, 0.5, 2.0, 
+          1.0, 0.5, 2.0, 
+          1.0, 0.5, 0.0,
+          0.0, 0.0, 0.0, 
+          0.0
+        ]);
+    */
+
+    write_to_tensor(&mut a,
+        &[ 0.5, 2.0, 0.0, 0.0,
+           1.0, 0.5, 2.0, 0.0,
+           0.0, 1.0, 0.5, 2.0,
+           0.0, 0.0, 1.0, 0.5,
+         ]);
+
 
     write_to_tensor(&mut x, &[1., 2., 2., 1.]);
     write_to_tensor(&mut y, &[0.5, 1., 2., 3.]);
@@ -220,11 +234,18 @@ where
     write_to_tensor(&mut kl, &[1.0]);
     write_to_tensor(&mut ku, &[1.0]);
 
-    backend
-        .gbmv(&alpha, Transpose::NoTrans, &a, &kl, &ku, &x, &beta, &mut y)
-        .unwrap();
+    backend.gbmv(
+       &alpha,
+       Transpose::NoTrans,
+       &a,
+       &kl,
+       &ku,
+       &x,
+       &beta,
+       &mut y,
+    ).unwrap();
 
-    tensor_assert_eq(&y, &[5.5, 9., 11., 10.5], 0.5);
+    tensor_assert_eq(&y, &[6.0, 9.0, 11., 11.5], 0.5);
 }
 
 pub fn test_gemm<T, F>(backend: Backend<F>)
@@ -327,11 +348,11 @@ macro_rules! test_blas_gbmv {
             use super::*;
 
             #[test]
-            fn it_computes_correct_gbmv() {
-                test_gbmv::<$t, _>($backend_getter());
+            fn it_computes_correct_gbmv_square() {
+                test_gbmv1::<$t, _>($backend_getter());
             }
         }
-    };
+    }
 }
 
 test_blas!(native_f32, get_native_backend, f32);
