@@ -19,6 +19,15 @@ pub struct Mat<T> {
 }
 
 impl<T> Mat<T> {
+
+    pub fn new_from_data(rows: usize, cols: usize, data: Vec<T>) -> Mat<T> {
+        Mat {
+            rows,
+            cols,
+            data
+        }
+    }
+    
     pub fn new(n: usize, m: usize) -> Mat<T> {
         let len = n * m;
         let mut data = Vec::with_capacity(len);
@@ -26,11 +35,7 @@ impl<T> Mat<T> {
             data.set_len(len);
         }
 
-        Mat {
-            rows: n,
-            cols: m,
-            data,
-        }
+        Self::new_from_data(n, m, data)
     }
 
     pub fn rows(&self) -> usize {

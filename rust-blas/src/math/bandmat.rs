@@ -24,7 +24,6 @@ pub struct BandMat<T> {
     sub_diagonals: u32,
     sup_diagonals: u32,
     data: Vec<T>,
-    original_dims: Vec<usize>,
 }
 
 impl<T> BandMat<T> {
@@ -41,7 +40,6 @@ impl<T> BandMat<T> {
             data,
             sub_diagonals: sub,
             sup_diagonals: sup,
-            original_dims: vec![n, m],
         }
     }
 
@@ -78,7 +76,7 @@ impl<T> BandMat<T> {
 
 }
 
-impl<T: std::marker::Copy> BandMat<T> {
+impl<T: std::marker::Copy + std::default::Default + std::fmt::Debug> BandMat<T> {
     /// Converts a standard matrix into a band matrix
     pub fn from_matrix(
         mat: Mat<T>,
@@ -86,7 +84,6 @@ impl<T: std::marker::Copy> BandMat<T> {
         sup_diagonals: u32,
     ) -> BandMat<T> 
     {
-        let original_dims = vec![mat.rows(), mat.cols()];
         let mut mat = ManuallyDrop::new(mat);
         
         let cols = mat.cols();
@@ -117,8 +114,40 @@ impl<T: std::marker::Copy> BandMat<T> {
             data: v,
             sub_diagonals,
             sup_diagonals,
-            original_dims,
         }
+    }
+
+    pub fn to_matrix(bandmat: Self) -> Mat<T> {
+        let mut bandmat = ManuallyDrop::new(bandmat);
+
+        let ku = bandmat.sup_diagonals() as usize;
+        let kl = bandmat.sub_diagonals() as usize;
+        let lda = ku + kl + 1;
+        let rows = bandmat.rows();
+        let cols = bandmat.cols();
+
+        let mut v = unsafe {
+            let length = rows * cols;
+            Vec::from_raw_parts(bandmat.as_mut_ptr(), length, length)
+        };
+
+        for r in (0..rows).rev() {
+            let offset = rows - r - 1;
+            let s = (r * lda) + max(0, offset as isize - kl as isize - 1) as usize; let e = (r * lda) + min(lda, offset + kl + 1) as usize; 
+
+            let p = lda as isize - (1 + kl as isize) - offset as isize + 1;
+            let i = (r * rows) + max(0, p) as usize;
+
+            v.copy_within(s..e, i);
+            let l = e - s;
+            let zero_range = (r*rows)..max(0, i);
+            let zero_range = zero_range.chain(min((r+1)*rows, i+l)..((r+1)*rows));
+            for i in zero_range {
+                v[i] = T::default();
+            }
+        }
+
+        Mat::new_from_data(rows, cols, v)
     }
 }
 
@@ -130,7 +159,6 @@ impl<T: Clone> BandMat<T> {
             data: repeat(value).take(n * m).collect(),
             sub_diagonals: n as u32,
             sup_diagonals: m as u32,
-            original_dims: vec![n as usize, m as usize],
         }
     }
 }
@@ -204,10 +232,6 @@ impl<T> BandMatrix<T> for BandMat<T> {
     fn as_matrix(&self) -> &dyn Matrix<T> {
         self
     }
-
-    fn original_dims(&self) -> &Vec<usize> {
-        self.original_dims.as_ref()
-    }
 }
 
 impl<'a, T> From<&'a dyn BandMatrix<T>> for BandMat<T>
@@ -228,7 +252,6 @@ where
             data: Vec::with_capacity(len),
             sub_diagonals: sub,
             sup_diagonals: sup,
-            original_dims: a.original_dims().clone(),
         };
         unsafe {
             result.data.set_len(len);
@@ -316,5 +339,30 @@ mod tests {
         assert_eq!(result_vec[8], 3.0);
         assert_eq!(result_vec[16], 3.0);
         assert_eq!(result_vec[20], 3.0);
+    }
+
+    #[test]
+    fn to_and_from_conversion_test() {
+        let original: Vec<f32> = vec![
+            0.5, 2.0, 0.0, 0.0,
+            1.0, 0.5, 2.0, 0.0,
+            0.0, 1.0, 0.5, 2.0,
+            0.0, 0.0, 1.0, 0.5,
+        ];
+        let v = original.clone(); 
+
+        let mut m: Mat<f32> = Mat::new(4, 4);
+        let length = m.rows() * m.cols();
+
+        write_to_memory(m.as_mut_ptr(), &v);
+
+        let band_m = BandMat::from_matrix(m, 1, 1);
+        let mut m = BandMat::to_matrix(band_m);
+
+        let result_vec = retrieve_memory(&mut m, length);
+
+        println!("{:?}", result_vec);
+
+        assert_eq!(result_vec, original);
     }
 }
