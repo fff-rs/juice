@@ -1,6 +1,7 @@
 // Copyright 2015 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
+use std::fmt::Debug;
 use crate::math::Mat;
 use crate::matrix::BandMatrix;
 use crate::vector::ops::Copy;
@@ -76,7 +77,7 @@ impl<T> BandMat<T> {
 
 }
 
-impl<T: std::marker::Copy + std::default::Default + std::fmt::Debug> BandMat<T> {
+impl<T: std::marker::Copy> BandMat<T> {
     /// Converts a standard matrix into a band matrix
     pub fn from_matrix(
         mat: Mat<T>,
@@ -117,6 +118,9 @@ impl<T: std::marker::Copy + std::default::Default + std::fmt::Debug> BandMat<T> 
         }
     }
 
+}
+
+impl<T: std::marker::Copy + Default> BandMat<T> {
     pub fn to_matrix(bandmat: Self) -> Mat<T> {
         let mut bandmat = ManuallyDrop::new(bandmat);
 
@@ -131,17 +135,27 @@ impl<T: std::marker::Copy + std::default::Default + std::fmt::Debug> BandMat<T> 
             Vec::from_raw_parts(bandmat.as_mut_ptr(), length, length)
         };
 
+
+        let num_of_last_row_terms = kl + 1 - (rows - min(rows, cols));
+
         for r in (0..rows).rev() {
             let offset = rows - r - 1;
-            let s = (r * lda) + max(0, offset as isize - kl as isize - 1) as usize; let e = (r * lda) + min(lda, offset + kl + 1) as usize; 
 
-            let p = lda as isize - (1 + kl as isize) - offset as isize + 1;
-            let i = (r * rows) + max(0, p) as usize;
+            let s = max(0, -(kl as isize + 1) + (num_of_last_row_terms -(if rows > cols {1} else {2}) ) as isize + offset as isize);
+            let s = (r * lda) as isize + s;
+            let s = s as usize; 
+
+            let e = min(lda, num_of_last_row_terms + offset);
+            let e = (r * lda) + e;
+
+            let p = cols as isize - num_of_last_row_terms as isize - offset as isize;
+            let i = (r * cols) + max(0, p) as usize;
 
             v.copy_within(s..e, i);
+
             let l = e - s;
-            let zero_range = (r*rows)..max(0, i);
-            let zero_range = zero_range.chain(min((r+1)*rows, i+l)..((r+1)*rows));
+            let zero_range = (r*cols)..max(0, i);
+            let zero_range = zero_range.chain(min((r+1)*cols, i+l)..((r+1)*cols));
             for i in zero_range {
                 v[i] = T::default();
             }
@@ -361,7 +375,54 @@ mod tests {
 
         let result_vec = retrieve_memory(&mut m, length);
 
-        println!("{:?}", result_vec);
+        assert_eq!(result_vec, original);
+    }
+
+    #[test]
+    fn to_and_from_nonsquare_test() {
+        let original: Vec<f32> = vec![
+            0.5, 1.0, 0.0, 0.0,
+            2.0, 0.5, 1.0, 0.0,
+            3.0, 2.0, 0.5, 1.0,
+            0.0, 3.0, 2.0, 0.5,
+            0.0, 0.0, 3.0, 2.0,
+        ];
+        let v = original.clone();
+
+        let mut m: Mat<f32> = Mat::new(5, 4);
+        let length = m.rows() * m.cols();
+
+        write_to_memory(m.as_mut_ptr(), &v);
+
+        let band_m = BandMat::from_matrix(m, 2, 1);
+        let mut m = BandMat::to_matrix(band_m);
+
+        let result_vec = retrieve_memory(&mut m, length);
+
+        assert_eq!(result_vec, original);
+    }
+
+    #[test]
+    fn to_and_from_nonsquare2_test() {
+        let original: Vec<f32> = vec![
+            0.5, 1.0, 0.0, 0.0,
+            2.0, 0.5, 1.0, 0.0,
+            3.0, 2.0, 0.5, 1.0,
+            0.0, 3.0, 2.0, 0.5,
+            0.0, 0.0, 3.0, 2.0,
+            0.0, 0.0, 0.0, 3.0,
+        ];
+        let v = original.clone();
+
+        let mut m: Mat<f32> = Mat::new(6, 4);
+        let length = m.rows() * m.cols();
+
+        write_to_memory(m.as_mut_ptr(), &v);
+
+        let band_m = BandMat::from_matrix(m, 2, 1);
+        let mut m = BandMat::to_matrix(band_m);
+
+        let result_vec = retrieve_memory(&mut m, length);
 
         assert_eq!(result_vec, original);
     }
