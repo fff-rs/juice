@@ -1,18 +1,18 @@
 // Copyright 2015 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-use std::fmt::Debug;
 use crate::math::Mat;
 use crate::matrix::BandMatrix;
 use crate::vector::ops::Copy;
 use crate::Matrix;
 use num::traits::NumCast;
+use std::cmp::{max, min};
 use std::fmt;
+use std::fmt::Debug;
 use std::iter::repeat;
+use std::mem::ManuallyDrop;
 use std::ops::Index;
 use std::slice;
-use std::mem::ManuallyDrop;
-use std::cmp::{max, min};
 
 #[derive(Debug, PartialEq)]
 /// Banded Matrix
@@ -74,7 +74,6 @@ impl<T> BandMat<T> {
     pub unsafe fn push(&mut self, val: T) {
         self.data.push(val);
     }
-
 }
 
 impl<T: std::marker::Copy> BandMat<T> {
@@ -87,11 +86,11 @@ impl<T: std::marker::Copy> BandMat<T> {
     /// Docs](http://www.netlib.org/lapack/explore-html/d7/d15/group__double__blas__level2_ga0dc187c15a47772440defe879d034888.html#ga0dc187c15a47772440defe879d034888),
     /// but the best demonstration is probably by example.
     ///
-    /// Say you have a matrix: 
+    /// Say you have a matrix:
     ///
-    /// ``` 
-    /// let m = 
-    /// [ 
+    /// ```
+    /// let m =
+    /// [
     ///   0.5, 2.0, 0.0, 0.0,
     ///   1.0, 0.5, 2.0, 0.0,
     ///   0.0, 1.0, 0.5, 2.0,
@@ -101,40 +100,35 @@ impl<T: std::marker::Copy> BandMat<T> {
     ///
     /// This method will transform it into:
     ///
-    /// ``` 
+    /// ```
     /// let x = 0.0;
-    /// let m = 
-    /// [ 
+    /// let m =
+    /// [
     ///   x,   0.5, 2.0,
-    ///   1.0, 0.5, 2.0, 
     ///   1.0, 0.5, 2.0,
-    ///   1.0, 0.5,   x, 
+    ///   1.0, 0.5, 2.0,
+    ///   1.0, 0.5,   x,
     /// ];
     /// ```
     ///
     /// The `x`'s represent the values that will not be read by the blas operation, and therefore
     /// can remain unchanged. Notice that the dimensions of the new matrix are `(rows, LDA)`, where
     /// `LDA = <sub diagonals> + <sup diagonals> + 1`. This matrix will be stored in the original
-    /// memory of the matrix that is consumed by this method. 
+    /// memory of the matrix that is consumed by this method.
     ///  
     ///  For details about how the conversion actually happens, consult the code comments.
     ///
     /// # Panics
     ///  
-    /// Panics if the size of the vector representing the input matrix is too small, that is 
+    /// Panics if the size of the vector representing the input matrix is too small, that is
     /// `rows * LDA > rows * cols`. In this case there is not enough space to perform a safe
     /// conversion to the Band Storage format.
     ///
-    /// [`BandMat`]: struct.BandMat.html 
+    /// [`BandMat`]: struct.BandMat.html
     /// [`Mat`]: ../mat/struct.Mat.html
-    pub fn from_matrix(
-        mat: Mat<T>,
-        sub_diagonals: u32,
-        sup_diagonals: u32,
-    ) -> BandMat<T> 
-    {
+    pub fn from_matrix(mat: Mat<T>, sub_diagonals: u32, sup_diagonals: u32) -> BandMat<T> {
         let mut mat = ManuallyDrop::new(mat);
-        
+
         let cols = mat.cols();
         let rows = mat.rows();
         let lda = (sub_diagonals + 1 + sup_diagonals) as usize;
@@ -142,13 +136,11 @@ impl<T: std::marker::Copy> BandMat<T> {
 
         // Not enough space to represent the matrix in BandMatrix storage
         if rows * lda > length {
-           panic!("BandMatrix conversion needed {} space, but only {} was provided. LDA was {}. Not enough space to safely convert to band matrix storage. Please consider expanding the size of the vector for the underlying Matrix", rows * lda, length, lda);
+            panic!("BandMatrix conversion needed {} space, but only {} was provided. LDA was {}. Not enough space to safely convert to band matrix storage. Please consider expanding the size of the vector for the underlying Matrix", rows * lda, length, lda);
         }
 
-        let mut v = unsafe {
-            Vec::from_raw_parts(mat.as_mut_ptr(), length, length)
-        };
-        
+        let mut v = unsafe { Vec::from_raw_parts(mat.as_mut_ptr(), length, length) };
+
         /*
          * For each row in the original matrix we do the following:
          *
@@ -163,11 +155,12 @@ impl<T: std::marker::Copy> BandMat<T> {
             let s = (r * cols) + max(0, r as isize - sub_diagonals as isize) as usize;
             let e = (r * cols) + min(cols, r + sup_diagonals as usize + 1usize);
 
-            let bandmat_offset = max(0, (lda as isize) - sup_diagonals as isize - r as isize - 1) as usize;
+            let bandmat_offset =
+                max(0, (lda as isize) - sup_diagonals as isize - r as isize - 1) as usize;
 
             let i = (r * lda) + bandmat_offset;
             let i = i as usize;
-            (&mut v).copy_within(s..e, i); 
+            (&mut v).copy_within(s..e, i);
         }
 
         BandMat {
@@ -178,12 +171,11 @@ impl<T: std::marker::Copy> BandMat<T> {
             sup_diagonals,
         }
     }
-
 }
 
 impl<T: std::marker::Copy + Default> BandMat<T> {
     /// Converts a [`BandMat`] back into a [`Mat`].
-    /// 
+    ///
     /// This method creates a [`Mat`] instance by reversing the steps from
     /// the [`from_matrix`] method. It will also fill in all the values that are "zero" to the
     /// default value of `T`.  
@@ -192,9 +184,9 @@ impl<T: std::marker::Copy + Default> BandMat<T> {
     ///
     /// # Panics
     ///
-    /// Panics if the values of `rows * cols` doesn't correspond to the length of the data vector. 
+    /// Panics if the values of `rows * cols` doesn't correspond to the length of the data vector.
     ///
-    /// [`BandMat`]: struct.BandMat.html 
+    /// [`BandMat`]: struct.BandMat.html
     /// [`Mat`]: ../mat/struct.Mat.html
     /// [`from_matrix`]: #method.from_matrix
     pub fn to_matrix(bandmat: Self) -> Mat<T> {
@@ -210,9 +202,7 @@ impl<T: std::marker::Copy + Default> BandMat<T> {
         if length < lda * rows {
             panic!("Could not convert BandMat to Mat. The specified length of the data vector is {}, which is less than the expected minimum {} x {} = {}", length, rows, lda, rows * lda);
         }
-        let mut v = unsafe {
-            Vec::from_raw_parts(bandmat.as_mut_ptr(), length, length)
-        };
+        let mut v = unsafe { Vec::from_raw_parts(bandmat.as_mut_ptr(), length, length) };
 
         let num_of_last_row_terms = kl + 1 - (rows - min(rows, cols));
 
@@ -228,22 +218,28 @@ impl<T: std::marker::Copy + Default> BandMat<T> {
         for r in (0..rows).rev() {
             let offset = rows - r - 1;
 
-            let s = max(0, -(kl as isize + 1) + (num_of_last_row_terms -(if rows > cols {1} else {2}) ) as isize + offset as isize);
+            let s = max(
+                0,
+                -(kl as isize + 1)
+                    + (num_of_last_row_terms - (if rows > cols { 1 } else { 2 })) as isize
+                    + offset as isize,
+            );
             let s = (r * lda) as isize + s;
-            let s = s as usize; 
+            let s = s as usize;
 
             let e = min(lda, num_of_last_row_terms + offset);
             let e = (r * lda) + e;
 
-            let original_mat_offset = cols as isize - num_of_last_row_terms as isize - offset as isize;
+            let original_mat_offset =
+                cols as isize - num_of_last_row_terms as isize - offset as isize;
             let i = (r * cols) + max(0, original_mat_offset) as usize;
 
             v.copy_within(s..e, i);
 
             // Fill the rest of the values for that row with "0"
             let l = e - s;
-            let zero_range = (r*cols)..max(0, i);
-            let zero_range = zero_range.chain(min((r+1)*cols, i+l)..((r+1)*cols));
+            let zero_range = (r * cols)..max(0, i);
+            let zero_range = zero_range.chain(min((r + 1) * cols, i + l)..((r + 1) * cols));
             for i in zero_range {
                 v[i] = T::default();
             }
@@ -391,10 +387,7 @@ mod tests {
     #[test]
     fn basic_conversion_test() {
         let v: Vec<f32> = vec![
-           0.5, 2.0, 0.0, 0.0,
-           1.0, 0.5, 2.0, 0.0,
-           0.0, 1.0, 0.5, 2.0,
-           0.0, 0.0, 1.0, 0.5,
+            0.5, 2.0, 0.0, 0.0, 1.0, 0.5, 2.0, 0.0, 0.0, 1.0, 0.5, 2.0, 0.0, 0.0, 1.0, 0.5,
         ];
 
         let mut m: Mat<f32> = Mat::new(4, 4);
@@ -402,7 +395,7 @@ mod tests {
 
         write_to_memory(m.as_mut_ptr(), &v);
 
-        let mut band_m = BandMat::from_matrix(m, 1, 1); 
+        let mut band_m = BandMat::from_matrix(m, 1, 1);
 
         let result_vec = retrieve_memory(&mut band_m, length);
 
@@ -418,12 +411,8 @@ mod tests {
     #[test]
     fn nonsquare_conversion_test() {
         let v: Vec<f32> = vec![
-            0.5, 1.0, 0.0, 0.0,
-            2.0, 0.5, 1.0, 0.0,
-            3.0, 2.0, 0.5, 1.0,
-            0.0, 3.0, 2.0, 0.5,
-            0.0, 0.0, 3.0, 2.0,
-            0.0, 0.0, 0.0, 3.0,
+            0.5, 1.0, 0.0, 0.0, 2.0, 0.5, 1.0, 0.0, 3.0, 2.0, 0.5, 1.0, 0.0, 3.0, 2.0, 0.5, 0.0,
+            0.0, 3.0, 2.0, 0.0, 0.0, 0.0, 3.0,
         ];
 
         let mut m: Mat<f32> = Mat::new(6, 4);
@@ -447,10 +436,7 @@ mod tests {
     #[should_panic]
     fn from_big_matrix_panic_test() {
         let original: Vec<f32> = vec![
-            0.5, 2.0, 3.0, 4.0,
-            1.0, 0.5, 2.0, 3.0,
-            5.0, 1.0, 0.5, 2.0,
-            6.0, 5.0, 1.0, 0.5,
+            0.5, 2.0, 3.0, 4.0, 1.0, 0.5, 2.0, 3.0, 5.0, 1.0, 0.5, 2.0, 6.0, 5.0, 1.0, 0.5,
         ];
         let mut m: Mat<f32> = Mat::new(4, 4);
 
@@ -462,12 +448,9 @@ mod tests {
     #[test]
     fn to_and_from_conversion_test() {
         let original: Vec<f32> = vec![
-            0.5, 2.0, 0.0, 0.0,
-            1.0, 0.5, 2.0, 0.0,
-            0.0, 1.0, 0.5, 2.0,
-            0.0, 0.0, 1.0, 0.5,
+            0.5, 2.0, 0.0, 0.0, 1.0, 0.5, 2.0, 0.0, 0.0, 1.0, 0.5, 2.0, 0.0, 0.0, 1.0, 0.5,
         ];
-        let v = original.clone(); 
+        let v = original.clone();
 
         let mut m: Mat<f32> = Mat::new(4, 4);
         let length = m.rows() * m.cols();
@@ -485,11 +468,8 @@ mod tests {
     #[test]
     fn to_and_from_nonsquare_test() {
         let original: Vec<f32> = vec![
-            0.5, 1.0, 0.0, 0.0,
-            2.0, 0.5, 1.0, 0.0,
-            3.0, 2.0, 0.5, 1.0,
-            0.0, 3.0, 2.0, 0.5,
-            0.0, 0.0, 3.0, 2.0,
+            0.5, 1.0, 0.0, 0.0, 2.0, 0.5, 1.0, 0.0, 3.0, 2.0, 0.5, 1.0, 0.0, 3.0, 2.0, 0.5, 0.0,
+            0.0, 3.0, 2.0,
         ];
         let v = original.clone();
 
@@ -509,12 +489,8 @@ mod tests {
     #[test]
     fn to_and_from_nonsquare2_test() {
         let original: Vec<f32> = vec![
-            0.5, 1.0, 0.0, 0.0,
-            2.0, 0.5, 1.0, 0.0,
-            3.0, 2.0, 0.5, 1.0,
-            0.0, 3.0, 2.0, 0.5,
-            0.0, 0.0, 3.0, 2.0,
-            0.0, 0.0, 0.0, 3.0,
+            0.5, 1.0, 0.0, 0.0, 2.0, 0.5, 1.0, 0.0, 3.0, 2.0, 0.5, 1.0, 0.0, 3.0, 2.0, 0.5, 0.0,
+            0.0, 3.0, 2.0, 0.0, 0.0, 0.0, 3.0,
         ];
         let v = original.clone();
 
@@ -530,5 +506,4 @@ mod tests {
 
         assert_eq!(result_vec, original);
     }
-
 }
