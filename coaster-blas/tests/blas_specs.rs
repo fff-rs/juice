@@ -209,24 +209,23 @@ where
 
     /*
      * The band matrix should look like this
-    write_to_tensor(&mut a, 
+    write_to_tensor(&mut a,
         &[
-          0.0, 0.5, 2.0, 
-          1.0, 0.5, 2.0, 
-          1.0, 0.5, 2.0, 
+          0.0, 0.5, 2.0,
+          1.0, 0.5, 2.0,
+          1.0, 0.5, 2.0,
           1.0, 0.5, 0.0,
-          0.0, 0.0, 0.0, 
+          0.0, 0.0, 0.0,
           0.0
         ]);
     */
 
-    write_to_tensor(&mut a,
-        &[ 0.5, 2.0, 0.0, 0.0,
-           1.0, 0.5, 2.0, 0.0,
-           0.0, 1.0, 0.5, 2.0,
-           0.0, 0.0, 1.0, 0.5,
-         ]);
-
+    write_to_tensor(
+        &mut a,
+        &[
+            0.5, 2.0, 0.0, 0.0, 1.0, 0.5, 2.0, 0.0, 0.0, 1.0, 0.5, 2.0, 0.0, 0.0, 1.0, 0.5,
+        ],
+    );
 
     write_to_tensor(&mut x, &[1., 2., 2., 1.]);
     write_to_tensor(&mut y, &[0.5, 1., 2., 3.]);
@@ -234,16 +233,9 @@ where
     write_to_tensor(&mut kl, &[1.0]);
     write_to_tensor(&mut ku, &[1.0]);
 
-    backend.gbmv(
-       &alpha,
-       Transpose::NoTrans,
-       &a,
-       &kl,
-       &ku,
-       &x,
-       &beta,
-       &mut y,
-    ).unwrap();
+    backend
+        .gbmv(&alpha, Transpose::NoTrans, &a, &kl, &ku, &x, &beta, &mut y)
+        .unwrap();
 
     tensor_assert_eq(&y, &[6.0, 9.0, 11., 11.5], 0.5);
 }
@@ -266,30 +258,23 @@ where
     write_to_tensor(&mut alpha, &[1.]);
     write_to_tensor(&mut beta, &[0.]);
 
-    write_to_tensor(&mut a, 
-        &[ 0.5, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0,
-           1.0, 0.5, 2.0, 3.0, 0.0, 0.0, 0.0,
-           0.0, 1.0, 0.5, 2.0, 3.0, 0.0, 0.0,
-           0.0, 0.0, 1.0, 0.5, 2.0, 3.0, 0.0,
-        ]);
-
+    write_to_tensor(
+        &mut a,
+        &[
+            0.5, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.5, 2.0, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.5,
+            2.0, 3.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.5, 2.0, 3.0, 0.0,
+        ],
+    );
 
     write_to_tensor(&mut x, &[1., 2., 3., 4., 5., 6., 7.]);
     write_to_tensor(&mut y, &[0., 0., 0., 0.]);
 
-    write_to_tensor(&mut kl, &[1.0]); 
+    write_to_tensor(&mut kl, &[1.0]);
     write_to_tensor(&mut ku, &[2.0]);
 
-    backend.gbmv(
-       &alpha,
-       Transpose::NoTrans,
-       &a,
-       &kl,
-       &ku,
-       &x,
-       &beta,
-       &mut y,
-    ).unwrap();
+    backend
+        .gbmv(&alpha, Transpose::NoTrans, &a, &kl, &ku, &x, &beta, &mut y)
+        .unwrap();
 
     tensor_assert_eq(&y, &[13.5, 20.0, 26.5, 33.0], 0.5);
 }
@@ -403,7 +388,7 @@ macro_rules! test_blas_gbmv {
                 test_gbmv2::<$t, _>($backend_getter());
             }
         }
-    }
+    };
 }
 
 test_blas!(native_f32, get_native_backend, f32);
