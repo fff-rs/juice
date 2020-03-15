@@ -78,7 +78,55 @@ impl<T> BandMat<T> {
 }
 
 impl<T: std::marker::Copy> BandMat<T> {
-    /// Converts a standard matrix into a band matrix
+    /// Converts a [`Mat`] into a [`BandMat`].
+    ///
+    /// The idea is to compress the the band matrix by compressing it to a form that is as legible
+    /// as possible but without many of the extraneous zeros. You can read more about the process
+    /// here: [Wikipedia](https://en.wikipedia.org/wiki/Band_matrix#Band_storage) and [Official
+    /// BLAS
+    /// Docs](http://www.netlib.org/lapack/explore-html/d7/d15/group__double__blas__level2_ga0dc187c15a47772440defe879d034888.html#ga0dc187c15a47772440defe879d034888),
+    /// but the best demonstration is probably by example.
+    ///
+    /// Say you have a matrix: 
+    ///
+    /// ``` 
+    /// let m = 
+    /// [ 
+    ///   0.5, 2.0, 0.0, 0.0,
+    ///   1.0, 0.5, 2.0, 0.0,
+    ///   0.0, 1.0, 0.5, 2.0,
+    ///   0.0, 0.0, 1.0, 0.5,
+    /// ];
+    /// ```
+    ///
+    /// This method will transform it into:
+    ///
+    /// ``` 
+    /// let x = 0.0;
+    /// let m = 
+    /// [ 
+    ///   x,   0.5, 2.0,
+    ///   1.0, 0.5, 2.0, 
+    ///   1.0, 0.5, 2.0,
+    ///   1.0, 0.5,   x, 
+    /// ];
+    /// ```
+    ///
+    /// The `x`'s represent the values that will not be read by the blas operation, and therefore
+    /// can remain unchanged. Notice that the dimensions of the new matrix are `(rows, LDA)`, where
+    /// `LDA = <sub diagonals> + <sup diagonals> + 1`. This matrix will be stored in the original
+    /// memory of the matrix that is consumed by this method. 
+    ///  
+    ///  For details about how the conversion actually happens, consult the code comments.
+    ///
+    /// # Panics
+    ///  
+    /// Panics if the size of the vector representing the input matrix is too small, that is 
+    /// `rows * LDA > rows * cols`. In this case there is not enough space to perform a safe
+    /// conversion to the Band Storage format.
+    ///
+    /// [`BandMat`]: struct.BandMat.html 
+    /// [`Mat`]: ../mat/struct.Mat.html
     pub fn from_matrix(
         mat: Mat<T>,
         sub_diagonals: u32,
@@ -90,21 +138,34 @@ impl<T: std::marker::Copy> BandMat<T> {
         let cols = mat.cols();
         let rows = mat.rows();
         let lda = (sub_diagonals + 1 + sup_diagonals) as usize;
+        let length = rows * cols;
+
+        // Not enough space to represent the matrix in BandMatrix storage
+        if rows * lda > length {
+           panic!("BandMatrix conversion needed {} space, but only {} was provided. LDA was {}. Not enough space to safely convert to band matrix storage. Please consider expanding the size of the vector for the underlying Matrix", rows * lda, length, lda);
+        }
+
         let mut v = unsafe {
-            let length = rows * cols;
             Vec::from_raw_parts(mat.as_mut_ptr(), length, length)
         };
-
+        
         /*
-         * TODO: Write comment explaining what's going on here
+         * For each row in the original matrix we do the following:
          *
+         *    1. We identify where the numbers start. Represented by the s variable.
+         *    2. We identify where the numbers end. Represented by the e variable.
+         *    3. We identify at which index in the resulting matrix they should be placed. That is
+         *       represented by i.
+         *    4. We call copy_within to move all of those values to their positions in the new
+         *       matrix.
          */
         for r in 0..rows {
             let s = (r * cols) + max(0, r as isize - sub_diagonals as isize) as usize;
             let e = (r * cols) + min(cols, r + sup_diagonals as usize + 1usize);
 
-            let offset = max(0, (lda as isize) - sup_diagonals as isize - r as isize - 1) as usize;
-            let i = (r * lda) + offset;
+            let bandmat_offset = max(0, (lda as isize) - sup_diagonals as isize - r as isize - 1) as usize;
+
+            let i = (r * lda) + bandmat_offset;
             let i = i as usize;
             (&mut v).copy_within(s..e, i); 
         }
@@ -121,6 +182,21 @@ impl<T: std::marker::Copy> BandMat<T> {
 }
 
 impl<T: std::marker::Copy + Default> BandMat<T> {
+    /// Converts a [`BandMat`] back into a [`Mat`].
+    /// 
+    /// This method creates a [`Mat`] instance by reversing the steps from
+    /// the [`from_matrix`] method. It will also fill in all the values that are "zero" to the
+    /// default value of `T`.  
+    ///
+    /// For more information about the implementation, please consult the code comments.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the values of `rows * cols` doesn't correspond to the length of the data vector. 
+    ///
+    /// [`BandMat`]: struct.BandMat.html 
+    /// [`Mat`]: ../mat/struct.Mat.html
+    /// [`from_matrix`]: #method.from_matrix
     pub fn to_matrix(bandmat: Self) -> Mat<T> {
         let mut bandmat = ManuallyDrop::new(bandmat);
 
@@ -129,15 +205,26 @@ impl<T: std::marker::Copy + Default> BandMat<T> {
         let lda = ku + kl + 1;
         let rows = bandmat.rows();
         let cols = bandmat.cols();
+        let length = rows * cols;
 
+        if length < lda * rows {
+            panic!("Could not convert BandMat to Mat. The specified length of the data vector is {}, which is less than the expected minimum {} x {} = {}", length, rows, lda, rows * lda);
+        }
         let mut v = unsafe {
-            let length = rows * cols;
             Vec::from_raw_parts(bandmat.as_mut_ptr(), length, length)
         };
 
-
         let num_of_last_row_terms = kl + 1 - (rows - min(rows, cols));
 
+        /*
+         * Refer to the `from_matrix` method for explanations of the meanings of the variables, but
+         * now with respect to the band matrix. That is, s now represents the start point in the
+         * band matrix for a particular row. The offset variable just inverts the index of the row
+         * (if we have a total of 10 rows, row 7 will have offset 3).
+         *
+         * We have to iterate on the rows in reverse order, because we need to be careful not to
+         * overwrite anything from the space of the original band matrix and lose values.
+         */
         for r in (0..rows).rev() {
             let offset = rows - r - 1;
 
@@ -148,11 +235,12 @@ impl<T: std::marker::Copy + Default> BandMat<T> {
             let e = min(lda, num_of_last_row_terms + offset);
             let e = (r * lda) + e;
 
-            let p = cols as isize - num_of_last_row_terms as isize - offset as isize;
-            let i = (r * cols) + max(0, p) as usize;
+            let original_mat_offset = cols as isize - num_of_last_row_terms as isize - offset as isize;
+            let i = (r * cols) + max(0, original_mat_offset) as usize;
 
             v.copy_within(s..e, i);
 
+            // Fill the rest of the values for that row with "0"
             let l = e - s;
             let zero_range = (r*cols)..max(0, i);
             let zero_range = zero_range.chain(min((r+1)*cols, i+l)..((r+1)*cols));
@@ -356,6 +444,22 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn from_big_matrix_panic_test() {
+        let original: Vec<f32> = vec![
+            0.5, 2.0, 3.0, 4.0,
+            1.0, 0.5, 2.0, 3.0,
+            5.0, 1.0, 0.5, 2.0,
+            6.0, 5.0, 1.0, 0.5,
+        ];
+        let mut m: Mat<f32> = Mat::new(4, 4);
+
+        write_to_memory(m.as_mut_ptr(), &original);
+
+        let _ = BandMat::from_matrix(m, 3, 3);
+    }
+
+    #[test]
     fn to_and_from_conversion_test() {
         let original: Vec<f32> = vec![
             0.5, 2.0, 0.0, 0.0,
@@ -426,4 +530,5 @@ mod tests {
 
         assert_eq!(result_vec, original);
     }
+
 }
