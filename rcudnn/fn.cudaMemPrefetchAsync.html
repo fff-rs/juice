@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaMemPrefetchAsync` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaMemPrefetchAsync"><title>rcudnn::cudaMemPrefetchAsync - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn</a></p><script>window.sidebarCurrent = {name: 'cudaMemPrefetchAsync', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span></span><span class='in-band'>Function <a href='index.html'>rcudnn</a>::<wbr><a class="fn" href=''>cudaMemPrefetchAsync</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaMemPrefetchAsync(<br>&nbsp;&nbsp;&nbsp;&nbsp;devPtr: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;count: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;dstDevice: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;stream: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../rcudnn/struct.CUstream_st.html" title="struct rcudnn::CUstream_st">CUstream_st</a><br>) -&gt; <a class="enum" href="../rcudnn/enum.cudaError.html" title="enum rcudnn::cudaError">cudaError</a></pre><div class='docblock'><p>\brief Prefetches memory to the specified destination device</p>
+<p>Prefetches memory to the specified destination device.  \p devPtr is the
+base device pointer of the memory to be prefetched and \p dstDevice is the
+destination device. \p count specifies the number of bytes to copy. \p stream
+is the stream in which the operation is enqueued. The memory range must refer
+to managed memory allocated via ::cudaMallocManaged or declared via <strong>managed</strong> variables.</p>
+<p>Passing in cudaCpuDeviceId for \p dstDevice will prefetch the data to host memory. If
+\p dstDevice is a GPU, then the device attribute ::cudaDevAttrConcurrentManagedAccess
+must be non-zero. Additionally, \p stream must be associated with a device that has a
+non-zero value for the device attribute ::cudaDevAttrConcurrentManagedAccess.</p>
+<p>The start address and end address of the memory range will be rounded down and rounded up
+respectively to be aligned to CPU page size before the prefetch operation is enqueued
+in the stream.</p>
+<p>If no physical memory has been allocated for this region, then this memory region
+will be populated and mapped on the destination device. If there's insufficient
+memory to prefetch the desired region, the Unified Memory driver may evict pages from other
+::cudaMallocManaged allocations to host memory in order to make room. Device memory
+allocated using ::cudaMalloc or ::cudaMallocArray will not be evicted.</p>
+<p>By default, any mappings to the previous location of the migrated pages are removed and
+mappings for the new location are only setup on \p dstDevice. The exact behavior however
+also depends on the settings applied to this memory range via ::cudaMemAdvise as described
+below:</p>
+<p>If ::cudaMemAdviseSetReadMostly was set on any subset of this memory range,
+then that subset will create a read-only copy of the pages on \p dstDevice.</p>
+<p>If ::cudaMemAdviseSetPreferredLocation was called on any subset of this memory
+range, then the pages will be migrated to \p dstDevice even if \p dstDevice is not the
+preferred location of any pages in the memory range.</p>
+<p>If ::cudaMemAdviseSetAccessedBy was called on any subset of this memory range,
+then mappings to those pages from all the appropriate processors are updated to
+refer to the new location if establishing such a mapping is possible. Otherwise,
+those mappings are cleared.</p>
+<p>Note that this API is not required for functionality and only serves to improve performance
+by allowing the application to migrate data to a suitable location before it is accessed.
+Memory accesses to this range are always coherent and are allowed even when the data is
+actively being migrated.</p>
+<p>Note that this function is asynchronous with respect to the host and all work
+on other devices.</p>
+<p>\param devPtr    - Pointer to be prefetched
+\param count     - Size in bytes
+\param dstDevice - Destination device to prefetch to
+\param stream    - Stream to enqueue prefetch operation</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidValue,
+::cudaErrorInvalidDevice
+\notefnerr
+\note_async
+\note_null_stream
+\note_init_rt
+\note_callback</p>
+<p>\sa ::cudaMemcpy, ::cudaMemcpyPeer, ::cudaMemcpyAsync,
+::cudaMemcpy3DPeerAsync, ::cudaMemAdvise,
+::cuMemPrefetchAsync</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

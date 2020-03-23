@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaLaunchHostFunc` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaLaunchHostFunc"><title>rcudnn::cudaLaunchHostFunc - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn</a></p><script>window.sidebarCurrent = {name: 'cudaLaunchHostFunc', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span></span><span class='in-band'>Function <a href='index.html'>rcudnn</a>::<wbr><a class="fn" href=''>cudaLaunchHostFunc</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaLaunchHostFunc(<br>&nbsp;&nbsp;&nbsp;&nbsp;stream: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../rcudnn/struct.CUstream_st.html" title="struct rcudnn::CUstream_st">CUstream_st</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;fn_: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;unsafe extern &quot;C&quot; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.fn.html">fn</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>)&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;userData: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a><br>) -&gt; <a class="enum" href="../rcudnn/enum.cudaError.html" title="enum rcudnn::cudaError">cudaError</a></pre><div class='docblock'><p>\brief Enqueues a host function call in a stream</p>
+<p>Enqueues a host function to run in a stream.  The function will be called
+after currently enqueued work and will block work added after it.</p>
+<p>The host function must not make any CUDA API calls.  Attempting to use a
+CUDA API may result in ::cudaErrorNotPermitted, but this is not required.
+The host function must not perform any synchronization that may depend on
+outstanding CUDA work not mandated to run earlier.  Host functions without a
+mandated order (such as in independent streams) execute in undefined order
+and may be serialized.</p>
+<p>For the purposes of Unified Memory, execution makes a number of guarantees:</p>
+<ul>
+  <li>The stream is considered idle for the duration of the function's
+  execution.  Thus, for example, the function may always use memory attached
+  to the stream it was enqueued in.</li>
+  <li>The start of execution of the function has the same effect as
+  synchronizing an event recorded in the same stream immediately prior to
+  the function.  It thus synchronizes streams which have been "joined"
+  prior to the function.</li>
+  <li>Adding device work to any stream does not have the effect of making
+  the stream active until all preceding host functions and stream callbacks
+  have executed.  Thus, for
+  example, a function might use global attached memory even if work has
+  been added to another stream, if the work has been ordered behind the
+  function call with an event.</li>
+  <li>Completion of the function does not cause a stream to become
+  active except as described above.  The stream will remain idle
+  if no device work follows the function, and will remain idle across
+  consecutive host functions or stream callbacks without device work in
+  between.  Thus, for example,
+  stream synchronization can be done by signaling from a host function at the
+  end of the stream.</li>
+</ul>
+<p>Note that, in constrast to ::cuStreamAddCallback, the function will not be
+called in the event of an error in the CUDA context.</p>
+<p>\param hStream  - Stream to enqueue function call in
+\param fn       - The function to call once preceding stream operations are complete
+\param userData - User-specified data to be passed to the function</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidResourceHandle,
+::cudaErrorInvalidValue,
+::cudaErrorNotSupported
+\note_null_stream
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa ::cudaStreamCreate,
+::cudaStreamQuery,
+::cudaStreamSynchronize,
+::cudaStreamWaitEvent,
+::cudaStreamDestroy,
+::cudaMallocManaged,
+::cudaStreamAttachMemAsync,
+::cudaStreamAddCallback,
+::cuLaunchHostFunc</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaGetDeviceProperties` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaGetDeviceProperties"><title>rcudnn_sys::cudaGetDeviceProperties - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn_sys</a></p><script>window.sidebarCurrent = {name: 'cudaGetDeviceProperties', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rcudnn_sys/generated.rs.html#8984-8985' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>rcudnn_sys</a>::<wbr><a class="fn" href=''>cudaGetDeviceProperties</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaGetDeviceProperties(<br>&nbsp;&nbsp;&nbsp;&nbsp;prop: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../rcudnn_sys/struct.cudaDeviceProp.html" title="struct rcudnn_sys::cudaDeviceProp">cudaDeviceProp</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;device: c_int<br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class='docblock'><p>\brief Returns information about the compute-device</p>
+<p>Returns in \p *prop the properties of device \p dev. The ::cudaDeviceProp
+structure is defined as:
+\code
+struct cudaDeviceProp {
+char name[256];
+cudaUUID_t uuid;
+size_t totalGlobalMem;
+size_t sharedMemPerBlock;
+int regsPerBlock;
+int warpSize;
+size_t memPitch;
+int maxThreadsPerBlock;
+int maxThreadsDim[3];
+int maxGridSize[3];
+int clockRate;
+size_t totalConstMem;
+int major;
+int minor;
+size_t textureAlignment;
+size_t texturePitchAlignment;
+int deviceOverlap;
+int multiProcessorCount;
+int kernelExecTimeoutEnabled;
+int integrated;
+int canMapHostMemory;
+int computeMode;
+int maxTexture1D;
+int maxTexture1DMipmap;
+int maxTexture1DLinear;
+int maxTexture2D[2];
+int maxTexture2DMipmap[2];
+int maxTexture2DLinear[3];
+int maxTexture2DGather[2];
+int maxTexture3D[3];
+int maxTexture3DAlt[3];
+int maxTextureCubemap;
+int maxTexture1DLayered[2];
+int maxTexture2DLayered[3];
+int maxTextureCubemapLayered[2];
+int maxSurface1D;
+int maxSurface2D[2];
+int maxSurface3D[3];
+int maxSurface1DLayered[2];
+int maxSurface2DLayered[3];
+int maxSurfaceCubemap;
+int maxSurfaceCubemapLayered[2];
+size_t surfaceAlignment;
+int concurrentKernels;
+int ECCEnabled;
+int pciBusID;
+int pciDeviceID;
+int pciDomainID;
+int tccDriver;
+int asyncEngineCount;
+int unifiedAddressing;
+int memoryClockRate;
+int memoryBusWidth;
+int l2CacheSize;
+int maxThreadsPerMultiProcessor;
+int streamPrioritiesSupported;
+int globalL1CacheSupported;
+int localL1CacheSupported;
+size_t sharedMemPerMultiprocessor;
+int regsPerMultiprocessor;
+int managedMemory;
+int isMultiGpuBoard;
+int multiGpuBoardGroupID;
+int singleToDoublePrecisionPerfRatio;
+int pageableMemoryAccess;
+int concurrentManagedAccess;
+int computePreemptionSupported;
+int canUseHostPointerForRegisteredMem;
+int cooperativeLaunch;
+int cooperativeMultiDeviceLaunch;
+int pageableMemoryAccessUsesHostPageTables;
+int directManagedMemAccessFromHost;
+}
+\endcode
+where:</p>
+<ul>
+<li>\ref ::cudaDeviceProp::name &quot;name[256]&quot; is an ASCII string identifying
+the device;</li>
+<li>\ref ::cudaDeviceProp::uuid &quot;uuid&quot; is a 16-byte unique identifier.</li>
+<li>\ref ::cudaDeviceProp::totalGlobalMem &quot;totalGlobalMem&quot; is the total
+amount of global memory available on the device in bytes;</li>
+<li>\ref ::cudaDeviceProp::sharedMemPerBlock &quot;sharedMemPerBlock&quot; is the
+maximum amount of shared memory available to a thread block in bytes;</li>
+<li>\ref ::cudaDeviceProp::regsPerBlock &quot;regsPerBlock&quot; is the maximum number
+of 32-bit registers available to a thread block;</li>
+<li>\ref ::cudaDeviceProp::warpSize &quot;warpSize&quot; is the warp size in threads;</li>
+<li>\ref ::cudaDeviceProp::memPitch &quot;memPitch&quot; is the maximum pitch in
+bytes allowed by the memory copy functions that involve memory regions
+allocated through ::cudaMallocPitch();</li>
+<li>\ref ::cudaDeviceProp::maxThreadsPerBlock &quot;maxThreadsPerBlock&quot; is the
+maximum number of threads per block;</li>
+<li>\ref ::cudaDeviceProp::maxThreadsDim &quot;maxThreadsDim[3]&quot; contains the
+maximum size of each dimension of a block;</li>
+<li>\ref ::cudaDeviceProp::maxGridSize &quot;maxGridSize[3]&quot; contains the
+maximum size of each dimension of a grid;</li>
+<li>\ref ::cudaDeviceProp::clockRate &quot;clockRate&quot; is the clock frequency in
+kilohertz;</li>
+<li>\ref ::cudaDeviceProp::totalConstMem &quot;totalConstMem&quot; is the total amount
+of constant memory available on the device in bytes;</li>
+<li>\ref ::cudaDeviceProp::major &quot;major&quot;,
+\ref ::cudaDeviceProp::minor &quot;minor&quot; are the major and minor revision
+numbers defining the device's compute capability;</li>
+<li>\ref ::cudaDeviceProp::textureAlignment &quot;textureAlignment&quot; is the
+alignment requirement; texture base addresses that are aligned to
+\ref ::cudaDeviceProp::textureAlignment &quot;textureAlignment&quot; bytes do not
+need an offset applied to texture fetches;</li>
+<li>\ref ::cudaDeviceProp::texturePitchAlignment &quot;texturePitchAlignment&quot; is the
+pitch alignment requirement for 2D texture references that are bound to
+pitched memory;</li>
+<li>\ref ::cudaDeviceProp::deviceOverlap &quot;deviceOverlap&quot; is 1 if the device
+can concurrently copy memory between host and device while executing a
+kernel, or 0 if not.  Deprecated, use instead asyncEngineCount.</li>
+<li>\ref ::cudaDeviceProp::multiProcessorCount &quot;multiProcessorCount&quot; is the
+number of multiprocessors on the device;</li>
+<li>\ref ::cudaDeviceProp::kernelExecTimeoutEnabled &quot;kernelExecTimeoutEnabled&quot;
+is 1 if there is a run time limit for kernels executed on the device, or
+0 if not.</li>
+<li>\ref ::cudaDeviceProp::integrated &quot;integrated&quot; is 1 if the device is an
+integrated (motherboard) GPU and 0 if it is a discrete (card) component.</li>
+<li>\ref ::cudaDeviceProp::canMapHostMemory &quot;canMapHostMemory&quot; is 1 if the
+device can map host memory into the CUDA address space for use with
+::cudaHostAlloc()/::cudaHostGetDevicePointer(), or 0 if not;</li>
+<li>\ref ::cudaDeviceProp::computeMode &quot;computeMode&quot; is the compute mode
+that the device is currently in. Available modes are as follows:
+<ul>
+<li>cudaComputeModeDefault: Default mode - Device is not restricted and
+multiple threads can use ::cudaSetDevice() with this device.</li>
+<li>cudaComputeModeExclusive: Compute-exclusive mode - Only one thread will
+be able to use ::cudaSetDevice() with this device.</li>
+<li>cudaComputeModeProhibited: Compute-prohibited mode - No threads can use
+::cudaSetDevice() with this device.</li>
+<li>cudaComputeModeExclusiveProcess: Compute-exclusive-process mode - Many
+threads in one process will be able to use ::cudaSetDevice() with this device.
+<br> If ::cudaSetDevice() is called on an already occupied \p device with
+computeMode ::cudaComputeModeExclusive, ::cudaErrorDeviceAlreadyInUse
+will be immediately returned indicating the device cannot be used.
+When an occupied exclusive mode device is chosen with ::cudaSetDevice,
+all subsequent non-device management runtime functions will return
+::cudaErrorDevicesUnavailable.</li>
+</ul>
+</li>
+<li>\ref ::cudaDeviceProp::maxTexture1D &quot;maxTexture1D&quot; is the maximum 1D
+texture size.</li>
+<li>\ref ::cudaDeviceProp::maxTexture1DMipmap &quot;maxTexture1DMipmap&quot; is the maximum
+1D mipmapped texture texture size.</li>
+<li>\ref ::cudaDeviceProp::maxTexture1DLinear &quot;maxTexture1DLinear&quot; is the maximum
+1D texture size for textures bound to linear memory.</li>
+<li>\ref ::cudaDeviceProp::maxTexture2D &quot;maxTexture2D[2]&quot; contains the maximum
+2D texture dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxTexture2DMipmap &quot;maxTexture2DMipmap[2]&quot; contains the
+maximum 2D mipmapped texture dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxTexture2DLinear &quot;maxTexture2DLinear[3]&quot; contains the
+maximum 2D texture dimensions for 2D textures bound to pitch linear memory.</li>
+<li>\ref ::cudaDeviceProp::maxTexture2DGather &quot;maxTexture2DGather[2]&quot; contains the
+maximum 2D texture dimensions if texture gather operations have to be performed.</li>
+<li>\ref ::cudaDeviceProp::maxTexture3D &quot;maxTexture3D[3]&quot; contains the maximum
+3D texture dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxTexture3DAlt &quot;maxTexture3DAlt[3]&quot;
+contains the maximum alternate 3D texture dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxTextureCubemap &quot;maxTextureCubemap&quot; is the
+maximum cubemap texture width or height.</li>
+<li>\ref ::cudaDeviceProp::maxTexture1DLayered &quot;maxTexture1DLayered[2]&quot; contains
+the maximum 1D layered texture dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxTexture2DLayered &quot;maxTexture2DLayered[3]&quot; contains
+the maximum 2D layered texture dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxTextureCubemapLayered &quot;maxTextureCubemapLayered[2]&quot;
+contains the maximum cubemap layered texture dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxSurface1D &quot;maxSurface1D&quot; is the maximum 1D
+surface size.</li>
+<li>\ref ::cudaDeviceProp::maxSurface2D &quot;maxSurface2D[2]&quot; contains the maximum
+2D surface dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxSurface3D &quot;maxSurface3D[3]&quot; contains the maximum
+3D surface dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxSurface1DLayered &quot;maxSurface1DLayered[2]&quot; contains
+the maximum 1D layered surface dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxSurface2DLayered &quot;maxSurface2DLayered[3]&quot; contains
+the maximum 2D layered surface dimensions.</li>
+<li>\ref ::cudaDeviceProp::maxSurfaceCubemap &quot;maxSurfaceCubemap&quot; is the maximum
+cubemap surface width or height.</li>
+<li>\ref ::cudaDeviceProp::maxSurfaceCubemapLayered &quot;maxSurfaceCubemapLayered[2]&quot;
+contains the maximum cubemap layered surface dimensions.</li>
+<li>\ref ::cudaDeviceProp::surfaceAlignment &quot;surfaceAlignment&quot; specifies the
+alignment requirements for surfaces.</li>
+<li>\ref ::cudaDeviceProp::concurrentKernels &quot;concurrentKernels&quot; is 1 if the
+device supports executing multiple kernels within the same context
+simultaneously, or 0 if not. It is not guaranteed that multiple kernels
+will be resident on the device concurrently so this feature should not be
+relied upon for correctness;</li>
+<li>\ref ::cudaDeviceProp::ECCEnabled &quot;ECCEnabled&quot; is 1 if the device has ECC
+support turned on, or 0 if not.</li>
+<li>\ref ::cudaDeviceProp::pciBusID &quot;pciBusID&quot; is the PCI bus identifier of
+the device.</li>
+<li>\ref ::cudaDeviceProp::pciDeviceID &quot;pciDeviceID&quot; is the PCI device
+(sometimes called slot) identifier of the device.</li>
+<li>\ref ::cudaDeviceProp::pciDomainID &quot;pciDomainID&quot; is the PCI domain identifier
+of the device.</li>
+<li>\ref ::cudaDeviceProp::tccDriver &quot;tccDriver&quot; is 1 if the device is using a
+TCC driver or 0 if not.</li>
+<li>\ref ::cudaDeviceProp::asyncEngineCount &quot;asyncEngineCount&quot; is 1 when the
+device can concurrently copy memory between host and device while executing
+a kernel. It is 2 when the device can concurrently copy memory between host
+and device in both directions and execute a kernel at the same time. It is
+0 if neither of these is supported.</li>
+<li>\ref ::cudaDeviceProp::unifiedAddressing &quot;unifiedAddressing&quot; is 1 if the device
+shares a unified address space with the host and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::memoryClockRate &quot;memoryClockRate&quot; is the peak memory
+clock frequency in kilohertz.</li>
+<li>\ref ::cudaDeviceProp::memoryBusWidth &quot;memoryBusWidth&quot; is the memory bus width
+in bits.</li>
+<li>\ref ::cudaDeviceProp::l2CacheSize &quot;l2CacheSize&quot; is L2 cache size in bytes.</li>
+<li>\ref ::cudaDeviceProp::maxThreadsPerMultiProcessor &quot;maxThreadsPerMultiProcessor&quot;
+is the number of maximum resident threads per multiprocessor.</li>
+<li>\ref ::cudaDeviceProp::streamPrioritiesSupported &quot;streamPrioritiesSupported&quot;
+is 1 if the device supports stream priorities, or 0 if it is not supported.</li>
+<li>\ref ::cudaDeviceProp::globalL1CacheSupported &quot;globalL1CacheSupported&quot;
+is 1 if the device supports caching of globals in L1 cache, or 0 if it is not supported.</li>
+<li>\ref ::cudaDeviceProp::localL1CacheSupported &quot;localL1CacheSupported&quot;
+is 1 if the device supports caching of locals in L1 cache, or 0 if it is not supported.</li>
+<li>\ref ::cudaDeviceProp::sharedMemPerMultiprocessor &quot;sharedMemPerMultiprocessor&quot; is the
+maximum amount of shared memory available to a multiprocessor in bytes; this amount is
+shared by all thread blocks simultaneously resident on a multiprocessor;</li>
+<li>\ref ::cudaDeviceProp::regsPerMultiprocessor &quot;regsPerMultiprocessor&quot; is the maximum number
+of 32-bit registers available to a multiprocessor; this number is shared
+by all thread blocks simultaneously resident on a multiprocessor;</li>
+<li>\ref ::cudaDeviceProp::managedMemory &quot;managedMemory&quot;
+is 1 if the device supports allocating managed memory on this system, or 0 if it is not supported.</li>
+<li>\ref ::cudaDeviceProp::isMultiGpuBoard &quot;isMultiGpuBoard&quot;
+is 1 if the device is on a multi-GPU board (e.g. Gemini cards), and 0 if not;</li>
+<li>\ref ::cudaDeviceProp::multiGpuBoardGroupID &quot;multiGpuBoardGroupID&quot; is a unique identifier
+for a group of devices associated with the same board.
+Devices on the same multi-GPU board will share the same identifier;</li>
+<li>\ref ::cudaDeviceProp::singleToDoublePrecisionPerfRatio &quot;singleToDoublePrecisionPerfRatio&quot;
+is the ratio of single precision performance (in floating-point operations per second)
+to double precision performance.</li>
+<li>\ref ::cudaDeviceProp::pageableMemoryAccess &quot;pageableMemoryAccess&quot; is 1 if the device supports
+coherently accessing pageable memory without calling cudaHostRegister on it, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::concurrentManagedAccess &quot;concurrentManagedAccess&quot; is 1 if the device can
+coherently access managed memory concurrently with the CPU, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::computePreemptionSupported &quot;computePreemptionSupported&quot; is 1 if the device
+supports Compute Preemption, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::canUseHostPointerForRegisteredMem &quot;canUseHostPointerForRegisteredMem&quot; is 1 if
+the device can access host registered memory at the same virtual address as the CPU, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::cooperativeLaunch &quot;cooperativeLaunch&quot; is 1 if the device supports launching
+cooperative kernels via ::cudaLaunchCooperativeKernel, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::cooperativeMultiDeviceLaunch &quot;cooperativeMultiDeviceLaunch&quot; is 1 if the device
+supports launching cooperative kernels via ::cudaLaunchCooperativeKernelMultiDevice, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::pageableMemoryAccessUsesHostPageTables &quot;pageableMemoryAccessUsesHostPageTables&quot; is 1 if the device accesses
+pageable memory via the host's page tables, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::directManagedMemAccessFromHost &quot;directManagedMemAccessFromHost&quot; is 1 if the host can directly access managed
+memory on the device without migration, and 0 otherwise.</li>
+</ul>
+<p>\param prop   - Properties for the specified device
+\param device - Device number to get properties for</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidDevice
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaSetDevice, ::cudaChooseDevice,
+::cudaDeviceGetAttribute,
+::cuDeviceGetAttribute,
+::cuDeviceGetName</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

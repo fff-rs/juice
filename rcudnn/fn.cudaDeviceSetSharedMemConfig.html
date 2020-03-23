@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaDeviceSetSharedMemConfig` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaDeviceSetSharedMemConfig"><title>rcudnn::cudaDeviceSetSharedMemConfig - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn</a></p><script>window.sidebarCurrent = {name: 'cudaDeviceSetSharedMemConfig', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span></span><span class='in-band'>Function <a href='index.html'>rcudnn</a>::<wbr><a class="fn" href=''>cudaDeviceSetSharedMemConfig</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaDeviceSetSharedMemConfig(config: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) -&gt; <a class="enum" href="../rcudnn/enum.cudaError.html" title="enum rcudnn::cudaError">cudaError</a></pre><div class='docblock'><p>\brief Sets the shared memory configuration for the current device.</p>
+<p>On devices with configurable shared memory banks, this function will set
+the shared memory bank size which is used for all subsequent kernel launches.
+Any per-function setting of shared memory set via ::cudaFuncSetSharedMemConfig
+will override the device wide setting.</p>
+<p>Changing the shared memory configuration between launches may introduce
+a device side synchronization point.</p>
+<p>Changing the shared memory bank size will not increase shared memory usage
+or affect occupancy of kernels, but may have major effects on performance.
+Larger bank sizes will allow for greater potential bandwidth to shared memory,
+but will change what kinds of accesses to shared memory will result in bank
+conflicts.</p>
+<p>This function will do nothing on devices with fixed shared memory bank size.</p>
+<p>The supported bank configurations are:</p>
+<ul>
+<li>::cudaSharedMemBankSizeDefault: set bank width the device default (currently,
+four bytes)</li>
+<li>::cudaSharedMemBankSizeFourByte: set shared memory bank width to be four bytes
+natively.</li>
+<li>::cudaSharedMemBankSizeEightByte: set shared memory bank width to be eight
+bytes natively.</li>
+</ul>
+<p>\param config - Requested cache configuration</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidValue
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa ::cudaDeviceSetCacheConfig,
+::cudaDeviceGetCacheConfig,
+::cudaDeviceGetSharedMemConfig,
+::cudaFuncSetCacheConfig,
+::cuCtxSetSharedMemConfig</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

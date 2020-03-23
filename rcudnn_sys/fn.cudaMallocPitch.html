@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaMallocPitch` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaMallocPitch"><title>rcudnn_sys::cudaMallocPitch - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn_sys</a></p><script>window.sidebarCurrent = {name: 'cudaMallocPitch', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rcudnn_sys/generated.rs.html#11808-11813' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>rcudnn_sys</a>::<wbr><a class="fn" href=''>cudaMallocPitch</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaMallocPitch(<br>&nbsp;&nbsp;&nbsp;&nbsp;devPtr: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pitch: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;width: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;height: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class='docblock'><p>\brief Allocates pitched memory on the device</p>
+<p>Allocates at least \p width (in bytes) * \p height bytes of linear memory
+on the device and returns in \p <em>devPtr a pointer to the allocated memory.
+The function may pad the allocation to ensure that corresponding pointers
+in any given row will continue to meet the alignment requirements for
+coalescing as the address is updated from row to row. The pitch returned in
+\p <em>pitch by ::cudaMallocPitch() is the width in bytes of the allocation.
+The intended usage of \p pitch is as a separate parameter of the allocation,
+used to compute addresses within the 2D array. Given the row and column of
+an array element of type \p T, the address is computed as:
+\code
+T</em> pElement = (T</em>)((char*)BaseAddress + Row * pitch) + Column;
+\endcode</p>
+<p>For allocations of 2D arrays, it is recommended that programmers consider
+performing pitch allocations using ::cudaMallocPitch(). Due to pitch
+alignment restrictions in the hardware, this is especially true if the
+application will be performing 2D memory copies between different regions
+of device memory (whether linear memory or CUDA arrays).</p>
+<p>\param devPtr - Pointer to allocated pitched device memory
+\param pitch  - Pitch for allocation
+\param width  - Requested pitched allocation width (in bytes)
+\param height - Requested pitched allocation height</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidValue,
+::cudaErrorMemoryAllocation
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa ::cudaMalloc, ::cudaFree, ::cudaMallocArray, ::cudaFreeArray,
+\ref ::cudaMallocHost(void**, size_t) &quot;cudaMallocHost (C API)&quot;,
+::cudaFreeHost, ::cudaMalloc3D, ::cudaMalloc3DArray,
+::cudaHostAlloc,
+::cuMemAllocPitch</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaDeviceGetAttribute` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaDeviceGetAttribute"><title>rcudnn_sys::cudaDeviceGetAttribute - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn_sys</a></p><script>window.sidebarCurrent = {name: 'cudaDeviceGetAttribute', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rcudnn_sys/generated.rs.html#9174-9178' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>rcudnn_sys</a>::<wbr><a class="fn" href=''>cudaDeviceGetAttribute</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaDeviceGetAttribute(<br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a>c_int, <br>&nbsp;&nbsp;&nbsp;&nbsp;attr: <a class="type" href="../rcudnn_sys/type.cudaDeviceAttr.html" title="type rcudnn_sys::cudaDeviceAttr">cudaDeviceAttr</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;device: c_int<br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class='docblock'><p>\brief Returns information about the device</p>
+<p>Returns in \p *value the integer value of the attribute \p attr on device
+\p device. The supported attributes are:</p>
+<ul>
+<li>::cudaDevAttrMaxThreadsPerBlock: Maximum number of threads per block;</li>
+<li>::cudaDevAttrMaxBlockDimX: Maximum x-dimension of a block;</li>
+<li>::cudaDevAttrMaxBlockDimY: Maximum y-dimension of a block;</li>
+<li>::cudaDevAttrMaxBlockDimZ: Maximum z-dimension of a block;</li>
+<li>::cudaDevAttrMaxGridDimX: Maximum x-dimension of a grid;</li>
+<li>::cudaDevAttrMaxGridDimY: Maximum y-dimension of a grid;</li>
+<li>::cudaDevAttrMaxGridDimZ: Maximum z-dimension of a grid;</li>
+<li>::cudaDevAttrMaxSharedMemoryPerBlock: Maximum amount of shared memory
+available to a thread block in bytes;</li>
+<li>::cudaDevAttrTotalConstantMemory: Memory available on device for
+<strong>constant</strong> variables in a CUDA C kernel in bytes;</li>
+<li>::cudaDevAttrWarpSize: Warp size in threads;</li>
+<li>::cudaDevAttrMaxPitch: Maximum pitch in bytes allowed by the memory copy
+functions that involve memory regions allocated through ::cudaMallocPitch();</li>
+<li>::cudaDevAttrMaxTexture1DWidth: Maximum 1D texture width;</li>
+<li>::cudaDevAttrMaxTexture1DLinearWidth: Maximum width for a 1D texture bound
+to linear memory;</li>
+<li>::cudaDevAttrMaxTexture1DMipmappedWidth: Maximum mipmapped 1D texture width;</li>
+<li>::cudaDevAttrMaxTexture2DWidth: Maximum 2D texture width;</li>
+<li>::cudaDevAttrMaxTexture2DHeight: Maximum 2D texture height;</li>
+<li>::cudaDevAttrMaxTexture2DLinearWidth: Maximum width for a 2D texture
+bound to linear memory;</li>
+<li>::cudaDevAttrMaxTexture2DLinearHeight: Maximum height for a 2D texture
+bound to linear memory;</li>
+<li>::cudaDevAttrMaxTexture2DLinearPitch: Maximum pitch in bytes for a 2D
+texture bound to linear memory;</li>
+<li>::cudaDevAttrMaxTexture2DMipmappedWidth: Maximum mipmapped 2D texture
+width;</li>
+<li>::cudaDevAttrMaxTexture2DMipmappedHeight: Maximum mipmapped 2D texture
+height;</li>
+<li>::cudaDevAttrMaxTexture3DWidth: Maximum 3D texture width;</li>
+<li>::cudaDevAttrMaxTexture3DHeight: Maximum 3D texture height;</li>
+<li>::cudaDevAttrMaxTexture3DDepth: Maximum 3D texture depth;</li>
+<li>::cudaDevAttrMaxTexture3DWidthAlt: Alternate maximum 3D texture width,
+0 if no alternate maximum 3D texture size is supported;</li>
+<li>::cudaDevAttrMaxTexture3DHeightAlt: Alternate maximum 3D texture height,
+0 if no alternate maximum 3D texture size is supported;</li>
+<li>::cudaDevAttrMaxTexture3DDepthAlt: Alternate maximum 3D texture depth,
+0 if no alternate maximum 3D texture size is supported;</li>
+<li>::cudaDevAttrMaxTextureCubemapWidth: Maximum cubemap texture width or
+height;</li>
+<li>::cudaDevAttrMaxTexture1DLayeredWidth: Maximum 1D layered texture width;</li>
+<li>::cudaDevAttrMaxTexture1DLayeredLayers: Maximum layers in a 1D layered
+texture;</li>
+<li>::cudaDevAttrMaxTexture2DLayeredWidth: Maximum 2D layered texture width;</li>
+<li>::cudaDevAttrMaxTexture2DLayeredHeight: Maximum 2D layered texture height;</li>
+<li>::cudaDevAttrMaxTexture2DLayeredLayers: Maximum layers in a 2D layered
+texture;</li>
+<li>::cudaDevAttrMaxTextureCubemapLayeredWidth: Maximum cubemap layered
+texture width or height;</li>
+<li>::cudaDevAttrMaxTextureCubemapLayeredLayers: Maximum layers in a cubemap
+layered texture;</li>
+<li>::cudaDevAttrMaxSurface1DWidth: Maximum 1D surface width;</li>
+<li>::cudaDevAttrMaxSurface2DWidth: Maximum 2D surface width;</li>
+<li>::cudaDevAttrMaxSurface2DHeight: Maximum 2D surface height;</li>
+<li>::cudaDevAttrMaxSurface3DWidth: Maximum 3D surface width;</li>
+<li>::cudaDevAttrMaxSurface3DHeight: Maximum 3D surface height;</li>
+<li>::cudaDevAttrMaxSurface3DDepth: Maximum 3D surface depth;</li>
+<li>::cudaDevAttrMaxSurface1DLayeredWidth: Maximum 1D layered surface width;</li>
+<li>::cudaDevAttrMaxSurface1DLayeredLayers: Maximum layers in a 1D layered
+surface;</li>
+<li>::cudaDevAttrMaxSurface2DLayeredWidth: Maximum 2D layered surface width;</li>
+<li>::cudaDevAttrMaxSurface2DLayeredHeight: Maximum 2D layered surface height;</li>
+<li>::cudaDevAttrMaxSurface2DLayeredLayers: Maximum layers in a 2D layered
+surface;</li>
+<li>::cudaDevAttrMaxSurfaceCubemapWidth: Maximum cubemap surface width;</li>
+<li>::cudaDevAttrMaxSurfaceCubemapLayeredWidth: Maximum cubemap layered
+surface width;</li>
+<li>::cudaDevAttrMaxSurfaceCubemapLayeredLayers: Maximum layers in a cubemap
+layered surface;</li>
+<li>::cudaDevAttrMaxRegistersPerBlock: Maximum number of 32-bit registers
+available to a thread block;</li>
+<li>::cudaDevAttrClockRate: Peak clock frequency in kilohertz;</li>
+<li>::cudaDevAttrTextureAlignment: Alignment requirement; texture base
+addresses aligned to ::textureAlign bytes do not need an offset applied
+to texture fetches;</li>
+<li>::cudaDevAttrTexturePitchAlignment: Pitch alignment requirement for 2D
+texture references bound to pitched memory;</li>
+<li>::cudaDevAttrGpuOverlap: 1 if the device can concurrently copy memory
+between host and device while executing a kernel, or 0 if not;</li>
+<li>::cudaDevAttrMultiProcessorCount: Number of multiprocessors on the device;</li>
+<li>::cudaDevAttrKernelExecTimeout: 1 if there is a run time limit for kernels
+executed on the device, or 0 if not;</li>
+<li>::cudaDevAttrIntegrated: 1 if the device is integrated with the memory
+subsystem, or 0 if not;</li>
+<li>::cudaDevAttrCanMapHostMemory: 1 if the device can map host memory into
+the CUDA address space, or 0 if not;</li>
+<li>::cudaDevAttrComputeMode: Compute mode is the compute mode that the device
+is currently in. Available modes are as follows:
+<ul>
+<li>::cudaComputeModeDefault: Default mode - Device is not restricted and
+multiple threads can use ::cudaSetDevice() with this device.</li>
+<li>::cudaComputeModeExclusive: Compute-exclusive mode - Only one thread will
+be able to use ::cudaSetDevice() with this device.</li>
+<li>::cudaComputeModeProhibited: Compute-prohibited mode - No threads can use
+::cudaSetDevice() with this device.</li>
+<li>::cudaComputeModeExclusiveProcess: Compute-exclusive-process mode - Many
+threads in one process will be able to use ::cudaSetDevice() with this
+device.</li>
+</ul>
+</li>
+<li>::cudaDevAttrConcurrentKernels: 1 if the device supports executing
+multiple kernels within the same context simultaneously, or 0 if
+not. It is not guaranteed that multiple kernels will be resident on the
+device concurrently so this feature should not be relied upon for
+correctness;</li>
+<li>::cudaDevAttrEccEnabled: 1 if error correction is enabled on the device,
+0 if error correction is disabled or not supported by the device;</li>
+<li>::cudaDevAttrPciBusId: PCI bus identifier of the device;</li>
+<li>::cudaDevAttrPciDeviceId: PCI device (also known as slot) identifier of
+the device;</li>
+<li>::cudaDevAttrTccDriver: 1 if the device is using a TCC driver. TCC is only
+available on Tesla hardware running Windows Vista or later;</li>
+<li>::cudaDevAttrMemoryClockRate: Peak memory clock frequency in kilohertz;</li>
+<li>::cudaDevAttrGlobalMemoryBusWidth: Global memory bus width in bits;</li>
+<li>::cudaDevAttrL2CacheSize: Size of L2 cache in bytes. 0 if the device
+doesn't have L2 cache;</li>
+<li>::cudaDevAttrMaxThreadsPerMultiProcessor: Maximum resident threads per
+multiprocessor;</li>
+<li>::cudaDevAttrUnifiedAddressing: 1 if the device shares a unified address
+space with the host, or 0 if not;</li>
+<li>::cudaDevAttrComputeCapabilityMajor: Major compute capability version
+number;</li>
+<li>::cudaDevAttrComputeCapabilityMinor: Minor compute capability version
+number;</li>
+<li>::cudaDevAttrStreamPrioritiesSupported: 1 if the device supports stream
+priorities, or 0 if not;</li>
+<li>::cudaDevAttrGlobalL1CacheSupported: 1 if device supports caching globals
+in L1 cache, 0 if not;</li>
+<li>::cudaDevAttrLocalL1CacheSupported: 1 if device supports caching locals
+in L1 cache, 0 if not;</li>
+<li>::cudaDevAttrMaxSharedMemoryPerMultiprocessor: Maximum amount of shared memory
+available to a multiprocessor in bytes; this amount is shared by all
+thread blocks simultaneously resident on a multiprocessor;</li>
+<li>::cudaDevAttrMaxRegistersPerMultiprocessor: Maximum number of 32-bit registers
+available to a multiprocessor; this number is shared by all thread blocks
+simultaneously resident on a multiprocessor;</li>
+<li>::cudaDevAttrManagedMemory: 1 if device supports allocating
+managed memory, 0 if not;</li>
+<li>::cudaDevAttrIsMultiGpuBoard: 1 if device is on a multi-GPU board, 0 if not;</li>
+<li>::cudaDevAttrMultiGpuBoardGroupID: Unique identifier for a group of devices on the
+same multi-GPU board;</li>
+<li>::cudaDevAttrHostNativeAtomicSupported: 1 if the link between the device and the
+host supports native atomic operations;</li>
+<li>::cudaDevAttrSingleToDoublePrecisionPerfRatio: Ratio of single precision performance
+(in floating-point operations per second) to double precision performance;</li>
+<li>::cudaDevAttrPageableMemoryAccess: 1 if the device supports coherently accessing
+pageable memory without calling cudaHostRegister on it, and 0 otherwise.</li>
+<li>::cudaDevAttrConcurrentManagedAccess: 1 if the device can coherently access managed
+memory concurrently with the CPU, and 0 otherwise.</li>
+<li>::cudaDevAttrComputePreemptionSupported: 1 if the device supports
+Compute Preemption, 0 if not.</li>
+<li>::cudaDevAttrCanUseHostPointerForRegisteredMem: 1 if the device can access host
+registered memory at the same virtual address as the CPU, and 0 otherwise.</li>
+<li>::cudaDevAttrCooperativeLaunch: 1 if the device supports launching cooperative kernels
+via ::cudaLaunchCooperativeKernel, and 0 otherwise.</li>
+<li>::cudaDevAttrCooperativeMultiDeviceLaunch: 1 if the device supports launching cooperative
+kernels via ::cudaLaunchCooperativeKernelMultiDevice, and 0 otherwise.</li>
+<li>::cudaDevAttrCanFlushRemoteWrites: 1 if the device supports flushing of outstanding
+remote writes, and 0 otherwise.</li>
+<li>::cudaDevAttrHostRegisterSupported: 1 if the device supports host memory registration
+via ::cudaHostRegister, and 0 otherwise.</li>
+<li>::cudaDevAttrPageableMemoryAccessUsesHostPageTables: 1 if the device accesses pageable memory via the
+host's page tables, and 0 otherwise.</li>
+<li>::cudaDevAttrDirectManagedMemAccessFromHost: 1 if the host can directly access managed memory on the device
+without migration, and 0 otherwise.</li>
+<li>::cudaDevAttrMaxSharedMemoryPerBlockOptin: Maximum per block shared memory size on the device. This value can
+be opted into when using ::cudaFuncSetAttribute</li>
+</ul>
+<p>\param value  - Returned device attribute value
+\param attr   - Device attribute to query
+\param device - Device number to query</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidDevice,
+::cudaErrorInvalidValue
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaSetDevice, ::cudaChooseDevice,
+::cudaGetDeviceProperties,
+::cuDeviceGetAttribute</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

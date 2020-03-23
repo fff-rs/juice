@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `rcudnn/cudnn/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rcudnn/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! Provides a safe and convenient wrapper for the [CUDA cuDNN][cudnn] API.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This crate (1.0.0) was developed against cuDNN v3.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Architecture</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This crate provides three levels of entrace.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! **FFI**&lt;br&gt;</span>
+<span class="doccomment">//! The `ffi` module exposes the foreign function interface and cuDNN specific types. Usually,</span>
+<span class="doccomment">//! there should be no use to touch it if you only want to use cuDNN in you application. The ffi</span>
+<span class="doccomment">//! is provided by the `rust-cudnn-sys` crate and gets reexported here.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! **Low-Level**&lt;br&gt;</span>
+<span class="doccomment">//! The `api` module exposes already a complete and safe wrapper for the cuDNN API, including proper</span>
+<span class="doccomment">//! Rust Errors. Usually there should be not need to use the `API` directly though, as the `Cudnn` module,</span>
+<span class="doccomment">//! as described in the next block, provides all the API functionality but provides a more convenient interface.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! **High-Level**&lt;br&gt;</span>
+<span class="doccomment">//! The `cudnn` module exposes the `Cudnn` struct, which provides a very convenient, easy-to-understand interface</span>
+<span class="doccomment">//! for the cuDNN API. There should be not much need to obtain and read the cuDNN manual. Initialize the Cudnn</span>
+<span class="doccomment">//! struct and you can call the available methods wich are representing all the available cuDNN operations.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Examples</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//! extern crate rcudnn as cudnn;</span>
+<span class="doccomment">//! extern crate libc;</span>
+<span class="doccomment">//! use cudnn::{Cudnn, TensorDescriptor};</span>
+<span class="doccomment">//! use cudnn::utils::{ScalParams, DataType};</span>
+<span class="doccomment">//! fn main() {</span>
+<span class="doccomment">//! //  Initialize a new cuDNN context and allocates resources.</span>
+<span class="doccomment">//!     let cudnn = Cudnn::new().unwrap();</span>
+<span class="doccomment">//! //  Create a cuDNN Tensor Descriptor for `src` and `dest` memory.</span>
+<span class="doccomment">//!     let src_desc = TensorDescriptor::new(&amp;[2, 2, 2], &amp;[4, 2, 1], DataType::Float).unwrap();</span>
+<span class="doccomment">//!     let dest_desc = TensorDescriptor::new(&amp;[2, 2, 2], &amp;[4, 2, 1], DataType::Float).unwrap();</span>
+<span class="doccomment">//!     let acti = cudnn.init_activation().unwrap();</span>
+<span class="doccomment">//! //  Obtain the `src` and memory pointer on the GPU.</span>
+<span class="doccomment">//! //  NOTE: You wouldn&#39;t do it like that. You need to really allocate memory on the GPU with e.g. CUDA or Collenchyma.</span>
+<span class="doccomment">//!     let src_data: *const ::libc::c_void = ::std::ptr::null();</span>
+<span class="doccomment">//!     let dest_data: *mut ::libc::c_void = ::std::ptr::null_mut();</span>
+<span class="doccomment">//! //  Now you can compute the forward sigmoid activation on your GPU.</span>
+<span class="doccomment">//!     cudnn.sigmoid_forward::&lt;f32&gt;(&amp;acti, &amp;src_desc, src_data, &amp;dest_desc, dest_data, ScalParams::default());</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Notes</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! rust-cudnn was developed at [Autumn][autumn] for the Rust Machine Intelligence Framework [Leaf][leaf].</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! rust-cudnn is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the</span>
+<span class="doccomment">//! [Neural Network Plugin][nn]. For an easy, unified interface for NN operations, such as those provided by</span>
+<span class="doccomment">//! cuDNN, you might check out [Collenchyma][collenchyma].</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! [cudnn]: https://developer.nvidia.com/cudnn</span>
+<span class="doccomment">//! [autumn]: http://autumnai.com</span>
+<span class="doccomment">//! [leaf]: https://github.com/autumnai/leaf</span>
+<span class="doccomment">//! [collenchyma]: https://github.com/autumnai/collenchyma</span>
+<span class="doccomment">//! [nn]: https://github.com/autumnai/collenchyma-nn</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">feature</span>(<span class="ident">plugin</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">plugin</span>(<span class="ident">clippy</span>))]</span>
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
+<span class="attribute">#![<span class="ident">deny</span>(
+    <span class="ident">missing_docs</span>,
+    <span class="ident">missing_debug_implementations</span>,
+    <span class="ident">missing_copy_implementations</span>,
+    <span class="ident">trivial_casts</span>,
+    <span class="ident">trivial_numeric_casts</span>,
+    <span class="ident">unused_import_braces</span>,
+    <span class="ident">unused_qualifications</span>
+)]</span>
+
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">libc</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">num</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rcudnn_sys</span> <span class="kw">as</span> <span class="ident">ffi</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">activation_descriptor</span>::<span class="ident">ActivationDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">convolution_descriptor</span>::<span class="ident">ConvolutionDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cudnn</span>::<span class="ident">Cudnn</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">dropout_descriptor</span>::<span class="ident">DropoutDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">error</span>::<span class="ident">Error</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">filter_descriptor</span>::<span class="ident">FilterDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">normalization_descriptor</span>::<span class="ident">NormalizationDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">pooling_descriptor</span>::<span class="ident">PoolingDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">tensor_descriptor</span>::<span class="ident">TensorDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">rnn_descriptor</span>::<span class="ident">RnnDescriptor</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="doccomment">/// Defines the Cuda cuDNN API.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">API</span>;
+
+<span class="kw">mod</span> <span class="ident">activation_descriptor</span>;
+<span class="kw">mod</span> <span class="ident">api</span>;
+<span class="kw">mod</span> <span class="ident">convolution_descriptor</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cuda</span>;
+<span class="kw">mod</span> <span class="ident">cudnn</span>;
+<span class="kw">mod</span> <span class="ident">dropout_descriptor</span>;
+<span class="kw">mod</span> <span class="ident">error</span>;
+<span class="kw">mod</span> <span class="ident">filter_descriptor</span>;
+<span class="kw">mod</span> <span class="ident">normalization_descriptor</span>;
+<span class="kw">mod</span> <span class="ident">pooling_descriptor</span>;
+<span class="kw">mod</span> <span class="ident">tensor_descriptor</span>;
+<span class="kw">mod</span> <span class="ident">rnn_descriptor</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">utils</span>;
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "rcudnn";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

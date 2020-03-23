@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaStreamIsCapturing` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaStreamIsCapturing"><title>rcudnn_sys::cudaStreamIsCapturing - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn_sys</a></p><script>window.sidebarCurrent = {name: 'cudaStreamIsCapturing', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rcudnn_sys/generated.rs.html#10099-10102' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>rcudnn_sys</a>::<wbr><a class="fn" href=''>cudaStreamIsCapturing</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaStreamIsCapturing(<br>&nbsp;&nbsp;&nbsp;&nbsp;stream: <a class="type" href="../rcudnn_sys/type.cudaStream_t.html" title="type rcudnn_sys::cudaStream_t">cudaStream_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pCaptureStatus: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="type" href="../rcudnn_sys/type.cudaStreamCaptureStatus.html" title="type rcudnn_sys::cudaStreamCaptureStatus">cudaStreamCaptureStatus</a><br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class='docblock'><p>\brief Returns a stream's capture status</p>
+<p>Return the capture status of \p stream via \p pCaptureStatus. After a successful
+call, \p *pCaptureStatus will contain one of the following:</p>
+<ul>
+<li>::cudaStreamCaptureStatusNone: The stream is not capturing.</li>
+<li>::cudaStreamCaptureStatusActive: The stream is capturing.</li>
+<li>::cudaStreamCaptureStatusInvalidated: The stream was capturing but an error
+has invalidated the capture sequence. The capture sequence must be terminated
+with ::cudaStreamEndCapture on the stream where it was initiated in order to
+continue using \p stream.</li>
+</ul>
+<p>Note that, if this is called on ::cudaStreamLegacy (the &quot;null stream&quot;) while
+a blocking stream on the same device is capturing, it will return
+::cudaErrorStreamCaptureImplicit and \p *pCaptureStatus is unspecified
+after the call. The blocking stream capture is not invalidated.</p>
+<p>When a blocking stream is capturing, the legacy stream is in an
+unusable state until the blocking stream capture is terminated. The legacy
+stream is not supported for stream capture, but attempted use would have an
+implicit dependency on the capturing stream(s).</p>
+<p>\param stream         - Stream to query
+\param pCaptureStatus - Returns the stream's capture status</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidValue,
+::cudaErrorStreamCaptureImplicit
+\notefnerr</p>
+<p>\sa
+::cudaStreamCreate,
+::cudaStreamBeginCapture,
+::cudaStreamEndCapture</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

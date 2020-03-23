@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaDeviceSetLimit` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaDeviceSetLimit"><title>rcudnn_sys::cudaDeviceSetLimit - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn_sys</a></p><script>window.sidebarCurrent = {name: 'cudaDeviceSetLimit', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rcudnn_sys/generated.rs.html#7824' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>rcudnn_sys</a>::<wbr><a class="fn" href=''>cudaDeviceSetLimit</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaDeviceSetLimit(<br>&nbsp;&nbsp;&nbsp;&nbsp;limit: <a class="type" href="../rcudnn_sys/type.cudaLimit.html" title="type rcudnn_sys::cudaLimit">cudaLimit</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class='docblock'><p>\brief Set resource limits</p>
+<p>Setting \p limit to \p value is a request by the application to update
+the current limit maintained by the device.  The driver is free to
+modify the requested value to meet h/w requirements (this could be
+clamping to minimum or maximum values, rounding up to nearest element
+size, etc). The application can use ::cudaDeviceGetLimit() to find out
+exactly what the limit has been set to.</p>
+<p>Setting each ::cudaLimit has its own specific restrictions, so each is
+discussed here.</p>
+<ul>
+<li>
+<p>::cudaLimitStackSize controls the stack size in bytes of each GPU thread.
+Note that the CUDA driver will set the \p limit to the maximum of \p value
+and what the kernel function requires.</p>
+</li>
+<li>
+<p>::cudaLimitPrintfFifoSize controls the size in bytes of the shared FIFO
+used by the ::printf() device system call. Setting
+::cudaLimitPrintfFifoSize must not be performed after launching any kernel
+that uses the ::printf() device system call - in such case
+::cudaErrorInvalidValue will be returned.</p>
+</li>
+<li>
+<p>::cudaLimitMallocHeapSize controls the size in bytes of the heap used by
+the ::malloc() and ::free() device system calls. Setting
+::cudaLimitMallocHeapSize must not be performed after launching any kernel
+that uses the ::malloc() or ::free() device system calls - in such case
+::cudaErrorInvalidValue will be returned.</p>
+</li>
+<li>
+<p>::cudaLimitDevRuntimeSyncDepth controls the maximum nesting depth of a
+grid at which a thread can safely call ::cudaDeviceSynchronize(). Setting
+this limit must be performed before any launch of a kernel that uses the
+device runtime and calls ::cudaDeviceSynchronize() above the default sync
+depth, two levels of grids. Calls to ::cudaDeviceSynchronize() will fail
+with error code ::cudaErrorSyncDepthExceeded if the limitation is
+violated. This limit can be set smaller than the default or up the maximum
+launch depth of 24. When setting this limit, keep in mind that additional
+levels of sync depth require the runtime to reserve large amounts of
+device memory which can no longer be used for user allocations. If these
+reservations of device memory fail, ::cudaDeviceSetLimit will return
+::cudaErrorMemoryAllocation, and the limit can be reset to a lower value.
+This limit is only applicable to devices of compute capability 3.5 and
+higher. Attempting to set this limit on devices of compute capability less
+than 3.5 will result in the error ::cudaErrorUnsupportedLimit being
+returned.</p>
+</li>
+<li>
+<p>::cudaLimitDevRuntimePendingLaunchCount controls the maximum number of
+outstanding device runtime launches that can be made from the current
+device. A grid is outstanding from the point of launch up until the grid
+is known to have been completed. Device runtime launches which violate
+this limitation fail and return ::cudaErrorLaunchPendingCountExceeded when
+::cudaGetLastError() is called after launch. If more pending launches than
+the default (2048 launches) are needed for a module using the device
+runtime, this limit can be increased. Keep in mind that being able to
+sustain additional pending launches will require the runtime to reserve
+larger amounts of device memory upfront which can no longer be used for
+allocations. If these reservations fail, ::cudaDeviceSetLimit will return
+::cudaErrorMemoryAllocation, and the limit can be reset to a lower value.
+This limit is only applicable to devices of compute capability 3.5 and
+higher. Attempting to set this limit on devices of compute capability less
+than 3.5 will result in the error ::cudaErrorUnsupportedLimit being
+returned.</p>
+</li>
+<li>
+<p>::cudaLimitMaxL2FetchGranularity controls the L2 cache fetch granularity.
+Values can range from 0B to 128B. This is purely a performance hint and
+it can be ignored or clamped depending on the platform.</p>
+</li>
+</ul>
+<p>\param limit - Limit to set
+\param value - Size of limit</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorUnsupportedLimit,
+::cudaErrorInvalidValue,
+::cudaErrorMemoryAllocation
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa
+::cudaDeviceGetLimit,
+::cuCtxSetLimit</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

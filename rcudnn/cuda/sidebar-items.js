@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CudaDeviceMemory","A pointer to memory existing on a nvidia GPU"]]});

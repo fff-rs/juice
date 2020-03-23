@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaGraphExecMemcpyNodeSetParams` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaGraphExecMemcpyNodeSetParams"><title>rcudnn_sys::cudaGraphExecMemcpyNodeSetParams - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn_sys</a></p><script>window.sidebarCurrent = {name: 'cudaGraphExecMemcpyNodeSetParams', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rcudnn_sys/generated.rs.html#17044-17048' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>rcudnn_sys</a>::<wbr><a class="fn" href=''>cudaGraphExecMemcpyNodeSetParams</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaGraphExecMemcpyNodeSetParams(<br>&nbsp;&nbsp;&nbsp;&nbsp;hGraphExec: <a class="type" href="../rcudnn_sys/type.cudaGraphExec_t.html" title="type rcudnn_sys::cudaGraphExec_t">cudaGraphExec_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;node: <a class="type" href="../rcudnn_sys/type.cudaGraphNode_t.html" title="type rcudnn_sys::cudaGraphNode_t">cudaGraphNode_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pNodeParams: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../rcudnn_sys/struct.cudaMemcpy3DParms.html" title="struct rcudnn_sys::cudaMemcpy3DParms">cudaMemcpy3DParms</a><br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class='docblock'><p>\brief Sets the parameters for a memcpy node in the given graphExec.</p>
+<p>Updates the work represented by \p node in \p hGraphExec as though \p node had
+contained \p pNodeParams at instantiation.  \p node must remain in the graph which was
+used to instantiate \p hGraphExec.  Changed edges to and from \p node are ignored.</p>
+<p>The source and destination memory in \p pNodeParams must be allocated from the same
+contexts as the original source and destination memory.  Both the instantiation-time
+memory operands and the memory operands in \p pNodeParams must be 1-dimensional.
+Zero-length operations are not supported.</p>
+<p>The modifications only affect future launches of \p hGraphExec.  Already enqueued
+or running launches of \p hGraphExec are not affected by this call.  \p node is also
+not modified by this call.</p>
+<p>Returns cudaErrorInvalidValue if the memory operands’ mappings changed or
+either the original or new memory operands are multidimensional.</p>
+<p>\param hGraphExec  - The executable graph in which to set the specified node
+\param nodei       - Memcpy node from the graph which was used to instantiate graphExec
+\param pNodeParams - Updated Parameters to set</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorInvalidValue,
+\note_graph_thread_safety
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa
+::cudaGraphAddMemcpyNode,
+::cudaGraphMemcpyNodeSetParams
+::cudaGraphInstantiate
+::cudaGraphExecKernelNodeSetParams
+::cudaGraphExecMemsetNodeSetParams
+::cudaGraphExecHostNodeSetParams</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn_sys";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

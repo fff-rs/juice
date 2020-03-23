@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaMallocManaged` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaMallocManaged"><title>rcudnn::cudaMallocManaged - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn</a></p><script>window.sidebarCurrent = {name: 'cudaMallocManaged', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span></span><span class='in-band'>Function <a href='index.html'>rcudnn</a>::<wbr><a class="fn" href=''>cudaMallocManaged</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaMallocManaged(<br>&nbsp;&nbsp;&nbsp;&nbsp;devPtr: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;flags: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a><br>) -&gt; <a class="enum" href="../rcudnn/enum.cudaError.html" title="enum rcudnn::cudaError">cudaError</a></pre><div class='docblock'><p>\brief Allocates memory that will be automatically managed by the Unified Memory system</p>
+<p>Allocates \p size bytes of managed memory on the device and returns in
+\p *devPtr a pointer to the allocated memory. If the device doesn't support
+allocating managed memory, ::cudaErrorNotSupported is returned. Support
+for managed memory can be queried using the device attribute
+::cudaDevAttrManagedMemory. The allocated memory is suitably
+aligned for any kind of variable. The memory is not cleared. If \p size
+is 0, ::cudaMallocManaged returns ::cudaErrorInvalidValue. The pointer
+is valid on the CPU and on all GPUs in the system that support managed memory.
+All accesses to this pointer must obey the Unified Memory programming model.</p>
+<p>\p flags specifies the default stream association for this allocation.
+\p flags must be one of ::cudaMemAttachGlobal or ::cudaMemAttachHost. The
+default value for \p flags is ::cudaMemAttachGlobal.
+If ::cudaMemAttachGlobal is specified, then this memory is accessible from
+any stream on any device. If ::cudaMemAttachHost is specified, then the
+allocation should not be accessed from devices that have a zero value for the
+device attribute ::cudaDevAttrConcurrentManagedAccess; an explicit call to
+::cudaStreamAttachMemAsync will be required to enable access on such devices.</p>
+<p>If the association is later changed via ::cudaStreamAttachMemAsync to
+a single stream, the default association, as specifed during ::cudaMallocManaged,
+is restored when that stream is destroyed. For <strong>managed</strong> variables, the
+default association is always ::cudaMemAttachGlobal. Note that destroying a
+stream is an asynchronous operation, and as a result, the change to default
+association won't happen until all work in the stream has completed.</p>
+<p>Memory allocated with ::cudaMallocManaged should be released with ::cudaFree.</p>
+<p>Device memory oversubscription is possible for GPUs that have a non-zero value for the
+device attribute ::cudaDevAttrConcurrentManagedAccess. Managed memory on
+such GPUs may be evicted from device memory to host memory at any time by the Unified
+Memory driver in order to make room for other allocations.</p>
+<p>In a multi-GPU system where all GPUs have a non-zero value for the device attribute
+::cudaDevAttrConcurrentManagedAccess, managed memory may not be populated when this
+API returns and instead may be populated on access. In such systems, managed memory can
+migrate to any processor's memory at any time. The Unified Memory driver will employ heuristics to
+maintain data locality and prevent excessive page faults to the extent possible. The application
+can also guide the driver about memory usage patterns via ::cudaMemAdvise. The application
+can also explicitly migrate memory to a desired processor's memory via
+::cudaMemPrefetchAsync.</p>
+<p>In a multi-GPU system where all of the GPUs have a zero value for the device attribute
+::cudaDevAttrConcurrentManagedAccess and all the GPUs have peer-to-peer support
+with each other, the physical storage for managed memory is created on the GPU which is active
+at the time ::cudaMallocManaged is called. All other GPUs will reference the data at reduced
+bandwidth via peer mappings over the PCIe bus. The Unified Memory driver does not migrate
+memory among such GPUs.</p>
+<p>In a multi-GPU system where not all GPUs have peer-to-peer support with each other and
+where the value of the device attribute ::cudaDevAttrConcurrentManagedAccess
+is zero for at least one of those GPUs, the location chosen for physical storage of managed
+memory is system-dependent.</p>
+<ul>
+<li>On Linux, the location chosen will be device memory as long as the current set of active
+contexts are on devices that either have peer-to-peer support with each other or have a
+non-zero value for the device attribute ::cudaDevAttrConcurrentManagedAccess.
+If there is an active context on a GPU that does not have a non-zero value for that device
+attribute and it does not have peer-to-peer support with the other devices that have active
+contexts on them, then the location for physical storage will be 'zero-copy' or host memory.
+Note that this means that managed memory that is located in device memory is migrated to
+host memory if a new context is created on a GPU that doesn't have a non-zero value for
+the device attribute and does not support peer-to-peer with at least one of the other devices
+that has an active context. This in turn implies that context creation may fail if there is
+insufficient host memory to migrate all managed allocations.</li>
+<li>On Windows, the physical storage is always created in 'zero-copy' or host memory.
+All GPUs will reference the data at reduced bandwidth over the PCIe bus. In these
+circumstances, use of the environment variable CUDA_VISIBLE_DEVICES is recommended to
+restrict CUDA to only use those GPUs that have peer-to-peer support.
+Alternatively, users can also set CUDA_MANAGED_FORCE_DEVICE_ALLOC to a non-zero
+value to force the driver to always use device memory for physical storage.
+When this environment variable is set to a non-zero value, all devices used in
+that process that support managed memory have to be peer-to-peer compatible
+with each other. The error ::cudaErrorInvalidDevice will be returned if a device
+that supports managed memory is used and it is not peer-to-peer compatible with
+any of the other managed memory supporting devices that were previously used in
+that process, even if ::cudaDeviceReset has been called on those devices. These
+environment variables are described in the CUDA programming guide under the
+&quot;CUDA environment variables&quot; section.</li>
+</ul>
+<p>\param devPtr - Pointer to allocated device memory
+\param size   - Requested allocation size in bytes
+\param flags  - Must be either ::cudaMemAttachGlobal or ::cudaMemAttachHost (defaults to ::cudaMemAttachGlobal)</p>
+<p>\return
+::cudaSuccess,
+::cudaErrorMemoryAllocation,
+::cudaErrorNotSupported,
+::cudaErrorInvalidValue
+\notefnerr
+\note_init_rt
+\note_callback</p>
+<p>\sa ::cudaMallocPitch, ::cudaFree, ::cudaMallocArray, ::cudaFreeArray,
+::cudaMalloc3D, ::cudaMalloc3DArray,
+\ref ::cudaMallocHost(void**, size_t) &quot;cudaMallocHost (C API)&quot;,
+::cudaFreeHost, ::cudaHostAlloc, ::cudaDeviceGetAttribute, ::cudaStreamAttachMemAsync,
+::cuMemAllocManaged</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
