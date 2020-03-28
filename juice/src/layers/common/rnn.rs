@@ -345,7 +345,7 @@ mod tests {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     #[cfg(feature = "cuda")]
     fn rnn_create_layer() {
         let cfg = RnnConfig {
@@ -397,7 +397,7 @@ mod tests {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     #[cfg(feature = "cuda")]
     fn rnn_forward_pass() {
         let backend: Backend<Cuda> = cuda_backend();

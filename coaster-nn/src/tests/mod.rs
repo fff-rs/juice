@@ -199,14 +199,14 @@ macro_rules! test_cuda {
 
         #[cfg(feature = "cuda")]
         #[test]
-        #[serial]
+        #[serial_test::serial]
         fn $f32_name() {
             $test_name::<f32, _>(crate::tests::get_cuda_backend())
         }
 
         #[cfg(feature = "cuda")]
         #[test]
-        #[serial]
+        #[serial_test::serial]
         fn $f64_name() {
             $test_name::<f64, _>(crate::tests::get_cuda_backend())
         }
@@ -234,7 +234,7 @@ macro_rules! test_cross {
     ($test_name:ident, $f32_name:ident) => {
         #[cfg(all(feature = "native",feature = "cuda"))]
         #[test]
-        #[serial]
+        #[serial_test::serial]
         fn $f32_name() {
             $test_name::<_, _>(crate::tests::get_native_backend(), crate::tests::get_cuda_backend())
         }
