@@ -1,0 +1,24 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: quay.io/spearow/machine-learning-container-fedora-cuda
+    tag: latest
+    max_concurrent_downloads: 5 
+    max_concurrent_uploads: 1
+
+inputs:
+- name: juice
+
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    prepare
+    cargo-override-injection
+    cargo build --tests --no-default-features --features=native,cuda
+    cargo test --no-default-features --features=native,cuda
+  dir: juice/coaster-nn
+
