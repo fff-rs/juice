@@ -128,7 +128,7 @@ mod test {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn use_cuda_memory_for_gemm() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();

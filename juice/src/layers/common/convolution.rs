@@ -328,7 +328,7 @@ mod tests {
     use crate::co::*;
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     #[cfg(feature="cuda")]
     fn correct_shapes() {
         let cfg = ConvolutionConfig {

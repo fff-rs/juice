@@ -106,7 +106,7 @@ mod test {
     use super::super::Context;
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn manual_context_creation() {
         unsafe {
             let handle = API::ffi_create().unwrap();
@@ -115,7 +115,7 @@ mod test {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn default_pointer_mode_is_host() {
         unsafe {
             let context = Context::new().unwrap();
@@ -125,7 +125,7 @@ mod test {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn can_set_pointer_mode() {
         unsafe {
             let context = Context::new().unwrap();

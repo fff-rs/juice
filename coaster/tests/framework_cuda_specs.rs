@@ -8,14 +8,14 @@ mod framework_cuda_spec {
     use crate::co::frameworks::cuda::memory::*;
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn it_works() {
         let frm = Cuda::new();
         println!("{:?}", frm.hardwares());
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn it_creates_context() {
         let frm = Cuda::new();
         let hardwares = &frm.hardwares()[0..1];
@@ -23,7 +23,7 @@ mod framework_cuda_spec {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     #[allow(unused_must_use)]
     fn it_allocates_memory() {
         let vec_a = vec![0isize, 1, 2, -3, 4, 5, 6, 7];
@@ -34,7 +34,7 @@ mod framework_cuda_spec {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     #[allow(unused_must_use)]
     // Create a lot of new CUDA devices, tests for correct dropping of device
     fn it_creates_a_lot_of_devices() {
@@ -45,7 +45,7 @@ mod framework_cuda_spec {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     #[allow(unused_must_use)]
     // Allocate 128mb blocks with dropping them in between, tests for correct freeing of memory
     fn it_allocates_4gb_memory_same_device() {
@@ -58,7 +58,7 @@ mod framework_cuda_spec {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn it_can_synchronize_context() {
         let backend = Backend::<Cuda>::default().unwrap();
         backend.synchronize().unwrap();

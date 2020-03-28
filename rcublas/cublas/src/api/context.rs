@@ -166,13 +166,13 @@ mod test {
     use super::super::PointerMode;
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn create_context() {
         Context::new().unwrap();
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn default_pointer_mode_is_host() {
         let ctx = Context::new().unwrap();
         let mode = ctx.pointer_mode().unwrap();
@@ -180,7 +180,7 @@ mod test {
     }
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn can_set_pointer_mode() {
         let mut context = Context::new().unwrap();
         // set to Device

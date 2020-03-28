@@ -7,7 +7,7 @@ mod tensor_descriptor_spec {
     use crate::cudnn::TensorDescriptor;
 
     #[test]
-    #[serial]
+    #[serial_test::serial]
     fn it_initializes_a_tensor_descriptor() {
         match TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float) {
             Ok(_) => assert!(true),
