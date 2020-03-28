@@ -37,7 +37,7 @@ pub mod numeric_helpers {
     pub use num::traits::*;
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 /// Defines a high-level Plugin Error.
 pub enum Error {
     /// Failure related to `SharedTensor`: use of uninitialized memory,

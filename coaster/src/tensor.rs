@@ -525,7 +525,7 @@ impl<T> SharedTensor<T> {
 }
 
 /// Errors than can occur when synchronizing memory.
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
     /// Error caused by operations with device: allocation, memory synchronization, etc.
     DeviceError(DeviceError),

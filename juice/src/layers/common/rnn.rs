@@ -37,14 +37,15 @@
 //! | NVIDIA GeForce GTX 1070 |
 
 use std::rc::Rc;
+use std::fmt::Debug;
 use std::sync::{Arc, RwLock};
 
 use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
+use conn::RnnConfig as ConnRnnConfig;
 
 use crate::capnp_util::*;
 use crate::co::prelude::*;
 use crate::conn;
-use crate::conn::RnnConfig as connRnnConfig;
 use crate::juice_capnp::rnn_config as capnp_config;
 use crate::layer::*;
 use crate::util::ArcLock;
@@ -52,7 +53,7 @@ use crate::weight::FillerType;
 
 #[derive(Debug, Clone)]
 ///
-pub struct Rnn<B: conn::Rnn<f32>> {
+pub struct Rnn<T> {
     hidden_size: usize,
     num_layers: usize,
     dropout_probability: f32,
@@ -61,12 +62,12 @@ pub struct Rnn<B: conn::Rnn<f32>> {
     input_mode: RnnInputMode,
     direction_mode: DirectionMode,
     workspace: Option<ArcLock<SharedTensor<u8>>>,
-    rnn_config: Option<Rc<B::CRNN>>,
+    rnn_config: Option<Rc<T>>,
 }
 
-impl<B: conn::Rnn<f32>> Rnn<B> {
+impl<T> Rnn<T> {
     /// Create a RNN from a RNNConfig
-    pub fn from_config(config: &RnnConfig) -> Rnn<B> {
+    pub fn from_config(config: &RnnConfig) -> Rnn<T> {
         Rnn {
             hidden_size: config.hidden_size,
             num_layers: config.num_layers,
@@ -81,7 +82,8 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
     }
 }
 
-impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
+/// Cuda Implementation of methods
+impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B::CRNN> {
     impl_ilayer_common!();
 
     fn auto_weight_blobs(&self) -> bool {
@@ -136,12 +138,13 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
             )
             .unwrap();
 
-        let filter_dimensions: TensorDesc = backend.generate_rnn_weight_description(
+        let fil_dims = backend.generate_rnn_weight_description(
             &config,
             sequence_length as i32,
             batch_size as i32,
             input_size as i32,
         ).unwrap();
+        let filter_dimensions: TensorDesc = fil_dims.get(0).unwrap().to_owned();
 
         weights_data[0].write().unwrap().resize(&filter_dimensions).unwrap();
         weights_data[1].write().unwrap().resize(&(1, self.hidden_size)).unwrap();
@@ -165,7 +168,7 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
         backend: Rc<B>,
         workspace: Option<ArcLock<SharedTensor<u8>>>,
     ) -> Option<ArcLock<SharedTensor<u8>>> {
-        let required_size = self.rnn_config.as_ref().unwrap().workspace_size();
+        let required_size = self.rnn_config.clone().unwrap().workspace_size();
         let new_workspace = if workspace.is_none() {
             Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
         } else {
@@ -183,7 +186,7 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
     }
 }
 
-impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
+impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B::CRNN> {
     fn compute_output(
         &self,
         backend: &B,
@@ -195,12 +198,12 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         backend
-            .rnn_forward(input_data[0], output_data[0], rnn_config, weights[0], &mut workspace)
+            .rnn_forward(input_data[0], output_data[0], rnn_config, weights, &mut workspace)
             .unwrap();
     }
 }
 
-impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
+impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B::CRNN> {
     fn compute_input_gradient(
         &self,
         backend: &B,
@@ -219,14 +222,14 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
                 &output_data[0],
                 output_gradients[0],
                 rnn_config,
-                weights_data[0],
+                weights_data,
                 &mut workspace,
             )
             .unwrap();
     }
 }
 
-impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> {
+impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B::CRNN> {
     fn compute_parameters_gradient(
         &self,
         backend: &B,
@@ -240,13 +243,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
 
         backend.rnn_backward_weights(&input_data[0],
                                      &output_data[0],
-                                     &mut parameters_gradients[0],
-                                     rnn_config,
-                                     &mut workspace)
-            .unwrap();
-        backend.rnn_backward_weights(&input_data[0],
-                                     &output_data[0],
-                                     &mut parameters_gradients[1],
+                                     parameters_gradients,
                                      rnn_config,
                                      &mut workspace)
             .unwrap();

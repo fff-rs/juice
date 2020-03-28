@@ -801,7 +801,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         sequence_length: i32,
         batch_size: i32,
         input_size: i32
-    ) -> Result<Vec<usize>, Error> {
+    ) -> Result<Vec<Vec<usize>>, Error> {
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
@@ -826,7 +826,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         }?;
         // TODO: Update for different sizing
         let dim_w: Vec<usize> = vec![weight_size / 4, 1, 1];
-        Ok(dim_w)
+        Ok(vec![dim_w])
     }
 
     fn new_rnn_config(
@@ -909,7 +909,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         src: &SharedTensor<T>,
         output: &mut SharedTensor<T>,
         rnn_config: &Self::CRNN,
-        weight: &SharedTensor<T>,
+        weights: &[&SharedTensor<T>],
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
@@ -922,6 +922,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             <T as DataTypeInfo>::cudnn_data_type(),
         )?;
 
+        let weight = weights[0];
         let weight_desc = weight.cudnn_filter_desc()?;
         let reserve = rnn_config.training_reserve();
 
@@ -960,7 +961,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                          output: &SharedTensor<T>,
                          output_gradient: &SharedTensor<T>,
                          rnn_config: &Self::CRNN,
-                         weight: &SharedTensor<T>,
+                         weights: &[&SharedTensor<T>],
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), Error> {
         let src_dimensions = src.desc().clone();
@@ -972,6 +973,8 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             rnn_config.num_layers,
             <T as DataTypeInfo>::cudnn_data_type(),
         )?;
+
+        let weight = weights[0];
         let weight_desc = weight.cudnn_filter_desc()?;
 
         let _src_mem = read!(src, self);
@@ -1017,7 +1020,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
     fn rnn_backward_weights(&self,
                             src: &SharedTensor<T>,
                             output: &SharedTensor<T>,
-                            filter: &mut SharedTensor<T>,
+                            weight_gradients: &mut [&mut SharedTensor<T>],
                             rnn_config: &Self::CRNN,
                             workspace: &mut SharedTensor<u8>)
                             -> Result<(), Error> {
@@ -1030,6 +1033,8 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             rnn_config.num_layers,
             <T as DataTypeInfo>::cudnn_data_type(),
         )?;
+
+        let filter = &mut weight_gradients[0];
         let filter_desc = filter.cudnn_filter_desc()?;
         let src_mem = read!(src, self);
         let output_mem = read!(output, self);

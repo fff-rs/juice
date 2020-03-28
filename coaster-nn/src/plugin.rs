@@ -304,7 +304,7 @@ pub trait Rnn<F>: NN<F> {
         sequence_length: i32,
         batch_size: i32,
         input_size: i32,
-    ) -> Result<Vec<usize>, crate::co::error::Error>;
+    ) -> Result<Vec<Vec<usize>>, crate::co::error::Error>;
 
     /// Train a LSTM Network and Return Results
     // TODO: Create alternate rnn_forward or alternate path to work with pretrained networks
@@ -315,26 +315,28 @@ pub trait Rnn<F>: NN<F> {
         src: &SharedTensor<F>,
         output: &mut SharedTensor<F>,
         rnn_config: &Self::CRNN,
-        weight: &SharedTensor<F>,
+        weights: &[&SharedTensor<F>],
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), crate::co::error::Error>;
 
     /// Calculates RNN Gradients for Input/Hidden/Cell
+    /// Compute Gradient of Input w.r.t. Output
     fn rnn_backward_data(&self,
                          src: &SharedTensor<F>,
                          src_gradient: &mut SharedTensor<F>,
                          output: &SharedTensor<F>,
                          output_gradient: &SharedTensor<F>,
                          rnn_config: &Self::CRNN,
-                         weight: &SharedTensor<F>,
+                         weights: &[&SharedTensor<F>],
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), crate::co::error::Error>;
 
     /// Calculates RNN Gradients for Weights
+    /// Compute Gradient of Weights w.r.t. Output 
     fn rnn_backward_weights(&self,
                             src: &SharedTensor<F>,
                             output: &SharedTensor<F>,
-                            filter: &mut SharedTensor<F>,
+                            weight_gradients: &mut [&mut SharedTensor<F>],
                             rnn_config: &Self::CRNN,
                             workspace: &mut SharedTensor<u8>)
                             -> Result<(), crate::co::error::Error>;

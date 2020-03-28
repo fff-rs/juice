@@ -1,6 +1,7 @@
 //! Defines the general set of error types in Coaster.
 
 use std::{error, fmt};
+use std::fmt::Display;
 
 #[derive(Debug)]
 /// Defines the set of available Coaster error types.
@@ -15,7 +16,7 @@ pub enum Error {
     Device(crate::device::Error),
 }
 
-impl fmt::Display for Error {
+impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::Framework(ref err) => write!(f, "Framwork error: {}", err),
@@ -34,5 +35,11 @@ impl error::Error for Error {
             Error::Plugin(ref err) => Some(err),
             Error::Device(ref err) => Some(err),
         }
+    }
+}
+
+impl From<std::time::SystemTimeError> for Error {
+    fn from(time_err: std::time::SystemTimeError) -> Self {
+       Error::Device(crate::device::Error::SystemError(format!("{:?}", time_err))) 
     }
 }

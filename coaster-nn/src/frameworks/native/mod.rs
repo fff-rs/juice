@@ -7,6 +7,7 @@
 use std::cmp::PartialOrd;
 use std::fmt::Debug;
 use std::ops::*;
+use std::time::SystemTime;
 
 use rand::{Rng, SeedableRng};
 use rand_hc as hc128;
@@ -73,6 +74,12 @@ fn map2<T, F>(src1: &[T], src2: &[T], dst: &mut [T], f: F) -> Result<(), Error>
         dst[i] = f(src1[i], src2[i]);
     }
     Ok(())
+}
+
+fn get_random_seed() -> Result<u64, Error> {
+    let start = SystemTime::now();
+    let time = start.duration_since(SystemTime::UNIX_EPOCH)?;
+    Ok(time.as_millis() as u64)
 }
 
 
@@ -833,9 +840,29 @@ impl<T> Pooling<T> for Backend<Native>
 
 impl<T> Rnn<T> for Backend<Native>
     where T: Float + Default + Copy + PartialOrd + Bounded {
-    fn new_rnn_config(&self, src: &SharedTensor<T>, dropout_probability: Option<f32>, dropout_seed: Option<u64>, sequence_length: i32, network_mode: RnnNetworkMode, input_mode: RnnInputMode, direction_mode: DirectionMode, algorithm: RnnAlgorithm, hidden_size: i32, num_layers: i32, batch_size: i32) -> Result<Self::CRNN, Error> {
-        // TODO: Implement Config to hold parameters regarding the RNN
-        unimplemented!()
+    fn new_rnn_config(&self,
+	src: &SharedTensor<T>,
+	dropout_probability: Option<f32>,
+	dropout_seed: Option<u64>,
+	sequence_length: i32,
+	network_mode: RnnNetworkMode,
+	input_mode: RnnInputMode,
+	direction_mode: DirectionMode,
+	algorithm: RnnAlgorithm,
+	hidden_size: i32,
+	num_layers: i32,
+	batch_size: i32
+    ) -> Result<Self::CRNN, Error> {
+       let config = Self::CRNN {
+        hidden_size: hidden_size as usize,
+        num_layers: num_layers as usize,
+        dropout_probability: dropout_probability.unwrap_or(0.1f32),
+        dropout_seed: dropout_seed.unwrap_or(0),
+        direction_mode,
+        input_mode,
+        rnn_type: network_mode, 
+       };
+       Ok(config)
     }
 
     fn generate_rnn_weight_description(
@@ -844,9 +871,14 @@ impl<T> Rnn<T> for Backend<Native>
         sequence_length: i32,
         batch_size: i32,
         input_size: i32,
-    ) -> Result<Vec<usize>, Error> {
+    ) -> Result<Vec<Vec<usize>>, Error> {
         // This will end up being the tensor descriptor for the weights associated with the RNN pass
-        unimplemented!()
+        match rnn_config.rnn_type {
+            RnnNetworkMode::ReLU => {
+              unimplemented!();  
+            }
+            _ => unimplemented!()
+        }
     }
 
     fn rnn_forward(
@@ -854,11 +886,18 @@ impl<T> Rnn<T> for Backend<Native>
         src: &SharedTensor<T>,
         output: &mut SharedTensor<T>,
         rnn_config: &Self::CRNN,
-        weight: &SharedTensor<T>,
+        weights: &[&SharedTensor<T>],
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         // TODO: Implement RNN Forward Pass
-        unimplemented!()
+        
+        match rnn_config.rnn_type {
+            RnnNetworkMode::ReLU => {
+                        
+            },
+            _ => unimplemented!(),
+        };
+        Ok(())
     }
 
     fn rnn_backward_data(&self,
@@ -867,7 +906,7 @@ impl<T> Rnn<T> for Backend<Native>
                          output: &SharedTensor<T>,
                          output_gradient: &SharedTensor<T>,
                          rnn_config: &Self::CRNN,
-                         weight: &SharedTensor<T>,
+                         weights: &[&SharedTensor<T>],
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), Error> {
         // TODO: Implement Backward Pass for RNN for the Input
@@ -877,7 +916,7 @@ impl<T> Rnn<T> for Backend<Native>
     fn rnn_backward_weights(&self,
                             src: &SharedTensor<T>,
                             output: &SharedTensor<T>,
-                            filter: &mut SharedTensor<T>,
+                            weight_gradients: &mut [&mut SharedTensor<T>],
                             rnn_config: &Self::CRNN,
                             workspace: &mut SharedTensor<u8>)
                             -> Result<(), Error> {

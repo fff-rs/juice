@@ -48,7 +48,7 @@ pub trait MemorySync {
                 -> Result<(), Error>;
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 /// Defines a generic set of Memory Errors.
 pub enum Error {
     /// No route found for memory transfer between devices
@@ -57,6 +57,8 @@ pub enum Error {
     MemorySyncError,
     /// Framework error at memory allocation.
     MemoryAllocationError,
+    /// Generic System error
+    SystemError(String),
 
     /// Failures related to the Native framework implementation.
     #[cfg(feature = "native")]
@@ -71,17 +73,18 @@ pub enum Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let msg = match *self {
-            Error::NoMemorySyncRoute => "No available memory synchronization route".to_string(),
-            Error::MemorySyncError => "Memory synchronization failed".to_string(),
-            Error::MemoryAllocationError => "Memory allocation failed".to_string(),
+        let msg = match &self {
+            &Error::NoMemorySyncRoute => "No available memory synchronization route".to_string(),
+            &Error::MemorySyncError => "Memory synchronization failed".to_string(),
+            &Error::MemoryAllocationError => "Memory allocation failed".to_string(),
+            &Error::SystemError(s) => s.clone(),
 
             #[cfg(feature = "native")]
-            Error::Native(ref err) => format!("Native error: {}", err.to_string()),
+            &Error::Native(ref err) => format!("Native error: {}", err.to_string()),
             #[cfg(feature = "opencl")]
-            Error::OpenCL(ref err) => format!("OpenCL error: {}", err.to_string()),
+            &Error::OpenCL(ref err) => format!("OpenCL error: {}", err.to_string()),
             #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => format!("Cuda error: {}", err.to_string())
+            &Error::Cuda(ref err) => format!("Cuda error: {}", err.to_string())
         };
 
         write!(f, "{}", msg)
@@ -91,16 +94,15 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
-            Error::NoMemorySyncRoute => None,
-            Error::MemorySyncError => None,
-            Error::MemoryAllocationError => None,
-
             #[cfg(feature = "native")]
             Error::Native(ref err) => Some(err),
             #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => Some(err),
             #[cfg(feature = "cuda")]
             Error::Cuda(ref err) => Some(err),
+
+            // catch-all 
+            _ => None
         }
     }
 }
