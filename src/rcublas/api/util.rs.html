@@ -141,6 +141,9 @@
 <span id="141">141</span>
 <span id="142">142</span>
 <span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> {<span class="ident">API</span>, <span class="ident">Error</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Context</span>;
@@ -250,6 +253,7 @@
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">Context</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">manual_context_creation</span>() {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">ffi_create</span>().<span class="ident">unwrap</span>();
@@ -258,6 +262,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">default_pointer_mode_is_host</span>() {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();
@@ -267,6 +272,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">can_set_pointer_mode</span>() {
         <span class="kw">unsafe</span> {
             <span class="kw">let</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();

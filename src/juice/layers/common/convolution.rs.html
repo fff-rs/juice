@@ -349,6 +349,7 @@
 <span id="349">349</span>
 <span id="350">350</span>
 <span id="351">351</span>
+<span id="352">352</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Convolves the input tensor.</span>
 <span class="doccomment">//!</span>
@@ -680,6 +681,7 @@
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="kw-2">*</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;cuda&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">correct_shapes</span>() {
         <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">ConvolutionConfig</span> {

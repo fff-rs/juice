@@ -190,6 +190,9 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">ffi</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> {<span class="ident">API</span>, <span class="ident">Error</span>};
@@ -359,11 +362,13 @@
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">PointerMode</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">create_context</span>() {
         <span class="ident">Context</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">default_pointer_mode_is_host</span>() {
         <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">Context</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">pointer_mode</span>().<span class="ident">unwrap</span>();
@@ -371,6 +376,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">can_set_pointer_mode</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">Context</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();
         <span class="comment">// set to Device</span>

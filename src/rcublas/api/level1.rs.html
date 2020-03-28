@@ -525,6 +525,13 @@
 <span id="525">525</span>
 <span id="526">526</span>
 <span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> {<span class="ident">API</span>, <span class="ident">Error</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Context</span>;
@@ -824,6 +831,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_asum</span>() {
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
@@ -857,6 +865,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_axpy</span>() {
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
@@ -893,6 +902,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_copy</span>() {
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
@@ -924,6 +934,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_dot</span>() {
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
@@ -960,6 +971,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_nrm2</span>() {
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
@@ -991,6 +1003,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_scal</span>() {
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
@@ -1021,6 +1034,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_swap</span>() {
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
