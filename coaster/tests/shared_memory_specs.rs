@@ -25,6 +25,7 @@ mod shared_memory_spec {
     }
 
     #[test]
+    #[serial]
     #[cfg(feature = "cuda")]
     fn it_creates_new_shared_memory_for_cuda() {
         let ntv = Cuda::new();
@@ -61,6 +62,7 @@ mod shared_memory_spec {
     }
 
     #[test]
+    #[serial]
     #[cfg(feature = "cuda")]
     fn it_syncs_from_native_to_cuda_and_back() {
         let cu = Cuda::new();

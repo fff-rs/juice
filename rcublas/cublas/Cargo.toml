@@ -20,6 +20,7 @@ clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]
 coaster = { path = "../../coaster", default-features = false, features = ["cuda", "native"] }
+serial_test = "0.4"
 
 [features]
 dev = []

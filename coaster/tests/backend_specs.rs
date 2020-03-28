@@ -33,6 +33,7 @@ mod backend_spec {
         use crate::co::*;
 
         #[test]
+        #[serial]
         fn it_can_create_default_backend() {
             assert!(Backend::<Cuda>::default().is_ok());
         }

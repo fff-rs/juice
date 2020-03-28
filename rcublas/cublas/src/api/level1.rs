@@ -296,6 +296,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     fn use_cuda_memory_for_asum() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();
@@ -329,6 +330,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     fn use_cuda_memory_for_axpy() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();
@@ -365,6 +367,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     fn use_cuda_memory_for_copy() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();
@@ -396,6 +399,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     fn use_cuda_memory_for_dot() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();
@@ -432,6 +436,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     fn use_cuda_memory_for_nrm2() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();
@@ -463,6 +468,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     fn use_cuda_memory_for_scal() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();
@@ -493,6 +499,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     fn use_cuda_memory_for_swap() {
         let native = get_native_backend();
         let cuda = get_cuda_backend();
