@@ -21,7 +21,7 @@ Access is granted only to very few mortal souls part of the `crashtesters` `dev`
 For those enabled, please use from a `juice` git checkout in this sub directory:
 
 ```sh
-fly -t spearow login -n crashtesters --concourse-url https://ci.spearow.io # make sure you are logged in
+fly -t spearow login -n juice-crashtesters --concourse-url https://ci.spearow.io # make sure you are logged in
 fly -t spearow execute -c ./test.yml --tag framework:cuda --input juice=.. --inputs-from juice-crashtest/crashtest
 ```
 
@@ -33,6 +33,14 @@ For this to work please keep a few things in mind:
 * do not create artifacts
 
 Full details on how to tweak `test.yml`, checkout [concourse docs regarding running one-off tasks](https://concourse-ci.org/tasks.html#running-tasks)
+
+### Publicly observable
+
+Keep in mind that the test execution is public to the group and/or the interwebs.
+Don't push any secrets there :)
+
+[![Screenshot of Job Task](./concourse-crashtest-job.png)](https://ci.spearow.io/teams/juice-crashtesters/pipelines/crashtest)
+
 
 ### Sample output
 
