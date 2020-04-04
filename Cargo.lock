@@ -436,6 +436,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ctor"
+version = "0.1.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47c5e5ac752e18207b12e16b10631ae5f7f68f8805f335f9b817ead83d9ffce1"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "deflate"
 version = "0.7.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1536,9 +1546,12 @@ version = "0.4.0"
 dependencies = [
  "clippy",
  "coaster",
+ "ctor",
+ "lazy_static",
  "libc",
  "rcublas-sys",
  "serial_test",
+ "spin",
 ]
 
 [[package]]

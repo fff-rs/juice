@@ -3,15 +3,41 @@ use super::Context;
 use super::PointerMode;
 use ffi::*;
 use std::ptr;
+use spin;
+use std::collections::HashSet;
+use lazy_static::lazy_static;
+use ctor::dtor;
+use std::convert::AsRef;
+
+lazy_static! {
+    static ref TRACKER: std::sync::RwLock<HashSet<cublasHandle_t>> = std::sync::RwLock::new(HashSet::with_capacity(3));
+}
 
 impl API {
+
+    fn track(handle: cublasHandle_t) {
+        let guard = TRACKER.as_ref().write();
+        let _ = guard.insert(handle);
+    }
+
+    #[dtor]
+    fn shutdown() {
+        let guard = TRACKER.as_ref().read();
+        for handle in guard.into_iter() {
+            API::ffi_destroy(handle).unwrap();
+        }
+    }
+
     /// Create a new cuBLAS context, allocating resources on the host and the GPU.
     ///
     /// The returned Context must be provided to future cuBLAS calls.
     /// Creating contexts all the time can lead to performance problems.
     /// Generally one Context per GPU device and configuration is recommended.
     pub fn create() -> Result<Context, Error> {
-        Ok(Context::from_c(unsafe { API::ffi_create() }?))
+
+        let ptr = unsafe { API::ffi_create() }?;
+        Self::track(ptr);
+        Ok(Context::from_c(ptr))
     }
 
     /// Destroys the cuBLAS context, freeing its resources.
