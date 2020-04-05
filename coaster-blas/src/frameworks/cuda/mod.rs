@@ -7,17 +7,18 @@ use coaster::backend::Backend;
 use coaster::frameworks::cuda::Cuda;
 use coaster::plugin::Error as PluginError;
 use coaster::tensor::{ITensorDesc, SharedTensor};
+use std::convert::AsRef;
 
 #[macro_use]
 pub mod helper;
 
 lazy_static! {
-    static ref CONTEXT: cublas::Context = {
+    static ref CONTEXT: Arc<cublas::Context> = {
         let mut context = cublas::Context::new().unwrap();
         context
             .set_pointer_mode(cublas::api::PointerMode::Device)
             .unwrap();
-        context
+        Arc::new(context)
     };
 }
 

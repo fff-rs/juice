@@ -12,7 +12,8 @@ impl API {
     }
 
     unsafe fn ffi_init() -> Result<(), Error> {
-        match cuInit(0u32) {
+        const FLAGS : u32 = 0u32;
+        match cuInit(FLAGS) {
             CUresult::CUDA_SUCCESS => Ok(()),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
             CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidDevice("Invalid device.")),
