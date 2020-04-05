@@ -1,7 +1,7 @@
-use {API, Error};
+use crate::{API, Error};
 use super::Context;
 use super::Operation;
-use ffi::*;
+use crate::ffi::*;
 
 impl API {
     /// Performs a general matrix-matrix multiplication.
@@ -94,15 +94,15 @@ impl API {
 
 #[cfg(test)]
 mod test {
-    use ffi::*;
-    use API;
-    use api::context::Context;
-    use api::enums::PointerMode;
-    use co::backend::{Backend, IBackend};
-    use co::framework::IFramework;
-    use co::frameworks::{Cuda, Native};
-    use co::frameworks::native::flatbox::FlatBox;
-    use co::tensor::SharedTensor;
+    use crate::ffi::*;
+    use crate::API;
+    use crate::api::context::Context;
+    use crate::api::enums::PointerMode;
+    use crate::co::backend::{Backend, IBackend};
+    use crate::co::framework::IFramework;
+    use crate::co::frameworks::{Cuda, Native};
+    use crate::co::frameworks::native::flatbox::FlatBox;
+    use crate::co::tensor::SharedTensor;
 
     fn get_native_backend() -> Backend<Native> {
         Backend::<Native>::default().unwrap()

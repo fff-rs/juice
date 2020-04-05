@@ -1,5 +1,5 @@
-use ffi::*;
-use {API, Error};
+use crate::ffi::*;
+use crate::{API, Error};
 use super::{Operation, PointerMode};
 
 #[derive(Debug, Clone)]

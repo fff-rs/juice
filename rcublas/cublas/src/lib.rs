@@ -1,17 +1,9 @@
 #![allow(dead_code)]
 
-extern crate rcublas_sys as ffi;
+pub(crate) use rcublas_sys as ffi;
 
 #[cfg(test)]
-extern crate coaster as co;
-
-#[macro_use]
-extern crate lazy_static;
-
-extern crate spin;
-
-#[macro_use]
-extern crate ctor;
+use coaster as co;
 
 pub use api::Context;
 pub use error::Error;
