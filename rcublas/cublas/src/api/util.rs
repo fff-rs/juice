@@ -1,33 +1,44 @@
-use {API, Error};
+use crate::ffi::*;
+use crate::{API, Error};
 use super::Context;
 use super::PointerMode;
-use ffi::*;
 use std::ptr;
-use spin;
 use std::collections::HashSet;
 use lazy_static::lazy_static;
 use ctor::dtor;
 use std::convert::AsRef;
+use std::sync::{RwLock,Arc};
 
 lazy_static! {
-    static ref TRACKER: std::sync::RwLock<HashSet<cublasHandle_t>> = std::sync::RwLock::new(HashSet::with_capacity(3));
+    static ref TRACKER: Arc<RwLock<HashSet<u64>>> = Arc::new(RwLock::new(HashSet::with_capacity(3)));
+}
+
+fn track(handle: cublasHandle_t) {
+    let mut guard = TRACKER.as_ref().write().unwrap();
+    unsafe {
+        let _ = guard.insert(std::mem::transmute(handle));
+    }
+}
+
+
+fn untrack(handle: cublasHandle_t) {
+    let mut guard = TRACKER.as_ref().write().unwrap();
+    unsafe {
+        let _ = guard.remove(std::mem::transmute(handle));
+    }
+}
+
+#[dtor]
+fn shutdown() {
+    unsafe {
+        let guard = TRACKER.as_ref().read().unwrap();
+        for handle in guard.iter() {
+            API::ffi_destroy(std::mem::transmute(*handle)).unwrap();
+        }
+    }
 }
 
 impl API {
-
-    fn track(handle: cublasHandle_t) {
-        let guard = TRACKER.as_ref().write();
-        let _ = guard.insert(handle);
-    }
-
-    #[dtor]
-    fn shutdown() {
-        let guard = TRACKER.as_ref().read();
-        for handle in guard.into_iter() {
-            API::ffi_destroy(handle).unwrap();
-        }
-    }
-
     /// Create a new cuBLAS context, allocating resources on the host and the GPU.
     ///
     /// The returned Context must be provided to future cuBLAS calls.
@@ -35,9 +46,9 @@ impl API {
     /// Generally one Context per GPU device and configuration is recommended.
     pub fn create() -> Result<Context, Error> {
 
-        let ptr = unsafe { API::ffi_create() }?;
-        Self::track(ptr);
-        Ok(Context::from_c(ptr))
+        let handle = unsafe { API::ffi_create() }?;
+        track(handle);
+        Ok(Context::from_c(handle))
     }
 
     /// Destroys the cuBLAS context, freeing its resources.
@@ -50,7 +61,9 @@ impl API {
     /// This should be called at the end of using cuBLAS and should ideally be handled by drop
     /// exclusively, and never called by the user.
     pub unsafe fn destroy(context: &mut Context) -> Result<(), Error> {
-        Ok(API::ffi_destroy(*context.id_c())?)
+        let handle = *context.id_c();
+        untrack(handle);
+        Ok(API::ffi_destroy(handle)?)
     }
 
     /// Retrieve the pointer mode for a given cuBLAS context.

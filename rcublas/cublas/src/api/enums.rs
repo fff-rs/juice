@@ -1,4 +1,4 @@
-use ffi::*;
+use crate::ffi::*;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PointerMode {

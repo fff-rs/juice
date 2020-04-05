@@ -1,6 +1,6 @@
-use {API, Error};
+use crate::{API, Error};
 use super::Context;
-use ffi::*;
+use crate::ffi::*;
 
 impl API {
     // TODO: cublasIsamax_v2 x 4
