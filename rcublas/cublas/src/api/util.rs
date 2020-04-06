@@ -28,8 +28,7 @@ fn untrack(handle: cublasHandle_t) {
     }
 }
 
-#[dtor]
-fn shutdown() {
+fn cleanup() {
     unsafe {
         let guard = TRACKER.as_ref().read().unwrap();
         for handle in guard.iter() {
