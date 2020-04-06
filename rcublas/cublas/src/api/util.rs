@@ -140,9 +140,9 @@ impl API {
 
 #[cfg(test)]
 mod test {
-    use ffi::cublasPointerMode_t;
-    use API;
-    use super::super::Context;
+    use crate::ffi::cublasPointerMode_t;
+    use crate::API;
+    use crate::Context;
 
     #[test]
     #[serial_test::serial]
