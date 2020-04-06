@@ -1,12 +1,10 @@
 platform: linux
 
 image_resource:
-  type: docker-image
+  type: registry-image
   source:
     repository: quay.io/spearow/machine-learning-container-fedora-cuda
     tag: latest
-    max_concurrent_downloads: 5 
-    max_concurrent_uploads: 1
 
 inputs:
 - name: juice
