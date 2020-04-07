@@ -1,7 +1,5 @@
-extern crate bindgen;
-extern crate pkg_config;
+use pkg_config;
 use std::env;
-use std::path::PathBuf;
 
 fn main() {
     let lib_dir = env::var("CUDNN_LIB_DIR").ok();
@@ -56,13 +54,19 @@ fn main() {
         println!("cargo:include={}", include_dir);
     }
 
-    if false {
+    println!("cargo:rerun-if-changed=build.rs");
+
+    #[cfg(feature="generate")]
+    {
+        println!("cargo:warning=Running bindgen(cudnn-sys), make sure to have all required host libs installed!");
+
+        use std::path::PathBuf;
+
+        let include_dir = include_dir
+            .unwrap_or_else(|| String::from("/usr/include/cuda"));
+
         let bindings = bindgen::Builder::default()
-            // Do not generate unstable Rust code that
-            // requires a nightly rustc and enabling
-            // unstable features.
             .rust_target(bindgen::RustTarget::Stable_1_40)
-            .blacklist_type("max_align_t") // https://github.com/servo/rust-bindgen/issues/550
             .raw_line(
                 r"
 //! Defines the FFI for CUDA cuDNN.
@@ -70,32 +74,22 @@ fn main() {
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
-
             ",
             )
             .ctypes_prefix("::libc")
-            .clang_arg("-I")
-            .clang_arg(
-                include_dir
-                    .unwrap_or_else(|| String::from("/usr/include/cuda"))
-                    .as_str(),
-            )
-            // The input header we would like to generate
-            // bindings for.
-            .header("wrapper.h")
-            // Consistency with old behaviour.
             .size_t_is_usize(true)
-            // Make some of the enums readable for Rust
+            .clang_arg("-I")
+            .clang_arg(include_dir)
+            .header("wrapper.h")
             .rustified_enum("cudnn[A-Za-z]+_t")
             .rustified_enum("cudaError")
-            // Finish the builder and generate the bindings.
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks))
             .generate()
-            // Unwrap the Result and panic on failure.
             .expect("Unable to generate bindings");
 
-        let out_path = PathBuf::from("src");
+        let out_path = PathBuf::from("src").join("generated.rs");
         bindings
-            .write_to_file(out_path.join("generated.rs"))
+            .write_to_file(out_path)
             .expect("Couldn't write bindings!");
     }
 }

@@ -1,3 +1,5 @@
 mod generated;
 
-pub use generated::*;
+pub use crate::generated::*;
+
+unsafe impl std::marker::Send for Struct_cublasContext {}

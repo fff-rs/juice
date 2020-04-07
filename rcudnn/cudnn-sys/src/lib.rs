@@ -1,8 +1,7 @@
-extern crate libc;
-
 mod generated;
 
 pub use crate::generated::*;
+
 
 impl Default for cudnnConvolutionFwdAlgoPerf_t {
     fn default() -> Self {
