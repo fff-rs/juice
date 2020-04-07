@@ -1,16 +1,16 @@
 [package]
-name            = "rcudnn-sys"
-description     = "FFI bindings to cuDNN"
-version         = "0.2.0"
-authors         = ["Bernhard Schuster <bernhard@ahoi.io>",
-                   "Maximilian Goisser <max@autumnai.com>"]
-
-repository      = "https://github.com/spearow/juice"
-homepage        = "https://github.com/spearow/juice/tree/master/rcudnn"
-
-keywords        = ["cudnn", "cuda", "nvidia", "sys"]
-license         = "MIT OR Apache-2.0"
-
+name = "rcudnn-sys"
+description = "FFI bindings to cuDNN"
+version = "0.3.0"
+edition = "2018"
+authors = [
+    "Bernhard Schuster <bernhard@ahoi.io>",
+    "Maximilian Goisser <max@autumnai.com>"
+]
+repository = "https://github.com/spearow/juice"
+homepage = "https://github.com/spearow/juice/tree/master/rcudnn/cublas-sys"
+keywords = ["cudnn", "cuda", "nvidia", "sys"]
+license = "MIT OR Apache-2.0"
 links = "cudnn"
 build = "build.rs"
 
@@ -19,4 +19,8 @@ libc = "0.2"
 
 [build-dependencies]
 pkg-config = "0.3"
-bindgen = "0.53"
+bindgen = { version = "0.53", optional = true }
+
+[features]
+default = ["generate"]
+generate = ["bindgen"]

@@ -1480,7 +1480,7 @@ dependencies = [
 
 [[package]]
 name = "rcublas-sys"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "bindgen",
  "libc",
@@ -1501,7 +1501,7 @@ dependencies = [
 
 [[package]]
 name = "rcudnn-sys"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "bindgen",
  "libc",
