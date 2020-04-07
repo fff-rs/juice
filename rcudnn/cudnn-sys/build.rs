@@ -26,7 +26,6 @@ fn main() {
                 let paths = env::join_paths(info.include_paths).unwrap();
                 println!("cargo:include={}", paths.to_str().unwrap());
             }
-            return;
         }
     }
 
@@ -81,9 +80,13 @@ fn main() {
             .clang_arg("-I")
             .clang_arg(include_dir)
             .header("wrapper.h")
-            .rustified_enum("cudnn[A-Za-z]+_t")
-            .rustified_enum("cudaError")
+            .rustified_non_exhaustive_enum("cudnn[A-Za-z]+_t")
+            .rustified_non_exhaustive_enum("cuda.*")
+            .whitelist_function("cu.*")
+            .whitelist_var("CUDNN.*")
+            .whitelist_type("[Cc][Uu].*")
             .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+            .rustfmt_bindings(true)
             .generate()
             .expect("Unable to generate bindings");
 
