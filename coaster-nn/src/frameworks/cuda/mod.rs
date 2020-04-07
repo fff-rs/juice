@@ -168,7 +168,7 @@ impl ConvForwardAlgo {
             CUDNN_CONVOLUTION_FWD_ALGO_DIRECT => Direct,
             CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD => Winograd,
             CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED => WinogradNonFused,
-            _ => unimplemented!(),
+            _ => unreachable!(),
         }
     }
 
@@ -667,7 +667,8 @@ impl RnnInputMode {
     fn from_cudnn(input: cudnnRNNInputMode_t) -> Self {
         match input {
             cudnnRNNInputMode_t::CUDNN_LINEAR_INPUT => RnnInputMode::LinearInput,
-            cudnnRNNInputMode_t::CUDNN_SKIP_INPUT => RnnInputMode::SkipInput
+            cudnnRNNInputMode_t::CUDNN_SKIP_INPUT => RnnInputMode::SkipInput,
+            _ => unreachable!(),
         }
     }
 }
@@ -683,7 +684,8 @@ impl DirectionMode {
     fn from_cudnn(direction: cudnnDirectionMode_t) -> Self {
         match direction {
             cudnnDirectionMode_t::CUDNN_BIDIRECTIONAL => DirectionMode::BiDirectional,
-            cudnnDirectionMode_t::CUDNN_UNIDIRECTIONAL => DirectionMode::UniDirectional
+            cudnnDirectionMode_t::CUDNN_UNIDIRECTIONAL => DirectionMode::UniDirectional,
+            _ => unreachable!()
         }
     }
 }
@@ -703,7 +705,8 @@ impl RnnNetworkMode {
             cudnnRNNMode_t::CUDNN_RNN_RELU => RnnNetworkMode::ReLU,
             cudnnRNNMode_t::CUDNN_RNN_TANH => RnnNetworkMode::Tanh,
             cudnnRNNMode_t::CUDNN_LSTM => RnnNetworkMode::LSTM,
-            cudnnRNNMode_t::CUDNN_GRU => RnnNetworkMode::GRU
+            cudnnRNNMode_t::CUDNN_GRU => RnnNetworkMode::GRU,
+            _ => unreachable!(),
         }
     }
 }
@@ -723,7 +726,8 @@ impl RnnAlgorithm {
             cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_DYNAMIC => RnnAlgorithm::PersistDynamic,
             cudnnRNNAlgo_t::CUDNN_RNN_ALGO_PERSIST_STATIC => RnnAlgorithm::PersistStatic,
             cudnnRNNAlgo_t::CUDNN_RNN_ALGO_STANDARD => RnnAlgorithm::Standard,
-            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_COUNT => RnnAlgorithm::Count
+            cudnnRNNAlgo_t::CUDNN_RNN_ALGO_COUNT => RnnAlgorithm::Count,
+            _ => unreachable!(),
         }
     }
 }
@@ -741,7 +745,8 @@ impl MathType {
         match math_type {
             cudnnMathType_t::CUDNN_DEFAULT_MATH => MathType::Default,
             cudnnMathType_t::CUDNN_TENSOR_OP_MATH => MathType::TensorOPMath,
-            cudnnMathType_t::CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION => MathType::TensorOPMathAllowConversion
+            cudnnMathType_t::CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION => MathType::TensorOPMathAllowConversion,
+            _ => unreachable!(),
         }
     }
 }
@@ -757,7 +762,8 @@ impl RnnPaddingMode {
     fn from_cudnn(padding_type: cudnnRNNPaddingMode_t) -> RnnPaddingMode {
         match padding_type {
             cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_ENABLED => RnnPaddingMode::Enabled,
-            cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_DISABLED => RnnPaddingMode::Disabled
+            cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_DISABLED => RnnPaddingMode::Disabled,
+            _ => unreachable!(),
         }
     }
 }
