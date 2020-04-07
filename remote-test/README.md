@@ -22,7 +22,7 @@ For those enabled, please use from a `juice` git checkout in this sub directory:
 
 ```sh
 fly -t spearow login -n juice-crashtesters --concourse-url https://ci.spearow.io # make sure you are logged in
-fly -t spearow execute -c ./test.yml --tag framework:cuda --input juice=.. --inputs-from juice-crashtest/crashtest
+fly -t spearow execute -c ./test.yml --input juice=. --inputs-from crashtest/test-juice
 ```
 
 For this to work please keep a few things in mind:
@@ -45,7 +45,7 @@ Don't push any secrets there :)
 ### Sample output
 
 ```log
-fly -t spearow execute -c ./test.yml --tag framework:cuda --input juice=. --inputs-from juice-crashtest/crashtest
+# fly -t spearow execute -c ./remote-test/test.yml --input juice=. --inputs-from crashtest/test-juice
 uploading juice done
 executing build 5210 at https://ci.spearow.io/builds/5210 
 initializing
