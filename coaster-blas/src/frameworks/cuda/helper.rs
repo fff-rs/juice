@@ -51,9 +51,11 @@ macro_rules! iblas_asum_for_cuda {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let r_mem = write_only!(result, self);
+
+            let ctx = CONTEXT.lock();
             exec!(
                 asum,
-                CONTEXT.as_ref().asum(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
+                ctx.asum(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
             )
         }
     };
@@ -73,9 +75,11 @@ macro_rules! iblas_axpy_for_cuda {
             let a_mem = read!(a, self);
             let x_mem = read!(x, self);
             let y_mem = read_write!(y, self);
+
+            let ctx = CONTEXT.lock();
             exec!(
                 axpy,
-                CONTEXT.as_ref().axpy(
+                ctx.axpy(
                     trans!(a_mem, $t),
                     trans!(x_mem, $t),
                     trans!(y_mem, $t),
@@ -100,9 +104,11 @@ macro_rules! iblas_copy_for_cuda {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let y_mem = write_only!(y, self);
+
+            let ctx = CONTEXT.lock();
             exec!(
                 copy,
-                CONTEXT.as_ref().copy(trans!(x_mem, $t), trans!(y_mem, $t), n, None, None)
+                ctx.copy(trans!(x_mem, $t), trans!(y_mem, $t), n, None, None)
             )
         }
     };
@@ -122,9 +128,11 @@ macro_rules! iblas_dot_for_cuda {
             let x_mem = read!(x, self);
             let y_mem = read!(y, self);
             let r_mem = write_only!(result, self);
+
+            let ctx = CONTEXT.lock();
             exec!(
                 dot,
-                CONTEXT.as_ref().dot(
+                ctx.dot(
                     trans!(x_mem, $t),
                     trans!(y_mem, $t),
                     trans!(r_mem, $t),
@@ -149,9 +157,11 @@ macro_rules! iblas_nrm2_for_cuda {
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let r_mem = write_only!(result, self);
+
+            let ctx = CONTEXT.lock();
             exec!(
                 nrm2,
-                CONTEXT.as_ref().nrm2(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
+                ctx.nrm2(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
             )
         }
     };
@@ -169,9 +179,11 @@ macro_rules! iblas_scal_for_cuda {
             let n = x.desc().size() as i32;
             let a_mem = read!(a, self);
             let x_mem = read_write!(x, self);
+
+            let ctx = CONTEXT.lock();
             exec!(
                 scal,
-                CONTEXT.as_ref().scal(trans!(a_mem, $t), trans!(x_mem, $t), n, None)
+                ctx.scal(trans!(a_mem, $t), trans!(x_mem, $t), n, None)
             )
         }
     };
@@ -189,9 +201,11 @@ macro_rules! iblas_swap_for_cuda {
             let n = x.desc().size() as i32;
             let x_mem = read_write!(x, self);
             let y_mem = read_write!(y, self);
+
+            let ctx = CONTEXT.lock();
             exec!(
                 swap,
-                CONTEXT.as_ref().swap(trans!(x_mem, $t), trans!(y_mem, $t), n, None, None)
+                ctx.swap(trans!(x_mem, $t), trans!(y_mem, $t), n, None, None)
             )
         }
     };
@@ -254,9 +268,11 @@ macro_rules! iblas_gemm_for_cuda {
             let lda = a_1;
             let ldb = b_1;
             let ldc = c_1;
+
+            let ctx = CONTEXT.lock();
             exec!(
                 gemm,
-                CONTEXT.as_ref().gemm(
+                ctx.gemm(
                     ::cublas::api::Operation::from(bt),
                     ::cublas::api::Operation::from(at),
                     n,
