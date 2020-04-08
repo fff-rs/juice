@@ -2,40 +2,73 @@ use crate::ffi::*;
 use crate::{API, Error};
 use super::Context;
 use super::PointerMode;
-use std::ptr;
-use std::collections::HashSet;
 use lazy_static::lazy_static;
-use ctor::dtor;
+use log::{debug,warn,info};
+use std::collections::HashSet;
 use std::convert::AsRef;
-use std::sync::{RwLock,Arc};
+use std::convert::TryFrom;
+use std::ptr;
+use std::ptr::NonNull;
+use std::sync::{Mutex,Arc};
+
+
+
+// TODO:
+// extract the cookie tracking into a separate crate
+// which provides a better API than this
+//
+// usecases:
+//  * cudaMalloc / cudaFree
+//  * cublasContext_new / _destroy
+//  * cudnnContext_new / _destroy
+#[derive(Hash,Eq,PartialEq)]
+struct Cookie(NonNull<cublasContext>);
+
+unsafe impl std::marker::Send for Cookie { }
+
+impl Cookie {
+    fn as_ptr(&self) -> *mut cublasContext {
+        self.0.as_ptr()
+    }
+}
+
+impl TryFrom<cublasHandle_t> for Cookie {
+    type Error = Error;
+    fn try_from(handle: *mut cublasContext) -> std::result::Result<Self,Self::Error> {
+        if let Some(nn) = NonNull::new(handle) {
+            Ok(Cookie(nn))
+        } else {
+            Err(Error::Unknown("cublasHandle is a nullptr"))
+        }
+    }
+}
 
 lazy_static! {
-    static ref TRACKER: Arc<RwLock<HashSet<std::ptr::NonNull<cublasHandle_t>>>> =  {
-        Arc::new(RwLock::new(HashSet::with_capacity(3)))
+    static ref TRACKER: Arc<Mutex<HashSet<Cookie>>> =  {
+        Arc::new(Mutex::new(HashSet::with_capacity(3)))
     };
-};
+}
+
 
 fn track(handle: cublasHandle_t) {
-    let mut guard = TRACKER.as_ref().write().unwrap();
-    unsafe {
-        let _ = guard.insert(std::mem::transmute(handle));
-    }
+    let mut guard = TRACKER.as_ref().lock().unwrap();
+    let _ = guard.insert(Cookie::try_from(handle as *mut cublasContext).unwrap());
     debug!("Added handle {:?}, total of {}", handle, guard.len());
 }
 
 
 fn untrack(handle: cublasHandle_t) {
-    let mut guard = TRACKER.as_ref().write().unwrap();
-    unsafe {
-        let _ = guard.remove(std::mem::transmute(handle));
-    }
+    let mut guard = TRACKER.as_ref().lock().unwrap();
+    debug!("Removed handle {:?}, total of {}", handle, guard.len());
+    let k = Cookie::try_from(handle as *mut cublasContext).unwrap();
+    let _ = guard.remove(&k);
 }
 
 fn cleanup() {
-    unsafe {
-        let guard = TRACKER.as_ref().read().unwrap();
-        for handle in guard.iter() {
-            API::ffi_destroy(std::mem::transmute(*handle)).unwrap();
+    let guard = TRACKER.lock().unwrap();
+    for handle in guard.iter() {
+        unsafe {
+            API::ffi_destroy(handle.as_ptr()).unwrap();
         }
     }
 }
