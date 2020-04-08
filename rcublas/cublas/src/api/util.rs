@@ -10,14 +10,17 @@ use std::convert::AsRef;
 use std::sync::{RwLock,Arc};
 
 lazy_static! {
-    static ref TRACKER: Arc<RwLock<HashSet<u64>>> = Arc::new(RwLock::new(HashSet::with_capacity(3)));
-}
+    static ref TRACKER: Arc<RwLock<HashSet<std::ptr::NonNull<cublasHandle_t>>>> =  {
+        Arc::new(RwLock::new(HashSet::with_capacity(3)))
+    };
+};
 
 fn track(handle: cublasHandle_t) {
     let mut guard = TRACKER.as_ref().write().unwrap();
     unsafe {
         let _ = guard.insert(std::mem::transmute(handle));
     }
+    debug!("Added handle {:?}, total of {}", handle, guard.len());
 }
 
 
