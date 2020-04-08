@@ -1,17 +1,17 @@
 [package]
 name = "rcublas"
 description = "safe Rust wrapper for CUDA's cuBLAS"
-version = "0.4.0"
-authors = ["Bernhard Schuster <bernhard@ahoi.io>",
-	   "Maximilian Goisser <maximilian.goisser@autumnai.com>"]
-
-homepage      = "https://github.com/spearow/juice/tree/masster/rust-cublas"
-repository    = "https://github.com/spearow/juice"
-readme        = "../README.md"
-
-keywords        = ["cublas", "cuda", "nvidia", "blas"]
-license         = "MIT OR Apache-2.0"
-edition			= "2018"
+version = "0.4.1"
+edition = "2018"
+authors = [
+	"Bernhard Schuster <bernhard@ahoi.io>",
+	"Maximilian Goisser <maximilian.goisser@autumnai.com>"
+]
+homepage = "https://github.com/spearow/juice/tree/masster/rust-cublas"
+repository = "https://github.com/spearow/juice"
+readme = "../README.md"
+keywords = ["cublas", "cuda", "nvidia", "blas"]
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 libc = "0.2"
@@ -19,11 +19,13 @@ rcublas-sys = { version = "0.2", path = "../cublas-sys" }
 ctor = "0.1"
 spin = "0.5"
 lazy_static = "1"
-
 clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]
-coaster = { path = "../../coaster", default-features = false, features = ["cuda", "native"] }
+coaster = { path = "../../coaster", default-features = false, features = [
+	"cuda",
+	"native"
+] }
 serial_test = "0.4"
 
 [features]
