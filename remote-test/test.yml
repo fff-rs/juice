@@ -9,6 +9,9 @@ image_resource:
 inputs:
 - name: juice
 
+caches:
+- path: cargo_home
+
 run:
   path: sh
   args:
@@ -16,7 +19,15 @@ run:
   - |
     prepare
     cargo-override-injection
-    cargo build --tests --no-default-features --features=native,cuda
-    cargo test --no-default-features --features=native,cuda
-  dir: juice/coaster-nn
+    export RUST_LOG=rcublas=debug,rcublas-sys=debug
+    export DIRX="rcublas/cublas rcublas/cublas-sys"
+    for D in $DIRX; do
+      echo ">>>>> $D"
+      cd $D
+      # do not generate with bindgen
+      cargo test --no-default-features -- --nocapture
+      cd -
+      echo "<<<<< $D"
+    done
+  dir: juice
 
