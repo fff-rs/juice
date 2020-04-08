@@ -282,6 +282,7 @@ dependencies = [
  "rcublas 0.3.0",
  "rust-blas",
  "serial_test",
+ "spin",
 ]
 
 [[package]]
