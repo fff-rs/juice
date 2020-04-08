@@ -8,7 +8,12 @@ pub struct Context {
     id: cublasHandle_t,
 }
 
-unsafe impl ::std::marker::Sync for Context {}
+// would yield a huge perf gain by avoiding Arc<Mutex<..>>
+// but we want to play it safe for the time being
+// unsafe impl ::std::marker::Sync for Context {}
+
+// required for Arc<Mutex<..>> only
+unsafe impl ::std::marker::Send for Context {}
 
 impl Drop for Context {
     #[allow(unused_must_use)]
