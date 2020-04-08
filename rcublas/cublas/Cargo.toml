@@ -19,6 +19,7 @@ rcublas-sys = { version = "0.3", path = "../cublas-sys" }
 ctor = "0.1"
 spin = "0.5"
 lazy_static = "1"
+log = "0.4"
 clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]

@@ -1462,6 +1462,7 @@ dependencies = [
  "coaster",
  "lazy_static",
  "libc",
+ "log",
  "rcublas-sys",
  "serial_test",
  "spin",
