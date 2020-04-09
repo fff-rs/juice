@@ -169,24 +169,35 @@ impl Context {
 mod test {
     use super::*;
     use super::super::PointerMode;
+    use crate::chore::*;
 
     #[test]
     #[serial_test::serial]
     fn create_context() {
+        test_setup();
+
         Context::new().unwrap();
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn default_pointer_mode_is_host() {
+        test_setup();
+
         let ctx = Context::new().unwrap();
         let mode = ctx.pointer_mode().unwrap();
         assert_eq!(PointerMode::Host, mode);
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn can_set_pointer_mode() {
+        test_setup();
+
         let mut context = Context::new().unwrap();
         // set to Device
         context.set_pointer_mode(PointerMode::Device).unwrap();
@@ -196,5 +207,7 @@ mod test {
         context.set_pointer_mode(PointerMode::Host).unwrap();
         let mode2 = context.pointer_mode().unwrap();
         assert_eq!(PointerMode::Host, mode2);
+
+        test_teardown();
     }
 }

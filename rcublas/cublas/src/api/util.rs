@@ -3,7 +3,7 @@ use crate::{API, Error};
 use super::Context;
 use super::PointerMode;
 use lazy_static::lazy_static;
-use log::{debug,warn,info};
+use log::debug;
 use std::collections::HashSet;
 use std::convert::AsRef;
 use std::convert::TryFrom;
@@ -182,6 +182,8 @@ mod test {
     #[test]
     #[serial_test::serial]
     fn manual_context_creation() {
+        crate::chore::test_setup();
+
         unsafe {
             let handle = API::ffi_create().unwrap();
             API::ffi_destroy(handle).unwrap();
@@ -191,16 +193,21 @@ mod test {
     #[test]
     #[serial_test::serial]
     fn default_pointer_mode_is_host() {
+        crate::chore::test_setup();
+
         unsafe {
             let context = Context::new().unwrap();
             let mode = API::ffi_get_pointer_mode(*context.id_c()).unwrap();
             assert_eq!(cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST, mode);
         }
+        crate::chore::test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn can_set_pointer_mode() {
+        crate::chore::test_setup();
+
         unsafe {
             let context = Context::new().unwrap();
             API::ffi_set_pointer_mode(
@@ -216,5 +223,6 @@ mod test {
             let mode2 = API::ffi_get_pointer_mode(*context.id_c()).unwrap();
             assert_eq!(cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST, mode2);
         }
+        crate::chore::test_teardown();
     }
 }
