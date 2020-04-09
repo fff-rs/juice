@@ -266,38 +266,14 @@ mod test {
     use crate::API;
     use crate::api::context::Context;
     use crate::api::enums::PointerMode;
-    use crate::co::backend::{Backend, IBackend};
-    use crate::co::framework::IFramework;
-    use crate::co::frameworks::{Cuda, Native};
-    use crate::co::frameworks::native::flatbox::FlatBox;
     use crate::co::tensor::SharedTensor;
-
-    fn get_native_backend() -> Backend<Native> {
-        Backend::<Native>::default().unwrap()
-    }
-    fn get_cuda_backend() -> Backend<Cuda> {
-        Backend::<Cuda>::default().unwrap()
-    }
-
-    fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
-        let mem_buffer = mem.as_mut_slice::<T>();
-        for (index, datum) in data.iter().enumerate() {
-            mem_buffer[index] = *datum;
-        }
-    }
-
-    fn filled_tensor<B: IBackend, T: Copy>(_backend: &B, n: usize, val: T) -> SharedTensor<T> {
-        let mut x = SharedTensor::<T>::new(&vec![n]);
-        let values: &[T] = &::std::iter::repeat(val)
-            .take(x.capacity())
-            .collect::<Vec<T>>();
-        write_to_memory(x.write_only(get_native_backend().device()).unwrap(), values);
-        x
-    }
+    use crate::chore::*;
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_asum() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -306,12 +282,8 @@ mod test {
         let val = 2f32;
         let x = filled_tensor(&native, n as usize, val);
 
-
-
         // set up result
         let mut result = SharedTensor::<f32>::new(&vec![1]);
-
-
 
         {
             let cuda_mem = x.read(cuda.device()).unwrap();
@@ -327,11 +299,15 @@ mod test {
 
         let native_res = result.read(native.device()).unwrap();
         assert_eq!(&[40f32], native_res.as_slice::<f32>());
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_axpy() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -364,11 +340,15 @@ mod test {
 
         let native_y = y.read(native.device()).unwrap();
         assert_eq!(&[7f32, 7f32, 7f32, 7f32, 7f32], native_y.as_slice::<f32>());
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_copy() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -396,11 +376,15 @@ mod test {
 
         let native_y = y.read(native.device()).unwrap();
         assert_eq!(&[2f32, 2f32, 2f32, 2f32, 2f32], native_y.as_slice::<f32>());
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_dot() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -430,14 +414,17 @@ mod test {
             }
         }
 
-
         let native_result = result.read(native.device()).unwrap();
         assert_eq!(&[40f32], native_result.as_slice::<f32>());
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_nrm2() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -465,11 +452,15 @@ mod test {
 
         let native_result = result.read(native.device()).unwrap();
         assert_eq!(&[3f32], native_result.as_slice::<f32>());
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_scal() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -496,11 +487,15 @@ mod test {
 
         let native_x = x.read(native.device()).unwrap();
         assert_eq!(&[5f32, 5f32, 5f32], native_x.as_slice::<f32>());
+
+        test_teardown();
     }
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_swap() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -530,5 +525,7 @@ mod test {
 
         let native_y = y.read(native.device()).unwrap();
         assert_eq!(&[2f32, 2f32, 2f32, 2f32, 2f32], native_y.as_slice::<f32>());
+
+        test_teardown();
     }
 }

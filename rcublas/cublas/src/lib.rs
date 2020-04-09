@@ -14,3 +14,6 @@ pub struct API;
 
 pub mod api;
 pub mod error;
+
+#[cfg(test)]
+pub(crate) mod chore;

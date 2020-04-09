@@ -98,38 +98,14 @@ mod test {
     use crate::API;
     use crate::api::context::Context;
     use crate::api::enums::PointerMode;
-    use crate::co::backend::{Backend, IBackend};
-    use crate::co::framework::IFramework;
-    use crate::co::frameworks::{Cuda, Native};
-    use crate::co::frameworks::native::flatbox::FlatBox;
     use crate::co::tensor::SharedTensor;
-
-    fn get_native_backend() -> Backend<Native> {
-        Backend::<Native>::default().unwrap()
-    }
-    fn get_cuda_backend() -> Backend<Cuda> {
-        Backend::<Cuda>::default().unwrap()
-    }
-
-    fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
-        let mem_buffer = mem.as_mut_slice::<T>();
-        for (index, datum) in data.iter().enumerate() {
-            mem_buffer[index] = *datum;
-        }
-    }
-
-    fn filled_tensor<B: IBackend, T: Copy>(_backend: &B, n: usize, val: T) -> SharedTensor<T> {
-        let mut x = SharedTensor::<T>::new(&vec![n]);
-        let values: &[T] = &::std::iter::repeat(val)
-            .take(x.capacity())
-            .collect::<Vec<T>>();
-        write_to_memory(x.write_only(get_native_backend().device()).unwrap(), values);
-        x
-    }
+    use crate::chore::*;
 
     #[test]
     #[serial_test::serial]
     fn use_cuda_memory_for_gemm() {
+        test_setup();
+
         let native = get_native_backend();
         let cuda = get_cuda_backend();
 
@@ -202,5 +178,7 @@ mod test {
             &[28f32, 7f32, 7f32, 28f32, 7f32, 7f32, 28f32, 7f32, 7f32],
             native_c.as_slice::<f32>()
         );
+
+        test_teardown();
     }
 }
