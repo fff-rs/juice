@@ -34,8 +34,12 @@ macro_rules! trans {
 macro_rules! exec {
     ($name:ident, $f:expr) => ({
         let res = $f;
-        res.map_err(|_| PluginError::Operation(
-            stringify!(Unable to execute operation $name)).into())
+        res.map_err(|e| {
+            log::debug!("Unable to execute operation {}: {:?}", stringify!($name), e);
+            PluginError::Operation(
+                stringify!(Unable to execute operation $name)
+            ).into()
+        })
     })
 }
 

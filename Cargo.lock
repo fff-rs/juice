@@ -247,6 +247,7 @@ dependencies = [
  "clippy",
  "coaster",
  "lazy_static",
+ "log",
  "rand 0.7.3",
  "rcublas",
  "rust-blas",
