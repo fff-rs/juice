@@ -65,7 +65,7 @@ fn main() {
             .unwrap_or_else(|| String::from("/usr/include/cuda"));
 
         let bindings = bindgen::Builder::default()
-            .rust_target(bindgen::RustTarget::Stable_1_40)
+            .rust_target(bindgen::LATEST_STABLE_RUST)
             .raw_line(
                 r"
 //! Defines the FFI for CUDA cuDNN.
