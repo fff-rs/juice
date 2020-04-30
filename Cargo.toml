@@ -1,5 +1,5 @@
 [workspace]
-members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "juice-examples", "rust-blas", "rcudnn/cudnn", "rcudnn/cudnn-sys", "rcublas/cublas", "rcublas/cublas-sys"]
+members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "juice-examples", "rust-blas", "rcudnn/cudnn", "rcudnn/cudnn-sys", "rcublas/cublas", "rcublas/cublas-sys", "ptr-origin-tracker"]
 
 exclude = [ "./rcudnn", "./rcublas" ]
 
@@ -14,6 +14,7 @@ rcublas = { path = "./rcublas/cublas" }
 rcublas-sys = { path = "./rcublas/cublas-sys" }
 rcudnn = { path = "./rcudnn/cudnn" }
 rcudnn-sys = { path = "./rcudnn/cudnn-sys" }
+ptr-origin-tracker = { path = "./ptr-origin-tracker" }
 
 [profile.bench]
 opt-level = 3
