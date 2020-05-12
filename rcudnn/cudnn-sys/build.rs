@@ -86,6 +86,9 @@ fn main() {
             .whitelist_var("CUDNN.*")
             .whitelist_type("[Cc][Uu].*")
             .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+            .derive_hash(true)
+            .derive_eq(true)
+            .derive_debug(true)
             .rustfmt_bindings(true)
             .generate()
             .expect("Unable to generate bindings");

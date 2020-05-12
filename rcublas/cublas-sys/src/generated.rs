@@ -15,7 +15,7 @@ pub const CUBLAS_VER_BUILD: u32 = 89;
 pub const CUBLAS_VERSION: u32 = 10202;
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct float2 {
     pub x: f32,
     pub y: f32,
@@ -45,7 +45,7 @@ fn bindgen_test_layout_float2() {
 }
 #[repr(C)]
 #[repr(align(16))]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct double2 {
     pub x: f64,
     pub y: f64,
@@ -87,7 +87,7 @@ fn bindgen_test_layout_double2() {
 #[doc = "                                                                              *"]
 #[doc = "                                                                              *"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct dim3 {
     pub x: ::libc::c_uint,
     pub y: ::libc::c_uint,
@@ -591,7 +591,7 @@ pub enum cudaChannelFormatKind {
 }
 #[doc = " CUDA Channel format descriptor"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaChannelFormatDesc {
     #[doc = "< x"]
     pub x: ::libc::c_int,
@@ -719,7 +719,7 @@ pub enum cudaMemcpyKind {
 #[doc = ""]
 #[doc = " \\sa ::make_cudaPitchedPtr"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaPitchedPtr {
     #[doc = "< Pointer to allocated memory"]
     pub ptr: *mut ::libc::c_void,
@@ -787,7 +787,7 @@ fn bindgen_test_layout_cudaPitchedPtr() {
 #[doc = ""]
 #[doc = " \\sa ::make_cudaExtent"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExtent {
     #[doc = "< Width in elements when referring to array memory, in bytes when referring to linear memory"]
     pub width: usize,
@@ -843,7 +843,7 @@ fn bindgen_test_layout_cudaExtent() {
 #[doc = ""]
 #[doc = " \\sa ::make_cudaPos"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaPos {
     #[doc = "< x"]
     pub x: usize,
@@ -897,7 +897,7 @@ fn bindgen_test_layout_cudaPos() {
 }
 #[doc = " CUDA 3D memory copying parameters"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaMemcpy3DParms {
     #[doc = "< Source memory address"]
     pub srcArray: cudaArray_t,
@@ -1011,7 +1011,7 @@ fn bindgen_test_layout_cudaMemcpy3DParms() {
 }
 #[doc = " CUDA 3D cross-device memory copying parameters"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaMemcpy3DPeerParms {
     #[doc = "< Source memory address"]
     pub srcArray: cudaArray_t,
@@ -1137,7 +1137,7 @@ fn bindgen_test_layout_cudaMemcpy3DPeerParms() {
 }
 #[doc = " CUDA Memset node parameters"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaMemsetParams {
     #[doc = "< Destination device pointer"]
     pub dst: *mut ::libc::c_void,
@@ -1230,7 +1230,7 @@ fn bindgen_test_layout_cudaMemsetParams() {
 pub type cudaHostFn_t = ::std::option::Option<unsafe extern "C" fn(userData: *mut ::libc::c_void)>;
 #[doc = " CUDA host node parameters"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaHostNodeParams {
     #[doc = "< The function to call when the node executes"]
     pub fn_: cudaHostFn_t,
@@ -1453,7 +1453,7 @@ pub union cudaResourceDesc__bindgen_ty_1 {
     _bindgen_union_align: [u64; 7usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaResourceDesc__bindgen_ty_1__bindgen_ty_1 {
     #[doc = "< CUDA array"]
     pub array: cudaArray_t,
@@ -1491,7 +1491,7 @@ fn bindgen_test_layout_cudaResourceDesc__bindgen_ty_1__bindgen_ty_1() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaResourceDesc__bindgen_ty_1__bindgen_ty_2 {
     #[doc = "< CUDA mipmapped array"]
     pub mipmap: cudaMipmappedArray_t,
@@ -1529,7 +1529,7 @@ fn bindgen_test_layout_cudaResourceDesc__bindgen_ty_1__bindgen_ty_2() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaResourceDesc__bindgen_ty_1__bindgen_ty_3 {
     #[doc = "< Device pointer"]
     pub devPtr: *mut ::libc::c_void,
@@ -1597,7 +1597,7 @@ fn bindgen_test_layout_cudaResourceDesc__bindgen_ty_1__bindgen_ty_3() {
     );
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaResourceDesc__bindgen_ty_1__bindgen_ty_4 {
     #[doc = "< Device pointer"]
     pub devPtr: *mut ::libc::c_void,
@@ -1790,7 +1790,7 @@ fn bindgen_test_layout_cudaResourceDesc() {
 }
 #[doc = " CUDA resource view descriptor"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaResourceViewDesc {
     #[doc = "< Resource view format"]
     pub format: cudaResourceViewFormat,
@@ -1908,7 +1908,7 @@ fn bindgen_test_layout_cudaResourceViewDesc() {
 }
 #[doc = " CUDA pointer attributes"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaPointerAttributes {
     #[doc = " \\deprecated"]
     #[doc = ""]
@@ -2023,7 +2023,7 @@ fn bindgen_test_layout_cudaPointerAttributes() {
 }
 #[doc = " CUDA function attributes"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaFuncAttributes {
     #[doc = " The size in bytes of statically-allocated shared memory per block"]
     #[doc = " required by this function. This does not include dynamically-allocated"]
@@ -2529,7 +2529,7 @@ pub enum cudaDeviceP2PAttr {
     cudaDevP2PAttrCudaArrayAccessSupported = 4,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct CUuuid_st {
     pub bytes: [::libc::c_char; 16usize],
 }
@@ -3699,7 +3699,7 @@ pub union cudaExternalMemoryHandleDesc__bindgen_ty_1 {
 #[doc = " ::cudaExternalMemoryHandleTypeD3D11ResourceKmt"]
 #[doc = " then 'name' must be NULL."]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalMemoryHandleDesc__bindgen_ty_1__bindgen_ty_1 {
     #[doc = " Valid NT handle. Must be NULL if 'name' is non-NULL"]
     pub handle: *mut ::libc::c_void,
@@ -3873,7 +3873,7 @@ fn bindgen_test_layout_cudaExternalMemoryHandleDesc() {
 }
 #[doc = " External memory buffer descriptor"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalMemoryBufferDesc {
     #[doc = " Offset into the memory object where the buffer's base is"]
     pub offset: ::libc::c_ulonglong,
@@ -3933,7 +3933,7 @@ fn bindgen_test_layout_cudaExternalMemoryBufferDesc() {
 }
 #[doc = " External memory mipmap descriptor"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalMemoryMipmappedArrayDesc {
     #[doc = " Offset into the memory object where the base level of the"]
     #[doc = " mipmap chain is."]
@@ -4088,7 +4088,7 @@ pub union cudaExternalSemaphoreHandleDesc__bindgen_ty_1 {
 #[doc = " ::cudaExternalSemaphoreHandleTypeKeyedMutexKmt"]
 #[doc = " then 'name' must be NULL."]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalSemaphoreHandleDesc__bindgen_ty_1__bindgen_ty_1 {
     #[doc = " Valid NT handle. Must be NULL if 'name' is non-NULL"]
     pub handle: *mut ::libc::c_void,
@@ -4272,7 +4272,7 @@ pub struct cudaExternalSemaphoreSignalParams__bindgen_ty_1 {
 }
 #[doc = " Parameters for fence objects"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalSemaphoreSignalParams__bindgen_ty_1__bindgen_ty_1 {
     #[doc = " Value of fence to be signaled"]
     pub value: ::libc::c_ulonglong,
@@ -4368,7 +4368,7 @@ fn bindgen_test_layout_cudaExternalSemaphoreSignalParams__bindgen_ty_1__bindgen_
 }
 #[doc = " Parameters for keyed mutex objects"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalSemaphoreSignalParams__bindgen_ty_1__bindgen_ty_3 {
     pub key: ::libc::c_ulonglong,
 }
@@ -4528,7 +4528,7 @@ pub struct cudaExternalSemaphoreWaitParams__bindgen_ty_1 {
 }
 #[doc = " Parameters for fence objects"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalSemaphoreWaitParams__bindgen_ty_1__bindgen_ty_1 {
     #[doc = " Value of fence to be waited on"]
     pub value: ::libc::c_ulonglong,
@@ -4621,7 +4621,7 @@ fn bindgen_test_layout_cudaExternalSemaphoreWaitParams__bindgen_ty_1__bindgen_ty
 }
 #[doc = " Parameters for keyed mutex objects"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaExternalSemaphoreWaitParams__bindgen_ty_1__bindgen_ty_3 {
     #[doc = " Value of key to acquire the mutex with"]
     pub key: ::libc::c_ulonglong,
@@ -4830,7 +4830,7 @@ pub enum cudaCGScope {
 }
 #[doc = " CUDA launch parameters"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaLaunchParams {
     #[doc = "< Device function symbol"]
     pub func: *mut ::libc::c_void,
@@ -4920,7 +4920,7 @@ fn bindgen_test_layout_cudaLaunchParams() {
 }
 #[doc = " CUDA GPU kernel node parameters"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct cudaKernelNodeParams {
     #[doc = "< Kernel to launch"]
     pub func: *mut ::libc::c_void,
