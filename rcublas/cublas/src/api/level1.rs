@@ -288,12 +288,12 @@ mod test {
         {
             let cuda_mem = x.read(cuda.device()).unwrap();
             let cuda_mem_result = result.write_only(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let x_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem.id_c());
                 let res_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_result.id_c());
-                API::ffi_sasum(*ctx.id_c(), n, x_addr, 1, res_addr).unwrap();
+                API::ffi_sasum(*context.id_c(), n, x_addr, 1, res_addr).unwrap();
             }
         }
 
@@ -327,13 +327,13 @@ mod test {
             let cuda_mem_alpha = alpha.read(cuda.device()).unwrap();
             let cuda_mem_x = x.read(cuda.device()).unwrap();
             let cuda_mem_y = y.read_write(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let alpha_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_alpha.id_c());
                 let x_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_x.id_c());
                 let y_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_y.id_c());
-                API::ffi_saxpy(*ctx.id_c(), n, alpha_addr, x_addr, 1, y_addr, 1).unwrap();
+                API::ffi_saxpy(*context.id_c(), n, alpha_addr, x_addr, 1, y_addr, 1).unwrap();
             }
         }
 
@@ -364,12 +364,12 @@ mod test {
         {
             let cuda_mem_x = x.read(cuda.device()).unwrap();
             let cuda_mem_y = y.write_only(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let x_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_x.id_c());
                 let y_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_y.id_c());
-                API::ffi_scopy(*ctx.id_c(), n, x_addr, 1, y_addr, 1).unwrap();
+                API::ffi_scopy(*context.id_c(), n, x_addr, 1, y_addr, 1).unwrap();
             }
         }
 
@@ -404,13 +404,13 @@ mod test {
             let cuda_mem_x = x.read(cuda.device()).unwrap();
             let cuda_mem_y = y.read(cuda.device()).unwrap();
             let cuda_mem_result = result.write_only(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let x_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_x.id_c());
                 let y_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_y.id_c());
                 let result_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_result.id_c());
-                API::ffi_sdot(*ctx.id_c(), n, x_addr, 1, y_addr, 1, result_addr).unwrap();
+                API::ffi_sdot(*context.id_c(), n, x_addr, 1, y_addr, 1, result_addr).unwrap();
             }
         }
 
@@ -440,12 +440,12 @@ mod test {
         {
             let cuda_mem_x = x.read(cuda.device()).unwrap();
             let cuda_mem_result = result.write_only(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let x_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_x.id_c());
                 let result_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_result.id_c());
-                API::ffi_snrm2(*ctx.id_c(), n, x_addr, 1, result_addr).unwrap();
+                API::ffi_snrm2(*context.id_c(), n, x_addr, 1, result_addr).unwrap();
             }
         }
 
@@ -475,12 +475,12 @@ mod test {
         {
             let cuda_mem_alpha = alpha.read(cuda.device()).unwrap();
             let cuda_mem_x = x.read_write(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let alpha_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_alpha.id_c());
                 let x_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_x.id_c());
-                API::ffi_sscal(*ctx.id_c(), n, alpha_addr, x_addr, 1).unwrap();
+                API::ffi_sscal(*context.id_c(), n, alpha_addr, x_addr, 1).unwrap();
             }
         }
 
@@ -511,12 +511,12 @@ mod test {
         {
             let cuda_mem_x = x.read_write(cuda.device()).unwrap();
             let cuda_mem_y = y.read_write(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let x_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_x.id_c());
                 let y_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_y.id_c());
-                API::ffi_sswap(*ctx.id_c(), n, x_addr, 1, y_addr, 1).unwrap();
+                API::ffi_sswap(*context.id_c(), n, x_addr, 1, y_addr, 1).unwrap();
             }
         }
 

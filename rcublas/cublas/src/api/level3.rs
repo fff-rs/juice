@@ -146,8 +146,8 @@ mod test {
             let cuda_mem_a = a.read(cuda.device()).unwrap();
             let cuda_mem_b = b.read(cuda.device()).unwrap();
             let cuda_mem_c = c.write_only(cuda.device()).unwrap();
-            let mut ctx = Context::new().unwrap();
-            ctx.set_pointer_mode(PointerMode::Device).unwrap();
+            let mut context = Context::new().unwrap();
+            context.set_pointer_mode(PointerMode::Device).unwrap();
             unsafe {
                 let alpha_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_alpha.id_c());
                 let beta_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_beta.id_c());
@@ -155,7 +155,7 @@ mod test {
                 let b_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_b.id_c());
                 let c_addr = ::std::mem::transmute::<u64, *mut f32>(*cuda_mem_c.id_c());
                 API::ffi_sgemm(
-                    *ctx.id_c(),
+                    *context.id_c(),
                     transa,
                     transb,
                     m,
