@@ -20,12 +20,12 @@ run:
     prepare
     cargo-override-injection
     export RUST_LOG=rcublas=debug,rcublas-sys=debug
-    export DIRX="rcublas/cublas rcublas/cublas-sys"
+    export DIRX="rcublas/cublas rcublas/cublas-sys coaster-blas"
     for D in $DIRX; do
       echo ">>>>> $D"
       cd $D
       # do not generate with bindgen
-      cargo test --no-default-features -- --nocapture
+      cargo test -- --nocapture
       cd -
       echo "<<<<< $D"
     done
