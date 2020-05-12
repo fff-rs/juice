@@ -1,10 +1,12 @@
 [package]
 name = "ptr-origin-tracker"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Bernhard Schuster <bernhard@ahoi.io>"]
 edition = "2018"
 keywords = ["pointer","ffi","helper"]
 description = "A helper lib for validating memory pointers being passed around to FFI"
+repository = "https://github.com/sparow/juice"
+homepage = "https://github.com/spearow/juice/tree/master/ptr-origin-tracker"
 license = "MIT OR Apache-2.0 OR CC-BY-4.0 OR BSD-4-Clause"
 categories = ["development-tools::ffi"]
 
