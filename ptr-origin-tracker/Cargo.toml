@@ -3,9 +3,12 @@ name = "ptr-origin-tracker"
 version = "0.1.0"
 authors = ["Bernhard Schuster <bernhard@ahoi.io>"]
 edition = "2018"
+keywords = ["pointer","ffi","helper"]
+description = "A helper lib for validating memory pointers being passed around to FFI"
+license = "MIT OR Apache-2.0 OR CC-BY-4.0 OR BSD-4-Clause"
+categories = ["development-tools::ffi"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 log = "0.4"
-mashup = "*"
+mashup = "0.1"
 lazy_static = "1"
