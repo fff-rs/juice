@@ -7,8 +7,16 @@ use std::marker::Send;
 
 use std::hash::Hash;
 
-#[macro_use]
-extern crate mashup;
+// narsty but must both be public
+#[doc(hidden)]
+pub use paste;
+#[doc(hidden)]
+pub use lazy_static;
+
+#[doc(hidden)]
+pub mod prelude {
+    pub use super::{Tracker,Trackable,setup};
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Error<T>
@@ -37,37 +45,35 @@ pub trait Trackable {
     fn tracker() -> Self::Tracker;
 }
 
-#[macro_export]
-macro_rules! setup_tracker {
-    ($t:ident) => {{
-        mashup! {
-            m["__NAME__"] = $t _PARENT_TYPE;
-        }
-
-        m! {
-            lazy_static::lazy_static! {
-                static ref "__NAME__" : $crate::Tracker<$t> = $crate::Tracker::<$t>::new();
+#[macro_export(local_inner_macros)]
+macro_rules! setup {
+    ($t:ident) => {
+        $crate::paste::item! {
+            $crate::lazy_static::lazy_static! {
+                static ref [<$t _TRACKER_SINGLETON>] : $crate::Tracker<$t> = $crate::Tracker::<$t>::new();
             }
 
             impl Trackable for $t
             {
                 type Tracker = $crate::Tracker<$t>;
                 fn tracker() -> Self::Tracker {
-                    (*"__NAME__").clone()
+                    [<$t _TRACKER_SINGLETON>].clone()
                 }
             }
         }
-    }};
+    };
 }
 
-#[derive(PartialEq, Eq, Hash, Debug)]
+#[derive(Debug)]
 pub struct Cookie<T>(*mut T)
 where
-    T: fmt::Debug;
+    T: fmt::Debug,
+    *mut T: Hash + Eq;
 
 impl<T> Cookie<T>
 where
     T: fmt::Debug,
+    *mut T: Hash + Eq,
 {
     pub fn as_ptr(&self) -> *mut T {
         self.0
@@ -75,6 +81,21 @@ where
 
     pub fn try_from(ptr: *mut T) -> std::result::Result<Self, Error<T>> {
         Ok(Cookie::<T>(ptr))
+    }
+}
+use core::hash::Hasher;
+
+impl<T> PartialEq for Cookie<T>  where T: std::fmt::Debug {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl<T> Eq for Cookie<T>  where T: std::fmt::Debug {}
+
+impl<T> Hash for Cookie<T> where T: std::fmt::Debug {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 
@@ -114,7 +135,7 @@ where
     T: Trackable<Tracker = Self>,
 {
     #[allow(unused)]
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             inner: Arc::new(Mutex::new(HashSet::with_capacity(128))),
         }
@@ -139,7 +160,12 @@ where
         unreachable!("Forgot to setup a registry");
     }
 
+    #[deprecated]
     pub fn contains(handle: *mut T) -> bool {
+        Self::exists(handle)
+    }
+
+    pub fn exists(handle: *mut T) -> bool {
         if let Some(tracker) = Self::tracker() {
             let guard = tracker.inner.lock().unwrap();
             debug!("Removed handle {:?}, total of {}", handle, guard.len());
@@ -182,7 +208,7 @@ mod tests {
 
     // helper demo struct
     // could be anything that is send
-    #[derive(Debug, Default, PartialEq, Eq, Hash)]
+    #[derive(Debug)]
     pub struct X {
         a: u8,
         b: u32,
@@ -194,7 +220,7 @@ mod tests {
 
     #[test]
     fn tracky() {
-        setup_tracker!(X);
+        setup!(X);
 
         let mut x = X::default();
         let ptr = &mut x as *mut X;

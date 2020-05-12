@@ -1,6 +1,6 @@
 [package]
 name = "ptr-origin-tracker"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Bernhard Schuster <bernhard@ahoi.io>"]
 edition = "2018"
 keywords = ["pointer","ffi","helper"]
@@ -12,5 +12,5 @@ categories = ["development-tools::ffi"]
 
 [dependencies]
 log = "0.4"
-mashup = "0.1"
+paste = "0.1"
 lazy_static = "1"
