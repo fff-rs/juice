@@ -11,68 +11,6 @@ use std::ptr;
 use std::ptr::NonNull;
 use std::sync::{Mutex,Arc};
 
-
-
-// TODO:
-// extract the cookie tracking into a separate crate
-// which provides a better API than this
-//
-// usecases:
-//  * cudaMalloc / cudaFree
-//  * cublasContext_new / _destroy
-//  * cudnnContext_new / _destroy
-#[derive(Hash,Eq,PartialEq)]
-struct Cookie(NonNull<cublasContext>);
-
-unsafe impl std::marker::Send for Cookie { }
-
-impl Cookie {
-    fn as_ptr(&self) -> *mut cublasContext {
-        self.0.as_ptr()
-    }
-}
-
-impl TryFrom<cublasHandle_t> for Cookie {
-    type Error = Error;
-    fn try_from(handle: *mut cublasContext) -> std::result::Result<Self,Self::Error> {
-        if let Some(nn) = NonNull::new(handle) {
-            Ok(Cookie(nn))
-        } else {
-            Err(Error::Unknown("cublasHandle is a nullptr"))
-        }
-    }
-}
-
-lazy_static! {
-    static ref TRACKER: Arc<Mutex<HashSet<Cookie>>> =  {
-        Arc::new(Mutex::new(HashSet::with_capacity(3)))
-    };
-}
-
-
-fn track(handle: cublasHandle_t) {
-    let mut guard = TRACKER.as_ref().lock().unwrap();
-    let _ = guard.insert(Cookie::try_from(handle as *mut cublasContext).unwrap());
-    debug!("Added handle {:?}, total of {}", handle, guard.len());
-}
-
-
-fn untrack(handle: cublasHandle_t) {
-    let mut guard = TRACKER.as_ref().lock().unwrap();
-    debug!("Removed handle {:?}, total of {}", handle, guard.len());
-    let k = Cookie::try_from(handle as *mut cublasContext).unwrap();
-    let _ = guard.remove(&k);
-}
-
-fn cleanup() {
-    let guard = TRACKER.lock().unwrap();
-    for handle in guard.iter() {
-        unsafe {
-            API::ffi_destroy(handle.as_ptr()).unwrap();
-        }
-    }
-}
-
 impl API {
     /// Create a new cuBLAS context, allocating resources on the host and the GPU.
     ///
@@ -80,9 +18,7 @@ impl API {
     /// Creating contexts all the time can lead to performance problems.
     /// Generally one Context per GPU device and configuration is recommended.
     pub fn create() -> Result<Context, Error> {
-
         let handle = unsafe { API::ffi_create() }?;
-        track(handle);
         Ok(Context::from_c(handle))
     }
 
@@ -96,9 +32,7 @@ impl API {
     /// This should be called at the end of using cuBLAS and should ideally be handled by drop
     /// exclusively, and never called by the user.
     pub unsafe fn destroy(context: &mut Context) -> Result<(), Error> {
-        let handle = *context.id_c();
-        untrack(handle);
-        Ok(API::ffi_destroy(handle)?)
+        API::ffi_destroy(*context.id_c())
     }
 
     /// Retrieve the pointer mode for a given cuBLAS context.
@@ -118,7 +52,10 @@ impl API {
     unsafe fn ffi_create() -> Result<cublasHandle_t, Error> {
         let mut handle: cublasHandle_t = ptr::null_mut();
         match cublasCreate_v2(&mut handle) {
-            cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(handle),
+            cublasStatus_t::CUBLAS_STATUS_SUCCESS => {
+                Tracker::<cublasContext>::track(handle);
+                Ok(handle)
+            },
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => Err(Error::AllocFailed),
@@ -129,6 +66,7 @@ impl API {
     }
 
     unsafe fn ffi_destroy(handle: cublasHandle_t) -> Result<(), Error> {
+        Tracker::<cublasContext>::untrack(handle);
         match cublasDestroy_v2(handle) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
@@ -139,6 +77,7 @@ impl API {
     }
 
     unsafe fn ffi_get_pointer_mode(handle: cublasHandle_t) -> Result<cublasPointerMode_t, Error> {
+        Tracker::<cublasContext>::exists(handle);
         let pointer_mode = &mut [cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST];
         match cublasGetPointerMode_v2(handle, pointer_mode.as_mut_ptr()) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(pointer_mode[0]),
@@ -151,6 +90,7 @@ impl API {
         handle: cublasHandle_t,
         pointer_mode: cublasPointerMode_t,
     ) -> Result<(), Error> {
+        Tracker::<cublasContext>::exists(handle);
         match cublasSetPointerMode_v2(handle, pointer_mode) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),

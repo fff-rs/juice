@@ -24,7 +24,10 @@ impl API {
     unsafe fn ffi_cuda_allocate_device_memory(bytes: usize) -> Result<*mut ::libc::c_void, Error> {
         let mut ptr: *mut ::libc::c_void = ptr::null_mut();
         match cudaMalloc(&mut ptr, bytes) {
-            cudaError_t::cudaSuccess => Ok(ptr),
+            cudaError_t::cudaSuccess => {
+                Tracker::<::libc::c_void>::track(ptr);
+                Ok(ptr)
+            },
             cudaError_t::cudaErrorMemoryAllocation => {
                 Err(Error::AllocFailed("Unable to allocate CUDA device memory."))
             }
@@ -35,6 +38,7 @@ impl API {
     }
 
     unsafe fn ffi_cuda_free_device_memory(ptr: *mut ::libc::c_void) -> Result<(), Error> {
+        Tracker::<::libc::c_void>::untrack(ptr);
         match cudaFree(ptr) {
             cudaError_t::cudaSuccess => Ok(()),
             // TODO, more error enums sigh

@@ -44,3 +44,11 @@ impl Default for cudnnConvolutionBwdDataAlgoPerf_t {
         }
     }
 }
+
+
+pub use ptr_origin_tracker as tracker;
+
+pub use tracker::prelude::*;
+
+tracker::setup!(cudnnContext);
+tracker::setup!(::libc::c_void);
