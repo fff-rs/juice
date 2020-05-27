@@ -47,13 +47,16 @@ fn native_backend() -> Rc<Backend<Native>> {
 #[cfg(feature = "cuda")]
 #[allow(dead_code)]
 fn cuda_backend() -> Rc<Backend<Cuda>> {
-    let framework = Cuda::new();
+    let mut framework = Cuda::new();
     let hardwares = &framework.hardwares()[0..1].to_vec();
     println!("Device: {:?}/{}",
              hardwares[0].hardware_type().unwrap(),
              hardwares[0].name().unwrap());
     let backend_config = BackendConfig::new(framework, hardwares);
-    Rc::new(Backend::new(backend_config).unwrap())
+    let mut backend = Backend::new(backend_config).unwrap();
+    backend.framework.initialise_cublas();
+    backend.framework.initialise_cudnn();
+    Rc::new(backend)
 }
 
 #[cfg(feature = "opencl")]

@@ -38,7 +38,10 @@ fn cuda_backend() -> Backend<Cuda> {
     let framework = Cuda::new();
     let hardwares = framework.hardwares()[0..1].to_vec();
     let backend_config = BackendConfig::new(framework, &hardwares);
-    Backend::new(backend_config).unwrap()
+    let mut backend = Backend::new(backend_config).unwrap();
+    backend.framework.initialise_cublas().unwrap();
+    backend.framework.initialise_cudnn().unwrap();
+    backend
 }
 
 fn sync_back_and_forth<F1, F2>(b: &mut Bencher,

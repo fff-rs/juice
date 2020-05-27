@@ -7,34 +7,9 @@ use coaster::backend::Backend;
 use coaster::frameworks::cuda::Cuda;
 use coaster::plugin::Error as PluginError;
 use coaster::tensor::{ITensorDesc, SharedTensor};
-use std::sync::Arc;
-use spin::Mutex;
 
 #[macro_use]
 pub mod helper;
-
-// TODO Arc<Mutex<..>> kills performance
-// but inthe light of crashing unit tests
-// this is a good enough solution for the time
-// being since we should never end up spinning
-// the lock - all uses within juice are
-// single threaded given currently existing layers.
-// According to the nvidia documentation multiple contexts
-// should not be a problem, bun in practice this crashes
-// often.
-lazy_static! {
-    static ref CONTEXT: Arc<Mutex<cublas::Context>> = {
-        let mut context = cublas::Context::new().unwrap();
-        context
-            .set_pointer_mode(cublas::api::PointerMode::Device)
-            .unwrap();
-        Arc::new(Mutex::new(context))
-    };
-}
-
-fn cuda_blas_ctx() -> Arc<Mutex<cublas::Context>> {
-    CONTEXT.clone()
-}
 
 impl Asum<f32> for Backend<Cuda> {
     iblas_asum_for_cuda!(f32);

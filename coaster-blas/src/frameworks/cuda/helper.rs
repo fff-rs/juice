@@ -56,10 +56,10 @@ macro_rules! iblas_asum_for_cuda {
             let x_mem = read!(x, self);
             let r_mem = write_only!(result, self);
 
-            let ctx = CONTEXT.lock();
+            let ctx : &cublas::Context = self.framework().cublas();
             exec!(
                 asum,
-                ctx.asum(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
+                (*ctx).asum(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
             )
         }
     };
@@ -80,7 +80,7 @@ macro_rules! iblas_axpy_for_cuda {
             let x_mem = read!(x, self);
             let y_mem = read_write!(y, self);
 
-            let ctx = CONTEXT.lock();
+            let ctx = (*self.framework()).cublas();
             exec!(
                 axpy,
                 ctx.axpy(
@@ -109,10 +109,33 @@ macro_rules! iblas_copy_for_cuda {
             let x_mem = read!(x, self);
             let y_mem = write_only!(y, self);
 
-            let ctx = CONTEXT.lock();
+            let ctx = (*self.framework()).cublas();
             exec!(
                 copy,
                 ctx.copy(trans!(x_mem, $t), trans!(y_mem, $t), n, None, None)
+            )
+        }
+    };
+}
+
+/// nrm2 for cuda
+#[macro_export]
+macro_rules! iblas_nrm2_for_cuda {
+    ($t:ident) => {
+        fn nrm2(
+            &self,
+            x: &SharedTensor<$t>,
+            result: &mut SharedTensor<$t>,
+        ) -> Result<(), ::coaster::error::Error> {
+            let n = x.desc().size() as i32;
+            let x_mem = read!(x, self);
+            let r_mem = write_only!(result, self);
+
+            let ctx : &cublas::Context = self.framework().cublas();
+
+            exec!(
+                nrm2,
+                (*ctx).nrm2(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
             )
         }
     };
@@ -132,11 +155,10 @@ macro_rules! iblas_dot_for_cuda {
             let x_mem = read!(x, self);
             let y_mem = read!(y, self);
             let r_mem = write_only!(result, self);
-
-            let ctx = CONTEXT.lock();
+            let ctx : &cublas::Context = self.framework().cublas();
             exec!(
                 dot,
-                ctx.dot(
+                (*ctx).dot(
                     trans!(x_mem, $t),
                     trans!(y_mem, $t),
                     trans!(r_mem, $t),
@@ -144,28 +166,6 @@ macro_rules! iblas_dot_for_cuda {
                     None,
                     None
                 )
-            )
-        }
-    };
-}
-
-/// nrm2 for cuda
-#[macro_export]
-macro_rules! iblas_nrm2_for_cuda {
-    ($t:ident) => {
-        fn nrm2(
-            &self,
-            x: &SharedTensor<$t>,
-            result: &mut SharedTensor<$t>,
-        ) -> Result<(), ::coaster::error::Error> {
-            let n = x.desc().size() as i32;
-            let x_mem = read!(x, self);
-            let r_mem = write_only!(result, self);
-
-            let ctx = CONTEXT.lock();
-            exec!(
-                nrm2,
-                ctx.nrm2(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
             )
         }
     };
@@ -183,11 +183,11 @@ macro_rules! iblas_scal_for_cuda {
             let n = x.desc().size() as i32;
             let a_mem = read!(a, self);
             let x_mem = read_write!(x, self);
+            let ctx : &cublas::Context = self.framework().cublas();
 
-            let ctx = CONTEXT.lock();
             exec!(
                 scal,
-                ctx.scal(trans!(a_mem, $t), trans!(x_mem, $t), n, None)
+                (*ctx).scal(trans!(a_mem, $t), trans!(x_mem, $t), n, None)
             )
         }
     };
@@ -205,11 +205,11 @@ macro_rules! iblas_swap_for_cuda {
             let n = x.desc().size() as i32;
             let x_mem = read_write!(x, self);
             let y_mem = read_write!(y, self);
+            let ctx : &cublas::Context = self.framework().cublas();
 
-            let ctx = CONTEXT.lock();
             exec!(
                 swap,
-                ctx.swap(trans!(x_mem, $t), trans!(y_mem, $t), n, None, None)
+                (*ctx).swap(trans!(x_mem, $t), trans!(y_mem, $t), n, None, None)
             )
         }
     };
@@ -273,10 +273,11 @@ macro_rules! iblas_gemm_for_cuda {
             let ldb = b_1;
             let ldc = c_1;
 
-            let ctx = CONTEXT.lock();
+            let ctx : &cublas::Context = self.framework().cublas();
+
             exec!(
                 gemm,
-                ctx.gemm(
+                (*ctx).gemm(
                     ::cublas::api::Operation::from(bt),
                     ::cublas::api::Operation::from(at),
                     n,

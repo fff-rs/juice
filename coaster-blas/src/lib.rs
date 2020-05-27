@@ -53,9 +53,6 @@
     unused_qualifications
 )]
 
-#[macro_use]
-extern crate lazy_static;
-
 extern crate coaster;
 #[cfg(feature = "cuda")]
 extern crate rcublas as cublas;

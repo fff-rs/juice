@@ -101,6 +101,23 @@ impl API {
         Ok(API::ffi_destroy(handle)?)
     }
 
+    /// Get CUBLAS Version
+    pub fn get_version(context: &Context) -> Result<i32, Error> {
+        unsafe {
+            API::ffi_get_version(*context.id_c())
+        }
+    }
+
+    unsafe fn ffi_get_version(handle: cublasHandle_t) -> Result<i32, Error> {
+        let mut version: i32 = 0;
+        let version_ptr: *mut i32 = &mut version;
+        match cublasGetVersion_v2(handle, version_ptr) {
+            cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(version),
+            cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::Unknown("Unable to initialise CUBLAS Library")),
+            _ => Err(Error::Unknown("Other Unknown Error with CUBLAS Get Version")),
+        }
+    }
+
     /// Retrieve the pointer mode for a given cuBLAS context.
     pub fn get_pointer_mode(context: &Context) -> Result<PointerMode, Error> {
         Ok(PointerMode::from_c(
@@ -196,6 +213,7 @@ mod test {
         crate::chore::test_setup();
 
         unsafe {
+            dbg!("Pointer Mode Test - Initialises New CUBLAS");
             let context = Context::new().unwrap();
             let mode = API::ffi_get_pointer_mode(*context.id_c()).unwrap();
             assert_eq!(cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST, mode);

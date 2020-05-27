@@ -19,7 +19,13 @@ mod layer_spec {
 
     #[cfg(feature="cuda")]
     fn cuda_backend() -> Rc<Backend<Cuda>> {
-        Rc::new(Backend::<Cuda>::default().unwrap())
+        let framework = Cuda::new();
+        let hardwares = framework.hardwares()[0..1].to_vec();
+        let backend_config = BackendConfig::new(framework, &hardwares);
+        let mut backend = Backend::new(backend_config).unwrap();
+        backend.framework.initialise_cublas().unwrap();
+        backend.framework.initialise_cudnn().unwrap();
+        Rc::new(backend)
     }
 
     #[cfg(all(feature="native", feature="cuda"))]

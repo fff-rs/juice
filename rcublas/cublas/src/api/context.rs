@@ -163,6 +163,12 @@ impl Context {
             ldc,
         )
     }
+
+    pub fn get_version(
+        &self
+    ) -> i32 {
+        API::get_version(self).unwrap()
+    }
 }
 
 #[cfg(test)]
