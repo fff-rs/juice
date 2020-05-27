@@ -7,7 +7,7 @@
 //! Cuda device -> Hardware
 //! Cuda context -> Device
 
-extern { }
+extern {}
 
 use crate::backend::{Backend, IBackend};
 use crate::framework::IFramework;
@@ -17,6 +17,8 @@ pub use self::function::Function;
 pub use self::module::Module;
 pub use self::device::{Device, DeviceInfo};
 pub use self::api::{Driver, DriverError};
+use crate::cudnn::*;
+use crate::cublas;
 
 pub mod device;
 pub mod context;
@@ -30,6 +32,50 @@ mod api;
 pub struct Cuda {
     hardwares: Vec<Device>,
     binary: Module,
+    cudnn: Option<Cudnn>,
+    cublas: Option<cublas::Context>,
+}
+
+impl Cuda {
+    /// Create a handle to CUBLAS and assign it to CUDA Object
+    ///
+    /// Creating a handle when the CUDA object is created initially will cause CUDA_ERROR_LAUNCH_FAILED
+    /// when an attempt is made to use the pointer. This can also affect global initialisation of
+    /// the pointer, and so the initialise must run after the CUDA Driver is fully initialised, or
+    /// (theoretically) a call is done to CUDA Free or DeviceSynchronise.
+    pub fn initialise_cublas(&mut self) -> Result<(), crate::framework::Error> {
+        self.cublas = {
+            let mut context = cublas::Context::new().unwrap();
+            context.set_pointer_mode(cublas::api::PointerMode::Device).unwrap();
+            Some(context)
+        };
+        Ok(())
+    }
+
+    /// Create a handle to CUDNN and assign it to CUDA Object
+    pub fn initialise_cudnn(&mut self) -> Result<(), crate::framework::Error> {
+        self.cudnn = match Cudnn::new() {
+            Ok(cudnn_ptr) => Some(cudnn_ptr),
+            Err(_) => None
+        };
+        Ok(())
+    }
+
+    /// Return a reference to the CUDNN Handle
+    pub fn cudnn(&self) -> &Cudnn {
+        match &self.cudnn {
+            Some(cudnn) => cudnn,
+            None => panic!("Couldn't find a CUDNN Handle - Initialise CUDNN has not been called")
+        }
+    }
+
+    /// Return a reference to the CUBLAS Handle
+    pub fn cublas(&self) -> &cublas::Context {
+        match &self.cublas {
+            Some(cublas) => cublas,
+            None => panic!("Couldn't find a CUBLAS Handle - Initialise CUBLAS has not been called")
+        }
+    }
 }
 
 impl IFramework for Cuda {
@@ -50,6 +96,8 @@ impl IFramework for Cuda {
                 Cuda {
                     hardwares,
                     binary: Module::from_isize(1),
+                    cudnn: None,
+                    cublas: None,
                 }
             },
             Err(err) => panic!("Could not initialize Cuda Framework, due to: {}", err)

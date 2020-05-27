@@ -172,6 +172,10 @@ pub use crate::tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
 pub use crate::frameworks::Native;
 #[cfg(feature = "cuda")]
 pub use crate::frameworks::Cuda;
+
+extern crate rcudnn as cudnn;
+extern crate rcublas as cublas;
+
 #[cfg(feature = "opencl")]
 pub use frameworks::OpenCL;
 

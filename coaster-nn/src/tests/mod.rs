@@ -33,8 +33,15 @@ fn get_native_backend() -> Backend<Native> {
 }
 #[cfg(feature = "cuda")]
 fn get_cuda_backend() -> Backend<Cuda> {
-    Backend::<Cuda>::default().unwrap()
+    let framework = Cuda::new();
+    let hardwares = framework.hardwares()[0..1].to_vec();
+    let backend_config = BackendConfig::new(framework, &hardwares);
+    let mut backend = Backend::new(backend_config).unwrap();
+    backend.framework.initialise_cublas().unwrap();
+    backend.framework.initialise_cudnn().unwrap();
+    backend
 }
+
 #[cfg(feature = "opencl")]
 fn get_opencl_backend() -> Backend<OpenCL> {
     Backend::<OpenCL>::default().unwrap()

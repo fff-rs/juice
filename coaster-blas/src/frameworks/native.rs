@@ -285,7 +285,6 @@ fn read_from_matrix<T: Clone>(mat: &Mat<T>, slice: &mut [T]) {
 mod test {
     use super::as_matrix;
     use coaster::backend::{Backend, IBackend};
-    use coaster::framework::IFramework;
     use coaster::frameworks::native::flatbox::FlatBox;
     use coaster::frameworks::Native;
     use coaster::tensor::SharedTensor;

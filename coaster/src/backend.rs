@@ -56,7 +56,7 @@ pub struct Backend<F: IFramework> {
     /// Default: [Native][native]
     ///
     /// [native]: ../frameworks/native/index.html
-    framework: Box<F>,
+    pub framework: Box<F>,
     /// Provides a device, created from one or many hardwares, which are ready to execute kernel
     /// methods and synchronize memory.
     device: F::D,
@@ -121,6 +121,7 @@ pub trait IBackend
 ///
 /// Use it to initialize a new Backend.
 pub struct BackendConfig<'a, F: IFramework + 'a> {
+    /// Framework - i.e. CUDA
     framework: F,
     hardwares: &'a [F::H],
 }

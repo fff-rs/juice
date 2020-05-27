@@ -335,8 +335,13 @@ fn run_mnist(
     classifier_cfg.add_layer(nll_cfg);
 
     // set up backends
-    let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
-    // let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
+    let framework = Cuda::new();
+    let hardwares = framework.hardwares()[0..1].to_vec();
+    let backend_config = BackendConfig::new(framework, &hardwares);
+    let mut backend = Backend::new(backend_config).unwrap();
+    backend.framework.initialise_cublas().unwrap();
+    backend.framework.initialise_cudnn().unwrap();
+    let backend = ::std::rc::Rc::new(backend);
 
     // set up solver
     let mut solver_cfg = SolverConfig {
@@ -485,8 +490,13 @@ fn run_fashion(
     classifier_cfg.add_layer(nll_cfg);
 
     // set up backends
-    let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
-    // let native_backend = ::std::rc::Rc::new(Backend::<Native>::default().unwrap());
+    let framework = Cuda::new();
+    let hardwares = framework.hardwares()[0..1].to_vec();
+    let backend_config = BackendConfig::new(framework, &hardwares);
+    let mut backend = Backend::new(backend_config).unwrap();
+    backend.framework.initialise_cublas().unwrap();
+    backend.framework.initialise_cudnn().unwrap();
+    let backend = ::std::rc::Rc::new(backend);
 
     // set up solver
     let mut solver_cfg = SolverConfig {
@@ -599,7 +609,13 @@ fn run_mackey_glass(
     regressor_cfg.add_layer(mse_layer_cfg);
 
     // set up backends
-    let backend = ::std::rc::Rc::new(Backend::<Cuda>::default().unwrap());
+    let framework = Cuda::new();
+    let hardwares = framework.hardwares()[0..1].to_vec();
+    let backend_config = BackendConfig::new(framework, &hardwares);
+    let mut backend = Backend::new(backend_config).unwrap();
+    backend.framework.initialise_cublas().unwrap();
+    backend.framework.initialise_cudnn().unwrap();
+    let backend = ::std::rc::Rc::new(backend);
 
     // set up solver
     let mut solver_cfg = SolverConfig {

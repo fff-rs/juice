@@ -12,10 +12,6 @@ use crate::plugin::*;
 #[macro_use]
 pub mod helper;
 
-lazy_static! {
-    static ref CUDNN: Cudnn = Cudnn::new().unwrap();
-}
-
 fn rnn_sequence_descriptors(sequence_length: i32,
                             input_size: i32,
                             hidden_size: i32,
@@ -124,6 +120,7 @@ pub trait ICudnnDesc<T> {
                               -> Result<ConvolutionDescriptor, PluginError>;
 
     fn cudnn_rnn_desc(&self,
+                      cudnn_framework: &Cudnn,
                       hidden_size: i32,
                       num_layers: i32,
                       dropout_desc: utils::DropoutConfig,
@@ -174,6 +171,7 @@ impl ConvForwardAlgo {
 
     /// Try to find best algorithm for a operation that uses the provided descriptors.
     fn find_cudnn_algo(&self,
+                       cudnn_framework: &Cudnn,
                        filter_desc: &FilterDescriptor,
                        conv_desc: &ConvolutionDescriptor,
                        src_desc: &TensorDescriptor,
@@ -182,7 +180,7 @@ impl ConvForwardAlgo {
         if !self.is_auto() {
             return Ok(*self);
         }
-        let algos = API::find_convolution_forward_algorithm(*CUDNN.id_c(),
+        let algos = API::find_convolution_forward_algorithm(*cudnn_framework.id_c(),
                                                             *filter_desc.id_c(),
                                                             *conv_desc.id_c(),
                                                             *src_desc.id_c(),
@@ -231,6 +229,7 @@ impl ConvBackwardFilterAlgo {
 
     /// Try to find best algorithm for a operation that uses the provided descriptors.
     fn find_cudnn_algo(&self,
+                       cudnn_framework: &Cudnn,
                        filter_desc: &FilterDescriptor,
                        conv_desc: &ConvolutionDescriptor,
                        src_desc: &TensorDescriptor,
@@ -239,7 +238,7 @@ impl ConvBackwardFilterAlgo {
         if !self.is_auto() {
             return Ok(*self);
         }
-        let algos = API::find_convolution_backward_filter_algorithm(*CUDNN.id_c(),
+        let algos = API::find_convolution_backward_filter_algorithm(*cudnn_framework.id_c(),
                                                                     *filter_desc.id_c(),
                                                                     *conv_desc.id_c(),
                                                                     *src_desc.id_c(),
@@ -290,6 +289,7 @@ impl ConvBackwardDataAlgo {
 
     /// Try to find best algorithm for a operation that uses the provided descriptors.
     fn find_cudnn_algo(&self,
+                       cudnn_framework: &Cudnn,
                        filter_desc: &FilterDescriptor,
                        conv_desc: &ConvolutionDescriptor,
                        src_desc: &TensorDescriptor,
@@ -298,7 +298,7 @@ impl ConvBackwardDataAlgo {
         if !self.is_auto() {
             return Ok(*self);
         }
-        let algos = API::find_convolution_backward_data_algorithm(*CUDNN.id_c(),
+        let algos = API::find_convolution_backward_data_algorithm(*cudnn_framework.id_c(),
                                                                   *filter_desc.id_c(),
                                                                   *conv_desc.id_c(),
                                                                   *src_desc.id_c(),
@@ -388,6 +388,7 @@ impl<T> ICudnnDesc<T> for SharedTensor<T>
 
     fn cudnn_rnn_desc(
         &self,
+        cudnn_framework: &Cudnn,
         hidden_size: i32,
         num_layers: i32,
         dropout_desc: utils::DropoutConfig,
@@ -398,7 +399,7 @@ impl<T> ICudnnDesc<T> for SharedTensor<T>
         padding_mode: cudnnRNNPaddingMode_t,
     ) -> Result<RnnDescriptor, PluginError> {
         match RnnDescriptor::new(
-            &CUDNN,
+            &cudnn_framework,
             hidden_size,
             num_layers,
             dropout_desc,
@@ -425,7 +426,7 @@ impl<T> NN<T> for Backend<Cuda>
     type CRNN = utils::RnnConfig;
 
     fn init_nn() {
-        let _ = CUDNN.id_c();
+        //let _ = cudnn_framework.id_c();
     }
 }
 
@@ -443,16 +444,17 @@ impl<T> Sigmoid<T> for Backend<Cuda>
                result: &mut SharedTensor<T>)
                -> Result<(), Error> {
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
+        let cudnn_framework = self.framework().cudnn();
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.sigmoid_forward(&CUDNN.init_activation().unwrap(),
 
-                                    &x.cudnn_tensor_desc_flat()?,
-                                    trans!(x_mem),
-                                    &r_desc,
-                                    trans_mut!(r_mem),
-                                    scal_params) {
+        match cudnn_framework.sigmoid_forward(&cudnn_framework.init_activation().unwrap(),
+                                              &x.cudnn_tensor_desc_flat()?,
+                                              trans!(x_mem),
+                                              &r_desc,
+                                              trans_mut!(r_mem),
+                                              scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation Sigmoid Forward."))),
         }
@@ -464,22 +466,23 @@ impl<T> Sigmoid<T> for Backend<Cuda>
                     result: &SharedTensor<T>,
                     result_diff: &mut SharedTensor<T>)
                     -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.sigmoid_backward(&CUDNN.init_activation().unwrap(),
-                                     &x.cudnn_tensor_desc_flat()?,
-                                     trans!(x_mem),
-                                     &x_diff.cudnn_tensor_desc_flat()?,
-                                     trans!(dx_mem),
-                                     &result.cudnn_tensor_desc_flat()?,
-                                     trans!(r_mem),
-                                     &dr_desc,
-                                     trans_mut!(dr_mem),
-                                     scal_params) {
+        match cudnn_framework.sigmoid_backward(&cudnn_framework.init_activation().unwrap(),
+                                               &x.cudnn_tensor_desc_flat()?,
+                                               trans!(x_mem),
+                                               &x_diff.cudnn_tensor_desc_flat()?,
+                                               trans!(dx_mem),
+                                               &result.cudnn_tensor_desc_flat()?,
+                                               trans!(r_mem),
+                                               &dr_desc,
+                                               trans_mut!(dr_mem),
+                                               scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation Sigmoid Backward."))),
         }
@@ -507,6 +510,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                               stride: &[i32],
                               zero_padding: &[i32])
                               -> Result<Self::CC, Error> {
+        let cudnn_framework = self.framework().cudnn();
         let src_desc = src.cudnn_tensor_desc()?;
         let dest_desc = dest.cudnn_tensor_desc()?;
         let filter_desc = filter.cudnn_filter_desc()?;
@@ -516,14 +520,14 @@ impl<T> Convolution<T> for Backend<Cuda>
             .unwrap();
 
         let useable_algo_fwd =
-            algo_fwd.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc)?;
+            algo_fwd.find_cudnn_algo(cudnn_framework, &filter_desc, &conv_desc, &src_desc, &dest_desc)?;
         let useable_algo_bwd_filter =
-            algo_bwd_filter.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc)?;
+            algo_bwd_filter.find_cudnn_algo(cudnn_framework, &filter_desc, &conv_desc, &src_desc, &dest_desc)?;
         let useable_algo_bwd_data =
-            algo_bwd_data.find_cudnn_algo(&filter_desc, &conv_desc, &src_desc, &dest_desc)?;
+            algo_bwd_data.find_cudnn_algo(cudnn_framework, &filter_desc, &conv_desc, &src_desc, &dest_desc)?;
 
         let mut workspace_size_fwd =
-            API::get_convolution_forward_workspace_size(*CUDNN.id_c(),
+            API::get_convolution_forward_workspace_size(*cudnn_framework.id_c(),
                                                         useable_algo_fwd.as_cudnn().unwrap(),
                                                         *filter_desc.id_c(),
                                                         *conv_desc.id_c(),
@@ -531,7 +535,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                                                         *dest_desc.id_c())
                 .unwrap();
         let mut workspace_size_bwd_filter =
-            API::get_convolution_backward_filter_workspace_size(*CUDNN.id_c(),
+            API::get_convolution_backward_filter_workspace_size(*cudnn_framework.id_c(),
                                                                 useable_algo_bwd_filter
                                                                     .as_cudnn()
                                                                     .unwrap(),
@@ -541,7 +545,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                                                                 *dest_desc.id_c())
                 .unwrap();
         let mut workspace_size_bwd_data =
-            API::get_convolution_backward_data_workspace_size(*CUDNN.id_c(),
+            API::get_convolution_backward_data_workspace_size(*cudnn_framework.id_c(),
                                                               useable_algo_bwd_data
                                                                   .as_cudnn()
                                                                   .unwrap(),
@@ -577,6 +581,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                    workspace: &mut SharedTensor<u8>,
                    config: &Self::CC)
                    -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
 
         let r_desc = result.cudnn_tensor_desc()?;
@@ -585,14 +590,14 @@ impl<T> Convolution<T> for Backend<Cuda>
         let r_mem = write_only!(result, self);
         let w_mem = write_only!(workspace, self);
 
-        match CUDNN.convolution_forward(config,
-                                        trans_mut!(w_mem),
-                                        trans!(f_mem),
-                                        &x.cudnn_tensor_desc()?, // src_desc
-                                        trans!(x_mem),
-                                        &r_desc,
-                                        trans_mut!(r_mem),
-                                        scal_params) {
+        match cudnn_framework.convolution_forward(config,
+                                                  trans_mut!(w_mem),
+                                                  trans!(f_mem),
+                                                  &x.cudnn_tensor_desc()?, // src_desc
+                                                  trans!(x_mem),
+                                                  &r_desc,
+                                                  trans_mut!(r_mem),
+                                                  scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation convolution Forward."))),
         }
@@ -605,19 +610,20 @@ impl<T> Convolution<T> for Backend<Cuda>
                                workspace: &mut SharedTensor<u8>,
                                config: &Self::CC)
                                -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let s_mem = read!(src_data, self);
         let dd_mem = read!(dest_diff, self);
         let df_mem = write_only!(filter_diff, self);
         let w_mem = write_only!(workspace, self);
-        match CUDNN.convolution_backward_filter(config,
-                                                trans_mut!(w_mem),
-                                                &src_data.cudnn_tensor_desc()?,
-                                                trans!(s_mem),
-                                                &dest_diff.cudnn_tensor_desc()?,
-                                                trans!(dd_mem),
-                                                trans_mut!(df_mem),
-                                                scal_params) {
+        match cudnn_framework.convolution_backward_filter(config,
+                                                          trans_mut!(w_mem),
+                                                          &src_data.cudnn_tensor_desc()?,
+                                                          trans!(s_mem),
+                                                          &dest_diff.cudnn_tensor_desc()?,
+                                                          trans!(dd_mem),
+                                                          trans_mut!(df_mem),
+                                                          scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation convolution Backward."))),
         }
@@ -630,6 +636,7 @@ impl<T> Convolution<T> for Backend<Cuda>
                              workspace: &mut SharedTensor<u8>,
                              config: &Self::CC)
                              -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
 
         let dr_desc = result_diff.cudnn_tensor_desc()?;
@@ -637,14 +644,14 @@ impl<T> Convolution<T> for Backend<Cuda>
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
         let w_mem = write_only!(workspace, self);
-        match CUDNN.convolution_backward_data(config,
-                                              trans_mut!(w_mem),
-                                              trans!(f_mem),
-                                              &x_diff.cudnn_tensor_desc()?,
-                                              trans!(dx_mem),
-                                              &dr_desc,
-                                              trans_mut!(dr_mem),
-                                              scal_params) {
+        match cudnn_framework.convolution_backward_data(config,
+                                                        trans_mut!(w_mem),
+                                                        trans!(f_mem),
+                                                        &x_diff.cudnn_tensor_desc()?,
+                                                        trans!(dx_mem),
+                                                        &dr_desc,
+                                                        trans_mut!(dr_mem),
+                                                        scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Operation("Unable to execute CUDA cuDNN Activation convolution Backward."))),
         }
@@ -808,6 +815,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         batch_size: i32,
         input_size: i32
     ) -> Result<Vec<usize>, Error> {
+        let cudnn_framework = self.framework().cudnn();
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
@@ -823,7 +831,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         }
 
         let weight_size: usize = match API::get_rnn_params_size(
-            *CUDNN.id_c(),
+            *cudnn_framework.id_c(),
             *rnn_config.rnn_desc().id_c(),
             *x_desc[0].id_c(),
             data_type) {
@@ -849,13 +857,14 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         num_layers: i32,
         batch_size: i32,
     ) -> Result<Self::CRNN, Error> {
+        let cudnn_framework = self.framework().cudnn();
         let input_mode = input_mode.as_cudnn()?;
         let direction_mode = direction_mode.as_cudnn()?;
         let network_mode = network_mode.as_cudnn()?;
         let algorithm = algorithm.as_cudnn()?;
         let src_description = src.desc();
 
-        let drop_desc = match CUDNN.init_dropout(
+        let drop_desc = match cudnn_framework.init_dropout(
             dropout_probability.unwrap_or(0.5),
             dropout_seed.unwrap_or(0),
         ) {
@@ -875,7 +884,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         )?.x_desc;
 
         let rnn_desc = match RnnDescriptor::new(
-            &CUDNN,
+            &cudnn_framework,
             hidden_size,
             num_layers,
             drop_desc,
@@ -890,7 +899,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
             Err(e) => panic!("Error {:?}", e)
         };
 
-        match CUDNN.init_rnn(
+        match cudnn_framework.init_rnn(
             &x_desc,
             rnn_desc,
             hidden_size,
@@ -918,6 +927,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         weight: &SharedTensor<T>,
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
             *rnn_config.sequence_length(),
@@ -936,7 +946,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let output_mem = output.write_only(self.device()).unwrap();
         let workspace_mem = workspace.write_only(self.device()).unwrap();
 
-        match CUDNN.rnn_forward::<f32>(
+        match cudnn_framework.rnn_forward::<f32>(
             rnn_config,
             sequence_descriptors.x_desc,
             trans!(src_mem),
@@ -969,6 +979,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                          weight: &SharedTensor<T>,
                          workspace: &mut SharedTensor<u8>)
                          -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
             *rnn_config.sequence_length(),
@@ -987,7 +998,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let output_gradient_mem = read!(output_gradient, self);
         let workspace_mem = write_only!(workspace, self);
         let reserve_space = rnn_config.training_reserve();
-        match CUDNN.rnn_backward_data::<f32>(
+        match cudnn_framework.rnn_backward_data::<f32>(
             rnn_config,
             sequence_descriptors.y_desc,
             trans!(output_mem),
@@ -1027,6 +1038,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
                             rnn_config: &Self::CRNN,
                             workspace: &mut SharedTensor<u8>)
                             -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
             *rnn_config.sequence_length(),
@@ -1042,7 +1054,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let workspace_mem = write_only!(workspace, self);
         let filter_mem = write_only!(filter, self);
         let reserve_space = rnn_config.training_reserve();
-        match CUDNN.rnn_backward_weights::<f32>(
+        match cudnn_framework.rnn_backward_weights::<f32>(
             rnn_config,
             sequence_descriptors.x_desc,
             trans!(src_mem),
@@ -1067,16 +1079,17 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
     fn sigmoid_pointwise(&self,
                          x: &mut SharedTensor<T>)
                          -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
-        match CUDNN.sigmoid_forward(&CUDNN.init_activation().unwrap(),
-        							&x_desc,
-                                    trans!(x_mem),
-                                    &x_desc,
-                                    trans_mut!(x_mem),
-                                    scal_params) {
+        match cudnn_framework.sigmoid_forward(&cudnn_framework.init_activation().unwrap(),
+                                              &x_desc,
+                                              trans!(x_mem),
+                                              &x_desc,
+                                              trans_mut!(x_mem),
+                                              scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Sigmoid Pointwise forward."))),
         }
@@ -1086,22 +1099,23 @@ impl<T> SigmoidPointwise<T> for Backend<Cuda>
                               x: &SharedTensor<T>,
                               x_diff: &mut SharedTensor<T>)
                               -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
         // TODO move config one level up
-        match CUDNN.sigmoid_backward(&CUDNN.init_activation().unwrap(),
-        							 &x_desc,
-                                     trans!(x_mem),
-                                     &dx_desc,
-                                     trans!(dx_mem),
-                                     &x_desc,
-                                     trans!(x_mem),
-                                     &dx_desc,
-                                     trans_mut!(dx_mem),
-                                     scal_params) {
+        match cudnn_framework.sigmoid_backward(&cudnn_framework.init_activation().unwrap(),
+                                               &x_desc,
+                                               trans!(x_mem),
+                                               &dx_desc,
+                                               trans!(dx_mem),
+                                               &x_desc,
+                                               trans!(x_mem),
+                                               &dx_desc,
+                                               trans_mut!(dx_mem),
+                                               scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Operation("Unable to execute CUDA cuDNN Sigmoid Pointwise backward."))),
         }
@@ -1115,16 +1129,17 @@ impl<T> Relu<T> for Backend<Cuda>
             x: &SharedTensor<T>,
             result: &mut SharedTensor<T>)
             -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.relu_forward(&CUDNN.init_activation().unwrap(),
-        						&x.cudnn_tensor_desc_flat()?,
-                                 trans!(x_mem),
-                                 &r_desc,
-                                 trans_mut!(r_mem),
-                                 scal_params) {
+        match cudnn_framework.relu_forward(&cudnn_framework.init_activation().unwrap(),
+                                           &x.cudnn_tensor_desc_flat()?,
+                                           trans!(x_mem),
+                                           &r_desc,
+                                           trans_mut!(r_mem),
+                                           scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation relu Forward."))),
         }
@@ -1136,6 +1151,7 @@ impl<T> Relu<T> for Backend<Cuda>
                  result: &SharedTensor<T>,
                  result_diff: &mut SharedTensor<T>)
                  -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
@@ -1143,16 +1159,16 @@ impl<T> Relu<T> for Backend<Cuda>
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
 
-        match CUDNN.relu_backward(&CUDNN.init_activation().unwrap(),
-        						&x.cudnn_tensor_desc_flat()?,
-                                  trans!(x_mem),
-                                  &x_diff.cudnn_tensor_desc_flat()?,
-                                  trans!(dx_mem),
-                                  &result.cudnn_tensor_desc_flat()?,
-                                  trans!(r_mem),
-                                  &dr_desc,
-                                  trans_mut!(dr_mem),
-                                  scal_params) {
+        match cudnn_framework.relu_backward(&cudnn_framework.init_activation().unwrap(),
+                                            &x.cudnn_tensor_desc_flat()?,
+                                            trans!(x_mem),
+                                            &x_diff.cudnn_tensor_desc_flat()?,
+                                            trans!(dx_mem),
+                                            &result.cudnn_tensor_desc_flat()?,
+                                            trans!(r_mem),
+                                            &dr_desc,
+                                            trans_mut!(dr_mem),
+                                            scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation relu Backward."))),
         }
@@ -1165,16 +1181,17 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
     fn relu_pointwise(&self,
                       x: &mut SharedTensor<T>)
                       -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
-        match CUDNN.relu_forward(&CUDNN.init_activation().unwrap(),
-        						&x_desc,
-                                 trans!(x_mem),
-                                 &x_desc,
-                                 trans_mut!(x_mem),
-                                 scal_params) {
+        match cudnn_framework.relu_forward(&cudnn_framework.init_activation().unwrap(),
+                                           &x_desc,
+                                           trans!(x_mem),
+                                           &x_desc,
+                                           trans_mut!(x_mem),
+                                           scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN ReLU Pointwise forward."))),
         }
@@ -1184,22 +1201,23 @@ impl<T> ReluPointwise<T> for Backend<Cuda>
                            x: &SharedTensor<T>,
                            x_diff: &mut SharedTensor<T>)
                            -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
 
-        match CUDNN.relu_backward(&CUDNN.init_activation().unwrap(),
-        						&x_desc,
-                                  trans!(x_mem),
-                                  &dx_desc,
-                                  trans!(dx_mem),
-                                  &x_desc,
-                                  trans!(x_mem),
-                                  &dx_desc,
-                                  trans_mut!(dx_mem),
-                                  scal_params) {
+        match cudnn_framework.relu_backward(&cudnn_framework.init_activation().unwrap(),
+                                            &x_desc,
+                                            trans!(x_mem),
+                                            &dx_desc,
+                                            trans!(dx_mem),
+                                            &x_desc,
+                                            trans!(x_mem),
+                                            &dx_desc,
+                                            trans_mut!(dx_mem),
+                                            scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN ReLU Pointwise backward."))),
         }
@@ -1213,16 +1231,17 @@ impl<T> Tanh<T> for Backend<Cuda>
             x: &SharedTensor<T>,
             result: &mut SharedTensor<T>)
             -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.tanh_forward(&CUDNN.init_activation().unwrap(),
-        						&x.cudnn_tensor_desc_flat()?,
-                                 trans!(x_mem),
-                                 &r_desc,
-                                 trans_mut!(r_mem),
-                                 scal_params) {
+        match cudnn_framework.tanh_forward(&cudnn_framework.init_activation().unwrap(),
+                                           &x.cudnn_tensor_desc_flat()?,
+                                           trans!(x_mem),
+                                           &r_desc,
+                                           trans_mut!(r_mem),
+                                           scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation tanh Forward."))),
         }
@@ -1234,22 +1253,23 @@ impl<T> Tanh<T> for Backend<Cuda>
                  result: &SharedTensor<T>,
                  result_diff: &mut SharedTensor<T>)
                  -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.tanh_backward(&CUDNN.init_activation().unwrap(),
-        						&x.cudnn_tensor_desc_flat()?,
-                                  trans!(x_mem),
-                                  &x_diff.cudnn_tensor_desc_flat()?,
-                                  trans!(dx_mem),
-                                  &result.cudnn_tensor_desc_flat()?,
-                                  trans!(r_mem),
-                                  &dr_desc,
-                                  trans_mut!(dr_mem),
-                                  scal_params) {
+        match cudnn_framework.tanh_backward(&cudnn_framework.init_activation().unwrap(),
+                                            &x.cudnn_tensor_desc_flat()?,
+                                            trans!(x_mem),
+                                            &x_diff.cudnn_tensor_desc_flat()?,
+                                            trans!(dx_mem),
+                                            &result.cudnn_tensor_desc_flat()?,
+                                            trans!(r_mem),
+                                            &dr_desc,
+                                            trans_mut!(dr_mem),
+                                            scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation tanh Backward."))),
         }
@@ -1262,15 +1282,16 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
     fn tanh_pointwise(&self,
                       x: &mut SharedTensor<T>)
                       -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
-        match CUDNN.tanh_forward(&CUDNN.init_activation().unwrap(),
-        						&x_desc,
-                                 trans!(x_mem),
-                                 &x_desc,
-                                 trans_mut!(x_mem),
-                                 scal_params) {
+        match cudnn_framework.tanh_forward(&cudnn_framework.init_activation().unwrap(),
+                                           &x_desc,
+                                           trans!(x_mem),
+                                           &x_desc,
+                                           trans_mut!(x_mem),
+                                           scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Tanh Pointwise forward."))),
         }
@@ -1280,21 +1301,22 @@ impl<T> TanhPointwise<T> for Backend<Cuda>
                            x: &SharedTensor<T>,
                            x_diff: &mut SharedTensor<T>)
                            -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
-        match CUDNN.tanh_backward(&CUDNN.init_activation().unwrap(),
-        						&x_desc,
-                                  trans!(x_mem),
-                                  &dx_desc,
-                                  trans!(dx_mem),
-                                  &x_desc,
-                                  trans!(x_mem),
-                                  &dx_desc,
-                                  trans_mut!(dx_mem),
-                                  scal_params) {
+        match cudnn_framework.tanh_backward(&cudnn_framework.init_activation().unwrap(),
+                                            &x_desc,
+                                            trans!(x_mem),
+                                            &dx_desc,
+                                            trans!(dx_mem),
+                                            &x_desc,
+                                            trans!(x_mem),
+                                            &dx_desc,
+                                            trans_mut!(dx_mem),
+                                            scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Tanh Pointwise backward."))),
         }
@@ -1308,15 +1330,16 @@ impl<T> Softmax<T> for Backend<Cuda>
                x: &SharedTensor<T>,
                result: &mut SharedTensor<T>)
                -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.softmax_forward(&x.cudnn_tensor_desc_softmax()?,
-                                    trans!(x_mem),
-                                    &r_desc,
-                                    trans_mut!(r_mem),
-                                    scal_params) {
+        match cudnn_framework.softmax_forward(&x.cudnn_tensor_desc_softmax()?,
+                                              trans!(x_mem),
+                                              &r_desc,
+                                              trans_mut!(r_mem),
+                                              scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN softmax Forward."))),
         }
@@ -1327,18 +1350,19 @@ impl<T> Softmax<T> for Backend<Cuda>
                     x_diff: &SharedTensor<T>,
                     result_diff: &mut SharedTensor<T>)
                     -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.softmax_backward(&x.cudnn_tensor_desc_softmax()?,
-                                     trans!(x_mem),
-                                     &x_diff.cudnn_tensor_desc_softmax()?,
-                                     trans!(dx_mem),
-                                     &dr_desc,
-                                     trans_mut!(dr_mem),
-                                     scal_params) {
+        match cudnn_framework.softmax_backward(&x.cudnn_tensor_desc_softmax()?,
+                                               trans!(x_mem),
+                                               &x_diff.cudnn_tensor_desc_softmax()?,
+                                               trans!(dx_mem),
+                                               &dr_desc,
+                                               trans_mut!(dr_mem),
+                                               scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN softmax Backward."))),
         }
@@ -1352,15 +1376,16 @@ impl<T> LogSoftmax<T> for Backend<Cuda>
                    x: &SharedTensor<T>,
                    result: &mut SharedTensor<T>)
                    -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.log_softmax_forward(&x.cudnn_tensor_desc_softmax()?,
-                                    trans!(x_mem),
-                                    &r_desc,
-                                    trans_mut!(r_mem),
-                                    scal_params) {
+        match cudnn_framework.log_softmax_forward(&x.cudnn_tensor_desc_softmax()?,
+                                                  trans!(x_mem),
+                                                  &r_desc,
+                                                  trans_mut!(r_mem),
+                                                  scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN softmax Forward."))),
         }
@@ -1370,18 +1395,19 @@ impl<T> LogSoftmax<T> for Backend<Cuda>
                     x_diff: &SharedTensor<T>,
                     result_diff: &mut SharedTensor<T>)
                     -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.log_softmax_backward(&x.cudnn_tensor_desc_softmax()?,
-                                     trans!(x_mem),
-                                     &x_diff.cudnn_tensor_desc_softmax()?,
-                                     trans!(dx_mem),
-                                     &dr_desc,
-                                     trans_mut!(dr_mem),
-                                     scal_params) {
+        match cudnn_framework.log_softmax_backward(&x.cudnn_tensor_desc_softmax()?,
+                                                   trans!(x_mem),
+                                                   &x_diff.cudnn_tensor_desc_softmax()?,
+                                                   trans!(dx_mem),
+                                                   &dr_desc,
+                                                   trans_mut!(dr_mem),
+                                                   scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN log softmax Backward."))),
         }
@@ -1398,7 +1424,8 @@ impl<T> LRN<T> for Backend<Cuda>
                       beta: f64,
                       k: f64)
                       -> Result<Self::CLRN, Error> {
-        Ok(CUDNN.init_normalization(n, alpha, beta, k).unwrap())
+        let cudnn_framework = self.framework().cudnn();
+        Ok(cudnn_framework.init_normalization(n, alpha, beta, k).unwrap())
     }
 
     fn lrn(&self,
@@ -1406,16 +1433,17 @@ impl<T> LRN<T> for Backend<Cuda>
            result: &mut SharedTensor<T>,
            config: &Self::CLRN)
            -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.lrn_forward(config,
-                                &x.cudnn_tensor_desc()?,
-                                trans!(x_mem),
-                                &r_desc,
-                                trans_mut!(r_mem),
-                                scal_params) {
+        match cudnn_framework.lrn_forward(config,
+                                          &x.cudnn_tensor_desc()?,
+                                          trans!(x_mem),
+                                          &r_desc,
+                                          trans_mut!(r_mem),
+                                          scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation lrn Forward."))),
         }
@@ -1429,22 +1457,23 @@ impl<T> LRN<T> for Backend<Cuda>
                 result_diff: &mut SharedTensor<T>,
                 config: &Self::CLRN)
                 -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.lrn_backward(config,
-                                 &x.cudnn_tensor_desc()?,
-                                 trans!(x_mem),
-                                 &x_diff.cudnn_tensor_desc()?,
-                                 trans!(dx_mem),
-                                 &result.cudnn_tensor_desc()?,
-                                 trans!(r_mem),
-                                 &dr_desc,
-                                 trans_mut!(dr_mem),
-                                 scal_params) {
+        match cudnn_framework.lrn_backward(config,
+                                           &x.cudnn_tensor_desc()?,
+                                           trans!(x_mem),
+                                           &x_diff.cudnn_tensor_desc()?,
+                                           trans!(dx_mem),
+                                           &result.cudnn_tensor_desc()?,
+                                           trans!(r_mem),
+                                           &dr_desc,
+                                           trans_mut!(dr_mem),
+                                           scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Activation lrn Backward."))),
         }
@@ -1474,17 +1503,18 @@ impl<T> Pooling<T> for Backend<Cuda>
                    result: &mut SharedTensor<T>,
                    config: &Self::CPOOL)
                    -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
 
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.pooling_max_forward(config,
-                                        &x.cudnn_tensor_desc()?,
-                                        trans!(x_mem),
-                                        &r_desc,
-                                        trans_mut!(r_mem),
-                                        scal_params) {
+        match cudnn_framework.pooling_max_forward(config,
+                                                  &x.cudnn_tensor_desc()?,
+                                                  trans!(x_mem),
+                                                  &r_desc,
+                                                  trans_mut!(r_mem),
+                                                  scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN max pooling Forward."))),
         }
@@ -1498,23 +1528,23 @@ impl<T> Pooling<T> for Backend<Cuda>
                         result_diff: &mut SharedTensor<T>,
                         config: &Self::CPOOL)
                         -> Result<(), Error> {
-
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.pooling_max_backward(config,
-                                         &x.cudnn_tensor_desc()?,
-                                         trans!(x_mem),
-                                         &x_diff.cudnn_tensor_desc()?,
-                                         trans!(dx_mem),
-                                         &result.cudnn_tensor_desc()?,
-                                         trans!(r_mem),
-                                         &dr_desc,
-                                         trans_mut!(dr_mem),
-                                         scal_params) {
+        match cudnn_framework.pooling_max_backward(config,
+                                                   &x.cudnn_tensor_desc()?,
+                                                   trans!(x_mem),
+                                                   &x_diff.cudnn_tensor_desc()?,
+                                                   trans!(dx_mem),
+                                                   &result.cudnn_tensor_desc()?,
+                                                   trans!(r_mem),
+                                                   &dr_desc,
+                                                   trans_mut!(dr_mem),
+                                                   scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN max pooling Backward."))),
         }
@@ -1525,16 +1555,17 @@ impl<T> Pooling<T> for Backend<Cuda>
                    result: &mut SharedTensor<T>,
                    config: &Self::CPOOL)
                    -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.pooling_avg_forward(config,
-                                        &x.cudnn_tensor_desc()?,
-                                        trans!(x_mem),
-                                        &r_desc,
-                                        trans_mut!(r_mem),
-                                        scal_params) {
+        match cudnn_framework.pooling_avg_forward(config,
+                                                  &x.cudnn_tensor_desc()?,
+                                                  trans!(x_mem),
+                                                  &r_desc,
+                                                  trans_mut!(r_mem),
+                                                  scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN avg pooling Forward."))),
         }
@@ -1548,22 +1579,23 @@ impl<T> Pooling<T> for Backend<Cuda>
                         result_diff: &mut SharedTensor<T>,
                         config: &Self::CPOOL)
                         -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> = crate::cudnn::utils::ScalParams::default();
         let dr_desc = result_diff.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        match CUDNN.pooling_avg_backward(config,
-                                         &x.cudnn_tensor_desc()?,
-                                         trans!(x_mem),
-                                         &x_diff.cudnn_tensor_desc()?,
-                                         trans!(dx_mem),
-                                         &result.cudnn_tensor_desc()?,
-                                         trans!(r_mem),
-                                         &dr_desc,
-                                         trans_mut!(dr_mem),
-                                         scal_params) {
+        match cudnn_framework.pooling_avg_backward(config,
+                                                   &x.cudnn_tensor_desc()?,
+                                                   trans!(x_mem),
+                                                   &x_diff.cudnn_tensor_desc()?,
+                                                   trans!(dx_mem),
+                                                   &result.cudnn_tensor_desc()?,
+                                                   trans!(r_mem),
+                                                   &dr_desc,
+                                                   trans_mut!(dr_mem),
+                                                   scal_params) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN avg pooling Backward."))),
         }
@@ -1580,7 +1612,8 @@ impl<T> Dropout<T> for Backend<Cuda>
                       seed: u64,
                       )
                       -> Result<Self::CDROP, Error> {
-        Ok(CUDNN.init_dropout(probability, seed).unwrap())
+        let cudnn_framework = self.framework().cudnn();
+        Ok(cudnn_framework.init_dropout(probability, seed).unwrap())
     }
 
     fn dropout(&self,
@@ -1588,15 +1621,16 @@ impl<T> Dropout<T> for Backend<Cuda>
            result: &mut SharedTensor<T>,
            config: &Self::CDROP)
            -> Result<(), Error> {
+        let cudnn_framework = self.framework().cudnn();
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        match CUDNN.dropout_forward::<f32>(config,
-                                &x.cudnn_tensor_desc()?,
-                                trans!(x_mem),
-                                &r_desc,
-                                trans_mut!(r_mem),
-                                ) {
+        match cudnn_framework.dropout_forward::<f32>(config,
+                                                     &x.cudnn_tensor_desc()?,
+                                                     trans!(x_mem),
+                                                     &r_desc,
+                                                     trans_mut!(r_mem),
+        ) {
             Ok(_) => Ok(()),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to execute CUDA cuDNN Dropout Forward."))),
         }
@@ -1616,7 +1650,7 @@ impl<T> Dropout<T> for Backend<Cuda>
         // let dx_mem = read!(x_diff, self);
         // let r_mem = write_only!(result, self);
         // let dr_mem = write_only!(result_diff, self);
-        // match CUDNN.dropout_backward::<f32>(config,
+        // match cudnn_framework.dropout_backward::<f32>(config,
         //                          &x.cudnn_tensor_desc()?,
         //                          trans!(x_mem),
         //                          &result.cudnn_tensor_desc()?,

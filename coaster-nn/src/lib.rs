@@ -42,7 +42,13 @@
 //! pub fn main() {
 //!     // Initialize a CUDA Backend.
 //!     // Usually you would not use CUDA but let Coaster pick what is available on the machine.
-//!     let backend = Backend::<Cuda>::default().unwrap();
+//!     let framework = Cuda::new();
+//!     let hardwares = framework.hardwares()[0..1].to_vec();
+//!     let backend_config = BackendConfig::new(framework, &hardwares);
+//!     let mut backend = Backend::new(backend_config).unwrap();
+//!     backend.framework.initialise_cublas().unwrap();
+//!     backend.framework.initialise_cudnn().unwrap();
+//!
 //!     // Initialize two SharedTensors.
 //!     let mut x = SharedTensor::<f32>::new(&(1, 1, 3));
 //!     let mut result = SharedTensor::<f32>::new(&(1, 1, 3));
@@ -112,8 +118,6 @@ extern crate coaster as co;
 #[cfg(feature = "cuda")]
 extern crate rcudnn as cudnn;
 extern crate libc;
-#[macro_use]
-extern crate lazy_static;
 extern crate log;
 
 extern crate rand;

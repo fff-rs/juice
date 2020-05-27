@@ -21,10 +21,7 @@ num = "0.1"
 clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]
-coaster = { default-features = false, features = [
-    "native",
-    "cuda"
-], version = "0.1" }
+coaster = { default-features = false, features = ["native", "cuda"], version = "0.1" }
 serial_test = "0.4"
 
 [features]
