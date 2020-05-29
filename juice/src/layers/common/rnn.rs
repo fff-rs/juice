@@ -390,7 +390,7 @@ mod tests {
                     RnnNetworkMode::LSTM,
                     RnnInputMode::LinearInput,
                     DirectionMode::UniDirectional,
-                    RnnAlgorithm::PersistStatic,
+                    RnnAlgorithm::Standard,
                     hidden_size as i32,
                     num_layers as i32,
                     input_shape[0] as i32,
