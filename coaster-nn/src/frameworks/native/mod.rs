@@ -8,7 +8,9 @@ use std::cmp::PartialOrd;
 use std::fmt::Debug;
 use std::ops::*;
 
+#[cfg(feature = "native")]
 use rand::{Rng, SeedableRng};
+#[cfg(feature = "native")]
 use rand_hc as hc128;
 
 use crate::co::Error;
@@ -886,6 +888,7 @@ impl<T> Rnn<T> for Backend<Native>
     }
 }
 
+#[cfg(feature = "native")]
 impl<T> Dropout<T> for Backend<Native>
     where T: Float + Add<T, Output = T> + Mul<T, Output = T> + Default + Copy + PartialOrd + Bounded
 {
@@ -898,6 +901,7 @@ impl<T> Dropout<T> for Backend<Native>
     }
 
     // TODO this is supposed to be an in place operation
+    #[cfg(feature = "native")]
     fn dropout(&self,
            x: &SharedTensor<T>,
            result: &mut SharedTensor<T>,

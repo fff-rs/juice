@@ -110,9 +110,11 @@
 #![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
 #![deny(missing_docs,
-        missing_debug_implementations, missing_copy_implementations,
-        trivial_casts, trivial_numeric_casts,
-        unused_import_braces, unused_qualifications)]
+missing_debug_implementations, missing_copy_implementations,
+trivial_casts, trivial_numeric_casts,
+unused_import_braces, unused_qualifications)]
+
+pub use crate::plugin::*;
 
 extern crate coaster as co;
 #[cfg(feature = "cuda")]
@@ -120,10 +122,10 @@ extern crate rcudnn as cudnn;
 extern crate libc;
 extern crate log;
 
-extern crate rand;
+#[cfg(feature = "native")]
 extern crate rand_hc;
-
-pub use crate::plugin::*;
+#[cfg(feature = "native")]
+extern crate rand;
 
 mod plugin;
 pub mod frameworks;
