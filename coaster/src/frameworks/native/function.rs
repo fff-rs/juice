@@ -2,7 +2,7 @@
 
 use crate::operation::IOperation;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 /// Defines a host CPU operation.
 pub struct Function;
 

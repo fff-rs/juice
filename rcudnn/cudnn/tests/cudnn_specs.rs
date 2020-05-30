@@ -22,7 +22,6 @@ mod cudnn_spec {
     };
 
     #[test]
-    #[serial_test::serial]
     fn it_initializes_correctly() {
         let cuda = Cuda::new();
         println!("{:?}", cuda.hardwares());
@@ -36,7 +35,6 @@ mod cudnn_spec {
     }
 
     #[test]
-    #[serial_test::serial]
     fn it_returns_version() {
         println!("cuDNN Version: {:?}", Cudnn::version());
     }
@@ -49,7 +47,6 @@ mod cudnn_spec {
      * Since then this has been rewritten to not use transmute but a sequence of unsafe optimizations.
      */
     #[test]
-    #[serial_test::serial]
     fn it_computes_sigmoid() {
         let cudnn = Cudnn::new().unwrap();
         let desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
@@ -84,7 +81,6 @@ mod cudnn_spec {
     }
 
     #[test]
-    #[serial_test::serial]
     fn it_finds_correct_convolution_algorithm_forward() {
         let cudnn = Cudnn::new().unwrap();
         let src = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
@@ -107,7 +103,6 @@ mod cudnn_spec {
     }
 
     #[test]
-    #[serial_test::serial]
     fn it_finds_correct_convolution_algorithm_backward() {
         let cudnn = Cudnn::new().unwrap();
         let src = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
@@ -130,14 +125,12 @@ mod cudnn_spec {
     }
 
     #[test]
-    #[serial_test::serial]
     fn it_allocates_cuda_device_memory() {
         let _ = Cudnn::new().unwrap();
         let _ = CudaDeviceMemory::new(1024).unwrap();
     }
 
     #[test]
-    #[serial_test::serial]
     fn it_computes_dropout_forward() {
         let cudnn = Cudnn::new().unwrap();
         let src = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();

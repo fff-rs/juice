@@ -102,7 +102,6 @@ mod test {
     use crate::chore::*;
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_gemm() {
         test_setup();
 

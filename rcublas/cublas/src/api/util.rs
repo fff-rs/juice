@@ -197,7 +197,6 @@ mod test {
     use crate::Context;
 
     #[test]
-    #[serial_test::serial]
     fn manual_context_creation() {
         crate::chore::test_setup();
 
@@ -208,7 +207,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn default_pointer_mode_is_host() {
         crate::chore::test_setup();
 
@@ -222,7 +220,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn can_set_pointer_mode() {
         crate::chore::test_setup();
 

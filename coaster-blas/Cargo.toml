@@ -28,7 +28,6 @@ spin = { version = "0.5", optional = true }
 clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]
-serial_test = "0.4"
 
 [features]
 default = ["native", "cuda"]

@@ -29,7 +29,6 @@ compiletest_rs = { version = "0.4", optional = true }
 
 [dev-dependencies]
 coaster-nn = { version = "0.4", default-features=false}
-serial_test = "0.4"
 
 
 [features]
