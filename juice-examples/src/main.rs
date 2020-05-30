@@ -334,14 +334,7 @@ fn run_mnist(
     let nll_cfg = LayerConfig::new("nll", LayerType::NegativeLogLikelihood(nll_layer_cfg));
     classifier_cfg.add_layer(nll_cfg);
 
-    // set up backends
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares()[0..1].to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    let mut backend = Backend::new(backend_config).unwrap();
-    backend.framework.initialise_cublas().unwrap();
-    backend.framework.initialise_cudnn().unwrap();
-    let backend = ::std::rc::Rc::new(backend);
+    let backend = Rc::new(get_cuda_backend());
 
     // set up solver
     let mut solver_cfg = SolverConfig {
@@ -490,13 +483,7 @@ fn run_fashion(
     classifier_cfg.add_layer(nll_cfg);
 
     // set up backends
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares()[0..1].to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    let mut backend = Backend::new(backend_config).unwrap();
-    backend.framework.initialise_cublas().unwrap();
-    backend.framework.initialise_cudnn().unwrap();
-    let backend = ::std::rc::Rc::new(backend);
+    let backend = Rc::new(get_cuda_backend());
 
     // set up solver
     let mut solver_cfg = SolverConfig {
@@ -551,6 +538,9 @@ fn run_fashion(
 
 #[cfg(all(feature = "cuda"))]
 use conn::{RnnNetworkMode, DirectionMode, RnnInputMode};
+use co::frameworks::cuda::get_cuda_backend;
+use std::rc::Rc;
+
 #[allow(dead_code)]
 fn run_mackey_glass(
     model_name: Option<String>,
@@ -609,13 +599,7 @@ fn run_mackey_glass(
     regressor_cfg.add_layer(mse_layer_cfg);
 
     // set up backends
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares()[0..1].to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    let mut backend = Backend::new(backend_config).unwrap();
-    backend.framework.initialise_cublas().unwrap();
-    backend.framework.initialise_cudnn().unwrap();
-    let backend = ::std::rc::Rc::new(backend);
+    let backend = Rc::new(get_cuda_backend());
 
     // set up solver
     let mut solver_cfg = SolverConfig {

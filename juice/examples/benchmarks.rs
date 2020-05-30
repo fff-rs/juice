@@ -46,18 +46,9 @@ fn native_backend() -> Rc<Backend<Native>> {
 
 #[cfg(feature = "cuda")]
 #[allow(dead_code)]
-fn cuda_backend() -> Rc<Backend<Cuda>> {
-    let framework = Cuda::new();
-    let hardwares = &framework.hardwares()[0..1].to_vec();
-    println!("Device: {:?}/{}",
-             hardwares[0].hardware_type().unwrap(),
-             hardwares[0].name().unwrap());
-    let backend_config = BackendConfig::new(framework, hardwares);
-    let mut backend = Backend::new(backend_config).unwrap();
-    backend.framework.initialise_cublas().unwrap();
-    backend.framework.initialise_cudnn().unwrap();
-    Rc::new(backend)
-}
+use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
+use juice::layer::{LayerConfig, LayerType, Layer};
+use juice::layers::{ConvolutionConfig, PoolingMode, PoolingConfig, LinearConfig, SequentialConfig};
 
 #[cfg(feature = "opencl")]
 #[allow(dead_code)]
@@ -197,7 +188,7 @@ fn bench_alexnet() {
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc3", LinearConfig { output_size: 1000 }));
 
-    let backend = cuda_backend();
+    let backend = Rc::new(cuda_backend());
     // let native_backend = native_backend();
     let mut network = Layer::from_config(backend.clone(),
                                          &LayerConfig::new("alexnet", LayerType::Sequential(cfg)));
@@ -326,7 +317,7 @@ fn bench_overfeat() {
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc3", LinearConfig { output_size: 1000 }));
 
-    let backend = cuda_backend();
+    let backend = Rc::new(cuda_backend());
     // let native_backend = native_backend();
     let mut network = Layer::from_config(backend.clone(),
                                          &LayerConfig::new("overfeat", LayerType::Sequential(cfg)));
@@ -501,7 +492,7 @@ fn bench_vgg_a() {
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc3", LinearConfig { output_size: 1000 }));
 
-    let backend = cuda_backend();
+    let backend = Rc::new(cuda_backend());
     // let native_backend = native_backend();
     let mut network = Layer::from_config(backend.clone(),
                                          &LayerConfig::new("vgg_a", LayerType::Sequential(cfg)));

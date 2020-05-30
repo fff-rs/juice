@@ -32,16 +32,7 @@ fn get_native_backend() -> Backend<Native> {
     Backend::<Native>::default().unwrap()
 }
 #[cfg(feature = "cuda")]
-fn get_cuda_backend() -> Backend<Cuda> {
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares()[0..1].to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    let mut backend = Backend::new(backend_config).unwrap();
-    backend.framework.initialise_cublas().unwrap();
-    backend.framework.initialise_cudnn().unwrap();
-    backend
-}
-
+use crate::co::frameworks::cuda::get_cuda_backend;
 #[cfg(feature = "opencl")]
 fn get_opencl_backend() -> Backend<OpenCL> {
     Backend::<OpenCL>::default().unwrap()
@@ -206,14 +197,12 @@ macro_rules! test_cuda {
 
         #[cfg(feature = "cuda")]
         #[test]
-        #[serial_test::serial]
         fn $f32_name() {
             $test_name::<f32, _>(crate::tests::get_cuda_backend())
         }
 
         #[cfg(feature = "cuda")]
         #[test]
-        #[serial_test::serial]
         fn $f64_name() {
             $test_name::<f64, _>(crate::tests::get_cuda_backend())
         }
@@ -241,7 +230,6 @@ macro_rules! test_cross {
     ($test_name:ident, $f32_name:ident) => {
         #[cfg(all(feature = "native",feature = "cuda"))]
         #[test]
-        #[serial_test::serial]
         fn $f32_name() {
             $test_name::<_, _>(crate::tests::get_native_backend(), crate::tests::get_cuda_backend())
         }

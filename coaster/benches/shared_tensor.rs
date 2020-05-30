@@ -34,15 +34,7 @@ fn opencl_backend() -> Backend<OpenCL> {
 }
 
 #[cfg(feature = "cuda")]
-fn cuda_backend() -> Backend<Cuda> {
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares()[0..1].to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    let mut backend = Backend::new(backend_config).unwrap();
-    backend.framework.initialise_cublas().unwrap();
-    backend.framework.initialise_cudnn().unwrap();
-    backend
-}
+use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
 
 fn sync_back_and_forth<F1, F2>(b: &mut Bencher,
                                backend1: Backend<F1>, backend2: Backend<F2>,

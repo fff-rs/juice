@@ -332,15 +332,7 @@ mod tests {
     fn sample_input() -> &'static [f32] { [1.0_f32; 512].as_ref() }
 
     #[cfg(feature = "cuda")]
-    fn cuda_backend() -> Backend<Cuda> {
-        let framework = Cuda::new();
-        let hardwares = framework.hardwares()[0..1].to_vec();
-        let backend_config = BackendConfig::new(framework, &hardwares);
-        let mut backend = Backend::new(backend_config).unwrap();
-        backend.framework.initialise_cublas().unwrap();
-        backend.framework.initialise_cudnn().unwrap();
-        backend
-    }
+    use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
 
     fn sample_output() -> &'static [f32] {
         [0.99, 0.99, 0.99, 0.99,
@@ -348,7 +340,6 @@ mod tests {
     }
 
     #[test]
-    #[serial_test::serial]
     #[cfg(feature = "cuda")]
     fn rnn_create_layer() {
         let cfg = RnnConfig {
@@ -375,6 +366,7 @@ mod tests {
             .unwrap()
             .as_mut_slice()
             .copy_from_slice(sample_input());
+
         let input_shape = input_data.desc();
 
         let output_shape = &[input_shape[0], input_shape[1], num_layers];
@@ -400,7 +392,6 @@ mod tests {
     }
 
     #[test]
-    #[serial_test::serial]
     #[cfg(feature = "cuda")]
     fn rnn_forward_pass() {
         let backend: Backend<Cuda> = cuda_backend();

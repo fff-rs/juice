@@ -20,15 +20,7 @@ mod benches {
     }
 
     #[cfg(feature = "cuda")]
-    fn cuda_backend() -> Rc<Backend<Cuda>> {
-        let framework = Cuda::new();
-        let hardwares = framework.hardwares()[0..1].to_vec();
-        let backend_config = BackendConfig::new(framework, &hardwares);
-        let mut backend = Backend::new(backend_config).unwrap();
-        backend.framework.initialise_cublas().unwrap();
-        backend.framework.initialise_cudnn().unwrap();
-        Rc::new(backend)
-    }
+    use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
 
     #[cfg(feature = "opencl")]
     #[allow(dead_code)]
