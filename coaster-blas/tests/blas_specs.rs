@@ -17,22 +17,13 @@ use crate::co::frameworks::Native;
 
 #[cfg(feature = "cuda")]
 use crate::co::frameworks::Cuda;
-use co::BackendConfig;
 
 #[cfg(feature = "native")]
 fn get_native_backend() -> Backend<Native> {
     Backend::<Native>::default().unwrap()
 }
 #[cfg(feature = "cuda")]
-fn get_cuda_backend() -> Backend<Cuda> {
-    let framework = Cuda::new();
-    let hardwares = framework.hardwares()[0..1].to_vec();
-    let backend_config = BackendConfig::new(framework, &hardwares);
-    let mut backend = Backend::new(backend_config).unwrap();
-    backend.framework.initialise_cublas().unwrap();
-    backend.framework.initialise_cudnn().unwrap();
-    backend
-}
+use crate::co::frameworks::cuda::get_cuda_backend;
 
 // #[cfg(feature = "opencl")]
 // fn get_opencl_backend() -> Backend<OpenCL> {

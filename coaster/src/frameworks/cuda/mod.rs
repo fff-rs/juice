@@ -19,6 +19,7 @@ pub use self::device::{Device, DeviceInfo};
 pub use self::api::{Driver, DriverError};
 use crate::cudnn::*;
 use crate::cublas;
+use BackendConfig;
 
 pub mod device;
 pub mod context;
@@ -26,6 +27,24 @@ pub mod function;
 pub mod memory;
 pub mod module;
 mod api;
+
+
+/// Initialise the CUDA, CUBLAS, and CUDNN APIs
+///
+/// # Safety
+/// CUDA, CUBLAS, and CUDNN are all initialised by external handles, and will be destroyed via
+/// external API calls when the Cuda struct within the backend is destroyed.
+pub fn get_cuda_backend() -> Backend<Cuda> {
+    let framework = Cuda::new();
+    let hardwares = framework.hardwares()[0..1].to_vec();
+    let backend_config = BackendConfig::new(framework, &hardwares);
+    let mut backend = Backend::new(backend_config).unwrap();
+    // CUDA backend must be initialised before CUDA and CUDNN can be initialised.
+    // Ordering of CUBLAS & CUDNN being initialised is unimportant.
+    backend.framework.initialise_cublas().unwrap();
+    backend.framework.initialise_cudnn().unwrap();
+    backend
+}
 
 #[derive(Debug, Clone)]
 /// Provides the Cuda Framework.

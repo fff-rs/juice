@@ -28,6 +28,12 @@ mod stable_alloc;
 #[cfg(feature = "unstable_alloc")]
 mod unstable_alloc;
 
+
+/// Initialise the Native Backend for running Tensor Operations
+pub fn get_native_backend() -> Backend<Native> {
+    Backend::<Native>::default().unwrap()
+}
+
 #[derive(Debug, Clone)]
 /// Provides the Native framework.
 ///
