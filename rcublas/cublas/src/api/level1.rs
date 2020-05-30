@@ -154,9 +154,7 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown(
-                "Unable to calculate dot product of x and y.",
-            )),
+            _ => Err(Error::Unknown("Unable to calculate dot product of x and y.")),
         }
     }
 
@@ -184,11 +182,18 @@ impl API {
         match cublasSnrm2_v2(handle, n, x, incx, result) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
+            cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => {
+                dbg!("Alloc failed");
+                Err(Error::AllocFailed)
+            },
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown(
-                "Unable to calculate the euclidian norm of x.",
-            )),
+            _ => {
+                dbg!("Unknown!");
+                Err(Error::Unknown(
+                    "Unable to calculate the euclidian norm of x.",
+                ))
+            },
         }
     }
 
@@ -270,7 +275,6 @@ mod test {
     use crate::chore::*;
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_asum() {
         test_setup();
 
@@ -304,7 +308,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_axpy() {
         test_setup();
 
@@ -345,7 +348,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_copy() {
         test_setup();
 
@@ -381,7 +383,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_dot() {
         test_setup();
 
@@ -421,7 +422,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_nrm2() {
         test_setup();
 
@@ -457,7 +457,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_scal() {
         test_setup();
 
@@ -492,7 +491,6 @@ mod test {
     }
 
     #[test]
-    #[serial_test::serial]
     fn use_cuda_memory_for_swap() {
         test_setup();
 

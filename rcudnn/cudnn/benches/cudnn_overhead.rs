@@ -5,17 +5,12 @@ extern crate rcudnn;
 extern crate test;
 
 
-
-
-
-
 #[cfg(test)]
 mod cudnn_spec {
 
     use rcudnn::Cudnn;
 
     #[test]
-    #[serial_test::serial]
     fn it_initializes_correctly() {
         /*
         match Cudnn::new() {
@@ -29,7 +24,6 @@ mod cudnn_spec {
     }
 
     #[test]
-    #[serial_test::serial]
     fn it_returns_version() {
         println!("cuDNN Version: {:?}", Cudnn::version());
     }

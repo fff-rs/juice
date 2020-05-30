@@ -2,7 +2,7 @@
 
 use crate::binary::IBinary;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 /// Defines a host CPU binary.
 pub struct Binary {
     id: isize,
