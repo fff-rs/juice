@@ -181,34 +181,11 @@
 <span id="181">181</span>
 <span id="182">182</span>
 <span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> {<span class="ident">API</span>, <span class="ident">Error</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">API</span>, <span class="ident">Error</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Context</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Operation</span>;
-<span class="kw">use</span> <span class="ident">ffi</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
 
 <span class="kw">impl</span> <span class="ident">API</span> {
     <span class="doccomment">/// Performs a general matrix-matrix multiplication.</span>
@@ -301,42 +278,17 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
-    <span class="kw">use</span> <span class="ident">ffi</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">API</span>;
-    <span class="kw">use</span> <span class="ident">api</span>::<span class="ident">context</span>::<span class="ident">Context</span>;
-    <span class="kw">use</span> <span class="ident">api</span>::<span class="ident">enums</span>::<span class="ident">PointerMode</span>;
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">backend</span>::{<span class="ident">Backend</span>, <span class="ident">IBackend</span>};
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">framework</span>::<span class="ident">IFramework</span>;
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">frameworks</span>::{<span class="ident">Cuda</span>, <span class="ident">Native</span>};
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">flatbox</span>::<span class="ident">FlatBox</span>;
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">tensor</span>::<span class="ident">SharedTensor</span>;
-
-    <span class="kw">fn</span> <span class="ident">get_native_backend</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span> {
-        <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>()
-    }
-    <span class="kw">fn</span> <span class="ident">get_cuda_backend</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span> {
-        <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>()
-    }
-
-    <span class="kw">fn</span> <span class="ident">write_to_memory</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span><span class="op">&gt;</span>(<span class="ident">mem</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlatBox</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>]) {
-        <span class="kw">let</span> <span class="ident">mem_buffer</span> <span class="op">=</span> <span class="ident">mem</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-        <span class="kw">for</span> (<span class="ident">index</span>, <span class="ident">datum</span>) <span class="kw">in</span> <span class="ident">data</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="ident">mem_buffer</span>[<span class="ident">index</span>] <span class="op">=</span> <span class="kw-2">*</span><span class="ident">datum</span>;
-        }
-    }
-
-    <span class="kw">fn</span> <span class="ident">filled_tensor</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span>, <span class="ident">T</span>: <span class="ident">Copy</span><span class="op">&gt;</span>(<span class="ident">_backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">val</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="ident">n</span>]);
-        <span class="kw">let</span> <span class="ident">values</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>::<span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">repeat</span>(<span class="ident">val</span>)
-            .<span class="ident">take</span>(<span class="ident">x</span>.<span class="ident">capacity</span>())
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-        <span class="ident">write_to_memory</span>(<span class="ident">x</span>.<span class="ident">write_only</span>(<span class="ident">get_native_backend</span>().<span class="ident">device</span>()).<span class="ident">unwrap</span>(), <span class="ident">values</span>);
-        <span class="ident">x</span>
-    }
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">API</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">api</span>::<span class="ident">context</span>::<span class="ident">Context</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">api</span>::<span class="ident">enums</span>::<span class="ident">PointerMode</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">tensor</span>::<span class="ident">SharedTensor</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chore</span>::<span class="kw-2">*</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_gemm</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -409,6 +361,8 @@
             <span class="kw-2">&amp;</span>[<span class="number">28f32</span>, <span class="number">7f32</span>, <span class="number">7f32</span>, <span class="number">28f32</span>, <span class="number">7f32</span>, <span class="number">7f32</span>, <span class="number">28f32</span>, <span class="number">7f32</span>, <span class="number">7f32</span>],
             <span class="ident">native_c</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>()
         );
+
+        <span class="ident">test_teardown</span>();
     }
 }
 </pre></div>

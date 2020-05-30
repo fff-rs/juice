@@ -90,6 +90,12 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides informations about the software system, such as OpenCL, CUDA, that contains the set of</span>
 <span class="doccomment">//! components to support [hardwares][hardware] with kernel execution.</span>
@@ -120,6 +126,12 @@
 <span class="kw">mod</span> <span class="ident">stable_alloc</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable_alloc&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">unstable_alloc</span>;
+
+
+<span class="doccomment">/// Initialise the Native Backend for running Tensor Operations</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_native_backend</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span> {
+    <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>()
+}
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="doccomment">/// Provides the Native framework.</span>

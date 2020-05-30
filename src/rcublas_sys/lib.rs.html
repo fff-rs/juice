@@ -4,10 +4,10 @@
 <span id="4">4</span>
 <span id="5">5</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">libc</span>;
-
 <span class="kw">mod</span> <span class="ident">generated</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">generated</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">generated</span>::<span class="kw-2">*</span>;
+
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">Send</span> <span class="kw">for</span> <span class="kw">crate</span>::<span class="ident">generated</span>::<span class="ident">cublasContext</span> {}
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "rcublas_sys";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

@@ -205,6 +205,11 @@
 <span id="205">205</span>
 <span id="206">206</span>
 <span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a simple and unified API to run fast and highly parallel computations on different</span>
 <span class="doccomment">//! devices such as CPUs and GPUs, accross different computation languages such as OpenCL and</span>
@@ -380,6 +385,11 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Native</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Cuda</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rcudnn</span> <span class="kw">as</span> <span class="ident">cudnn</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rcublas</span> <span class="kw">as</span> <span class="ident">cublas</span>;
+
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frameworks</span>::<span class="ident">OpenCL</span>;
 

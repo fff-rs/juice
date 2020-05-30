@@ -275,6 +275,27 @@
 <span id="275">275</span>
 <span id="276">276</span>
 <span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Those macros should be removed when read()/read_only()/write() are refactored</span>
 <span class="doccomment">/// to return typed memory. For now they remove a lot of visual clutter and</span>
@@ -312,8 +333,12 @@
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">exec</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">f</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> ({
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">f</span>;
-        <span class="ident">res</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">PluginError</span>::<span class="ident">Operation</span>(
-            <span class="macro">stringify</span><span class="macro">!</span>(<span class="ident">Unable</span> <span class="ident">to</span> <span class="ident">execute</span> <span class="ident">operation</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>)).<span class="ident">into</span>())
+        <span class="ident">res</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+            <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Unable to execute operation {}: {:?}&quot;</span>, <span class="macro">stringify</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>), <span class="ident">e</span>);
+            <span class="ident">PluginError</span>::<span class="ident">Operation</span>(
+                <span class="macro">stringify</span><span class="macro">!</span>(<span class="ident">Unable</span> <span class="ident">to</span> <span class="ident">execute</span> <span class="ident">operation</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>)
+            ).<span class="ident">into</span>()
+        })
     })
 }
 
@@ -329,9 +354,11 @@
             <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">desc</span>().<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
+
+            <span class="kw">let</span> <span class="ident">ctx</span> : <span class="kw-2">&amp;</span><span class="ident">cublas</span>::<span class="ident">Context</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cublas</span>();
             <span class="macro">exec</span><span class="macro">!</span>(
                 <span class="ident">asum</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">asum</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>)
+                (<span class="kw-2">*</span><span class="ident">ctx</span>).<span class="ident">asum</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>)
             )
         }
     };
@@ -351,9 +378,11 @@
             <span class="kw">let</span> <span class="ident">a_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">a</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">y_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="self">self</span>);
+
+            <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">framework</span>()).<span class="ident">cublas</span>();
             <span class="macro">exec</span><span class="macro">!</span>(
                 <span class="ident">axpy</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">axpy</span>(
+                <span class="ident">ctx</span>.<span class="ident">axpy</span>(
                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">a_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>),
                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>),
                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">y_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>),
@@ -378,9 +407,34 @@
             <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">desc</span>().<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">y_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="self">self</span>);
+
+            <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> (<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">framework</span>()).<span class="ident">cublas</span>();
             <span class="macro">exec</span><span class="macro">!</span>(
                 <span class="ident">copy</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">copy</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">y_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+                <span class="ident">ctx</span>.<span class="ident">copy</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">y_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+            )
+        }
+    };
+}
+
+<span class="doccomment">/// nrm2 for cuda</span>
+<span class="attribute">#[<span class="ident">macro_export</span>]</span>
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_nrm2_for_cuda</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">nrm2</span>(
+            <span class="kw-2">&amp;</span><span class="self">self</span>,
+            <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
+            <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
+        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+            <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">desc</span>().<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
+            <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
+
+            <span class="kw">let</span> <span class="ident">ctx</span> : <span class="kw-2">&amp;</span><span class="ident">cublas</span>::<span class="ident">Context</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cublas</span>();
+
+            <span class="macro">exec</span><span class="macro">!</span>(
+                <span class="ident">nrm2</span>,
+                (<span class="kw-2">*</span><span class="ident">ctx</span>).<span class="ident">nrm2</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>)
             )
         }
     };
@@ -400,9 +454,10 @@
             <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">y_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
+            <span class="kw">let</span> <span class="ident">ctx</span> : <span class="kw-2">&amp;</span><span class="ident">cublas</span>::<span class="ident">Context</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cublas</span>();
             <span class="macro">exec</span><span class="macro">!</span>(
                 <span class="ident">dot</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">dot</span>(
+                (<span class="kw-2">*</span><span class="ident">ctx</span>).<span class="ident">dot</span>(
                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>),
                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">y_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>),
                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>),
@@ -410,26 +465,6 @@
                     <span class="prelude-val">None</span>,
                     <span class="prelude-val">None</span>
                 )
-            )
-        }
-    };
-}
-
-<span class="doccomment">/// nrm2 for cuda</span>
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_nrm2_for_cuda</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
-        <span class="kw">fn</span> <span class="ident">nrm2</span>(
-            <span class="kw-2">&amp;</span><span class="self">self</span>,
-            <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-            <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
-            <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">desc</span>().<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-            <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
-            <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-            <span class="macro">exec</span><span class="macro">!</span>(
-                <span class="ident">nrm2</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">nrm2</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>)
             )
         }
     };
@@ -447,9 +482,11 @@
             <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">desc</span>().<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">a_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">a</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
+            <span class="kw">let</span> <span class="ident">ctx</span> : <span class="kw-2">&amp;</span><span class="ident">cublas</span>::<span class="ident">Context</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cublas</span>();
+
             <span class="macro">exec</span><span class="macro">!</span>(
                 <span class="ident">scal</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">scal</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">a_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>)
+                (<span class="kw-2">*</span><span class="ident">ctx</span>).<span class="ident">scal</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">a_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>)
             )
         }
     };
@@ -467,9 +504,11 @@
             <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">desc</span>().<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">y_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="self">self</span>);
+            <span class="kw">let</span> <span class="ident">ctx</span> : <span class="kw-2">&amp;</span><span class="ident">cublas</span>::<span class="ident">Context</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cublas</span>();
+
             <span class="macro">exec</span><span class="macro">!</span>(
                 <span class="ident">swap</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">swap</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">y_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+                (<span class="kw-2">*</span><span class="ident">ctx</span>).<span class="ident">swap</span>(<span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">y_mem</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>), <span class="ident">n</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
             )
         }
     };
@@ -532,9 +571,12 @@
             <span class="kw">let</span> <span class="ident">lda</span> <span class="op">=</span> <span class="ident">a_1</span>;
             <span class="kw">let</span> <span class="ident">ldb</span> <span class="op">=</span> <span class="ident">b_1</span>;
             <span class="kw">let</span> <span class="ident">ldc</span> <span class="op">=</span> <span class="ident">c_1</span>;
+
+            <span class="kw">let</span> <span class="ident">ctx</span> : <span class="kw-2">&amp;</span><span class="ident">cublas</span>::<span class="ident">Context</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cublas</span>();
+
             <span class="macro">exec</span><span class="macro">!</span>(
                 <span class="ident">gemm</span>,
-                <span class="ident">CONTEXT</span>.<span class="ident">gemm</span>(
+                (<span class="kw-2">*</span><span class="ident">ctx</span>).<span class="ident">gemm</span>(
                     ::<span class="ident">cublas</span>::<span class="ident">api</span>::<span class="ident">Operation</span>::<span class="ident">from</span>(<span class="ident">bt</span>),
                     ::<span class="ident">cublas</span>::<span class="ident">api</span>::<span class="ident">Operation</span>::<span class="ident">from</span>(<span class="ident">at</span>),
                     <span class="ident">n</span>,

@@ -46,16 +46,6 @@
 <span id="46">46</span>
 <span id="47">47</span>
 <span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides BLAS for a CUDA backend.</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
@@ -69,16 +59,6 @@
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">helper</span>;
-
-<span class="macro">lazy_static</span><span class="macro">!</span> {
-    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CONTEXT</span>: <span class="ident">cublas</span>::<span class="ident">Context</span> <span class="op">=</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">context</span> <span class="op">=</span> <span class="ident">cublas</span>::<span class="ident">Context</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();
-        <span class="ident">context</span>
-            .<span class="ident">set_pointer_mode</span>(<span class="ident">cublas</span>::<span class="ident">api</span>::<span class="ident">PointerMode</span>::<span class="ident">Device</span>)
-            .<span class="ident">unwrap</span>();
-        <span class="ident">context</span>
-    };
-}
 
 <span class="kw">impl</span> <span class="ident">Asum</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span> {
     <span class="macro">iblas_asum_for_cuda</span><span class="macro">!</span>(<span class="ident">f32</span>);

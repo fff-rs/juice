@@ -21,6 +21,7 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
+<span id="24">24</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides Cuda Driver API utility functionality.</span>
 
@@ -36,7 +37,8 @@
     }
 
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_init</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">cuInit</span>(<span class="number">0u32</span>) {
+        <span class="kw">const</span> <span class="ident">FLAGS</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="number">0u32</span>;
+        <span class="kw">match</span> <span class="ident">cuInit</span>(<span class="ident">FLAGS</span>) {
             <span class="ident">CUresult</span>::<span class="ident">CUDA_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">CUresult</span>::<span class="ident">CUDA_ERROR_INVALID_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidValue</span>(<span class="string">&quot;Invalid value provided.&quot;</span>)),
             <span class="ident">CUresult</span>::<span class="ident">CUDA_ERROR_INVALID_DEVICE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidDevice</span>(<span class="string">&quot;Invalid device.&quot;</span>)),

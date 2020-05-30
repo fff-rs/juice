@@ -134,6 +134,7 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
+<span id="137">137</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the interface for running parallel computations on one ore many devices.</span>
 <span class="doccomment">//!</span>
@@ -193,7 +194,7 @@
     <span class="doccomment">/// Default: [Native][native]</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [native]: ../frameworks/native/index.html</span>
-    <span class="ident">framework</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">framework</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Provides a device, created from one or many hardwares, which are ready to execute kernel</span>
     <span class="doccomment">/// methods and synchronize memory.</span>
     <span class="ident">device</span>: <span class="ident">F</span>::<span class="ident">D</span>,
@@ -258,6 +259,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Use it to initialize a new Backend.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BackendConfig</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">F</span>: <span class="ident">IFramework</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Framework - i.e. CUDA</span>
     <span class="ident">framework</span>: <span class="ident">F</span>,
     <span class="ident">hardwares</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">F</span>::<span class="ident">H</span>],
 }

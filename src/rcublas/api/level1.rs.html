@@ -527,15 +527,10 @@
 <span id="527">527</span>
 <span id="528">528</span>
 <span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
-<span id="534">534</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> {<span class="ident">API</span>, <span class="ident">Error</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">API</span>, <span class="ident">Error</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Context</span>;
-<span class="kw">use</span> <span class="ident">ffi</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
 
 <span class="kw">impl</span> <span class="ident">API</span> {
     <span class="comment">// TODO: cublasIsamax_v2 x 4</span>
@@ -689,9 +684,7 @@
             <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
             <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_ARCH_MISMATCH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ArchMismatch</span>),
             <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
-                <span class="string">&quot;Unable to calculate dot product of x and y.&quot;</span>,
-            )),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to calculate dot product of x and y.&quot;</span>)),
         }
     }
 
@@ -719,11 +712,18 @@
         <span class="kw">match</span> <span class="ident">cublasSnrm2_v2</span>(<span class="ident">handle</span>, <span class="ident">n</span>, <span class="ident">x</span>, <span class="ident">incx</span>, <span class="ident">result</span>) {
             <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">dbg</span><span class="macro">!</span>(<span class="string">&quot;Alloc failed&quot;</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>)
+            },
             <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_ARCH_MISMATCH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ArchMismatch</span>),
             <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
-                <span class="string">&quot;Unable to calculate the euclidian norm of x.&quot;</span>,
-            )),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">dbg</span><span class="macro">!</span>(<span class="string">&quot;Unknown!&quot;</span>);
+                <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                    <span class="string">&quot;Unable to calculate the euclidian norm of x.&quot;</span>,
+                ))
+            },
         }
     }
 
@@ -798,41 +798,16 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
-    <span class="kw">use</span> <span class="ident">API</span>;
-    <span class="kw">use</span> <span class="ident">api</span>::<span class="ident">context</span>::<span class="ident">Context</span>;
-    <span class="kw">use</span> <span class="ident">api</span>::<span class="ident">enums</span>::<span class="ident">PointerMode</span>;
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">backend</span>::{<span class="ident">Backend</span>, <span class="ident">IBackend</span>};
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">framework</span>::<span class="ident">IFramework</span>;
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">frameworks</span>::{<span class="ident">Cuda</span>, <span class="ident">Native</span>};
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">flatbox</span>::<span class="ident">FlatBox</span>;
-    <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">tensor</span>::<span class="ident">SharedTensor</span>;
-
-    <span class="kw">fn</span> <span class="ident">get_native_backend</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span> {
-        <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>()
-    }
-    <span class="kw">fn</span> <span class="ident">get_cuda_backend</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span> {
-        <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>()
-    }
-
-    <span class="kw">fn</span> <span class="ident">write_to_memory</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span><span class="op">&gt;</span>(<span class="ident">mem</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FlatBox</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>]) {
-        <span class="kw">let</span> <span class="ident">mem_buffer</span> <span class="op">=</span> <span class="ident">mem</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
-        <span class="kw">for</span> (<span class="ident">index</span>, <span class="ident">datum</span>) <span class="kw">in</span> <span class="ident">data</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="ident">mem_buffer</span>[<span class="ident">index</span>] <span class="op">=</span> <span class="kw-2">*</span><span class="ident">datum</span>;
-        }
-    }
-
-    <span class="kw">fn</span> <span class="ident">filled_tensor</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span>, <span class="ident">T</span>: <span class="ident">Copy</span><span class="op">&gt;</span>(<span class="ident">_backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">val</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="ident">n</span>]);
-        <span class="kw">let</span> <span class="ident">values</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>] <span class="op">=</span> <span class="kw-2">&amp;</span>::<span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">repeat</span>(<span class="ident">val</span>)
-            .<span class="ident">take</span>(<span class="ident">x</span>.<span class="ident">capacity</span>())
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-        <span class="ident">write_to_memory</span>(<span class="ident">x</span>.<span class="ident">write_only</span>(<span class="ident">get_native_backend</span>().<span class="ident">device</span>()).<span class="ident">unwrap</span>(), <span class="ident">values</span>);
-        <span class="ident">x</span>
-    }
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">API</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">api</span>::<span class="ident">context</span>::<span class="ident">Context</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">api</span>::<span class="ident">enums</span>::<span class="ident">PointerMode</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">tensor</span>::<span class="ident">SharedTensor</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">chore</span>::<span class="kw-2">*</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_asum</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -841,12 +816,8 @@
         <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="number">2f32</span>;
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">filled_tensor</span>(<span class="kw-2">&amp;</span><span class="ident">native</span>, <span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">val</span>);
 
-
-
         <span class="comment">// set up result</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>]);
-
-
 
         {
             <span class="kw">let</span> <span class="ident">cuda_mem</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">read</span>(<span class="ident">cuda</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
@@ -862,11 +833,14 @@
 
         <span class="kw">let</span> <span class="ident">native_res</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">read</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">40f32</span>], <span class="ident">native_res</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
+
+        <span class="ident">test_teardown</span>();
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_axpy</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -899,11 +873,14 @@
 
         <span class="kw">let</span> <span class="ident">native_y</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">read</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">7f32</span>, <span class="number">7f32</span>, <span class="number">7f32</span>, <span class="number">7f32</span>, <span class="number">7f32</span>], <span class="ident">native_y</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
+
+        <span class="ident">test_teardown</span>();
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_copy</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -931,11 +908,14 @@
 
         <span class="kw">let</span> <span class="ident">native_y</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">read</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">2f32</span>, <span class="number">2f32</span>, <span class="number">2f32</span>, <span class="number">2f32</span>, <span class="number">2f32</span>], <span class="ident">native_y</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
+
+        <span class="ident">test_teardown</span>();
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_dot</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -965,14 +945,16 @@
             }
         }
 
-
         <span class="kw">let</span> <span class="ident">native_result</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">read</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">40f32</span>], <span class="ident">native_result</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
+
+        <span class="ident">test_teardown</span>();
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_nrm2</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -1000,11 +982,14 @@
 
         <span class="kw">let</span> <span class="ident">native_result</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">read</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">3f32</span>], <span class="ident">native_result</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
+
+        <span class="ident">test_teardown</span>();
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_scal</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -1031,11 +1016,14 @@
 
         <span class="kw">let</span> <span class="ident">native_x</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">read</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">5f32</span>, <span class="number">5f32</span>, <span class="number">5f32</span>], <span class="ident">native_x</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
+
+        <span class="ident">test_teardown</span>();
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">serial</span>]</span>
     <span class="kw">fn</span> <span class="ident">use_cuda_memory_for_swap</span>() {
+        <span class="ident">test_setup</span>();
+
         <span class="kw">let</span> <span class="ident">native</span> <span class="op">=</span> <span class="ident">get_native_backend</span>();
         <span class="kw">let</span> <span class="ident">cuda</span> <span class="op">=</span> <span class="ident">get_cuda_backend</span>();
 
@@ -1065,6 +1053,8 @@
 
         <span class="kw">let</span> <span class="ident">native_y</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">read</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span>[<span class="number">2f32</span>, <span class="number">2f32</span>, <span class="number">2f32</span>, <span class="number">2f32</span>, <span class="number">2f32</span>], <span class="ident">native_y</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
+
+        <span class="ident">test_teardown</span>();
     }
 }
 </pre></div>

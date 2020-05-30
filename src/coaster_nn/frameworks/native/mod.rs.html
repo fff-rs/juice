@@ -970,6 +970,10 @@
 <span id="970">970</span>
 <span id="971">971</span>
 <span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides NN for a Native backend.</span>
 
@@ -981,7 +985,9 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">Rng</span>, <span class="ident">SeedableRng</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">rand_hc</span> <span class="kw">as</span> <span class="ident">hc128</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">Error</span>;
@@ -1859,6 +1865,7 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Dropout</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Default</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">PartialOrd</span> <span class="op">+</span> <span class="ident">Bounded</span>
 {
@@ -1871,6 +1878,7 @@
     }
 
     <span class="comment">// TODO this is supposed to be an in place operation</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">dropout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
            <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
            <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,

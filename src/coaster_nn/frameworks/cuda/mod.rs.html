@@ -1621,6 +1621,46 @@
 <span id="1621">1621</span>
 <span id="1622">1622</span>
 <span id="1623">1623</span>
+<span id="1624">1624</span>
+<span id="1625">1625</span>
+<span id="1626">1626</span>
+<span id="1627">1627</span>
+<span id="1628">1628</span>
+<span id="1629">1629</span>
+<span id="1630">1630</span>
+<span id="1631">1631</span>
+<span id="1632">1632</span>
+<span id="1633">1633</span>
+<span id="1634">1634</span>
+<span id="1635">1635</span>
+<span id="1636">1636</span>
+<span id="1637">1637</span>
+<span id="1638">1638</span>
+<span id="1639">1639</span>
+<span id="1640">1640</span>
+<span id="1641">1641</span>
+<span id="1642">1642</span>
+<span id="1643">1643</span>
+<span id="1644">1644</span>
+<span id="1645">1645</span>
+<span id="1646">1646</span>
+<span id="1647">1647</span>
+<span id="1648">1648</span>
+<span id="1649">1649</span>
+<span id="1650">1650</span>
+<span id="1651">1651</span>
+<span id="1652">1652</span>
+<span id="1653">1653</span>
+<span id="1654">1654</span>
+<span id="1655">1655</span>
+<span id="1656">1656</span>
+<span id="1657">1657</span>
+<span id="1658">1658</span>
+<span id="1659">1659</span>
+<span id="1660">1660</span>
+<span id="1661">1661</span>
+<span id="1662">1662</span>
+<span id="1663">1663</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides NN for a CUDA backend.</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
@@ -1635,10 +1675,6 @@
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">helper</span>;
-
-<span class="macro">lazy_static</span><span class="macro">!</span> {
-    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CUDNN</span>: <span class="ident">Cudnn</span> <span class="op">=</span> <span class="ident">Cudnn</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();
-}
 
 <span class="kw">fn</span> <span class="ident">rnn_sequence_descriptors</span>(<span class="ident">sequence_length</span>: <span class="ident">i32</span>,
                             <span class="ident">input_size</span>: <span class="ident">i32</span>,
@@ -1748,6 +1784,7 @@
                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ConvolutionDescriptor</span>, <span class="ident">PluginError</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">cudnn_rnn_desc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+                      <span class="ident">cudnn_framework</span>: <span class="kw-2">&amp;</span><span class="ident">Cudnn</span>,
                       <span class="ident">hidden_size</span>: <span class="ident">i32</span>,
                       <span class="ident">num_layers</span>: <span class="ident">i32</span>,
                       <span class="ident">dropout_desc</span>: <span class="ident">utils</span>::<span class="ident">DropoutConfig</span>,
@@ -1792,12 +1829,13 @@
             <span class="ident">CUDNN_CONVOLUTION_FWD_ALGO_DIRECT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Direct</span>,
             <span class="ident">CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Winograd</span>,
             <span class="ident">CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">WinogradNonFused</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unimplemented</span><span class="macro">!</span>(),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
 
     <span class="doccomment">/// Try to find best algorithm for a operation that uses the provided descriptors.</span>
     <span class="kw">fn</span> <span class="ident">find_cudnn_algo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+                       <span class="ident">cudnn_framework</span>: <span class="kw-2">&amp;</span><span class="ident">Cudnn</span>,
                        <span class="ident">filter_desc</span>: <span class="kw-2">&amp;</span><span class="ident">FilterDescriptor</span>,
                        <span class="ident">conv_desc</span>: <span class="kw-2">&amp;</span><span class="ident">ConvolutionDescriptor</span>,
                        <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
@@ -1806,7 +1844,7 @@
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_auto</span>() {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="self">self</span>);
         }
-        <span class="kw">let</span> <span class="ident">algos</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_forward_algorithm</span>(<span class="kw-2">*</span><span class="ident">CUDNN</span>.<span class="ident">id_c</span>(),
+        <span class="kw">let</span> <span class="ident">algos</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_forward_algorithm</span>(<span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
                                                             <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
                                                             <span class="kw-2">*</span><span class="ident">conv_desc</span>.<span class="ident">id_c</span>(),
                                                             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
@@ -1855,6 +1893,7 @@
 
     <span class="doccomment">/// Try to find best algorithm for a operation that uses the provided descriptors.</span>
     <span class="kw">fn</span> <span class="ident">find_cudnn_algo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+                       <span class="ident">cudnn_framework</span>: <span class="kw-2">&amp;</span><span class="ident">Cudnn</span>,
                        <span class="ident">filter_desc</span>: <span class="kw-2">&amp;</span><span class="ident">FilterDescriptor</span>,
                        <span class="ident">conv_desc</span>: <span class="kw-2">&amp;</span><span class="ident">ConvolutionDescriptor</span>,
                        <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
@@ -1863,7 +1902,7 @@
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_auto</span>() {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="self">self</span>);
         }
-        <span class="kw">let</span> <span class="ident">algos</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_backward_filter_algorithm</span>(<span class="kw-2">*</span><span class="ident">CUDNN</span>.<span class="ident">id_c</span>(),
+        <span class="kw">let</span> <span class="ident">algos</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_backward_filter_algorithm</span>(<span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
                                                                     <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
                                                                     <span class="kw-2">*</span><span class="ident">conv_desc</span>.<span class="ident">id_c</span>(),
                                                                     <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
@@ -1914,6 +1953,7 @@
 
     <span class="doccomment">/// Try to find best algorithm for a operation that uses the provided descriptors.</span>
     <span class="kw">fn</span> <span class="ident">find_cudnn_algo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+                       <span class="ident">cudnn_framework</span>: <span class="kw-2">&amp;</span><span class="ident">Cudnn</span>,
                        <span class="ident">filter_desc</span>: <span class="kw-2">&amp;</span><span class="ident">FilterDescriptor</span>,
                        <span class="ident">conv_desc</span>: <span class="kw-2">&amp;</span><span class="ident">ConvolutionDescriptor</span>,
                        <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
@@ -1922,7 +1962,7 @@
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_auto</span>() {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="self">self</span>);
         }
-        <span class="kw">let</span> <span class="ident">algos</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_backward_data_algorithm</span>(<span class="kw-2">*</span><span class="ident">CUDNN</span>.<span class="ident">id_c</span>(),
+        <span class="kw">let</span> <span class="ident">algos</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_backward_data_algorithm</span>(<span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
                                                                   <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
                                                                   <span class="kw-2">*</span><span class="ident">conv_desc</span>.<span class="ident">id_c</span>(),
                                                                   <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
@@ -2012,6 +2052,7 @@
 
     <span class="kw">fn</span> <span class="ident">cudnn_rnn_desc</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">cudnn_framework</span>: <span class="kw-2">&amp;</span><span class="ident">Cudnn</span>,
         <span class="ident">hidden_size</span>: <span class="ident">i32</span>,
         <span class="ident">num_layers</span>: <span class="ident">i32</span>,
         <span class="ident">dropout_desc</span>: <span class="ident">utils</span>::<span class="ident">DropoutConfig</span>,
@@ -2022,7 +2063,7 @@
         <span class="ident">padding_mode</span>: <span class="ident">cudnnRNNPaddingMode_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RnnDescriptor</span>, <span class="ident">PluginError</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">RnnDescriptor</span>::<span class="ident">new</span>(
-            <span class="kw-2">&amp;</span><span class="ident">CUDNN</span>,
+            <span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>,
             <span class="ident">hidden_size</span>,
             <span class="ident">num_layers</span>,
             <span class="ident">dropout_desc</span>,
@@ -2049,7 +2090,7 @@
     <span class="kw">type</span> <span class="ident">CRNN</span> <span class="op">=</span> <span class="ident">utils</span>::<span class="ident">RnnConfig</span>;
 
     <span class="kw">fn</span> <span class="ident">init_nn</span>() {
-        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">CUDNN</span>.<span class="ident">id_c</span>();
+        <span class="comment">//let _ = cudnn_framework.id_c();</span>
     }
 }
 
@@ -2067,16 +2108,17 @@
                <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">sigmoid_forward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
 
-                                    <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                    <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                    <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                    <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                    <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">sigmoid_forward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                              <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                              <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                              <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                              <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                              <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation Sigmoid Forward.&quot;</span>))),
         }
@@ -2088,22 +2130,23 @@
                     <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                     <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                     <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">sigmoid_backward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-                                     <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                     <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                     <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">sigmoid_backward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                               <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                               <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                               <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation Sigmoid Backward.&quot;</span>))),
         }
@@ -2131,6 +2174,7 @@
                               <span class="ident">stride</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>],
                               <span class="ident">zero_padding</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>])
                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CC</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">src_desc</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">dest_desc</span> <span class="op">=</span> <span class="ident">dest</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">filter_desc</span> <span class="op">=</span> <span class="ident">filter</span>.<span class="ident">cudnn_filter_desc</span>()<span class="question-mark">?</span>;
@@ -2140,14 +2184,14 @@
             .<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">useable_algo_fwd</span> <span class="op">=</span>
-            <span class="ident">algo_fwd</span>.<span class="ident">find_cudnn_algo</span>(<span class="kw-2">&amp;</span><span class="ident">filter_desc</span>, <span class="kw-2">&amp;</span><span class="ident">conv_desc</span>, <span class="kw-2">&amp;</span><span class="ident">src_desc</span>, <span class="kw-2">&amp;</span><span class="ident">dest_desc</span>)<span class="question-mark">?</span>;
+            <span class="ident">algo_fwd</span>.<span class="ident">find_cudnn_algo</span>(<span class="ident">cudnn_framework</span>, <span class="kw-2">&amp;</span><span class="ident">filter_desc</span>, <span class="kw-2">&amp;</span><span class="ident">conv_desc</span>, <span class="kw-2">&amp;</span><span class="ident">src_desc</span>, <span class="kw-2">&amp;</span><span class="ident">dest_desc</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">useable_algo_bwd_filter</span> <span class="op">=</span>
-            <span class="ident">algo_bwd_filter</span>.<span class="ident">find_cudnn_algo</span>(<span class="kw-2">&amp;</span><span class="ident">filter_desc</span>, <span class="kw-2">&amp;</span><span class="ident">conv_desc</span>, <span class="kw-2">&amp;</span><span class="ident">src_desc</span>, <span class="kw-2">&amp;</span><span class="ident">dest_desc</span>)<span class="question-mark">?</span>;
+            <span class="ident">algo_bwd_filter</span>.<span class="ident">find_cudnn_algo</span>(<span class="ident">cudnn_framework</span>, <span class="kw-2">&amp;</span><span class="ident">filter_desc</span>, <span class="kw-2">&amp;</span><span class="ident">conv_desc</span>, <span class="kw-2">&amp;</span><span class="ident">src_desc</span>, <span class="kw-2">&amp;</span><span class="ident">dest_desc</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">useable_algo_bwd_data</span> <span class="op">=</span>
-            <span class="ident">algo_bwd_data</span>.<span class="ident">find_cudnn_algo</span>(<span class="kw-2">&amp;</span><span class="ident">filter_desc</span>, <span class="kw-2">&amp;</span><span class="ident">conv_desc</span>, <span class="kw-2">&amp;</span><span class="ident">src_desc</span>, <span class="kw-2">&amp;</span><span class="ident">dest_desc</span>)<span class="question-mark">?</span>;
+            <span class="ident">algo_bwd_data</span>.<span class="ident">find_cudnn_algo</span>(<span class="ident">cudnn_framework</span>, <span class="kw-2">&amp;</span><span class="ident">filter_desc</span>, <span class="kw-2">&amp;</span><span class="ident">conv_desc</span>, <span class="kw-2">&amp;</span><span class="ident">src_desc</span>, <span class="kw-2">&amp;</span><span class="ident">dest_desc</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace_size_fwd</span> <span class="op">=</span>
-            <span class="ident">API</span>::<span class="ident">get_convolution_forward_workspace_size</span>(<span class="kw-2">*</span><span class="ident">CUDNN</span>.<span class="ident">id_c</span>(),
+            <span class="ident">API</span>::<span class="ident">get_convolution_forward_workspace_size</span>(<span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
                                                         <span class="ident">useable_algo_fwd</span>.<span class="ident">as_cudnn</span>().<span class="ident">unwrap</span>(),
                                                         <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
                                                         <span class="kw-2">*</span><span class="ident">conv_desc</span>.<span class="ident">id_c</span>(),
@@ -2155,7 +2199,7 @@
                                                         <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>())
                 .<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace_size_bwd_filter</span> <span class="op">=</span>
-            <span class="ident">API</span>::<span class="ident">get_convolution_backward_filter_workspace_size</span>(<span class="kw-2">*</span><span class="ident">CUDNN</span>.<span class="ident">id_c</span>(),
+            <span class="ident">API</span>::<span class="ident">get_convolution_backward_filter_workspace_size</span>(<span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
                                                                 <span class="ident">useable_algo_bwd_filter</span>
                                                                     .<span class="ident">as_cudnn</span>()
                                                                     .<span class="ident">unwrap</span>(),
@@ -2165,7 +2209,7 @@
                                                                 <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>())
                 .<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace_size_bwd_data</span> <span class="op">=</span>
-            <span class="ident">API</span>::<span class="ident">get_convolution_backward_data_workspace_size</span>(<span class="kw-2">*</span><span class="ident">CUDNN</span>.<span class="ident">id_c</span>(),
+            <span class="ident">API</span>::<span class="ident">get_convolution_backward_data_workspace_size</span>(<span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
                                                               <span class="ident">useable_algo_bwd_data</span>
                                                                   .<span class="ident">as_cudnn</span>()
                                                                   .<span class="ident">unwrap</span>(),
@@ -2201,6 +2245,7 @@
                    <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
                    <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CC</span>)
                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
 
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
@@ -2209,14 +2254,14 @@
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">w_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">workspace</span>, <span class="self">self</span>);
 
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">convolution_forward</span>(<span class="ident">config</span>,
-                                        <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">w_mem</span>),
-                                        <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">f_mem</span>),
-                                        <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>, <span class="comment">// src_desc</span>
-                                        <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                        <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                        <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                        <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">convolution_forward</span>(<span class="ident">config</span>,
+                                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">w_mem</span>),
+                                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">f_mem</span>),
+                                                  <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>, <span class="comment">// src_desc</span>
+                                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                  <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                                  <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation convolution Forward.&quot;</span>))),
         }
@@ -2229,19 +2274,20 @@
                                <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
                                <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CC</span>)
                                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">s_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">src_data</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dd_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">dest_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">df_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">filter_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">w_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">workspace</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">convolution_backward_filter</span>(<span class="ident">config</span>,
-                                                <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">w_mem</span>),
-                                                <span class="kw-2">&amp;</span><span class="ident">src_data</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                                <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">s_mem</span>),
-                                                <span class="kw-2">&amp;</span><span class="ident">dest_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                                <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dd_mem</span>),
-                                                <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">df_mem</span>),
-                                                <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">convolution_backward_filter</span>(<span class="ident">config</span>,
+                                                          <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">w_mem</span>),
+                                                          <span class="kw-2">&amp;</span><span class="ident">src_data</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                          <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">s_mem</span>),
+                                                          <span class="kw-2">&amp;</span><span class="ident">dest_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                          <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dd_mem</span>),
+                                                          <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">df_mem</span>),
+                                                          <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation convolution Backward.&quot;</span>))),
         }
@@ -2254,6 +2300,7 @@
                              <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
                              <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CC</span>)
                              <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
 
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
@@ -2261,14 +2308,14 @@
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">w_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">workspace</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">convolution_backward_data</span>(<span class="ident">config</span>,
-                                              <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">w_mem</span>),
-                                              <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">f_mem</span>),
-                                              <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                              <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                              <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                              <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                              <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">convolution_backward_data</span>(<span class="ident">config</span>,
+                                                        <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">w_mem</span>),
+                                                        <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">f_mem</span>),
+                                                        <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                        <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                                        <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                                        <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                                        <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Operation</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation convolution Backward.&quot;</span>))),
         }
@@ -2291,7 +2338,8 @@
     <span class="kw">fn</span> <span class="ident">from_cudnn</span>(<span class="ident">input</span>: <span class="ident">cudnnRNNInputMode_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">match</span> <span class="ident">input</span> {
             <span class="ident">cudnnRNNInputMode_t</span>::<span class="ident">CUDNN_LINEAR_INPUT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>,
-            <span class="ident">cudnnRNNInputMode_t</span>::<span class="ident">CUDNN_SKIP_INPUT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span>
+            <span class="ident">cudnnRNNInputMode_t</span>::<span class="ident">CUDNN_SKIP_INPUT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
 }
@@ -2307,7 +2355,8 @@
     <span class="kw">fn</span> <span class="ident">from_cudnn</span>(<span class="ident">direction</span>: <span class="ident">cudnnDirectionMode_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">match</span> <span class="ident">direction</span> {
             <span class="ident">cudnnDirectionMode_t</span>::<span class="ident">CUDNN_BIDIRECTIONAL</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">DirectionMode</span>::<span class="ident">BiDirectional</span>,
-            <span class="ident">cudnnDirectionMode_t</span>::<span class="ident">CUDNN_UNIDIRECTIONAL</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>
+            <span class="ident">cudnnDirectionMode_t</span>::<span class="ident">CUDNN_UNIDIRECTIONAL</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>()
         }
     }
 }
@@ -2327,7 +2376,8 @@
             <span class="ident">cudnnRNNMode_t</span>::<span class="ident">CUDNN_RNN_RELU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">ReLU</span>,
             <span class="ident">cudnnRNNMode_t</span>::<span class="ident">CUDNN_RNN_TANH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">Tanh</span>,
             <span class="ident">cudnnRNNMode_t</span>::<span class="ident">CUDNN_LSTM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
-            <span class="ident">cudnnRNNMode_t</span>::<span class="ident">CUDNN_GRU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span>
+            <span class="ident">cudnnRNNMode_t</span>::<span class="ident">CUDNN_GRU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
 }
@@ -2347,7 +2397,8 @@
             <span class="ident">cudnnRNNAlgo_t</span>::<span class="ident">CUDNN_RNN_ALGO_PERSIST_DYNAMIC</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistDynamic</span>,
             <span class="ident">cudnnRNNAlgo_t</span>::<span class="ident">CUDNN_RNN_ALGO_PERSIST_STATIC</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistStatic</span>,
             <span class="ident">cudnnRNNAlgo_t</span>::<span class="ident">CUDNN_RNN_ALGO_STANDARD</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnAlgorithm</span>::<span class="ident">Standard</span>,
-            <span class="ident">cudnnRNNAlgo_t</span>::<span class="ident">CUDNN_RNN_ALGO_COUNT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnAlgorithm</span>::<span class="ident">Count</span>
+            <span class="ident">cudnnRNNAlgo_t</span>::<span class="ident">CUDNN_RNN_ALGO_COUNT</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnAlgorithm</span>::<span class="ident">Count</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
 }
@@ -2365,7 +2416,8 @@
         <span class="kw">match</span> <span class="ident">math_type</span> {
             <span class="ident">cudnnMathType_t</span>::<span class="ident">CUDNN_DEFAULT_MATH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MathType</span>::<span class="ident">Default</span>,
             <span class="ident">cudnnMathType_t</span>::<span class="ident">CUDNN_TENSOR_OP_MATH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MathType</span>::<span class="ident">TensorOPMath</span>,
-            <span class="ident">cudnnMathType_t</span>::<span class="ident">CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MathType</span>::<span class="ident">TensorOPMathAllowConversion</span>
+            <span class="ident">cudnnMathType_t</span>::<span class="ident">CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">MathType</span>::<span class="ident">TensorOPMathAllowConversion</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
 }
@@ -2381,7 +2433,8 @@
     <span class="kw">fn</span> <span class="ident">from_cudnn</span>(<span class="ident">padding_type</span>: <span class="ident">cudnnRNNPaddingMode_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RnnPaddingMode</span> {
         <span class="kw">match</span> <span class="ident">padding_type</span> {
             <span class="ident">cudnnRNNPaddingMode_t</span>::<span class="ident">CUDNN_RNN_PADDED_IO_ENABLED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnPaddingMode</span>::<span class="ident">Enabled</span>,
-            <span class="ident">cudnnRNNPaddingMode_t</span>::<span class="ident">CUDNN_RNN_PADDED_IO_DISABLED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnPaddingMode</span>::<span class="ident">Disabled</span>
+            <span class="ident">cudnnRNNPaddingMode_t</span>::<span class="ident">CUDNN_RNN_PADDED_IO_DISABLED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">RnnPaddingMode</span>::<span class="ident">Disabled</span>,
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
 }
@@ -2426,6 +2479,7 @@
         <span class="ident">batch_size</span>: <span class="ident">i32</span>,
         <span class="ident">input_size</span>: <span class="ident">i32</span>
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">usize</span>);
         <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">DataTypeInfo</span><span class="op">&gt;</span>::<span class="ident">cudnn_data_type</span>();
 
@@ -2441,7 +2495,7 @@
         }
 
         <span class="kw">let</span> <span class="ident">weight_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">API</span>::<span class="ident">get_rnn_params_size</span>(
-            <span class="kw-2">*</span><span class="ident">CUDNN</span>.<span class="ident">id_c</span>(),
+            <span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">x_desc</span>[<span class="number">0</span>].<span class="ident">id_c</span>(),
             <span class="ident">data_type</span>) {
@@ -2467,13 +2521,14 @@
         <span class="ident">num_layers</span>: <span class="ident">i32</span>,
         <span class="ident">batch_size</span>: <span class="ident">i32</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CRNN</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">input_mode</span> <span class="op">=</span> <span class="ident">input_mode</span>.<span class="ident">as_cudnn</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">direction_mode</span> <span class="op">=</span> <span class="ident">direction_mode</span>.<span class="ident">as_cudnn</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">network_mode</span> <span class="op">=</span> <span class="ident">network_mode</span>.<span class="ident">as_cudnn</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">algorithm</span> <span class="op">=</span> <span class="ident">algorithm</span>.<span class="ident">as_cudnn</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">src_description</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">desc</span>();
 
-        <span class="kw">let</span> <span class="ident">drop_desc</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">init_dropout</span>(
+        <span class="kw">let</span> <span class="ident">drop_desc</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">init_dropout</span>(
             <span class="ident">dropout_probability</span>.<span class="ident">unwrap_or</span>(<span class="number">0.5</span>),
             <span class="ident">dropout_seed</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>),
         ) {
@@ -2493,7 +2548,7 @@
         )<span class="question-mark">?</span>.<span class="ident">x_desc</span>;
 
         <span class="kw">let</span> <span class="ident">rnn_desc</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">RnnDescriptor</span>::<span class="ident">new</span>(
-            <span class="kw-2">&amp;</span><span class="ident">CUDNN</span>,
+            <span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>,
             <span class="ident">hidden_size</span>,
             <span class="ident">num_layers</span>,
             <span class="ident">drop_desc</span>,
@@ -2508,7 +2563,7 @@
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error {:?}&quot;</span>, <span class="ident">e</span>)
         };
 
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">init_rnn</span>(
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">init_rnn</span>(
             <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
             <span class="ident">rnn_desc</span>,
             <span class="ident">hidden_size</span>,
@@ -2536,6 +2591,7 @@
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
         <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">src_dimensions</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">desc</span>().<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">sequence_descriptors</span> <span class="op">=</span> <span class="ident">rnn_sequence_descriptors</span>(
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">sequence_length</span>(),
@@ -2554,7 +2610,7 @@
         <span class="kw">let</span> <span class="ident">output_mem</span> <span class="op">=</span> <span class="ident">output</span>.<span class="ident">write_only</span>(<span class="self">self</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">workspace_mem</span> <span class="op">=</span> <span class="ident">workspace</span>.<span class="ident">write_only</span>(<span class="self">self</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
 
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">rnn_forward</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">rnn_forward</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(
             <span class="ident">rnn_config</span>,
             <span class="ident">sequence_descriptors</span>.<span class="ident">x_desc</span>,
             <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">src_mem</span>),
@@ -2587,6 +2643,7 @@
                          <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                          <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>)
                          <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">src_dimensions</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">desc</span>().<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">sequence_descriptors</span> <span class="op">=</span> <span class="ident">rnn_sequence_descriptors</span>(
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">sequence_length</span>(),
@@ -2605,7 +2662,7 @@
         <span class="kw">let</span> <span class="ident">output_gradient_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">output_gradient</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">workspace_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">workspace</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">reserve_space</span> <span class="op">=</span> <span class="ident">rnn_config</span>.<span class="ident">training_reserve</span>();
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">rnn_backward_data</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">rnn_backward_data</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(
             <span class="ident">rnn_config</span>,
             <span class="ident">sequence_descriptors</span>.<span class="ident">y_desc</span>,
             <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">output_mem</span>),
@@ -2645,6 +2702,7 @@
                             <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CRNN</span>,
                             <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>)
                             <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">src_dimensions</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">desc</span>().<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">sequence_descriptors</span> <span class="op">=</span> <span class="ident">rnn_sequence_descriptors</span>(
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">sequence_length</span>(),
@@ -2660,7 +2718,7 @@
         <span class="kw">let</span> <span class="ident">workspace_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">workspace</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">filter_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">filter</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">reserve_space</span> <span class="op">=</span> <span class="ident">rnn_config</span>.<span class="ident">training_reserve</span>();
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">rnn_backward_weights</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">rnn_backward_weights</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(
             <span class="ident">rnn_config</span>,
             <span class="ident">sequence_descriptors</span>.<span class="ident">x_desc</span>,
             <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">src_mem</span>),
@@ -2685,16 +2743,17 @@
     <span class="kw">fn</span> <span class="ident">sigmoid_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
                          <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                          <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">x_desc</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
 
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">sigmoid_forward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        							<span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                    <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                    <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                    <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                    <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">sigmoid_forward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                              <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                              <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                              <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                              <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                              <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Sigmoid Pointwise forward.&quot;</span>))),
         }
@@ -2704,22 +2763,23 @@
                               <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                               <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">x_desc</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">dx_desc</span> <span class="op">=</span> <span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="comment">// TODO move config one level up</span>
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">sigmoid_backward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        							 <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
-                                     <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                     <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">sigmoid_backward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                               <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
+                                               <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                               <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Operation</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Sigmoid Pointwise backward.&quot;</span>))),
         }
@@ -2733,16 +2793,17 @@
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
             <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
             <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">relu_forward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                 <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                 <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                 <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                 <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">relu_forward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                           <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                           <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                           <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                           <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                           <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation relu Forward.&quot;</span>))),
         }
@@ -2754,6 +2815,7 @@
                  <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                  <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                  <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
@@ -2761,16 +2823,16 @@
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
 
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">relu_backward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                  <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">relu_backward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                            <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                            <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                            <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation relu Backward.&quot;</span>))),
         }
@@ -2783,16 +2845,17 @@
     <span class="kw">fn</span> <span class="ident">relu_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
                       <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                       <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">x_desc</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
 
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">relu_forward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                 <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                 <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                 <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                 <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">relu_forward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                           <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                           <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                           <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                           <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                           <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN ReLU Pointwise forward.&quot;</span>))),
         }
@@ -2802,22 +2865,23 @@
                            <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                            <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                            <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">x_desc</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">dx_desc</span> <span class="op">=</span> <span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
 
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">relu_backward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
-                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                  <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">relu_backward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                            <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
+                                            <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                            <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN ReLU Pointwise backward.&quot;</span>))),
         }
@@ -2831,16 +2895,17 @@
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
             <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
             <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">tanh_forward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                 <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                 <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                 <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                 <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">tanh_forward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                           <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                           <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                           <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                           <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                           <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation tanh Forward.&quot;</span>))),
         }
@@ -2852,22 +2917,23 @@
                  <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                  <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                  <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">tanh_backward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                  <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">tanh_backward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                            <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                            <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                            <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation tanh Backward.&quot;</span>))),
         }
@@ -2880,15 +2946,16 @@
     <span class="kw">fn</span> <span class="ident">tanh_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
                       <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                       <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">x_desc</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">tanh_forward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                 <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                 <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                 <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                 <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">tanh_forward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                           <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                           <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                           <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                           <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                           <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Tanh Pointwise forward.&quot;</span>))),
         }
@@ -2898,21 +2965,22 @@
                            <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                            <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                            <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">x_desc</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">dx_desc</span> <span class="op">=</span> <span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_flat</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">tanh_backward</span>(<span class="kw-2">&amp;</span><span class="ident">CUDNN</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
-        						<span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
-                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                  <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
-                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                  <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">tanh_backward</span>(<span class="kw-2">&amp;</span><span class="ident">cudnn_framework</span>.<span class="ident">init_activation</span>().<span class="ident">unwrap</span>(),
+                                            <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">x_desc</span>,
+                                            <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                            <span class="kw-2">&amp;</span><span class="ident">dx_desc</span>,
+                                            <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                            <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Tanh Pointwise backward.&quot;</span>))),
         }
@@ -2926,15 +2994,16 @@
                <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">softmax_forward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
-                                    <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                    <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                    <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                    <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">softmax_forward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
+                                              <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                              <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                              <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                              <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN softmax Forward.&quot;</span>))),
         }
@@ -2945,18 +3014,19 @@
                     <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                     <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                     <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">softmax_backward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                     <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                     <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">softmax_backward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
+                                               <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                               <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                               <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                               <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN softmax Backward.&quot;</span>))),
         }
@@ -2970,15 +3040,16 @@
                    <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                    <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">log_softmax_forward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
-                                    <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                    <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                    <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                    <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">log_softmax_forward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
+                                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                  <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                                  <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN softmax Forward.&quot;</span>))),
         }
@@ -2988,18 +3059,19 @@
                     <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                     <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)
                     <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">log_softmax_backward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
-                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                     <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                     <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                     <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">log_softmax_backward</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc_softmax</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                                   <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                                   <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN log softmax Backward.&quot;</span>))),
         }
@@ -3016,7 +3088,8 @@
                       <span class="ident">beta</span>: <span class="ident">f64</span>,
                       <span class="ident">k</span>: <span class="ident">f64</span>)
                       <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CLRN</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">CUDNN</span>.<span class="ident">init_normalization</span>(<span class="ident">n</span>, <span class="ident">alpha</span>, <span class="ident">beta</span>, <span class="ident">k</span>).<span class="ident">unwrap</span>())
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
+        <span class="prelude-val">Ok</span>(<span class="ident">cudnn_framework</span>.<span class="ident">init_normalization</span>(<span class="ident">n</span>, <span class="ident">alpha</span>, <span class="ident">beta</span>, <span class="ident">k</span>).<span class="ident">unwrap</span>())
     }
 
     <span class="kw">fn</span> <span class="ident">lrn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -3024,16 +3097,17 @@
            <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
            <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>)
            <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">lrn_forward</span>(<span class="ident">config</span>,
-                                <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">lrn_forward</span>(<span class="ident">config</span>,
+                                          <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                          <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                          <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                          <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                          <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation lrn Forward.&quot;</span>))),
         }
@@ -3047,22 +3121,23 @@
                 <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                 <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>)
                 <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">lrn_backward</span>(<span class="ident">config</span>,
-                                 <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                 <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                 <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                 <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                 <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                 <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                 <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                 <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                 <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">lrn_backward</span>(<span class="ident">config</span>,
+                                           <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                           <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                           <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                           <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                           <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                           <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                           <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                           <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                           <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Activation lrn Backward.&quot;</span>))),
         }
@@ -3092,17 +3167,18 @@
                    <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                    <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>)
                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
 
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">pooling_max_forward</span>(<span class="ident">config</span>,
-                                        <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                        <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                        <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                        <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                        <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">pooling_max_forward</span>(<span class="ident">config</span>,
+                                                  <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                  <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                                  <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN max pooling Forward.&quot;</span>))),
         }
@@ -3116,23 +3192,23 @@
                         <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                         <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>)
                         <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">pooling_max_backward</span>(<span class="ident">config</span>,
-                                         <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                         <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                         <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                         <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                         <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                         <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                         <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                         <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                         <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">pooling_max_backward</span>(<span class="ident">config</span>,
+                                                   <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                                   <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                                   <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN max pooling Backward.&quot;</span>))),
         }
@@ -3143,16 +3219,17 @@
                    <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                    <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>)
                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">pooling_avg_forward</span>(<span class="ident">config</span>,
-                                        <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                        <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                        <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                        <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                        <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">pooling_avg_forward</span>(<span class="ident">config</span>,
+                                                  <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                  <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                  <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                                  <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                                  <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN avg pooling Forward.&quot;</span>))),
         }
@@ -3166,22 +3243,23 @@
                         <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
                         <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>)
                         <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">scal_params</span>: <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">cudnn</span>::<span class="ident">utils</span>::<span class="ident">ScalParams</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="ident">dr_desc</span> <span class="op">=</span> <span class="ident">result_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dx_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">dr_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">pooling_avg_backward</span>(<span class="ident">config</span>,
-                                         <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                         <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                         <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                         <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
-                                         <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                         <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                         <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
-                                         <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
-                                         <span class="ident">scal_params</span>) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">pooling_avg_backward</span>(<span class="ident">config</span>,
+                                                   <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">x_diff</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">dx_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                   <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+                                                   <span class="kw-2">&amp;</span><span class="ident">dr_desc</span>,
+                                                   <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">dr_mem</span>),
+                                                   <span class="ident">scal_params</span>) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN avg pooling Backward.&quot;</span>))),
         }
@@ -3198,7 +3276,8 @@
                       <span class="ident">seed</span>: <span class="ident">u64</span>,
                       )
                       <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CDROP</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">CUDNN</span>.<span class="ident">init_dropout</span>(<span class="ident">probability</span>, <span class="ident">seed</span>).<span class="ident">unwrap</span>())
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
+        <span class="prelude-val">Ok</span>(<span class="ident">cudnn_framework</span>.<span class="ident">init_dropout</span>(<span class="ident">probability</span>, <span class="ident">seed</span>).<span class="ident">unwrap</span>())
     }
 
     <span class="kw">fn</span> <span class="ident">dropout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -3206,15 +3285,16 @@
            <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
            <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CDROP</span>)
            <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">r_desc</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">x_mem</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="self">self</span>);
         <span class="kw">let</span> <span class="ident">r_mem</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="self">self</span>);
-        <span class="kw">match</span> <span class="ident">CUDNN</span>.<span class="ident">dropout_forward</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(<span class="ident">config</span>,
-                                <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
-                                <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
-                                <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
-                                <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
-                                ) {
+        <span class="kw">match</span> <span class="ident">cudnn_framework</span>.<span class="ident">dropout_forward</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(<span class="ident">config</span>,
+                                                     <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="ident">cudnn_tensor_desc</span>()<span class="question-mark">?</span>,
+                                                     <span class="macro">trans</span><span class="macro">!</span>(<span class="ident">x_mem</span>),
+                                                     <span class="kw-2">&amp;</span><span class="ident">r_desc</span>,
+                                                     <span class="macro">trans_mut</span><span class="macro">!</span>(<span class="ident">r_mem</span>),
+        ) {
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to execute CUDA cuDNN Dropout Forward.&quot;</span>))),
         }
@@ -3234,7 +3314,7 @@
         <span class="comment">// let dx_mem = read!(x_diff, self);</span>
         <span class="comment">// let r_mem = write_only!(result, self);</span>
         <span class="comment">// let dr_mem = write_only!(result_diff, self);</span>
-        <span class="comment">// match CUDNN.dropout_backward::&lt;f32&gt;(config,</span>
+        <span class="comment">// match cudnn_framework.dropout_backward::&lt;f32&gt;(config,</span>
         <span class="comment">//                          &amp;x.cudnn_tensor_desc()?,</span>
         <span class="comment">//                          trans!(x_mem),</span>
         <span class="comment">//                          &amp;result.cudnn_tensor_desc()?,</span>
