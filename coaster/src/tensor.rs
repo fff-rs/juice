@@ -389,7 +389,7 @@ impl<T> SharedTensor<T> {
 
 		// If there is no direct path, we take the detour via native
 		// and do an indirect transfer.
-		if cfg!(feature = "Native") {
+		if cfg!(feature = "native") {
 			use crate::framework::IFramework;
 			use crate::frameworks::native::Native;
 			let native_framework = Native::new();
