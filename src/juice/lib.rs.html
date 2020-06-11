@@ -126,10 +126,6 @@
 <span id="126">126</span>
 <span id="127">127</span>
 <span id="128">128</span>
-<span id="129">129</span>
-<span id="130">130</span>
-<span id="131">131</span>
-<span id="132">132</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Juice is a open, modular and clear-designed Machine Intelligence Framework providing</span>
 <span class="doccomment">//! state-of-the-art performance for distributed (Deep|Machine) Learning - sharing concepts from</span>
@@ -222,23 +218,19 @@
 <span class="doccomment">//! [issue-loss]: https://github.com/spearow/juice/issues/18</span>
 <span class="doccomment">//! [issue-activation]: https://github.com/spearow/juice/issues/19</span>
 <span class="doccomment">//! [issue-common]: https://github.com/spearow/juice/issues/20</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;lint&quot;</span>, <span class="ident">feature</span>(<span class="ident">plugin</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;lint&quot;</span>, <span class="ident">plugin</span>(<span class="ident">clippy</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;lint&quot;</span>, <span class="ident">allow</span>(<span class="ident">type_complexity</span>))]</span>
-
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>,
-        <span class="ident">missing_debug_implementations</span>, <span class="ident">missing_copy_implementations</span>,
-        <span class="ident">trivial_casts</span>, <span class="ident">trivial_numeric_casts</span>,
-        <span class="ident">unsafe_code</span>,
-        <span class="ident">unused_import_braces</span>, <span class="ident">unused_qualifications</span>)]</span>
-
-<span class="comment">// used when run with  cargo test --no-run --features clippy</span>
-<span class="comment">// or cargo build --features clippy</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;clippy&quot;</span>, <span class="ident">feature</span>(<span class="ident">plugin</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;clippy&quot;</span>, <span class="ident">plugin</span>(<span class="ident">clippy</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;clippy&quot;</span>, <span class="ident">deny</span>(<span class="ident">clippy</span>, <span class="ident">clippy_pedantic</span>))]</span>
+<span class="attribute">#![<span class="ident">deny</span>(
+    <span class="ident">clippy</span>::<span class="ident">missing_docs</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_debug_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_copy_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_numeric_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">unsafe_code</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_import_braces</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_qualifications</span>,
+    <span class="ident">clippy</span>::<span class="ident">complexity</span>
+)]</span>
 
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">timeit</span>;

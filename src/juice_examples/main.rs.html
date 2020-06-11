@@ -680,6 +680,7 @@
 <span id="680">680</span>
 <span id="681">681</span>
 <span id="682">682</span>
+<span id="683">683</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::{<span class="ident">File</span>, <span class="ident">OpenOptions</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
@@ -1346,6 +1347,7 @@ Options:
     })
 }
 
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
 <span class="kw">fn</span> <span class="ident">get_packed_regr_iter</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">f32</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">rdr</span> <span class="op">=</span> <span class="ident">Reader</span>::<span class="ident">from_reader</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="string">&quot;assets/normalised_mackeyglass_lstm.csv&quot;</span>).<span class="ident">unwrap</span>());
     <span class="kw">let</span> <span class="ident">columns</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;

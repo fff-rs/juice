@@ -107,17 +107,17 @@
 <span class="doccomment">//! [coaster]: https://github.com/spearow/coaster</span>
 <span class="doccomment">//! [coaster-docs]: https://spearow.github.io/coaster</span>
 <span class="doccomment">//! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">feature</span>(<span class="ident">plugin</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">plugin</span>(<span class="ident">clippy</span>))]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="attribute">#![<span class="ident">deny</span>(
-    <span class="ident">missing_docs</span>,
-    <span class="ident">missing_debug_implementations</span>,
-    <span class="ident">missing_copy_implementations</span>,
-    <span class="ident">trivial_casts</span>,
-    <span class="ident">trivial_numeric_casts</span>,
-    <span class="ident">unused_import_braces</span>,
-    <span class="ident">unused_qualifications</span>
+    <span class="ident">clippy</span>::<span class="ident">missing_docs</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_debug_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_copy_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_numeric_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">unsafe_code</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_import_braces</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_qualifications</span>,
+    <span class="ident">clippy</span>::<span class="ident">complexity</span>
 )]</span>
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster</span>;

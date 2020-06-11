@@ -128,6 +128,11 @@
 <span id="128">128</span>
 <span id="129">129</span>
 <span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a [Coaster][coaster] Plugin, to extend Coaster with Neural Network related</span>
 <span class="doccomment">//! operations such as convolutions, pooling, ReLU, etc. A full list of operations provided by this Plugin,</span>
@@ -233,13 +238,18 @@
 <span class="doccomment">//! [coaster-docs]: https://spearow.github.io/coaster</span>
 <span class="doccomment">//! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable&quot;</span>, <span class="ident">feature</span>(<span class="ident">test</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">feature</span>(<span class="ident">plugin</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">plugin</span>(<span class="ident">clippy</span>))]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>,
-<span class="ident">missing_debug_implementations</span>, <span class="ident">missing_copy_implementations</span>,
-<span class="ident">trivial_casts</span>, <span class="ident">trivial_numeric_casts</span>,
-<span class="ident">unused_import_braces</span>, <span class="ident">unused_qualifications</span>)]</span>
+<span class="attribute">#![<span class="ident">deny</span>(
+    <span class="ident">clippy</span>::<span class="ident">missing_docs</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_debug_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_copy_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_numeric_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">unsafe_code</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_import_braces</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_qualifications</span>,
+    <span class="ident">clippy</span>::<span class="ident">complexity</span>
+)]</span>
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">plugin</span>::<span class="kw-2">*</span>;
 

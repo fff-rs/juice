@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["juice_examples"] = [{"text":"impl&lt;'de&gt; <a class=\"trait\" href=\"https://docs.rs/serde/1.0.106/serde/de/trait.Deserialize.html\" title=\"trait serde::de::Deserialize\">Deserialize</a>&lt;'de&gt; for <a class=\"struct\" href=\"juice_examples/struct.Args.html\" title=\"struct juice_examples::Args\">Args</a>","synthetic":false,"types":["juice_examples::Args"]}];
+implementors["juice_examples"] = [{"text":"impl&lt;'de&gt; <a class=\"trait\" href=\"https://docs.rs/serde/1.0.111/serde/de/trait.Deserialize.html\" title=\"trait serde::de::Deserialize\">Deserialize</a>&lt;'de&gt; for <a class=\"struct\" href=\"juice_examples/struct.Args.html\" title=\"struct juice_examples::Args\">Args</a>","synthetic":false,"types":["juice_examples::Args"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

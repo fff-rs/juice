@@ -507,6 +507,7 @@
 <span id="507">507</span>
 <span id="508">508</span>
 <span id="509">509</span>
+<span id="510">510</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Copyright 2015 Michael Yang. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a MIT-style</span>
@@ -625,11 +626,11 @@
     <span class="doccomment">/// can remain unchanged. Notice that the dimensions of the new matrix are `(rows, LDA)`, where</span>
     <span class="doccomment">/// `LDA = &lt;sub diagonals&gt; + &lt;sup diagonals&gt; + 1`. This matrix will be stored in the original</span>
     <span class="doccomment">/// memory of the matrix that is consumed by this method.</span>
-    <span class="doccomment">///  </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">///  For details about how the conversion actually happens, consult the code comments.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Panics</span>
-    <span class="doccomment">///  </span>
+    <span class="doccomment">///</span>
     <span class="doccomment">/// Panics if the size of the vector representing the input matrix is too small, that is</span>
     <span class="doccomment">/// `rows * LDA &gt; rows * cols`. In this case there is not enough space to perform a safe</span>
     <span class="doccomment">/// conversion to the Band Storage format.</span>
@@ -688,7 +689,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This method creates a [`Mat`] instance by reversing the steps from</span>
     <span class="doccomment">/// the [`from_matrix`] method. It will also fill in all the values that are &quot;zero&quot; to the</span>
-    <span class="doccomment">/// default value of `T`.  </span>
+    <span class="doccomment">/// default value of `T`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// For more information about the implementation, please consult the code comments.</span>
     <span class="doccomment">///</span>
@@ -870,13 +871,14 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
     <span class="kw">fn</span> <span class="ident">write_to_memory</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="ident">dest</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> () {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v1</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v1</span>;
         <span class="kw">unsafe</span> {
-            <span class="ident">v1</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">from_raw_parts</span>(<span class="ident">dest</span>, <span class="ident">source</span>.<span class="ident">len</span>(), <span class="ident">source</span>.<span class="ident">len</span>());
+            <span class="ident">v1</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">from_raw_parts</span>(<span class="ident">dest</span>, <span class="ident">source</span>.<span class="ident">len</span>(), <span class="ident">source</span>.<span class="ident">capacity</span>());
             <span class="ident">v1</span>.<span class="ident">clone_from</span>(<span class="ident">source</span>);
         }
         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">ManuallyDrop</span>::<span class="ident">new</span>(<span class="ident">v1</span>);

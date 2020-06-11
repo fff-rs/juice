@@ -210,6 +210,11 @@
 <span id="210">210</span>
 <span id="211">211</span>
 <span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a simple and unified API to run fast and highly parallel computations on different</span>
 <span class="doccomment">//! devices such as CPUs and GPUs, accross different computation languages such as OpenCL and</span>
@@ -342,13 +347,18 @@
 <span class="doccomment">//! [coaster-blas]: https://github.com/spearow/coaster-blas</span>
 <span class="doccomment">//! [memory]: ./memory/index.html</span>
 <span class="doccomment">//! [tensor]: ./tensor/index.html</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">feature</span>(<span class="ident">plugin</span>))]</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">lint</span>, <span class="ident">plugin</span>(<span class="ident">clippy</span>))]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>,
-        <span class="ident">missing_debug_implementations</span>, <span class="ident">missing_copy_implementations</span>,
-        <span class="ident">trivial_casts</span>, <span class="ident">trivial_numeric_casts</span>,
-        <span class="ident">unused_import_braces</span>, <span class="ident">unused_qualifications</span>)]</span>
+<span class="attribute">#![<span class="ident">deny</span>(
+    <span class="ident">clippy</span>::<span class="ident">missing_docs</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_debug_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">missing_copy_implementations</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">trivial_numeric_casts</span>,
+    <span class="ident">clippy</span>::<span class="ident">unsafe_code</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_import_braces</span>,
+    <span class="ident">clippy</span>::<span class="ident">unused_qualifications</span>,
+    <span class="ident">clippy</span>::<span class="ident">complexity</span>
+)]</span>
 
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable_alloc&quot;</span>, <span class="ident">feature</span>(<span class="ident">alloc</span>))]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable_alloc&quot;</span>)]</span>
