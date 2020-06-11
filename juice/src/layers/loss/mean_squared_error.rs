@@ -7,8 +7,6 @@
 use crate::co::prelude::*;
 use crate::layer::*;
 use crate::util::*;
-use crate::util::{native_backend, ArcLock};
-use util::{native_scalar, LayerOps};
 
 #[derive(Debug, Clone)]
 #[allow(missing_copy_implementations)]
