@@ -1545,7 +1545,7 @@ dependencies = [
 
 [[package]]
 name = "rust-blas"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "libc",
  "num 0.2.1",
