@@ -323,14 +323,14 @@ impl<'a> CapnpRead<'a> for RnnConfig {
 mod tests {
     use conn::Rnn as coRnn;
     use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
-    use util::native_backend;
+    use crate::util::native_backend;
 
     use crate::co::*;
 
     use super::{Rnn, RnnConfig};
-    use layer::ILayer;
+    use crate::layer::ILayer;
     use std::rc::Rc;
-    use weight::FillerType;
+    use crate::weight::FillerType;
 
     fn sample_input() -> &'static [f32] {
         [1.0_f32; 512].as_ref()
