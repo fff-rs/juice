@@ -663,6 +663,7 @@ fn get_regr_iter() -> impl Iterator<Item = (f32, Vec<f32>)> {
     })
 }
 
+#[allow(unused)]
 fn get_packed_regr_iter() -> impl Iterator<Item = (f32, Vec<Vec<f32>>)> {
     let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass_lstm.csv").unwrap());
     let columns: usize = 10;
