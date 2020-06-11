@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate timeit;
 
-extern crate env_logger;
 extern crate coaster as co;
+extern crate env_logger;
 extern crate juice;
 
 use crate::co::prelude::*;
@@ -25,13 +25,13 @@ fn main() {
                 bench_vgg_a();
             }
         } else {
-            println!("Sorry, no model found with name '{:?}'. Valid options: {:?}",
-                     net,
-                     nets);
+            println!("Sorry, no model found with name '{:?}'. Valid options: {:?}", net, nets);
         }
     } else {
-        println!("No `net` argument specified. Default: `alexnet`. Valid options: {:?}",
-                 nets);
+        println!(
+            "No `net` argument specified. Default: `alexnet`. Valid options: {:?}",
+            nets
+        );
         bench_alexnet();
     }
 }
@@ -47,8 +47,8 @@ fn native_backend() -> Rc<Backend<Native>> {
 #[cfg(feature = "cuda")]
 #[allow(dead_code)]
 use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
-use juice::layer::{LayerConfig, LayerType, Layer};
-use juice::layers::{ConvolutionConfig, PoolingMode, PoolingConfig, LinearConfig, SequentialConfig};
+use juice::layer::{Layer, LayerConfig, LayerType};
+use juice::layers::{ConvolutionConfig, LinearConfig, PoolingConfig, PoolingMode, SequentialConfig};
 
 #[cfg(feature = "opencl")]
 #[allow(dead_code)]
@@ -108,12 +108,14 @@ fn get_time_scale<'a>(sec: f64) -> (f64, &'a str) {
     }
 }
 
-#[cfg(feature="native")]
+#[cfg(feature = "native")]
 fn bench_alexnet() {
     println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Coaster NN Plugin.");
-    println!("Try running with `cargo run --release --no-default-features --features cuda --example benchmarks alexnet`.");
+    println!(
+        "Try running with `cargo run --release --no-default-features --features cuda --example benchmarks alexnet`."
+    );
 }
-#[cfg(all(feature="cuda", not(feature="native")))]
+#[cfg(all(feature = "cuda", not(feature = "native")))]
 fn bench_alexnet() {
     let mut cfg = SequentialConfig::default();
     cfg.add_input("data", &[128, 3, 224, 224]);
@@ -126,63 +128,77 @@ fn bench_alexnet() {
     };
     cfg.add_layer(LayerConfig::new("conv1", conv1_layer_cfg));
     cfg.add_layer(LayerConfig::new("conv1/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool1",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![3],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool1",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![3],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
 
-    cfg.add_layer(LayerConfig::new("conv2",
-                                   ConvolutionConfig {
-                                       num_output: 192,
-                                       filter_shape: vec![5],
-                                       padding: vec![2],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv2",
+        ConvolutionConfig {
+            num_output: 192,
+            filter_shape: vec![5],
+            padding: vec![2],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv2/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool2",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![3],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool2",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![3],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
 
-    cfg.add_layer(LayerConfig::new("conv3",
-                                   ConvolutionConfig {
-                                       num_output: 384,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv3",
+        ConvolutionConfig {
+            num_output: 384,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv3/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv4",
-                                   ConvolutionConfig {
-                                       num_output: 256,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv4",
+        ConvolutionConfig {
+            num_output: 256,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv4/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv5",
-                                   ConvolutionConfig {
-                                       num_output: 256,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv5",
+        ConvolutionConfig {
+            num_output: 256,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv5/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool3",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![3],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool3",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![3],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
 
     cfg.add_layer(LayerConfig::new("fc1", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
@@ -190,8 +206,10 @@ fn bench_alexnet() {
 
     let backend = Rc::new(cuda_backend());
     // let native_backend = native_backend();
-    let mut network = Layer::from_config(backend.clone(),
-                                         &LayerConfig::new("alexnet", LayerType::Sequential(cfg)));
+    let mut network = Layer::from_config(
+        backend.clone(),
+        &LayerConfig::new("alexnet", LayerType::Sequential(cfg)),
+    );
 
     {
         let func = || {
@@ -228,8 +246,7 @@ fn bench_alexnet() {
                     network.backward_parameters();
                 }
             });
-            println!("backward parameters step: {}",
-                     scale_time(backward_time, "ms"));
+            println!("backward parameters step: {}", scale_time(backward_time, "ms"));
         };
         {
             bench_profile("alexnet_backward_parameters", func, 10);
@@ -237,12 +254,14 @@ fn bench_alexnet() {
     }
 }
 
-#[cfg(feature="native")]
+#[cfg(feature = "native")]
 fn bench_overfeat() {
     println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Coaster NN Plugin.");
-    println!("Try running with `cargo run --release --no-default-features --features cuda --example benchmarks overfeat`.");
+    println!(
+        "Try running with `cargo run --release --no-default-features --features cuda --example benchmarks overfeat`."
+    );
 }
-#[cfg(all(feature="cuda", not(feature="native")))]
+#[cfg(all(feature = "cuda", not(feature = "native")))]
 fn bench_overfeat() {
     let mut cfg = SequentialConfig::default();
     cfg.add_input("data", &[128, 3, 231, 231]);
@@ -319,8 +338,10 @@ fn bench_overfeat() {
 
     let backend = Rc::new(cuda_backend());
     // let native_backend = native_backend();
-    let mut network = Layer::from_config(backend.clone(),
-                                         &LayerConfig::new("overfeat", LayerType::Sequential(cfg)));
+    let mut network = Layer::from_config(
+        backend.clone(),
+        &LayerConfig::new("overfeat", LayerType::Sequential(cfg)),
+    );
 
     {
         let func = || {
@@ -357,8 +378,7 @@ fn bench_overfeat() {
                     network.backward_parameters();
                 }
             });
-            println!("backward parameters step: {}",
-                     scale_time(backward_time, "ms"));
+            println!("backward parameters step: {}", scale_time(backward_time, "ms"));
         };
         {
             bench_profile("overfeat_backward_parameters", func, 10);
@@ -366,12 +386,12 @@ fn bench_overfeat() {
     }
 }
 
-#[cfg(feature="native")]
+#[cfg(feature = "native")]
 fn bench_vgg_a() {
     println!("Examples run only with CUDA support at the moment, because of missing native convolution implementation for the Coaster NN Plugin.");
     println!("Try running with `cargo run --release --no-default-features --features cuda --example benchmarks vgg`.");
 }
-#[cfg(all(feature="cuda", not(feature="native")))]
+#[cfg(all(feature = "cuda", not(feature = "native")))]
 fn bench_vgg_a() {
     let mut cfg = SequentialConfig::default();
     cfg.add_input("data", &[64, 3, 224, 224]);
@@ -384,21 +404,25 @@ fn bench_vgg_a() {
     };
     cfg.add_layer(LayerConfig::new("conv1", conv1_layer_cfg));
     cfg.add_layer(LayerConfig::new("conv1/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool1",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![2],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool1",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![2],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
 
-    cfg.add_layer(LayerConfig::new("conv2",
-                                   ConvolutionConfig {
-                                       num_output: 128,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv2",
+        ConvolutionConfig {
+            num_output: 128,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv2/relu", LayerType::ReLU));
     let pool2_layer_cfg = PoolingConfig {
         mode: PoolingMode::Max,
@@ -406,96 +430,115 @@ fn bench_vgg_a() {
         stride: vec![2],
         padding: vec![0],
     };
-    cfg.add_layer(LayerConfig::new("pool2",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![2],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool2",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![2],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
 
-    cfg.add_layer(LayerConfig::new("conv3",
-                                   ConvolutionConfig {
-                                       num_output: 256,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv3",
+        ConvolutionConfig {
+            num_output: 256,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv3/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv4",
-                                   ConvolutionConfig {
-                                       num_output: 256,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv4",
+        ConvolutionConfig {
+            num_output: 256,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv4/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool3",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![2],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool3",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![2],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
 
-    cfg.add_layer(LayerConfig::new("conv5",
-                                   ConvolutionConfig {
-                                       num_output: 512,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv5",
+        ConvolutionConfig {
+            num_output: 512,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv5/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv6",
-                                   ConvolutionConfig {
-                                       num_output: 512,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv6",
+        ConvolutionConfig {
+            num_output: 512,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv6/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool4",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![2],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool4",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![2],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
 
-    cfg.add_layer(LayerConfig::new("conv7",
-                                   ConvolutionConfig {
-                                       num_output: 512,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv7",
+        ConvolutionConfig {
+            num_output: 512,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv7/relu", LayerType::ReLU));
 
-    cfg.add_layer(LayerConfig::new("conv8",
-                                   ConvolutionConfig {
-                                       num_output: 512,
-                                       filter_shape: vec![3],
-                                       padding: vec![1],
-                                       stride: vec![1],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "conv8",
+        ConvolutionConfig {
+            num_output: 512,
+            filter_shape: vec![3],
+            padding: vec![1],
+            stride: vec![1],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("conv8/relu", LayerType::ReLU));
-    cfg.add_layer(LayerConfig::new("pool5",
-                                   PoolingConfig {
-                                       mode: PoolingMode::Max,
-                                       filter_shape: vec![2],
-                                       stride: vec![2],
-                                       padding: vec![0],
-                                   }));
+    cfg.add_layer(LayerConfig::new(
+        "pool5",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![2],
+            stride: vec![2],
+            padding: vec![0],
+        },
+    ));
     cfg.add_layer(LayerConfig::new("fc1", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc2", LinearConfig { output_size: 4096 }));
     cfg.add_layer(LayerConfig::new("fc3", LinearConfig { output_size: 1000 }));
 
     let backend = Rc::new(cuda_backend());
     // let native_backend = native_backend();
-    let mut network = Layer::from_config(backend.clone(),
-                                         &LayerConfig::new("vgg_a", LayerType::Sequential(cfg)));
+    let mut network = Layer::from_config(backend.clone(), &LayerConfig::new("vgg_a", LayerType::Sequential(cfg)));
 
     {
         let func = || {
@@ -532,8 +575,7 @@ fn bench_vgg_a() {
                     network.backward_parameters();
                 }
             });
-            println!("backward parameters step: {}",
-                     scale_time(backward_time, "ms"));
+            println!("backward parameters step: {}", scale_time(backward_time, "ms"));
         };
         {
             bench_profile("overfeat_backward_parameters", func, 10);

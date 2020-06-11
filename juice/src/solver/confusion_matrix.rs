@@ -1,10 +1,9 @@
 //! TODO: DOC
 
-
 use crate::co::SharedTensor;
+use crate::util::native_backend;
 use std::collections::VecDeque;
 use std::fmt;
-use crate::util::native_backend;
 /// A [ConfusionMatrix][wiki].
 ///
 /// [wiki]: https://en.wikipedia.org/wiki/Confusion_matrix
@@ -58,7 +57,8 @@ impl ConfusionMatrix {
         let mut predictions = Vec::<usize>::new();
         for batch_predictions in predictions_slice.chunks(self.num_classes) {
             let mut enumerated_predictions = batch_predictions.iter().enumerate().collect::<Vec<_>>();
-            enumerated_predictions.sort_by(|&(_, one), &(_, two)| one.partial_cmp(two).unwrap_or(::std::cmp::Ordering::Equal)); // find index of prediction
+            enumerated_predictions
+                .sort_by(|&(_, one), &(_, two)| one.partial_cmp(two).unwrap_or(::std::cmp::Ordering::Equal)); // find index of prediction
             predictions.push(enumerated_predictions.last().unwrap().0)
         }
         predictions
@@ -102,10 +102,7 @@ impl Sample {
 
 impl fmt::Display for Sample {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,
-               "Prediction: {:?}, Target: {:?}",
-               self.prediction,
-               self.target)
+        write!(f, "Prediction: {:?}, Target: {:?}", self.prediction, self.target)
     }
 }
 
@@ -126,10 +123,12 @@ impl Accuracy {
 
 impl fmt::Display for Accuracy {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,
-               "{:?}/{:?} = {:.2?}%",
-               self.num_correct,
-               self.num_samples,
-               self.ratio())
+        write!(
+            f,
+            "{:?}/{:?} = {:.2?}%",
+            self.num_correct,
+            self.num_samples,
+            self.ratio()
+        )
     }
 }

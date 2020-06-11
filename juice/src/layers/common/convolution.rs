@@ -17,12 +17,12 @@ use crate::capnp_util::*;
 use crate::co::prelude::*;
 use crate::conn;
 use crate::conn::ConvolutionConfig as connConvolutionConfig;
-use crate::layer::*;
 use crate::juice_capnp::convolution_config as capnp_config;
+use crate::layer::*;
+use crate::util::{cast_vec_usize_to_i32, ArcLock};
+use crate::weight::FillerType;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use crate::util::{ArcLock, cast_vec_usize_to_i32};
-use crate::weight::FillerType;
 
 #[derive(Debug, Clone)]
 /// Convolution Layer
@@ -116,14 +116,16 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
         true
     }
 
-    fn reshape(&mut self,
-               backend: Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    fn reshape(
+        &mut self,
+        backend: Rc<B>,
+        input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+    ) {
         for i in 0..input_data.len() {
             let inp = input_data[0].read().unwrap();
             let mut output_data = output_data[0].write().unwrap();
@@ -139,14 +141,17 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
             let stride = cast_vec_usize_to_i32(self.stride_dims(num_spatial_dims));
             let padding = cast_vec_usize_to_i32(self.padding_dims(num_spatial_dims));
 
-            let config = backend.new_convolution_config(&inp,
-                                        &output_data,
-                                        &mut filter,
-                                        conn::ConvForwardAlgo::Auto,
-                                        conn::ConvBackwardFilterAlgo::Auto,
-                                        conn::ConvBackwardDataAlgo::Auto,
-                                        &stride,
-                                        &padding)
+            let config = backend
+                .new_convolution_config(
+                    &inp,
+                    &output_data,
+                    &mut filter,
+                    conn::ConvForwardAlgo::Auto,
+                    conn::ConvBackwardFilterAlgo::Auto,
+                    conn::ConvBackwardDataAlgo::Auto,
+                    &stride,
+                    &padding,
+                )
                 .unwrap();
 
             // resize and fill weights
@@ -161,10 +166,11 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
         }
     }
 
-    fn resize_shared_workspace(&mut self,
-                               backend: Rc<B>,
-                               workspace: Option<ArcLock<SharedTensor<u8>>>)
-                               -> Option<ArcLock<SharedTensor<u8>>> {
+    fn resize_shared_workspace(
+        &mut self,
+        backend: Rc<B>,
+        workspace: Option<ArcLock<SharedTensor<u8>>>,
+    ) -> Option<ArcLock<SharedTensor<u8>>> {
         let required_size = self.convolution_config.as_ref().unwrap().workspace_size();
         let new_workspace = if workspace.is_none() {
             Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
@@ -184,65 +190,73 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
 }
 
 impl<B: IBackend + conn::Convolution<f32>> ComputeOutput<f32, B> for Convolution<B> {
-    fn compute_output(&self,
-                      backend: &B,
-                      weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
+    fn compute_output(
+        &self,
+        backend: &B,
+        weights: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        output_data: &mut [&mut SharedTensor<f32>],
+    ) {
         let filter_data = weights[0];
         let conv_config = self.convolution_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
-        backend.convolution(filter_data,
-                         input_data[0],
-                         output_data[0],
-                         &mut workspace,
-                         conv_config)
+        backend
+            .convolution(filter_data, input_data[0], output_data[0], &mut workspace, conv_config)
             .unwrap();
     }
 }
 
 impl<B: IBackend + conn::Convolution<f32>> ComputeInputGradient<f32, B> for Convolution<B> {
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              weights_data: &[&SharedTensor<f32>],
-                              _output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_input_gradient(
+        &self,
+        backend: &B,
+        weights_data: &[&SharedTensor<f32>],
+        _output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        input_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         let filter_data = weights_data[0];
         let conv_config = self.convolution_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         // compute gradient w.r.t. input
-        backend.convolution_grad_data(filter_data,
-                                   output_gradients[0],
-                                   input_gradients[0],
-                                   &mut workspace,
-                                   conv_config)
+        backend
+            .convolution_grad_data(
+                filter_data,
+                output_gradients[0],
+                input_gradients[0],
+                &mut workspace,
+                conv_config,
+            )
             .unwrap();
     }
 }
 
 impl<B: IBackend + conn::Convolution<f32>> ComputeParametersGradient<f32, B> for Convolution<B> {
-    fn compute_parameters_gradient(&self,
-                                   backend: &B,
-                                   _output_data: &[&SharedTensor<f32>],
-                                   output_gradients: &[&SharedTensor<f32>],
-                                   input_data: &[&SharedTensor<f32>],
-                                   parameters_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_parameters_gradient(
+        &self,
+        backend: &B,
+        _output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        parameters_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         // TODO: compute gradient w.r.t to bias
         let filter_gradient = &mut parameters_gradients[0];
         let conv_config = self.convolution_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         // compute gradient w.r.t. filter
-        backend.convolution_grad_filter(input_data[0],
-                                     output_gradients[0],
-                                     filter_gradient,
-                                     &mut workspace,
-                                     conv_config)
+        backend
+            .convolution_grad_filter(
+                input_data[0],
+                output_gradients[0],
+                filter_gradient,
+                &mut workspace,
+                conv_config,
+            )
             .unwrap();
     }
 }
-
 
 #[derive(Debug, Clone)]
 /// Specifies configuration parameters for a Convolution Layer.
@@ -323,12 +337,12 @@ impl<'a> CapnpRead<'a> for ConvolutionConfig {
 
 #[cfg(test)]
 mod tests {
-    use super::{Convolution, ConvolutionConfig};
     use super::super::FilterLayer;
+    use super::{Convolution, ConvolutionConfig};
     use crate::co::*;
 
     #[test]
-    #[cfg(feature="cuda")]
+    #[cfg(feature = "cuda")]
     fn correct_shapes() {
         let cfg = ConvolutionConfig {
             num_output: 64,
@@ -343,9 +357,7 @@ mod tests {
         assert_eq!(vec![11, 11], layer.spatial_filter_dims(2));
         assert_eq!(vec![2, 2], layer.padding_dims(2));
         assert_eq!(vec![4, 4], layer.stride_dims(2));
-        assert_eq!(vec![64, 3, 11, 11],
-                   layer.calculate_filter_shape(&[1, 3, 224, 224]));
-        assert_eq!(vec![1, 64, 55, 55],
-                   layer.calculate_output_shape(&[1, 3, 224, 224]));
+        assert_eq!(vec![64, 3, 11, 11], layer.calculate_filter_shape(&[1, 3, 224, 224]));
+        assert_eq!(vec![1, 64, 55, 55], layer.calculate_output_shape(&[1, 3, 224, 224]));
     }
 }

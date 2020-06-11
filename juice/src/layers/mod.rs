@@ -51,25 +51,21 @@
 /// Implement [ILayer][1] for [activation layers][2].
 /// [1]: ./layer/trait.ILayer.html
 /// [2]: ./layers/activation/index.html
-
 pub use self::activation::{ReLU, Sigmoid, TanH};
 
-pub use self::common::{Convolution, ConvolutionConfig,
-                       Rnn, RnnConfig,
-                       Pooling, PoolingConfig, PoolingMode,
-                       Linear, LinearConfig,
-                       LogSoftmax,
-                       Softmax,
-                       Dropout, DropoutConfig};
+pub use self::common::{
+    Convolution, ConvolutionConfig, Dropout, DropoutConfig, Linear, LinearConfig, LogSoftmax, Pooling, PoolingConfig,
+    PoolingMode, Rnn, RnnConfig, Softmax,
+};
 
 pub use self::container::{Sequential, SequentialConfig};
 
-pub use self::loss::{NegativeLogLikelihood, NegativeLogLikelihoodConfig, MeanSquaredError};
+pub use self::loss::{MeanSquaredError, NegativeLogLikelihood, NegativeLogLikelihoodConfig};
 
 pub use self::utility::{Flatten, Reshape, ReshapeConfig};
 
 pub mod activation;
 pub mod common;
+pub mod container;
 pub mod loss;
 pub mod utility;
-pub mod container;

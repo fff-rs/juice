@@ -3,9 +3,9 @@
 
 use crate::capnp_util::*;
 use crate::co::{IBackend, ITensorDesc, SharedTensor};
-use crate::layer::*;
 use crate::juice_capnp::negative_log_likelihood_config as capnp_config;
-use crate::util::{ArcLock, native_backend};
+use crate::layer::*;
+use crate::util::{native_backend, ArcLock};
 
 #[derive(Debug, Clone)]
 #[allow(missing_copy_implementations)]
@@ -17,7 +17,9 @@ pub struct NegativeLogLikelihood {
 impl NegativeLogLikelihood {
     /// Create a NegativeLogLikelihood layer from a NegativeLogLikelihoodConfig.
     pub fn from_config(config: &NegativeLogLikelihoodConfig) -> NegativeLogLikelihood {
-        NegativeLogLikelihood { num_classes: config.num_classes }
+        NegativeLogLikelihood {
+            num_classes: config.num_classes,
+        }
     }
 
     fn calculate_outer_num(softmax_axis: usize, input_shape: &[usize]) -> usize {
@@ -44,14 +46,16 @@ impl<B: IBackend> ILayer<B> for NegativeLogLikelihood {
         true
     }
 
-    fn reshape(&mut self,
-               backend: ::std::rc::Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    fn reshape(
+        &mut self,
+        backend: ::std::rc::Rc<B>,
+        input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+    ) {
         let data = input_data[0].read().unwrap();
         let label = input_data[1].read().unwrap();
 
@@ -61,21 +65,21 @@ impl<B: IBackend> ILayer<B> for NegativeLogLikelihood {
 }
 
 impl<B: IBackend> ComputeOutput<f32, B> for NegativeLogLikelihood {
-    fn compute_output(&self,
-                      backend: &B,
-                      _weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
+    fn compute_output(
+        &self,
+        backend: &B,
+        _weights: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        output_data: &mut [&mut SharedTensor<f32>],
+    ) {
         let probabilities = input_data[0];
         let labels = input_data[1];
 
         let batch_size = Self::batch_size(labels.desc());
 
         let native = native_backend();
-        let native_labels = labels.read(native.device()).unwrap()
-            .as_slice::<f32>();
-        let native_probabilities = probabilities.read(native.device()).unwrap()
-            .as_slice::<f32>();
+        let native_labels = labels.read(native.device()).unwrap().as_slice::<f32>();
+        let native_probabilities = probabilities.read(native.device()).unwrap().as_slice::<f32>();
 
         let mut writable_loss = Vec::<f32>::new();
         for &label_value in native_labels {
@@ -87,34 +91,36 @@ impl<B: IBackend> ComputeOutput<f32, B> for NegativeLogLikelihood {
         loss = loss / (batch_size as f32);
         writable_loss = vec![loss];
 
-        crate::util::write_to_memory(output_data[0].write_only(native.device()).unwrap(),
-                                &writable_loss);
+        crate::util::write_to_memory(output_data[0].write_only(native.device()).unwrap(), &writable_loss);
     }
 }
 
 impl<B: IBackend> ComputeInputGradient<f32, B> for NegativeLogLikelihood {
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              weights_data: &[&SharedTensor<f32>],
-                              output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_input_gradient(
+        &self,
+        backend: &B,
+        weights_data: &[&SharedTensor<f32>],
+        output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        input_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         let labels = input_data[1];
         let batch_size = Self::batch_size(input_data[0].desc());
         let num_classes = self.num_classes;
 
         let native = native_backend();
-        let native_labels = labels.read(native.device()).unwrap()
-            .as_slice::<f32>();
+        let native_labels = labels.read(native.device()).unwrap().as_slice::<f32>();
         let mut writable_gradient = vec![0f32; input_gradients[0].desc().size()];
 
         for (batch_n, &label_value) in native_labels.iter().enumerate() {
             let index = (num_classes * batch_n) + label_value as usize;
             writable_gradient[index] = -1f32;
         }
-        crate::util::write_to_memory(input_gradients[0].write_only(native.device()).unwrap(),
-                                &writable_gradient);
+        crate::util::write_to_memory(
+            input_gradients[0].write_only(native.device()).unwrap(),
+            &writable_gradient,
+        );
     }
 }
 
@@ -143,7 +149,9 @@ impl<'a> CapnpRead<'a> for NegativeLogLikelihoodConfig {
     fn read_capnp(reader: Self::Reader) -> Self {
         let num_classes = reader.get_num_classes() as usize;
 
-        NegativeLogLikelihoodConfig { num_classes: num_classes }
+        NegativeLogLikelihoodConfig {
+            num_classes: num_classes,
+        }
     }
 }
 

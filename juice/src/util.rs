@@ -1,10 +1,10 @@
 //! Provides common utility functions
 
-use crate::co::prelude::*;
 use crate::co::frameworks::native::flatbox::FlatBox;
+use crate::co::prelude::*;
 use crate::coblas::plugin::*;
 use crate::conn;
-use num::traits::{NumCast, cast};
+use num::traits::{cast, NumCast};
 use std::sync::{Arc, RwLock};
 
 /// Shared Lock used for our tensors
@@ -47,17 +47,18 @@ pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedT
     let batch_size = tensor.desc().size();
     let sample_size = batch_size / tensor.desc()[0];
 
-    write_to_memory_offset(tensor.write_only(native_backend.device()).unwrap(),
-                           &data,
-                           i * sample_size);
+    write_to_memory_offset(
+        tensor.write_only(native_backend.device()).unwrap(),
+        &data,
+        i * sample_size,
+    );
 }
 
 /// Create a Coaster SharedTensor for a scalar value.
 pub fn native_scalar<T: NumCast + ::std::marker::Copy>(scalar: T) -> SharedTensor<T> {
     let native = native_backend();
     let mut shared_scalar = SharedTensor::<T>::new(&[1]);
-    write_to_memory(shared_scalar.write_only(native.device()).unwrap(),
-                    &[scalar]);
+    write_to_memory(shared_scalar.write_only(native.device()).unwrap(), &[scalar]);
     shared_scalar
 }
 
@@ -75,12 +76,13 @@ pub trait Axpby<F>: Axpy<F> + Scal<F> {
     /// Performs the operation y := a*x + b*y .
     ///
     /// Consists of a scal(b, y) followed by a axpby(a,x,y).
-    fn axpby(&self,
-             a: &SharedTensor<F>,
-             x: &SharedTensor<F>,
-             b: &SharedTensor<F>,
-             y: &mut SharedTensor<F>)
-             -> Result<(), crate::co::error::Error> {
+    fn axpby(
+        &self,
+        a: &SharedTensor<F>,
+        x: &SharedTensor<F>,
+        b: &SharedTensor<F>,
+        y: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error> {
         self.scal(b, y)?;
         self.axpy(a, x, y)?;
         Ok(())
@@ -98,26 +100,41 @@ pub trait SolverOps<F>: LayerOps<F> + Axpby<F> + Dot<F> + Copy<F> {}
 impl<T: LayerOps<f32> + Axpby<f32> + Dot<f32> + Copy<f32>> SolverOps<f32> for T {}
 
 /// Encapsulates all traits used in Layers.
-pub trait LayerOps<F> : conn::Convolution<F>
-                      + conn::Rnn<F>
-                      + conn::Pooling<F>
-                      + conn::Relu<F> + conn::ReluPointwise<F>
-                      + conn::Sigmoid<F> + conn::SigmoidPointwise<F>
-                      + conn::Tanh<F> + conn::TanhPointwise<F>
-                      + conn::Softmax<F> + conn::LogSoftmax<F>
-                      + conn::Dropout<F>
-                      + Gemm<F>
-                      + Axpby<F>
-                      + Copy<F> {}
+pub trait LayerOps<F>:
+    conn::Convolution<F>
+    + conn::Rnn<F>
+    + conn::Pooling<F>
+    + conn::Relu<F>
+    + conn::ReluPointwise<F>
+    + conn::Sigmoid<F>
+    + conn::SigmoidPointwise<F>
+    + conn::Tanh<F>
+    + conn::TanhPointwise<F>
+    + conn::Softmax<F>
+    + conn::LogSoftmax<F>
+    + conn::Dropout<F>
+    + Gemm<F>
+    + Axpby<F>
+    + Copy<F>
+{
+}
 
-impl<T: conn::Convolution<f32>
-      + conn::Rnn<f32>
-      + conn::Pooling<f32>
-      + conn::Relu<f32> + conn::ReluPointwise<f32>
-      + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>
-      + conn::Tanh<f32> + conn::TanhPointwise<f32>
-      + conn::Softmax<f32> + conn::LogSoftmax<f32>
-      + conn::Dropout<f32>
-      + Gemm<f32>
-      + Axpby<f32>
-      + Copy<f32>> LayerOps<f32> for T {}
+impl<
+        T: conn::Convolution<f32>
+            + conn::Rnn<f32>
+            + conn::Pooling<f32>
+            + conn::Relu<f32>
+            + conn::ReluPointwise<f32>
+            + conn::Sigmoid<f32>
+            + conn::SigmoidPointwise<f32>
+            + conn::Tanh<f32>
+            + conn::TanhPointwise<f32>
+            + conn::Softmax<f32>
+            + conn::LogSoftmax<f32>
+            + conn::Dropout<f32>
+            + Gemm<f32>
+            + Axpby<f32>
+            + Copy<f32>,
+    > LayerOps<f32> for T
+{
+}

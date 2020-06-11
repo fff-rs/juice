@@ -22,15 +22,18 @@
 //! [mod_relu]: ./relu/index.html
 //! [struct_layerconfig]: ../../layer/struct.LayerConfig.html
 
-
 /// macro helper to implement activation trait
 /// TODO see common
 #[macro_export]
 macro_rules! impl_ilayer_activation {
-    () => (
-        fn exact_num_output_blobs(&self) -> Option<usize> { Some(1) }
-        fn exact_num_input_blobs(&self) -> Option<usize> { Some(1) }
-    )
+    () => {
+        fn exact_num_output_blobs(&self) -> Option<usize> {
+            Some(1)
+        }
+        fn exact_num_input_blobs(&self) -> Option<usize> {
+            Some(1)
+        }
+    };
 }
 
 pub use self::relu::ReLU;

@@ -1,9 +1,9 @@
 //! Set of Evaluators for Regression Problems
 
 use crate::co::SharedTensor;
+use crate::util::native_backend;
 use std::collections::VecDeque;
 use std::fmt;
-use crate::util::native_backend;
 /// Sampled Evaluator for Regression Problems
 ///
 /// Produces measure of accuracy for regression problems up to `Capacity` elements in a
@@ -33,10 +33,7 @@ impl RegressionEvaluator {
         if self.capacity.is_some() && self.samples.len() >= self.capacity.unwrap() {
             self.samples.pop_front();
         }
-        self.samples.push_back(Sample {
-            prediction,
-            target,
-        });
+        self.samples.push_back(Sample { prediction, target });
     }
 
     /// Add a batch of samples.
@@ -69,15 +66,17 @@ impl RegressionEvaluator {
     pub fn accuracy(&self) -> impl RegressionLoss {
         let num_samples = self.samples.len();
         match &*self.evaluation_metric {
-           "mse" => {
-               let sum_squared_error = self.samples.iter()
-                   .fold(0.0, |acc, sample| acc + (sample.prediction-sample.target).powi(2));
-               MeanSquaredErrorAccuracy {
-                   num_samples,
-                   sum_squared_error
-               }
-           },
-            _ => {unimplemented!()}
+            "mse" => {
+                let sum_squared_error = self
+                    .samples
+                    .iter()
+                    .fold(0.0, |acc, sample| acc + (sample.prediction - sample.target).powi(2));
+                MeanSquaredErrorAccuracy {
+                    num_samples,
+                    sum_squared_error,
+                }
+            }
+            _ => unimplemented!(),
         }
     }
 }
@@ -91,10 +90,7 @@ pub struct Sample {
 
 impl fmt::Display for Sample {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,
-               "Prediction: {:.2?}, Target: {:.2?}",
-               self.prediction,
-               self.target)
+        write!(f, "Prediction: {:.2?}, Target: {:.2?}", self.prediction, self.target)
     }
 }
 
@@ -122,9 +118,6 @@ pub struct MeanSquaredErrorAccuracy {
 #[allow(trivial_casts)]
 impl fmt::Display for dyn RegressionLoss {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,
-               " {:.6?}",
-               self.loss()
-        )
+        write!(f, " {:.6?}", self.loss())
     }
 }
