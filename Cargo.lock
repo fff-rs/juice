@@ -205,15 +205,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "clippy"
-version = "0.0.302"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d911ee15579a3f50880d8c1d59ef6e79f9533127a3bd342462f5d584f5e8c294"
-dependencies = [
- "term 0.5.2",
-]
-
-[[package]]
 name = "cloudabi"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -255,7 +246,6 @@ dependencies = [
 name = "coaster-nn"
 version = "0.4.1"
 dependencies = [
- "clippy",
  "coaster",
  "libc",
  "log",
@@ -416,17 +406,6 @@ name = "diff"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e25ea47919b1560c4e3b7fe0aaab9becf5b84a10325ddf7db0f0ba5e1026499"
-
-[[package]]
-name = "dirs"
-version = "1.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fd78930633bd1c6e35c4b42b1df7b0cbc6bc191146e512bb3bedf243fcc3901"
-dependencies = [
- "libc",
- "redox_users",
- "winapi 0.3.8",
-]
 
 [[package]]
 name = "dirs"
@@ -1448,7 +1427,6 @@ dependencies = [
 name = "rcublas"
 version = "0.5.0"
 dependencies = [
- "clippy",
  "coaster",
  "env_logger",
  "lazy_static",
@@ -1470,7 +1448,6 @@ dependencies = [
 name = "rcudnn"
 version = "1.7.0"
 dependencies = [
- "clippy",
  "coaster",
  "libc",
  "num 0.1.42",
@@ -1800,22 +1777,11 @@ dependencies = [
 
 [[package]]
 name = "term"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edd106a334b7657c10b7c540a0106114feadeb4dc314513e97df481d5d966f42"
-dependencies = [
- "byteorder",
- "dirs 1.0.5",
- "winapi 0.3.8",
-]
-
-[[package]]
-name = "term"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0863a3345e70f61d613eab32ee046ccd1bcc5f9105fe402c61fcd0c13eeb8b5"
 dependencies = [
- "dirs 2.0.2",
+ "dirs",
  "winapi 0.3.8",
 ]
 
@@ -1836,7 +1802,7 @@ checksum = "ee72ec31009a42b53de9a6b7d8f462b493ab3b1e4767bda1fcdbb52127f13b6c"
 dependencies = [
  "getopts",
  "libc",
- "term 0.6.1",
+ "term",
 ]
 
 [[package]]
