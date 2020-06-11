@@ -25,7 +25,6 @@ rust-blas = { version = "^0.1", path = "../rust-blas", optional = true }
 # cuda
 rcublas = { version = "0.4", path = "../rcublas/cublas", optional = true }
 spin = { version = "0.5", optional = true }
-clippy = { version = "0.0.302", optional = true }
 
 [dev-dependencies]
 
@@ -34,6 +33,3 @@ default = ["native", "cuda"]
 native = ["coaster/native", "rust-blas"]
 cuda = ["coaster/cuda", "rcublas", "spin"]
 opencl = ["coaster/opencl"]
-travis = ["native"]
-dev = []
-lint = ["clippy"]

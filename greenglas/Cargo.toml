@@ -18,14 +18,8 @@ image = "0.23"
 murmurhash3 = "0.0.5"
 modifier = "0.1"
 
-clippy = { version = "0.0.302", optional = true }
-
 [features]
 default = ["native", "cuda"]
 native = []
 cuda = ["coaster/cuda"]
 opencl = ["coaster/opencl"]
-
-dev = []
-lint = ["clippy"]
-travis = []

@@ -89,23 +89,19 @@
 //! [issue-loss]: https://github.com/spearow/juice/issues/18
 //! [issue-activation]: https://github.com/spearow/juice/issues/19
 //! [issue-common]: https://github.com/spearow/juice/issues/20
-#![cfg_attr(feature="lint", feature(plugin))]
-#![cfg_attr(feature="lint", plugin(clippy))]
-#![cfg_attr(feature="lint", allow(type_complexity))]
-
 #![allow(dead_code)]
 #![allow(unused_variables)]
-#![deny(missing_docs,
-        missing_debug_implementations, missing_copy_implementations,
-        trivial_casts, trivial_numeric_casts,
-        unsafe_code,
-        unused_import_braces, unused_qualifications)]
-
-// used when run with  cargo test --no-run --features clippy
-// or cargo build --features clippy
-#![cfg_attr(feature="clippy", feature(plugin))]
-#![cfg_attr(feature="clippy", plugin(clippy))]
-#![cfg_attr(feature="clippy", deny(clippy, clippy_pedantic))]
+#![deny(
+    clippy::missing_docs,
+    clippy::missing_debug_implementations,
+    clippy::missing_copy_implementations,
+    clippy::trivial_casts,
+    clippy::trivial_numeric_casts,
+    clippy::unsafe_code,
+    clippy::unused_import_braces,
+    clippy::unused_qualifications,
+    clippy::complexity
+)]
 
 #[macro_use]
 extern crate timeit;

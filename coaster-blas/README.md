@@ -24,7 +24,7 @@ If you're using Cargo, just add coaster-BLAS to your Cargo.toml:
 
     [dependencies]
     coaster = "0.4"
-    coaster-blas = "0.2.0"
+    coaster-blas = "0.2"
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 

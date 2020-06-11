@@ -40,17 +40,17 @@
 //! [coaster]: https://github.com/spearow/coaster
 //! [coaster-docs]: https://spearow.github.io/coaster
 //! [blas-source]: https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
-#![cfg_attr(lint, feature(plugin))]
-#![cfg_attr(lint, plugin(clippy))]
 #![allow(dead_code)]
 #![deny(
-    missing_docs,
-    missing_debug_implementations,
-    missing_copy_implementations,
-    trivial_casts,
-    trivial_numeric_casts,
-    unused_import_braces,
-    unused_qualifications
+    clippy::missing_docs,
+    clippy::missing_debug_implementations,
+    clippy::missing_copy_implementations,
+    clippy::trivial_casts,
+    clippy::trivial_numeric_casts,
+    clippy::unsafe_code,
+    clippy::unused_import_braces,
+    clippy::unused_qualifications,
+    clippy::complexity
 )]
 
 extern crate coaster;
