@@ -66,7 +66,7 @@ impl<B: IBackend> ComputeOutput<f32, B> for MeanSquaredError {
 
         write_to_memory(
             output_data[0].write_only(native.device()).unwrap(),
-            &vec![writable_loss / batch_size as f32]
+            &vec![writable_loss / batch_size as f32],
         );
     }
 }

@@ -3,8 +3,8 @@
 use crate::capnp_util::*;
 use crate::co::{ITensorDesc, SharedTensor};
 use crate::juice_capnp::weight_config as capnp_config;
-use rand::{self,prelude::*};
 use crate::util::native_backend;
+use rand::{self, prelude::*};
 
 #[derive(Debug, Clone)]
 /// Specifies training configuration for a weight blob.
@@ -52,40 +52,45 @@ impl Default for WeightConfig {
 impl WeightConfig {
     /// Checks dimensions of two blobs according to the `share_mode`.
     /// Returns an error if there is a count/shape mismatch.
-    pub fn check_dimensions<T>(&self,
-                               tensor_one: &SharedTensor<T>,
-                               tensor_two: &SharedTensor<T>,
-                               param_name: String,
-                               owner_name: String,
-                               layer_name: String)
-                               -> Result<(), String> {
+    pub fn check_dimensions<T>(
+        &self,
+        tensor_one: &SharedTensor<T>,
+        tensor_two: &SharedTensor<T>,
+        param_name: String,
+        owner_name: String,
+        layer_name: String,
+    ) -> Result<(), String> {
         match self.share_mode {
             // Permissive dimension checking -- only check counts are the same.
             DimCheckMode::Permissive => {
                 if tensor_one.desc().size() != tensor_two.desc().size() {
-                    return Err(format!("Cannot share weight '{}' owned by layer '{}' with layer '{}';
+                    return Err(format!(
+                        "Cannot share weight '{}' owned by layer '{}' with layer '{}';
                                 count mismatch.
                                 Owner layer weight shape is {:?};
                                 Sharing layer weight shape is {:?}",
-                                       param_name,
-                                       owner_name,
-                                       layer_name,
-                                       tensor_two.desc(),
-                                       tensor_one.desc()));
+                        param_name,
+                        owner_name,
+                        layer_name,
+                        tensor_two.desc(),
+                        tensor_one.desc()
+                    ));
                 }
             }
             // Strict dimension checking -- all dims must be the same.
             DimCheckMode::Strict => {
                 if tensor_one.desc() != tensor_two.desc() {
-                    return Err(format!("Cannot share weight '{}' owned by layer '{}' with layer '{}';
+                    return Err(format!(
+                        "Cannot share weight '{}' owned by layer '{}' with layer '{}';
                                 shape mismatch.
                                 Owner layer weight shape is {:?};
                                 Sharing layer expects weight shape {:?}",
-                                       param_name,
-                                       owner_name,
-                                       layer_name,
-                                       tensor_two.desc(),
-                                       tensor_one.desc()));
+                        param_name,
+                        owner_name,
+                        layer_name,
+                        tensor_two.desc(),
+                        tensor_one.desc()
+                    ));
                 }
             }
         }
@@ -125,7 +130,10 @@ impl<'a> CapnpRead<'a> for WeightConfig {
     fn read_capnp(reader: Self::Reader) -> Self {
         // TODO: incomplete since WeightConfig isn't really used internally in Juice at the moment.
         let name = reader.get_name().unwrap().to_owned();
-        WeightConfig { name: name, ..Self::default() }
+        WeightConfig {
+            name: name,
+            ..Self::default()
+        }
     }
 }
 
@@ -169,7 +177,10 @@ impl FillerType {
 
         match *self {
             FillerType::Constant { value } => Self::fill_constant(weight, value),
-            FillerType::Glorot { input_size, output_size } => Self::fill_glorot(weight, input_size, output_size),
+            FillerType::Glorot {
+                input_size,
+                output_size,
+            } => Self::fill_glorot(weight, input_size, output_size),
         }
     }
 

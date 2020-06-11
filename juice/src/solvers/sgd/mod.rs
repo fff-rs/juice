@@ -23,8 +23,10 @@
 /// [2]: ./solvers/sgd/index.html
 #[macro_export]
 macro_rules! impl_isolver_sgd {
-    ($t:ty) => (
-        impl<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> ISolver<SolverB, NetB> for $t {
+    ($t:ty) => {
+        impl<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> ISolver<SolverB, NetB>
+            for $t
+        {
             /// Initialize the SGD Momentum solver, allocating memory for its history.
             fn init(&mut self, net: &Layer<NetB>) {
                 self.history = Vec::with_capacity(net.learnable_weights_gradients().len());
@@ -49,11 +51,14 @@ macro_rules! impl_isolver_sgd {
                     SGDSolver::<SolverB, NetB>::normalize(self, config, weight_gradient);
                     // SGDSolver::<SolverB, NetB>::regularize(self, config, weight_gradient, net.weights_weight_decay()[weight_id]);
 
-                    SGDSolver::<SolverB, NetB>::compute_update_value(self, config,
-                                              weight_gradient,
-                                              weight_id,
-                                              &rate,
-                                              &net.learnable_weights_lr()[weight_id].unwrap());
+                    SGDSolver::<SolverB, NetB>::compute_update_value(
+                        self,
+                        config,
+                        weight_gradient,
+                        weight_id,
+                        &rate,
+                        &net.learnable_weights_lr()[weight_id].unwrap(),
+                    );
                 }
             }
 
@@ -61,7 +66,7 @@ macro_rules! impl_isolver_sgd {
                 &self.backend
             }
         }
-    )
+    };
 }
 
 pub use self::momentum::Momentum;

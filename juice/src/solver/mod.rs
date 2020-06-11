@@ -14,8 +14,8 @@ use crate::layers::SequentialConfig;
 use crate::solvers::*;
 use std::marker::PhantomData;
 
-use std::rc::Rc;
 use crate::util::{ArcLock, LayerOps, SolverOps};
+use std::rc::Rc;
 
 #[derive(Debug)]
 /// Solver that optimizes a [Layer][1] with a given objective.
@@ -70,10 +70,11 @@ impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> +
     }
 
     /// Train the network with one minibatch
-    pub fn train_minibatch(&mut self,
-                           mb_data: ArcLock<SharedTensor<f32>>,
-                           mb_target: ArcLock<SharedTensor<f32>>)
-                           -> ArcLock<SharedTensor<f32>> {
+    pub fn train_minibatch(
+        &mut self,
+        mb_data: ArcLock<SharedTensor<f32>>,
+        mb_target: ArcLock<SharedTensor<f32>>,
+    ) -> ArcLock<SharedTensor<f32>> {
         // forward through network and classifier
         let network_out = self.net.forward(&[mb_data])[0].clone();
         let _ = self.objective.forward(&[network_out.clone(), mb_target]);
@@ -337,11 +338,11 @@ pub enum SolverKind {
 
 impl SolverKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>
-        (&self,
-         backend: Rc<B>,
-         config: &SolverConfig)
-         -> Box<dyn ISolver<B, NetB>> {
+    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>(
+        &self,
+        backend: Rc<B>,
+        config: &SolverConfig,
+    ) -> Box<dyn ISolver<B, NetB>> {
         match *self {
             SolverKind::SGD(sgd) => sgd.with_config(backend, config),
         }
@@ -358,11 +359,11 @@ pub enum SGDKind {
 
 impl SGDKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>
-        (&self,
-         backend: Rc<B>,
-         config: &SolverConfig)
-         -> Box<dyn ISolver<B, NetB>> {
+    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>(
+        &self,
+        backend: Rc<B>,
+        config: &SolverConfig,
+    ) -> Box<dyn ISolver<B, NetB>> {
         match *self {
             SGDKind::Momentum => Box::new(Momentum::<B>::new(backend)),
         }
@@ -388,7 +389,7 @@ pub enum LRPolicy {
     // /// stepvalue
     // Multistep,
     /// return base_lr * gamma ^ iter
-    Exp, 
+    Exp,
     // /// return base_lr * (1 + gamma * iter) ^ (- power)
     // Inv,
     // /// the effective learning rate follows a polynomial decay, to be

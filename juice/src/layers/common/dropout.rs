@@ -6,14 +6,13 @@
 //! - `x`: input value
 //! - `p`: dropout probability
 
-
 use crate::capnp_util::*;
 use crate::co::{IBackend, SharedTensor};
 use crate::conn;
-use crate::layer::*;
 use crate::juice_capnp::dropout_config as capnp_config;
-use std::rc::Rc;
+use crate::layer::*;
 use crate::util::ArcLock;
+use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 /// [Dropout](./index.html) Layer
@@ -33,7 +32,7 @@ impl<T, B: conn::Dropout<T>> Dropout<T, B> {
             seed: config.seed,
             dropout_config: vec![],
         }
-    }    
+    }
 }
 
 //
@@ -42,14 +41,16 @@ impl<T, B: conn::Dropout<T>> Dropout<T, B> {
 impl<B: IBackend + conn::Dropout<f32>> ILayer<B> for Dropout<f32, B> {
     impl_ilayer_common!();
 
-    fn reshape(&mut self,
-               backend: ::std::rc::Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    fn reshape(
+        &mut self,
+        backend: ::std::rc::Rc<B>,
+        input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+    ) {
         for i in 0..input_data.len() {
             let inp = input_data[0].read().unwrap();
             let input_desc = inp.desc();
@@ -63,38 +64,43 @@ impl<B: IBackend + conn::Dropout<f32>> ILayer<B> for Dropout<f32, B> {
     }
 }
 
-impl<B: IBackend + conn::Dropout<f32>> ComputeOutput<f32, B> for Dropout<f32,B> {
-    fn compute_output(&self,
-                      backend: &B,
-                      _weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
-
-		let config = &self.dropout_config[0];
-		backend.dropout(input_data[0], output_data[0], &*config).unwrap();
+impl<B: IBackend + conn::Dropout<f32>> ComputeOutput<f32, B> for Dropout<f32, B> {
+    fn compute_output(
+        &self,
+        backend: &B,
+        _weights: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        output_data: &mut [&mut SharedTensor<f32>],
+    ) {
+        let config = &self.dropout_config[0];
+        backend.dropout(input_data[0], output_data[0], &*config).unwrap();
     }
 }
 
-impl<B: IBackend + conn::Dropout<f32>> ComputeInputGradient<f32, B> for Dropout<f32,B> {
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              weights_data: &[&SharedTensor<f32>],
-                              output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
-
+impl<B: IBackend + conn::Dropout<f32>> ComputeInputGradient<f32, B> for Dropout<f32, B> {
+    fn compute_input_gradient(
+        &self,
+        backend: &B,
+        weights_data: &[&SharedTensor<f32>],
+        output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        input_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         let dropout_config = &self.dropout_config[0];
-        backend.dropout_grad(output_data[0],
-                       output_gradients[0],
-                       input_data[0],
-                       input_gradients[0],
-                       dropout_config)
+        backend
+            .dropout_grad(
+                output_data[0],
+                output_gradients[0],
+                input_data[0],
+                input_gradients[0],
+                dropout_config,
+            )
             .unwrap()
     }
 }
 
-impl<B: IBackend + conn::Dropout<f32>> ComputeParametersGradient<f32, B> for Dropout<f32,B> {}
+impl<B: IBackend + conn::Dropout<f32>> ComputeParametersGradient<f32, B> for Dropout<f32, B> {}
 
 #[derive(Debug, Copy, Clone)]
 /// Specifies configuration parameters for a Dropout Layer.
@@ -125,8 +131,8 @@ impl<'a> CapnpRead<'a> for DropoutConfig {
     type Reader = capnp_config::Reader<'a>;
 
     fn read_capnp(reader: Self::Reader) -> Self {
-        let probability : f32 = reader.get_probability();
-        let seed : u64 = reader.get_seed();
+        let probability: f32 = reader.get_probability();
+        let seed: u64 = reader.get_seed();
 
         DropoutConfig {
             probability: probability,
@@ -137,6 +143,9 @@ impl<'a> CapnpRead<'a> for DropoutConfig {
 
 impl ::std::default::Default for DropoutConfig {
     fn default() -> DropoutConfig {
-        DropoutConfig { probability: 0.75, seed: 42 }
+        DropoutConfig {
+            probability: 0.75,
+            seed: 42,
+        }
     }
 }

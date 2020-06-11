@@ -2,14 +2,19 @@
 //!
 //! A loss function is also sometimes called cost function.
 
-
 /// macro helper for default loss
 #[macro_export]
 macro_rules! impl_ilayer_loss {
-    () => (
-        fn exact_num_output_blobs(&self) -> Option<usize> { Some(1) }
-        fn exact_num_input_blobs(&self) -> Option<usize> { Some(1) }
-        fn auto_output_blobs(&self) -> bool { true }
+    () => {
+        fn exact_num_output_blobs(&self) -> Option<usize> {
+            Some(1)
+        }
+        fn exact_num_input_blobs(&self) -> Option<usize> {
+            Some(1)
+        }
+        fn auto_output_blobs(&self) -> bool {
+            true
+        }
 
         fn loss_weight(&self, output_id: usize) -> Option<f32> {
             if output_id == 0 {
@@ -18,10 +23,10 @@ macro_rules! impl_ilayer_loss {
                 None
             }
         }
-    )
+    };
 }
 
-pub use self::negative_log_likelihood::{NegativeLogLikelihood, NegativeLogLikelihoodConfig};
 pub use self::mean_squared_error::MeanSquaredError;
-pub mod negative_log_likelihood;
+pub use self::negative_log_likelihood::{NegativeLogLikelihood, NegativeLogLikelihoodConfig};
 pub mod mean_squared_error;
+pub mod negative_log_likelihood;

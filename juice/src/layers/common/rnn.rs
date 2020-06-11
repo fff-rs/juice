@@ -136,12 +136,9 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
             )
             .unwrap();
 
-        let filter_dimensions: TensorDesc = backend.generate_rnn_weight_description(
-            &config,
-            sequence_length as i32,
-            batch_size as i32,
-            input_size as i32,
-        ).unwrap();
+        let filter_dimensions: TensorDesc = backend
+            .generate_rnn_weight_description(&config, sequence_length as i32, batch_size as i32, input_size as i32)
+            .unwrap();
 
         weights_data[0].write().unwrap().resize(&filter_dimensions).unwrap();
         weights_data[1].write().unwrap().resize(&(1, self.hidden_size)).unwrap();
@@ -238,17 +235,23 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
 
-        backend.rnn_backward_weights(&input_data[0],
-                                     &output_data[0],
-                                     &mut parameters_gradients[0],
-                                     rnn_config,
-                                     &mut workspace)
+        backend
+            .rnn_backward_weights(
+                &input_data[0],
+                &output_data[0],
+                &mut parameters_gradients[0],
+                rnn_config,
+                &mut workspace,
+            )
             .unwrap();
-        backend.rnn_backward_weights(&input_data[0],
-                                     &output_data[0],
-                                     &mut parameters_gradients[1],
-                                     rnn_config,
-                                     &mut workspace)
+        backend
+            .rnn_backward_weights(
+                &input_data[0],
+                &output_data[0],
+                &mut parameters_gradients[1],
+                rnn_config,
+                &mut workspace,
+            )
             .unwrap();
     }
 }
@@ -329,14 +332,15 @@ mod tests {
     use std::rc::Rc;
     use weight::FillerType;
 
-    fn sample_input() -> &'static [f32] { [1.0_f32; 512].as_ref() }
+    fn sample_input() -> &'static [f32] {
+        [1.0_f32; 512].as_ref()
+    }
 
     #[cfg(feature = "cuda")]
     use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
 
     fn sample_output() -> &'static [f32] {
-        [0.99, 0.99, 0.99, 0.99,
-            0.99, 0.99, 0.99, 0.99].as_ref()
+        [0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99].as_ref()
     }
 
     #[test]
@@ -423,23 +427,21 @@ mod tests {
         let output_shape = vec![batch_size, cfg.hidden_size, cfg.num_layers];
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
 
-
-        let config =
-            backend
-                .new_rnn_config(
-                    &input_data,
-                    None,
-                    None,
-                    sequence_length,
-                    RnnNetworkMode::LSTM,
-                    RnnInputMode::LinearInput,
-                    DirectionMode::UniDirectional,
-                    RnnAlgorithm::Standard,
-                    cfg.hidden_size as i32,
-                    cfg.num_layers as i32,
-                    batch_size as i32,
-                )
-                .unwrap();
+        let config = backend
+            .new_rnn_config(
+                &input_data,
+                None,
+                None,
+                sequence_length,
+                RnnNetworkMode::LSTM,
+                RnnInputMode::LinearInput,
+                DirectionMode::UniDirectional,
+                RnnAlgorithm::Standard,
+                cfg.hidden_size as i32,
+                cfg.num_layers as i32,
+                batch_size as i32,
+            )
+            .unwrap();
 
         let filter_dimensions = <Backend<Cuda> as conn::Rnn<f32>>::generate_rnn_weight_description(
             &backend,
@@ -447,11 +449,10 @@ mod tests {
             sequence_length,
             batch_size as i32,
             cfg.hidden_size as i32,
-        ).unwrap();
+        )
+        .unwrap();
 
-        layer.rnn_config = Some(Rc::from(
-            config
-        ));
+        layer.rnn_config = Some(Rc::from(config));
 
         let mut weights_data = Vec::with_capacity(4);
         weights_data.push(SharedTensor::<f32>::new(&filter_dimensions));
@@ -461,9 +462,7 @@ mod tests {
         weights_gradient.push(SharedTensor::<f32>::new(&filter_dimensions));
         weights_gradient.push(SharedTensor::<f32>::new(&(1, cfg.hidden_size)));
 
-        let filler = FillerType::Constant {
-            value: 0.02,
-        };
+        let filler = FillerType::Constant { value: 0.02 };
 
         filler.fill(&mut weights_data[0]);
         filler.fill(&mut weights_data[1]);

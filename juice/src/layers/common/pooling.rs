@@ -15,11 +15,11 @@ use super::FilterLayer;
 use crate::capnp_util::*;
 use crate::co::{IBackend, SharedTensor};
 use crate::conn;
-use crate::layer::*;
-use crate::juice_capnp::PoolingMode as CapnpPoolingMode;
 use crate::juice_capnp::pooling_config as capnp_config;
+use crate::juice_capnp::PoolingMode as CapnpPoolingMode;
+use crate::layer::*;
+use crate::util::{cast_vec_usize_to_i32, ArcLock};
 use std::rc::Rc;
-use crate::util::{ArcLock, cast_vec_usize_to_i32};
 
 #[derive(Debug, Clone)]
 /// [Pooling](./index.html) Layer
@@ -90,14 +90,16 @@ impl<T, B: conn::Pooling<T>> FilterLayer for Pooling<T, B> {
 impl<B: IBackend + conn::Pooling<f32>> ILayer<B> for Pooling<f32, B> {
     impl_ilayer_common!();
 
-    fn reshape(&mut self,
-               backend: ::std::rc::Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    fn reshape(
+        &mut self,
+        backend: ::std::rc::Rc<B>,
+        input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+    ) {
         for i in 0..input_data.len() {
             let inp = input_data[0].read().unwrap();
             let input_shape = inp.desc();
@@ -117,51 +119,51 @@ impl<B: IBackend + conn::Pooling<f32>> ILayer<B> for Pooling<f32, B> {
 }
 
 impl<B: IBackend + conn::Pooling<f32>> ComputeOutput<f32, B> for Pooling<f32, B> {
-    fn compute_output(&self,
-                      backend: &B,
-                      weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
+    fn compute_output(
+        &self,
+        backend: &B,
+        weights: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        output_data: &mut [&mut SharedTensor<f32>],
+    ) {
         let config = &self.pooling_configs[0];
         match self.mode {
-            PoolingMode::Max => {
-                backend.pooling_max(input_data[0], output_data[0], &*config)
-                    .unwrap()
-            }
-            PoolingMode::Average => {
-                backend.pooling_avg(input_data[0], output_data[0], &*config)
-                    .unwrap()
-            }
+            PoolingMode::Max => backend.pooling_max(input_data[0], output_data[0], &*config).unwrap(),
+            PoolingMode::Average => backend.pooling_avg(input_data[0], output_data[0], &*config).unwrap(),
         }
     }
 }
 
 impl<B: IBackend + conn::Pooling<f32>> ComputeInputGradient<f32, B> for Pooling<f32, B> {
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              _weights_data: &[&SharedTensor<f32>],
-                              output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_input_gradient(
+        &self,
+        backend: &B,
+        _weights_data: &[&SharedTensor<f32>],
+        output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        input_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         let config = &self.pooling_configs[0];
         match self.mode {
-            PoolingMode::Max => {
-                backend.pooling_max_grad(output_data[0],
-                                      output_gradients[0],
-                                      input_data[0],
-                                      input_gradients[0],
-                                      config)
-                    .unwrap()
-            }
-            PoolingMode::Average => {
-                backend.pooling_avg_grad(output_data[0],
-                                      output_gradients[0],
-                                      input_data[0],
-                                      input_gradients[0],
-                                      config)
-                    .unwrap()
-            }
+            PoolingMode::Max => backend
+                .pooling_max_grad(
+                    output_data[0],
+                    output_gradients[0],
+                    input_data[0],
+                    input_gradients[0],
+                    config,
+                )
+                .unwrap(),
+            PoolingMode::Average => backend
+                .pooling_avg_grad(
+                    output_data[0],
+                    output_gradients[0],
+                    input_data[0],
+                    input_gradients[0],
+                    config,
+                )
+                .unwrap(),
         }
     }
 }

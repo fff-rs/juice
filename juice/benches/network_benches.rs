@@ -90,8 +90,10 @@ mod benches {
         // cfg.add_layer(loss_cfg);
 
         let backend = cuda_backend();
-        let mut network = Layer::from_config(backend.clone(),
-                                             &LayerConfig::new("network", LayerType::Sequential(cfg)));
+        let mut network = Layer::from_config(
+            backend.clone(),
+            &LayerConfig::new("network", LayerType::Sequential(cfg)),
+        );
 
         let _ = timeit_loops!(10, {
             let inp = SharedTensor::<f32>::new(&[1, 30, 30]);
@@ -253,8 +255,10 @@ mod benches {
 
         let backend = cuda_backend();
         // let native_backend = native_backend();
-        let mut network = Layer::from_config(backend.clone(),
-                                             &LayerConfig::new("network", LayerType::Sequential(cfg)));
+        let mut network = Layer::from_config(
+            backend.clone(),
+            &LayerConfig::new("network", LayerType::Sequential(cfg)),
+        );
 
         let func = || {
             let forward_time = timeit_loops!(1, {
@@ -410,8 +414,10 @@ mod benches {
 
         let backend = cuda_backend();
         // let native_backend = native_backend();
-        let mut network = Layer::from_config(backend.clone(),
-                                             &LayerConfig::new("network", LayerType::Sequential(cfg)));
+        let mut network = Layer::from_config(
+            backend.clone(),
+            &LayerConfig::new("network", LayerType::Sequential(cfg)),
+        );
 
         let mut func = || {
             let inp = SharedTensor::<f32>::new(&[128, 3, 112, 112]);

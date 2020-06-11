@@ -17,9 +17,9 @@ use crate::co::prelude::*;
 use crate::layer::*;
 use crate::solver::*;
 use crate::solvers::SGDSolver;
+use crate::util::*;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use crate::util::*;
 
 #[derive(Debug)]
 /// Stochastic Gradient Descent with Momentum.
@@ -57,14 +57,19 @@ impl<SolverB: IBackend + SolverOps<f32>> Momentum<SolverB> {
 }
 
 impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGDSolver<B, NetB> for Momentum<B> {
-    fn compute_update_value(&mut self,
-                            config: &SolverConfig,
-                            weight_gradient: &ArcLock<SharedTensor<f32>>,
-                            history_blob_id: usize,
-                            global_lr: &f32,
-                            blob_lr: &f32) {
+    fn compute_update_value(
+        &mut self,
+        config: &SolverConfig,
+        weight_gradient: &ArcLock<SharedTensor<f32>>,
+        history_blob_id: usize,
+        global_lr: &f32,
+        blob_lr: &f32,
+    ) {
         // PERF: check if value is changed before writing it
-        crate::weight::FillerType::Constant { value: global_lr * blob_lr }.fill(&mut self.lr);
+        crate::weight::FillerType::Constant {
+            value: global_lr * blob_lr,
+        }
+        .fill(&mut self.lr);
 
         crate::weight::FillerType::Constant { value: config.momentum }.fill(&mut self.momentum);
 
@@ -72,15 +77,17 @@ impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGD
         let device = IBackend::device(backend);
 
         let history_blob = &self.history[history_blob_id];
-        Axpby::axpby(backend,
-                     &self.lr,
-                     &weight_gradient.read().unwrap(),
-                     &self.momentum,
-                     &mut history_blob.write().unwrap())
-            .unwrap();
+        Axpby::axpby(
+            backend,
+            &self.lr,
+            &weight_gradient.read().unwrap(),
+            &self.momentum,
+            &mut history_blob.write().unwrap(),
+        )
+        .unwrap();
 
-        backend.copy(&history_blob.read().unwrap(),
-                  &mut weight_gradient.write().unwrap())
+        backend
+            .copy(&history_blob.read().unwrap(), &mut weight_gradient.write().unwrap())
             .unwrap();
     }
 }

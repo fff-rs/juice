@@ -1,5 +1,5 @@
-extern crate juice;
 extern crate coaster as co;
+extern crate juice;
 
 #[cfg(test)]
 mod layer_spec {
@@ -17,7 +17,7 @@ mod layer_spec {
         Rc::new(Backend::<Native>::default().unwrap())
     }
 
-    #[cfg(feature="cuda")]
+    #[cfg(feature = "cuda")]
     fn cuda_backend() -> Rc<Backend<Cuda>> {
         let framework = Cuda::new();
         let hardwares = framework.hardwares()[0..1].to_vec();
@@ -28,9 +28,9 @@ mod layer_spec {
         Rc::new(backend)
     }
 
-    #[cfg(all(feature="native", feature="cuda"))]
+    #[cfg(all(feature = "native", feature = "cuda"))]
     mod native_cuda {
-        use super::{native_backend, cuda_backend};
+        use super::{cuda_backend, native_backend};
         use juice::layer::*;
 
         #[test]
@@ -43,7 +43,7 @@ mod layer_spec {
         }
     }
 
-    #[cfg(feature="native")]
+    #[cfg(feature = "native")]
     mod native {
         use super::native_backend;
         use crate::co::prelude::*;
@@ -53,8 +53,10 @@ mod layer_spec {
         fn simple_network() -> LayerConfig {
             let mut net_cfg = SequentialConfig::default();
             net_cfg.add_input("data", &vec![1, 1, 28, 28]);
-            net_cfg.add_layer(LayerConfig::new("linear",
-                                               LayerType::Linear(LinearConfig { output_size: 10 })));
+            net_cfg.add_layer(LayerConfig::new(
+                "linear",
+                LayerType::Linear(LinearConfig { output_size: 10 }),
+            ));
 
             LayerConfig::new("network", net_cfg)
         }
@@ -66,15 +68,23 @@ mod layer_spec {
             // Layer: data
             cfg.add_input("data", &[2]);
             // Layer: fc1
-            cfg.add_layer(LayerConfig::new("fc1", LayerType::Linear(LinearConfig { output_size: 2 })));
+            cfg.add_layer(LayerConfig::new(
+                "fc1",
+                LayerType::Linear(LinearConfig { output_size: 2 }),
+            ));
             cfg.add_layer(LayerConfig::new("fc1_out/sigmoid", LayerType::Sigmoid));
             // Layer: fc2 equiv. output
-            cfg.add_layer(LayerConfig::new("fc2", LayerType::Linear(LinearConfig { output_size: 1 })));
+            cfg.add_layer(LayerConfig::new(
+                "fc2",
+                LayerType::Linear(LinearConfig { output_size: 1 }),
+            ));
             cfg.add_layer(LayerConfig::new("fc2_out/sigmoid", LayerType::Sigmoid));
 
             let backend = native_backend();
-            let _ = Layer::from_config(backend.clone(),
-                                       &LayerConfig::new("network", LayerType::Sequential(cfg)));
+            let _ = Layer::from_config(
+                backend.clone(),
+                &LayerConfig::new("network", LayerType::Sequential(cfg)),
+            );
         }
 
         #[test]
@@ -87,26 +97,29 @@ mod layer_spec {
             original_layer.save(&tmpfile).unwrap();
             let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), &tmpfile).unwrap();
 
-            assert_eq!(original_layer.input_blob_names(),
-                       loaded_layer.input_blob_names());
+            assert_eq!(original_layer.input_blob_names(), loaded_layer.input_blob_names());
 
             let original_weights = original_layer.learnable_weights_data();
             let original_weight_lock = original_weights[0].read().unwrap();
             let loaded_weights = loaded_layer.learnable_weights_data();
             let loaded_weight_lock = loaded_weights[0].read().unwrap();
 
-            let original_weight = original_weight_lock.read(native_backend().device())
-                .unwrap().as_slice::<f32>();
-            let loaded_weight = loaded_weight_lock.read(native_backend().device())
-                .unwrap().as_slice::<f32>();
+            let original_weight = original_weight_lock
+                .read(native_backend().device())
+                .unwrap()
+                .as_slice::<f32>();
+            let loaded_weight = loaded_weight_lock
+                .read(native_backend().device())
+                .unwrap()
+                .as_slice::<f32>();
 
             assert_eq!(original_weight, loaded_weight);
         }
     }
 
-    #[cfg(feature="cuda")]
+    #[cfg(feature = "cuda")]
     mod cuda {
-        use super::{native_backend, cuda_backend};
+        use super::{cuda_backend, native_backend};
         use crate::co::prelude::*;
         use juice::layer::*;
         use juice::layers::*;
@@ -122,22 +135,22 @@ mod layer_spec {
         #[test]
         fn can_create_default_dropout_layer() {
             let model = DropoutConfig::default();
-            Layer::from_config(cuda_backend(),
-                               &LayerConfig::new("model", LayerType::Dropout(model)));
+            Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Dropout(model)));
         }
 
         #[test]
         fn can_create_single_dropout_layer() {
-            let model = DropoutConfig { probability: 0.5, seed: 0 };
-            Layer::from_config(cuda_backend(),
-                               &LayerConfig::new("model", LayerType::Dropout(model)));
+            let model = DropoutConfig {
+                probability: 0.5,
+                seed: 0,
+            };
+            Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Dropout(model)));
         }
 
         #[test]
         fn can_create_empty_sequential_layer() {
             let model = SequentialConfig::default();
-            Layer::from_config(cuda_backend(),
-                               &LayerConfig::new("model", LayerType::Sequential(model)));
+            Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Sequential(model)));
         }
 
         #[test]
@@ -146,8 +159,7 @@ mod layer_spec {
             model.add_input("data", &[28, 28]);
             model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
 
-            Layer::from_config(cuda_backend(),
-                               &LayerConfig::new("model", LayerType::Sequential(model)));
+            Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Sequential(model)));
         }
 
         #[test]
@@ -157,10 +169,15 @@ mod layer_spec {
             model.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 1568 }));
             model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
             model.add_layer(LayerConfig::new("linear2", LinearConfig { output_size: 10 }));
-            model.add_layer(LayerConfig::new("dropout", DropoutConfig { probability: 0.8, seed: 0 }));
+            model.add_layer(LayerConfig::new(
+                "dropout",
+                DropoutConfig {
+                    probability: 0.8,
+                    seed: 0,
+                },
+            ));
 
-            let _ = Layer::from_config(cuda_backend(),
-                                       &LayerConfig::new("model", LayerType::Sequential(model)));
+            let _ = Layer::from_config(cuda_backend(), &LayerConfig::new("model", LayerType::Sequential(model)));
         }
 
         #[test]
@@ -171,70 +188,86 @@ mod layer_spec {
             let mut normal_model = SequentialConfig::default();
             normal_model.add_input("data", &[3]);
             normal_model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            let mut normal_network = Layer::from_config(cuda_backend.clone(),
-                                                        &LayerConfig::new("normal_model",
-                                                                          LayerType::Sequential(normal_model)));
+            let mut normal_network = Layer::from_config(
+                cuda_backend.clone(),
+                &LayerConfig::new("normal_model", LayerType::Sequential(normal_model)),
+            );
 
             let mut reshape_model = SequentialConfig::default();
             reshape_model.add_input("data", &[3]);
             reshape_model.add_layer(LayerConfig::new("reshape", ReshapeConfig { shape: vec![1, 1, 3] }));
             reshape_model.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            let mut reshape_network = Layer::from_config(cuda_backend.clone(),
-                                                         &LayerConfig::new("reshape_model",
-                                                                           LayerType::Sequential(reshape_model)));
+            let mut reshape_network = Layer::from_config(
+                cuda_backend.clone(),
+                &LayerConfig::new("reshape_model", LayerType::Sequential(reshape_model)),
+            );
 
             let input = vec![1f32, 1f32, 2f32];
             let mut normal_tensor = SharedTensor::<f32>::new(&[3]);
             let mut reshape_tensor = SharedTensor::<f32>::new(&[3]);
-            write_to_memory(normal_tensor.write_only(native_backend.device()).unwrap(),
-                            &input);
-            write_to_memory(reshape_tensor.write_only(native_backend.device()).unwrap(),
-                            &input);
+            write_to_memory(normal_tensor.write_only(native_backend.device()).unwrap(), &input);
+            write_to_memory(reshape_tensor.write_only(native_backend.device()).unwrap(), &input);
 
             let normal_tensor_output = normal_network.forward(&[Arc::new(RwLock::new(normal_tensor))])[0].clone();
             let normal_tensor_output_native_ = normal_tensor_output.read().unwrap();
-            let normal_tensor_output_native = normal_tensor_output_native_
-                .read(native_backend.device()).unwrap();
-            assert_eq!(&[0.7310585786f32, 0.7310586f32, 0.880797f32],
-                       normal_tensor_output_native.as_slice::<f32>());
+            let normal_tensor_output_native = normal_tensor_output_native_.read(native_backend.device()).unwrap();
+            assert_eq!(
+                &[0.7310585786f32, 0.7310586f32, 0.880797f32],
+                normal_tensor_output_native.as_slice::<f32>()
+            );
 
             let reshape_tensor_output = reshape_network.forward(&[Arc::new(RwLock::new(reshape_tensor))])[0].clone();
             let reshape_tensor_output_native_ = reshape_tensor_output.read().unwrap();
-            let reshape_tensor_output_native = reshape_tensor_output_native_
-                .read(native_backend.device()).unwrap();
-            assert_eq!(&[0.7310585786f32, 0.7310586f32, 0.880797f32],
-                       reshape_tensor_output_native.as_slice::<f32>());
-            assert_eq!(normal_tensor_output_native.as_slice::<f32>(),
-                       reshape_tensor_output_native.as_slice::<f32>());
+            let reshape_tensor_output_native = reshape_tensor_output_native_.read(native_backend.device()).unwrap();
+            assert_eq!(
+                &[0.7310585786f32, 0.7310586f32, 0.880797f32],
+                reshape_tensor_output_native.as_slice::<f32>()
+            );
+            assert_eq!(
+                normal_tensor_output_native.as_slice::<f32>(),
+                reshape_tensor_output_native.as_slice::<f32>()
+            );
         }
     }
 
     #[test]
     fn dim_check_strict() {
-        let cfg = WeightConfig { share_mode: DimCheckMode::Strict, ..WeightConfig::default() };
+        let cfg = WeightConfig {
+            share_mode: DimCheckMode::Strict,
+            ..WeightConfig::default()
+        };
         let blob_one = SharedTensor::<f32>::new(&vec![2, 3, 3]);
         let blob_two = SharedTensor::<f32>::new(&vec![3, 2, 3]);
         let param_name = "foo".to_owned();
         let owner_name = "owner".to_owned();
         let layer_name = "layer".to_owned();
 
-        assert!(cfg.check_dimensions(&blob_one,
-                                     &blob_one,
-                                     param_name.clone(),
-                                     owner_name.clone(),
-                                     layer_name.clone())
-                   .is_ok());
-        assert!(cfg.check_dimensions(&blob_one,
-                                     &blob_two,
-                                     param_name.clone(),
-                                     owner_name.clone(),
-                                     layer_name.clone())
-                   .is_err());
+        assert!(cfg
+            .check_dimensions(
+                &blob_one,
+                &blob_one,
+                param_name.clone(),
+                owner_name.clone(),
+                layer_name.clone()
+            )
+            .is_ok());
+        assert!(cfg
+            .check_dimensions(
+                &blob_one,
+                &blob_two,
+                param_name.clone(),
+                owner_name.clone(),
+                layer_name.clone()
+            )
+            .is_err());
     }
 
     #[test]
     fn dim_check_permissive() {
-        let cfg = WeightConfig { share_mode: DimCheckMode::Permissive, ..WeightConfig::default() };
+        let cfg = WeightConfig {
+            share_mode: DimCheckMode::Permissive,
+            ..WeightConfig::default()
+        };
         let blob_one = SharedTensor::<f32>::new(&vec![2, 3, 3]);
         let blob_two = SharedTensor::<f32>::new(&vec![3, 2, 3]);
         let blob_three = SharedTensor::<f32>::new(&vec![3, 10, 3]);
@@ -242,29 +275,41 @@ mod layer_spec {
         let owner_name = "owner".to_owned();
         let layer_name = "layer".to_owned();
 
-        assert!(cfg.check_dimensions(&blob_one,
-                                     &blob_one,
-                                     param_name.clone(),
-                                     owner_name.clone(),
-                                     layer_name.clone())
-                   .is_ok());
-        assert!(cfg.check_dimensions(&blob_one,
-                                     &blob_two,
-                                     param_name.clone(),
-                                     owner_name.clone(),
-                                     layer_name.clone())
-                   .is_ok());
-        assert!(cfg.check_dimensions(&blob_one,
-                                     &blob_three,
-                                     param_name.clone(),
-                                     owner_name.clone(),
-                                     layer_name.clone())
-                   .is_err());
-        assert!(cfg.check_dimensions(&blob_two,
-                                     &blob_three,
-                                     param_name.clone(),
-                                     owner_name.clone(),
-                                     layer_name.clone())
-                   .is_err());
+        assert!(cfg
+            .check_dimensions(
+                &blob_one,
+                &blob_one,
+                param_name.clone(),
+                owner_name.clone(),
+                layer_name.clone()
+            )
+            .is_ok());
+        assert!(cfg
+            .check_dimensions(
+                &blob_one,
+                &blob_two,
+                param_name.clone(),
+                owner_name.clone(),
+                layer_name.clone()
+            )
+            .is_ok());
+        assert!(cfg
+            .check_dimensions(
+                &blob_one,
+                &blob_three,
+                param_name.clone(),
+                owner_name.clone(),
+                layer_name.clone()
+            )
+            .is_err());
+        assert!(cfg
+            .check_dimensions(
+                &blob_two,
+                &blob_three,
+                param_name.clone(),
+                owner_name.clone(),
+                layer_name.clone()
+            )
+            .is_err());
     }
 }

@@ -1,5 +1,5 @@
-extern crate juice;
 extern crate coaster as co;
+extern crate juice;
 
 #[cfg(all(test, whatever))]
 // #[cfg(test)]
@@ -64,7 +64,10 @@ mod solver_specs {
 
     #[test]
     fn instantiate_solver_sgd_momentum() {
-        let cfg = SolverConfig { solver: SolverKind::SGD(SGDKind::Momentum), ..SolverConfig::default() };
+        let cfg = SolverConfig {
+            solver: SolverKind::SGD(SGDKind::Momentum),
+            ..SolverConfig::default()
+        };
         Solver::<Box<ISolver<Backend<Native>>>, Backend<Native>>::from_config(&cfg);
     }
 }

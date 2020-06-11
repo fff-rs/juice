@@ -23,9 +23,9 @@ use crate::capnp_util::*;
 use crate::co::backend::IBackend;
 use crate::co::tensor::SharedTensor;
 use crate::coblas::transpose::Transpose;
-use crate::layer::*;
 use crate::juice_capnp::linear_config as capnp_config;
-use crate::util::{ArcLock, native_scalar, LayerOps};
+use crate::layer::*;
+use crate::util::{native_scalar, ArcLock, LayerOps};
 use crate::weight::FillerType;
 
 #[derive(Debug)]
@@ -68,19 +68,20 @@ impl Linear {
 }
 
 impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
-
     fn auto_weight_blobs(&self) -> bool {
         true
     }
 
-    fn reshape(&mut self,
-               backend: ::std::rc::Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    fn reshape(
+        &mut self,
+        backend: ::std::rc::Rc<B>,
+        input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+    ) {
         let input = input_data[0].read().unwrap();
         // reshape top
         let output_shape = self.calculate_output_shape(input.desc());
@@ -124,30 +125,37 @@ impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
     /// Basically, x has the shape (k, n) where k is the batch size. Given W with shape (m, n) where
     /// m is output vector length, we compute the output with the formula xW^T which will give us a
     /// matrix of size (k, m) with the outputs.
-    fn compute_output(&self,
-                      backend: &B,
-                      weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
-
+    fn compute_output(
+        &self,
+        backend: &B,
+        weights: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        output_data: &mut [&mut SharedTensor<f32>],
+    ) {
         let mut ones_tensor = SharedTensor::<f32>::new(&[input_data[0].desc().as_slice()[0], 1]);
         FillerType::fill_constant(&mut ones_tensor, 1f32);
-        backend.gemm(&self.one,
-                     Transpose::NoTrans,
-                     &ones_tensor,
-                     Transpose::NoTrans,
-                     weights[1],
-                     &self.zero,
-                     output_data[0])
+        backend
+            .gemm(
+                &self.one,
+                Transpose::NoTrans,
+                &ones_tensor,
+                Transpose::NoTrans,
+                weights[1],
+                &self.zero,
+                output_data[0],
+            )
             .unwrap();
 
-        backend.gemm(&self.one,
-                  Transpose::NoTrans,
-                  input_data[0],
-                  Transpose::Trans,
-                  weights[0],
-                  &self.one,
-                  output_data[0])
+        backend
+            .gemm(
+                &self.one,
+                Transpose::NoTrans,
+                input_data[0],
+                Transpose::Trans,
+                weights[0],
+                &self.one,
+                output_data[0],
+            )
             .unwrap();
     }
 }
@@ -158,47 +166,58 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for Linear {
     /// W^T of dims (n, m). In backpropagation with column vectors, we would take W^T * output_grad,
     /// and in terms of row vectors, that would be output_grad^T * W which produces a vector of
     /// dims (1, n)
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              weights_data: &[&SharedTensor<f32>],
-                              output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_input_gradient(
+        &self,
+        backend: &B,
+        weights_data: &[&SharedTensor<f32>],
+        output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        input_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         // Gradient with respect to input data
-        backend.gemm(&self.one,
-                  Transpose::NoTrans,
-                  output_gradients[0],
-                  Transpose::NoTrans,
-                  weights_data[0],
-                  &self.zero,
-                  input_gradients[0])
+        backend
+            .gemm(
+                &self.one,
+                Transpose::NoTrans,
+                output_gradients[0],
+                Transpose::NoTrans,
+                weights_data[0],
+                &self.zero,
+                input_gradients[0],
+            )
             .unwrap();
     }
 }
 
 impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
-    fn compute_parameters_gradient(&self,
-                                   backend: &B,
-                                   output_data: &[&SharedTensor<f32>],
-                                   output_gradients: &[&SharedTensor<f32>],
-                                   input_data: &[&SharedTensor<f32>],
-                                   parameters_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_parameters_gradient(
+        &self,
+        backend: &B,
+        output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        parameters_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         // gradient w.r.t. weights
-        backend.gemm(&self.one,
-                  Transpose::Trans,
-                  output_gradients[0],
-                  Transpose::NoTrans,
-                  input_data[0],
-                  &self.zero,
-                  parameters_gradients[0])
+        backend
+            .gemm(
+                &self.one,
+                Transpose::Trans,
+                output_gradients[0],
+                Transpose::NoTrans,
+                input_data[0],
+                &self.zero,
+                parameters_gradients[0],
+            )
             .unwrap();
 
         // gradient w.r.t bias
         // Technically, the gradient of vector b of length n to itself is the I_n identity matrix,
         // so instead we'll just copy the output_gradient[0] vector into
-        backend.copy(&output_gradients[0], &mut parameters_gradients[1]).unwrap();
-
+        backend
+            .copy(&output_gradients[0], &mut parameters_gradients[1])
+            .unwrap();
     }
 }
 
@@ -209,7 +228,6 @@ impl ::std::default::Default for Linear {
         Self::from_config(&config)
     }
 }
-
 
 #[derive(Debug, Clone)]
 #[allow(missing_copy_implementations)]
@@ -234,7 +252,9 @@ impl<'a> CapnpRead<'a> for LinearConfig {
     fn read_capnp(reader: Self::Reader) -> Self {
         let output_size = reader.get_output_size() as usize;
 
-        LinearConfig { output_size: output_size }
+        LinearConfig {
+            output_size: output_size,
+        }
     }
 }
 
@@ -246,18 +266,16 @@ impl Into<LayerType> for LinearConfig {
 
 #[cfg(test)]
 mod tests {
-    use crate::layers::{LinearConfig, Linear};
     use crate::co::tensor::SharedTensor;
-    use crate::layer::{ComputeOutput, ComputeParametersGradient, ComputeInputGradient};
+    use crate::layer::{ComputeInputGradient, ComputeOutput, ComputeParametersGradient};
+    use crate::layers::{Linear, LinearConfig};
     use util::native_backend;
-
 
     fn get_sample_w() -> &'static [f32] {
         [
-            1f32, 0f32, 3f32, 0f32,
-            1.5f32, 4f32, 2f32, 0f32,
-            0f32, 2f32, 1.5f32, 4f32,
-        ].as_ref()
+            1f32, 0f32, 3f32, 0f32, 1.5f32, 4f32, 2f32, 0f32, 0f32, 2f32, 1.5f32, 4f32,
+        ]
+        .as_ref()
     }
 
     fn get_sample_x() -> &'static [f32] {
@@ -287,9 +305,18 @@ mod tests {
         let mut x = SharedTensor::<f32>::new(x_shape);
         let mut b = SharedTensor::<f32>::new(b_shape);
 
-        w.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_w());
-        x.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_x());
-        b.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_b());
+        w.write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_w());
+        x.write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_x());
+        b.write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_b());
 
         let mut output = SharedTensor::<f32>::new(output_shape);
 
@@ -314,13 +341,26 @@ mod tests {
         let mut x = SharedTensor::<f32>::new(x_shape);
         let mut b = SharedTensor::<f32>::new(b_shape);
 
-        w.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_w());
-        x.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_x());
-        b.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_b());
+        w.write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_w());
+        x.write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_x());
+        b.write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_b());
 
         let mut input_gradient = SharedTensor::<f32>::new(x_shape);
         let mut output_gradient = SharedTensor::<f32>::new(output_shape);
-        output_gradient.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_output_gradient());
+        output_gradient
+            .write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_output_gradient());
         // The output_data tensor doesn't really matter since it's not used.
         let output_data = SharedTensor::<f32>::new(&(1, 1));
 
@@ -330,7 +370,7 @@ mod tests {
             &[&output_data],
             &[&output_gradient],
             &[&x],
-            &mut [&mut input_gradient]
+            &mut [&mut input_gradient],
         );
 
         let result_slice: &[f32] = input_gradient.read(backend.device()).unwrap().as_slice();
@@ -352,11 +392,18 @@ mod tests {
         let mut x = SharedTensor::<f32>::new(x_shape);
         let mut b_grad = SharedTensor::<f32>::new(b_shape);
 
-        x.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_x());
+        x.write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_x());
 
         let input_gradient = SharedTensor::<f32>::new(x_shape);
         let mut output_gradient = SharedTensor::<f32>::new(output_shape);
-        output_gradient.write_only(backend.device()).unwrap().as_mut_slice().copy_from_slice(get_sample_output_gradient());
+        output_gradient
+            .write_only(backend.device())
+            .unwrap()
+            .as_mut_slice()
+            .copy_from_slice(get_sample_output_gradient());
         // The output_data tensor doesn't really matter since it's not used.
         let output_data = SharedTensor::<f32>::new(&(1, 1));
 
@@ -365,17 +412,16 @@ mod tests {
             &[&output_data],
             &[&output_gradient],
             &[&x],
-            &mut [&mut w_grad, &mut b_grad]
+            &mut [&mut w_grad, &mut b_grad],
         );
 
         let w_grad_result: &[f32] = w_grad.read(backend.device()).unwrap().as_slice();
         let b_grad_result: &[f32] = b_grad.read(backend.device()).unwrap().as_slice();
 
-        assert_eq!(w_grad_result, &[
-            -1f32, -2f32, -3f32, -4f32,
-            0.5f32, 1f32, 1.5f32, 2f32,
-            0.2f32, 0.4f32, 0.6f32, 0.8f32
-        ]);
+        assert_eq!(
+            w_grad_result,
+            &[-1f32, -2f32, -3f32, -4f32, 0.5f32, 1f32, 1.5f32, 2f32, 0.2f32, 0.4f32, 0.6f32, 0.8f32]
+        );
         assert_eq!(b_grad_result, &[-1f32, 0.5f32, 0.2f32]);
     }
 }

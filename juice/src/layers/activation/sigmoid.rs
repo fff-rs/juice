@@ -33,14 +33,16 @@ impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ILayer<B> f
         true
     }
 
-    fn reshape(&mut self,
-               backend: ::std::rc::Rc<B>,
-               input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
-               output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>) {
+    fn reshape(
+        &mut self,
+        backend: ::std::rc::Rc<B>,
+        input_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        input_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        weights_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
+        output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
+    ) {
         if let Some(inp) = input_data.get(0) {
             let read_inp = inp.read().unwrap();
             let input_desc = read_inp.desc();
@@ -52,11 +54,13 @@ impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ILayer<B> f
 }
 
 impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeOutput<f32, B> for Sigmoid {
-    fn compute_output(&self,
-                      backend: &B,
-                      _weights: &[&SharedTensor<f32>],
-                      input_data: &[&SharedTensor<f32>],
-                      output_data: &mut [&mut SharedTensor<f32>]) {
+    fn compute_output(
+        &self,
+        backend: &B,
+        _weights: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        output_data: &mut [&mut SharedTensor<f32>],
+    ) {
         match input_data.get(0) {
             Some(input) => backend.sigmoid(input, output_data[0]).unwrap(),
             None => backend.sigmoid_pointwise(output_data[0]).unwrap(),
@@ -65,22 +69,22 @@ impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeOutp
 }
 
 impl<B: IBackend + conn::Sigmoid<f32> + conn::SigmoidPointwise<f32>> ComputeInputGradient<f32, B> for Sigmoid {
-    fn compute_input_gradient(&self,
-                              backend: &B,
-                              weights_data: &[&SharedTensor<f32>],
-                              output_data: &[&SharedTensor<f32>],
-                              output_gradients: &[&SharedTensor<f32>],
-                              input_data: &[&SharedTensor<f32>],
-                              input_gradients: &mut [&mut SharedTensor<f32>]) {
+    fn compute_input_gradient(
+        &self,
+        backend: &B,
+        weights_data: &[&SharedTensor<f32>],
+        output_data: &[&SharedTensor<f32>],
+        output_gradients: &[&SharedTensor<f32>],
+        input_data: &[&SharedTensor<f32>],
+        input_gradients: &mut [&mut SharedTensor<f32>],
+    ) {
         match output_data.get(0) {
-            Some(_) => {
-                backend.sigmoid_grad(output_data[0],
-                                  output_gradients[0],
-                                  input_data[0],
-                                  input_gradients[0])
-                    .unwrap()
-            }
-            None => backend.sigmoid_pointwise_grad(input_data[0], input_gradients[0]).unwrap(),
+            Some(_) => backend
+                .sigmoid_grad(output_data[0], output_gradients[0], input_data[0], input_gradients[0])
+                .unwrap(),
+            None => backend
+                .sigmoid_pointwise_grad(input_data[0], input_gradients[0])
+                .unwrap(),
         }
     }
 }

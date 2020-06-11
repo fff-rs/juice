@@ -36,14 +36,15 @@ use crate::layer::*;
 use crate::solver::*;
 use crate::util::*;
 
-trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32>>
-    : ISolver<SolverB, NetB> {
-    fn compute_update_value(&mut self,
-                            config: &SolverConfig,
-                            weight_blob: &ArcLock<SharedTensor<f32>>,
-                            history_blob_id: usize,
-                            global_lr: &f32,
-                            blob_lr: &f32);
+trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32>>: ISolver<SolverB, NetB> {
+    fn compute_update_value(
+        &mut self,
+        config: &SolverConfig,
+        weight_blob: &ArcLock<SharedTensor<f32>>,
+        history_blob_id: usize,
+        global_lr: &f32,
+        blob_lr: &f32,
+    );
 
     /// [Clip gradients][1] when they exceed [SolverConfig.clip_gradients][2].
     /// [1]: http://arxiv.org/abs/1211.5063
@@ -79,11 +80,11 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
             let l2norm_diff = sumsq_diff.sqrt();
             if l2norm_diff > clip_threshold {
                 let scale_factor = clip_threshold / l2norm_diff;
-                info!("Gradient clipping: scaling down gradients (L2 norm {} > {})
+                info!(
+                    "Gradient clipping: scaling down gradients (L2 norm {} > {})
                         by scale factor {}",
-                      l2norm_diff,
-                      clip_threshold,
-                      scale_factor);
+                    l2norm_diff, clip_threshold, scale_factor
+                );
 
                 let mut scale_shared = native_scalar(scale_factor);
 
@@ -116,10 +117,12 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
     /// [Regularize][1] the gradient according to the configured [RegularizationMethod][2].
     /// [1]: https://cs231n.github.io/neural-networks-2/#reg
     /// [2]: ../solver/enum.RegularizationMethod.html
-    fn regularize(&self,
-                  config: &SolverConfig,
-                  weight_gradient: &ArcLock<SharedTensor<f32>>,
-                  blob_weight_decay: Option<f32>) {
+    fn regularize(
+        &self,
+        config: &SolverConfig,
+        weight_gradient: &ArcLock<SharedTensor<f32>>,
+        blob_weight_decay: Option<f32>,
+    ) {
         if let Some(global_weight_decay) = config.weight_decay {
             if let Some(regularization_method) = config.regularization_method {
                 match blob_weight_decay {
