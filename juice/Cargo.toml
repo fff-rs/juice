@@ -18,23 +18,21 @@ license = "MIT OR Apache-2.0"
 build = "build.rs"
 
 [dependencies]
-coaster = { default-features = false, version = "0.1.0", path = "../coaster" }
+coaster = { default-features = false, version = "0.1", path = "../coaster" }
 coaster-blas = { default-features = false, version = "0.3", path = "../coaster-blas" }
-coaster-nn = { default-features = false, version = "0.4.1", path = "../coaster-nn" }
+coaster-nn = { default-features = false, version = "0.4", path = "../coaster-nn" }
 
 log = "0.4"
 rand = "0.7"
 num = "0.2"
-capnp = "0.12"
+capnp = "0.13"
 timeit = "0.1"
 
-clippy = { version = "0.0.302", optional = true }
-
 [build-dependencies]
-capnpc = "0.12"
+capnpc = "0.13"
 
 [dev-dependencies]
-env_logger = "0.6"
+env_logger = "0.7"
 serial_test = "0.4"
 
 [features]
@@ -42,8 +40,3 @@ default = ["native", "cuda"]
 native = ["coaster-blas/native", "coaster-nn/native"]
 cuda = ["coaster/cuda", "coaster-blas/cuda", "coaster-nn/cuda"]
 opencl = ["coaster/opencl", "coaster-blas/opencl", "coaster-nn/opencl"]
-
-travis = ["native"]
-dev = []
-unstable = [] # for travis-cargo
-lint = ["clippy"]

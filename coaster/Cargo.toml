@@ -1,7 +1,7 @@
 [package]
 name          = "coaster"
 description   = "high-performance computation on any hardware"
-version       = "0.1.0"
+version       = "0.1.1"
 authors       = ["Bernhard Schsuter <bernhard@ahoi.io>",
                  "Michael Hirn <mj@autumnai.com>",
                  "Maximilian Goisser <max@autumnai.com>"]
@@ -22,14 +22,12 @@ byteorder = "1"
 num = "0.2"
 lazy_static = "1"
 regex = "1"
-rcudnn = { version = "1.6", optional = true}
-rcublas = { version = "0.4", path = "../rcublas/cublas", optional = true }
-clippy = { version = "0.0", optional = true }
-compiletest_rs = { version = "0.4", optional = true }
+rcudnn = { version = "1.7", path = "../rcudnn/cudnn", optional = true}
+rcublas = { version = "0.5", path = "../rcublas/cublas", optional = true }
 
 [dev-dependencies]
 coaster-nn = { version = "0.4", default-features=false}
-
+compiletest_rs = { version = "0.5" }
 
 [features]
 default = ["native"]
