@@ -32,7 +32,3 @@ native = ["coaster/native", "rand"]
 cuda = ["coaster/cuda", "rcudnn"]
 opencl = ["coaster/opencl"]
 unstable = []
-
-travis = ["native"]
-dev = []
-lint = ["clippy"]

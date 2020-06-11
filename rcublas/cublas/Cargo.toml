@@ -24,8 +24,3 @@ clippy = { version = "0.0.302", optional = true }
 [dev-dependencies]
 coaster = { path = "../../coaster", default-features = false, features = ["cuda","native"], version = "0.1" }
 env_logger = "0.7"
-
-[features]
-dev = []
-travis = []
-lint = ["clippy"]
