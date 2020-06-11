@@ -20,7 +20,6 @@ rcudnn = { version = "1.6", optional = true}
 libc = "0.2"
 log = "0.4"
 
-clippy = { version = "0.0.302", optional = true }
 rand = {version = "0.7", optional = true }
 rand_hc = "0.2.0"
 
