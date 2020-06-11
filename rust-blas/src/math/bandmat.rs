@@ -115,11 +115,11 @@ impl<T: std::marker::Copy> BandMat<T> {
     /// can remain unchanged. Notice that the dimensions of the new matrix are `(rows, LDA)`, where
     /// `LDA = <sub diagonals> + <sup diagonals> + 1`. This matrix will be stored in the original
     /// memory of the matrix that is consumed by this method.
-    ///  
+    ///
     ///  For details about how the conversion actually happens, consult the code comments.
     ///
     /// # Panics
-    ///  
+    ///
     /// Panics if the size of the vector representing the input matrix is too small, that is
     /// `rows * LDA > rows * cols`. In this case there is not enough space to perform a safe
     /// conversion to the Band Storage format.
@@ -178,7 +178,7 @@ impl<T: std::marker::Copy + Default> BandMat<T> {
     ///
     /// This method creates a [`Mat`] instance by reversing the steps from
     /// the [`from_matrix`] method. It will also fill in all the values that are "zero" to the
-    /// default value of `T`.  
+    /// default value of `T`.
     ///
     /// For more information about the implementation, please consult the code comments.
     ///
@@ -360,13 +360,14 @@ where
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
     fn write_to_memory<T: Clone>(dest: *mut T, source: &Vec<T>) -> () {
-        let mut v1 = vec![];
+        let mut v1;
         unsafe {
-            v1 = Vec::from_raw_parts(dest, source.len(), source.len());
+            v1 = Vec::from_raw_parts(dest, source.len(), source.capacity());
             v1.clone_from(source);
         }
         let _ = ManuallyDrop::new(v1);
