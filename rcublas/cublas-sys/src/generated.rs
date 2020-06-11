@@ -3605,6 +3605,7 @@ fn bindgen_test_layout_cudaIpcEventHandle_st() {
         )
     );
 }
+#[doc = " CUDA IPC event handle"]
 pub type cudaIpcEventHandle_t = cudaIpcEventHandle_st;
 #[doc = " CUDA IPC memory handle"]
 #[repr(C)]
@@ -3635,6 +3636,7 @@ fn bindgen_test_layout_cudaIpcMemHandle_st() {
         )
     );
 }
+#[doc = " CUDA IPC memory handle"]
 pub type cudaIpcMemHandle_t = cudaIpcMemHandle_st;
 #[repr(u32)]
 #[non_exhaustive]
