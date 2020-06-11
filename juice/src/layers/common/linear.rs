@@ -269,7 +269,7 @@ mod tests {
     use crate::co::tensor::SharedTensor;
     use crate::layer::{ComputeInputGradient, ComputeOutput, ComputeParametersGradient};
     use crate::layers::{Linear, LinearConfig};
-    use util::native_backend;
+    use crate::util::native_backend;
 
     fn get_sample_w() -> &'static [f32] {
         [
