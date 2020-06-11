@@ -52,13 +52,14 @@ power of the CUDA backend is by deactivating the default `native` flag.
 Cargo allows us to do that either via the `--no-default-features` on the CLI or
 by specifying `default-feature = false` for a dependency in `Cargo.toml`.
 
-#### In your project
+### In your project
 
 The simple `Cargo.toml` example above works in simple cases but if you want
 to provide the same flexibility of backends in your project, you can reexport
 the feature flags.
 
 A typical example (including coaster) would look like this:
+
 ```toml
 [dependencies]
 juice = { version = "0.2.2", default-features = false }
