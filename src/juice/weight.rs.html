@@ -196,14 +196,25 @@
 <span id="196">196</span>
 <span id="197">197</span>
 <span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides configuration of weights and their initialization.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">capnp_util</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::{<span class="ident">ITensorDesc</span>, <span class="ident">SharedTensor</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">weight_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
-<span class="kw">use</span> <span class="ident">rand</span>::{<span class="self">self</span>,<span class="ident">prelude</span>::<span class="kw-2">*</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">native_backend</span>;
+<span class="kw">use</span> <span class="ident">rand</span>::{<span class="self">self</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="doccomment">/// Specifies training configuration for a weight blob.</span>
@@ -251,40 +262,45 @@
 <span class="kw">impl</span> <span class="ident">WeightConfig</span> {
     <span class="doccomment">/// Checks dimensions of two blobs according to the `share_mode`.</span>
     <span class="doccomment">/// Returns an error if there is a count/shape mismatch.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_dimensions</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                               <span class="ident">tensor_one</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-                               <span class="ident">tensor_two</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-                               <span class="ident">param_name</span>: <span class="ident">String</span>,
-                               <span class="ident">owner_name</span>: <span class="ident">String</span>,
-                               <span class="ident">layer_name</span>: <span class="ident">String</span>)
-                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_dimensions</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">tensor_one</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">tensor_two</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">param_name</span>: <span class="ident">String</span>,
+        <span class="ident">owner_name</span>: <span class="ident">String</span>,
+        <span class="ident">layer_name</span>: <span class="ident">String</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">share_mode</span> {
             <span class="comment">// Permissive dimension checking -- only check counts are the same.</span>
             <span class="ident">DimCheckMode</span>::<span class="ident">Permissive</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="ident">tensor_one</span>.<span class="ident">desc</span>().<span class="ident">size</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">tensor_two</span>.<span class="ident">desc</span>().<span class="ident">size</span>() {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot share weight &#39;{}&#39; owned by layer &#39;{}&#39; with layer &#39;{}&#39;;
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
+                        <span class="string">&quot;Cannot share weight &#39;{}&#39; owned by layer &#39;{}&#39; with layer &#39;{}&#39;;
                                 count mismatch.
                                 Owner layer weight shape is {:?};
                                 Sharing layer weight shape is {:?}&quot;</span>,
-                                       <span class="ident">param_name</span>,
-                                       <span class="ident">owner_name</span>,
-                                       <span class="ident">layer_name</span>,
-                                       <span class="ident">tensor_two</span>.<span class="ident">desc</span>(),
-                                       <span class="ident">tensor_one</span>.<span class="ident">desc</span>()));
+                        <span class="ident">param_name</span>,
+                        <span class="ident">owner_name</span>,
+                        <span class="ident">layer_name</span>,
+                        <span class="ident">tensor_two</span>.<span class="ident">desc</span>(),
+                        <span class="ident">tensor_one</span>.<span class="ident">desc</span>()
+                    ));
                 }
             }
             <span class="comment">// Strict dimension checking -- all dims must be the same.</span>
             <span class="ident">DimCheckMode</span>::<span class="ident">Strict</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">if</span> <span class="ident">tensor_one</span>.<span class="ident">desc</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">tensor_two</span>.<span class="ident">desc</span>() {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cannot share weight &#39;{}&#39; owned by layer &#39;{}&#39; with layer &#39;{}&#39;;
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
+                        <span class="string">&quot;Cannot share weight &#39;{}&#39; owned by layer &#39;{}&#39; with layer &#39;{}&#39;;
                                 shape mismatch.
                                 Owner layer weight shape is {:?};
                                 Sharing layer expects weight shape {:?}&quot;</span>,
-                                       <span class="ident">param_name</span>,
-                                       <span class="ident">owner_name</span>,
-                                       <span class="ident">layer_name</span>,
-                                       <span class="ident">tensor_two</span>.<span class="ident">desc</span>(),
-                                       <span class="ident">tensor_one</span>.<span class="ident">desc</span>()));
+                        <span class="ident">param_name</span>,
+                        <span class="ident">owner_name</span>,
+                        <span class="ident">layer_name</span>,
+                        <span class="ident">tensor_two</span>.<span class="ident">desc</span>(),
+                        <span class="ident">tensor_one</span>.<span class="ident">desc</span>()
+                    ));
                 }
             }
         }
@@ -324,7 +340,10 @@
     <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="comment">// TODO: incomplete since WeightConfig isn&#39;t really used internally in Juice at the moment.</span>
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_name</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>();
-        <span class="ident">WeightConfig</span> { <span class="ident">name</span>: <span class="ident">name</span>, ..<span class="self">Self</span>::<span class="ident">default</span>() }
+        <span class="ident">WeightConfig</span> {
+            <span class="ident">name</span>: <span class="ident">name</span>,
+            ..<span class="self">Self</span>::<span class="ident">default</span>()
+        }
     }
 }
 
@@ -368,7 +387,10 @@
 
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
             <span class="ident">FillerType</span>::<span class="ident">Constant</span> { <span class="ident">value</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">fill_constant</span>(<span class="ident">weight</span>, <span class="ident">value</span>),
-            <span class="ident">FillerType</span>::<span class="ident">Glorot</span> { <span class="ident">input_size</span>, <span class="ident">output_size</span> } <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">fill_glorot</span>(<span class="ident">weight</span>, <span class="ident">input_size</span>, <span class="ident">output_size</span>),
+            <span class="ident">FillerType</span>::<span class="ident">Glorot</span> {
+                <span class="ident">input_size</span>,
+                <span class="ident">output_size</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">fill_glorot</span>(<span class="ident">weight</span>, <span class="ident">input_size</span>, <span class="ident">output_size</span>),
         }
     }
 

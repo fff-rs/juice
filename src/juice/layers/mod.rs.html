@@ -69,10 +69,6 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the fundamental units of computation in a Neural Network.</span>
 <span class="doccomment">//!</span>
@@ -127,27 +123,23 @@
 <span class="doccomment">/// Implement [ILayer][1] for [activation layers][2].</span>
 <span class="doccomment">/// [1]: ./layer/trait.ILayer.html</span>
 <span class="doccomment">/// [2]: ./layers/activation/index.html</span>
-
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">activation</span>::{<span class="ident">ReLU</span>, <span class="ident">Sigmoid</span>, <span class="ident">TanH</span>};
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">common</span>::{<span class="ident">Convolution</span>, <span class="ident">ConvolutionConfig</span>,
-                       <span class="ident">Rnn</span>, <span class="ident">RnnConfig</span>,
-                       <span class="ident">Pooling</span>, <span class="ident">PoolingConfig</span>, <span class="ident">PoolingMode</span>,
-                       <span class="ident">Linear</span>, <span class="ident">LinearConfig</span>,
-                       <span class="ident">LogSoftmax</span>,
-                       <span class="ident">Softmax</span>,
-                       <span class="ident">Dropout</span>, <span class="ident">DropoutConfig</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">common</span>::{
+    <span class="ident">Convolution</span>, <span class="ident">ConvolutionConfig</span>, <span class="ident">Dropout</span>, <span class="ident">DropoutConfig</span>, <span class="ident">Linear</span>, <span class="ident">LinearConfig</span>, <span class="ident">LogSoftmax</span>, <span class="ident">Pooling</span>, <span class="ident">PoolingConfig</span>,
+    <span class="ident">PoolingMode</span>, <span class="ident">Rnn</span>, <span class="ident">RnnConfig</span>, <span class="ident">Softmax</span>,
+};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">container</span>::{<span class="ident">Sequential</span>, <span class="ident">SequentialConfig</span>};
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">loss</span>::{<span class="ident">NegativeLogLikelihood</span>, <span class="ident">NegativeLogLikelihoodConfig</span>, <span class="ident">MeanSquaredError</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">loss</span>::{<span class="ident">MeanSquaredError</span>, <span class="ident">NegativeLogLikelihood</span>, <span class="ident">NegativeLogLikelihoodConfig</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">utility</span>::{<span class="ident">Flatten</span>, <span class="ident">Reshape</span>, <span class="ident">ReshapeConfig</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">activation</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">common</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">container</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">loss</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">utility</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">container</span>;
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "juice";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

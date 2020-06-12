@@ -113,8 +113,6 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides Loss &amp; Gradient for Mean Squared Error</span>
 <span class="doccomment">//!</span>
@@ -125,8 +123,6 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">native_backend</span>, <span class="ident">ArcLock</span>};
-<span class="kw">use</span> <span class="ident">util</span>::{<span class="ident">native_scalar</span>, <span class="ident">LayerOps</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_copy_implementations</span>)]</span>
@@ -184,7 +180,7 @@
 
         <span class="ident">write_to_memory</span>(
             <span class="ident">output_data</span>[<span class="number">0</span>].<span class="ident">write_only</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>(),
-            <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="ident">writable_loss</span> <span class="op">/</span> <span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">f32</span>]
+            <span class="kw-2">&amp;</span><span class="macro">vec</span><span class="macro">!</span>[<span class="ident">writable_loss</span> <span class="op">/</span> <span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">f32</span>],
         );
     }
 }

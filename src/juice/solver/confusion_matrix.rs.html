@@ -132,15 +132,13 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
-<span id="135">135</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! TODO: DOC</span>
 
-
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">SharedTensor</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">native_backend</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::<span class="ident">VecDeque</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">native_backend</span>;
 <span class="doccomment">/// A [ConfusionMatrix][wiki].</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// [wiki]: https://en.wikipedia.org/wiki/Confusion_matrix</span>
@@ -194,7 +192,8 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">predictions</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>::<span class="ident">new</span>();
         <span class="kw">for</span> <span class="ident">batch_predictions</span> <span class="kw">in</span> <span class="ident">predictions_slice</span>.<span class="ident">chunks</span>(<span class="self">self</span>.<span class="ident">num_classes</span>) {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">enumerated_predictions</span> <span class="op">=</span> <span class="ident">batch_predictions</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-            <span class="ident">enumerated_predictions</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">one</span>), <span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">two</span>)<span class="op">|</span> <span class="ident">one</span>.<span class="ident">partial_cmp</span>(<span class="ident">two</span>).<span class="ident">unwrap_or</span>(::<span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>::<span class="ident">Equal</span>)); <span class="comment">// find index of prediction</span>
+            <span class="ident">enumerated_predictions</span>
+                .<span class="ident">sort_by</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">one</span>), <span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">two</span>)<span class="op">|</span> <span class="ident">one</span>.<span class="ident">partial_cmp</span>(<span class="ident">two</span>).<span class="ident">unwrap_or</span>(::<span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span>::<span class="ident">Equal</span>)); <span class="comment">// find index of prediction</span>
             <span class="ident">predictions</span>.<span class="ident">push</span>(<span class="ident">enumerated_predictions</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="number">0</span>)
         }
         <span class="ident">predictions</span>
@@ -238,10 +237,7 @@
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Sample</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>,
-               <span class="string">&quot;Prediction: {:?}, Target: {:?}&quot;</span>,
-               <span class="self">self</span>.<span class="ident">prediction</span>,
-               <span class="self">self</span>.<span class="ident">target</span>)
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Prediction: {:?}, Target: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">prediction</span>, <span class="self">self</span>.<span class="ident">target</span>)
     }
 }
 
@@ -262,11 +258,13 @@
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Accuracy</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>,
-               <span class="string">&quot;{:?}/{:?} = {:.2?}%&quot;</span>,
-               <span class="self">self</span>.<span class="ident">num_correct</span>,
-               <span class="self">self</span>.<span class="ident">num_samples</span>,
-               <span class="self">self</span>.<span class="ident">ratio</span>())
+        <span class="macro">write</span><span class="macro">!</span>(
+            <span class="ident">f</span>,
+            <span class="string">&quot;{:?}/{:?} = {:.2?}%&quot;</span>,
+            <span class="self">self</span>.<span class="ident">num_correct</span>,
+            <span class="self">self</span>.<span class="ident">num_samples</span>,
+            <span class="self">self</span>.<span class="ident">ratio</span>()
+        )
     }
 }
 </pre></div>

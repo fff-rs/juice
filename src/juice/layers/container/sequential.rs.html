@@ -489,19 +489,58 @@
 <span id="489">489</span>
 <span id="490">490</span>
 <span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! A container layer that runs operations sequentially on the contained layers.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">capnp_util</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::{<span class="ident">IBackend</span>, <span class="ident">SharedTensor</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">sequential_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">shaped_input</span> <span class="kw">as</span> <span class="ident">capnp_shaped_input</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// Sequential Layer</span>
@@ -554,9 +593,15 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_layers</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">in_config</span>: <span class="kw-2">&amp;</span><span class="ident">SequentialConfig</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">in_config</span>.<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">registry</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>::<span class="ident">new</span>();
-        <span class="kw">let</span> <span class="ident">weight_registry</span> <span class="op">=</span>
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span>::<span class="op">&lt;</span><span class="ident">String</span>,
-                           (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>)<span class="op">&gt;</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="ident">weight_registry</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span>::<span class="op">&lt;</span>
+            <span class="ident">String</span>,
+            (
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+                <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+                <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+            ),
+        <span class="op">&gt;</span>::<span class="ident">new</span>();
 
         <span class="kw">for</span> (<span class="ident">input_name</span>, <span class="ident">input_shape</span>) <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">inputs</span>.<span class="ident">clone</span>() {
             <span class="self">self</span>.<span class="ident">init_input_blob</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">input_name</span>, <span class="kw-2">&amp;</span><span class="ident">input_shape</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">registry</span>);
@@ -573,8 +618,10 @@
             <span class="kw">match</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> (<span class="ident">config</span>.<span class="ident">layers</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>) {
                 <span class="bool-val">false</span> <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="comment">// layers have already been manually connected</span>
-                    <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span>].<span class="ident">outputs</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">is_some</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>].<span class="ident">inputs</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">is_some</span>() <span class="kw-2">&amp;</span><span class="op">&amp;</span>
-                       <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span>].<span class="ident">outputs</span>.<span class="ident">get</span>(<span class="number">0</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>].<span class="ident">inputs</span>.<span class="ident">get</span>(<span class="number">0</span>) {
+                    <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span>].<span class="ident">outputs</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">is_some</span>()
+                        <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>].<span class="ident">inputs</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">is_some</span>()
+                        <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span>].<span class="ident">outputs</span>.<span class="ident">get</span>(<span class="number">0</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">config</span>.<span class="ident">layers</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>].<span class="ident">inputs</span>.<span class="ident">get</span>(<span class="number">0</span>)
+                    {
                         <span class="kw">continue</span>;
                     }
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">in_place</span>) <span class="op">=</span> <span class="ident">config</span>.<span class="ident">find_in_place_output</span>(<span class="ident">i</span>) {
@@ -594,10 +641,7 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shared_workspace</span> <span class="op">=</span> <span class="prelude-val">None</span>;
         <span class="kw">for</span> <span class="ident">layer_config</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">layers</span> {
-            <span class="self">self</span>.<span class="ident">init_layer</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(),
-                            <span class="kw-2">&amp;</span><span class="ident">layer_config</span>,
-                            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">registry</span>,
-                            <span class="ident">weight_registry</span>);
+            <span class="self">self</span>.<span class="ident">init_layer</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">layer_config</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">registry</span>, <span class="ident">weight_registry</span>);
             <span class="ident">shared_workspace</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resize_shared_workspace</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="ident">shared_workspace</span>);
         }
 
@@ -642,22 +686,22 @@
     <span class="doccomment">/// Used during initialization of the Sequential container.</span>
     <span class="doccomment">/// [1]: ../layer/struct.Layer.html</span>
     <span class="doccomment">/// [2]: ../layer/struct.Layer.html#method.connect</span>
-    <span class="kw">fn</span> <span class="ident">init_input_blob</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-                       <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-                       <span class="ident">tensor_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-                       <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>],
-                       <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>) {
-
+    <span class="kw">fn</span> <span class="ident">init_input_blob</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+        <span class="ident">tensor_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+        <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>],
+        <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+    ) {
         <span class="kw">if</span> <span class="ident">registry</span>.<span class="ident">contains_key</span>(<span class="ident">tensor_name</span>) {
             <span class="comment">// If we are not doing in-place computation but see two layers trying</span>
             <span class="comment">// to produce the same tensor, raise an error.</span>
-            <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Output tensor {} produced by multiple sources.&quot;</span>,
-                   <span class="ident">tensor_name</span>);
+            <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Output tensor {} produced by multiple sources.&quot;</span>, <span class="ident">tensor_name</span>);
             <span class="kw">return</span>;
         } <span class="kw">else</span> {
             <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Input {} -&gt; {}&quot;</span>, <span class="self">self</span>.<span class="ident">input_data_tensors</span>.<span class="ident">len</span>(), <span class="ident">tensor_name</span>);
 
-            <span class="kw">let</span> <span class="ident">ibackend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">backend</span>;
+            <span class="kw">let</span> <span class="ident">ibackend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">backend</span>;
             <span class="kw">let</span> <span class="ident">data_tensor</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">input_shape</span>)));
             <span class="kw">let</span> <span class="ident">gradient_tensor</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">input_shape</span>)));
 
@@ -676,15 +720,21 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [3]: ../layer/struct.Layer.html</span>
     <span class="doccomment">/// [4]: ../layers/index.html</span>
-    <span class="kw">fn</span> <span class="ident">init_layer</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-                  <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-                  <span class="ident">layer_config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>,
-                  <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
-                  <span class="ident">weight_registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>,
-                                                (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-                                                 <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-                                                 <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-                                                 <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>)<span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">init_layer</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+        <span class="ident">layer_config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>,
+        <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+        <span class="ident">weight_registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span>
+            <span class="ident">String</span>,
+            (
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+                <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+                <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+            ),
+        <span class="op">&gt;</span>,
+    ) {
         <span class="comment">// Setup layer.</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">layer_config</span>.<span class="ident">validate</span>() {
             <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">e</span>);
@@ -722,39 +772,57 @@
     }
 
     <span class="kw">fn</span> <span class="ident">learnable_weights</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">weights</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">layers</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">layer</span><span class="op">|</span> <span class="ident">layer</span>.<span class="ident">borrow</span>().<span class="ident">learnable_weights_data</span>()).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">weights</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">layers</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">layer</span><span class="op">|</span> <span class="ident">layer</span>.<span class="ident">borrow</span>().<span class="ident">learnable_weights_data</span>())
+            .<span class="ident">collect</span>();
         <span class="prelude-val">Some</span>(<span class="ident">weights</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">learnable_weights_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">gradients</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">layers</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">layer</span><span class="op">|</span> <span class="ident">layer</span>.<span class="ident">borrow</span>().<span class="ident">learnable_weights_gradients</span>()).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">gradients</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">layers</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">layer</span><span class="op">|</span> <span class="ident">layer</span>.<span class="ident">borrow</span>().<span class="ident">learnable_weights_gradients</span>())
+            .<span class="ident">collect</span>();
         <span class="prelude-val">Some</span>(<span class="ident">gradients</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">learnable_weights_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">names</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">layers</span>.<span class="ident">iter</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">layer</span><span class="op">|</span> <span class="ident">layer</span>.<span class="ident">borrow</span>().<span class="ident">learnable_weights_names</span>()).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">names</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">layers</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">layer</span><span class="op">|</span> <span class="ident">layer</span>.<span class="ident">borrow</span>().<span class="ident">learnable_weights_names</span>())
+            .<span class="ident">collect</span>();
         <span class="prelude-val">Some</span>(<span class="ident">names</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">resize_shared_workspace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-                               <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-                               <span class="ident">workspace</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>)
-                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">resize_shared_workspace</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+        <span class="ident">workspace</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Resizing shared workspace {:?}&quot;</span>, <span class="ident">workspace</span>.<span class="ident">is_some</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shared_workspace</span> <span class="op">=</span> <span class="ident">workspace</span>;
 
         <span class="kw">for</span> <span class="ident">layer</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">layers</span> {
-            <span class="ident">shared_workspace</span> <span class="op">=</span> <span class="ident">layer</span>.<span class="ident">borrow_mut</span>().<span class="ident">worker</span>.<span class="ident">resize_shared_workspace</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="ident">shared_workspace</span>);
+            <span class="ident">shared_workspace</span> <span class="op">=</span> <span class="ident">layer</span>
+                .<span class="ident">borrow_mut</span>()
+                .<span class="ident">worker</span>
+                .<span class="ident">resize_shared_workspace</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="ident">shared_workspace</span>);
         }
 
         <span class="ident">shared_workspace</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">forward</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-               <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-               <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-               <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-               <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">forward</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+    ) {
         <span class="kw">for</span> <span class="ident">layer</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">layers</span> {
             <span class="kw">for</span> (<span class="ident">i</span>, (<span class="ident">input</span>, <span class="ident">input_name</span>)) <span class="kw">in</span> <span class="ident">input_data</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="self">self</span>.<span class="ident">input_tensor_names</span>.<span class="ident">iter</span>()).<span class="ident">enumerate</span>() {
                 <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">layer</span>.<span class="ident">borrow</span>().<span class="ident">input_blob_names</span>[<span class="ident">i</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">input_name</span> {
@@ -768,13 +836,15 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">backward_input</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                      <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                      <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-                      <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-                      <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-                      <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-                      <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">backward_input</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+    ) {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">last_layer</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">layers</span>.<span class="ident">last</span>() {
             <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">output_gradient</span>) <span class="kw">in</span> <span class="ident">output_gradients</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                 <span class="ident">last_layer</span>.<span class="ident">borrow_mut</span>().<span class="ident">output_blobs_gradient</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">output_gradient</span>.<span class="ident">clone</span>();
@@ -788,12 +858,14 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">backward_parameters</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                           <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                           <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-                           <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-                           <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
-                           <span class="ident">weights_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">backward_parameters</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">weights_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+    ) {
         <span class="kw">for</span> <span class="ident">layer</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">layers</span>.<span class="ident">iter</span>().<span class="ident">rev</span>() {
             <span class="ident">layer</span>.<span class="ident">borrow_mut</span>().<span class="ident">backward_parameters</span>();
         }
@@ -805,34 +877,40 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">ComputeOutput</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Sequential</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
     <span class="comment">// we are overriding `forward` and not calling `compute_output`</span>
-    <span class="kw">fn</span> <span class="ident">compute_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                      <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                      <span class="ident">weights</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                      <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                      <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">compute_output</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">weights</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+    ) {
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">ComputeInputGradient</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Sequential</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
     <span class="comment">// we are overriding `backward_input` and not calling `compute_input_gradient`</span>
-    <span class="kw">fn</span> <span class="ident">compute_input_gradient</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                              <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                              <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">compute_input_gradient</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+    ) {
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">ComputeParametersGradient</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Sequential</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
     <span class="comment">// we are overriding `backward_parameters` and not calling `compute_parameters_gradient`</span>
-    <span class="kw">fn</span> <span class="ident">compute_parameters_gradient</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                                   <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                                   <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                                   <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                                   <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                                   <span class="ident">parameters_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">compute_parameters_gradient</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">parameters_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+    ) {
     }
 }
 

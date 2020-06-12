@@ -349,6 +349,18 @@
 <span id="349">349</span>
 <span id="350">350</span>
 <span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Convolves the input tensor.</span>
 <span class="doccomment">//!</span>
@@ -369,12 +381,12 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">conn</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">conn</span>::<span class="ident">ConvolutionConfig</span> <span class="kw">as</span> <span class="ident">connConvolutionConfig</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">convolution_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">cast_vec_usize_to_i32</span>, <span class="ident">ArcLock</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">FillerType</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">cast_vec_usize_to_i32</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">FillerType</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="doccomment">/// Convolution Layer</span>
@@ -468,14 +480,16 @@
         <span class="bool-val">true</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">reshape</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-               <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-               <span class="ident">input_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">input_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-               <span class="ident">output_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">reshape</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">input_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">output_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) {
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">input_data</span>.<span class="ident">len</span>() {
             <span class="kw">let</span> <span class="ident">inp</span> <span class="op">=</span> <span class="ident">input_data</span>[<span class="number">0</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_data</span> <span class="op">=</span> <span class="ident">output_data</span>[<span class="number">0</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>();
@@ -491,14 +505,17 @@
             <span class="kw">let</span> <span class="ident">stride</span> <span class="op">=</span> <span class="ident">cast_vec_usize_to_i32</span>(<span class="self">self</span>.<span class="ident">stride_dims</span>(<span class="ident">num_spatial_dims</span>));
             <span class="kw">let</span> <span class="ident">padding</span> <span class="op">=</span> <span class="ident">cast_vec_usize_to_i32</span>(<span class="self">self</span>.<span class="ident">padding_dims</span>(<span class="ident">num_spatial_dims</span>));
 
-            <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">new_convolution_config</span>(<span class="kw-2">&amp;</span><span class="ident">inp</span>,
-                                        <span class="kw-2">&amp;</span><span class="ident">output_data</span>,
-                                        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">filter</span>,
-                                        <span class="ident">conn</span>::<span class="ident">ConvForwardAlgo</span>::<span class="ident">Auto</span>,
-                                        <span class="ident">conn</span>::<span class="ident">ConvBackwardFilterAlgo</span>::<span class="ident">Auto</span>,
-                                        <span class="ident">conn</span>::<span class="ident">ConvBackwardDataAlgo</span>::<span class="ident">Auto</span>,
-                                        <span class="kw-2">&amp;</span><span class="ident">stride</span>,
-                                        <span class="kw-2">&amp;</span><span class="ident">padding</span>)
+            <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">backend</span>
+                .<span class="ident">new_convolution_config</span>(
+                    <span class="kw-2">&amp;</span><span class="ident">inp</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">output_data</span>,
+                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">filter</span>,
+                    <span class="ident">conn</span>::<span class="ident">ConvForwardAlgo</span>::<span class="ident">Auto</span>,
+                    <span class="ident">conn</span>::<span class="ident">ConvBackwardFilterAlgo</span>::<span class="ident">Auto</span>,
+                    <span class="ident">conn</span>::<span class="ident">ConvBackwardDataAlgo</span>::<span class="ident">Auto</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">stride</span>,
+                    <span class="kw-2">&amp;</span><span class="ident">padding</span>,
+                )
                 .<span class="ident">unwrap</span>();
 
             <span class="comment">// resize and fill weights</span>
@@ -513,10 +530,11 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">resize_shared_workspace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-                               <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-                               <span class="ident">workspace</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>)
-                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">resize_shared_workspace</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+        <span class="ident">workspace</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">required_size</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">convolution_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">workspace_size</span>();
         <span class="kw">let</span> <span class="ident">new_workspace</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">workspace</span>.<span class="ident">is_none</span>() {
             <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="ident">required_size</span>])))
@@ -536,65 +554,73 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ComputeOutput</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">compute_output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                      <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                      <span class="ident">weights</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                      <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                      <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">compute_output</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">weights</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+    ) {
         <span class="kw">let</span> <span class="ident">filter_data</span> <span class="op">=</span> <span class="ident">weights</span>[<span class="number">0</span>];
         <span class="kw">let</span> <span class="ident">conv_config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">convolution_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">workspace</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">write</span>().<span class="ident">unwrap</span>();
-        <span class="ident">backend</span>.<span class="ident">convolution</span>(<span class="ident">filter_data</span>,
-                         <span class="ident">input_data</span>[<span class="number">0</span>],
-                         <span class="ident">output_data</span>[<span class="number">0</span>],
-                         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>,
-                         <span class="ident">conv_config</span>)
+        <span class="ident">backend</span>
+            .<span class="ident">convolution</span>(<span class="ident">filter_data</span>, <span class="ident">input_data</span>[<span class="number">0</span>], <span class="ident">output_data</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>, <span class="ident">conv_config</span>)
             .<span class="ident">unwrap</span>();
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ComputeInputGradient</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">compute_input_gradient</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                              <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                              <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">_output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                              <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">compute_input_gradient</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">_output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+    ) {
         <span class="kw">let</span> <span class="ident">filter_data</span> <span class="op">=</span> <span class="ident">weights_data</span>[<span class="number">0</span>];
         <span class="kw">let</span> <span class="ident">conv_config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">convolution_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">workspace</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">write</span>().<span class="ident">unwrap</span>();
         <span class="comment">// compute gradient w.r.t. input</span>
-        <span class="ident">backend</span>.<span class="ident">convolution_grad_data</span>(<span class="ident">filter_data</span>,
-                                   <span class="ident">output_gradients</span>[<span class="number">0</span>],
-                                   <span class="ident">input_gradients</span>[<span class="number">0</span>],
-                                   <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>,
-                                   <span class="ident">conv_config</span>)
+        <span class="ident">backend</span>
+            .<span class="ident">convolution_grad_data</span>(
+                <span class="ident">filter_data</span>,
+                <span class="ident">output_gradients</span>[<span class="number">0</span>],
+                <span class="ident">input_gradients</span>[<span class="number">0</span>],
+                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>,
+                <span class="ident">conv_config</span>,
+            )
             .<span class="ident">unwrap</span>();
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">conn</span>::<span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ComputeParametersGradient</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Convolution</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">compute_parameters_gradient</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
-                                   <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-                                   <span class="ident">_output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                                   <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                                   <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-                                   <span class="ident">parameters_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>]) {
+    <span class="kw">fn</span> <span class="ident">compute_parameters_gradient</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
+        <span class="ident">_output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">parameters_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+    ) {
         <span class="comment">// TODO: compute gradient w.r.t to bias</span>
         <span class="kw">let</span> <span class="ident">filter_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parameters_gradients</span>[<span class="number">0</span>];
         <span class="kw">let</span> <span class="ident">conv_config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">convolution_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">workspace</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">write</span>().<span class="ident">unwrap</span>();
         <span class="comment">// compute gradient w.r.t. filter</span>
-        <span class="ident">backend</span>.<span class="ident">convolution_grad_filter</span>(<span class="ident">input_data</span>[<span class="number">0</span>],
-                                     <span class="ident">output_gradients</span>[<span class="number">0</span>],
-                                     <span class="ident">filter_gradient</span>,
-                                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>,
-                                     <span class="ident">conv_config</span>)
+        <span class="ident">backend</span>
+            .<span class="ident">convolution_grad_filter</span>(
+                <span class="ident">input_data</span>[<span class="number">0</span>],
+                <span class="ident">output_gradients</span>[<span class="number">0</span>],
+                <span class="ident">filter_gradient</span>,
+                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>,
+                <span class="ident">conv_config</span>,
+            )
             .<span class="ident">unwrap</span>();
     }
 }
-
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="doccomment">/// Specifies configuration parameters for a Convolution Layer.</span>
@@ -675,12 +701,12 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Convolution</span>, <span class="ident">ConvolutionConfig</span>};
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">FilterLayer</span>;
+    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Convolution</span>, <span class="ident">ConvolutionConfig</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="kw-2">*</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;cuda&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
     <span class="kw">fn</span> <span class="ident">correct_shapes</span>() {
         <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">ConvolutionConfig</span> {
             <span class="ident">num_output</span>: <span class="number">64</span>,
@@ -695,10 +721,8 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">11</span>, <span class="number">11</span>], <span class="ident">layer</span>.<span class="ident">spatial_filter_dims</span>(<span class="number">2</span>));
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">2</span>, <span class="number">2</span>], <span class="ident">layer</span>.<span class="ident">padding_dims</span>(<span class="number">2</span>));
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">4</span>, <span class="number">4</span>], <span class="ident">layer</span>.<span class="ident">stride_dims</span>(<span class="number">2</span>));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">64</span>, <span class="number">3</span>, <span class="number">11</span>, <span class="number">11</span>],
-                   <span class="ident">layer</span>.<span class="ident">calculate_filter_shape</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>]));
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>, <span class="number">64</span>, <span class="number">55</span>, <span class="number">55</span>],
-                   <span class="ident">layer</span>.<span class="ident">calculate_output_shape</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>]));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">64</span>, <span class="number">3</span>, <span class="number">11</span>, <span class="number">11</span>], <span class="ident">layer</span>.<span class="ident">calculate_filter_shape</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>]));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>, <span class="number">64</span>, <span class="number">55</span>, <span class="number">55</span>], <span class="ident">layer</span>.<span class="ident">calculate_output_shape</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>]));
     }
 }
 </pre></div>

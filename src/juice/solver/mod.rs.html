@@ -408,6 +408,7 @@
 <span id="408">408</span>
 <span id="409">409</span>
 <span id="410">410</span>
+<span id="411">411</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the generics and interfaces for the specific Solvers.</span>
 <span class="doccomment">//!</span>
@@ -425,8 +426,8 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">solvers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>, <span class="ident">SolverOps</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// Solver that optimizes a [Layer][1] with a given objective.</span>
@@ -435,7 +436,7 @@
     <span class="ident">net</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
     <span class="ident">objective</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">SolverB</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The implementation of the Solver</span>
-    <span class="kw">pub</span> <span class="ident">worker</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">worker</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="ident">config</span>: <span class="ident">SolverConfig</span>,
 
@@ -481,10 +482,11 @@
     }
 
     <span class="doccomment">/// Train the network with one minibatch</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">train_minibatch</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-                           <span class="ident">mb_data</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-                           <span class="ident">mb_target</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)
-                           <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">train_minibatch</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">mb_data</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">mb_target</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="comment">// forward through network and classifier</span>
         <span class="kw">let</span> <span class="ident">network_out</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">net</span>.<span class="ident">forward</span>(<span class="kw-2">&amp;</span>[<span class="ident">mb_data</span>])[<span class="number">0</span>].<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">objective</span>.<span class="ident">forward</span>(<span class="kw-2">&amp;</span>[<span class="ident">network_out</span>.<span class="ident">clone</span>(), <span class="ident">mb_target</span>]);
@@ -543,7 +545,7 @@
     <span class="kw">fn</span> <span class="ident">backend</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SolverB</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="kw">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">B</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;({})&quot;</span>, <span class="string">&quot;ILayer&quot;</span>)
     }
@@ -748,11 +750,11 @@
 
 <span class="kw">impl</span> <span class="ident">SolverKind</span> {
     <span class="doccomment">/// Create a Solver of the specified kind with the supplied SolverConfig.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_config</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">NetB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>
-        (<span class="kw-2">&amp;</span><span class="self">self</span>,
-         <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-         <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>)
-         <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_config</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">NetB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
             <span class="ident">SolverKind</span>::<span class="ident">SGD</span>(<span class="ident">sgd</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">sgd</span>.<span class="ident">with_config</span>(<span class="ident">backend</span>, <span class="ident">config</span>),
         }
@@ -769,11 +771,11 @@
 
 <span class="kw">impl</span> <span class="ident">SGDKind</span> {
     <span class="doccomment">/// Create a Solver of the specified kind with the supplied SolverConfig.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_config</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">NetB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>
-        (<span class="kw-2">&amp;</span><span class="self">self</span>,
-         <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-         <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>)
-         <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_config</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">NetB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">SolverConfig</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ISolver</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">NetB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
             <span class="ident">SGDKind</span>::<span class="ident">Momentum</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Momentum</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">backend</span>)),
         }
@@ -799,7 +801,7 @@
     <span class="comment">// /// stepvalue</span>
     <span class="comment">// Multistep,</span>
     <span class="doccomment">/// return base_lr * gamma ^ iter</span>
-    <span class="ident">Exp</span>, 
+    <span class="ident">Exp</span>,
     <span class="comment">// /// return base_lr * (1 + gamma * iter) ^ (- power)</span>
     <span class="comment">// Inv,</span>
     <span class="comment">// /// the effective learning rate follows a polynomial decay, to be</span>

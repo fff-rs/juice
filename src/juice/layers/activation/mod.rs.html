@@ -40,6 +40,9 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides nonlinear activation methods.</span>
 <span class="doccomment">//!</span>
@@ -65,15 +68,18 @@
 <span class="doccomment">//! [mod_relu]: ./relu/index.html</span>
 <span class="doccomment">//! [struct_layerconfig]: ../../layer/struct.LayerConfig.html</span>
 
-
 <span class="doccomment">/// macro helper to implement activation trait</span>
 <span class="doccomment">/// TODO see common</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_ilayer_activation</span> {
-    () <span class="op">=</span><span class="op">&gt;</span> (
-        <span class="kw">fn</span> <span class="ident">exact_num_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> { <span class="prelude-val">Some</span>(<span class="number">1</span>) }
-        <span class="kw">fn</span> <span class="ident">exact_num_input_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> { <span class="prelude-val">Some</span>(<span class="number">1</span>) }
-    )
+    () <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">exact_num_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Some</span>(<span class="number">1</span>)
+        }
+        <span class="kw">fn</span> <span class="ident">exact_num_input_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Some</span>(<span class="number">1</span>)
+        }
+    };
 }
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">relu</span>::<span class="ident">ReLU</span>;
