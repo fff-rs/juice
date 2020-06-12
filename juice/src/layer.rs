@@ -705,7 +705,7 @@ impl<B: IBackend> Layer<B> {
     /// #
     /// # fn main() {
     /// #     if cfg!(feature = "native") {
-    /// #         ::native::test();
+    /// #         crate::native::test();
     /// #    }
     /// # }
     /// ```
@@ -756,7 +756,7 @@ impl<B: IBackend> Layer<B> {
     /// #
     /// # fn main() {
     /// #     if cfg!(feature = "native") {
-    /// #         ::native::test();
+    /// #         crate::native::test();
     /// #    }
     /// # }
     /// ```
