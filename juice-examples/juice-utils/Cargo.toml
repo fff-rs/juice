@@ -1,0 +1,36 @@
+[package]
+name = "juice-utils"
+description = "Utilities for running Juice Examples"
+version = "0.0.1"
+authors = ["Lissa Hyacinth <lissahyacinth@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+greenglas = { version = "0.2" }
+juice = { version = "0.2.4", default-features = false }
+coaster = { version = "0.1.1", default-features = false }
+coaster-nn = { version = "0.4.2", default-features = false }
+
+csv = "1"
+reqwest= {version = "0.10.6", features = ["blocking"]}
+futures = "0.3.5"
+futures-util = "0.3"
+
+tokio = {version = "0.2.4", features = ["macros"]}
+bytes="*"
+flate2 = "1"
+mnist = "0.4.0"
+
+log = "0.4"
+env_logger = "0.7"
+timeit = "0.1.2"
+
+docopt = "1"
+serde = { version = "1", features = ["derive"] }
+
+
+[features]
+default = ["native", "cuda"]
+native = ["juice/native", "coaster/native"]
+opencl = ["juice/opencl", "coaster/opencl"]
+cuda = ["juice/cuda", "coaster/cuda"]

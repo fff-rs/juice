@@ -1,0 +1,23 @@
+[package]
+name = "example-rnn-regression"
+description = "Juice Framework example for RNN Regression using Mackey-Glass Dataset"
+version = "0.0.1"
+authors = ["Lissa Hyacinth <lissahyacinth@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+greenglas = { version = "0.2" }
+juice = { version = "0.2.4", default-features = false }
+coaster = { version = "0.1.1", default-features = false }
+coaster-nn = { version = "0.4.2", default-features = false }
+
+csv = "1"
+serde = { version = "1", features = ["derive"] }
+env_logger = "0.7.1"
+docopt= "1.1.0"
+
+[features]
+default = ["native", "cuda"]
+native = ["juice/native", "coaster/native"]
+opencl = ["juice/opencl", "coaster/opencl"]
+cuda = ["juice/cuda", "coaster/cuda"]
