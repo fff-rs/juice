@@ -1,7 +1,7 @@
 [workspace]
-members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "juice-examples", "rust-blas", "rcudnn/cudnn", "rcudnn/cudnn-sys", "rcublas/cublas", "rcublas/cublas-sys"]
+members = ["greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "rust-blas", "rcudnn/cudnn", "rcudnn/cudnn-sys", "rcublas/cublas", "rcublas/cublas-sys"]
 
-exclude = [ "./rcudnn", "./rcublas" ]
+exclude = [ "./rcudnn", "./rcublas", "./juice-examples"]
 
 [patch.crates-io]
 coaster-nn = { path = "./coaster-nn" }
