@@ -12,17 +12,19 @@
 //!
 //! [cs231n_convnets]: https://cs231n.github.io/convolutional-networks
 
-use super::FilterLayer;
+use std::rc::Rc;
+use std::sync::{Arc, RwLock};
+
 use crate::capnp_util::*;
 use crate::co::prelude::*;
 use crate::conn;
 use crate::conn::ConvolutionConfig as connConvolutionConfig;
 use crate::juice_capnp::convolution_config as capnp_config;
 use crate::layer::*;
-use crate::util::{cast_vec_usize_to_i32, ArcLock};
+use crate::util::{ArcLock, cast_vec_usize_to_i32};
 use crate::weight::FillerType;
-use std::rc::Rc;
-use std::sync::{Arc, RwLock};
+
+use super::FilterLayer;
 
 #[derive(Debug, Clone)]
 /// Convolution Layer
@@ -154,14 +156,21 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
                 )
                 .unwrap();
 
-            // resize and fill weights
+            // Initialise Weights
             weights_data[0].write().unwrap().resize(filter.desc()).unwrap();
+            weights_data[1].write().unwrap().resize(&output_shape).unwrap();
+
             let filler = FillerType::Glorot {
                 input_size: inp.desc().size(),
                 output_size: output_shape.size(),
             };
+
+            // Randomly initialise weights
             filler.fill(&mut weights_data[0].write().unwrap());
+            filler.fill(&mut weights_data[1].write().unwrap());
+
             weights_gradient[0].write().unwrap().resize(filter.desc()).unwrap();
+            weights_gradient[1].write().unwrap().resize(filter.desc()).unwrap();
             self.convolution_config = Some(Rc::new(config));
         }
     }
@@ -255,6 +264,17 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeParametersGradient<f32, B> for
                 conv_config,
             )
             .unwrap();
+
+        let bias_filter_gradient = &mut parameters_gradients[1];
+        backend
+            .convolution_grad_filter(
+                input_data[0],
+                output_gradients[0],
+                bias_filter_gradient,
+                &mut workspace,
+                conv_config,
+            )
+            .unwrap();
     }
 }
 
@@ -337,9 +357,10 @@ impl<'a> CapnpRead<'a> for ConvolutionConfig {
 
 #[cfg(test)]
 mod tests {
-    use super::super::FilterLayer;
-    use super::{Convolution, ConvolutionConfig};
     use crate::co::*;
+
+    use super::{Convolution, ConvolutionConfig};
+    use super::super::FilterLayer;
 
     #[test]
     #[cfg(feature = "cuda")]
