@@ -4,6 +4,7 @@ description = "Machine Learning Framework for Hackers"
 version = "0.2.4"
 authors = [
   "Bernhard Schuster <bernhard@ahoi.io>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
   "Maximilian Goisser <max@autumnai.com>",
   "Michael Hirn <mj@autumnai.com>",
 ]

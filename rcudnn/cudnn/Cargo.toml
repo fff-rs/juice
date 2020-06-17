@@ -5,8 +5,9 @@ version = "1.7.0"
 #edition = "2018"
 authors = [
     "Bernhard Schuster <bernhard@ahoi.io>",
+    "Lissa Hyacinth <lissahyacinth@gmail.com>",
     "MichaelHirn <mj@autumnai.com>",
-    "Maximilian Goisser <max@autumnai.com>"
+    "Maximilian Goisser <max@autumnai.com>",
 ]
 repository = "https://github.com/spearow/juice"
 homepage = "https://github.com/spearow/juice/tree/master/rcudnn"
