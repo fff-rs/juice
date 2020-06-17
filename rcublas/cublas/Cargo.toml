@@ -5,7 +5,8 @@ version = "0.5.0"
 edition = "2018"
 authors = [
 	"Bernhard Schuster <bernhard@ahoi.io>",
-	"Maximilian Goisser <maximilian.goisser@autumnai.com>"
+	"Lissa Hyacinth <lissahyacinth@gmail.com>",
+	"Maximilian Goisser <maximilian.goisser@autumnai.com>",
 ]
 homepage = "https://github.com/spearow/juice/tree/masster/rcublas"
 repository = "https://github.com/spearow/juice"

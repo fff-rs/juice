@@ -5,8 +5,9 @@ version = "0.3.0"
 edition = "2018"
 authors = [
     "Bernhard Schuster <bernhard@ahoi.io>",
+    "Lissa Hyacinth <lissahyacinth@gmail.com>",
     "Michael Hirn <mj@autumnai.com>",
-    "Maximilian Goisser <max@autumnai.com>"
+    "Maximilian Goisser <max@autumnai.com>",
 ]
 repository = "https://github.com/spearow/coaster-blas"
 homepage = "https://spearow.io/projects/coaster-blas"
