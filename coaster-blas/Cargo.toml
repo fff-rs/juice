@@ -6,6 +6,7 @@ edition = "2018"
 authors = [
     "Bernhard Schuster <bernhard@ahoi.io>",
     "Lissa Hyacinth <lissahyacinth@gmail.com>",
+    "Paul Kassianik <pkassianik@gmail.com>",
     "Michael Hirn <mj@autumnai.com>",
     "Maximilian Goisser <max@autumnai.com>",
 ]
