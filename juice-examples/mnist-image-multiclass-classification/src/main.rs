@@ -7,6 +7,7 @@ extern crate mnist;
 
 #[cfg(all(feature = "cuda"))]
 use co::frameworks::cuda::get_cuda_backend;
+use co::frameworks::native::get_native_backend;
 use co::prelude::*;
 use juice::layer::*;
 use juice::layers::*;
@@ -17,7 +18,6 @@ use mnist::{Mnist, MnistBuilder};
 use serde::Deserialize;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-
 
 const MAIN_USAGE: &str = "
 Juice Examples
@@ -48,6 +48,11 @@ struct Args {
     cmd_load_dataset: bool,
     cmd_mnist: bool,
     cmd_fashion: bool,
+}
+
+enum MnistType {
+    Fashion,
+    Numbers,
 }
 
 #[cfg(not(test))]
@@ -99,6 +104,7 @@ fn main() {
     } else if args.cmd_mnist {
         #[cfg(all(feature = "cuda"))]
             run_mnist(
+            MnistType::Numbers,
             args.arg_model_name,
             args.arg_batch_size,
             args.arg_learning_rate,
@@ -112,182 +118,89 @@ fn main() {
                 panic!()
             }
     } else if args.cmd_fashion {
-        #[cfg(all(feature = "cuda"))]
-            run_fashion(
+        run_mnist(
+            MnistType::Fashion,
             args.arg_model_name,
             args.arg_batch_size,
             args.arg_learning_rate,
             args.arg_momentum,
         );
-        #[cfg(not(feature = "cuda"))]
-            {
-                println!(
-                    "Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda."
-                );
-                panic!()
-            }
-    }
-}
-
-#[allow(dead_code)]
-fn run_mnist(
-    model_name: Option<String>,
-    batch_size: Option<usize>,
-    learning_rate: Option<f32>,
-    momentum: Option<f32>,
-) {
-    let example_count = 60000;
-    let test_count = 10000;
-    let pixel_count = 784;
-    let pixel_dim = 28;
-
-    let Mnist {
-        trn_img, trn_lbl, ..
-    } = MnistBuilder::new()
-        .base_path("./assets/mnist/")
-        .label_format_digit()
-        .training_set_length(example_count)
-        .test_set_length(test_count)
-        .finalize();
-
-    let mut decoded_images = trn_img
-        .chunks(pixel_count)
-        .enumerate()
-        .map(|(ind, pixels)| (trn_lbl[ind], pixels.to_vec()));
-
-    let batch_size = batch_size.unwrap_or(1);
-    let learning_rate = learning_rate.unwrap_or(0.001f32);
-    let momentum = momentum.unwrap_or(0f32);
-
-    let mut net_cfg = SequentialConfig::default();
-    net_cfg.add_input("data", &[batch_size, pixel_dim, pixel_dim]);
-    net_cfg.force_backward = true;
-
-    match &*model_name.unwrap_or("none".to_owned()) {
-        "conv" => {
-            net_cfg.add_layer(LayerConfig::new(
-                "reshape",
-                ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "conv",
-                ConvolutionConfig {
-                    num_output: 20,
-                    filter_shape: vec![5],
-                    padding: vec![0],
-                    stride: vec![1],
-                },
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "pooling",
-                PoolingConfig {
-                    mode: PoolingMode::Max,
-                    filter_shape: vec![2],
-                    padding: vec![0],
-                    stride: vec![2],
-                },
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear1",
-                LinearConfig { output_size: 500 },
-            ));
-            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear2",
-                LinearConfig { output_size: 10 },
-            ));
-        }
-        "mlp" => {
-            net_cfg.add_layer(LayerConfig::new(
-                "reshape",
-                LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear1",
-                LayerType::Linear(LinearConfig { output_size: 1568 }),
-            ));
-            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear2",
-                LayerType::Linear(LinearConfig { output_size: 10 }),
-            ));
-        }
-        "linear" => {
-            net_cfg.add_layer(LayerConfig::new(
-                "linear",
-                LayerType::Linear(LinearConfig { output_size: 10 }),
-            ));
-        }
-        _ => panic!("Unknown model. Try one of [linear, mlp, conv]"),
-    }
-    net_cfg.add_layer(LayerConfig::new("log_softmax", LayerType::LogSoftmax));
-
-    let mut classifier_cfg = SequentialConfig::default();
-    classifier_cfg.add_input("network_out", &[batch_size, 10]);
-    classifier_cfg.add_input("label", &[batch_size, 1]);
-    // set up nll loss
-    let nll_layer_cfg = NegativeLogLikelihoodConfig { num_classes: 10 };
-    let nll_cfg = LayerConfig::new("nll", LayerType::NegativeLogLikelihood(nll_layer_cfg));
-    classifier_cfg.add_layer(nll_cfg);
-
-    #[cfg(all(feature = "cuda"))]
-        let backend = Rc::new(get_cuda_backend());
-    #[cfg(not(feature = "cuda"))]
-        let backend = Rc::new(get_native_backend());
-    // set up solver
-    let mut solver_cfg = SolverConfig {
-        minibatch_size: batch_size,
-        base_lr: learning_rate,
-        momentum,
-        ..SolverConfig::default()
-    };
-    solver_cfg.network = LayerConfig::new("network", net_cfg);
-    solver_cfg.objective = LayerConfig::new("classifier", classifier_cfg);
-    let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_cfg);
-
-    let inp = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
-    let label = SharedTensor::<f32>::new(&[batch_size, 1]);
-
-    let inp_lock = Arc::new(RwLock::new(inp));
-    let label_lock = Arc::new(RwLock::new(label));
-
-    // set up confusion matrix
-    let mut confusion = ::juice::solver::ConfusionMatrix::new(10);
-    confusion.set_capacity(Some(1000));
-
-    for _ in 0..(example_count / batch_size as u32) {
-        // write input
-        let mut targets = Vec::new();
-
-        for (batch_n, (label_val, ref input)) in decoded_images
-            .by_ref()
-            .take(batch_size)
-            .enumerate()
-        {
-            let mut inp = inp_lock.write().unwrap();
-            let mut label = label_lock.write().unwrap();
-            write_batch_sample(&mut inp, &input, batch_n);
-            write_batch_sample(&mut label, &[label_val], batch_n);
-
-            targets.push(label_val as usize);
-        }
-        // train the network!
-        let infered_out = solver.train_minibatch(inp_lock.clone(), label_lock.clone());
-
-        let mut infered = infered_out.write().unwrap();
-        let predictions = confusion.get_predictions(&mut infered);
-
-        confusion.add_samples(&predictions, &targets);
-        println!(
-            "Last sample: {} | Accuracy {}",
-            confusion.samples().iter().last().unwrap(),
-            confusion.accuracy()
-        );
     }
 }
 
 #[cfg(all(feature = "cuda"))]
-fn run_fashion(
+fn add_conv_net(mut net_cfg: SequentialConfig, batch_size: usize, pixel_dim: usize) -> SequentialConfig {
+    net_cfg.add_layer(LayerConfig::new(
+        "reshape",
+        ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
+    ));
+    net_cfg.add_layer(LayerConfig::new(
+        "conv",
+        ConvolutionConfig {
+            num_output: 20,
+            filter_shape: vec![5],
+            padding: vec![0],
+            stride: vec![1],
+        },
+    ));
+    net_cfg.add_layer(LayerConfig::new(
+        "pooling",
+        PoolingConfig {
+            mode: PoolingMode::Max,
+            filter_shape: vec![2],
+            padding: vec![0],
+            stride: vec![2],
+        },
+    ));
+    net_cfg.add_layer(LayerConfig::new(
+        "linear1",
+        LinearConfig { output_size: 500 },
+    ));
+    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+    net_cfg.add_layer(LayerConfig::new(
+        "linear2",
+        LinearConfig { output_size: 10 },
+    ));
+    net_cfg
+}
+
+#[cfg(not(feature = "cuda"))]
+fn add_conv_net(_net_cfg: SequentialConfig, _batch_size: usize, _pixel_dim: usize) -> SequentialConfig {
+    println!(
+        "Currently Juice does not have a native pooling function to use with Conv Nets - you can either try
+        the CUDA implementation, or use a different type of layer"
+    );
+    panic!()
+}
+
+fn add_mlp(mut net_cfg: SequentialConfig, batch_size: usize, pixel_count: usize) -> SequentialConfig {
+    net_cfg.add_layer(LayerConfig::new(
+        "reshape",
+        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
+    ));
+    net_cfg.add_layer(LayerConfig::new(
+        "linear1",
+        LayerType::Linear(LinearConfig { output_size: 1568 }),
+    ));
+    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+    net_cfg.add_layer(LayerConfig::new(
+        "linear2",
+        LayerType::Linear(LinearConfig { output_size: 10 }),
+    ));
+    net_cfg
+}
+
+fn add_linear_net(mut net_cfg: SequentialConfig) -> SequentialConfig {
+    net_cfg.add_layer(LayerConfig::new(
+        "linear",
+        LayerType::Linear(LinearConfig { output_size: 10 }),
+    ));
+    net_cfg
+}
+
+
+fn run_mnist(
+    mnist_type: MnistType,
     model_name: Option<String>,
     batch_size: Option<usize>,
     learning_rate: Option<f32>,
@@ -298,10 +211,15 @@ fn run_fashion(
     let pixel_count = 784;
     let pixel_dim = 28;
 
+    let asset_path = match mnist_type {
+        MnistType::Fashion => "./assets/mnist-fashion",
+        MnistType::Numbers => "./assets/mnist"
+    };
+
     let Mnist {
         trn_img, trn_lbl, ..
     } = MnistBuilder::new()
-        .base_path("./assets/mnist-fashion/")
+        .base_path(asset_path)
         .label_format_digit()
         .training_set_length(example_count)
         .test_set_length(test_count)
@@ -320,63 +238,13 @@ fn run_fashion(
     net_cfg.add_input("data", &[batch_size, pixel_dim, pixel_dim]);
     net_cfg.force_backward = true;
 
-    match &*model_name.unwrap_or("none".to_owned()) {
-        "conv" => {
-            net_cfg.add_layer(LayerConfig::new(
-                "reshape",
-                ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "conv",
-                ConvolutionConfig {
-                    num_output: 20,
-                    filter_shape: vec![5],
-                    padding: vec![0],
-                    stride: vec![1],
-                },
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "pooling",
-                PoolingConfig {
-                    mode: PoolingMode::Max,
-                    filter_shape: vec![2],
-                    padding: vec![0],
-                    stride: vec![2],
-                },
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear1",
-                LinearConfig { output_size: 500 },
-            ));
-            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear2",
-                LinearConfig { output_size: 10 },
-            ));
-        }
-        "mlp" => {
-            net_cfg.add_layer(LayerConfig::new(
-                "reshape",
-                LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
-            ));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear1",
-                LayerType::Linear(LinearConfig { output_size: 1568 }),
-            ));
-            net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-            net_cfg.add_layer(LayerConfig::new(
-                "linear2",
-                LayerType::Linear(LinearConfig { output_size: 10 }),
-            ));
-        }
-        "linear" => {
-            net_cfg.add_layer(LayerConfig::new(
-                "linear",
-                LayerType::Linear(LinearConfig { output_size: 10 }),
-            ));
-        }
+    net_cfg = match &*model_name.unwrap_or("none".to_owned()) {
+        "conv" => add_conv_net(net_cfg, batch_size, pixel_dim),
+        "mlp" => add_mlp(net_cfg, batch_size, pixel_count),
+        "linear" => add_linear_net(net_cfg),
         _ => panic!("Unknown model. Try one of [linear, mlp, conv]"),
-    }
+    };
+
     net_cfg.add_layer(LayerConfig::new("log_softmax", LayerType::LogSoftmax));
 
     let mut classifier_cfg = SequentialConfig::default();
@@ -388,7 +256,10 @@ fn run_fashion(
     classifier_cfg.add_layer(nll_cfg);
 
     // set up backends
-    let backend = Rc::new(get_cuda_backend());
+    #[cfg(all(feature = "cuda"))]
+        let backend = Rc::new(get_cuda_backend());
+    #[cfg(not(feature = "cuda"))]
+        let backend = Rc::new(get_native_backend());
 
     // set up solver
     let mut solver_cfg = SolverConfig {
