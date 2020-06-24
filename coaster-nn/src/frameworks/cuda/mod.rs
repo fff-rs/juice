@@ -23,7 +23,8 @@ fn rnn_sequence_descriptors(sequence_length: i32,
     let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
     let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
     let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-    let dim_input = vec![batch_size, input_size, 1];
+    // Treating the input split by batch then input like in a typical NCHW cell.
+    let dim_input = vec![batch_size, 1, 1];
     let dim_output = vec![batch_size, hidden_size, 1];
     let dim_hidden_cell = vec![num_layers, batch_size, hidden_size];
     let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
@@ -816,29 +817,29 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         input_size: i32
     ) -> Result<Vec<usize>, Error> {
         let cudnn_framework = self.framework().cudnn();
-        let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
-        let dim_input = vec![batch_size, input_size, 1];
+        // MiniBatch, LayerSize, 1
+        let dim_input = vec![batch_size, 1, 1];
         let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
 
-        for _ in 0..sequence_length {
-            x_desc.push(TensorDescriptor::new(
-                &dim_input,
-                &stride_input,
-                data_type,
-            ).unwrap());
-        }
+        let x_desc_single_iterator = TensorDescriptor::new(
+            &dim_input,
+            &stride_input,
+            data_type,
+        ).unwrap();
 
         let weight_size: usize = match API::get_rnn_params_size(
             *cudnn_framework.id_c(),
             *rnn_config.rnn_desc().id_c(),
-            *x_desc[0].id_c(),
+            // Input. A fully packed tensor descriptor describing the input to one recurrent iteration.
+            // Appears to be a single descriptor, not an array of tensor descriptors.
+            *x_desc_single_iterator.id_c(),
             data_type) {
             Ok(size) => Ok(size),
             Err(_) => Err(Error::Plugin(PluginError::Plugin("Unable to get CudNN Rnn Params Size."))),
         }?;
-        // TODO: Update for different sizing
+        // TODO: Update for different sizing.
         let dim_w: Vec<usize> = vec![weight_size / 4, 1, 1];
         Ok(dim_w)
     }

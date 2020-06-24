@@ -28,6 +28,7 @@ rand = "0.7"
 num = "0.2"
 capnp = "0.13"
 timeit = "0.1"
+transpose = "*"
 
 [build-dependencies]
 capnpc = "0.13"
