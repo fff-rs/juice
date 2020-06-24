@@ -4,7 +4,6 @@ extern crate env_logger;
 extern crate juice;
 
 use std::fs::File;
-use std::path::Path;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
@@ -18,7 +17,6 @@ use juice::layers::*;
 use juice::solver::*;
 use juice::util::*;
 use serde::Deserialize;
-
 
 const MAIN_USAGE: &str = "
 Usage:  mackey-glass-example train [--file=<path>] [--batchSize=<batch>] [--learningRate=<lr>] [--momentum=<float>]
@@ -45,16 +43,48 @@ struct Args {
     flag_momentum: Option<f32>,
 }
 
-// Provide an Iterator over the input data
-fn data_generator() -> impl Iterator<Item=(f32, Vec<f32>)> {
-    let rdr = Reader::from_reader(File::open("assets/normalised_mackeyglass_lstm.csv").unwrap());
-    let columns: usize = 10;
+enum DataMode {
+    Train,
+    Test,
+}
 
+pub struct BatchIter {
+    pub data_iter: Box<dyn Iterator<Item=(f32, Vec<f32>)>>,
+    pub batch_size: usize,
+    pub time_steps: usize,
+}
+
+impl Iterator for BatchIter {
+    type Item = (Vec<f32>, Vec<f32>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut result: Vec<f32> = Vec::with_capacity(self.batch_size);
+        let mut input: Vec<f32> = Vec::with_capacity(self.batch_size * self.time_steps);
+        for _ in 0..self.batch_size {
+            match self.data_iter.next() {
+                None => break,
+                Some((elem_res, mut elem_input)) => {
+                    result.push(elem_res);
+                    input.append(&mut elem_input);
+                }
+            }
+        }
+        Some((result, input))
+    }
+}
+
+// Provide an Iterator over the input data
+fn data_generator(data: DataMode) -> impl Iterator<Item=(f32, Vec<f32>)> {
+    let path = match data {
+        DataMode::Train => "assets/norm_mackeyglass_train.csv",
+        DataMode::Test => "assets/norm_mackeyglass_test.csv"
+    };
+    let rdr = Reader::from_reader(File::open(path).unwrap());
     rdr.into_deserialize().map(move |row| match row {
         Ok(value) => {
             let row_vec: Box<Vec<f32>> = Box::new(value);
             let label = row_vec[0];
-            let columns = row_vec[1..=columns].to_vec();
+            let columns = row_vec[1..=10].to_vec();
             (label, columns)
         }
         _ => {
@@ -80,8 +110,8 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
         // Layer name is only used internally - can be changed to anything
         "LSTMInitial",
         RnnConfig {
-            hidden_size: 200,
-            num_layers: 10,
+            hidden_size: 5,
+            num_layers: 1,
             dropout_seed: 123,
             dropout_probability: 0.5,
             rnn_type: RnnNetworkMode::LSTM,
@@ -138,11 +168,11 @@ fn train(
     // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
     let backend = Rc::new(get_cuda_backend());
 
-    let example_count: usize = 44000;
+    let example_count = 35192;
     let columns: usize = 10;
 
-    let batch_size = batch_size.unwrap_or(200);
-    let learning_rate = learning_rate.unwrap_or(0.01f32);
+    let batch_size = batch_size.unwrap_or(10);
+    let learning_rate = learning_rate.unwrap_or(0.1f32);
     let momentum = momentum.unwrap_or(0.00f32);
 
     // Initialise a Sequential Layer
@@ -162,7 +192,7 @@ fn train(
     // Indicate how many samples to average loss over
     regression_evaluator.set_capacity(Some(2000));
 
-    let mut data_rows = data_generator();
+    let mut data_rows = data_generator(DataMode::Train);
     for _ in 0..(example_count / batch_size) {
         let mut targets = Vec::new();
         for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
@@ -190,6 +220,62 @@ fn train(
     }
 }
 
+#[cfg(all(feature = "cuda"))]
+#[allow(dead_code)]
+fn test(
+    batch_size: Option<usize>,
+    file: Option<String>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
+    let backend = Rc::new(get_cuda_backend());
+
+    // Load in the Network, and some test data
+
+    let example_count: usize = 8798;
+    let columns: usize = 10;
+
+    let batch_size = batch_size.unwrap_or(200);
+
+    // Load in a pre-trained network
+    let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file.unwrap())?;
+
+    // Define Input & Labels
+    let input = SharedTensor::<f32>::new(&[batch_size, 1, columns]);
+    let input_lock = Arc::new(RwLock::new(input));
+
+    let label = SharedTensor::<f32>::new(&[batch_size, 1]);
+    let label_lock = Arc::new(RwLock::new(label));
+
+    // Define Evaluation Method - Using Mean Squared Error
+    let mut regression_evaluator =
+        ::juice::solver::RegressionEvaluator::new(Some("mse".to_owned()));
+    // Indicate how many samples to average loss over
+    regression_evaluator.set_capacity(Some(2000));
+
+    let mut data_rows = data_generator(DataMode::Test);
+
+    for _ in 0..(example_count / batch_size) {
+        let mut targets = Vec::new();
+        for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
+            let mut input_tensor = input_lock.write().unwrap();
+            let mut label_tensor = label_lock.write().unwrap();
+            write_batch_sample(&mut input_tensor, &input, batch_n);
+            write_batch_sample(&mut label_tensor, &[label_val], batch_n);
+            targets.push(label_val);
+        }
+        let results_vec = network.forward(&[input_lock.clone()]);
+        let mut results = results_vec.get(0).unwrap().write().unwrap();
+        let predictions = regression_evaluator.get_predictions(&mut results);
+        regression_evaluator.add_samples(&predictions, &targets);
+        println!(
+            "Mean Squared Error {}",
+            &regression_evaluator.accuracy() as &dyn RegressionLoss
+        );
+    }
+    Ok(())
+}
+
+
 #[cfg(not(test))]
 #[allow(unused_must_use)]
 fn main() {
@@ -208,11 +294,18 @@ fn main() {
             args.flag_file,
         );
         #[cfg(not(feature = "cuda"))]
-        panic!(
-            "
-            Couldn't find CUDA, and Juice does not support RNNs on native CPU.
-            If you have CUDA installed, and believe this is an error, please let us know on Gitter (https://gitter.im/spearow/juice)
-            "
-        )
+        panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
+                on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
+                or the 2020 road map https://github.com/spearow/juice/issues/30")
+    } else if args.cmd_test {
+        #[cfg(all(feature = "cuda"))]
+            test(
+            args.flag_batchSize,
+            args.flag_file,
+        );
+        #[cfg(not(feature = "cuda"))]
+        panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
+                    on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
+                    or the 2020 road map https://github.com/spearow/juice/issues/30")
     }
 }
