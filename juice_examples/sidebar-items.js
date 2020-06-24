@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["MAIN_USAGE",""]],"fn":[["download_dataset",""],["download_datasets",""],["get_mnist_iter",""],["get_packed_regr_iter",""],["get_regr_iter",""],["main",""],["run_fashion",""],["run_mackey_glass",""],["run_mnist",""],["unzip_datasets",""]],"struct":[["Args",""]]});

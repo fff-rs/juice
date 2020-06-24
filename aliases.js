@@ -4,7 +4,6 @@ ALIASES["coaster_blas"] = {};
 ALIASES["coaster_nn"] = {};
 ALIASES["greenglas"] = {};
 ALIASES["juice"] = {};
-ALIASES["juice_examples"] = {};
 ALIASES["rcublas"] = {};
 ALIASES["rcublas_sys"] = {};
 ALIASES["rcudnn"] = {};
