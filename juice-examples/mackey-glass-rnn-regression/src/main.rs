@@ -49,6 +49,8 @@ enum DataMode {
 }
 
 const TRAIN_ROWS : usize = 35192;
+const TEST_ROWS : usize = 8798;
+const DATA_COLUMNS : usize = 10;
 
 pub struct BatchIter {
     pub data_iter: Box<dyn Iterator<Item=(f32, Vec<f32>)>>,
@@ -86,7 +88,7 @@ fn data_generator(data: DataMode) -> impl Iterator<Item=(f32, Vec<f32>)> {
         Ok(value) => {
             let row_vec: Box<Vec<f32>> = Box::new(value);
             let label = row_vec[0];
-            let columns = row_vec[1..=10].to_vec();
+            let columns = row_vec[1..=DATA_COLUMNS].to_vec();
             (label, columns)
         }
         _ => {
@@ -169,19 +171,17 @@ fn train(
 ) {
     // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
     let backend = Rc::new(get_cuda_backend());
-    
-    let columns: usize = 10;
 
     let batch_size = batch_size.unwrap_or(10);
     let learning_rate = learning_rate.unwrap_or(0.1f32);
     let momentum = momentum.unwrap_or(0.00f32);
 
     // Initialise a Sequential Layer
-    let net_cfg = create_network(batch_size, columns);
+    let net_cfg = create_network(batch_size, DATA_COLUMNS);
     let mut solver = add_solver(net_cfg, backend, batch_size, learning_rate, momentum);
 
     // Define Input & Labels
-    let input = SharedTensor::<f32>::new(&[batch_size, 1, columns]);
+    let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
     let input_lock = Arc::new(RwLock::new(input));
 
     let label = SharedTensor::<f32>::new(&[batch_size, 1]);
@@ -231,17 +231,13 @@ fn test(
     let backend = Rc::new(get_cuda_backend());
 
     // Load in the Network, and some test data
-
-    let example_count: usize = 8798;
-    let columns: usize = 10;
-
-    let batch_size = batch_size.unwrap_or(200);
+    let batch_size = batch_size.unwrap_or(10);
 
     // Load in a pre-trained network
     let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file.unwrap())?;
 
     // Define Input & Labels
-    let input = SharedTensor::<f32>::new(&[batch_size, 1, columns]);
+    let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
     let input_lock = Arc::new(RwLock::new(input));
 
     let label = SharedTensor::<f32>::new(&[batch_size, 1]);
@@ -255,7 +251,7 @@ fn test(
 
     let mut data_rows = data_generator(DataMode::Test);
 
-    for _ in 0..(example_count / batch_size) {
+    for _ in 0..(TEST_ROWS / batch_size) {
         let mut targets = Vec::new();
         for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
             let mut input_tensor = input_lock.write().unwrap();
