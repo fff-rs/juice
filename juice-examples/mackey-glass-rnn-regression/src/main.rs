@@ -48,6 +48,8 @@ enum DataMode {
     Test,
 }
 
+const TRAIN_ROWS : usize = 35192;
+
 pub struct BatchIter {
     pub data_iter: Box<dyn Iterator<Item=(f32, Vec<f32>)>>,
     pub batch_size: usize,
@@ -167,8 +169,7 @@ fn train(
 ) {
     // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
     let backend = Rc::new(get_cuda_backend());
-
-    let example_count = 35192;
+    
     let columns: usize = 10;
 
     let batch_size = batch_size.unwrap_or(10);
@@ -193,7 +194,7 @@ fn train(
     regression_evaluator.set_capacity(Some(2000));
 
     let mut data_rows = data_generator(DataMode::Train);
-    for _ in 0..(example_count / batch_size) {
+    for _ in 0..(TRAIN_ROWS / batch_size) {
         let mut targets = Vec::new();
         for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
             let mut input_tensor = input_lock.write().unwrap();
