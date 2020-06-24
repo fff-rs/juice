@@ -82,6 +82,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for MeanSquaredEr
     ) {
         let labels = input_data[1];
         let predictions = input_data[0];
+        let batch_size = Self::batch_size(labels.desc());
         let native = native_backend();
         let native_labels = labels.read(native.device()).unwrap().as_slice::<f32>();
         let native_predictions = predictions.read(native.device()).unwrap().as_slice::<f32>();
@@ -92,12 +93,12 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for MeanSquaredEr
         // Gradient is calculated as 2 * (Predictions - Labels)
         Axpby::axpby(
             backend,
-            &native_scalar(-2f32),
-            &predictions,
             &native_scalar(2f32),
+            &predictions,
+            &native_scalar(-2f32),
             &mut writable_input,
         )
-        .unwrap();
+            .unwrap();
 
         write_to_memory(
             input_gradients[0].write_only(native.device()).unwrap(),

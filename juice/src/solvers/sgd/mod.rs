@@ -18,6 +18,8 @@
 //! [backprop]: https://en.wikipedia.org/wiki/Backpropagation
 //! [gd]: https://en.wikipedia.org/wiki/Gradient_descent
 
+pub use self::momentum::Momentum;
+
 /// Implement [ISolver][1] for [SGD solvers][2].
 /// [1]: ./solver/trait.ISolver.html
 /// [2]: ./solvers/sgd/index.html
@@ -50,7 +52,6 @@ macro_rules! impl_isolver_sgd {
                 for (weight_id, weight_gradient) in net.learnable_weights_gradients().iter().enumerate() {
                     SGDSolver::<SolverB, NetB>::normalize(self, config, weight_gradient);
                     // SGDSolver::<SolverB, NetB>::regularize(self, config, weight_gradient, net.weights_weight_decay()[weight_id]);
-
                     SGDSolver::<SolverB, NetB>::compute_update_value(
                         self,
                         config,
@@ -68,7 +69,5 @@ macro_rules! impl_isolver_sgd {
         }
     };
 }
-
-pub use self::momentum::Momentum;
 
 pub mod momentum;

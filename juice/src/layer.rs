@@ -3,14 +3,6 @@
 //! See [Layers][layers]
 //! [layers]: ../layers/index.html
 
-use crate::capnp_util::*;
-use crate::co::prelude::*;
-use crate::juice_capnp::layer as capnp_layer;
-use crate::juice_capnp::layer_config as capnp_layer_config;
-use crate::juice_capnp::layer_config::layer_type as capnp_layer_type;
-use crate::layers::*;
-use crate::util::{ArcLock, LayerOps};
-use crate::weight::WeightConfig;
 use std::cmp;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
@@ -19,6 +11,15 @@ use std::io::{self, BufReader};
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
+
+use crate::capnp_util::*;
+use crate::co::prelude::*;
+use crate::juice_capnp::layer as capnp_layer;
+use crate::juice_capnp::layer_config as capnp_layer_config;
+use crate::juice_capnp::layer_config::layer_type as capnp_layer_type;
+use crate::layers::*;
+use crate::util::{ArcLock, LayerOps};
+use crate::weight::WeightConfig;
 
 #[derive(Debug)]
 /// The generic Layer
@@ -537,8 +538,9 @@ impl<B: IBackend> Layer<B> {
             let old_shape = self.input_blobs_data[input_i].read().unwrap().desc().clone();
             if old_shape.size() != reshaped_shape.size() {
                 panic!(
-                    "The provided input does not have the expected shape of {:?}",
-                    reshaped_shape
+                    "Input Shape Mismatch\nExpected {:?}\nActual {:?}",
+                    reshaped_shape,
+                    old_shape
                 );
             }
             self.input_blobs_data[input_i]
