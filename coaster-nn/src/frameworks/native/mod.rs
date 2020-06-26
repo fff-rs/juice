@@ -843,7 +843,6 @@ impl<T> Rnn<T> for Backend<Native>
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
-        sequence_length: i32,
         batch_size: i32,
         input_size: i32,
     ) -> Result<Vec<usize>, Error> {
