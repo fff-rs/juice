@@ -49,40 +49,15 @@ enum DataMode {
     Test,
 }
 
-const TRAIN_ROWS : usize = 35192;
-const TEST_ROWS : usize = 8798;
-const DATA_COLUMNS : usize = 10;
-
-pub struct BatchIter {
-    pub data_iter: Box<dyn Iterator<Item=(f32, Vec<f32>)>>,
-    pub batch_size: usize,
-    pub time_steps: usize,
-}
-
-impl Iterator for BatchIter {
-    type Item = (Vec<f32>, Vec<f32>);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let mut result: Vec<f32> = Vec::with_capacity(self.batch_size);
-        let mut input: Vec<f32> = Vec::with_capacity(self.batch_size * self.time_steps);
-        for _ in 0..self.batch_size {
-            match self.data_iter.next() {
-                None => break,
-                Some((elem_res, mut elem_input)) => {
-                    result.push(elem_res);
-                    input.append(&mut elem_input);
-                }
-            }
-        }
-        Some((result, input))
-    }
-}
+const TRAIN_ROWS: usize = 35192;
+const TEST_ROWS: usize = 8798;
+const DATA_COLUMNS: usize = 10;
 
 // Provide an Iterator over the input data
-fn data_generator(data: DataMode) -> impl Iterator<Item=(f32, Vec<f32>)> {
+fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
     let path = match data {
         DataMode::Train => "assets/norm_mackeyglass_train.csv",
-        DataMode::Test => "assets/norm_mackeyglass_test.csv"
+        DataMode::Test => "assets/norm_mackeyglass_test.csv",
     };
     let rdr = Reader::from_reader(File::open(path).unwrap());
     rdr.into_deserialize().map(move |row| match row {
@@ -110,7 +85,6 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
     // and it is expected that the RNN move across them using this order.
     net_cfg.add_input("data_input", &[batch_size, 1_usize, columns]);
     net_cfg.force_backward = true;
-
 
     // Reshape the input into NCHW Format
     net_cfg.add_layer(LayerConfig::new(
@@ -231,10 +205,7 @@ fn train(
 
 #[cfg(all(feature = "cuda"))]
 #[allow(dead_code)]
-fn test(
-    batch_size: Option<usize>,
-    file: Option<String>,
-) -> Result<(), Box<dyn std::error::Error>> {
+fn test(batch_size: Option<usize>, file: Option<String>) -> Result<(), Box<dyn std::error::Error>> {
     // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
     let backend = Rc::new(get_cuda_backend());
 
@@ -280,7 +251,6 @@ fn test(
     Ok(())
 }
 
-
 #[cfg(not(test))]
 #[allow(unused_must_use)]
 fn main() {
@@ -292,7 +262,7 @@ fn main() {
 
     if args.cmd_train {
         #[cfg(all(feature = "cuda"))]
-            train(
+        train(
             args.flag_batchSize,
             args.flag_learningRate,
             args.flag_momentum,
@@ -304,10 +274,7 @@ fn main() {
                 or the 2020 road map https://github.com/spearow/juice/issues/30")
     } else if args.cmd_test {
         #[cfg(all(feature = "cuda"))]
-            test(
-            args.flag_batchSize,
-            args.flag_file,
-        );
+        test(args.flag_batchSize, args.flag_file);
         #[cfg(not(feature = "cuda"))]
         panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
                     on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
