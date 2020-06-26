@@ -36,21 +36,18 @@
 //! |---              |
 //! | NVIDIA GeForce GTX 1070 |
 
-use std::io::Write;
 use std::rc::Rc;
-use std::sync::{Arc, RwLock, RwLockWriteGuard};
+use std::sync::{Arc, RwLock};
 
 use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
-use transpose;
 
 use crate::capnp_util::*;
-use crate::co::frameworks::cuda::get_cuda_backend;
 use crate::co::prelude::*;
 use crate::conn;
 use crate::conn::RnnConfig as connRnnConfig;
 use crate::juice_capnp::rnn_config as capnp_config;
 use crate::layer::*;
-use crate::util::{ArcLock, native_backend, write_to_memory};
+use crate::util::{ArcLock, native_backend};
 use crate::weight::FillerType;
 
 #[derive(Debug, Clone)]
@@ -84,15 +81,6 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
     }
 }
 
-fn batch_to_time_series(input_data: Vec<f32>,
-                        batch_size: usize,
-                        time_steps: usize) -> Vec<f32> {
-    let mut output: Vec<f32> = vec![0_f32; input_data.len()];
-    transpose::transpose(&input_data, &mut output, time_steps, batch_size);
-    output
-}
-
-
 impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
     impl_ilayer_common!();
 
@@ -117,8 +105,8 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
         // Input Shape is Batch, Number of Inputs, Sequence Length
         let input_shape = input.desc();
         let batch_size = input_shape[0];
-        let input_size = input_shape[1];
-        let sequence_length = input_shape[2];
+        let sequence_length = input_shape[1];
+        let input_size = input_shape[2];
 
         let hidden_size = self.hidden_size;
 
@@ -151,7 +139,6 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
         let filter_dimensions: TensorDesc = backend
             .generate_rnn_weight_description(
                 &config,
-                sequence_length as i32,
                 batch_size as i32,
                 input_size as i32)
             .unwrap();
@@ -214,33 +201,10 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
         let batch_size = input_shape[0];
         let input_size = input_shape[1];
         let sequence_length = input_shape[2];
-        let native_backend = native_backend();
-        let readable_input = src
-            .read(native_backend.device()).unwrap()
-            .as_slice::<f32>().to_vec();
-
-        let vec_output = batch_to_time_series(
-            readable_input.clone(),
-            batch_size,
-            sequence_length,
-        );
-
-        let mut transposed_input: SharedTensor<f32> = SharedTensor::new(input_data[0].desc());
-
-        transposed_input
-            .write_only(native_backend.device())
-            .unwrap()
-            .as_mut_slice()
-            .copy_from_slice(&vec_output);
-
-        //println!("In RNN");
-        //println!("RNN Input {:#?}", &vec_output);
-        //dbg!(vec_output.len());
-
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         backend
-            .rnn_forward(&transposed_input,
+            .rnn_forward(&input_data[0],
                          output_data[0],
                          rnn_config,
                          weights[0],
@@ -271,23 +235,10 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
         let readable_input = src
             .read(native_backend.device()).unwrap()
             .as_slice::<f32>().to_vec();
-        let vec_output = batch_to_time_series(
-            readable_input,
-            batch_size,
-            sequence_length,
-        );
-
-        let mut transposed_input: SharedTensor<f32> = SharedTensor::new(input_data[0].desc());
-
-        transposed_input
-            .write_only(native_backend.device())
-            .unwrap()
-            .as_mut_slice()
-            .copy_from_slice(&vec_output);
 
         backend
             .rnn_backward_data(
-                &transposed_input,
+                &input_data[0],
                 input_gradients[0],
                 &output_data[0],
                 output_gradients[0],
@@ -316,28 +267,10 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
         let batch_size = input_shape[0];
         let input_size = input_shape[1];
         let sequence_length = input_shape[2];
-        let native_backend = native_backend();
-        let readable_input = src
-            .read(native_backend.device()).unwrap()
-            .as_slice::<f32>().to_vec();
-        let vec_output = batch_to_time_series(
-            readable_input,
-            batch_size,
-            sequence_length,
-        );
-
-        let mut transposed_input: SharedTensor<f32> = SharedTensor::new(input_data[0].desc());
-
-        transposed_input
-            .write_only(native_backend.device())
-            .unwrap()
-            .as_mut_slice()
-            .copy_from_slice(&vec_output);
-
 
         backend
             .rnn_backward_weights(
-                &transposed_input,
+                &input_data[0],
                 &output_data[0],
                 &mut parameters_gradients[0],
                 rnn_config,
@@ -347,7 +280,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
 
         backend
             .rnn_backward_weights(
-                &transposed_input,
+                &input_data[0],
                 &output_data[0],
                 &mut parameters_gradients[1],
                 rnn_config,
@@ -438,36 +371,18 @@ mod tests {
 
     use super::{Rnn, RnnConfig};
 
-    fn sample_input() -> &'static [f32] {
-        [
+    fn sample_input_64() -> Vec<f32> {
+        vec![
             // Default Input Type - Batch of 5 Elements, 5 Time Parts, Width 1, Height 1.
-            0.663984726578356,
-            0.663977089346876,
-            0.663969451768218,
-            0.663961813842358,
-            0.663954175569271,
-            0.542592845129268,
-            0.542582448803271,
-            0.542572052004671,
-            0.542561654733436,
-            0.542551256989533,
-            0.752716032546759,
-            0.752710412073376,
-            0.752704791344493,
-            0.752699170360094,
-            0.75269354912016,
-            0.364857493522476,
-            0.364843057481236,
-            0.364828620783751,
-            0.364814183429979,
-            0.364799745419874,
-            0.624414746124721,
-            0.624406209514183,
-            0.624397672515581,
-            0.62438913512889,
-            0.624380597354083,
+            0.5f32;64
         ]
-            .as_ref()
+    }
+
+    fn sample_input_25() -> Vec<f32> {
+        vec![
+            // Default Input Type - Batch of 5 Elements, 5 Time Parts, Width 1, Height 1.
+            0.5f32;25
+        ]
     }
 
     fn sample_output() -> &'static [f32] {
@@ -506,7 +421,7 @@ mod tests {
             .write_only(native_backend.device())
             .unwrap()
             .as_mut_slice()
-            .copy_from_slice(sample_input());
+            .copy_from_slice(&sample_input_25());
 
         let input_shape = input_data.desc();
 
@@ -551,15 +466,17 @@ mod tests {
         let native_backend = native_backend();
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
-        let input_shape = vec![batch_size, cfg.hidden_size, cfg.num_layers];
+        let input_shape = vec![batch_size, sequence_length, 1, 1];
 
         let mut input_data = SharedTensor::<f32>::new(&input_shape);
+
+        input_data.resize(&[batch_size, sequence_length, 1, 1]).unwrap();
 
         input_data
             .write_only(native_backend.device())
             .unwrap()
             .as_mut_slice()
-            .copy_from_slice(sample_input());
+            .copy_from_slice(&sample_input_64());
 
         let output_shape = vec![batch_size, cfg.hidden_size, cfg.num_layers];
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
@@ -569,7 +486,7 @@ mod tests {
                 &input_data,
                 None,
                 None,
-                sequence_length,
+                sequence_length as i32,
                 RnnNetworkMode::LSTM,
                 RnnInputMode::LinearInput,
                 DirectionMode::UniDirectional,
@@ -583,7 +500,6 @@ mod tests {
         let filter_dimensions = <Backend<Cuda> as conn::Rnn<f32>>::generate_rnn_weight_description(
             &backend,
             &config,
-            sequence_length,
             batch_size as i32,
             cfg.hidden_size as i32,
         )
@@ -612,7 +528,6 @@ mod tests {
             },
             None => panic!("No workspace found"),
         };
-
         match backend.rnn_forward(
             &input_data,
             &mut output_data,

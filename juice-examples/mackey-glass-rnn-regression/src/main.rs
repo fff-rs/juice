@@ -7,16 +7,17 @@ use std::fs::File;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
+use csv::Reader;
+use serde::Deserialize;
+
 #[cfg(all(feature = "cuda"))]
 use co::frameworks::cuda::get_cuda_backend;
 use co::prelude::*;
 use conn::{DirectionMode, RnnInputMode, RnnNetworkMode};
-use csv::Reader;
 use juice::layer::*;
 use juice::layers::*;
 use juice::solver::*;
 use juice::util::*;
-use serde::Deserialize;
 
 const MAIN_USAGE: &str = "
 Usage:  mackey-glass-example train [--file=<path>] [--batchSize=<batch>] [--learningRate=<lr>] [--momentum=<float>]
@@ -109,6 +110,13 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
     // and it is expected that the RNN move across them using this order.
     net_cfg.add_input("data_input", &[batch_size, 1_usize, columns]);
     net_cfg.force_backward = true;
+
+
+    // Reshape the input into NCHW Format
+    net_cfg.add_layer(LayerConfig::new(
+        "reshape",
+        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, DATA_COLUMNS, 1, 1])),
+    ));
 
     net_cfg.add_layer(LayerConfig::new(
         // Layer name is only used internally - can be changed to anything

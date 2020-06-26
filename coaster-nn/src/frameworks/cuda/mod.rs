@@ -24,7 +24,7 @@ fn rnn_sequence_descriptors(sequence_length: i32,
     let mut dxdesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
     let mut dydesc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
     // Treating the input split by batch then input like in a typical NCHW cell.
-    let dim_input = vec![batch_size, 1, 1];
+    let dim_input = vec![batch_size, input_size, 1];
     let dim_output = vec![batch_size, hidden_size, 1];
     let dim_hidden_cell = vec![num_layers, batch_size, hidden_size];
     let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
@@ -812,7 +812,6 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
-        sequence_length: i32,
         batch_size: i32,
         input_size: i32
     ) -> Result<Vec<usize>, Error> {
@@ -820,7 +819,7 @@ impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
         // MiniBatch, LayerSize, 1
-        let dim_input = vec![batch_size, 1, 1];
+        let dim_input = vec![batch_size, input_size, 1];
         let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
 
         let x_desc_single_iterator = TensorDescriptor::new(
