@@ -36,16 +36,19 @@ pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBo
 
 /// Write the `i`th sample of a batch into a SharedTensor.
 ///
-/// The size of a single sample is infered through
+/// The size of a single sample is inferred through
 /// the first dimension of the SharedTensor, which
-/// is asumed to be the batchsize.
+/// is assumed to be the batchsize.
 ///
 /// Allocates memory on a Native Backend if neccessary.
-pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedTensor<f32>, data: &[T], i: usize) {
+pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(
+    tensor: &mut SharedTensor<f32>,
+    data: &[T], i: usize) {
     let native_backend = native_backend();
-
-    let batch_size = tensor.desc().size();
-    let sample_size = batch_size / tensor.desc()[0];
+    let tensor_desc = tensor.desc();
+    let batch_size = tensor_desc[0];
+    let batch_sample_size = tensor_desc.size();
+    let sample_size = batch_sample_size / batch_size;
 
     write_to_memory_offset(
         tensor.write_only(native_backend.device()).unwrap(),
