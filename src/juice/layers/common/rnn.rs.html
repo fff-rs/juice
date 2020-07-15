@@ -491,6 +491,58 @@
 <span id="491">491</span>
 <span id="492">492</span>
 <span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Create a Recursive Layer</span>
 <span class="doccomment">//!</span>
@@ -541,7 +593,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">conn</span>::<span class="ident">RnnConfig</span> <span class="kw">as</span> <span class="ident">connRnnConfig</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">rnn_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">ArcLock</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">native_backend</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">FillerType</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
@@ -599,8 +651,8 @@
         <span class="comment">// Input Shape is Batch, Number of Inputs, Sequence Length</span>
         <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">desc</span>();
         <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">0</span>];
-        <span class="kw">let</span> <span class="ident">input_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">1</span>];
-        <span class="kw">let</span> <span class="ident">sequence_length</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">2</span>];
+        <span class="kw">let</span> <span class="ident">sequence_length</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">1</span>];
+        <span class="kw">let</span> <span class="ident">input_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">2</span>];
 
         <span class="kw">let</span> <span class="ident">hidden_size</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">hidden_size</span>;
 
@@ -631,19 +683,26 @@
             .<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">filter_dimensions</span>: <span class="ident">TensorDesc</span> <span class="op">=</span> <span class="ident">backend</span>
-            .<span class="ident">generate_rnn_weight_description</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>, <span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">input_size</span> <span class="kw">as</span> <span class="ident">i32</span>)
+            .<span class="ident">generate_rnn_weight_description</span>(
+                <span class="kw-2">&amp;</span><span class="ident">config</span>,
+                <span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">i32</span>,
+                <span class="ident">input_size</span> <span class="kw">as</span> <span class="ident">i32</span>)
             .<span class="ident">unwrap</span>();
 
         <span class="ident">weights_data</span>[<span class="number">0</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">filter_dimensions</span>).<span class="ident">unwrap</span>();
         <span class="ident">weights_data</span>[<span class="number">1</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">resize</span>(<span class="kw-2">&amp;</span>(<span class="number">1</span>, <span class="self">self</span>.<span class="ident">hidden_size</span>)).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">filler</span> <span class="op">=</span> <span class="ident">FillerType</span>::<span class="ident">Glorot</span> {
-            <span class="ident">input_size</span>,
-            <span class="ident">output_size</span>: <span class="self">self</span>.<span class="ident">hidden_size</span>,
+            <span class="ident">input_size</span>: <span class="ident">filter_dimensions</span>.<span class="ident">clone</span>().<span class="ident">size</span>(),
+            <span class="ident">output_size</span>: <span class="ident">batch_size</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">num_layers</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">hidden_size</span>,
+        };
+
+        <span class="kw">let</span> <span class="ident">bias_filler</span> <span class="op">=</span> <span class="ident">FillerType</span>::<span class="ident">Constant</span> {
+            <span class="ident">value</span>: <span class="number">1.0</span>
         };
 
         <span class="ident">filler</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">weights_data</span>[<span class="number">0</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>());
-        <span class="ident">filler</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">weights_data</span>[<span class="number">1</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>());
+        <span class="ident">bias_filler</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">weights_data</span>[<span class="number">1</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>());
 
         <span class="ident">weights_gradient</span>[<span class="number">0</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">filter_dimensions</span>).<span class="ident">unwrap</span>();
         <span class="ident">weights_gradient</span>[<span class="number">1</span>].<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="ident">filter_dimensions</span>).<span class="ident">unwrap</span>();
@@ -683,10 +742,19 @@
         <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
     ) {
         <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">input_data</span>[<span class="number">0</span>];
+
+        <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">desc</span>();
+        <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">0</span>];
+        <span class="kw">let</span> <span class="ident">input_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">1</span>];
+        <span class="kw">let</span> <span class="ident">sequence_length</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">2</span>];
         <span class="kw">let</span> <span class="ident">rnn_config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rnn_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">workspace</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">write</span>().<span class="ident">unwrap</span>();
         <span class="ident">backend</span>
-            .<span class="ident">rnn_forward</span>(<span class="ident">input_data</span>[<span class="number">0</span>], <span class="ident">output_data</span>[<span class="number">0</span>], <span class="ident">rnn_config</span>, <span class="ident">weights</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>)
+            .<span class="ident">rnn_forward</span>(<span class="kw-2">&amp;</span><span class="ident">input_data</span>[<span class="number">0</span>],
+                         <span class="ident">output_data</span>[<span class="number">0</span>],
+                         <span class="ident">rnn_config</span>,
+                         <span class="ident">weights</span>[<span class="number">0</span>],
+                         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>)
             .<span class="ident">unwrap</span>();
     }
 }
@@ -703,6 +771,17 @@
     ) {
         <span class="kw">let</span> <span class="ident">rnn_config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rnn_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">workspace</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">write</span>().<span class="ident">unwrap</span>();
+
+        <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">input_data</span>[<span class="number">0</span>];
+        <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">desc</span>();
+        <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">0</span>];
+        <span class="kw">let</span> <span class="ident">input_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">1</span>];
+        <span class="kw">let</span> <span class="ident">sequence_length</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">2</span>];
+        <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">native_backend</span>();
+        <span class="kw">let</span> <span class="ident">readable_input</span> <span class="op">=</span> <span class="ident">src</span>
+            .<span class="ident">read</span>(<span class="ident">native_backend</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>()
+            .<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>().<span class="ident">to_vec</span>();
+
         <span class="ident">backend</span>
             .<span class="ident">rnn_backward_data</span>(
                 <span class="kw-2">&amp;</span><span class="ident">input_data</span>[<span class="number">0</span>],
@@ -729,6 +808,12 @@
         <span class="kw">let</span> <span class="ident">rnn_config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">rnn_config</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">workspace</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">workspace</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap</span>().<span class="ident">write</span>().<span class="ident">unwrap</span>();
 
+        <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">input_data</span>[<span class="number">0</span>];
+        <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">desc</span>();
+        <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">0</span>];
+        <span class="kw">let</span> <span class="ident">input_size</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">1</span>];
+        <span class="kw">let</span> <span class="ident">sequence_length</span> <span class="op">=</span> <span class="ident">input_shape</span>[<span class="number">2</span>];
+
         <span class="ident">backend</span>
             .<span class="ident">rnn_backward_weights</span>(
                 <span class="kw-2">&amp;</span><span class="ident">input_data</span>[<span class="number">0</span>],
@@ -738,6 +823,7 @@
                 <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">workspace</span>,
             )
             .<span class="ident">unwrap</span>();
+
         <span class="ident">backend</span>
             .<span class="ident">rnn_backward_weights</span>(
                 <span class="kw-2">&amp;</span><span class="ident">input_data</span>[<span class="number">0</span>],
@@ -758,12 +844,12 @@
     <span class="kw">pub</span> <span class="ident">hidden_size</span>: <span class="ident">usize</span>,
     <span class="doccomment">/// Number of Hidden Layers</span>
     <span class="kw">pub</span> <span class="ident">num_layers</span>: <span class="ident">usize</span>,
+    <span class="doccomment">/// Type of RNN</span>
+    <span class="kw">pub</span> <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>,
     <span class="doccomment">/// Dropout Probability</span>
     <span class="kw">pub</span> <span class="ident">dropout_probability</span>: <span class="ident">f32</span>,
     <span class="doccomment">/// Dropout Seed</span>
     <span class="kw">pub</span> <span class="ident">dropout_seed</span>: <span class="ident">u64</span>,
-    <span class="doccomment">/// Type of RNN</span>
-    <span class="kw">pub</span> <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>,
     <span class="doccomment">/// Input Mode</span>
     <span class="kw">pub</span> <span class="ident">input_mode</span>: <span class="ident">RnnInputMode</span>,
     <span class="doccomment">/// RNN Direction</span>
@@ -781,11 +867,13 @@
 
     <span class="doccomment">/// Write the RnnConfig into a capnp message.</span>
     <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>::<span class="ident">Builder</span>) {
-        <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_hidden_size</span>(<span class="self">self</span>.<span class="ident">hidden_size</span> <span class="kw">as</span> <span class="ident">u64</span>);
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_num_layers</span>(<span class="self">self</span>.<span class="ident">num_layers</span> <span class="kw">as</span> <span class="ident">u64</span>);
+        <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_hidden_size</span>(<span class="self">self</span>.<span class="ident">hidden_size</span> <span class="kw">as</span> <span class="ident">u64</span>);
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_rnn_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">rnn_type</span>.<span class="ident">to_string</span>());
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_dropout_probability</span>(<span class="self">self</span>.<span class="ident">dropout_probability</span>);
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_dropout_seed</span>(<span class="self">self</span>.<span class="ident">dropout_seed</span>);
+        <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_input_mode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">input_mode</span>.<span class="ident">to_string</span>());
+        <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_direction_mode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">direction_mode</span>.<span class="ident">to_string</span>());
     }
 }
 
@@ -815,26 +903,36 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">conn</span>::<span class="ident">Rnn</span> <span class="kw">as</span> <span class="ident">coRnn</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
+
     <span class="kw">use</span> <span class="ident">conn</span>::{<span class="ident">DirectionMode</span>, <span class="ident">RnnAlgorithm</span>, <span class="ident">RnnInputMode</span>, <span class="ident">RnnNetworkMode</span>};
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">native_backend</span>;
+    <span class="kw">use</span> <span class="ident">conn</span>::<span class="ident">Rnn</span> <span class="kw">as</span> <span class="ident">coRnn</span>;
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="kw-2">*</span>;
-
-    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Rnn</span>, <span class="ident">RnnConfig</span>};
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="ident">ILayer</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">FillerType</span>;
-
-    <span class="kw">fn</span> <span class="ident">sample_input</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">f32</span>] {
-        [<span class="number">1.0_f32</span>; <span class="number">512</span>].<span class="ident">as_ref</span>()
-    }
-
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">frameworks</span>::<span class="ident">cuda</span>::<span class="ident">get_cuda_backend</span> <span class="kw">as</span> <span class="ident">cuda_backend</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layer</span>::<span class="ident">ILayer</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">native_backend</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">FillerType</span>;
+
+    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Rnn</span>, <span class="ident">RnnConfig</span>};
+
+    <span class="kw">fn</span> <span class="ident">sample_input_64</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> {
+        <span class="macro">vec</span><span class="macro">!</span>[
+            <span class="comment">// Default Input Type - Batch of 5 Elements, 5 Time Parts, Width 1, Height 1.</span>
+            <span class="number">0.5f32</span>;<span class="number">64</span>
+        ]
+    }
+
+    <span class="kw">fn</span> <span class="ident">sample_input_25</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> {
+        <span class="macro">vec</span><span class="macro">!</span>[
+            <span class="comment">// Default Input Type - Batch of 5 Elements, 5 Time Parts, Width 1, Height 1.</span>
+            <span class="number">0.5f32</span>;<span class="number">25</span>
+        ]
+    }
 
     <span class="kw">fn</span> <span class="ident">sample_output</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">f32</span>] {
-        [<span class="number">0.99</span>, <span class="number">0.99</span>, <span class="number">0.99</span>, <span class="number">0.99</span>, <span class="number">0.99</span>, <span class="number">0.99</span>, <span class="number">0.99</span>, <span class="number">0.99</span>].<span class="ident">as_ref</span>()
+        [<span class="number">0.6639924</span>, <span class="number">0.5426032</span>, <span class="number">0.7527217</span>, <span class="number">0.3648719</span>, <span class="number">0.6244233</span>].<span class="ident">as_ref</span>()
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -842,7 +940,7 @@
     <span class="kw">fn</span> <span class="ident">rnn_create_layer</span>() {
         <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">RnnConfig</span> {
             <span class="ident">hidden_size</span>: <span class="number">8</span>,
-            <span class="ident">num_layers</span>: <span class="number">8</span>,
+            <span class="ident">num_layers</span>: <span class="number">2</span>,
             <span class="ident">dropout_probability</span>: <span class="number">0.5</span>,
             <span class="ident">dropout_seed</span>: <span class="number">0</span>,
             <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
@@ -852,10 +950,16 @@
 
         <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">native_backend</span>();
         <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">cuda_backend</span>();
-        <span class="kw">let</span> <span class="ident">sequence_length</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">8</span>;
+
+        <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="number">5_usize</span>;
+        <span class="kw">let</span> <span class="ident">sequence_length</span> <span class="op">=</span> <span class="number">5_usize</span>;
+        <span class="kw">let</span> <span class="ident">height</span> <span class="op">=</span> <span class="number">1_usize</span>;
+        <span class="kw">let</span> <span class="ident">width</span> <span class="op">=</span> <span class="number">1_usize</span>;
+
         <span class="kw">let</span> <span class="ident">hidden_size</span> <span class="op">=</span> <span class="ident">cfg</span>.<span class="ident">hidden_size</span>;
         <span class="kw">let</span> <span class="ident">num_layers</span> <span class="op">=</span> <span class="ident">cfg</span>.<span class="ident">num_layers</span>;
-        <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="kw-2">&amp;</span>(<span class="number">8</span>, <span class="number">8</span>, <span class="number">8</span>);
+
+        <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="kw-2">&amp;</span>(<span class="ident">batch_size</span>, <span class="ident">sequence_length</span>, <span class="ident">height</span>, <span class="ident">width</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">Rnn</span>::<span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">cfg</span>);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input_data</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">input_shape</span>);
@@ -863,7 +967,7 @@
             .<span class="ident">write_only</span>(<span class="ident">native_backend</span>.<span class="ident">device</span>())
             .<span class="ident">unwrap</span>()
             .<span class="ident">as_mut_slice</span>()
-            .<span class="ident">copy_from_slice</span>(<span class="ident">sample_input</span>());
+            .<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sample_input_25</span>());
 
         <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="ident">input_data</span>.<span class="ident">desc</span>();
 
@@ -876,7 +980,7 @@
                     <span class="kw-2">&amp;</span><span class="ident">input_data</span>,
                     <span class="prelude-val">None</span>,
                     <span class="prelude-val">None</span>,
-                    <span class="ident">sequence_length</span>,
+                    <span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">i32</span>,
                     <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
                     <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>,
                     <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>,
@@ -908,15 +1012,17 @@
         <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">native_backend</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">Rnn</span>::<span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">cfg</span>);
 
-        <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">batch_size</span>, <span class="ident">cfg</span>.<span class="ident">hidden_size</span>, <span class="ident">cfg</span>.<span class="ident">num_layers</span>];
+        <span class="kw">let</span> <span class="ident">input_shape</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">batch_size</span>, <span class="ident">sequence_length</span>, <span class="number">1</span>, <span class="number">1</span>];
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input_data</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">input_shape</span>);
+
+        <span class="ident">input_data</span>.<span class="ident">resize</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">sequence_length</span>, <span class="number">1</span>, <span class="number">1</span>]).<span class="ident">unwrap</span>();
 
         <span class="ident">input_data</span>
             .<span class="ident">write_only</span>(<span class="ident">native_backend</span>.<span class="ident">device</span>())
             .<span class="ident">unwrap</span>()
             .<span class="ident">as_mut_slice</span>()
-            .<span class="ident">copy_from_slice</span>(<span class="ident">sample_input</span>());
+            .<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">sample_input_64</span>());
 
         <span class="kw">let</span> <span class="ident">output_shape</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">batch_size</span>, <span class="ident">cfg</span>.<span class="ident">hidden_size</span>, <span class="ident">cfg</span>.<span class="ident">num_layers</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_data</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">output_shape</span>);
@@ -926,7 +1032,7 @@
                 <span class="kw-2">&amp;</span><span class="ident">input_data</span>,
                 <span class="prelude-val">None</span>,
                 <span class="prelude-val">None</span>,
-                <span class="ident">sequence_length</span>,
+                <span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">i32</span>,
                 <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
                 <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>,
                 <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>,
@@ -940,7 +1046,6 @@
         <span class="kw">let</span> <span class="ident">filter_dimensions</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">conn</span>::<span class="ident">Rnn</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">generate_rnn_weight_description</span>(
             <span class="kw-2">&amp;</span><span class="ident">backend</span>,
             <span class="kw-2">&amp;</span><span class="ident">config</span>,
-            <span class="ident">sequence_length</span>,
             <span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">i32</span>,
             <span class="ident">cfg</span>.<span class="ident">hidden_size</span> <span class="kw">as</span> <span class="ident">i32</span>,
         )
@@ -969,7 +1074,6 @@
             },
             <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;No workspace found&quot;</span>),
         };
-
         <span class="kw">match</span> <span class="ident">backend</span>.<span class="ident">rnn_forward</span>(
             <span class="kw-2">&amp;</span><span class="ident">input_data</span>,
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output_data</span>,

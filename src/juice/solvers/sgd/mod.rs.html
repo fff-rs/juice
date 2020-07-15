@@ -71,7 +71,6 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides ISolver implementations based on [Stochastic Gradient</span>
 <span class="doccomment">//! Descent][2].</span>
@@ -92,6 +91,8 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [backprop]: https://en.wikipedia.org/wiki/Backpropagation</span>
 <span class="doccomment">//! [gd]: https://en.wikipedia.org/wiki/Gradient_descent</span>
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">momentum</span>::<span class="ident">Momentum</span>;
 
 <span class="doccomment">/// Implement [ISolver][1] for [SGD solvers][2].</span>
 <span class="doccomment">/// [1]: ./solver/trait.ISolver.html</span>
@@ -125,7 +126,6 @@
                 <span class="kw">for</span> (<span class="ident">weight_id</span>, <span class="ident">weight_gradient</span>) <span class="kw">in</span> <span class="ident">net</span>.<span class="ident">learnable_weights_gradients</span>().<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                     <span class="ident">SGDSolver</span>::<span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">NetB</span><span class="op">&gt;</span>::<span class="ident">normalize</span>(<span class="self">self</span>, <span class="ident">config</span>, <span class="ident">weight_gradient</span>);
                     <span class="comment">// SGDSolver::&lt;SolverB, NetB&gt;::regularize(self, config, weight_gradient, net.weights_weight_decay()[weight_id]);</span>
-
                     <span class="ident">SGDSolver</span>::<span class="op">&lt;</span><span class="ident">SolverB</span>, <span class="ident">NetB</span><span class="op">&gt;</span>::<span class="ident">compute_update_value</span>(
                         <span class="self">self</span>,
                         <span class="ident">config</span>,
@@ -143,8 +143,6 @@
         }
     };
 }
-
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">momentum</span>::<span class="ident">Momentum</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">momentum</span>;
 </pre></div>

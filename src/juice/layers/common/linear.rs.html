@@ -425,6 +425,8 @@
 <span id="425">425</span>
 <span id="426">426</span>
 <span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Applies a linear transformation to the input data `y = a * x + b`</span>
 <span class="doccomment">//!</span>
@@ -533,9 +535,11 @@
         <span class="comment">// Fill the bias</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">weight</span>) <span class="op">=</span> <span class="ident">weights_data</span>.<span class="ident">get</span>(<span class="number">1</span>) {
             <span class="ident">weight</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">resize</span>(<span class="kw-2">&amp;</span>(<span class="number">1</span>, <span class="self">self</span>.<span class="ident">output_size</span>)).<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">filler</span> <span class="op">=</span> <span class="ident">FillerType</span>::<span class="ident">Glorot</span> {
-                <span class="ident">input_size</span>: <span class="number">1</span>,
-                <span class="ident">output_size</span>: <span class="self">self</span>.<span class="ident">output_size</span>,
+            <span class="comment">// Weight Initialisation for bias is typically a constant, and a suitable initialisation</span>
+            <span class="comment">// is stated in https://cs231n.github.io/neural-networks-2/#init for non-LSTM types.</span>
+            <span class="kw">let</span> <span class="ident">initialisation_constant</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">random</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="ident">filler</span> <span class="op">=</span> <span class="ident">FillerType</span>::<span class="ident">Constant</span> {
+                <span class="ident">value</span>: <span class="ident">initialisation_constant</span> <span class="op">*</span> (<span class="number">2.0</span> <span class="op">/</span> <span class="ident">initialisation_constant</span>).<span class="ident">sqrt</span>()
             };
             <span class="ident">filler</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">weight</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>());
         }

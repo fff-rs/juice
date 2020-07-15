@@ -1687,6 +1687,7 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">usize</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dxdesc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">usize</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dydesc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">usize</span>);
+    <span class="comment">// Treating the input split by batch then input like in a typical NCHW cell.</span>
     <span class="kw">let</span> <span class="ident">dim_input</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">batch_size</span>, <span class="ident">input_size</span>, <span class="number">1</span>];
     <span class="kw">let</span> <span class="ident">dim_output</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">batch_size</span>, <span class="ident">hidden_size</span>, <span class="number">1</span>];
     <span class="kw">let</span> <span class="ident">dim_hidden_cell</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">num_layers</span>, <span class="ident">batch_size</span>, <span class="ident">hidden_size</span>];
@@ -2475,34 +2476,33 @@
     <span class="kw">fn</span> <span class="ident">generate_rnn_weight_description</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CRNN</span>,
-        <span class="ident">sequence_length</span>: <span class="ident">i32</span>,
         <span class="ident">batch_size</span>: <span class="ident">i32</span>,
         <span class="ident">input_size</span>: <span class="ident">i32</span>
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">sequence_length</span> <span class="kw">as</span> <span class="ident">usize</span>);
         <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">DataTypeInfo</span><span class="op">&gt;</span>::<span class="ident">cudnn_data_type</span>();
 
+        <span class="comment">// MiniBatch, LayerSize, 1</span>
         <span class="kw">let</span> <span class="ident">dim_input</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">batch_size</span>, <span class="ident">input_size</span>, <span class="number">1</span>];
         <span class="kw">let</span> <span class="ident">stride_input</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">dim_input</span>[<span class="number">2</span>] <span class="op">*</span> <span class="ident">dim_input</span>[<span class="number">1</span>], <span class="ident">dim_input</span>[<span class="number">2</span>], <span class="number">1</span>];
 
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">sequence_length</span> {
-            <span class="ident">x_desc</span>.<span class="ident">push</span>(<span class="ident">TensorDescriptor</span>::<span class="ident">new</span>(
-                <span class="kw-2">&amp;</span><span class="ident">dim_input</span>,
-                <span class="kw-2">&amp;</span><span class="ident">stride_input</span>,
-                <span class="ident">data_type</span>,
-            ).<span class="ident">unwrap</span>());
-        }
+        <span class="kw">let</span> <span class="ident">x_desc_single_iterator</span> <span class="op">=</span> <span class="ident">TensorDescriptor</span>::<span class="ident">new</span>(
+            <span class="kw-2">&amp;</span><span class="ident">dim_input</span>,
+            <span class="kw-2">&amp;</span><span class="ident">stride_input</span>,
+            <span class="ident">data_type</span>,
+        ).<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">weight_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">API</span>::<span class="ident">get_rnn_params_size</span>(
             <span class="kw-2">*</span><span class="ident">cudnn_framework</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>(),
-            <span class="kw-2">*</span><span class="ident">x_desc</span>[<span class="number">0</span>].<span class="ident">id_c</span>(),
+            <span class="comment">// Input. A fully packed tensor descriptor describing the input to one recurrent iteration.</span>
+            <span class="comment">// Appears to be a single descriptor, not an array of tensor descriptors.</span>
+            <span class="kw-2">*</span><span class="ident">x_desc_single_iterator</span>.<span class="ident">id_c</span>(),
             <span class="ident">data_type</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">size</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="ident">PluginError</span>::<span class="ident">Plugin</span>(<span class="string">&quot;Unable to get CudNN Rnn Params Size.&quot;</span>))),
         }<span class="question-mark">?</span>;
-        <span class="comment">// TODO: Update for different sizing</span>
+        <span class="comment">// TODO: Update for different sizing.</span>
         <span class="kw">let</span> <span class="ident">dim_w</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">weight_size</span> <span class="op">/</span> <span class="number">4</span>, <span class="number">1</span>, <span class="number">1</span>];
         <span class="prelude-val">Ok</span>(<span class="ident">dim_w</span>)
     }
