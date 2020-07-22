@@ -12,8 +12,8 @@ overview of how you can contribute to Collenchyma.
   * [Documentation Guidelines](#documentation-guidelines)
 
 
-If you have questions hop on the [Coaster Chat](https://gitter.im/autumnai/collenchyma)
-, or reach out to {@[MJ](https://twitter.com/mjhirn), @[Max](https://twitter.com/hobofan)}.
+If you have questions hop on the [Gitter Channel][chat],
+or reach out to {@[drahnr][drahnr], }.
 
 ## Pull Requests
 
@@ -190,3 +190,6 @@ and efficient communication Framework for providing developers and users with
 helpful Documentation about the Deep Learning Framework.
 
 [1]: https://medium.com/@autumn_eng/increasing-open-source-engagement-with-structural-communication-guidelines-for-code-documentation-e72533de8e45
+
+[chat]: https://gitter.im/spearow/juice
+[drahnr]: https://github.com/drahnr
