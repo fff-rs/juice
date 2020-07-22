@@ -12,7 +12,7 @@ overview of how you can contribute to Juice.
   * [Documentation Guidelines](#documentation-guidelines)
 
 
-If you have questions hop on the [Juice Chat](https://gitter.im/spearow/juice), to the #rust-machine-learning IRC on irc.mozilla.org or reach out to {@[drahnr](https://github.com/drahnr), }.
+If you have questions hop on the [Gitter Channel][chat], to the #rust-machine-learning IRC on irc.mozilla.org or reach out to {[@drahnr][drahnr], }.
 
 ## Pull Requests
 
@@ -120,7 +120,7 @@ through the project history. The commit guidelines help us to auto-generate the 
 
 #### Commit Message Examples
 
-Following some valid commit message examples. A syntax explanation can be found in the following section, Commit Message Format. 
+Following some valid commit message examples. A syntax explanation can be found in the following section, Commit Message Format.
 
 Example for a mature commit message.
 ```
@@ -211,3 +211,7 @@ helpful Documentation about the Deep Learning Framework.
 
 [1]: https://medium.com/@autumn_eng/increasing-open-source-engagement-with-structural-communication-guidelines-for-code-documentation-e72533de8e45
 [2]: https://medium.com/@autumn_eng/guide-to-changelog-md-in-rust-6eb349808fa4
+
+
+[chat]: https://gitter.im/spearow/juice
+[drahnr]: https://github.com/drahnr
