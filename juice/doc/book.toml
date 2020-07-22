@@ -2,8 +2,8 @@
 title = "juice documentation"
 description = "Introduction book to the juice framework"
 authors = [
-	"Maximilian Goisser <max@autumnai.com>",
-	"Michael Hirn <mj@autumnai.com>",
+	"Maximilian Goisser",
+	"Michael Hirn",
 	"Bernhard Schuster <bernhard@ahoi.io>",
 ]
 
