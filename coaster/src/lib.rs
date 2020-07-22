@@ -116,7 +116,7 @@
 //! needs to be checked, and devices be loaded in order to identify the best setup. But this would allow, that you
 //! really could deploy a Coaster-backed application to almost any hardware - server, desktops, mobiles.
 //!
-//! [autumn]: http://autumnai.com
+//! [autumn]: https://www.crunchbase.com/organization/autumn-ai
 //! [leaf]: https://github.com/spearow/leaf
 //! [glium]: https://github.com/tomaka/glium
 //! [backend]: ./backend/index.html
