@@ -1,19 +1,17 @@
-# rust-cuDNN • [![Join the chat at https://gitter.im/spearow/juice](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/autumnai/collenchyma?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/teams/spearow/pipelines/juice/jobs/test-rust-cudnn/badge)](https://ci.spearow.io/teams/spearow/pipelines/juice/jobs/test-rust-cudnn) [![Crates.io](https://img.shields.io/crates/v/rcudnn.svg)](https://crates.io/crates/rcudnn) [![License](https://img.shields.io/crates/l/rcudnn.svg)](LICENSE)
+# rust-cuDNN • [![Join the chat at https://gitter.im/spearow/juice](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/juice?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://ci.spearow.io/api/v1/teams/spearow/pipelines/juice/jobs/test-rust-cudnn/badge)](https://ci.spearow.io/teams/spearow/pipelines/juice/jobs/test-rust-cudnn) [![Crates.io](https://img.shields.io/crates/v/rcudnn.svg)](https://crates.io/crates/rcudnn) [![License](https://img.shields.io/crates/l/rcudnn.svg)](LICENSE)
 rust-cuDNN provides safe wrapper for [CUDA's cuDNN][cudnn] library, so you can use
 it comfortably and safely in your Rust application.
 
 As cuDNN relies on CUDA to allocate memory on the GPU, you might also look into [rust-cuda][rust-cuda].
 
-rust-cudnn was developed at now defunct Autumnai for the Rust Machine Intelligence Framework [Leaf][leaf].
+rust-cudnn was developed at now defunct Autumnai for the Rust Machine Intelligence Framework Leaf.
 
-rust-cudnn is part of the High-Performance Computation Framework [Coaster][coaster], for the
-[Neural Network Plugin][nn]. For an easy, unified interface for NN operations, such as those provided by
+rust-cudnn is part of the High-Performance Computation Framework [Coaster][coaster]. For an easy, unified interface for NN operations, such as those provided by
 cuDNN, you might check out [Coaster][coaster].
 
 For more information,
 
-* see rust-cuDNN's [Documentation](http://autumnai.github.io/rust-cudnn)
-* or get in touch on [Twitter][twitter-autumn] or [Gitter][chat]
+* Get in touch on [Gitter][chat]
 
 [cudnn]: https://developer.nvidia.com/cudnn
 [rust-cuda]: https://github.com/autumnai/rust-cuda

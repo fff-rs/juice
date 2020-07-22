@@ -49,14 +49,14 @@
 //! rust-cudnn was developed at [Autumn][autumn] for the Rust Machine Intelligence Framework [Leaf][leaf].
 //!
 //! rust-cudnn is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the
-//! [Neural Network Plugin][nn]. For an easy, unified interface for NN operations, such as those provided by
-//! cuDNN, you might check out [Collenchyma][collenchyma].
+//! [Neural Network Plugin][nn]. Rust CUDNN is now maintained by [Juice][juice]
 //!
 //! [cudnn]: https://developer.nvidia.com/cudnn
-//! [autumn]: http://autumnai.com
+//! [autumn]: https://www.crunchbase.com/organization/autumn-ai
 //! [leaf]: https://github.com/autumnai/leaf
 //! [collenchyma]: https://github.com/autumnai/collenchyma
 //! [nn]: https://github.com/autumnai/collenchyma-nn
+//! [juice]: https://github.com/spearow/juice
 #![allow(dead_code)]
 #![deny(
     clippy::missing_docs,
