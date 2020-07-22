@@ -12,8 +12,12 @@ overview of how you can contribute to Juice.
   * [Documentation Guidelines](#documentation-guidelines)
 
 
-If you have questions hop on the [Juice Chat](https://gitter.im/spearow/uice)
-, or reach out to {@[drahnr](https://github.com/drahnr), }.
+If you have questions hop on the [Gitter Channel][chat]
+, or reach out to {[@drahnr][drahnr], }.
+
+
+[chat]: https://gitter.im/spearow/juice
+[drahnr]: https://github.com/drahnr
 
 ## Pull Requests
 

@@ -30,7 +30,7 @@ portability to deep learning.
 
 Both machine and deep learning are really easy with Juice.
 
-Construct a [Network](./deep-learning-glossary.html#Network) by chaining [Layers](./deep-learning-glossary.html#Layer). 
+Construct a [Network](./deep-learning-glossary.html#Network) by chaining [Layers](./deep-learning-glossary.html#Layer).
 Then optimize the network by feeding it examples.
 This is why Juice's entire API consists of only two concepts: [Layers][layers]
 and [Solvers][solvers]. Use layers to construct almost any kind of model: deep,
@@ -38,7 +38,7 @@ classical, stochastic or hybrids, and solvers for executing and optimizing the
 model.
 
 This is already the entire API for machine learning with Juice. To learn how
-this is possible and how to build machine learning applications, refer to chapters 
+this is possible and how to build machine learning applications, refer to chapters
 [2. Layers](./layers.html) and [3. Solvers](./solvers.html). Enjoy!
 
 [juice]: https://github.com/spearow/juice
@@ -57,7 +57,7 @@ smartphones and embedded devices. Any combination of platform and
 computation language (OpenCL, CUDA, etc.) is a first class citizen in Juice.
 
 We coupled portability with simplicity, meaning you can deploy your machine
-learning applications to almost any machine and device with no code changes. 
+learning applications to almost any machine and device with no code changes.
 Learn more at chapter [4. Backend](./backend.html) or at the
 [Coaster Github repository](https://github.com/spearow/juice/tree/master/coaster).
 
@@ -83,7 +83,7 @@ just want a more low-level overview.
 Juice is free for anyone for whatever purpose.
 Juice is licensed under either
 [Apache License v2.0](https://github.com/spearow/juice/blob/master/LICENSE-APACHE) or,
-[MIT license](https://github.com/spearow/juice/blob/master/LICENSE-MIT). 
+[MIT license](https://github.com/spearow/juice/blob/master/LICENSE-MIT).
 Whatever strikes your fancy.
 
 

@@ -1,4 +1,4 @@
-# Greenglas • [![Join the chat at https://gitter.im/spearow/greenglas](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/greenglas?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Greenglas Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-greenglas/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/greenglas.svg)](https://crates.io/crates/greenglas) [![dependency status](https://deps.rs/repo/github/spearow/greenglas/status.svg)](https://deps.rs/repo/github/spearow/greenglas) [![License](https://img.shields.io/crates/l/greenglas.svg)](#license)
+# Greenglas • [![Join the chat at https://gitter.im/spearow/juice](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/spearow/juice?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Greenglas Build Status](https://ci.spearow.io/api/v1/pipelines/leaf/jobs/test-greenglas/badge)](https://ci.spearow.io/teams/main/pipelines/leaf) [![Crates.io](https://img.shields.io/crates/v/greenglas.svg)](https://crates.io/crates/greenglas) [![dependency status](https://deps.rs/repo/github/spearow/greenglas/status.svg)](https://deps.rs/repo/github/spearow/greenglas) [![License](https://img.shields.io/crates/l/greenglas.svg)](#license)
 
 Greenglas tries to provide a smart and customizable pipeline for preprocessing
 data for machine learning tasks. Clean preprocessing methods for the most
@@ -73,9 +73,9 @@ impl Modifier<Image> for CustomModifier {
 Want to contribute? Awesome! We have [instructions to help you get started contributing code or documentation](CONTRIBUTING.md).
 
 Autumn has a mostly real-time collaboration culture and happens on the [Spearow
-Gitter Channels](https://gitter.im/spearow). Or you reach out to the
+Gitter Channels][chat]. Or you reach out to the
 Maintainer(s). e.g.
-{[@drahnr](https://github.com/drahnr), }.
+{[@drahnr][drahnr], }.
 
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0
@@ -90,3 +90,7 @@ Licensed under either of
  * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
+
+
+[chat]: https://gitter.im/spearow/juice
+[drahnr]: https://github.com/drahnr
