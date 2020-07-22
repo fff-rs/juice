@@ -4,23 +4,23 @@ it comfortably and safely in your Rust application.
 
 As cuDNN relies on CUDA to allocate memory on the GPU, you might also look into [rust-cuda][rust-cuda].
 
-rust-cudnn was developed at [Autumn][autumn] for the Rust Machine Intelligence Framework [Leaf][leaf].
+rust-cudnn was developed at now defunct Autumnai for the Rust Machine Intelligence Framework [Leaf][leaf].
 
-rust-cudnn is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the
+rust-cudnn is part of the High-Performance Computation Framework [Coaster][coaster], for the
 [Neural Network Plugin][nn]. For an easy, unified interface for NN operations, such as those provided by
-cuDNN, you might check out [Collenchyma][collenchyma].
+cuDNN, you might check out [Coaster][coaster].
 
 For more information,
 
 * see rust-cuDNN's [Documentation](http://autumnai.github.io/rust-cudnn)
-* or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
+* or get in touch on [Twitter][twitter-autumn] or [Gitter][chat]
 
 [cudnn]: https://developer.nvidia.com/cudnn
 [rust-cuda]: https://github.com/autumnai/rust-cuda
-[collenchyma]: https://github.com/autumnai/collenchyma
-[autumn]: http://autumnai.com
-[leaf]: https://github.com/autumnai/leaf
-[twitter-autumn]: https://twitter.com/autumn_eng
+[coaster]: https://github.com/spearow/juice/tree/master/coaster
+[spearow]: https://spearow.io/project/juice
+[juice]: https://github.com/spearow/juice
+
 
 ## Getting Started
 
@@ -101,9 +101,7 @@ Want to contribute? Awesome! We have
 And high priority issues, that we could need your help with.
 
 We have a mostly real-time collaboration culture and happens here on Github and
-on the [Collenchyma Gitter Channel][gitter-collenchyma].
-You can also reach out to the Maintainers
-{[@MJ][mj], [@hobofan][hobofan]}.
+on the [Gitter Channel][chat].
 
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0
@@ -111,9 +109,8 @@ license, shall be dual licensed as below, without any additional terms or
 conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
-[mj]: https://twitter.com/mjhirn
-[hobofan]: https://twitter.com/hobofan
+[chat]: https://gitter.im/spearow/juice
+
 
 
 ## License

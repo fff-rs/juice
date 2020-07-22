@@ -12,7 +12,7 @@ code for the machine you deploy to. coaster does not require OpenCL or Cuda
 on the machine and automatically falls back to the native host CPU, making your
 application highly flexible and fast to build.
 
-coaster was started as collenchyma at [Autumn][autumn] to support the Machine Intelligence
+coaster was started as collenchyma at now defunct Autumnai to support the Machine Intelligence
 Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 * __Parallelizing Performance__<br/>
@@ -37,15 +37,15 @@ No long and painful build procedures for you or your users.
 For more information,
 
 * see coaster's [Documentation][documentation]
-* or get in touch via [Gitter][gitter-coaster]
+* or get in touch via [Gitter][chat]
 
 > Disclaimer: coaster is currently in a very early and heavy stage of
 > development. If you are experiencing any bugs that are not due to not yet
 > implemented features, feel free to create an issue.
 
 [arrayfire]: https://github.com/arrayfire/arrayfire
-[autumn]: http://autumnai.com
-[leaf]: https://github.com/spearow/leaf
+[spearow]: https://spearow.io/project/juice
+[juice]: https://github.com/spearow/juice
 [spearow]: https://spearow.io/projects/coaster
 [documentation]: https://spearow.github.com/coaster
 
@@ -76,8 +76,8 @@ take as a starting point, if you would like to create your own Plugin.
 You can easily write your own backend-agnostic, parallel operations and provide it for others,
 via a Plugin - we are happy to feature your Plugin here, just send us a PR.
 
-[coaster-blas]: http://github.com/spearow/coaster-blas
-[coaster-nn]: http://github.com/spearow/coaster-nn
+[coaster-blas]: https://github.com/spearow/juice/tree/master/coaster-blas
+[coaster-nn]: https://github.com/spearow/juice/tree/master/coaster-nn
 
 ## Examples
 
@@ -122,7 +122,7 @@ Want to contribute? Awesome! We have
 And high priority issues, that we could need your help with.
 
 We have a mostly real-time collaboration culture and happens here on Github and
-on the [Coaster Gitter Channel][gitter-coaster].
+on the [Gitter Channel][chat].
 You can also reach out to the Maintainer(s)
 {[@drahnr][drahnr],}.
 
@@ -131,11 +131,8 @@ submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as below, without any additional terms or
 conditions.
 
-[issue-1]: https://github.com/spearow/coaster/issues/1
-[issue-2]: https://github.com/spearow/coaster/issues/2
-[issue-3]: https://github.com/spearow/coaster/issues/3
 [contributing]: CONTRIBUTING.md
-[gitter-coaster]: https://gitter.im/spearow/coaster
+[chat]: https://gitter.im/spearow/juice
 [drahnr]: https://github.com/drahnr
 
 ## Changelog

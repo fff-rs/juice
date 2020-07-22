@@ -5,18 +5,18 @@ so you can use Basic Linear Algebra Subprograms on servers, desktops or mobiles,
 GPUs, FPGAs or CPUS, without carrying about OpenCL or CUDA support on the
 machine.
 
-coaster-BLAS was started as collenchyma-BLAS at [Autumn][autumn] for the Rust Machine Intelligence
+coaster-BLAS was started as collenchyma-BLAS at now defunct Autumnai for the Rust Machine Intelligence
 Framework [Leaf][leaf].
 
 For more information,
 
 * see coaster-BLAS's [Documentation](https://spearow.github.io/coaster-blas)
 * visit [Coaster][coaster] for portable operations and other Plugins.
-* or get in touch on [Gitter][gitter-coaster]
+* or get in touch on [Gitter][chat]
 
 [coaster]: https://github.com/spearow/coaster
-[autumn]: http://autumnai.com
-[leaf]: https://github.com/spearow/leaf
+[spearow]: https://spearow.io/project/juice
+[juice]: https://github.com/spearow/juice
 
 ## Getting Started
 
@@ -57,7 +57,7 @@ Want to contribute? Awesome! We have
 And high priority issues, that we could need your help with.
 
 We have a mostly real-time collaboration culture and happens here on Github and
-on the [Coaster Gitter Channel][gitter-coaster].
+on the [Gitter Channel][chat].
 You can also reach out to the Maintainers
 {[@drahnr][drahnr]}.
 
@@ -67,7 +67,7 @@ license, shall be dual licensed as below, without any additional terms or
 conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-coaster]: https://gitter.im/spearow/coaster
+[chat]: https://gitter.im/spearow/juice
 [drahnr]: https://github.com/drahnr
 
 ## Changelog

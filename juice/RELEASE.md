@@ -57,7 +57,7 @@ e.g. Convolution, Pooling and ReLU following each other.
 
 We had 9 individual contributors, which made Juice 0.2 possible. Thank you so
 much for your contribution, when Juice wasn't even executable, yet. And thank you
-for everyone who took the time to engage with us on [Gitter][gitter-juice] and
+for everyone who took the time to engage with us on [Gitter][chat] and
 Github.
 
 * Maximilian Goisser ([@hobofan](https://twitter.com/hobofan))
@@ -80,4 +80,4 @@ Github.
 [examples]: https://github.com/spearow/juice#examples
 [coaster]: https://github.com/spearow/coaster
 [deep-learning-benchmarks-website]: http://spearow.io/deep-learning-benchmarks
-[gitter-juice]: https://gitter.im/spearow/juice
+[chat]: https://gitter.im/spearow/juice

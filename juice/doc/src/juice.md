@@ -68,7 +68,7 @@ Want to contribute? Awesome!
 
 Juice has a near real-time collaboration culture, which happens at the [Github
 repository](https://github.com/spearow/juice) and on the
-[Juice Gitter Channel](https://gitter.im/spearow/juice).
+[Gitter Channel](https://gitter.im/spearow/juice).
 
 ## API Documentation
 

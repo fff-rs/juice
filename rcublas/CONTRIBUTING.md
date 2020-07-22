@@ -12,7 +12,7 @@ overview of how you can contribute to Collenchyma.
   * [Documentation Guidelines](#documentation-guidelines)
 
 
-If you have questions hop on the [Collenchyma Chat](https://gitter.im/autumnai/collenchyma)
+If you have questions hop on the [Coaster Chat](https://gitter.im/autumnai/collenchyma)
 , or reach out to {@[MJ](https://twitter.com/mjhirn), @[Max](https://twitter.com/hobofan)}.
 
 ## Pull Requests
