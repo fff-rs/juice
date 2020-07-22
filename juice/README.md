@@ -25,7 +25,7 @@ deployment easily accessible for everyone.
 
 [caffe]: https://github.com/BVLC/caffe
 [rust]: https://www.rust-lang.org/
-[autumn]: http://autumnai.com
+[spearow]: https://spearow.io/project/juice
 [spearow]: http://spearow.io
 [juice-book]: https://spearow.github.io/juice/book/juice.html
 [tensorflow]: https://github.com/tensorflow/tensorflow
@@ -104,12 +104,12 @@ you should start with forking and cloning the repository.
 We have more instructions to help you get started in the [CONTRIBUTING.md][contributing].
 
 We also has a near real-time collaboration culture, which happens
-here on Github and on the [Juice Gitter Channel][gitter-juice].
+here on Github and on the [Gitter Channel][chat].
 
 > Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-juice]: https://gitter.im/spearow/juice
+[chat]: https://gitter.im/spearow/juice
 [drahnr]: https://github.com/drahnr
 
 ## Ecosystem / Extensions
@@ -126,7 +126,7 @@ and extensible as possible. More helpful crates you can use with Juice:
 ## Support / Contact
 
 - With a bit of luck, you can find us online on the #rust-machine-learning IRC at irc.mozilla.org,
-- but we are always approachable on [Gitter/Juice][gitter-juice]
+- but we are always approachable on [Gitter/Juice][chat]
 - For bugs and feature request, you can create a [Github issue][juice-issue]
 - For more private matters, send us email straight to our inbox: hej@spearow.io
 

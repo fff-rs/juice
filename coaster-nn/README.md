@@ -4,7 +4,7 @@ coaster-NN provides Neural Network related algorithms for [coaster][coaster].
 Run NN operations on servers, desktops or mobiles, GPUs, FPGAs or CPUS, without
 carrying about OpenCL or CUDA support on the machine.
 
-coaster-NN was started as collenchyma-NN at [Autumn][autumn] to support the Machine Intelligence
+coaster-NN was started as collenchyma-NN at now defunct Autumnai to support the Machine Intelligence
 Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
 
 Today it powers [Juice][juice].
@@ -13,11 +13,11 @@ For more information,
 
 * see coaster-NN's [Documentation](http://spearow.github.io/coaster-nn)
 * visit [coaster][coaster] for more information about portable operations and other Plugins.
-* or get in touch on [Gitter][gitter-coaster]
+* or get in touch on [Gitter][chat]
 
 [coaster]: https://github.com/spearow/coaster
-[autumn]: http://autumnai.com
-[leaf]: https://github.com/autumnai/leaf
+[spearow]: https://spearow.io/project/juice
+[juice]: https://github.com/spearow/juice
 [juice]: https://github.com/spearow/juice
 
 ## Provided Operations
@@ -94,7 +94,7 @@ Want to contribute? Awesome! We have
 And high priority issues, that we could need your help with.
 
 We have a mostly real-time collaboration culture and happens here on Github and
-on the [coaster Gitter Channel][gitter-coaster].
+on the [Gitter Channel][chat].
 You can also reach out to the Maintainer(s)
 {[drahnr][drahnr]}.
 
@@ -104,7 +104,7 @@ license, shall be dual licensed as below, without any additional terms or
 conditions.
 
 [contributing]: CONTRIBUTING.md
-[gitter-coaster]: https://gitter.im/spearow/coaster
+[chat]: https://gitter.im/spearow/juice
 [drahnr]: https://github.com/drahnr
 
 ## Changelog

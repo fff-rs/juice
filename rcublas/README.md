@@ -6,25 +6,23 @@ can use cuBLAS comfortably and safely in your Rust application.
 As cuBLAS currently relies on CUDA to allocate memory on the GPU, you might also
 look into [rust-cuda][rust-cuda].
 
-rust-cublas was developed at [Autumn][autumn] for the Rust Machine Intelligence
-Framework [Leaf][leaf].
 
-rust-cublas is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the
+
+rust-cublas is part of the High-Performance Computation Framework [Coaster][coaster], for the
 [BLAS Plugin][plugin]. For an easy, unified interface for BLAS operations, such as those provided by
-cuBLAS, you might check out [Collenchyma][collenchyma].
+cuBLAS, you might check out [Coaster][coaster].
 
 For more information,
 
-* see rust-cuBLAS's [Documentation](http://autumnai.github.io/rust-cublas)
-* or get in touch on [Twitter][twitter-autumn] or [Gitter][gitter-collenchyma]
+* see rust-cuBLAS's [Documentation](https://spearow.github.io/juice/rcublas/)
+* or get in touch on [Gitter][chat]
 
 [cublas]: https://developer.nvidia.com/cublas
-[rust-cuda]: https://github.com/autumnai/rust-cuda
-[collenchyma]: https://github.com/autumnai/collenchyma
-[plugin]: https://github.com/autumnai/collenchyma-blas
-[autumn]: http://autumnai.com
-[leaf]: https://github.com/autumnai/leaf
-[twitter-autumn]: https://twitter.com/autumn_eng
+[coaster]: https://github.com/spearow/juice/tree/master/coaster
+[plugin]: https://github.com/spearow/juice/tree/master/coaster-blas
+[spearow]: https://spearow.io/project/juice
+[juice]: https://github.com/spearow/juice
+
 
 ## Getting Started
 
@@ -82,14 +80,11 @@ Want to contribute? Awesome! We have
 [instructions to help you get started contributing code or documentation][contributing].
 
 We have a mostly real-time collaboration culture and happens here on Github and
-on the [Collenchyma Gitter Channel][gitter-collenchyma].
-You can also reach out to the Maintainers
-{[@MJ][mj], [@hobofan][hobofan]}.
+on the [Gitter Channel][chat].
 
 [contributing]: CONTRIBUTING.md
-[gitter-collenchyma]: https://gitter.im/autumnai/collenchyma
-[mj]: https://twitter.com/mjhirn
-[hobofan]: https://twitter.com/hobofan
+[chat]: https://gitter.im/spearow/juice
+
 
 ## Changelog
 
