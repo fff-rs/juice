@@ -7,8 +7,8 @@ authors = [
     "Bernhard Schuster <bernhard@ahoi.io>",
     "Lissa Hyacinth <lissahyacinth@gmail.com>",
     "Paul Kassianik <pkassianik@gmail.com>",
-    "Michael Hirn <mj@autumnai.com>",
-    "Maximilian Goisser <max@autumnai.com>",
+    "Michael Hirn",
+    "Maximilian Goisser",
 ]
 repository = "https://github.com/spearow/coaster-blas"
 homepage = "https://spearow.io/projects/coaster-blas"

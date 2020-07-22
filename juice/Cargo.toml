@@ -5,8 +5,8 @@ version = "0.2.5"
 authors = [
   "Bernhard Schuster <bernhard@ahoi.io>",
   "Lissa Hyacinth <lissahyacinth@gmail.com>",
-  "Maximilian Goisser <max@autumnai.com>",
-  "Michael Hirn <mj@autumnai.com>",
+  "Maximilian Goisser",
+  "Michael Hirn",
 ]
 repository = "https://github.com/spearow/juice"
 # TODO get the website back on track

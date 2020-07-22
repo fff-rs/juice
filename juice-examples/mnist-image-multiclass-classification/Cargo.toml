@@ -3,8 +3,8 @@ name = "example-mnist-classification"
 description = "MNIST Image Multiclass Classification example of Juice"
 version = "0.0.1"
 authors = ["Bernhard Schuster <bernhard@ahoi.io>",
-           "Michael Hirn <mj@autumnai.com>",
-           "Maximilian Goisser <max@autumnai.com>"]
+           "Michael Hirn",
+           "Maximilian Goisser"]
 edition = "2018"
 
 [dependencies]

@@ -5,8 +5,8 @@ version = "0.4.2"
 authors = [
 	"Bernhard Schuster <bernhard@ahoi.io>",
 	"Lissa Hyacinth <lissahyacinth@gmail.com>",
-	"Michael Hirn <mj@autumnai.com>",
-	"Maximilian Goisser <max@autumnai.com>",
+	"Michael Hirn",
+	"Maximilian Goisser",
 ]
 repository = "https://github.com/spearow/coaster-nn"
 homepage = "https://spearow.io/coaster-nn"
