@@ -585,6 +585,32 @@ pub trait Convolution<F> : NN<F> {
     // }
 }
 
+/// Provides Gather for Embedding Forward
+pub trait Gather<F>: NN<F> {
+    fn gather(
+        &self,
+        src: &SharedTensor<F>,
+        weights: &SharedTensor<F>,
+        dest: &mut SharedTensor<F>,
+        embedding_dimension: usize,
+        phrase_length: usize,
+        vocab_size: usize,
+        batch_size: usize,
+    ) -> Result<(), crate::co::error::Error>;
+}
+
+/// Provides Batched Strided Sum for Forward
+pub trait BatchedStridedSum<F>: NN<F> {
+    fn batched_strided_sum(
+        &self,
+        input: &SharedTensor<F>,
+        dest: &mut SharedTensor<F>,
+        batch_size: usize,
+        rows: usize,
+        cols: usize,
+    ) -> Result<(), crate::co::error::Error>;
+}
+
 /// Provides the functionality for a Backend to support Softmax operations.
 pub trait Softmax<F> : NN<F> {
     /// Computes a [Softmax][softmax] over the input Tensor `x`.

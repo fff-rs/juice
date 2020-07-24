@@ -1,6 +1,8 @@
 //! Provides NN for a CUDA backend.
 #![allow(missing_docs)]
 
+use rcuda_ffi::{ffi_batch_strided_sum, ffi_gather};
+
 use crate::co::Error;
 use crate::co::plugin::Error as PluginError;
 use crate::co::plugin::numeric_helpers::Float;
@@ -808,12 +810,76 @@ pub struct RnnSequenceDescriptors {
     pub dcy_desc: TensorDescriptor,
 }
 
+
+impl<T> Gather<T> for Backend<Cuda>
+    where
+        T: Float + Default + DataTypeInfo,
+{
+    fn gather(
+        &self,
+        src: &SharedTensor<T>,
+        weights: &SharedTensor<T>,
+        dest: &mut SharedTensor<T>,
+        embedding_size: usize,
+        phrase_length: usize,
+        vocab_size: usize,
+        batch_size: usize,
+    ) -> Result<(), Error> {
+        let src_mem = read!(src, self);
+        let weight_mem = read!(weights, self);
+        let dest_mem = write_only!(dest, self);
+        match ffi_gather(
+            embedding_size,
+            phrase_length,
+            vocab_size,
+            batch_size,
+            trans!(src_mem),
+            trans!(weight_mem),
+            trans_mut!(dest_mem),
+        ) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::Plugin(PluginError::Plugin(
+                "Unable to execute CUDA FFI Embedding.",
+            ))),
+        }
+    }
+}
+
+impl<T> BatchedStridedSum<T> for Backend<Cuda>
+    where
+        T: Float + Default + DataTypeInfo,
+{
+    fn batched_strided_sum(
+        &self,
+        input: &SharedTensor<T>,
+        dest: &mut SharedTensor<T>,
+        batch_size: usize,
+        rows: usize,
+        cols: usize,
+    ) -> Result<(), Error> {
+        let src_mem = read!(input, self);
+        let dest_mem = write_only!(dest, self);
+        match ffi_batch_strided_sum(
+            trans!(src_mem),
+            trans_mut!(dest_mem),
+            batch_size,
+            rows,
+            cols,
+        ) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::Plugin(PluginError::Plugin(
+                "Unable to execute CUDA FFI Batch Strided Sum.",
+            ))),
+        }
+    }
+}
+
 impl<T> Rnn<T> for Backend<Cuda> where T: Float + DataTypeInfo {
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
         batch_size: i32,
-        input_size: i32
+        input_size: i32,
     ) -> Result<Vec<usize>, Error> {
         let cudnn_framework = self.framework().cudnn();
         let data_type = <T as DataTypeInfo>::cudnn_data_type();

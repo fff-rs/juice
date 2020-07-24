@@ -1,11 +1,15 @@
 //! Provides common utility functions
 
+use std::sync::{Arc, RwLock};
+
+use num::traits::{cast, NumCast};
+
+use conn::{BatchedStridedSum, Gather};
+
 use crate::co::frameworks::native::flatbox::FlatBox;
 use crate::co::prelude::*;
 use crate::coblas::plugin::*;
 use crate::conn;
-use num::traits::{cast, NumCast};
-use std::sync::{Arc, RwLock};
 
 /// Shared Lock used for our tensors
 pub type ArcLock<T> = Arc<RwLock<T>>;
@@ -41,9 +45,7 @@ pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBo
 /// is assumed to be the batchsize.
 ///
 /// Allocates memory on a Native Backend if neccessary.
-pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(
-    tensor: &mut SharedTensor<f32>,
-    data: &[T], i: usize) {
+pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedTensor<f32>, data: &[T], i: usize) {
     let native_backend = native_backend();
     let tensor_desc = tensor.desc();
     let batch_size = tensor_desc[0];
@@ -54,6 +56,17 @@ pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(
         tensor.write_only(native_backend.device()).unwrap(),
         &data,
         i * sample_size,
+    );
+}
+
+/// Write a single batch of data to a SharedTensor
+///
+/// If necessary, allocates memory on the native backend.
+pub fn write_batch<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedTensor<f32>, data: &[T]) {
+    let native_backend = native_backend();
+    write_to_memory(
+        tensor.write_only(native_backend.device()).unwrap(),
+        &data,
     );
 }
 
@@ -109,16 +122,18 @@ pub trait LayerOps<F>:
     + conn::Pooling<F>
     + conn::Relu<F>
     + conn::ReluPointwise<F>
-    + conn::Sigmoid<F>
-    + conn::SigmoidPointwise<F>
-    + conn::Tanh<F>
-    + conn::TanhPointwise<F>
-    + conn::Softmax<F>
-    + conn::LogSoftmax<F>
-    + conn::Dropout<F>
-    + Gemm<F>
-    + Axpby<F>
-    + Copy<F>
++ conn::Sigmoid<F>
++ conn::SigmoidPointwise<F>
++ conn::Tanh<F>
++ conn::TanhPointwise<F>
++ conn::Softmax<F>
++ conn::LogSoftmax<F>
++ conn::Dropout<F>
++ Gemm<F>
++ Axpby<F>
++ Copy<F>
++ Gather<F>
++ BatchedStridedSum<F>
 {
 }
 
@@ -127,17 +142,19 @@ impl<
             + conn::Rnn<f32>
             + conn::Pooling<f32>
             + conn::Relu<f32>
-            + conn::ReluPointwise<f32>
-            + conn::Sigmoid<f32>
-            + conn::SigmoidPointwise<f32>
-            + conn::Tanh<f32>
-            + conn::TanhPointwise<f32>
-            + conn::Softmax<f32>
-            + conn::LogSoftmax<f32>
-            + conn::Dropout<f32>
-            + Gemm<f32>
-            + Axpby<f32>
-            + Copy<f32>,
-    > LayerOps<f32> for T
+        + conn::ReluPointwise<f32>
+        + conn::Sigmoid<f32>
+        + conn::SigmoidPointwise<f32>
+        + conn::Tanh<f32>
+        + conn::TanhPointwise<f32>
+        + conn::Softmax<f32>
+        + conn::LogSoftmax<f32>
+        + conn::Dropout<f32>
+        + Gemm<f32>
+        + Axpby<f32>
+        + Copy<f32>
+        + Gather<f32>
+        + BatchedStridedSum<f32>,
+> LayerOps<f32> for T
 {
 }

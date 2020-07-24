@@ -110,26 +110,27 @@
     clippy::trivial_casts,
     clippy::trivial_numeric_casts,
     clippy::unsafe_code,
-    clippy::unused_import_braces,
-    clippy::unused_qualifications,
-    clippy::complexity
+clippy::unused_import_braces,
+clippy::unused_qualifications,
+clippy::complexity
 )]
+
+extern crate coaster as co;
+extern crate libc;
+extern crate log;
+#[cfg(feature = "native")]
+extern crate rand;
+#[cfg(feature = "native")]
+extern crate rand_hc;
+extern crate rcuda_ffi_sys;
+#[cfg(feature = "cuda")]
+extern crate rcudnn as cudnn;
 
 pub use crate::plugin::*;
 
-extern crate coaster as co;
-#[cfg(feature = "cuda")]
-extern crate rcudnn as cudnn;
-extern crate libc;
-extern crate log;
 
-#[cfg(feature = "native")]
-extern crate rand_hc;
-#[cfg(feature = "native")]
-extern crate rand;
-
-mod plugin;
 pub mod frameworks;
+mod plugin;
 
 #[cfg(test)]
 mod tests;
