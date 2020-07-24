@@ -114,8 +114,7 @@ here on Github and on the [Gitter Channel][chat].
 
 ## Ecosystem / Extensions
 
-We designed Juice and the other crates of the Autumn Platform to be as modular
-and extensible as possible. More helpful crates you can use with Juice:
+Juice is designed to be as modular and extensible as possible. More helpful crates you can use with Juice:
 
 - [**Greenglas**][greenglas]: Preprocessing Framework for Machine Learning
 - [**Coaster**][coaster]: Portable, HPC-Framework on any hardware with CUDA, OpenCL, Rust
@@ -126,7 +125,7 @@ and extensible as possible. More helpful crates you can use with Juice:
 ## Support / Contact
 
 - With a bit of luck, you can find us online on the #rust-machine-learning IRC at irc.mozilla.org,
-- but we are always approachable on [Gitter/Juice][chat]
+- but we are always approachable on [Gitter Channel][chat]
 - For bugs and feature request, you can create a [Github issue][juice-issue]
 - For more private matters, send us email straight to our inbox: hej@spearow.io
 
