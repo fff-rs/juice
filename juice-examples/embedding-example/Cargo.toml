@@ -1,0 +1,20 @@
+[package]
+name = "nlp-so-pipeline"
+version = "0.1.0"
+authors = ["Lissa Hyacinth <lissahyacinth@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "3.0.0-beta.1"
+csv = "1"
+serde = { version = "1", features = ["derive"] }
+tokenizers = {git="https://github.com/huggingface/tokenizers"}
+rand = "0.7.3"
+juice = {path="../../juice"}
+coaster = {path="../../coaster"}
+coaster-nn = {path="../../coaster-nn"}
+memchr = "2.3.3"
+itertools="0.9.0"
+env_logger = "0.7.1"
