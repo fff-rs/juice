@@ -199,6 +199,20 @@ macro_rules! iblas_gemm_for_native {
             read_from_matrix(&c_matrix, c_slice);
             Ok(())
         }
+
+        fn gemm_batched(
+            &self,
+            alpha: &SharedTensor<$t>,
+            at: Transpose,
+            a: &SharedTensor<$t>,
+            bt: Transpose,
+            b: &SharedTensor<$t>,
+            beta: &SharedTensor<$t>,
+            c: &mut SharedTensor<$t>,
+            batch_count: usize
+        ) -> Result<(), ::coaster::error::Error> {
+        unimplemented!()
+    }
     };
 }
 

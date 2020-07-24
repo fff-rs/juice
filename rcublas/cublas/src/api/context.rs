@@ -164,9 +164,34 @@ impl Context {
         )
     }
 
-    pub fn get_version(
-        &self
-    ) -> i32 {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::many_single_char_names)]
+    pub fn gemm_batched(
+        &self,
+        transa: Operation,
+        transb: Operation,
+        m: i32,
+        n: i32,
+        k: i32,
+        alpha: *const f32,
+        a: *const f32,
+        lda: i32,
+        stride_a: i64,
+        b: *const f32,
+        ldb: i32,
+        stride_b: i64,
+        beta: *mut f32,
+        c: *mut f32,
+        ldc: i32,
+        stride_c: i64,
+        batch_count: i32
+    ) -> Result<(), Error> {
+        API::gemm_batched(
+            self, transa, transb, m, n, k, alpha, a, lda, stride_a, b, ldb, stride_b, beta, c, ldc, stride_c, batch_count
+        )
+    }
+
+    pub fn get_version(&self) -> i32 {
         API::get_version(self).unwrap()
     }
 }

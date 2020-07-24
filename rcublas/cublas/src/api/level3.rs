@@ -65,20 +65,78 @@ impl API {
         ldc: i32,
     ) -> Result<(), Error> {
         match cublasSgemm_v2(
-            handle,
-            transa,
-            transb,
-            m,
-            n,
-            k,
-            alpha,
-            a,
-            lda,
-            b,
-            ldb,
-            beta,
-            c,
-            ldc,
+            handle, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc,
+        ) {
+            cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
+            cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
+            cublasStatus_t::CUBLAS_STATUS_INVALID_VALUE => {
+                Err(Error::InvalidValue("m, n, or k < 0"))
+            }
+            cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
+            cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
+            _ => Err(Error::Unknown("Unable to calculate axpy (alpha * x + y).")),
+        }
+    }
+
+    /// Performs Batched general matrix-matrix multiplication.
+    ///
+    /// Note: the matrices are expected to be ordered column-major (FORTRAN-style).
+    /// Matrices must not change from one batch to the other - defined as uniform in CUBLAS docs.
+    #[allow(clippy::many_single_char_names)]
+    #[allow(clippy::too_many_arguments)]
+    pub fn gemm_batched(
+        context: &Context,
+        transa: Operation,
+        transb: Operation,
+        m: i32,
+        n: i32,
+        k: i32,
+        alpha: *const f32,
+        a: *const f32,
+        lda: i32,
+        stride_a: i64,
+        b: *const f32,
+        ldb: i32,
+        stride_b: i64,
+        beta: *mut f32,
+        c: *mut f32,
+        ldc: i32,
+        stride_c: i64,
+        batch_count: i32
+    ) -> Result<(), Error> {
+        unsafe {
+            Self::ffi_sgemm_batched(
+                *context.id_c(),
+                transa.as_c(), transb.as_c(), m, n, k, alpha, a, lda, stride_a, b, ldb, stride_b, beta, c, ldc, stride_c, batch_count
+            )
+        }
+    }
+
+    /// Note: the matrices are expected to be ordered column-major (FORTRAN-style).
+    #[allow(clippy::many_single_char_names)]
+    #[allow(clippy::too_many_arguments)]
+    unsafe fn ffi_sgemm_batched(
+        handle: cublasHandle_t,
+        transa: cublasOperation_t,
+        transb: cublasOperation_t,
+        m: i32,
+        n: i32,
+        k: i32,
+        alpha: *const f32,
+        a: *const f32,
+        lda: i32,
+        stride_a: i64,
+        b: *const f32,
+        ldb: i32,
+        stride_b: i64,
+        beta: *mut f32,
+        c: *mut f32,
+        ldc: i32,
+        stride_c: i64,
+        batch_count: i32
+    ) -> Result<(), Error> {
+        match cublasSgemmStridedBatched(
+            handle, transa, transb, m, n, k, alpha, a, lda, stride_a, b, ldb, stride_b, beta, c, ldc, stride_c, batch_count,
         ) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
