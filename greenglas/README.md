@@ -72,10 +72,9 @@ impl Modifier<Image> for CustomModifier {
 
 Want to contribute? Awesome! We have [instructions to help you get started contributing code or documentation](CONTRIBUTING.md).
 
-Autumn has a mostly real-time collaboration culture and happens on the [Spearow
-Gitter Channels][chat]. Or you reach out to the
-Maintainer(s). e.g.
-{[@drahnr][drahnr], }.
+Development happens in a mostly async collaboration culture and happens on the [Gitter Channels][chat]
+or via github issues.
+Or you reach out to the Maintainer(s). e.g. {[@drahnr][drahnr], }.
 
 Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0

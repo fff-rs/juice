@@ -5,8 +5,7 @@ so you can use Basic Linear Algebra Subprograms on servers, desktops or mobiles,
 GPUs, FPGAs or CPUS, without carrying about OpenCL or CUDA support on the
 machine.
 
-coaster-BLAS was started as collenchyma-BLAS at now defunct Autumnai for the Rust Machine Intelligence
-Framework [Leaf][leaf].
+It powers [Juice][juice].
 
 For more information,
 

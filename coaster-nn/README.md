@@ -4,10 +4,7 @@ coaster-NN provides Neural Network related algorithms for [coaster][coaster].
 Run NN operations on servers, desktops or mobiles, GPUs, FPGAs or CPUS, without
 carrying about OpenCL or CUDA support on the machine.
 
-coaster-NN was started as collenchyma-NN at now defunct Autumnai to support the Machine Intelligence
-Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
-
-Today it powers [Juice][juice].
+It powers [Juice][juice].
 
 For more information,
 

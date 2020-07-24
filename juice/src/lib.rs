@@ -78,7 +78,7 @@
 //! - [Issue #19 for Activation Layers][issue-activation]
 //! - [Issue #20 for Common Layers][issue-common]
 //!
-//! [coaster]: https://github.com/autumnai/coaster
+//! [coaster]: https://github.com/spearow/coaster
 //! [network]: ./network/index.html
 //! [layers]: ./layers/index.html
 //! [activation]: ./layers/activation/index.html

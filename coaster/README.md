@@ -12,8 +12,7 @@ code for the machine you deploy to. coaster does not require OpenCL or Cuda
 on the machine and automatically falls back to the native host CPU, making your
 application highly flexible and fast to build.
 
-coaster was started as collenchyma at now defunct Autumnai to support the Machine Intelligence
-Framework [Leaf][leaf] with backend-agnostic, state-of-the-art performance.
+coaster is powering [Juice][juice].
 
 * __Parallelizing Performance__<br/>
 coaster makes it easy to parallelize computations on your machine, putting
