@@ -1,7 +1,7 @@
 //! Provides NN for a CUDA backend.
 #![allow(missing_docs)]
 
-use rcuda_ffi::{ffi_batch_strided_sum, ffi_gather};
+use rcuda_ffi_sys::{ffi_batch_strided_sum, ffi_gather};
 
 use crate::co::Error;
 use crate::co::plugin::Error as PluginError;
