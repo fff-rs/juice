@@ -39,6 +39,7 @@ struct LayerConfig {
     meanSquaredError @17 :Void;
     # Utility layers
     reshape @10 :ReshapeConfig;
+    embedding @19 :EmbeddingConfig;
     # Dropout layers
     dropout @16 :DropoutConfig;
   }
@@ -90,6 +91,12 @@ enum PoolingMode {
 struct DropoutConfig {
   probability @0 :Float32;
   seed @1 :UInt64;
+}
+
+struct EmbeddingConfig {
+	embeddingDimension @0 :UInt64;
+	vocabSize @1 :UInt64;
+	phraseLength @2 :UInt64;
 }
 
 struct SequentialConfig {

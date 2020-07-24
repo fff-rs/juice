@@ -1000,6 +1000,7 @@ impl<B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> L
     fn worker_from_config(backend: Rc<B>, config: &LayerConfig) -> Box<dyn ILayer<B>> {
         match config.layer_type.clone() {
             LayerType::Convolution(layer_config) => Box::new(Convolution::from_config(&layer_config)),
+            LayerType::Embedding(embedding_config) => Box::new(Embedding::from_config(&embedding_config)),
             LayerType::Rnn(layer_config) => Box::new(Rnn::from_config(&layer_config)),
             LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
             LayerType::LogSoftmax => Box::new(LogSoftmax::default()),
@@ -1399,6 +1400,8 @@ pub enum LayerType {
     // Common layers
     /// Convolution Layer
     Convolution(ConvolutionConfig),
+    /// Embedding Input Layer
+    Embedding(EmbeddingConfig),
     /// RNN Layer
     Rnn(RnnConfig),
     /// Linear Layer
@@ -1433,13 +1436,14 @@ pub enum LayerType {
 // TODO get rid of this, each implementation has to state if this
 // TODO an in place operation or not, this thing here makes no sense whatsoever
 impl LayerType {
-    /// Returns wether the LayerType supports in-place operations.
+    /// Returns whether the LayerType supports in-place operations.
     pub fn supports_in_place(&self) -> bool {
         match *self {
             LayerType::Linear(_) => false,
             LayerType::LogSoftmax => false,
             LayerType::Sequential(_) => false,
             LayerType::Softmax => false,
+            LayerType::Embedding(_) => false,
             LayerType::ReLU => true,
             LayerType::TanH => true,
             LayerType::Sigmoid => true,
@@ -1462,6 +1466,10 @@ impl<'a> CapnpWrite<'a> for LayerType {
         match self {
             &LayerType::Linear(ref cfg) => {
                 let ref mut config = builder.reborrow().init_linear();
+                cfg.write_capnp(config);
+            }
+            &LayerType::Embedding(ref cfg) => {
+                let ref mut config = builder.reborrow().init_embedding();
                 cfg.write_capnp(config);
             }
             &LayerType::LogSoftmax => builder.set_log_softmax(()),
@@ -1540,6 +1548,10 @@ impl<'a> CapnpRead<'a> for LayerType {
             capnp_layer_type::Which::Rnn(read_config) => {
                 let config = RnnConfig::read_capnp(read_config.unwrap());
                 LayerType::Rnn(config)
+            }
+            capnp_layer_type::Which::Embedding(read_config) => {
+                let config = EmbeddingConfig::read_capnp(read_config.unwrap());
+                LayerType::Embedding(config)
             }
             capnp_layer_type::Which::Dropout(read_config) => {
                 let config = DropoutConfig::read_capnp(read_config.unwrap());

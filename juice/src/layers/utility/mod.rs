@@ -10,8 +10,10 @@
 //!
 //! [1]: ../../layer/index.html
 
+pub use self::embedding::{Embedding, EmbeddingConfig};
 pub use self::flatten::Flatten;
 pub use self::reshape::{Reshape, ReshapeConfig};
 
+pub mod embedding;
 pub mod flatten;
 pub mod reshape;

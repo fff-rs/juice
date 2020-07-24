@@ -62,7 +62,7 @@ pub use self::container::{Sequential, SequentialConfig};
 
 pub use self::loss::{MeanSquaredError, NegativeLogLikelihood, NegativeLogLikelihoodConfig};
 
-pub use self::utility::{Flatten, Reshape, ReshapeConfig};
+pub use self::utility::{Embedding, EmbeddingConfig, Flatten, Reshape, ReshapeConfig};
 
 pub mod activation;
 pub mod common;
