@@ -25,8 +25,6 @@ deployment easily accessible for everyone.
 
 [caffe]: https://github.com/BVLC/caffe
 [rust]: https://www.rust-lang.org/
-[spearow]: https://spearow.io/project/juice
-[spearow]: http://spearow.io
 [juice-book]: https://spearow.github.io/juice/book/juice.html
 [tensorflow]: https://github.com/tensorflow/tensorflow
 [benchmarks]: #benchmarks
@@ -43,7 +41,7 @@ deployment easily accessible for everyone.
 
 To learn how to build classical, deep or hybrid machine learning applications with Juice, check out the [Juice - Machine Learning for Hackers][juice-book] book.
 
-For additional information see the [Rust API Documentation][documentation] or the [Spearow Website][spearow].
+For additional information see the [Rust API Documentation][documentation].
 
 Or start by running the **Juice examples**.
 
@@ -97,8 +95,7 @@ opencl  = ["juice/opencl"]
 
 ### Contributing
 
-If you want to start hacking on Juice (e.g.
-  [adding a new `Layer`](http://spearow.io/juice/book/create-new-layer.html))
+If you want to start hacking on Juice (e.g.[adding a new `Layer`](new-layer))
 you should start with forking and cloning the repository.
 
 We have more instructions to help you get started in the [CONTRIBUTING.md][contributing].
@@ -108,6 +105,7 @@ here on Github and on the [Gitter Channel][chat].
 
 > Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as below, without any additional terms or conditions.
 
+[new-layer]: http://spearow.io/juice/book/create-new-layer.html
 [contributing]: CONTRIBUTING.md
 [chat]: https://gitter.im/spearow/juice
 [drahnr]: https://github.com/drahnr
@@ -119,8 +117,8 @@ Juice is designed to be as modular and extensible as possible. More helpful crat
 - [**Greenglas**][greenglas]: Preprocessing Framework for Machine Learning
 - [**Coaster**][coaster]: Portable, HPC-Framework on any hardware with CUDA, OpenCL, Rust
 
-[greenglas]: https://github.com/spearow/greenglas
-[coaster]: https://github.com/spearow/coaster
+[greenglas]: https://github.com/spearow/juice/tree/master/greenglas
+[coaster]: https://github.com/spearow/juice/tree/master/coaster
 
 ## Support / Contact
 
