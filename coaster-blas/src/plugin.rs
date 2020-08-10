@@ -139,6 +139,23 @@ pub trait Gemm<F> {
         beta: &SharedTensor<F>,
         c: &mut SharedTensor<F>,
     ) -> Result<(), ::coaster::error::Error>;
+
+    /// Computes a batched matrix-matrix product with general matrices.
+    ///
+    /// Saves the result into `c`.
+    /// This is a Level 3 BLAS operation.
+    #[allow(clippy::too_many_arguments)]
+    fn gemm_batched(
+        &self,
+        alpha: &SharedTensor<F>,
+        at: Transpose,
+        a: &SharedTensor<F>,
+        bt: Transpose,
+        b: &SharedTensor<F>,
+        beta: &SharedTensor<F>,
+        c: &mut SharedTensor<F>,
+        batch_count: usize
+    ) -> Result<(), ::coaster::error::Error>;
 }
 
 /// Allows a BlasBinary to be provided which is used for a IBlas implementation.

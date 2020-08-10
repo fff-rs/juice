@@ -323,6 +323,8 @@ macro_rules! iblas_gemm_for_cuda {
             c: &mut SharedTensor<$t>,
             batch_count: usize
         ) -> Result<(), ::coaster::error::Error> {
+            let mut a_desc = a.desc().clone();
+            let b_desc = b.desc().clone();
             let c_desc = c.desc().clone();
             let alpha_mem = read!(alpha, self);
             let beta_mem = read!(beta, self);
@@ -330,10 +332,21 @@ macro_rules! iblas_gemm_for_cuda {
             let b_mem = read!(b, self);
             let c_mem = write_only!(c, self);
 
-            assert_eq!(a.desc().len(), 3);
+            match a_desc.len() {
+                4 => {
+                    a_desc = vec![
+                        a_desc[0],
+                        a_desc[2],
+                        a_desc[3]
+                    ];
+                },
+                _ => {}
+            }
+
+            assert_eq!(a_desc.len(), 3);
             assert_eq!(b.desc().len(), 3);
 
-            let a_batch = a.desc()[0];
+            let a_batch = a_desc[0];
             let b_batch = b.desc()[1];
             let c_batch = c_desc[2];
 
@@ -341,7 +354,7 @@ macro_rules! iblas_gemm_for_cuda {
             let b_stride = b.desc().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
             let c_stride = c_desc.clone().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
 
-            let a_rows = a.desc()[1] as i32;
+            let a_rows = a_desc[1] as i32;
             let a_cols = a.desc()[2] as i32;
 
             let b_rows = b.desc()[1] as i32;
