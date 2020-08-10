@@ -117,18 +117,18 @@ pub struct TokenLoader {
 impl TokenLoader {
     pub(crate) fn train_test(self) -> (BatchedData, BatchedData) {
         (
-            BatchedData {
-                input_shape: self.input_shape.clone(),
-                output_shape: self.output_shape.clone(),
-                input_stream: self.training_input_stream,
-                label_stream: self.training_label_stream
-            },
-            BatchedData {
-                input_shape: self.input_shape,
-                output_shape: self.output_shape,
-                input_stream: self.test_input_stream,
-                label_stream: self.test_label_stream
-            }
+            BatchedData::new(
+                self.input_shape.clone(),
+                self.output_shape.clone(),
+                self.training_input_stream,
+                self.training_label_stream
+            ),
+            BatchedData::new(
+                self.input_shape,
+                self.output_shape,
+                self.test_input_stream,
+                self.test_label_stream,
+            )
         )
     }
 }
@@ -138,15 +138,23 @@ pub struct BatchedData {
     output_shape: Vec<usize>,
     input_stream: Box<dyn Iterator<Item=Vec<f32>>>,
     label_stream: Box<dyn Iterator<Item=f32>>,
+    exhausted: bool
 }
 
 impl BatchedData {
-    pub fn len(&self) -> usize {
-        self.input_shape[0]
-    }
-
-    pub fn empty(&self) -> bool {
-        self.len() == 0
+    fn new(
+        input_shape: Vec<usize>,
+        output_shape: Vec<usize>,
+        input_stream: Box<dyn Iterator<Item=Vec<f32>>>,
+        label_stream: Box<dyn Iterator<Item=f32>>
+    )  -> BatchedData {
+        BatchedData {
+            input_shape,
+            output_shape,
+            input_stream,
+            label_stream,
+            exhausted: false
+        }
     }
 }
 
@@ -154,17 +162,27 @@ impl Iterator for BatchedData {
     type Item = (Vec<Vec<f32>>, Option<Vec<f32>>);
 
     fn next(&mut self) -> Option<Self::Item> {
+        if self.exhausted {
+            return None
+        }
+
         let batch_size = self.input_shape[0];
         let mut input_buffer: Vec<Vec<f32>> = Vec::with_capacity(batch_size);
         let mut label_buffer: Vec<f32> = Vec::with_capacity(batch_size);
         for _ in 0..batch_size {
             match (*self.input_stream).next() {
                 Some(elem) => input_buffer.push(elem),
-                None => break
+                None => {
+                    self.exhausted = true;
+                    break
+                }
             }
             match (*self.label_stream).next() {
                 Some(elem) => label_buffer.push(elem),
-                None => break
+                None => {
+                    self.exhausted = true;
+                    break
+                }
             }
         }
         Some((input_buffer, Some(label_buffer)))
