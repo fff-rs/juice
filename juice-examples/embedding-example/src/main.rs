@@ -2,7 +2,6 @@ extern crate env_logger;
 
 mod data_processing;
 mod model;
-mod train;
 
 use clap::Clap;
 use std::rc::Rc;
@@ -64,7 +63,8 @@ fn train_network(batch_size: Option<usize>, learning_rate: Option<f32>,
     // Indicate how many samples to average loss over
     test_evaluator.set_capacity(Some(2000));
 
-    for _ in 0..epochs {
+    for epoch in 0..epochs {
+        println!("Epoch {}", epoch);
         let mut data_loader = network_dataloader(
             holdout_percentage,
             batch_size,
@@ -73,7 +73,7 @@ fn train_network(batch_size: Option<usize>, learning_rate: Option<f32>,
         while let Some((inputs, Some(labels))) = training_loader.next() {
             train_one_batch(&mut solver, batch_size, inputs, labels, &mut training_evaluator);
         }
-        evaluate_batch(&mut solver, test_loader.len(), batch_size, test_loader);
+        //evaluate_batch(&mut solver,  batch_size, test_loader);
     }
 
     // Write the network to a file
@@ -85,5 +85,5 @@ fn train_network(batch_size: Option<usize>, learning_rate: Option<f32>,
 
 fn main() {
     env_logger::init();
-    train_network(Some(2), Some(0.01), None, Some(2), Some(0.8), None);
+    train_network(Some(125), Some(0.01), None, Some(2), Some(0.8), None);
 }

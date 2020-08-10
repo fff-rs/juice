@@ -12,7 +12,6 @@ use crate::model::params::PHRASE_LENGTH;
 
 pub(crate) fn evaluate_batch(
     network: &mut Solver<Backend<Cuda>, Backend<Cuda>>,
-    rows: usize,
     batch_size: usize,
     mut data_loader: impl Iterator,
 ) {
