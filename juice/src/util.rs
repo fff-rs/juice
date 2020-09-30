@@ -1,9 +1,12 @@
 //! Provides common utility functions
 
+use std::rc::Rc;
+
 use crate::co::frameworks::native::flatbox::FlatBox;
 use crate::co::prelude::*;
 use crate::coblas::plugin::*;
 use crate::conn;
+use crate::layer::{LayerType,LayerConfig,ILayer};
 use num::traits::{cast, NumCast};
 use std::sync::{Arc, RwLock};
 
@@ -95,49 +98,101 @@ pub trait Axpby<F>: Axpy<F> + Scal<F> {
 impl<T: Axpy<f32> + Scal<f32>> Axpby<f32> for T {}
 
 /// Encapsulates all traits required by Solvers.
-// pub trait SolverOps<F> : Axpby<F> + Dot<F> + Copy<F> {}
-//
-// impl<T: Axpby<f32> + Dot<f32> + Copy<f32>> SolverOps<f32> for T {}
-pub trait SolverOps<F>: LayerOps<F> + Axpby<F> + Dot<F> + Copy<F> {}
+pub trait SolverOps<F>: Axpby<F> + Dot<F> + Copy<F> {}
 
-impl<T: LayerOps<f32> + Axpby<f32> + Dot<f32> + Copy<f32>> SolverOps<f32> for T {}
+impl<T: Axpby<f32> + Dot<f32> + Copy<f32>> SolverOps<f32> for T {}
 
-/// Encapsulates all traits used in Layers.
-pub trait LayerOps<F>:
-    conn::Convolution<F>
-    + conn::Rnn<F>
-    + conn::Pooling<F>
-    + conn::Relu<F>
-    + conn::ReluPointwise<F>
-    + conn::Sigmoid<F>
-    + conn::SigmoidPointwise<F>
-    + conn::Tanh<F>
-    + conn::TanhPointwise<F>
-    + conn::Softmax<F>
-    + conn::LogSoftmax<F>
-    + conn::Dropout<F>
-    + Gemm<F>
-    + Axpby<F>
-    + Copy<F>
+
+use crate::layers::*;
+
+
+/// Encapsulates all traits used in Layers per `Framework` and data type `F`.
+pub trait LayerOps<Framework: Clone + IFramework, F> : coblas::plugin::Copy<f32>
 {
+    /// Helper for [from_config] to match a [LayerType][2] to its [implementation][3].
+    /// [1]: #method.from_config
+    /// [2]: ./enum.LayerType.html
+    /// [3]: ../layers/index.html
+    fn layer_from_config<B: IBackend<F=Framework>>(backend: Rc<B>, config: &LayerConfig) -> Box<dyn ILayer<B>>;
 }
 
-impl<
-        T: conn::Convolution<f32>
-            + conn::Rnn<f32>
-            + conn::Pooling<f32>
-            + conn::Relu<f32>
-            + conn::ReluPointwise<f32>
-            + conn::Sigmoid<f32>
-            + conn::SigmoidPointwise<f32>
-            + conn::Tanh<f32>
-            + conn::TanhPointwise<f32>
-            + conn::Softmax<f32>
-            + conn::LogSoftmax<f32>
-            + conn::Dropout<f32>
-            + Gemm<f32>
-            + Axpby<f32>
-            + Copy<f32>,
-    > LayerOps<f32> for T
+#[cfg(feature = "native")]
+impl<F,T> LayerOps<co::frameworks::Native, F> for T where
+    T: conn::Convolution<f32>
+        + conn::Rnn<f32>
+        + conn::Pooling<f32>
+        + conn::Relu<f32>
+        + conn::ReluPointwise<f32>
+        + conn::Sigmoid<f32>
+        + conn::SigmoidPointwise<f32>
+        + conn::Tanh<f32>
+        + conn::TanhPointwise<f32>
+        + conn::Softmax<f32>
+        + conn::LogSoftmax<f32>
+        + conn::Dropout<f32>
+        + Gemm<f32>
+        + Axpby<f32>
+        + Copy<f32>
 {
+    fn layer_from_config<B: IBackend<F=co::frameworks::Native>>(backend: Rc<B>, config: &LayerConfig) -> Box<dyn ILayer<B>> {
+        match config.layer_type {
+            LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
+            LayerType::LogSoftmax => Box::new(LogSoftmax::default()),
+            LayerType::Pooling(layer_config) => Box::new(Pooling::from_config(&layer_config)),
+            LayerType::Sequential(layer_config) => Box::new(Sequential::from_config(backend, &layer_config)),
+            LayerType::Softmax => Box::new(Softmax::default()),
+            LayerType::ReLU => Box::new(ReLU),
+            LayerType::TanH => Box::new(TanH),
+            LayerType::Sigmoid => Box::new(Sigmoid),
+            LayerType::NegativeLogLikelihood(layer_config) => {
+                Box::new(NegativeLogLikelihood::from_config(&layer_config))
+            }
+            LayerType::MeanSquaredError => Box::new(MeanSquaredError),
+            LayerType::Reshape(layer_config) => Box::new(Reshape::from_config(&layer_config)),
+            LayerType::Dropout(layer_config) => Box::new(Dropout::from_config(&layer_config)),
+            unsupported => panic!("Native does not support the requested layer type {:?}", unsupported),
+        }
+    }
+}
+
+#[cfg(feature = "cuda")]
+impl<F,T> LayerOps<co::frameworks::Cuda, F> for T where
+    T: conn::Convolution<f32>
+        + conn::Rnn<f32>
+        + conn::Pooling<f32>
+        + conn::Relu<f32>
+        + conn::ReluPointwise<f32>
+        + conn::Sigmoid<f32>
+        + conn::SigmoidPointwise<f32>
+        + conn::Tanh<f32>
+        + conn::TanhPointwise<f32>
+        + conn::Softmax<f32>
+        + conn::LogSoftmax<f32>
+        + conn::Dropout<f32>
+        + Gemm<f32>
+        + Axpby<f32>
+        + Copy<f32>
+{
+    fn layer_from_config<B: IBackend<F=co::frameworks::Cuda>>(backend: Rc<B>, config: &LayerConfig) -> Box<dyn ILayer<B>> {
+    // fn layer_from_config(backend: Rc<Backend<co::frameworks::Cuda>>, config: &LayerConfig) -> Box<dyn ILayer<Backend<co::frameworks::Cuda>>> {
+        match config.layer_type {
+            LayerType::Convolution(layer_config) => Box::new(Convolution::from_config(layer_config)),
+            LayerType::Rnn(layer_config) => Box::new(Rnn::from_config(&layer_config)),
+            LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
+            LayerType::LogSoftmax => Box::new(LogSoftmax::default()),
+            LayerType::Pooling(layer_config) => Box::new(Pooling::from_config(&layer_config)),
+            LayerType::Sequential(layer_config) => Box::new(Sequential::from_config(backend, &layer_config)),
+            LayerType::Softmax => Box::new(Softmax::default()),
+            LayerType::ReLU => Box::new(ReLU),
+            LayerType::TanH => Box::new(TanH),
+            LayerType::Sigmoid => Box::new(Sigmoid),
+            LayerType::NegativeLogLikelihood(layer_config) => {
+                Box::new(NegativeLogLikelihood::from_config(&layer_config))
+            }
+            LayerType::MeanSquaredError => Box::new(MeanSquaredError),
+            LayerType::Reshape(layer_config) => Box::new(Reshape::from_config(&layer_config)),
+            LayerType::Dropout(layer_config) => Box::new(Dropout::from_config(&layer_config)),
+        }
+    }
+
 }

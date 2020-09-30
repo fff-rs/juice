@@ -22,11 +22,17 @@
 use crate::capnp_util::*;
 use crate::co::backend::IBackend;
 use crate::co::tensor::SharedTensor;
+use crate::coblas::plugin::*;
 use crate::coblas::transpose::Transpose;
 use crate::juice_capnp::linear_config as capnp_config;
 use crate::layer::*;
-use crate::util::{native_scalar, ArcLock, LayerOps};
+use crate::util::{native_scalar, ArcLock, LayerOps, Axpby};
 use crate::weight::FillerType;
+
+
+trait ILinearCalc<F>: Gemm<F> + Axpby<F> + Copy<F> {}
+
+impl<T,F> ILinearCalc<F> for T where T: Gemm<F> + Axpby<F> + Copy<F> {}
 
 #[derive(Debug)]
 /// Linear Layer
@@ -67,7 +73,7 @@ impl Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
+impl<B: IBackend + ILinearCalc<f32>> ILayer<B> for Linear {
     fn auto_weight_blobs(&self) -> bool {
         true
     }
@@ -123,7 +129,7 @@ impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
+impl<B: IBackend + ILinearCalc<f32>> ComputeOutput<f32, B> for Linear {
     /// Basically, x has the shape (k, n) where k is the batch size. Given W with shape (m, n) where
     /// m is output vector length, we compute the output with the formula xW^T which will give us a
     /// matrix of size (k, m) with the outputs.
@@ -162,7 +168,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeOutput<f32, B> for Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for Linear {
+impl<B: IBackend + ILinearCalc<f32>> ComputeInputGradient<f32, B> for Linear {
     /// Since we have row vectors instead of columns, xW^T = (Wx^T)^T. Take the derivative with
     /// respect to x^T (gives us a column vector of dimension (n, 1)), we get d((Wx^T)^T)/d(x^T) =
     /// W^T of dims (n, m). In backpropagation with column vectors, we would take W^T * output_grad,
@@ -192,7 +198,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for Linear {
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
+impl<B: IBackend + ILinearCalc<f32>> ComputeParametersGradient<f32, B> for Linear {
     fn compute_parameters_gradient(
         &self,
         backend: &B,

@@ -23,7 +23,7 @@ impl MeanSquaredError {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + Axpby<f32>> ILayer<B> for MeanSquaredError {
+impl<B: IBackend + LayerOps<<B as IBackend>::F,f32> + Axpby<f32>> ILayer<B> for MeanSquaredError {
     fn reshape(
         &mut self,
         backend: ::std::rc::Rc<B>,
@@ -70,7 +70,7 @@ impl<B: IBackend> ComputeOutput<f32, B> for MeanSquaredError {
 }
 
 // Calculate a Gradient for Mean Squared Error
-impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for MeanSquaredError {
+impl<B: IBackend + LayerOps<<B as IBackend>::F,f32>> ComputeInputGradient<f32, B> for MeanSquaredError {
     fn compute_input_gradient(
         &self,
         backend: &B,

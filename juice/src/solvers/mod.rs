@@ -36,7 +36,7 @@ use crate::layer::*;
 use crate::solver::*;
 use crate::util::*;
 
-trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32>>: ISolver<SolverB, NetB> {
+trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<<NetB as IBackend>::F,f32>>: ISolver<SolverB, NetB> {
     fn compute_update_value(
         &mut self,
         config: &SolverConfig,
@@ -59,7 +59,7 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
     /// [3]: https://en.wikipedia.org/wiki/Recurrent_neural_network
     /// [4]: https://en.wikipedia.org/wiki/Norm_(mathematics)#Euclidean_norm
     #[allow(unused_must_use)]
-    fn clip_gradients<B: IBackend + LayerOps<f32> + 'static>(&self, config: &SolverConfig, net: &mut Layer<B>) {
+    fn clip_gradients<B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static>(&self, config: &SolverConfig, net: &mut Layer<B>) {
         // skip clipping gradients if SolverConfig.clip_gradients is set to None
         if let Some(clip_threshold) = config.clip_gradients {
             let native = native_backend();
