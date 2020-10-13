@@ -31,3 +31,58 @@ cargo build --release
 ../target/release/juice-examples --help
 # which means, you can run the examples from the juice-examples README
 ```
+
+
+### Dependencies
+
+#### Cap'n'Proto
+
+[cpanp is a data interchange format](https://capnproto.org/) that is used to store and load networks with weights for [Juice](https://github.com/spearow/juice/juice).
+
+`capnproto` and `capnproto-libs` plus their development packages are the ones needed from your package manager.
+
+#### Cuda
+
+Getting the cuda libraries up poses to be the first road-block many users face.
+
+To get things working one needs to set the following environment variables:
+
+```zsh
+# examplary paths, unlikely to work for your local setup!
+export CUDNN_INCLUDE_DIR=/opt/cuda/include
+export CUDNN_LIB_DIR=/opt/cuda/targets/x86_64-linux/lib/
+export CUBLAS_INCLUDE_DIR=/opt/cuda/include
+export CUBLAS_LIB_DIR=/opt/cuda/targets/x86_64-linux/lib/
+```
+
+depending on __your local__ installation setup.
+
+The currently supported cuda version is `cuda-10` (details in #114 and #115 )
+
+Note that you need a capable nvidia device in order to _run_ the cuda backend.
+
+#### OpenCL
+
+You need the apropriate loader and device libraries. Since the `OpenCL` backend is still WIP, this will be detailed at a later point of time.
+
+
+#### BLAS
+
+Blas is a linear algebra used by the `native` backend.
+
+`openblas` or `blas` is required to be present. Choose explicitly via `BLAS_VARIANT`.
+
+By default an attempt is made to resolve the library via `pkg-config`.
+
+Overriding via 
+
+```zsh
+# examplary paths, unlikely to work for your local setup!
+export BLAS_LIB_DIR=/opt/blas/lib64/
+export BLAS_INCLUDE_DIR=/opt/blas/include/
+```
+
+is also supported.
+
+Linkage for the blas library variant is determined by setting `BLAS_STATIC` to `1` or unsetting `BLAS_STATIC`.
+
