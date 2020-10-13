@@ -1,0 +1,8 @@
+daysUntilClose: 124
+
+responseRequiredLabel: needs-more-information
+
+closeComment: >
+  Feel free to re-open once there is more information available.
+
+  If you are not the original author, please create a new issue.
