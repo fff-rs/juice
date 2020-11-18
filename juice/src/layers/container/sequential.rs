@@ -13,7 +13,7 @@ use std::sync::{Arc, RwLock};
 
 #[derive(Debug)]
 /// Sequential Layer
-pub struct Sequential<B: IBackend + LayerOps<f32>> {
+pub struct Sequential<B: IBackend + LayerOps<<B as IBackend>::F,f32>> {
     layers: Vec<RefCell<Layer<B>>>,
 
     input_tensor_names: Vec<String>,
@@ -26,7 +26,7 @@ pub struct Sequential<B: IBackend + LayerOps<f32>> {
     registry: HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>,
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
+impl<B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static> Sequential<B> {
     /// Create a empty Sequential container layer.
     pub fn empty() -> Sequential<B> {
         Sequential {
@@ -219,7 +219,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> ILayer<B> for Sequential<B> {
+impl<B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static> ILayer<B> for Sequential<B> {
     fn is_container(&self) -> bool {
         true
     }
@@ -344,7 +344,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ILayer<B> for Sequential<B> {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> ComputeOutput<f32, B> for Sequential<B> {
+impl<B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static> ComputeOutput<f32, B> for Sequential<B> {
     // we are overriding `forward` and not calling `compute_output`
     fn compute_output(
         &self,
@@ -356,7 +356,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ComputeOutput<f32, B> for Sequential
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> ComputeInputGradient<f32, B> for Sequential<B> {
+impl<B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static> ComputeInputGradient<f32, B> for Sequential<B> {
     // we are overriding `backward_input` and not calling `compute_input_gradient`
     fn compute_input_gradient(
         &self,
@@ -370,7 +370,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ComputeInputGradient<f32, B> for Seq
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> ComputeParametersGradient<f32, B> for Sequential<B> {
+impl<B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static> ComputeParametersGradient<f32, B> for Sequential<B> {
     // we are overriding `backward_parameters` and not calling `compute_parameters_gradient`
     fn compute_parameters_gradient(
         &self,

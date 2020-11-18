@@ -26,7 +26,7 @@ pub use self::momentum::Momentum;
 #[macro_export]
 macro_rules! impl_isolver_sgd {
     ($t:ty) => {
-        impl<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> ISolver<SolverB, NetB>
+        impl<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<<NetB as IBackend>::F,f32> + 'static> ISolver<SolverB, NetB>
             for $t
         {
             /// Initialize the SGD Momentum solver, allocating memory for its history.

@@ -56,7 +56,7 @@ impl<SolverB: IBackend + SolverOps<f32>> Momentum<SolverB> {
     }
 }
 
-impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGDSolver<B, NetB> for Momentum<B> {
+impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<<NetB as IBackend>::F,f32> + 'static> SGDSolver<B, NetB> for Momentum<B> {
     fn compute_update_value(
         &mut self,
         config: &SolverConfig,

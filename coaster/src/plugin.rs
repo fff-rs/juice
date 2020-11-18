@@ -22,7 +22,7 @@
 //!
 //! Extending the Backend with your own Plugin is a straight forward process.
 //! For now we recommend that you take a look at the general code structure of [Coaster-BLAS][coaster-blas]
-//! or its documentation. Let us now about your Plugin on the Gitter chat, we are happy to feature
+//! or its documentation. Let us know about your Plugin on the Gitter chat, we are happy to feature
 //! your Coaster Plugin on the README.
 //!
 //! [program]: ../program/index.html

@@ -20,7 +20,7 @@ use std::rc::Rc;
 #[derive(Debug)]
 /// Solver that optimizes a [Layer][1] with a given objective.
 /// [1]: ../layer/index.html
-pub struct Solver<SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32>> {
+pub struct Solver<SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<<B as IBackend>::F,f32>> {
     net: Layer<B>,
     objective: Layer<SolverB>,
     /// The implementation of the Solver
@@ -34,7 +34,7 @@ pub struct Solver<SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32
     solver_backend: PhantomData<SolverB>,
 }
 
-impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + 'static> Solver<SolverB, B> {
+impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static> Solver<SolverB, B> {
     /// Create Solver from [SolverConfig][1]
     /// [1]: ./struct.SolverConfig.html
     ///
@@ -56,7 +56,7 @@ impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> +
     }
 }
 
-impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + 'static> Solver<SolverB, B> {
+impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static> Solver<SolverB, B> {
     fn init(&mut self, backend: Rc<B>) {
         info!("Initializing solver from configuration");
 
@@ -112,7 +112,7 @@ impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> +
 ///
 /// See [Solvers][1]
 /// [1]: ../solvers/index.html
-pub trait ISolver<SolverB, B: IBackend + LayerOps<f32>> {
+pub trait ISolver<SolverB, B: IBackend + LayerOps<<B as IBackend>::F,f32>> {
     /// Initialize the solver, setting up any network related data.
     fn init(&mut self, net: &Layer<B>) {}
 
@@ -133,7 +133,7 @@ pub trait ISolver<SolverB, B: IBackend + LayerOps<f32>> {
     fn backend(&self) -> &SolverB;
 }
 
-impl<SolverB, B: IBackend + LayerOps<f32>> ::std::fmt::Debug for dyn ISolver<SolverB, B> {
+impl<SolverB, B: IBackend + LayerOps<<B as IBackend>::F,f32>> ::std::fmt::Debug for dyn ISolver<SolverB, B> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "({})", "ILayer")
     }
@@ -216,7 +216,7 @@ pub struct SolverConfig {
     /// The value should always be between 0 and 1 and dictates how much of the previous
     /// gradient update will be added to the current one.
     ///
-    /// Default: 0
+    /// Default: 0.0
     pub momentum: f32,
 }
 
@@ -240,7 +240,7 @@ impl Default for SolverConfig {
             weight_decay: None,
             regularization_method: None,
 
-            momentum: 0f32,
+            momentum: 0.0f32,
         }
     }
 }
@@ -338,11 +338,11 @@ pub enum SolverKind {
 
 impl SolverKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>(
+    pub fn with_config<SolverB: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<<NetB as IBackend>::F,f32> + 'static>(
         &self,
-        backend: Rc<B>,
+        backend: Rc<SolverB>,
         config: &SolverConfig,
-    ) -> Box<dyn ISolver<B, NetB>> {
+    ) -> Box<dyn ISolver<SolverB, NetB>> {
         match *self {
             SolverKind::SGD(sgd) => sgd.with_config(backend, config),
         }
@@ -359,7 +359,7 @@ pub enum SGDKind {
 
 impl SGDKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>(
+    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<<B as IBackend>::F,f32> + 'static>(
         &self,
         backend: Rc<B>,
         config: &SolverConfig,

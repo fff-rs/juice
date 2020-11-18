@@ -762,10 +762,10 @@ impl<B: IBackend> Layer<B> {
     /// #    }
     /// # }
     /// ```
-    pub fn load<LB: IBackend + LayerOps<f32> + 'static, P: AsRef<Path>>(
-        backend: Rc<LB>,
+    pub fn load<NetB: IBackend + LayerOps<<NetB as IBackend>::F, f32> + 'static, P: AsRef<Path>>(
+        backend: Rc<NetB>,
         path: P,
-    ) -> io::Result<Layer<LB>> {
+    ) -> io::Result<Layer<NetB>> {
         let path = path.as_ref();
         let ref mut file = File::open(path)?;
         let mut reader = BufReader::new(file);
@@ -951,7 +951,7 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> Layer<B> {
+impl<B> Layer<B> where B: IBackend + LayerOps<<B as IBackend>::F,f32> + crate::coblas::plugin::Copy<f32> + 'static {
     /// Creates a new Layer from a [LayerConfig][1].
     /// [1]: ./struct.LayerConfig.html
     pub fn from_config(backend: Rc<B>, config: &LayerConfig) -> Layer<B> {
@@ -984,38 +984,13 @@ impl<B: IBackend + LayerOps<f32> + crate::coblas::plugin::Copy<f32> + 'static> L
 
             backend: backend.clone(),
 
-            worker: Layer::<B>::worker_from_config(backend, &cfg),
+            worker: <B as LayerOps::<<B as IBackend>::F, f32>>::layer_from_config::<B>(backend, &cfg),
             config: cfg,
         };
         layer.expose_inputs();
         layer.expose_outputs();
 
         layer
-    }
-
-    /// Helper for [from_config] to match a [LayerType][2] to its [implementation][3].
-    /// [1]: #method.from_config
-    /// [2]: ./enum.LayerType.html
-    /// [3]: ../layers/index.html
-    fn worker_from_config(backend: Rc<B>, config: &LayerConfig) -> Box<dyn ILayer<B>> {
-        match config.layer_type.clone() {
-            LayerType::Convolution(layer_config) => Box::new(Convolution::from_config(&layer_config)),
-            LayerType::Rnn(layer_config) => Box::new(Rnn::from_config(&layer_config)),
-            LayerType::Linear(layer_config) => Box::new(Linear::from_config(&layer_config)),
-            LayerType::LogSoftmax => Box::new(LogSoftmax::default()),
-            LayerType::Pooling(layer_config) => Box::new(Pooling::from_config(&layer_config)),
-            LayerType::Sequential(layer_config) => Box::new(Sequential::from_config(backend, &layer_config)),
-            LayerType::Softmax => Box::new(Softmax::default()),
-            LayerType::ReLU => Box::new(ReLU),
-            LayerType::TanH => Box::new(TanH),
-            LayerType::Sigmoid => Box::new(Sigmoid),
-            LayerType::NegativeLogLikelihood(layer_config) => {
-                Box::new(NegativeLogLikelihood::from_config(&layer_config))
-            }
-            LayerType::MeanSquaredError => Box::new(MeanSquaredError),
-            LayerType::Reshape(layer_config) => Box::new(Reshape::from_config(&layer_config)),
-            LayerType::Dropout(layer_config) => Box::new(Dropout::from_config(&layer_config)),
-        }
     }
 }
 
