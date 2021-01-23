@@ -46,7 +46,7 @@ For more information,
 [spearow]: https://spearow.io/project/juice
 [juice]: https://github.com/spearow/juice
 [spearow]: https://spearow.io/projects/coaster
-[documentation]: https://spearow.github.com/coaster
+[documentation]: https://spearow.github.io/coaster
 
 ## Getting Started
 
