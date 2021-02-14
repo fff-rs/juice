@@ -8,22 +8,54 @@
 #![allow(non_upper_case_globals)]
             
 
-pub const CUDNN_MAJOR: u32 = 7;
-pub const CUDNN_MINOR: u32 = 6;
+pub const CUDNN_MAJOR: u32 = 8;
+pub const CUDNN_MINOR: u32 = 0;
 pub const CUDNN_PATCHLEVEL: u32 = 5;
-pub const CUDNN_VERSION: u32 = 7605;
+pub const CUDNN_VERSION: u32 = 8005;
+pub const CUDNN_OPS_INFER_MAJOR: u32 = 8;
+pub const CUDNN_OPS_INFER_MINOR: u32 = 0;
+pub const CUDNN_OPS_INFER_PATCH: u32 = 5;
 pub const CUDNN_DIM_MAX: u32 = 8;
 pub const CUDNN_LRN_MIN_N: u32 = 1;
 pub const CUDNN_LRN_MAX_N: u32 = 16;
 pub const CUDNN_LRN_MIN_K: f64 = 0.00001;
 pub const CUDNN_LRN_MIN_BETA: f64 = 0.01;
 pub const CUDNN_BN_MIN_EPSILON: f64 = 0.0;
+pub const CUDNN_OPS_TRAIN_MAJOR: u32 = 8;
+pub const CUDNN_OPS_TRAIN_MINOR: u32 = 0;
+pub const CUDNN_OPS_TRAIN_PATCH: u32 = 5;
+pub const CUDNN_ADV_INFER_MAJOR: u32 = 8;
+pub const CUDNN_ADV_INFER_MINOR: u32 = 0;
+pub const CUDNN_ADV_INFER_PATCH: u32 = 5;
+pub const CUDNN_RNN_PADDED_IO_DISABLED: u32 = 0;
+pub const CUDNN_RNN_PADDED_IO_ENABLED: u32 = 1;
 pub const CUDNN_SEQDATA_DIM_COUNT: u32 = 4;
 pub const CUDNN_ATTN_QUERYMAP_ALL_TO_ONE: u32 = 0;
 pub const CUDNN_ATTN_QUERYMAP_ONE_TO_ONE: u32 = 1;
 pub const CUDNN_ATTN_DISABLE_PROJ_BIASES: u32 = 0;
 pub const CUDNN_ATTN_ENABLE_PROJ_BIASES: u32 = 2;
 pub const CUDNN_ATTN_WKIND_COUNT: u32 = 8;
+pub const CUDNN_ADV_TRAIN_MAJOR: u32 = 8;
+pub const CUDNN_ADV_TRAIN_MINOR: u32 = 0;
+pub const CUDNN_ADV_TRAIN_PATCH: u32 = 5;
+pub const CUDNN_CNN_INFER_MAJOR: u32 = 8;
+pub const CUDNN_CNN_INFER_MINOR: u32 = 0;
+pub const CUDNN_CNN_INFER_PATCH: u32 = 5;
+pub const CUDNN_CNN_TRAIN_MAJOR: u32 = 8;
+pub const CUDNN_CNN_TRAIN_MINOR: u32 = 0;
+pub const CUDNN_CNN_TRAIN_PATCH: u32 = 5;
+#[repr(u32)]
+#[non_exhaustive]
+#[doc = "                                                                              *"]
+#[doc = "                                                                              *"]
+#[doc = "                                                                              *"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaRoundMode {
+    cudaRoundNearest = 0,
+    cudaRoundZero = 1,
+    cudaRoundPosInf = 2,
+    cudaRoundMinInf = 3,
+}
 #[doc = "                                                                              *"]
 #[doc = "                                                                              *"]
 #[doc = "                                                                              *"]
@@ -183,10 +215,18 @@ pub enum cudaError {
     #[doc = " This error return is deprecated as of CUDA 3.1. Device emulation mode was"]
     #[doc = " removed with the CUDA 3.1 release."]
     cudaErrorMemoryValueTooLarge = 32,
+    #[doc = " This indicates that the CUDA driver that the application has loaded is a"]
+    #[doc = " stub library. Applications that run with the stub rather than a real"]
+    #[doc = " driver loaded will result in CUDA API returning this error."]
+    cudaErrorStubLibrary = 34,
     #[doc = " This indicates that the installed NVIDIA CUDA driver is older than the"]
     #[doc = " CUDA runtime library. This is not a supported configuration. Users should"]
     #[doc = " install an updated NVIDIA display driver to allow the application to run."]
     cudaErrorInsufficientDriver = 35,
+    #[doc = " This indicates that the API call requires a newer CUDA driver than the one"]
+    #[doc = " currently installed. Users should install an updated NVIDIA CUDA driver"]
+    #[doc = " to allow the API call to succeed."]
+    cudaErrorCallRequiresNewerDriver = 36,
     #[doc = " This indicates that the surface passed to the API call is not a valid"]
     #[doc = " surface."]
     cudaErrorInvalidSurface = 37,
@@ -269,6 +309,14 @@ pub enum cudaError {
     #[doc = " This indicates that the device ordinal supplied by the user does not"]
     #[doc = " correspond to a valid CUDA device."]
     cudaErrorInvalidDevice = 101,
+    #[doc = " This indicates that the device doesn't have a valid Grid License."]
+    cudaErrorDeviceNotLicensed = 102,
+    #[doc = " By default, the CUDA runtime may perform a minimal set of self-tests,"]
+    #[doc = " as well as CUDA driver tests, to establish the validity of both."]
+    #[doc = " Introduced in CUDA 11.2, this error return indicates that at least one"]
+    #[doc = " of these tests has failed and the validity of either the runtime"]
+    #[doc = " or the driver could not be established."]
+    cudaErrorSoftwareValidityNotEstablished = 103,
     #[doc = " This indicates an internal startup failure in the CUDA runtime."]
     cudaErrorStartupFailure = 127,
     #[doc = " This indicates that the device kernel image is invalid."]
@@ -328,6 +376,14 @@ pub enum cudaError {
     #[doc = " library is used for PTX compilation. The runtime may fall back to compiling PTX"]
     #[doc = " if an application does not contain a suitable binary for the current device."]
     cudaErrorJitCompilerNotFound = 221,
+    #[doc = " This indicates that the provided PTX was compiled with an unsupported toolchain."]
+    #[doc = " The most common reason for this, is the PTX was generated by a compiler newer"]
+    #[doc = " than what is supported by the CUDA driver and PTX JIT compiler."]
+    cudaErrorUnsupportedPtxVersion = 222,
+    #[doc = " This indicates that the JIT compilation was disabled. The JIT compilation compiles"]
+    #[doc = " PTX. The runtime may fall back to compiling PTX if an application does not contain"]
+    #[doc = " a suitable binary for the current device."]
+    cudaErrorJitCompilationDisabled = 223,
     #[doc = " This indicates that the device kernel source is invalid."]
     cudaErrorInvalidSource = 300,
     #[doc = " This indicates that the file specified was not found."]
@@ -529,6 +585,8 @@ pub enum cudaChannelFormatKind {
     cudaChannelFormatKindFloat = 2,
     #[doc = "< No channel format"]
     cudaChannelFormatKindNone = 3,
+    #[doc = "< Unsigned 8-bit integers, planar 4:2:0 YUV format"]
+    cudaChannelFormatKindNV12 = 4,
 }
 #[doc = " CUDA Channel format descriptor"]
 #[repr(C)]
@@ -626,6 +684,159 @@ pub struct cudaMipmappedArray {
 pub type cudaMipmappedArray_t = *mut cudaMipmappedArray;
 #[doc = " CUDA mipmapped array (as source argument)"]
 pub type cudaMipmappedArray_const_t = *const cudaMipmappedArray;
+#[doc = " Sparse CUDA array and CUDA mipmapped array properties"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudaArraySparseProperties {
+    pub tileExtent: cudaArraySparseProperties__bindgen_ty_1,
+    #[doc = "< First mip level at which the mip tail begins"]
+    pub miptailFirstLevel: ::libc::c_uint,
+    #[doc = "< Total size of the mip tail."]
+    pub miptailSize: ::libc::c_ulonglong,
+    #[doc = "< Flags will either be zero or ::cudaArraySparsePropertiesSingleMipTail"]
+    pub flags: ::libc::c_uint,
+    pub reserved: [::libc::c_uint; 4usize],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudaArraySparseProperties__bindgen_ty_1 {
+    #[doc = "< Tile width in elements"]
+    pub width: ::libc::c_uint,
+    #[doc = "< Tile height in elements"]
+    pub height: ::libc::c_uint,
+    #[doc = "< Tile depth in elements"]
+    pub depth: ::libc::c_uint,
+}
+#[test]
+fn bindgen_test_layout_cudaArraySparseProperties__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaArraySparseProperties__bindgen_ty_1>(),
+        12usize,
+        concat!(
+            "Size of: ",
+            stringify!(cudaArraySparseProperties__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaArraySparseProperties__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(cudaArraySparseProperties__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaArraySparseProperties__bindgen_ty_1>())).width as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties__bindgen_ty_1),
+            "::",
+            stringify!(width)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaArraySparseProperties__bindgen_ty_1>())).height as *const _
+                as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties__bindgen_ty_1),
+            "::",
+            stringify!(height)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaArraySparseProperties__bindgen_ty_1>())).depth as *const _
+                as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties__bindgen_ty_1),
+            "::",
+            stringify!(depth)
+        )
+    );
+}
+#[test]
+fn bindgen_test_layout_cudaArraySparseProperties() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaArraySparseProperties>(),
+        48usize,
+        concat!("Size of: ", stringify!(cudaArraySparseProperties))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaArraySparseProperties>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cudaArraySparseProperties))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaArraySparseProperties>())).tileExtent as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties),
+            "::",
+            stringify!(tileExtent)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaArraySparseProperties>())).miptailFirstLevel as *const _
+                as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties),
+            "::",
+            stringify!(miptailFirstLevel)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaArraySparseProperties>())).miptailSize as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties),
+            "::",
+            stringify!(miptailSize)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaArraySparseProperties>())).flags as *const _ as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties),
+            "::",
+            stringify!(flags)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaArraySparseProperties>())).reserved as *const _ as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaArraySparseProperties),
+            "::",
+            stringify!(reserved)
+        )
+    );
+}
 #[repr(u32)]
 #[non_exhaustive]
 #[doc = " CUDA memory types"]
@@ -1088,7 +1299,7 @@ pub struct cudaMemsetParams {
     pub value: ::libc::c_uint,
     #[doc = "< Size of each element in bytes. Must be 1, 2, or 4."]
     pub elementSize: ::libc::c_uint,
-    #[doc = "< Width in bytes, of the row"]
+    #[doc = "< Width of the row in elements"]
     pub width: usize,
     #[doc = "< Number of rows"]
     pub height: usize,
@@ -1166,6 +1377,106 @@ fn bindgen_test_layout_cudaMemsetParams() {
         )
     );
 }
+#[repr(u32)]
+#[non_exhaustive]
+#[doc = " Specifies performance hint with ::cudaAccessPolicyWindow for hitProp and missProp members."]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaAccessProperty {
+    #[doc = "< Normal cache persistence."]
+    cudaAccessPropertyNormal = 0,
+    #[doc = "< Streaming access is less likely to persit from cache."]
+    cudaAccessPropertyStreaming = 1,
+    #[doc = "< Persisting access is more likely to persist in cache."]
+    cudaAccessPropertyPersisting = 2,
+}
+#[doc = " Specifies an access policy for a window, a contiguous extent of memory"]
+#[doc = " beginning at base_ptr and ending at base_ptr + num_bytes."]
+#[doc = " Partition into many segments and assign segments such that."]
+#[doc = " sum of \"hit segments\" / window == approx. ratio."]
+#[doc = " sum of \"miss segments\" / window == approx 1-ratio."]
+#[doc = " Segments and ratio specifications are fitted to the capabilities of"]
+#[doc = " the architecture."]
+#[doc = " Accesses in a hit segment apply the hitProp access policy."]
+#[doc = " Accesses in a miss segment apply the missProp access policy."]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudaAccessPolicyWindow {
+    #[doc = "< Starting address of the access policy window. CUDA driver may align it."]
+    pub base_ptr: *mut ::libc::c_void,
+    #[doc = "< Size in bytes of the window policy. CUDA driver may restrict the maximum size and alignment."]
+    pub num_bytes: usize,
+    #[doc = "< hitRatio specifies percentage of lines assigned hitProp, rest are assigned missProp."]
+    pub hitRatio: f32,
+    #[doc = "< ::CUaccessProperty set for hit."]
+    pub hitProp: cudaAccessProperty,
+    #[doc = "< ::CUaccessProperty set for miss. Must be either NORMAL or STREAMING."]
+    pub missProp: cudaAccessProperty,
+}
+#[test]
+fn bindgen_test_layout_cudaAccessPolicyWindow() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaAccessPolicyWindow>(),
+        32usize,
+        concat!("Size of: ", stringify!(cudaAccessPolicyWindow))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaAccessPolicyWindow>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cudaAccessPolicyWindow))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaAccessPolicyWindow>())).base_ptr as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaAccessPolicyWindow),
+            "::",
+            stringify!(base_ptr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaAccessPolicyWindow>())).num_bytes as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaAccessPolicyWindow),
+            "::",
+            stringify!(num_bytes)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaAccessPolicyWindow>())).hitRatio as *const _ as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaAccessPolicyWindow),
+            "::",
+            stringify!(hitRatio)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaAccessPolicyWindow>())).hitProp as *const _ as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaAccessPolicyWindow),
+            "::",
+            stringify!(hitProp)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaAccessPolicyWindow>())).missProp as *const _ as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaAccessPolicyWindow),
+            "::",
+            stringify!(missProp)
+        )
+    );
+}
 #[doc = " CUDA host function"]
 #[doc = " \\param userData Argument value passed to the function"]
 pub type cudaHostFn_t = ::std::option::Option<unsafe extern "C" fn(userData: *mut ::libc::c_void)>;
@@ -1234,6 +1545,68 @@ pub enum cudaStreamCaptureMode {
     cudaStreamCaptureModeThreadLocal = 1,
     cudaStreamCaptureModeRelaxed = 2,
 }
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaSynchronizationPolicy {
+    cudaSyncPolicyAuto = 1,
+    cudaSyncPolicySpin = 2,
+    cudaSyncPolicyYield = 3,
+    cudaSyncPolicyBlockingSync = 4,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[doc = " Stream Attributes"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaStreamAttrID {
+    #[doc = "< Identifier for ::cudaStreamAttrValue::accessPolicyWindow."]
+    cudaStreamAttributeAccessPolicyWindow = 1,
+    #[doc = "< ::cudaSynchronizationPolicy for work queued up in this stream"]
+    cudaStreamAttributeSynchronizationPolicy = 3,
+}
+#[doc = " Stream attributes union used with ::cudaStreamSetAttribute/::cudaStreamGetAttribute"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cudaStreamAttrValue {
+    pub accessPolicyWindow: cudaAccessPolicyWindow,
+    pub syncPolicy: cudaSynchronizationPolicy,
+    _bindgen_union_align: [u64; 4usize],
+}
+#[test]
+fn bindgen_test_layout_cudaStreamAttrValue() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaStreamAttrValue>(),
+        32usize,
+        concat!("Size of: ", stringify!(cudaStreamAttrValue))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaStreamAttrValue>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cudaStreamAttrValue))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaStreamAttrValue>())).accessPolicyWindow as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaStreamAttrValue),
+            "::",
+            stringify!(accessPolicyWindow)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaStreamAttrValue>())).syncPolicy as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaStreamAttrValue),
+            "::",
+            stringify!(syncPolicy)
+        )
+    );
+}
 #[doc = " CUDA graphics interop resource"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1285,6 +1658,63 @@ pub enum cudaGraphicsCubeFace {
     cudaGraphicsCubeFacePositiveZ = 4,
     #[doc = "< Negative Z face of cubemap"]
     cudaGraphicsCubeFaceNegativeZ = 5,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[doc = " Graph kernel node Attributes"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaKernelNodeAttrID {
+    #[doc = "< Identifier for ::cudaKernelNodeAttrValue::accessPolicyWindow."]
+    cudaKernelNodeAttributeAccessPolicyWindow = 1,
+    #[doc = "< Allows a kernel node to be cooperative (see ::cudaLaunchCooperativeKernel)."]
+    cudaKernelNodeAttributeCooperative = 2,
+}
+#[doc = " Graph kernel node attributes union, used with ::cudaKernelNodeSetAttribute/::cudaKernelNodeGetAttribute"]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union cudaKernelNodeAttrValue {
+    #[doc = "< Attribute ::CUaccessPolicyWindow."]
+    pub accessPolicyWindow: cudaAccessPolicyWindow,
+    pub cooperative: ::libc::c_int,
+    _bindgen_union_align: [u64; 4usize],
+}
+#[test]
+fn bindgen_test_layout_cudaKernelNodeAttrValue() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaKernelNodeAttrValue>(),
+        32usize,
+        concat!("Size of: ", stringify!(cudaKernelNodeAttrValue))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaKernelNodeAttrValue>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cudaKernelNodeAttrValue))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaKernelNodeAttrValue>())).accessPolicyWindow as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaKernelNodeAttrValue),
+            "::",
+            stringify!(accessPolicyWindow)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaKernelNodeAttrValue>())).cooperative as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaKernelNodeAttrValue),
+            "::",
+            stringify!(cooperative)
+        )
+    );
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -1851,13 +2281,6 @@ fn bindgen_test_layout_cudaResourceViewDesc() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudaPointerAttributes {
-    #[doc = " \\deprecated"]
-    #[doc = ""]
-    #[doc = " The physical location of the memory, ::cudaMemoryTypeHost or"]
-    #[doc = " ::cudaMemoryTypeDevice. Note that managed memory can return either"]
-    #[doc = " ::cudaMemoryTypeDevice or ::cudaMemoryTypeHost regardless of it's"]
-    #[doc = " physical location."]
-    pub memoryType: cudaMemoryType,
     #[doc = " The type of memory - ::cudaMemoryTypeUnregistered, ::cudaMemoryTypeHost,"]
     #[doc = " ::cudaMemoryTypeDevice or ::cudaMemoryTypeManaged."]
     pub type_: cudaMemoryType,
@@ -1878,16 +2301,12 @@ pub struct cudaPointerAttributes {
     #[doc = " \\note CUDA doesn't check if unregistered memory is allocated so this field"]
     #[doc = " may contain invalid pointer if an invalid pointer has been passed to CUDA."]
     pub hostPointer: *mut ::libc::c_void,
-    #[doc = " \\deprecated"]
-    #[doc = ""]
-    #[doc = " Indicates if this pointer points to managed memory"]
-    pub isManaged: ::libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_cudaPointerAttributes() {
     assert_eq!(
         ::std::mem::size_of::<cudaPointerAttributes>(),
-        40usize,
+        24usize,
         concat!("Size of: ", stringify!(cudaPointerAttributes))
     );
     assert_eq!(
@@ -1896,20 +2315,8 @@ fn bindgen_test_layout_cudaPointerAttributes() {
         concat!("Alignment of ", stringify!(cudaPointerAttributes))
     );
     assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudaPointerAttributes>())).memoryType as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudaPointerAttributes),
-            "::",
-            stringify!(memoryType)
-        )
-    );
-    assert_eq!(
         unsafe { &(*(::std::ptr::null::<cudaPointerAttributes>())).type_ as *const _ as usize },
-        4usize,
+        0usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaPointerAttributes),
@@ -1919,7 +2326,7 @@ fn bindgen_test_layout_cudaPointerAttributes() {
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<cudaPointerAttributes>())).device as *const _ as usize },
-        8usize,
+        4usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaPointerAttributes),
@@ -1931,7 +2338,7 @@ fn bindgen_test_layout_cudaPointerAttributes() {
         unsafe {
             &(*(::std::ptr::null::<cudaPointerAttributes>())).devicePointer as *const _ as usize
         },
-        16usize,
+        8usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaPointerAttributes),
@@ -1943,22 +2350,12 @@ fn bindgen_test_layout_cudaPointerAttributes() {
         unsafe {
             &(*(::std::ptr::null::<cudaPointerAttributes>())).hostPointer as *const _ as usize
         },
-        24usize,
+        16usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaPointerAttributes),
             "::",
             stringify!(hostPointer)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cudaPointerAttributes>())).isManaged as *const _ as usize },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudaPointerAttributes),
-            "::",
-            stringify!(isManaged)
         )
     );
 }
@@ -2209,6 +2606,8 @@ pub enum cudaLimit {
     cudaLimitDevRuntimePendingLaunchCount = 4,
     #[doc = "< A value between 0 and 128 that indicates the maximum fetch granularity of L2 (in Bytes). This is a hint"]
     cudaLimitMaxL2FetchGranularity = 5,
+    #[doc = "< A size in bytes for L2 persisting lines cache size"]
+    cudaLimitPersistingL2CacheSize = 6,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -2454,6 +2853,266 @@ pub enum cudaDeviceAttr {
     cudaDevAttrPageableMemoryAccessUsesHostPageTables = 100,
     #[doc = "< Host can directly access managed memory on the device without migration."]
     cudaDevAttrDirectManagedMemAccessFromHost = 101,
+    #[doc = "< Maximum number of blocks per multiprocessor"]
+    cudaDevAttrMaxBlocksPerMultiprocessor = 106,
+    #[doc = "< Shared memory reserved by CUDA driver per block in bytes"]
+    cudaDevAttrReservedSharedMemoryPerBlock = 111,
+    #[doc = "< Device supports sparse CUDA arrays and sparse CUDA mipmapped arrays"]
+    cudaDevAttrSparseCudaArraySupported = 112,
+    #[doc = "< Device supports using the ::cudaHostRegister flag cudaHostRegisterReadOnly to register memory that must be mapped as read-only to the GPU"]
+    cudaDevAttrHostRegisterReadOnlySupported = 113,
+    #[doc = "< External timeline semaphore interop is supported on the device"]
+    cudaDevAttrMaxTimelineSemaphoreInteropSupported = 114,
+    #[doc = "< Device supports using the ::cudaMallocAsync and ::cudaMemPool family of APIs"]
+    cudaDevAttrMemoryPoolsSupported = 115,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[doc = " CUDA memory pool attributes"]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaMemPoolAttr {
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " Amount of reserved memory in bytes to hold onto before trying"]
+    #[doc = " to release memory back to the OS. When more than the release"]
+    #[doc = " threshold bytes of memory are held by the memory pool, the"]
+    #[doc = " allocator will try to release memory back to the OS on the"]
+    #[doc = " next call to stream, event or context synchronize. (default 0)"]
+    cudaMemPoolReuseFollowEventDependencies = 1,
+    #[doc = " (value type = int)"]
+    #[doc = " Allow cuMemAllocAsync to use memory asynchronously freed"]
+    #[doc = " in another streams as long as a stream ordering dependency"]
+    #[doc = " of the allocating stream on the free action exists."]
+    #[doc = " Cuda events and null stream interactions can create the required"]
+    #[doc = " stream ordered dependencies. (default enabled)"]
+    cudaMemPoolReuseAllowOpportunistic = 2,
+    #[doc = " (value type = int)"]
+    #[doc = " Allow reuse of already completed frees when there is no dependency"]
+    #[doc = " between the free and allocation. (default enabled)"]
+    cudaMemPoolReuseAllowInternalDependencies = 3,
+    #[doc = " (value type = int)"]
+    #[doc = " Allow cuMemAllocAsync to insert new stream dependencies"]
+    #[doc = " in order to establish the stream ordering required to reuse"]
+    #[doc = " a piece of memory released by cuFreeAsync (default enabled)."]
+    cudaMemPoolAttrReleaseThreshold = 4,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaMemLocationType {
+    cudaMemLocationTypeInvalid = 0,
+    cudaMemLocationTypeDevice = 1,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudaMemLocation {
+    pub type_: cudaMemLocationType,
+    pub id: ::libc::c_int,
+}
+#[test]
+fn bindgen_test_layout_cudaMemLocation() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaMemLocation>(),
+        8usize,
+        concat!("Size of: ", stringify!(cudaMemLocation))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaMemLocation>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cudaMemLocation))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemLocation>())).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemLocation),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemLocation>())).id as *const _ as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemLocation),
+            "::",
+            stringify!(id)
+        )
+    );
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaMemAccessFlags {
+    cudaMemAccessFlagsProtNone = 0,
+    cudaMemAccessFlagsProtRead = 1,
+    cudaMemAccessFlagsProtReadWrite = 3,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudaMemAccessDesc {
+    pub location: cudaMemLocation,
+    pub flags: cudaMemAccessFlags,
+}
+#[test]
+fn bindgen_test_layout_cudaMemAccessDesc() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaMemAccessDesc>(),
+        12usize,
+        concat!("Size of: ", stringify!(cudaMemAccessDesc))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaMemAccessDesc>(),
+        4usize,
+        concat!("Alignment of ", stringify!(cudaMemAccessDesc))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemAccessDesc>())).location as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemAccessDesc),
+            "::",
+            stringify!(location)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemAccessDesc>())).flags as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemAccessDesc),
+            "::",
+            stringify!(flags)
+        )
+    );
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaMemAllocationType {
+    cudaMemAllocationTypeInvalid = 0,
+    cudaMemAllocationTypePinned = 1,
+    cudaMemAllocationTypeMax = 4294967295,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudaMemAllocationHandleType {
+    #[doc = "< Does not allow any export mechanism. >"]
+    cudaMemHandleTypeNone = 0,
+    #[doc = "< Allows a file descriptor to be used for exporting. Permitted only on POSIX systems. (int)"]
+    cudaMemHandleTypePosixFileDescriptor = 1,
+    #[doc = "< Allows a Win32 NT handle to be used for exporting. (HANDLE)"]
+    cudaMemHandleTypeWin32 = 2,
+    #[doc = "< Allows a Win32 KMT handle to be used for exporting. (D3DKMT_HANDLE)"]
+    cudaMemHandleTypeWin32Kmt = 4,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cudaMemPoolProps {
+    pub allocType: cudaMemAllocationType,
+    pub handleTypes: cudaMemAllocationHandleType,
+    pub location: cudaMemLocation,
+    pub win32SecurityAttributes: *mut ::libc::c_void,
+    pub reserved: [::libc::c_uchar; 64usize],
+}
+#[test]
+fn bindgen_test_layout_cudaMemPoolProps() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaMemPoolProps>(),
+        88usize,
+        concat!("Size of: ", stringify!(cudaMemPoolProps))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaMemPoolProps>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cudaMemPoolProps))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemPoolProps>())).allocType as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemPoolProps),
+            "::",
+            stringify!(allocType)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemPoolProps>())).handleTypes as *const _ as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemPoolProps),
+            "::",
+            stringify!(handleTypes)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemPoolProps>())).location as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemPoolProps),
+            "::",
+            stringify!(location)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaMemPoolProps>())).win32SecurityAttributes as *const _
+                as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemPoolProps),
+            "::",
+            stringify!(win32SecurityAttributes)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<cudaMemPoolProps>())).reserved as *const _ as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemPoolProps),
+            "::",
+            stringify!(reserved)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct cudaMemPoolPtrExportData {
+    pub reserved: [::libc::c_uchar; 64usize],
+}
+#[test]
+fn bindgen_test_layout_cudaMemPoolPtrExportData() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaMemPoolPtrExportData>(),
+        64usize,
+        concat!("Size of: ", stringify!(cudaMemPoolPtrExportData))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaMemPoolPtrExportData>(),
+        1usize,
+        concat!("Alignment of ", stringify!(cudaMemPoolPtrExportData))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaMemPoolPtrExportData>())).reserved as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaMemPoolPtrExportData),
+            "::",
+            stringify!(reserved)
+        )
+    );
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -2555,7 +3214,7 @@ pub struct cudaDeviceProp {
     pub maxTexture1D: ::libc::c_int,
     #[doc = "< Maximum 1D mipmapped texture size"]
     pub maxTexture1DMipmap: ::libc::c_int,
-    #[doc = "< Maximum size for 1D textures bound to linear memory"]
+    #[doc = "< Deprecated, do not use. Use cudaDeviceGetTexture1DLinearMaxWidth() or cuDeviceGetTexture1DLinearMaxWidth() instead."]
     pub maxTexture1DLinear: ::libc::c_int,
     #[doc = "< Maximum 2D texture dimensions"]
     pub maxTexture2D: [::libc::c_int; 2usize],
@@ -2615,6 +3274,8 @@ pub struct cudaDeviceProp {
     pub memoryBusWidth: ::libc::c_int,
     #[doc = "< Size of L2 cache in bytes"]
     pub l2CacheSize: ::libc::c_int,
+    #[doc = "< Device's maximum l2 persisting lines capacity setting in bytes"]
+    pub persistingL2CacheMaxSize: ::libc::c_int,
     #[doc = "< Maximum resident threads per multiprocessor"]
     pub maxThreadsPerMultiProcessor: ::libc::c_int,
     #[doc = "< Device supports stream priorities"]
@@ -2655,12 +3316,18 @@ pub struct cudaDeviceProp {
     pub pageableMemoryAccessUsesHostPageTables: ::libc::c_int,
     #[doc = "< Host can directly access managed memory on the device without migration."]
     pub directManagedMemAccessFromHost: ::libc::c_int,
+    #[doc = "< Maximum number of resident blocks per multiprocessor"]
+    pub maxBlocksPerMultiProcessor: ::libc::c_int,
+    #[doc = "< The maximum value of ::cudaAccessPolicyWindow::num_bytes."]
+    pub accessPolicyMaxWindowSize: ::libc::c_int,
+    #[doc = "< Shared memory reserved by CUDA driver per block in bytes"]
+    pub reservedSharedMemPerBlock: usize,
 }
 #[test]
 fn bindgen_test_layout_cudaDeviceProp() {
     assert_eq!(
         ::std::mem::size_of::<cudaDeviceProp>(),
-        712usize,
+        728usize,
         concat!("Size of: ", stringify!(cudaDeviceProp))
     );
     assert_eq!(
@@ -3272,10 +3939,22 @@ fn bindgen_test_layout_cudaDeviceProp() {
     );
     assert_eq!(
         unsafe {
+            &(*(::std::ptr::null::<cudaDeviceProp>())).persistingL2CacheMaxSize as *const _ as usize
+        },
+        620usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaDeviceProp),
+            "::",
+            stringify!(persistingL2CacheMaxSize)
+        )
+    );
+    assert_eq!(
+        unsafe {
             &(*(::std::ptr::null::<cudaDeviceProp>())).maxThreadsPerMultiProcessor as *const _
                 as usize
         },
-        620usize,
+        624usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaDeviceProp),
@@ -3288,7 +3967,7 @@ fn bindgen_test_layout_cudaDeviceProp() {
             &(*(::std::ptr::null::<cudaDeviceProp>())).streamPrioritiesSupported as *const _
                 as usize
         },
-        624usize,
+        628usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaDeviceProp),
@@ -3300,7 +3979,7 @@ fn bindgen_test_layout_cudaDeviceProp() {
         unsafe {
             &(*(::std::ptr::null::<cudaDeviceProp>())).globalL1CacheSupported as *const _ as usize
         },
-        628usize,
+        632usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaDeviceProp),
@@ -3312,7 +3991,7 @@ fn bindgen_test_layout_cudaDeviceProp() {
         unsafe {
             &(*(::std::ptr::null::<cudaDeviceProp>())).localL1CacheSupported as *const _ as usize
         },
-        632usize,
+        636usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaDeviceProp),
@@ -3514,6 +4193,45 @@ fn bindgen_test_layout_cudaDeviceProp() {
             stringify!(cudaDeviceProp),
             "::",
             stringify!(directManagedMemAccessFromHost)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaDeviceProp>())).maxBlocksPerMultiProcessor as *const _
+                as usize
+        },
+        712usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaDeviceProp),
+            "::",
+            stringify!(maxBlocksPerMultiProcessor)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaDeviceProp>())).accessPolicyMaxWindowSize as *const _
+                as usize
+        },
+        716usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaDeviceProp),
+            "::",
+            stringify!(accessPolicyMaxWindowSize)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaDeviceProp>())).reservedSharedMemPerBlock as *const _
+                as usize
+        },
+        720usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaDeviceProp),
+            "::",
+            stringify!(reservedSharedMemPerBlock)
         )
     );
 }
@@ -3994,6 +4712,10 @@ pub enum cudaExternalSemaphoreHandleType {
     cudaExternalSemaphoreHandleTypeKeyedMutex = 7,
     #[doc = " Handle is a shared KMT handle referencing a D3D11 keyed mutex object"]
     cudaExternalSemaphoreHandleTypeKeyedMutexKmt = 8,
+    #[doc = " Handle is an opaque handle file descriptor referencing a timeline semaphore"]
+    cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd = 9,
+    #[doc = " Handle is an opaque handle file descriptor referencing a timeline semaphore"]
+    cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32 = 10,
 }
 #[doc = " External semaphore handle descriptor"]
 #[repr(C)]
@@ -4008,8 +4730,10 @@ pub struct cudaExternalSemaphoreHandleDesc {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union cudaExternalSemaphoreHandleDesc__bindgen_ty_1 {
-    #[doc = " File descriptor referencing the semaphore object. Valid"]
-    #[doc = " when type is ::cudaExternalSemaphoreHandleTypeOpaqueFd"]
+    #[doc = " File descriptor referencing the semaphore object. Valid when"]
+    #[doc = " type is one of the following:"]
+    #[doc = " - ::cudaExternalSemaphoreHandleTypeOpaqueFd"]
+    #[doc = " - ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd"]
     pub fd: ::libc::c_int,
     pub win32: cudaExternalSemaphoreHandleDesc__bindgen_ty_1__bindgen_ty_1,
     #[doc = " Valid NvSciSyncObj. Must be non NULL"]
@@ -4023,6 +4747,7 @@ pub union cudaExternalSemaphoreHandleDesc__bindgen_ty_1 {
 #[doc = " - ::cudaExternalSemaphoreHandleTypeD3D12Fence"]
 #[doc = " - ::cudaExternalSemaphoreHandleTypeD3D11Fence"]
 #[doc = " - ::cudaExternalSemaphoreHandleTypeKeyedMutex"]
+#[doc = " - ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32"]
 #[doc = " Exactly one of 'handle' and 'name' must be non-NULL. If"]
 #[doc = " type is one of the following:"]
 #[doc = " ::cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt"]
@@ -4189,7 +4914,7 @@ fn bindgen_test_layout_cudaExternalSemaphoreHandleDesc() {
         )
     );
 }
-#[doc = " External semaphore  signal parameters"]
+#[doc = " External semaphore signal parameters, compatible with driver type"]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cudaExternalSemaphoreSignalParams {
@@ -4203,6 +4928,7 @@ pub struct cudaExternalSemaphoreSignalParams {
     #[doc = " object imported as ::cudaExternalMemoryHandleTypeNvSciBuf."]
     #[doc = " For all other types of ::cudaExternalSemaphore_t, flags must be zero."]
     pub flags: ::libc::c_uint,
+    pub reserved: [::libc::c_uint; 16usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -4210,6 +4936,7 @@ pub struct cudaExternalSemaphoreSignalParams__bindgen_ty_1 {
     pub fence: cudaExternalSemaphoreSignalParams__bindgen_ty_1__bindgen_ty_1,
     pub nvSciSync: cudaExternalSemaphoreSignalParams__bindgen_ty_1__bindgen_ty_2,
     pub keyedMutex: cudaExternalSemaphoreSignalParams__bindgen_ty_1__bindgen_ty_3,
+    pub reserved: [::libc::c_uint; 12usize],
 }
 #[doc = " Parameters for fence objects"]
 #[repr(C)]
@@ -4350,7 +5077,7 @@ fn bindgen_test_layout_cudaExternalSemaphoreSignalParams__bindgen_ty_1__bindgen_
 fn bindgen_test_layout_cudaExternalSemaphoreSignalParams__bindgen_ty_1() {
     assert_eq!(
         ::std::mem::size_of::<cudaExternalSemaphoreSignalParams__bindgen_ty_1>(),
-        24usize,
+        72usize,
         concat!(
             "Size of: ",
             stringify!(cudaExternalSemaphoreSignalParams__bindgen_ty_1)
@@ -4403,12 +5130,25 @@ fn bindgen_test_layout_cudaExternalSemaphoreSignalParams__bindgen_ty_1() {
             stringify!(keyedMutex)
         )
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreSignalParams__bindgen_ty_1>())).reserved
+                as *const _ as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreSignalParams__bindgen_ty_1),
+            "::",
+            stringify!(reserved)
+        )
+    );
 }
 #[test]
 fn bindgen_test_layout_cudaExternalSemaphoreSignalParams() {
     assert_eq!(
         ::std::mem::size_of::<cudaExternalSemaphoreSignalParams>(),
-        32usize,
+        144usize,
         concat!("Size of: ", stringify!(cudaExternalSemaphoreSignalParams))
     );
     assert_eq!(
@@ -4436,7 +5176,7 @@ fn bindgen_test_layout_cudaExternalSemaphoreSignalParams() {
         unsafe {
             &(*(::std::ptr::null::<cudaExternalSemaphoreSignalParams>())).flags as *const _ as usize
         },
-        24usize,
+        72usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaExternalSemaphoreSignalParams),
@@ -4444,8 +5184,21 @@ fn bindgen_test_layout_cudaExternalSemaphoreSignalParams() {
             stringify!(flags)
         )
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreSignalParams>())).reserved as *const _
+                as usize
+        },
+        76usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreSignalParams),
+            "::",
+            stringify!(reserved)
+        )
+    );
 }
-#[doc = " External semaphore wait parameters"]
+#[doc = " External semaphore wait parameters, compatible with driver type"]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct cudaExternalSemaphoreWaitParams {
@@ -4459,6 +5212,7 @@ pub struct cudaExternalSemaphoreWaitParams {
     #[doc = " object imported as ::cudaExternalMemoryHandleTypeNvSciBuf."]
     #[doc = " For all other types of ::cudaExternalSemaphore_t, flags must be zero."]
     pub flags: ::libc::c_uint,
+    pub reserved: [::libc::c_uint; 16usize],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -4466,6 +5220,7 @@ pub struct cudaExternalSemaphoreWaitParams__bindgen_ty_1 {
     pub fence: cudaExternalSemaphoreWaitParams__bindgen_ty_1__bindgen_ty_1,
     pub nvSciSync: cudaExternalSemaphoreWaitParams__bindgen_ty_1__bindgen_ty_2,
     pub keyedMutex: cudaExternalSemaphoreWaitParams__bindgen_ty_1__bindgen_ty_3,
+    pub reserved: [::libc::c_uint; 10usize],
 }
 #[doc = " Parameters for fence objects"]
 #[repr(C)]
@@ -4618,7 +5373,7 @@ fn bindgen_test_layout_cudaExternalSemaphoreWaitParams__bindgen_ty_1__bindgen_ty
 fn bindgen_test_layout_cudaExternalSemaphoreWaitParams__bindgen_ty_1() {
     assert_eq!(
         ::std::mem::size_of::<cudaExternalSemaphoreWaitParams__bindgen_ty_1>(),
-        32usize,
+        72usize,
         concat!(
             "Size of: ",
             stringify!(cudaExternalSemaphoreWaitParams__bindgen_ty_1)
@@ -4671,12 +5426,25 @@ fn bindgen_test_layout_cudaExternalSemaphoreWaitParams__bindgen_ty_1() {
             stringify!(keyedMutex)
         )
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreWaitParams__bindgen_ty_1>())).reserved
+                as *const _ as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreWaitParams__bindgen_ty_1),
+            "::",
+            stringify!(reserved)
+        )
+    );
 }
 #[test]
 fn bindgen_test_layout_cudaExternalSemaphoreWaitParams() {
     assert_eq!(
         ::std::mem::size_of::<cudaExternalSemaphoreWaitParams>(),
-        40usize,
+        144usize,
         concat!("Size of: ", stringify!(cudaExternalSemaphoreWaitParams))
     );
     assert_eq!(
@@ -4700,12 +5468,25 @@ fn bindgen_test_layout_cudaExternalSemaphoreWaitParams() {
         unsafe {
             &(*(::std::ptr::null::<cudaExternalSemaphoreWaitParams>())).flags as *const _ as usize
         },
-        32usize,
+        72usize,
         concat!(
             "Offset of field: ",
             stringify!(cudaExternalSemaphoreWaitParams),
             "::",
             stringify!(flags)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreWaitParams>())).reserved as *const _
+                as usize
+        },
+        76usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreWaitParams),
+            "::",
+            stringify!(reserved)
         )
     );
 }
@@ -4757,6 +5538,20 @@ pub struct CUgraphNode_st {
 }
 #[doc = " CUDA graph node."]
 pub type cudaGraphNode_t = *mut CUgraphNode_st;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CUfunc_st {
+    _unused: [u8; 0],
+}
+#[doc = " CUDA function"]
+pub type cudaFunction_t = *mut CUfunc_st;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CUmemPoolHandle_st {
+    _unused: [u8; 0],
+}
+#[doc = " CUDA memory pool"]
+pub type cudaMemPool_t = *mut CUmemPoolHandle_st;
 #[repr(u32)]
 #[non_exhaustive]
 #[doc = " CUDA cooperative group scope"]
@@ -4953,6 +5748,135 @@ fn bindgen_test_layout_cudaKernelNodeParams() {
         )
     );
 }
+#[doc = " External semaphore signal node parameters"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudaExternalSemaphoreSignalNodeParams {
+    pub extSemArray: *mut cudaExternalSemaphore_t,
+    pub paramsArray: *const cudaExternalSemaphoreSignalParams,
+    pub numExtSems: ::libc::c_uint,
+}
+#[test]
+fn bindgen_test_layout_cudaExternalSemaphoreSignalNodeParams() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaExternalSemaphoreSignalNodeParams>(),
+        24usize,
+        concat!(
+            "Size of: ",
+            stringify!(cudaExternalSemaphoreSignalNodeParams)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaExternalSemaphoreSignalNodeParams>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(cudaExternalSemaphoreSignalNodeParams)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreSignalNodeParams>())).extSemArray
+                as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreSignalNodeParams),
+            "::",
+            stringify!(extSemArray)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreSignalNodeParams>())).paramsArray
+                as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreSignalNodeParams),
+            "::",
+            stringify!(paramsArray)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreSignalNodeParams>())).numExtSems as *const _
+                as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreSignalNodeParams),
+            "::",
+            stringify!(numExtSems)
+        )
+    );
+}
+#[doc = " External semaphore wait node parameters"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudaExternalSemaphoreWaitNodeParams {
+    pub extSemArray: *mut cudaExternalSemaphore_t,
+    pub paramsArray: *const cudaExternalSemaphoreWaitParams,
+    pub numExtSems: ::libc::c_uint,
+}
+#[test]
+fn bindgen_test_layout_cudaExternalSemaphoreWaitNodeParams() {
+    assert_eq!(
+        ::std::mem::size_of::<cudaExternalSemaphoreWaitNodeParams>(),
+        24usize,
+        concat!("Size of: ", stringify!(cudaExternalSemaphoreWaitNodeParams))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudaExternalSemaphoreWaitNodeParams>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(cudaExternalSemaphoreWaitNodeParams)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreWaitNodeParams>())).extSemArray as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreWaitNodeParams),
+            "::",
+            stringify!(extSemArray)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreWaitNodeParams>())).paramsArray as *const _
+                as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreWaitNodeParams),
+            "::",
+            stringify!(paramsArray)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaExternalSemaphoreWaitNodeParams>())).numExtSems as *const _
+                as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaExternalSemaphoreWaitNodeParams),
+            "::",
+            stringify!(numExtSems)
+        )
+    );
+}
 #[repr(u32)]
 #[non_exhaustive]
 #[doc = " CUDA Graph node types"]
@@ -4970,7 +5894,11 @@ pub enum cudaGraphNodeType {
     cudaGraphNodeTypeGraph = 4,
     #[doc = "< Empty (no-op) node"]
     cudaGraphNodeTypeEmpty = 5,
-    cudaGraphNodeTypeCount = 6,
+    #[doc = "< External event wait node"]
+    cudaGraphNodeTypeWaitEvent = 6,
+    #[doc = "< External event record node"]
+    cudaGraphNodeTypeEventRecord = 7,
+    cudaGraphNodeTypeCount = 8,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -4992,24 +5920,14 @@ pub enum cudaGraphExecUpdateResult {
     cudaGraphExecUpdateErrorTopologyChanged = 2,
     #[doc = "< The update failed because a node type changed"]
     cudaGraphExecUpdateErrorNodeTypeChanged = 3,
-    #[doc = "< The update failed because the function of a kernel node changed"]
+    #[doc = "< The update failed because the function of a kernel node changed (CUDA driver < 11.2)"]
     cudaGraphExecUpdateErrorFunctionChanged = 4,
     #[doc = "< The update failed because the parameters changed in a way that is not supported"]
     cudaGraphExecUpdateErrorParametersChanged = 5,
     #[doc = "< The update failed because something about the node is not supported"]
     cudaGraphExecUpdateErrorNotSupported = 6,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[doc = "                                                                              *"]
-#[doc = "                                                                              *"]
-#[doc = "                                                                              *"]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudaRoundMode {
-    cudaRoundNearest = 0,
-    cudaRoundZero = 1,
-    cudaRoundPosInf = 2,
-    cudaRoundMinInf = 3,
+    #[doc = "< The update failed because the function of a kernel node changed in an unsupported way"]
+    cudaGraphExecUpdateErrorUnsupportedFunctionChange = 7,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -5123,7 +6041,9 @@ pub struct textureReference {
     pub minMipmapLevelClamp: f32,
     #[doc = " Upper end of the mipmap level range to clamp access to"]
     pub maxMipmapLevelClamp: f32,
-    pub __cudaReserved: [::libc::c_int; 15usize],
+    #[doc = " Disable any trilinear filtering optimizations."]
+    pub disableTrilinearOptimization: ::libc::c_int,
+    pub __cudaReserved: [::libc::c_int; 14usize],
 }
 #[test]
 fn bindgen_test_layout_textureReference() {
@@ -5246,8 +6166,21 @@ fn bindgen_test_layout_textureReference() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<textureReference>())).__cudaReserved as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<textureReference>())).disableTrilinearOptimization as *const _
+                as usize
+        },
         64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(textureReference),
+            "::",
+            stringify!(disableTrilinearOptimization)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<textureReference>())).__cudaReserved as *const _ as usize },
+        68usize,
         concat!(
             "Offset of field: ",
             stringify!(textureReference),
@@ -5282,12 +6215,14 @@ pub struct cudaTextureDesc {
     pub minMipmapLevelClamp: f32,
     #[doc = " Upper end of the mipmap level range to clamp access to"]
     pub maxMipmapLevelClamp: f32,
+    #[doc = " Disable any trilinear filtering optimizations."]
+    pub disableTrilinearOptimization: ::libc::c_int,
 }
 #[test]
 fn bindgen_test_layout_cudaTextureDesc() {
     assert_eq!(
         ::std::mem::size_of::<cudaTextureDesc>(),
-        64usize,
+        68usize,
         concat!("Size of: ", stringify!(cudaTextureDesc))
     );
     assert_eq!(
@@ -5413,6 +6348,19 @@ fn bindgen_test_layout_cudaTextureDesc() {
             stringify!(maxMipmapLevelClamp)
         )
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudaTextureDesc>())).disableTrilinearOptimization as *const _
+                as usize
+        },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudaTextureDesc),
+            "::",
+            stringify!(disableTrilinearOptimization)
+        )
+    );
 }
 #[doc = " An opaque value that represents a CUDA texture object"]
 pub type cudaTextureObject_t = ::libc::c_ulonglong;
@@ -5422,18 +6370,32 @@ pub type cudaTextureObject_t = ::libc::c_ulonglong;
 pub enum cudaDataType_t {
     CUDA_R_16F = 2,
     CUDA_C_16F = 6,
+    CUDA_R_16BF = 14,
+    CUDA_C_16BF = 15,
     CUDA_R_32F = 0,
     CUDA_C_32F = 4,
     CUDA_R_64F = 1,
     CUDA_C_64F = 5,
+    CUDA_R_4I = 16,
+    CUDA_C_4I = 17,
+    CUDA_R_4U = 18,
+    CUDA_C_4U = 19,
     CUDA_R_8I = 3,
     CUDA_C_8I = 7,
     CUDA_R_8U = 8,
     CUDA_C_8U = 9,
+    CUDA_R_16I = 20,
+    CUDA_C_16I = 21,
+    CUDA_R_16U = 22,
+    CUDA_C_16U = 23,
     CUDA_R_32I = 10,
     CUDA_C_32I = 11,
     CUDA_R_32U = 12,
     CUDA_C_32U = 13,
+    CUDA_R_64I = 24,
+    CUDA_C_64I = 25,
+    CUDA_R_64U = 26,
+    CUDA_C_64U = 27,
 }
 pub use self::cudaDataType_t as cudaDataType;
 pub const libraryPropertyType_t_MAJOR_VERSION: libraryPropertyType_t = 0;
@@ -5489,15 +6451,13 @@ extern "C" {
     #[doc = " the current limit maintained by the device.  The driver is free to"]
     #[doc = " modify the requested value to meet h/w requirements (this could be"]
     #[doc = " clamping to minimum or maximum values, rounding up to nearest element"]
-    #[doc = " size, etc). The application can use ::cudaDeviceGetLimit() to find out"]
+    #[doc = " size, etc).  The application can use ::cudaDeviceGetLimit() to find out"]
     #[doc = " exactly what the limit has been set to."]
     #[doc = ""]
     #[doc = " Setting each ::cudaLimit has its own specific restrictions, so each is"]
     #[doc = " discussed here."]
     #[doc = ""]
     #[doc = " - ::cudaLimitStackSize controls the stack size in bytes of each GPU thread."]
-    #[doc = " Note that the CUDA driver will set the \\p limit to the maximum of \\p value"]
-    #[doc = " and what the kernel function requires."]
     #[doc = ""]
     #[doc = " - ::cudaLimitPrintfFifoSize controls the size in bytes of the shared FIFO"]
     #[doc = "   used by the ::printf() device system call. Setting"]
@@ -5549,6 +6509,10 @@ extern "C" {
     #[doc = "   Values can range from 0B to 128B. This is purely a performance hint and"]
     #[doc = "   it can be ignored or clamped depending on the platform."]
     #[doc = ""]
+    #[doc = " - ::cudaLimitPersistingL2CacheSize controls size in bytes available"]
+    #[doc = "   for persisting L2 cache. This is purely a performance hint and it"]
+    #[doc = "   can be ignored or clamped depending on the platform."]
+    #[doc = ""]
     #[doc = " \\param limit - Limit to set"]
     #[doc = " \\param value - Size of limit"]
     #[doc = ""]
@@ -5582,6 +6546,7 @@ extern "C" {
     #[doc = " - ::cudaLimitDevRuntimePendingLaunchCount: maximum number of outstanding"]
     #[doc = "   device runtime launches."]
     #[doc = " - ::cudaLimitMaxL2FetchGranularity: L2 cache fetch granularity."]
+    #[doc = " - ::cudaLimitPersistingL2CacheSize: Persisting L2 cache size in bytes"]
     #[doc = ""]
     #[doc = " \\param limit  - Limit to query"]
     #[doc = " \\param pValue - Returned size of the limit"]
@@ -5598,6 +6563,13 @@ extern "C" {
     #[doc = " ::cudaDeviceSetLimit,"]
     #[doc = " ::cuCtxGetLimit"]
     pub fn cudaDeviceGetLimit(pValue: *mut usize, limit: cudaLimit) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaDeviceGetTexture1DLinearMaxWidth(
+        maxWidthInElements: *mut usize,
+        fmtDesc: *const cudaChannelFormatDesc,
+        device: ::libc::c_int,
+    ) -> cudaError_t;
 }
 extern "C" {
     #[doc = " \\brief Returns the preferred cache configuration for the current device."]
@@ -5625,7 +6597,7 @@ extern "C" {
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
-    #[doc = " \\sa cudaDeviceSetCacheConfig,"]
+    #[doc = " \\sa ::cudaDeviceSetCacheConfig,"]
     #[doc = " \\ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) \"cudaFuncSetCacheConfig (C API)\","]
     #[doc = " \\ref ::cudaFuncSetCacheConfig(T*, enum cudaFuncCache) \"cudaFuncSetCacheConfig (C++ API)\","]
     #[doc = " ::cuCtxGetCacheConfig"]
@@ -5877,7 +6849,8 @@ extern "C" {
     #[doc = " ::cudaErrorInvalidResourceHandle,"]
     #[doc = " ::cudaErrorMemoryAllocation,"]
     #[doc = " ::cudaErrorMapBufferObjectFailed,"]
-    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " ::cudaErrorNotSupported,"]
+    #[doc = " ::cudaErrorInvalidValue"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
@@ -5918,8 +6891,9 @@ extern "C" {
     #[doc = " \\returns"]
     #[doc = " ::cudaSuccess,"]
     #[doc = " ::cudaErrorMapBufferObjectFailed,"]
-    #[doc = " ::cudaErrorInvalidResourceHandle,"]
-    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " ::cudaErrorNotSupported,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorDeviceUninitialized"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
@@ -5963,10 +6937,10 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\returns"]
     #[doc = " ::cudaSuccess,"]
-    #[doc = " ::cudaErrorInvalidResourceHandle,"]
     #[doc = " ::cudaErrorMemoryAllocation,"]
     #[doc = " ::cudaErrorMapBufferObjectFailed,"]
-    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " ::cudaErrorNotSupported,"]
+    #[doc = " ::cudaErrorInvalidValue"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
@@ -6001,6 +6975,10 @@ extern "C" {
     #[doc = " ::cudaIpcMemHandles from each device in a given process may only be opened"]
     #[doc = " by one context per device per other process."]
     #[doc = ""]
+    #[doc = " If the memory handle has already been opened by the current context, the"]
+    #[doc = " reference count on the handle is incremented by 1 and the existing device pointer"]
+    #[doc = " is returned."]
+    #[doc = ""]
     #[doc = " Memory returned from ::cudaIpcOpenMemHandle must be freed with"]
     #[doc = " ::cudaIpcCloseMemHandle."]
     #[doc = ""]
@@ -6020,8 +6998,10 @@ extern "C" {
     #[doc = " ::cudaSuccess,"]
     #[doc = " ::cudaErrorMapBufferObjectFailed,"]
     #[doc = " ::cudaErrorInvalidResourceHandle,"]
+    #[doc = " ::cudaErrorDeviceUninitialized,"]
     #[doc = " ::cudaErrorTooManyPeers,"]
-    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " ::cudaErrorNotSupported,"]
+    #[doc = " ::cudaErrorInvalidValue"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
@@ -6045,9 +7025,10 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
-    #[doc = " \\brief Close memory mapped with cudaIpcOpenMemHandle"]
+    #[doc = " \\brief Attempts to close memory mapped with cudaIpcOpenMemHandle"]
     #[doc = ""]
-    #[doc = " Unmaps memory returnd by ::cudaIpcOpenMemHandle. The original allocation"]
+    #[doc = " Decrements the reference count of the memory returnd by ::cudaIpcOpenMemHandle by 1."]
+    #[doc = " When the reference count reaches 0, this API unmaps the memory. The original allocation"]
     #[doc = " in the exporting process as well as imported mappings in other processes"]
     #[doc = " will be unaffected."]
     #[doc = ""]
@@ -6063,8 +7044,8 @@ extern "C" {
     #[doc = " \\returns"]
     #[doc = " ::cudaSuccess,"]
     #[doc = " ::cudaErrorMapBufferObjectFailed,"]
-    #[doc = " ::cudaErrorInvalidResourceHandle,"]
-    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " ::cudaErrorNotSupported,"]
+    #[doc = " ::cudaErrorInvalidValue"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
@@ -6326,8 +7307,10 @@ extern "C" {
     #[doc = " ::cudaErrorSetOnActiveProcess,"]
     #[doc = " ::cudaErrorStartupFailure,"]
     #[doc = " ::cudaErrorInvalidPtx,"]
+    #[doc = " ::cudaErrorUnsupportedPtxVersion,"]
     #[doc = " ::cudaErrorNoKernelImageForDevice,"]
-    #[doc = " ::cudaErrorJitCompilerNotFound"]
+    #[doc = " ::cudaErrorJitCompilerNotFound,"]
+    #[doc = " ::cudaErrorJitCompilationDisabled"]
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
@@ -6371,8 +7354,10 @@ extern "C" {
     #[doc = " ::cudaErrorSetOnActiveProcess,"]
     #[doc = " ::cudaErrorStartupFailure,"]
     #[doc = " ::cudaErrorInvalidPtx,"]
+    #[doc = " ::cudaErrorUnsupportedPtxVersion,"]
     #[doc = " ::cudaErrorNoKernelImageForDevice,"]
-    #[doc = " ::cudaErrorJitCompilerNotFound"]
+    #[doc = " ::cudaErrorJitCompilerNotFound,"]
+    #[doc = " ::cudaErrorJitCompilationDisabled"]
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
@@ -6420,8 +7405,7 @@ extern "C" {
     #[doc = " greater or equal to 2.0"]
     #[doc = ""]
     #[doc = " \\return"]
-    #[doc = " ::cudaErrorInvalidValue (if a NULL device pointer is assigned), ::cudaSuccess"]
-    #[doc = ""]
+    #[doc = " ::cudaSuccess"]
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
@@ -6492,6 +7476,7 @@ extern "C" {
     #[doc = "int memoryClockRate;"]
     #[doc = "int memoryBusWidth;"]
     #[doc = "int l2CacheSize;"]
+    #[doc = "int persistingL2CacheMaxSize;"]
     #[doc = "int maxThreadsPerMultiProcessor;"]
     #[doc = "int streamPrioritiesSupported;"]
     #[doc = "int globalL1CacheSupported;"]
@@ -6510,6 +7495,7 @@ extern "C" {
     #[doc = "int cooperativeMultiDeviceLaunch;"]
     #[doc = "int pageableMemoryAccessUsesHostPageTables;"]
     #[doc = "int directManagedMemAccessFromHost;"]
+    #[doc = "int accessPolicyMaxWindowSize;"]
     #[doc = "}"]
     #[doc = "\\endcode"]
     #[doc = " where:"]
@@ -6644,6 +7630,7 @@ extern "C" {
     #[doc = " - \\ref ::cudaDeviceProp::memoryBusWidth \"memoryBusWidth\" is the memory bus width"]
     #[doc = "   in bits."]
     #[doc = " - \\ref ::cudaDeviceProp::l2CacheSize \"l2CacheSize\" is L2 cache size in bytes."]
+    #[doc = " - \\ref ::cudaDeviceProp::persistingL2CacheMaxSize \"persistingL2CacheMaxSize\" is L2 cache's maximum persisting lines size in bytes."]
     #[doc = " - \\ref ::cudaDeviceProp::maxThreadsPerMultiProcessor \"maxThreadsPerMultiProcessor\""]
     #[doc = "   is the number of maximum resident threads per multiprocessor."]
     #[doc = " - \\ref ::cudaDeviceProp::streamPrioritiesSupported \"streamPrioritiesSupported\""]
@@ -6684,6 +7671,10 @@ extern "C" {
     #[doc = "   pageable memory via the host's page tables, and 0 otherwise."]
     #[doc = " - \\ref ::cudaDeviceProp::directManagedMemAccessFromHost \"directManagedMemAccessFromHost\" is 1 if the host can directly access managed"]
     #[doc = "   memory on the device without migration, and 0 otherwise."]
+    #[doc = " - \\ref ::cudaDeviceProp::maxBlocksPerMultiProcessor \"maxBlocksPerMultiProcessor\" is the maximum number of thread blocks"]
+    #[doc = "   that can reside on a multiprocessor."]
+    #[doc = " - \\ref ::cudaDeviceProp::accessPolicyMaxWindowSize \"accessPolicyMaxWindowSize\" is"]
+    #[doc = "   the maximum value of ::cudaAccessPolicyWindow::num_bytes."]
     #[doc = ""]
     #[doc = " \\param prop   - Properties for the specified device"]
     #[doc = " \\param device - Device number to get properties for"]
@@ -6872,6 +7863,10 @@ extern "C" {
     #[doc = "   without migration, and 0 otherwise."]
     #[doc = " - ::cudaDevAttrMaxSharedMemoryPerBlockOptin: Maximum per block shared memory size on the device. This value can"]
     #[doc = "   be opted into when using ::cudaFuncSetAttribute"]
+    #[doc = " - ::cudaDevAttrMaxBlocksPerMultiprocessor: Maximum number of thread blocks that can reside on a multiprocessor."]
+    #[doc = " - ::cudaDevAttrHostRegisterReadOnly: Device supports using the ::cudaHostRegister flag cudaHostRegisterReadOnly"]
+    #[doc = "   to register memory that must be mapped as read-only to the GPU"]
+    #[doc = " - ::cudaDevAttrSparseCudaArraySupported: 1 if the device supports sparse CUDA arrays and sparse CUDA mipmapped arrays."]
     #[doc = ""]
     #[doc = " \\param value  - Returned device attribute value"]
     #[doc = " \\param attr   - Device attribute to query"]
@@ -6895,14 +7890,75 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
+    #[doc = " \\brief Returns the default mempool of a device"]
+    #[doc = ""]
+    #[doc = " The default mempool of a device contains device memory from that device."]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidDevice,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " \\notefnerr"]
+    #[doc = " \\note_init_rt"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuDeviceGetDefaultMemPool, ::cudaMallocAsync, ::cudaMemPoolTrimTo, ::cudaMemPoolGetAttribute, ::cudaMemPoolSetAttribute, ::cudaMemPoolSetAccess"]
+    pub fn cudaDeviceGetDefaultMemPool(
+        memPool: *mut cudaMemPool_t,
+        device: ::libc::c_int,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Sets the current memory pool of a device"]
+    #[doc = ""]
+    #[doc = " The memory pool must be local to the specified device."]
+    #[doc = " Unless a mempool is specified in the ::cudaMallocAsync call,"]
+    #[doc = " ::cudaMallocAsync allocates from the current mempool of the provided stream's device."]
+    #[doc = " By default, a device's current memory pool is its default memory pool."]
+    #[doc = ""]
+    #[doc = " \\note Use ::cudaMallocFromPoolAsync to specify asynchronous allocations from a device different"]
+    #[doc = " than the one the stream runs on."]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " ::cudaErrorInvalidDevice"]
+    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " \\notefnerr"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuDeviceSetDefaultMemPool, ::cudaDeviceGetDefaultMemPool, ::cudaMemPoolCreate, ::cudaMemPoolDestroy, ::cudaMallocFromPoolAsync"]
+    pub fn cudaDeviceSetMemPool(device: ::libc::c_int, memPool: cudaMemPool_t) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Gets the current mempool for a device"]
+    #[doc = ""]
+    #[doc = " Returns the last pool provided to ::cudaDeviceSetMemPool for this device"]
+    #[doc = " or the device's default memory pool if ::cudaDeviceSetMemPool has never been called."]
+    #[doc = " By default the current mempool is the default mempool for a device,"]
+    #[doc = " otherwise the returned pool must have been set with ::cuDeviceSetMemPool or ::cudaDeviceSetMemPool."]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " \\notefnerr"]
+    #[doc = " \\note_init_rt"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuDeviceGetMemPool"]
+    pub fn cudaDeviceGetMemPool(memPool: *mut cudaMemPool_t, device: ::libc::c_int) -> cudaError_t;
+}
+extern "C" {
     #[doc = " \\brief Return NvSciSync attributes that this device can support."]
     #[doc = ""]
     #[doc = " Returns in \\p nvSciSyncAttrList, the properties of NvSciSync that"]
     #[doc = " this CUDA device, \\p dev can support. The returned \\p nvSciSyncAttrList"]
-    #[doc = " can be used to create an NvSciSync that matches this device’s capabilities."]
+    #[doc = " can be used to create an NvSciSync that matches this device's capabilities."]
     #[doc = ""]
     #[doc = " If NvSciSyncAttrKey_RequiredPerm field in \\p nvSciSyncAttrList is"]
-    #[doc = " already set this API will return ::cudaErrorNotSupported."]
+    #[doc = " already set this API will return ::cudaErrorInvalidValue."]
     #[doc = ""]
     #[doc = " The applications should set \\p nvSciSyncAttrList to a valid"]
     #[doc = " NvSciSyncAttrList failing which this API will return"]
@@ -7197,8 +8253,8 @@ extern "C" {
     #[doc = " \\param flags - Pointer to store the device flags"]
     #[doc = ""]
     #[doc = " \\return"]
-    #[doc = " ::cudaSuccess, ::cudaErrorInvalidDevice, ::cudaErrorInvalidValue"]
-    #[doc = ""]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidDevice"]
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
@@ -7372,6 +8428,88 @@ extern "C" {
     pub fn cudaStreamGetFlags(hStream: cudaStream_t, flags: *mut ::libc::c_uint) -> cudaError_t;
 }
 extern "C" {
+    #[doc = " \\brief Resets all persisting lines in cache to normal status."]
+    #[doc = ""]
+    #[doc = " Resets all persisting lines in cache to normal status."]
+    #[doc = " Takes effect on function return."]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cudaAccessPolicyWindow"]
+    pub fn cudaCtxResetPersistingL2Cache() -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Copies attributes from source stream to destination stream."]
+    #[doc = ""]
+    #[doc = " Copies attributes from source stream \\p src to destination stream \\p dst."]
+    #[doc = " Both streams must have the same context."]
+    #[doc = ""]
+    #[doc = " \\param[out] dst Destination stream"]
+    #[doc = " \\param[in] src Source stream"]
+    #[doc = " For attributes see ::cudaStreamAttrID"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cudaAccessPolicyWindow"]
+    pub fn cudaStreamCopyAttributes(dst: cudaStream_t, src: cudaStream_t) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Queries stream attribute."]
+    #[doc = ""]
+    #[doc = " Queries attribute \\p attr from \\p hStream and stores it in corresponding"]
+    #[doc = " member of \\p value_out."]
+    #[doc = ""]
+    #[doc = " \\param[in] hStream"]
+    #[doc = " \\param[in] attr"]
+    #[doc = " \\param[out] value_out"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorInvalidResourceHandle"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cudaAccessPolicyWindow"]
+    pub fn cudaStreamGetAttribute(
+        hStream: cudaStream_t,
+        attr: cudaStreamAttrID,
+        value_out: *mut cudaStreamAttrValue,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Sets stream attribute."]
+    #[doc = ""]
+    #[doc = " Sets attribute \\p attr on \\p hStream from corresponding attribute of"]
+    #[doc = " \\p value. The updated attribute will be applied to subsequent work"]
+    #[doc = " submitted to the stream. It will not affect previously submitted work."]
+    #[doc = ""]
+    #[doc = " \\param[out] hStream"]
+    #[doc = " \\param[in] attr"]
+    #[doc = " \\param[in] value"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorInvalidResourceHandle"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cudaAccessPolicyWindow"]
+    pub fn cudaStreamSetAttribute(
+        hStream: cudaStream_t,
+        attr: cudaStreamAttrID,
+        value: *const cudaStreamAttrValue,
+    ) -> cudaError_t;
+}
+extern "C" {
     #[doc = " \\brief Destroys and cleans up an asynchronous stream"]
     #[doc = ""]
     #[doc = " Destroys and cleans up the asynchronous stream specified by \\p stream."]
@@ -7391,6 +8529,7 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa ::cudaStreamCreate,"]
     #[doc = " ::cudaStreamCreateWithFlags,"]
@@ -7409,9 +8548,14 @@ extern "C" {
     #[doc = " The synchronization will be performed efficiently on the device when applicable."]
     #[doc = " \\p event may be from a different device than \\p stream."]
     #[doc = ""]
+    #[doc = " flags include:"]
+    #[doc = " - ::cudaEventWaitDefault: Default event creation flag."]
+    #[doc = " - ::cudaEventWaitExternal: Event is captured in the graph as an external"]
+    #[doc = "   event node when performing stream capture."]
+    #[doc = ""]
     #[doc = " \\param stream - Stream to wait"]
     #[doc = " \\param event  - Event to wait on"]
-    #[doc = " \\param flags  - Parameters for the operation (must be 0)"]
+    #[doc = " \\param flags  - Parameters for the operation(See above)"]
     #[doc = ""]
     #[doc = " \\return"]
     #[doc = " ::cudaSuccess,"]
@@ -7555,85 +8699,6 @@ extern "C" {
     pub fn cudaStreamQuery(stream: cudaStream_t) -> cudaError_t;
 }
 extern "C" {
-    #[doc = " \\brief Attach memory to a stream asynchronously"]
-    #[doc = ""]
-    #[doc = " Enqueues an operation in \\p stream to specify stream association of"]
-    #[doc = " \\p length bytes of memory starting from \\p devPtr. This function is a"]
-    #[doc = " stream-ordered operation, meaning that it is dependent on, and will"]
-    #[doc = " only take effect when, previous work in stream has completed. Any"]
-    #[doc = " previous association is automatically replaced."]
-    #[doc = ""]
-    #[doc = " \\p devPtr must point to an one of the following types of memories:"]
-    #[doc = " - managed memory declared using the __managed__ keyword or allocated with"]
-    #[doc = "   ::cudaMallocManaged."]
-    #[doc = " - a valid host-accessible region of system-allocated pageable memory. This"]
-    #[doc = "   type of memory may only be specified if the device associated with the"]
-    #[doc = "   stream reports a non-zero value for the device attribute"]
-    #[doc = "   ::cudaDevAttrPageableMemoryAccess."]
-    #[doc = ""]
-    #[doc = " For managed allocations, \\p length must be either zero or the entire"]
-    #[doc = " allocation's size. Both indicate that the entire allocation's stream"]
-    #[doc = " association is being changed. Currently, it is not possible to change stream"]
-    #[doc = " association for a portion of a managed allocation."]
-    #[doc = ""]
-    #[doc = " For pageable allocations, \\p length must be non-zero."]
-    #[doc = ""]
-    #[doc = " The stream association is specified using \\p flags which must be"]
-    #[doc = " one of ::cudaMemAttachGlobal, ::cudaMemAttachHost or ::cudaMemAttachSingle."]
-    #[doc = " The default value for \\p flags is ::cudaMemAttachSingle"]
-    #[doc = " If the ::cudaMemAttachGlobal flag is specified, the memory can be accessed"]
-    #[doc = " by any stream on any device."]
-    #[doc = " If the ::cudaMemAttachHost flag is specified, the program makes a guarantee"]
-    #[doc = " that it won't access the memory on the device from any stream on a device that"]
-    #[doc = " has a zero value for the device attribute ::cudaDevAttrConcurrentManagedAccess."]
-    #[doc = " If the ::cudaMemAttachSingle flag is specified and \\p stream is associated with"]
-    #[doc = " a device that has a zero value for the device attribute ::cudaDevAttrConcurrentManagedAccess,"]
-    #[doc = " the program makes a guarantee that it will only access the memory on the device"]
-    #[doc = " from \\p stream. It is illegal to attach singly to the NULL stream, because the"]
-    #[doc = " NULL stream is a virtual global stream and not a specific stream. An error will"]
-    #[doc = " be returned in this case."]
-    #[doc = ""]
-    #[doc = " When memory is associated with a single stream, the Unified Memory system will"]
-    #[doc = " allow CPU access to this memory region so long as all operations in \\p stream"]
-    #[doc = " have completed, regardless of whether other streams are active. In effect,"]
-    #[doc = " this constrains exclusive ownership of the managed memory region by"]
-    #[doc = " an active GPU to per-stream activity instead of whole-GPU activity."]
-    #[doc = ""]
-    #[doc = " Accessing memory on the device from streams that are not associated with"]
-    #[doc = " it will produce undefined results. No error checking is performed by the"]
-    #[doc = " Unified Memory system to ensure that kernels launched into other streams"]
-    #[doc = " do not access this region."]
-    #[doc = ""]
-    #[doc = " It is a program's responsibility to order calls to ::cudaStreamAttachMemAsync"]
-    #[doc = " via events, synchronization or other means to ensure legal access to memory"]
-    #[doc = " at all times. Data visibility and coherency will be changed appropriately"]
-    #[doc = " for all kernels which follow a stream-association change."]
-    #[doc = ""]
-    #[doc = " If \\p stream is destroyed while data is associated with it, the association is"]
-    #[doc = " removed and the association reverts to the default visibility of the allocation"]
-    #[doc = " as specified at ::cudaMallocManaged. For __managed__ variables, the default"]
-    #[doc = " association is always ::cudaMemAttachGlobal. Note that destroying a stream is an"]
-    #[doc = " asynchronous operation, and as a result, the change to default association won't"]
-    #[doc = " happen until all work in the stream has completed."]
-    #[doc = ""]
-    #[doc = " \\param stream  - Stream in which to enqueue the attach operation"]
-    #[doc = " \\param devPtr  - Pointer to memory (must be a pointer to managed memory or"]
-    #[doc = "                  to a valid host-accessible region of system-allocated"]
-    #[doc = "                  memory)"]
-    #[doc = " \\param length  - Length of memory (defaults to zero)"]
-    #[doc = " \\param flags   - Must be one of ::cudaMemAttachGlobal, ::cudaMemAttachHost or ::cudaMemAttachSingle (defaults to ::cudaMemAttachSingle)"]
-    #[doc = ""]
-    #[doc = " \\return"]
-    #[doc = " ::cudaSuccess,"]
-    #[doc = " ::cudaErrorNotReady,"]
-    #[doc = " ::cudaErrorInvalidValue,"]
-    #[doc = " ::cudaErrorInvalidResourceHandle"]
-    #[doc = " \\notefnerr"]
-    #[doc = " \\note_init_rt"]
-    #[doc = " \\note_callback"]
-    #[doc = ""]
-    #[doc = " \\sa ::cudaStreamCreate, ::cudaStreamCreateWithFlags, ::cudaStreamWaitEvent, ::cudaStreamSynchronize, ::cudaStreamAddCallback, ::cudaStreamDestroy, ::cudaMallocManaged,"]
-    #[doc = " ::cuStreamAttachMemAsync"]
     pub fn cudaStreamAttachMemAsync(
         stream: cudaStream_t,
         devPtr: *mut ::libc::c_void,
@@ -7919,8 +8984,16 @@ extern "C" {
     #[doc = " ::cudaEventCreateWithFlags, ::cudaEventQuery,"]
     #[doc = " ::cudaEventSynchronize, ::cudaEventDestroy, ::cudaEventElapsedTime,"]
     #[doc = " ::cudaStreamWaitEvent,"]
+    #[doc = " ::cudaEventRecordWithFlags,"]
     #[doc = " ::cuEventRecord"]
     pub fn cudaEventRecord(event: cudaEvent_t, stream: cudaStream_t) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaEventRecordWithFlags(
+        event: cudaEvent_t,
+        stream: cudaStream_t,
+        flags: ::libc::c_uint,
+    ) -> cudaError_t;
 }
 extern "C" {
     #[doc = " \\brief Queries an event's status"]
@@ -7996,10 +9069,12 @@ extern "C" {
     #[doc = " \\return"]
     #[doc = " ::cudaSuccess,"]
     #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorInvalidResourceHandle,"]
     #[doc = " ::cudaErrorLaunchFailure"]
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa \\ref ::cudaEventCreate(cudaEvent_t*) \"cudaEventCreate (C API)\","]
     #[doc = " ::cudaEventCreateWithFlags, ::cudaEventQuery,"]
@@ -8349,6 +9424,7 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa ::cudaImportExternalMemory"]
     #[doc = " ::cudaExternalMemoryGetMappedBuffer,"]
@@ -8386,14 +9462,16 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\code"]
     #[doc = "typedef enum cudaExternalSemaphoreHandleType_enum {"]
-    #[doc = "cudaExternalSemaphoreHandleTypeOpaqueFd       = 1,"]
-    #[doc = "cudaExternalSemaphoreHandleTypeOpaqueWin32    = 2,"]
-    #[doc = "cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt = 3,"]
-    #[doc = "cudaExternalSemaphoreHandleTypeD3D12Fence     = 4,"]
-    #[doc = "cudaExternalSemaphoreHandleTypeD3D11Fence     = 5,"]
-    #[doc = "cudaExternalSemaphoreHandleTypeNvSciSync      = 6,"]
-    #[doc = "cudaExternalSemaphoreHandleTypeKeyedMutex     = 7,"]
-    #[doc = "cudaExternalSemaphoreHandleTypeKeyedMutexKmt  = 8"]
+    #[doc = "cudaExternalSemaphoreHandleTypeOpaqueFd                = 1,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeOpaqueWin32             = 2,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt          = 3,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeD3D12Fence              = 4,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeD3D11Fence              = 5,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeNvSciSync               = 6,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeKeyedMutex              = 7,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeKeyedMutexKmt           = 8,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd     = 9,"]
+    #[doc = "cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32  = 10"]
     #[doc = "} cudaExternalSemaphoreHandleType;"]
     #[doc = " \\endcode"]
     #[doc = ""]
@@ -8470,6 +9548,26 @@ extern "C" {
     #[doc = " handle that is returned by IDXGIResource::GetSharedHandle when"]
     #[doc = " referring to a IDXGIKeyedMutex object."]
     #[doc = ""]
+    #[doc = " If ::cudaExternalSemaphoreHandleDesc::type is"]
+    #[doc = " ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd, then"]
+    #[doc = " ::cudaExternalSemaphoreHandleDesc::handle::fd must be a valid file"]
+    #[doc = " descriptor referencing a synchronization object. Ownership of the"]
+    #[doc = " file descriptor is transferred to the CUDA driver when the handle"]
+    #[doc = " is imported successfully. Performing any operations on the file"]
+    #[doc = " descriptor after it is imported results in undefined behavior."]
+    #[doc = ""]
+    #[doc = " If ::cudaExternalSemaphoreHandleDesc::type is"]
+    #[doc = " ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32, then exactly one of"]
+    #[doc = " ::cudaExternalSemaphoreHandleDesc::handle::win32::handle and"]
+    #[doc = " ::cudaExternalSemaphoreHandleDesc::handle::win32::name must not be"]
+    #[doc = " NULL. If ::cudaExternalSemaphoreHandleDesc::handle::win32::handle"]
+    #[doc = " is not NULL, then it must represent a valid shared NT handle that"]
+    #[doc = " references a synchronization object. Ownership of this handle is"]
+    #[doc = " not transferred to CUDA after the import operation, so the"]
+    #[doc = " application must release the handle using the appropriate system"]
+    #[doc = " call. If ::cudaExternalSemaphoreHandleDesc::handle::win32::name is"]
+    #[doc = " not NULL, then it must name a valid synchronization object."]
+    #[doc = ""]
     #[doc = " \\param extSem_out    - Returned handle to an external semaphore"]
     #[doc = " \\param semHandleDesc - Semaphore import handle descriptor"]
     #[doc = ""]
@@ -8489,68 +9587,7 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
-    #[doc = " \\brief Signals a set of external semaphore objects"]
-    #[doc = ""]
-    #[doc = " Enqueues a signal operation on a set of externally allocated"]
-    #[doc = " semaphore object in the specified stream. The operations will be"]
-    #[doc = " executed when all prior operations in the stream complete."]
-    #[doc = ""]
-    #[doc = " The exact semantics of signaling a semaphore depends on the type of"]
-    #[doc = " the object."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is any one of the following types:"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeOpaqueFd,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeOpaqueWin32,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt"]
-    #[doc = " then signaling the semaphore will set it to the signaled state."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is any one of the following types:"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeD3D12Fence,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeD3D11Fence"]
-    #[doc = " then the semaphore will be set to the value specified in"]
-    #[doc = " ::cudaExternalSemaphoreSignalParams::params::fence::value."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is of the type ::cudaExternalSemaphoreHandleTypeNvSciSync"]
-    #[doc = " this API sets ::cudaExternalSemaphoreSignalParams::params::nvSciSync::fence to a"]
-    #[doc = " value that can be used by subsequent waiters of the same NvSciSync object to"]
-    #[doc = " order operations with those currently submitted in \\p stream. Such an update"]
-    #[doc = " will overwrite previous contents of"]
-    #[doc = " ::cudaExternalSemaphoreSignalParams::params::nvSciSync::fence. By deefault,"]
-    #[doc = " signaling such an external semaphore object causes appropriate memory synchronization"]
-    #[doc = " operations to be performed over all the external memory objects that are imported as"]
-    #[doc = " ::cudaExternalMemoryHandleTypeNvSciBuf. This ensures that any subsequent accesses"]
-    #[doc = " made by other importers of the same set of NvSciBuf memory object(s) are coherent."]
-    #[doc = " These operations can be skipped by specifying the flag"]
-    #[doc = " ::cudaExternalSemaphoreSignalSkipNvSciBufMemSync, which can be used as a"]
-    #[doc = " performance optimization when data coherency is not required. But specifying this"]
-    #[doc = " flag in scenarios where data coherency is required results in undefined behavior."]
-    #[doc = " Also, for semaphore object of the type ::cudaExternalSemaphoreHandleTypeNvSciSync,"]
-    #[doc = " if the NvSciSyncAttrList used to create the NvSciSyncObj had not set the flags in"]
-    #[doc = " ::cudaDeviceGetNvSciSyncAttributes to cudaNvSciSyncAttrSignal, this API will return"]
-    #[doc = " cudaErrorNotSupported."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is any one of the following types:"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeKeyedMutex,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeKeyedMutexKmt,"]
-    #[doc = " then the keyed mutex will be released with the key specified in"]
-    #[doc = " ::cudaExternalSemaphoreSignalParams::params::keyedmutex::key."]
-    #[doc = ""]
-    #[doc = " \\param extSemArray - Set of external semaphores to be signaled"]
-    #[doc = " \\param paramsArray - Array of semaphore parameters"]
-    #[doc = " \\param numExtSems  - Number of semaphores to signal"]
-    #[doc = " \\param stream     - Stream to enqueue the signal operations in"]
-    #[doc = ""]
-    #[doc = " \\return"]
-    #[doc = " ::cudaSuccess,"]
-    #[doc = " ::cudaErrorInvalidResourceHandle"]
-    #[doc = " \\notefnerr"]
-    #[doc = " \\note_init_rt"]
-    #[doc = " \\note_callback"]
-    #[doc = ""]
-    #[doc = " \\sa ::cudaImportExternalSemaphore,"]
-    #[doc = " ::cudaDestroyExternalSemaphore,"]
-    #[doc = " ::cudaWaitExternalSemaphoresAsync"]
-    pub fn cudaSignalExternalSemaphoresAsync(
+    pub fn cudaSignalExternalSemaphoresAsync_v2(
         extSemArray: *const cudaExternalSemaphore_t,
         paramsArray: *const cudaExternalSemaphoreSignalParams,
         numExtSems: ::libc::c_uint,
@@ -8558,77 +9595,7 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
-    #[doc = " \\brief Waits on a set of external semaphore objects"]
-    #[doc = ""]
-    #[doc = " Enqueues a wait operation on a set of externally allocated"]
-    #[doc = " semaphore object in the specified stream. The operations will be"]
-    #[doc = " executed when all prior operations in the stream complete."]
-    #[doc = ""]
-    #[doc = " The exact semantics of waiting on a semaphore depends on the type"]
-    #[doc = " of the object."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is any one of the following types:"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeOpaqueFd,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeOpaqueWin32,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt"]
-    #[doc = " then waiting on the semaphore will wait until the semaphore reaches"]
-    #[doc = " the signaled state. The semaphore will then be reset to the"]
-    #[doc = " unsignaled state. Therefore for every signal operation, there can"]
-    #[doc = " only be one wait operation."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is any one of the following types:"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeD3D12Fence,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeD3D11Fence"]
-    #[doc = " then waiting on the semaphore will wait until the value of the"]
-    #[doc = " semaphore is greater than or equal to"]
-    #[doc = " ::cudaExternalSemaphoreWaitParams::params::fence::value."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is of the type ::cudaExternalSemaphoreHandleTypeNvSciSync"]
-    #[doc = " then, waiting on the semaphore will wait until the"]
-    #[doc = " ::cudaExternalSemaphoreSignalParams::params::nvSciSync::fence is signaled by the"]
-    #[doc = " signaler of the NvSciSyncObj that was associated with this semaphore object."]
-    #[doc = " By default, waiting on such an external semaphore object causes appropriate"]
-    #[doc = " memory synchronization operations to be performed over all external memory objects"]
-    #[doc = " that are imported as ::cudaExternalMemoryHandleTypeNvSciBuf. This ensures that"]
-    #[doc = " any subsequent accesses made by other importers of the same set of NvSciBuf memory"]
-    #[doc = " object(s) are coherent. These operations can be skipped by specifying the flag"]
-    #[doc = " ::cudaExternalSemaphoreWaitSkipNvSciBufMemSync, which can be used as a"]
-    #[doc = " performance optimization when data coherency is not required. But specifying this"]
-    #[doc = " flag in scenarios where data coherency is required results in undefined behavior."]
-    #[doc = " Also, for semaphore object of the type ::cudaExternalSemaphoreHandleTypeNvSciSync,"]
-    #[doc = " if the NvSciSyncAttrList used to create the NvSciSyncObj had not set the flags in"]
-    #[doc = " ::cudaDeviceGetNvSciSyncAttributes to cudaNvSciSyncAttrWait, this API will return"]
-    #[doc = " cudaErrorNotSupported."]
-    #[doc = ""]
-    #[doc = " If the semaphore object is any one of the following types:"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeKeyedMutex,"]
-    #[doc = " ::cudaExternalSemaphoreHandleTypeKeyedMutexKmt,"]
-    #[doc = " then the keyed mutex will be acquired when it is released with the key specified"]
-    #[doc = " in ::cudaExternalSemaphoreSignalParams::params::keyedmutex::key or"]
-    #[doc = " until the timeout specified by"]
-    #[doc = " ::cudaExternalSemaphoreSignalParams::params::keyedmutex::timeoutMs"]
-    #[doc = " has lapsed. The timeout interval can either be a finite value"]
-    #[doc = " specified in milliseconds or an infinite value. In case an infinite"]
-    #[doc = " value is specified the timeout never elapses. The windows INFINITE"]
-    #[doc = " macro must be used to specify infinite timeout"]
-    #[doc = ""]
-    #[doc = " \\param extSemArray - External semaphores to be waited on"]
-    #[doc = " \\param paramsArray - Array of semaphore parameters"]
-    #[doc = " \\param numExtSems  - Number of semaphores to wait on"]
-    #[doc = " \\param stream      - Stream to enqueue the wait operations in"]
-    #[doc = ""]
-    #[doc = " \\return"]
-    #[doc = " ::cudaSuccess,"]
-    #[doc = " ::cudaErrorInvalidResourceHandle"]
-    #[doc = " ::cudaErrorTimeout"]
-    #[doc = " \\notefnerr"]
-    #[doc = " \\note_init_rt"]
-    #[doc = " \\note_callback"]
-    #[doc = ""]
-    #[doc = " \\sa ::cudaImportExternalSemaphore,"]
-    #[doc = " ::cudaDestroyExternalSemaphore,"]
-    #[doc = " ::cudaSignalExternalSemaphoresAsync"]
-    pub fn cudaWaitExternalSemaphoresAsync(
+    pub fn cudaWaitExternalSemaphoresAsync_v2(
         extSemArray: *const cudaExternalSemaphore_t,
         paramsArray: *const cudaExternalSemaphoreWaitParams,
         numExtSems: ::libc::c_uint,
@@ -8650,6 +9617,7 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa ::cudaImportExternalSemaphore,"]
     #[doc = " ::cudaSignalExternalSemaphoresAsync,"]
@@ -8659,9 +9627,9 @@ extern "C" {
 extern "C" {
     #[doc = " \\brief Launches a device function"]
     #[doc = ""]
-    #[doc = " The function invokes kernel \\p func on \\p gridDim (\\p gridDim.x × \\p gridDim.y"]
-    #[doc = " × \\p gridDim.z) grid of blocks. Each block contains \\p blockDim (\\p blockDim.x ×"]
-    #[doc = " \\p blockDim.y × \\p blockDim.z) threads."]
+    #[doc = " The function invokes kernel \\p func on \\p gridDim (\\p gridDim.x &times; \\p gridDim.y"]
+    #[doc = " &times; \\p gridDim.z) grid of blocks. Each block contains \\p blockDim (\\p blockDim.x &times;"]
+    #[doc = " \\p blockDim.y &times; \\p blockDim.z) threads."]
     #[doc = ""]
     #[doc = " If the kernel has N parameters the \\p args should point to array of N pointers."]
     #[doc = " Each pointer, from <tt>args[0]</tt> to <tt>args[N - 1]</tt>, point to the region"]
@@ -8691,8 +9659,10 @@ extern "C" {
     #[doc = " ::cudaErrorLaunchOutOfResources,"]
     #[doc = " ::cudaErrorSharedObjectInitFailed,"]
     #[doc = " ::cudaErrorInvalidPtx,"]
+    #[doc = " ::cudaErrorUnsupportedPtxVersion,"]
     #[doc = " ::cudaErrorNoKernelImageForDevice,"]
-    #[doc = " ::cudaErrorJitCompilerNotFound"]
+    #[doc = " ::cudaErrorJitCompilerNotFound,"]
+    #[doc = " ::cudaErrorJitCompilationDisabled"]
     #[doc = " \\note_null_stream"]
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
@@ -8713,9 +9683,9 @@ extern "C" {
 extern "C" {
     #[doc = " \\brief Launches a device function where thread blocks can cooperate and synchronize as they execute"]
     #[doc = ""]
-    #[doc = " The function invokes kernel \\p func on \\p gridDim (\\p gridDim.x × \\p gridDim.y"]
-    #[doc = " × \\p gridDim.z) grid of blocks. Each block contains \\p blockDim (\\p blockDim.x ×"]
-    #[doc = " \\p blockDim.y × \\p blockDim.z) threads."]
+    #[doc = " The function invokes kernel \\p func on \\p gridDim (\\p gridDim.x &times; \\p gridDim.y"]
+    #[doc = " &times; \\p gridDim.z) grid of blocks. Each block contains \\p blockDim (\\p blockDim.x &times;"]
+    #[doc = " \\p blockDim.y &times; \\p blockDim.z) threads."]
     #[doc = ""]
     #[doc = " The device on which this kernel is invoked must have a non-zero value for"]
     #[doc = " the device attribute ::cudaDevAttrCooperativeLaunch."]
@@ -8916,8 +9886,6 @@ extern "C" {
     #[doc = " \\ref ::cudaFuncSetCacheConfig(T*, enum cudaFuncCache) \"cudaFuncSetCacheConfig (C++ API)\","]
     #[doc = " \\ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) \"cudaFuncGetAttributes (C API)\","]
     #[doc = " \\ref ::cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) \"cudaLaunchKernel (C API)\","]
-    #[doc = " ::cudaSetDoubleForDevice,"]
-    #[doc = " ::cudaSetDoubleForHost,"]
     #[doc = " ::cudaThreadGetCacheConfig,"]
     #[doc = " ::cudaThreadSetCacheConfig,"]
     #[doc = " ::cuFuncSetCacheConfig"]
@@ -9012,8 +9980,6 @@ extern "C" {
     #[doc = " \\ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) \"cudaFuncSetCacheConfig (C API)\","]
     #[doc = " \\ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, T*) \"cudaFuncGetAttributes (C++ API)\","]
     #[doc = " \\ref ::cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) \"cudaLaunchKernel (C API)\","]
-    #[doc = " ::cudaSetDoubleForDevice,"]
-    #[doc = " ::cudaSetDoubleForHost,"]
     #[doc = " ::cuFuncGetAttribute"]
     pub fn cudaFuncGetAttributes(
         attr: *mut cudaFuncAttributes,
@@ -9053,8 +10019,6 @@ extern "C" {
     #[doc = " \\ref ::cudaLaunchKernel(const T *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) \"cudaLaunchKernel (C++ API)\","]
     #[doc = " \\ref ::cudaFuncSetCacheConfig(T*, enum cudaFuncCache) \"cudaFuncSetCacheConfig (C++ API)\","]
     #[doc = " \\ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) \"cudaFuncGetAttributes (C API)\","]
-    #[doc = " ::cudaSetDoubleForDevice,"]
-    #[doc = " ::cudaSetDoubleForHost"]
     pub fn cudaFuncSetAttribute(
         func: *const ::libc::c_void,
         attr: cudaFuncAttribute,
@@ -9202,12 +10166,46 @@ extern "C" {
     #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeWithFlags(int*, int*, T, size_t, int, unsigned int) \"cudaOccupancyMaxPotentialBlockSizeWithFlags (C++ API)\","]
     #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMem(int*, int*, T, UnaryFunction, int) \"cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)\","]
     #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags(int*, int*, T, UnaryFunction, int, unsigned int) \"cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags (C++ API)\","]
+    #[doc = " \\ref ::cudaOccupancyAvailableDynamicSMemPerBlock(size_t*, T, int, int) \"cudaOccupancyAvailableDynamicSMemPerBlock (C++ API)\","]
     #[doc = " ::cuOccupancyMaxActiveBlocksPerMultiprocessor"]
     pub fn cudaOccupancyMaxActiveBlocksPerMultiprocessor(
         numBlocks: *mut ::libc::c_int,
         func: *const ::libc::c_void,
         blockSize: ::libc::c_int,
         dynamicSMemSize: usize,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Returns dynamic shared memory available per block when launching \\p numBlocks blocks on SM."]
+    #[doc = ""]
+    #[doc = " Returns in \\p *dynamicSmemSize the maximum size of dynamic shared memory to allow \\p numBlocks blocks per SM."]
+    #[doc = ""]
+    #[doc = " \\param dynamicSmemSize - Returned maximum dynamic shared memory"]
+    #[doc = " \\param func            - Kernel function for which occupancy is calculated"]
+    #[doc = " \\param numBlocks       - Number of blocks to fit on SM"]
+    #[doc = " \\param blockSize       - Size of the block"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidDevice,"]
+    #[doc = " ::cudaErrorInvalidDeviceFunction,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorUnknown,"]
+    #[doc = " \\notefnerr"]
+    #[doc = " \\note_init_rt"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags,"]
+    #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSize(int*, int*, T, size_t, int) \"cudaOccupancyMaxPotentialBlockSize (C++ API)\","]
+    #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeWithFlags(int*, int*, T, size_t, int, unsigned int) \"cudaOccupancyMaxPotentialBlockSizeWithFlags (C++ API)\","]
+    #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMem(int*, int*, T, UnaryFunction, int) \"cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)\","]
+    #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags(int*, int*, T, UnaryFunction, int, unsigned int) \"cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags (C++ API)\","]
+    #[doc = " ::cudaOccupancyAvailableDynamicSMemPerBlock"]
+    pub fn cudaOccupancyAvailableDynamicSMemPerBlock(
+        dynamicSmemSize: *mut usize,
+        func: *const ::libc::c_void,
+        numBlocks: ::libc::c_int,
+        blockSize: ::libc::c_int,
     ) -> cudaError_t;
 }
 extern "C" {
@@ -9250,6 +10248,7 @@ extern "C" {
     #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeWithFlags(int*, int*, T, size_t, int, unsigned int) \"cudaOccupancyMaxPotentialBlockSizeWithFlags (C++ API)\","]
     #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMem(int*, int*, T, UnaryFunction, int) \"cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)\","]
     #[doc = " \\ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags(int*, int*, T, UnaryFunction, int, unsigned int) \"cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags (C++ API)\","]
+    #[doc = " \\ref ::cudaOccupancyAvailableDynamicSMemPerBlock(size_t*, T, int, int) \"cudaOccupancyAvailableDynamicSMemPerBlock (C++ API)\","]
     #[doc = " ::cuOccupancyMaxActiveBlocksPerMultiprocessorWithFlags"]
     pub fn cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags(
         numBlocks: *mut ::libc::c_int,
@@ -9260,105 +10259,6 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
-    #[doc = " \\brief Allocates memory that will be automatically managed by the Unified Memory system"]
-    #[doc = ""]
-    #[doc = " Allocates \\p size bytes of managed memory on the device and returns in"]
-    #[doc = " \\p *devPtr a pointer to the allocated memory. If the device doesn't support"]
-    #[doc = " allocating managed memory, ::cudaErrorNotSupported is returned. Support"]
-    #[doc = " for managed memory can be queried using the device attribute"]
-    #[doc = " ::cudaDevAttrManagedMemory. The allocated memory is suitably"]
-    #[doc = " aligned for any kind of variable. The memory is not cleared. If \\p size"]
-    #[doc = " is 0, ::cudaMallocManaged returns ::cudaErrorInvalidValue. The pointer"]
-    #[doc = " is valid on the CPU and on all GPUs in the system that support managed memory."]
-    #[doc = " All accesses to this pointer must obey the Unified Memory programming model."]
-    #[doc = ""]
-    #[doc = " \\p flags specifies the default stream association for this allocation."]
-    #[doc = " \\p flags must be one of ::cudaMemAttachGlobal or ::cudaMemAttachHost. The"]
-    #[doc = " default value for \\p flags is ::cudaMemAttachGlobal."]
-    #[doc = " If ::cudaMemAttachGlobal is specified, then this memory is accessible from"]
-    #[doc = " any stream on any device. If ::cudaMemAttachHost is specified, then the"]
-    #[doc = " allocation should not be accessed from devices that have a zero value for the"]
-    #[doc = " device attribute ::cudaDevAttrConcurrentManagedAccess; an explicit call to"]
-    #[doc = " ::cudaStreamAttachMemAsync will be required to enable access on such devices."]
-    #[doc = ""]
-    #[doc = " If the association is later changed via ::cudaStreamAttachMemAsync to"]
-    #[doc = " a single stream, the default association, as specifed during ::cudaMallocManaged,"]
-    #[doc = " is restored when that stream is destroyed. For __managed__ variables, the"]
-    #[doc = " default association is always ::cudaMemAttachGlobal. Note that destroying a"]
-    #[doc = " stream is an asynchronous operation, and as a result, the change to default"]
-    #[doc = " association won't happen until all work in the stream has completed."]
-    #[doc = ""]
-    #[doc = " Memory allocated with ::cudaMallocManaged should be released with ::cudaFree."]
-    #[doc = ""]
-    #[doc = " Device memory oversubscription is possible for GPUs that have a non-zero value for the"]
-    #[doc = " device attribute ::cudaDevAttrConcurrentManagedAccess. Managed memory on"]
-    #[doc = " such GPUs may be evicted from device memory to host memory at any time by the Unified"]
-    #[doc = " Memory driver in order to make room for other allocations."]
-    #[doc = ""]
-    #[doc = " In a multi-GPU system where all GPUs have a non-zero value for the device attribute"]
-    #[doc = " ::cudaDevAttrConcurrentManagedAccess, managed memory may not be populated when this"]
-    #[doc = " API returns and instead may be populated on access. In such systems, managed memory can"]
-    #[doc = " migrate to any processor's memory at any time. The Unified Memory driver will employ heuristics to"]
-    #[doc = " maintain data locality and prevent excessive page faults to the extent possible. The application"]
-    #[doc = " can also guide the driver about memory usage patterns via ::cudaMemAdvise. The application"]
-    #[doc = " can also explicitly migrate memory to a desired processor's memory via"]
-    #[doc = " ::cudaMemPrefetchAsync."]
-    #[doc = ""]
-    #[doc = " In a multi-GPU system where all of the GPUs have a zero value for the device attribute"]
-    #[doc = " ::cudaDevAttrConcurrentManagedAccess and all the GPUs have peer-to-peer support"]
-    #[doc = " with each other, the physical storage for managed memory is created on the GPU which is active"]
-    #[doc = " at the time ::cudaMallocManaged is called. All other GPUs will reference the data at reduced"]
-    #[doc = " bandwidth via peer mappings over the PCIe bus. The Unified Memory driver does not migrate"]
-    #[doc = " memory among such GPUs."]
-    #[doc = ""]
-    #[doc = " In a multi-GPU system where not all GPUs have peer-to-peer support with each other and"]
-    #[doc = " where the value of the device attribute ::cudaDevAttrConcurrentManagedAccess"]
-    #[doc = " is zero for at least one of those GPUs, the location chosen for physical storage of managed"]
-    #[doc = " memory is system-dependent."]
-    #[doc = " - On Linux, the location chosen will be device memory as long as the current set of active"]
-    #[doc = " contexts are on devices that either have peer-to-peer support with each other or have a"]
-    #[doc = " non-zero value for the device attribute ::cudaDevAttrConcurrentManagedAccess."]
-    #[doc = " If there is an active context on a GPU that does not have a non-zero value for that device"]
-    #[doc = " attribute and it does not have peer-to-peer support with the other devices that have active"]
-    #[doc = " contexts on them, then the location for physical storage will be 'zero-copy' or host memory."]
-    #[doc = " Note that this means that managed memory that is located in device memory is migrated to"]
-    #[doc = " host memory if a new context is created on a GPU that doesn't have a non-zero value for"]
-    #[doc = " the device attribute and does not support peer-to-peer with at least one of the other devices"]
-    #[doc = " that has an active context. This in turn implies that context creation may fail if there is"]
-    #[doc = " insufficient host memory to migrate all managed allocations."]
-    #[doc = " - On Windows, the physical storage is always created in 'zero-copy' or host memory."]
-    #[doc = " All GPUs will reference the data at reduced bandwidth over the PCIe bus. In these"]
-    #[doc = " circumstances, use of the environment variable CUDA_VISIBLE_DEVICES is recommended to"]
-    #[doc = " restrict CUDA to only use those GPUs that have peer-to-peer support."]
-    #[doc = " Alternatively, users can also set CUDA_MANAGED_FORCE_DEVICE_ALLOC to a non-zero"]
-    #[doc = " value to force the driver to always use device memory for physical storage."]
-    #[doc = " When this environment variable is set to a non-zero value, all devices used in"]
-    #[doc = " that process that support managed memory have to be peer-to-peer compatible"]
-    #[doc = " with each other. The error ::cudaErrorInvalidDevice will be returned if a device"]
-    #[doc = " that supports managed memory is used and it is not peer-to-peer compatible with"]
-    #[doc = " any of the other managed memory supporting devices that were previously used in"]
-    #[doc = " that process, even if ::cudaDeviceReset has been called on those devices. These"]
-    #[doc = " environment variables are described in the CUDA programming guide under the"]
-    #[doc = " \"CUDA environment variables\" section."]
-    #[doc = ""]
-    #[doc = " \\param devPtr - Pointer to allocated device memory"]
-    #[doc = " \\param size   - Requested allocation size in bytes"]
-    #[doc = " \\param flags  - Must be either ::cudaMemAttachGlobal or ::cudaMemAttachHost (defaults to ::cudaMemAttachGlobal)"]
-    #[doc = ""]
-    #[doc = " \\return"]
-    #[doc = " ::cudaSuccess,"]
-    #[doc = " ::cudaErrorMemoryAllocation,"]
-    #[doc = " ::cudaErrorNotSupported,"]
-    #[doc = " ::cudaErrorInvalidValue"]
-    #[doc = " \\notefnerr"]
-    #[doc = " \\note_init_rt"]
-    #[doc = " \\note_callback"]
-    #[doc = ""]
-    #[doc = " \\sa ::cudaMallocPitch, ::cudaFree, ::cudaMallocArray, ::cudaFreeArray,"]
-    #[doc = " ::cudaMalloc3D, ::cudaMalloc3DArray,"]
-    #[doc = " \\ref ::cudaMallocHost(void**, size_t) \"cudaMallocHost (C API)\","]
-    #[doc = " ::cudaFreeHost, ::cudaHostAlloc, ::cudaDeviceGetAttribute, ::cudaStreamAttachMemAsync,"]
-    #[doc = " ::cuMemAllocManaged"]
     pub fn cudaMallocManaged(
         devPtr: *mut *mut ::libc::c_void,
         size: usize,
@@ -9494,6 +10394,9 @@ extern "C" {
     #[doc = " - ::cudaArrayDefault: This flag's value is defined to be 0 and provides default array allocation"]
     #[doc = " - ::cudaArraySurfaceLoadStore: Allocates an array that can be read from or written to using a surface reference"]
     #[doc = " - ::cudaArrayTextureGather: This flag indicates that texture gather operations will be performed on the array."]
+    #[doc = " - ::cudaArraySparse: Allocates a CUDA array without physical backing memory. The subregions within this sparse array"]
+    #[doc = "   can later be mapped to physical memory by calling ::cuMemMapArrayAsync. The physical backing memory must be allocated"]
+    #[doc = "   via ::cuMemCreate."]
     #[doc = ""]
     #[doc = " \\p width and \\p height must meet certain size requirements. See ::cudaMalloc3DArray() for more details."]
     #[doc = ""]
@@ -9723,6 +10626,15 @@ extern "C" {
     #[doc = "   third-party PCIe device, and it will marked as non cache-coherent and"]
     #[doc = "   contiguous."]
     #[doc = ""]
+    #[doc = " - ::cudaHostRegisterReadOnly: The passed memory pointer is treated as"]
+    #[doc = "   pointing to memory that is considered read-only by the device.  On"]
+    #[doc = "   platforms without ::cudaDevAttrPageableMemoryAccessUsesHostPageTables, this"]
+    #[doc = "   flag is required in order to register memory mapped to the CPU as"]
+    #[doc = "   read-only.  Support for the use of this flag can be queried from the device"]
+    #[doc = "   attribute cudaDeviceAttrReadOnlyHostRegisterSupported.  Using this flag with"]
+    #[doc = "   a current context associated with a device that does not have this attribute"]
+    #[doc = "   set will cause ::cudaHostRegister to error with cudaErrorNotSupported."]
+    #[doc = ""]
     #[doc = " All of these flags are orthogonal to one another: a developer may page-lock"]
     #[doc = " memory that is portable or mapped with no restrictions."]
     #[doc = ""]
@@ -9951,6 +10863,9 @@ extern "C" {
     #[doc = "   reference."]
     #[doc = " - ::cudaArrayTextureGather: This flag indicates that texture gather operations will be performed on the CUDA"]
     #[doc = "   array. Texture gather can only be performed on 2D CUDA arrays."]
+    #[doc = " - ::cudaArraySparse: Allocates a CUDA array without physical backing memory. The subregions within this sparse array"]
+    #[doc = "   can later be mapped to physical memory by calling ::cuMemMapArrayAsync. This flag can only be used for"]
+    #[doc = "   creating 2D, 3D or 2D layered sparse CUDA arrays. The physical backing memory must be  allocated via ::cuMemCreate."]
     #[doc = ""]
     #[doc = " The width, height and depth extents must meet certain size requirements as listed in the following table."]
     #[doc = " All values are specified in elements."]
@@ -10096,6 +11011,9 @@ extern "C" {
     #[doc = " - ::cudaArrayTextureGather: This flag indicates that texture gather operations will be performed on the CUDA"]
     #[doc = "   array. Texture gather can only be performed on 2D CUDA mipmapped arrays, and the gather operations are"]
     #[doc = "   performed only on the most detailed mipmap level."]
+    #[doc = " - ::cudaArraySparse: Allocates a CUDA array without physical backing memory. The subregions within this sparse array"]
+    #[doc = "   can later be mapped to physical memory by calling ::cuMemMapArrayAsync. This flag can only be used for creating"]
+    #[doc = "   2D, 3D or 2D layered sparse CUDA mipmapped arrays. The physical backing memory must be allocated via ::cuMemCreate."]
     #[doc = ""]
     #[doc = " The width, height and depth extents must meet certain size requirements as listed in the following table."]
     #[doc = " All values are specified in elements."]
@@ -10199,6 +11117,9 @@ extern "C" {
     #[doc = " If \\p level is greater than the maximum number of levels in this mipmapped array,"]
     #[doc = " ::cudaErrorInvalidValue is returned."]
     #[doc = ""]
+    #[doc = " If \\p mipmappedArray is NULL,"]
+    #[doc = " ::cudaErrorInvalidResourceHandle is returned."]
+    #[doc = ""]
     #[doc = " \\param levelArray     - Returned mipmap level CUDA array"]
     #[doc = " \\param mipmappedArray - CUDA mipmapped array"]
     #[doc = " \\param level          - Mipmap level"]
@@ -10206,6 +11127,7 @@ extern "C" {
     #[doc = " \\return"]
     #[doc = " ::cudaSuccess,"]
     #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " ::cudaErrorInvalidResourceHandle"]
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
@@ -10294,8 +11216,8 @@ extern "C" {
     #[doc = " The source and destination object may not overlap. If overlapping source"]
     #[doc = " and destination objects are specified, undefined behavior will result."]
     #[doc = ""]
-    #[doc = " The source object must lie entirely within the region defined by \\p srcPos"]
-    #[doc = " and \\p extent. The destination object must lie entirely within the region"]
+    #[doc = " The source object must entirely contain the region defined by \\p srcPos"]
+    #[doc = " and \\p extent. The destination object must entirely contain the region"]
     #[doc = " defined by \\p dstPos and \\p extent."]
     #[doc = ""]
     #[doc = " ::cudaMemcpy3D() returns an error if the pitch of \\p srcPtr or \\p dstPtr"]
@@ -10553,6 +11475,50 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
+    #[doc = " \\brief Gets a CUDA array plane from a CUDA array"]
+    #[doc = ""]
+    #[doc = " Returns in \\p pPlaneArray a CUDA array that represents a single format plane"]
+    #[doc = " of the CUDA array \\p hArray."]
+    #[doc = ""]
+    #[doc = " If \\p planeIdx is greater than the maximum number of planes in this array or if the array does"]
+    #[doc = " not have a multi-planar format e.g: ::cudaChannelFormatKindNV12, then ::cudaErrorInvalidValue is returned."]
+    #[doc = ""]
+    #[doc = " Note that if the \\p hArray has format ::cudaChannelFormatKindNV12, then passing in 0 for \\p planeIdx returns"]
+    #[doc = " a CUDA array of the same size as \\p hArray but with one 8-bit channel and ::cudaChannelFormatKindUnsigned as its format kind."]
+    #[doc = " If 1 is passed for \\p planeIdx, then the returned CUDA array has half the height and width"]
+    #[doc = " of \\p hArray with two 8-bit channels and ::cudaChannelFormatKindUnsigned as its format kind."]
+    #[doc = ""]
+    #[doc = " \\param pPlaneArray   - Returned CUDA array referenced by the \\p planeIdx"]
+    #[doc = " \\param hArray        - CUDA array"]
+    #[doc = " \\param planeIdx      - Plane index"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " ::cudaErrorInvalidResourceHandle"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cuArrayGetPlane"]
+    pub fn cudaArrayGetPlane(
+        pPlaneArray: *mut cudaArray_t,
+        hArray: cudaArray_t,
+        planeIdx: ::libc::c_uint,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaArrayGetSparseProperties(
+        sparseProperties: *mut cudaArraySparseProperties,
+        array: cudaArray_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaMipmappedArrayGetSparseProperties(
+        sparseProperties: *mut cudaArraySparseProperties,
+        mipmap: cudaMipmappedArray_t,
+    ) -> cudaError_t;
+}
+extern "C" {
     #[doc = " \\brief Copies data between host and device"]
     #[doc = ""]
     #[doc = " Copies \\p count bytes from the memory area pointed to by \\p src to the"]
@@ -10580,6 +11546,7 @@ extern "C" {
     #[doc = " \\note_callback"]
     #[doc = ""]
     #[doc = " \\note_sync"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy2D,"]
     #[doc = " ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,"]
@@ -10674,6 +11641,7 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy,"]
     #[doc = " ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,"]
@@ -10730,6 +11698,7 @@ extern "C" {
     #[doc = " \\note_sync"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy, ::cudaMemcpy2D,"]
     #[doc = " ::cudaMemcpy2DFromArray,"]
@@ -10787,6 +11756,7 @@ extern "C" {
     #[doc = " \\note_sync"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy, ::cudaMemcpy2D,"]
     #[doc = " ::cudaMemcpy2DToArray,"]
@@ -11000,6 +11970,7 @@ extern "C" {
     #[doc = " \\note_null_stream"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy, ::cudaMemcpy2D,"]
     #[doc = " ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,"]
@@ -11111,6 +12082,7 @@ extern "C" {
     #[doc = " \\note_null_stream"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy, ::cudaMemcpy2D,"]
     #[doc = " ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,"]
@@ -11176,6 +12148,7 @@ extern "C" {
     #[doc = " \\note_null_stream"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy, ::cudaMemcpy2D,"]
     #[doc = " ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,"]
@@ -11241,6 +12214,7 @@ extern "C" {
     #[doc = " \\note_null_stream"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_memcpy"]
     #[doc = ""]
     #[doc = " \\sa ::cudaMemcpy, ::cudaMemcpy2D,"]
     #[doc = " ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,"]
@@ -11420,7 +12394,7 @@ extern "C" {
     #[doc = " \\p devPtr refers to pinned host memory."]
     #[doc = ""]
     #[doc = " \\param devPtr - Pointer to 2D device memory"]
-    #[doc = " \\param pitch  - Pitch in bytes of 2D device memory"]
+    #[doc = " \\param pitch  - Pitch in bytes of 2D device memory(Unused if \\p height is 1)"]
     #[doc = " \\param value  - Value to set for each byte of specified memory"]
     #[doc = " \\param width  - Width of matrix set (columns in bytes)"]
     #[doc = " \\param height - Height of matrix set (rows)"]
@@ -11455,6 +12429,8 @@ extern "C" {
     #[doc = " to by \\p pitchedDevPtr, including any padding added to the end of each row."]
     #[doc = " The \\p xsize field specifies the logical width of each row in bytes, while"]
     #[doc = " the \\p ysize field specifies the height of each 2D slice in rows."]
+    #[doc = " The \\p pitch field of \\p pitchedDevPtr is ignored when \\p height and \\p depth"]
+    #[doc = " are both equal to 1."]
     #[doc = ""]
     #[doc = " The extents of the initialized region are specified as a \\p width in bytes,"]
     #[doc = " a \\p height in rows, and a \\p depth in slices."]
@@ -11551,7 +12527,7 @@ extern "C" {
     #[doc = " cannot be given local or shared pointers."]
     #[doc = ""]
     #[doc = " \\param devPtr - Pointer to 2D device memory"]
-    #[doc = " \\param pitch  - Pitch in bytes of 2D device memory"]
+    #[doc = " \\param pitch  - Pitch in bytes of 2D device memory(Unused if \\p height is 1)"]
     #[doc = " \\param value  - Value to set for each byte of specified memory"]
     #[doc = " \\param width  - Width of matrix set (columns in bytes)"]
     #[doc = " \\param height - Height of matrix set (rows)"]
@@ -11589,6 +12565,8 @@ extern "C" {
     #[doc = " to by \\p pitchedDevPtr, including any padding added to the end of each row."]
     #[doc = " The \\p xsize field specifies the logical width of each row in bytes, while"]
     #[doc = " the \\p ysize field specifies the height of each 2D slice in rows."]
+    #[doc = " The \\p pitch field of \\p pitchedDevPtr is ignored when \\p height and \\p depth"]
+    #[doc = " are both equal to 1."]
     #[doc = ""]
     #[doc = " The extents of the initialized region are specified as a \\p width in bytes,"]
     #[doc = " a \\p height in rows, and a \\p depth in slices."]
@@ -12258,6 +13236,385 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
+    #[doc = " \\brief Allocates memory with stream ordered semantics"]
+    #[doc = ""]
+    #[doc = " Inserts an allocation operation into \\p hStream."]
+    #[doc = " A pointer to the allocated memory is returned immediately in *dptr."]
+    #[doc = " The allocation must not be accessed until the the allocation operation completes."]
+    #[doc = " The allocation comes from the memory pool associated with the stream's device."]
+    #[doc = ""]
+    #[doc = " \\note The default memory pool of a device contains device memory from that device."]
+    #[doc = " \\note Basic stream ordering allows future work submitted into the same stream to use the allocation."]
+    #[doc = "       Stream query, stream synchronize, and CUDA events can be used to guarantee that the allocation"]
+    #[doc = "       operation completes before work submitted in a separate stream runs."]
+    #[doc = ""]
+    #[doc = " \\param[out] devPtr  - Returned device pointer"]
+    #[doc = " \\param[in] size     - Number of bytes to allocate"]
+    #[doc = " \\param[in] hStream  - The stream establishing the stream ordering contract and the memory pool to allocate from"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorNotSupported,"]
+    #[doc = " ::cudaErrorOutOfMemory,"]
+    #[doc = " \\notefnerr"]
+    #[doc = " \\note_null_stream"]
+    #[doc = " \\note_init_rt"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemAllocAsync, ::cudaMallocFromPoolAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceSetMemPool, ::cudaDeviceGetMemPool, ::cudaMemPoolSetAccess, ::cudaMemPoolSetAttribute, ::cudaMemPoolGetAttribute"]
+    pub fn cudaMallocAsync(
+        devPtr: *mut *mut ::libc::c_void,
+        size: usize,
+        hStream: cudaStream_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Frees memory with stream ordered semantics"]
+    #[doc = ""]
+    #[doc = " Inserts a free operation into \\p hStream."]
+    #[doc = " The allocation must not be accessed after stream execution reaches the free."]
+    #[doc = " After this API returns, accessing the memory from any subsequent work launched on the GPU"]
+    #[doc = " or querying its pointer attributes results in undefined behavior."]
+    #[doc = ""]
+    #[doc = " \\param dptr - memory to free"]
+    #[doc = " \\param hStream - The stream establishing the stream ordering promise"]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = " \\notefnerr"]
+    #[doc = " \\note_null_stream"]
+    #[doc = " \\note_init_rt"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemFreeAsync, ::cudaMallocAsync"]
+    pub fn cudaFreeAsync(devPtr: *mut ::libc::c_void, hStream: cudaStream_t) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Tries to release memory back to the OS"]
+    #[doc = ""]
+    #[doc = " Releases memory back to the OS until the pool contains fewer than minBytesToKeep"]
+    #[doc = " reserved bytes, or there is no more memory that the allocator can safely release."]
+    #[doc = " The allocator cannot release OS allocations that back outstanding asynchronous allocations."]
+    #[doc = " The OS allocations may happen at different granularity from the user allocations."]
+    #[doc = ""]
+    #[doc = " \\note: Allocations that have not been freed count as outstanding."]
+    #[doc = " \\note: Allocations that have been asynchronously freed but whose completion has"]
+    #[doc = "        not been observed on the host (eg. by a synchronize) can count as outstanding."]
+    #[doc = ""]
+    #[doc = " \\param[in] pool           - The memory pool to trim"]
+    #[doc = " \\param[in] minBytesToKeep - If the pool has less than minBytesToKeep reserved,"]
+    #[doc = " the TrimTo operation is a no-op.  Otherwise the pool will be guaranteed to have"]
+    #[doc = " at least minBytesToKeep bytes reserved after the operation."]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolTrimTo, ::cudaMallocAsync, ::cudaFreeAsync"]
+    pub fn cudaMemPoolTrimTo(memPool: cudaMemPool_t, minBytesToKeep: usize) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Sets attributes of a memory pool"]
+    #[doc = ""]
+    #[doc = " Supported attributes are:"]
+    #[doc = " - ::cudaMemPoolAttrReleaseThreshold: (value type = cuuint64_t)"]
+    #[doc = "                    Amount of reserved memory in bytes to hold onto before trying"]
+    #[doc = "                    to release memory back to the OS. When more than the release"]
+    #[doc = "                    threshold bytes of memory are held by the memory pool, the"]
+    #[doc = "                    allocator will try to release memory back to the OS on the"]
+    #[doc = "                    next call to stream, event or context synchronize. (default 0)"]
+    #[doc = " - ::cudaMemPoolReuseFollowEventDependencies: (value type = int)"]
+    #[doc = "                    Allow ::cudaMallocAsync to use memory asynchronously freed"]
+    #[doc = "                    in another stream as long as a stream ordering dependency"]
+    #[doc = "                    of the allocating stream on the free action exists."]
+    #[doc = "                    Cuda events and null stream interactions can create the required"]
+    #[doc = "                    stream ordered dependencies. (default enabled)"]
+    #[doc = " - ::cudaMemPoolReuseAllowOpportunistic: (value type = int)"]
+    #[doc = "                    Allow reuse of already completed frees when there is no dependency"]
+    #[doc = "                    between the free and allocation. (default enabled)"]
+    #[doc = " - ::cudaMemPoolReuseAllowInternalDependencies: (value type = int)"]
+    #[doc = "                    Allow ::cudaMallocAsync to insert new stream dependencies"]
+    #[doc = "                    in order to establish the stream ordering required to reuse"]
+    #[doc = "                    a piece of memory released by ::cudaFreeAsync (default enabled)."]
+    #[doc = ""]
+    #[doc = " \\param[in] pool  - The memory pool to modify"]
+    #[doc = " \\param[in] attr  - The attribute to modify"]
+    #[doc = " \\param[in] value - Pointer to the value to assign"]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolSetAttribute, ::cudaAllocAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool"]
+    pub fn cudaMemPoolSetAttribute(
+        memPool: cudaMemPool_t,
+        attr: cudaMemPoolAttr,
+        value: *mut ::libc::c_void,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Sets attributes of a memory pool"]
+    #[doc = ""]
+    #[doc = " Supported attributes are:"]
+    #[doc = " - ::cudaMemPoolAttrReleaseThreshold: (value type = cuuint64_t)"]
+    #[doc = "                    Amount of reserved memory in bytes to hold onto before trying"]
+    #[doc = "                    to release memory back to the OS. When more than the release"]
+    #[doc = "                    threshold bytes of memory are held by the memory pool, the"]
+    #[doc = "                    allocator will try to release memory back to the OS on the"]
+    #[doc = "                    next call to stream, event or context synchronize. (default 0)"]
+    #[doc = " - ::cudaMemPoolReuseFollowEventDependencies: (value type = int)"]
+    #[doc = "                    Allow ::cudaMallocAsync to use memory asynchronously freed"]
+    #[doc = "                    in another stream as long as a stream ordering dependency"]
+    #[doc = "                    of the allocating stream on the free action exists."]
+    #[doc = "                    Cuda events and null stream interactions can create the required"]
+    #[doc = "                    stream ordered dependencies. (default enabled)"]
+    #[doc = " - ::cudaMemPoolReuseAllowOpportunistic: (value type = int)"]
+    #[doc = "                    Allow reuse of already completed frees when there is no dependency"]
+    #[doc = "                    between the free and allocation. (default enabled)"]
+    #[doc = " - ::cudaMemPoolReuseAllowInternalDependencies: (value type = int)"]
+    #[doc = "                    Allow ::cudaMallocAsync to insert new stream dependencies"]
+    #[doc = "                    in order to establish the stream ordering required to reuse"]
+    #[doc = "                    a piece of memory released by ::cudaFreeAsync (default enabled)."]
+    #[doc = ""]
+    #[doc = " \\param[in] pool  - The memory pool to get attributes of"]
+    #[doc = " \\param[in] attr  - The attribute to get"]
+    #[doc = " \\param[in] value - Retrieved value"]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = " \\note_callback"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolGetAttribute, ::cudaAllocAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool"]
+    pub fn cudaMemPoolGetAttribute(
+        memPool: cudaMemPool_t,
+        attr: cudaMemPoolAttr,
+        value: *mut ::libc::c_void,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Controls visibility of pools between devices"]
+    #[doc = ""]
+    #[doc = " \\param[in] pool  - The pool being modified"]
+    #[doc = " \\param[in] map   - Array of access descriptors. Each descriptor instructs the access to enable for a single gpu"]
+    #[doc = " \\param[in] count - Number of descriptors in the map array."]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolSetAccess, ::cudaMemPoolGetAcces, ::cudaMallocAsync, cudaMemFreeAsync"]
+    pub fn cudaMemPoolSetAccess(
+        memPool: cudaMemPool_t,
+        descList: *const cudaMemAccessDesc,
+        count: usize,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Returns the accessibility of a pool from a device"]
+    #[doc = ""]
+    #[doc = " Returns the accessibility of the pool's memory from the specified location."]
+    #[doc = ""]
+    #[doc = " \\param[out] flags   - the accessibility of the pool from the specified location"]
+    #[doc = " \\param[in] memPool  - the pool being queried"]
+    #[doc = " \\param[in] location - the location accessing the pool"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolGetAccess, ::cudaMemPoolSetAccess"]
+    pub fn cudaMemPoolGetAccess(
+        flags: *mut cudaMemAccessFlags,
+        memPool: cudaMemPool_t,
+        location: *mut cudaMemLocation,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Creates a memory pool"]
+    #[doc = ""]
+    #[doc = " Creates a CUDA memory pool and returns the handle in \\p pool.  The \\p poolProps determines"]
+    #[doc = " the properties of the pool such as the backing device and IPC capabilities."]
+    #[doc = ""]
+    #[doc = " By default, the pool's memory will be accessible from the device it is allocated on."]
+    #[doc = ""]
+    #[doc = " \\note Specifying cudaMemHandleTypeNone creates a memory pool that will not support IPC."]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorNotSupported"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolCreate, ::cudaDeviceSetMemPool, ::cudaMallocFromPoolAsync, ::cudaMemPoolExportToShareableHandle"]
+    pub fn cudaMemPoolCreate(
+        memPool: *mut cudaMemPool_t,
+        poolProps: *const cudaMemPoolProps,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Destroys the specified memory pool"]
+    #[doc = ""]
+    #[doc = " If any pointers obtained from this pool haven't been freed or"]
+    #[doc = " the pool has free operations that haven't completed"]
+    #[doc = " when ::cudaMemPoolDestroy is invoked, the function will return immediately and the"]
+    #[doc = " resources associated with the pool will be released automatically"]
+    #[doc = " once there are no more outstanding allocations."]
+    #[doc = ""]
+    #[doc = " Destroying the current mempool of a device sets the default mempool of"]
+    #[doc = " that device as the current mempool for that device."]
+    #[doc = ""]
+    #[doc = " \\note A device's default memory pool cannot be destroyed."]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue"]
+    #[doc = ""]
+    #[doc = " \\sa cuMemPoolDestroy, ::cudaFreeAsync, ::cudaDeviceSetMemPool, ::cudaDeviceGetMemPool, ::cudaDeviceGetDefaultMemPool"]
+    pub fn cudaMemPoolDestroy(memPool: cudaMemPool_t) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Allocates memory from a specified pool with stream ordered semantics."]
+    #[doc = ""]
+    #[doc = " Inserts an allocation operation into \\p hStream."]
+    #[doc = " A pointer to the allocated memory is returned immediately in *dptr."]
+    #[doc = " The allocation must not be accessed until the the allocation operation completes."]
+    #[doc = " The allocation comes from the specified memory pool."]
+    #[doc = ""]
+    #[doc = " \\note"]
+    #[doc = "    -  The specified memory pool may be from a device different than that of the specified \\p hStream."]
+    #[doc = ""]
+    #[doc = "    -  Basic stream ordering allows future work submitted into the same stream to use the allocation."]
+    #[doc = "       Stream query, stream synchronize, and CUDA events can be used to guarantee that the allocation"]
+    #[doc = "       operation completes before work submitted in a separate stream runs."]
+    #[doc = ""]
+    #[doc = " \\param[out] ptr     - Returned device pointer"]
+    #[doc = " \\param[in] bytesize - Number of bytes to allocate"]
+    #[doc = " \\param[in] memPool  - The pool to allocate from"]
+    #[doc = " \\param[in] stream   - The stream establishing the stream ordering semantic"]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorNotSupported,"]
+    #[doc = " ::cudaErrorOutOfMemory"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemAllocFromPoolAsync, ::cudaMallocAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool, ::cudaMemPoolCreate, ::cudaMemPoolSetAccess, ::cudaMemPoolSetAttribute"]
+    pub fn cudaMallocFromPoolAsync(
+        ptr: *mut *mut ::libc::c_void,
+        size: usize,
+        memPool: cudaMemPool_t,
+        stream: cudaStream_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Exports a memory pool to the requested handle type."]
+    #[doc = ""]
+    #[doc = " Given an IPC capable mempool, create an OS handle to share the pool with another process."]
+    #[doc = " A recipient process can convert the shareable handle into a mempool with ::cudaMemPoolImportFromShareableHandle."]
+    #[doc = " Individual pointers can then be shared with the ::cudaMemPoolExportPointer and ::cudaMemPoolImportPointer APIs."]
+    #[doc = " The implementation of what the shareable handle is and how it can be transferred is defined by the requested"]
+    #[doc = " handle type."]
+    #[doc = ""]
+    #[doc = " \\note: To create an IPC capable mempool, create a mempool with a CUmemAllocationHandleType other than cudaMemHandleTypeNone."]
+    #[doc = ""]
+    #[doc = " \\param[out] handle_out  - Returned OS handle"]
+    #[doc = " \\param[in] pool         - pool to export"]
+    #[doc = " \\param[in] handleType   - the type of handle to create"]
+    #[doc = " \\param[in] flags        - must be 0"]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorOutOfMemory"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolExportToShareableHandle, ::cudaMemPoolImportFromShareableHandle, ::cudaMemPoolExportPointer, ::cudaMemPoolImportPointer"]
+    pub fn cudaMemPoolExportToShareableHandle(
+        shareableHandle: *mut ::libc::c_void,
+        memPool: cudaMemPool_t,
+        handleType: cudaMemAllocationHandleType,
+        flags: ::libc::c_uint,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief imports a memory pool from a shared handle."]
+    #[doc = ""]
+    #[doc = " Specific allocations can be imported from the imported pool with ::cudaMemPoolImportPointer."]
+    #[doc = ""]
+    #[doc = " \\note Imported memory pools do not support creating new allocations."]
+    #[doc = "       As such imported memory pools may not be used in ::cudaDeviceSetMemPool"]
+    #[doc = "       or ::cudaMallocFromPoolAsync calls."]
+    #[doc = ""]
+    #[doc = " \\param[out] pool_out    - Returned memory pool"]
+    #[doc = " \\param[in] handle       - OS handle of the pool to open"]
+    #[doc = " \\param[in] handleType   - The type of handle being imported"]
+    #[doc = " \\param[in] flags        - must be 0"]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorOutOfMemory"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolImportFromShareableHandle, ::cudaMemPoolExportToShareableHandle, ::cudaMemPoolExportPointer, ::cudaMemPoolImportPointer"]
+    pub fn cudaMemPoolImportFromShareableHandle(
+        memPool: *mut cudaMemPool_t,
+        shareableHandle: *mut ::libc::c_void,
+        handleType: cudaMemAllocationHandleType,
+        flags: ::libc::c_uint,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Export data to share a memory pool allocation between processes."]
+    #[doc = ""]
+    #[doc = " Constructs \\p shareData_out for sharing a specific allocation from an already shared memory pool."]
+    #[doc = " The recipient process can import the allocation with the ::cudaMemPoolImportPointer api."]
+    #[doc = " The data is not a handle and may be shared through any IPC mechanism."]
+    #[doc = ""]
+    #[doc = " \\param[out] shareData_out - Returned export data"]
+    #[doc = " \\param[in] ptr            - pointer to memory being exported"]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorOutOfMemory"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolExportPointer, ::cudaMemPoolExportToShareableHandle, ::cudaMemPoolImportFromShareableHandle, ::cudaMemPoolImportPointer"]
+    pub fn cudaMemPoolExportPointer(
+        exportData: *mut cudaMemPoolPtrExportData,
+        ptr: *mut ::libc::c_void,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Import a memory pool allocation from another process."]
+    #[doc = ""]
+    #[doc = " Returns in \\p ptr_out a pointer to the imported memory."]
+    #[doc = " The imported memory must not be accessed before the allocation operation completes"]
+    #[doc = " in the exporting process. The imported memory must be freed from all importing processes before"]
+    #[doc = " being freed in the exporting process. The pointer may be freed with cudaFree"]
+    #[doc = " or cudaFreeAsync.  If ::cudaFreeAsync is used, the free must be completed"]
+    #[doc = " on the importing process before the free operation on the exporting process."]
+    #[doc = ""]
+    #[doc = " \\note The ::cudaFreeAsync api may be used in the exporting process before"]
+    #[doc = "       the ::cudaFreeAsync operation completes in its stream as long as the"]
+    #[doc = "       ::cudaFreeAsync in the exporting process specifies a stream with"]
+    #[doc = "       a stream dependency on the importing process's ::cudaMemFreeAsync."]
+    #[doc = ""]
+    #[doc = " \\param[out] ptr_out  - pointer to imported memory"]
+    #[doc = " \\param[in] pool      - pool from which to import"]
+    #[doc = " \\param[in] shareData - data specifying the memory to import"]
+    #[doc = ""]
+    #[doc = " \\returns"]
+    #[doc = " ::CUDA_SUCCESS,"]
+    #[doc = " ::CUDA_ERROR_INVALID_VALUE,"]
+    #[doc = " ::CUDA_ERROR_NOT_INITIALIZED,"]
+    #[doc = " ::CUDA_ERROR_OUT_OF_MEMORY"]
+    #[doc = ""]
+    #[doc = " \\sa ::cuMemPoolImportPointer, ::cudaMemPoolExportToShareableHandle, ::cudaMemPoolImportFromShareableHandle, ::cudaMemPoolExportPointer"]
+    pub fn cudaMemPoolImportPointer(
+        ptr: *mut *mut ::libc::c_void,
+        memPool: cudaMemPool_t,
+        exportData: *mut cudaMemPoolPtrExportData,
+    ) -> cudaError_t;
+}
+extern "C" {
     #[doc = " \\brief Returns attributes about a specified pointer"]
     #[doc = ""]
     #[doc = " Returns in \\p *attributes the attributes of the pointer \\p ptr."]
@@ -12270,20 +13627,13 @@ extern "C" {
     #[doc = " The ::cudaPointerAttributes structure is defined as:"]
     #[doc = " \\code"]
     #[doc = "struct cudaPointerAttributes {"]
-    #[doc = "enum cudaMemoryType memoryType;"]
     #[doc = "enum cudaMemoryType type;"]
     #[doc = "int device;"]
     #[doc = "void *devicePointer;"]
     #[doc = "void *hostPointer;"]
-    #[doc = "int isManaged;"]
     #[doc = "}"]
     #[doc = "\\endcode"]
     #[doc = " In this structure, the individual fields mean"]
-    #[doc = ""]
-    #[doc = " - \\ref ::cudaPointerAttributes::memoryType identifies the"]
-    #[doc = "   location of the memory associated with pointer \\p ptr.  It can be"]
-    #[doc = "   ::cudaMemoryTypeHost for host memory or ::cudaMemoryTypeDevice for device"]
-    #[doc = "   and managed memory. It has been deprecated in favour of ::cudaPointerAttributes::type."]
     #[doc = ""]
     #[doc = " - \\ref ::cudaPointerAttributes::type identifies type of memory. It can be"]
     #[doc = "    ::cudaMemoryTypeUnregistered for unregistered host memory,"]
@@ -12309,10 +13659,6 @@ extern "C" {
     #[doc = "   may be accessed on the host."]
     #[doc = "   If the memory referred to by \\p ptr cannot be accessed directly by the"]
     #[doc = "   host then this is NULL."]
-    #[doc = ""]
-    #[doc = " - \\ref ::cudaPointerAttributes::isManaged \"isManaged\" indicates if"]
-    #[doc = "   the pointer \\p ptr points to managed memory or not. It has been deprecated"]
-    #[doc = "   in favour of ::cudaPointerAttributes::type."]
     #[doc = ""]
     #[doc = " \\param attributes - Attributes for the specified pointer"]
     #[doc = " \\param ptr        - Pointer to get attributes for"]
@@ -12445,6 +13791,7 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphicsD3D9RegisterResource,"]
@@ -13184,6 +14531,7 @@ extern "C" {
     #[doc = "float                       mipmapLevelBias;"]
     #[doc = "float                       minMipmapLevelClamp;"]
     #[doc = "float                       maxMipmapLevelClamp;"]
+    #[doc = "int                         disableTrilinearOptimization;"]
     #[doc = "};"]
     #[doc = " \\endcode"]
     #[doc = " where"]
@@ -13240,6 +14588,8 @@ extern "C" {
     #[doc = " - ::cudaTextureDesc::minMipmapLevelClamp specifies the lower end of the mipmap level range to clamp access to."]
     #[doc = ""]
     #[doc = " - ::cudaTextureDesc::maxMipmapLevelClamp specifies the upper end of the mipmap level range to clamp access to."]
+    #[doc = ""]
+    #[doc = " - ::cudaTextureDesc::disableTrilinearOptimization specifies whether the trilinear filtering optimizations will be disabled."]
     #[doc = ""]
     #[doc = ""]
     #[doc = " The ::cudaResourceViewDesc struct is defined as"]
@@ -13322,6 +14672,7 @@ extern "C" {
     #[doc = " ::cudaErrorInvalidValue"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaCreateTextureObject,"]
@@ -13438,6 +14789,7 @@ extern "C" {
     #[doc = " ::cudaErrorInvalidValue"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaCreateSurfaceObject,"]
@@ -13711,6 +15063,76 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
+    #[doc = " \\brief Copies attributes from source node to destination node."]
+    #[doc = ""]
+    #[doc = " Copies attributes from source node \\p src to destination node \\p dst."]
+    #[doc = " Both node must have the same context."]
+    #[doc = ""]
+    #[doc = " \\param[out] dst Destination node"]
+    #[doc = " \\param[in] src Source node"]
+    #[doc = " For list of attributes see ::cudaKernelNodeAttrID"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidContext"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cudaAccessPolicyWindow"]
+    pub fn cudaGraphKernelNodeCopyAttributes(
+        hSrc: cudaGraphNode_t,
+        hDst: cudaGraphNode_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Queries node attribute."]
+    #[doc = ""]
+    #[doc = " Queries attribute \\p attr from node \\p hNode and stores it in corresponding"]
+    #[doc = " member of \\p value_out."]
+    #[doc = ""]
+    #[doc = " \\param[in] hNode"]
+    #[doc = " \\param[in] attr"]
+    #[doc = " \\param[out] value_out"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorInvalidResourceHandle"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cudaAccessPolicyWindow"]
+    pub fn cudaGraphKernelNodeGetAttribute(
+        hNode: cudaGraphNode_t,
+        attr: cudaKernelNodeAttrID,
+        value_out: *mut cudaKernelNodeAttrValue,
+    ) -> cudaError_t;
+}
+extern "C" {
+    #[doc = " \\brief Sets node attribute."]
+    #[doc = ""]
+    #[doc = " Sets attribute \\p attr on node \\p hNode from corresponding attribute of"]
+    #[doc = " \\p value."]
+    #[doc = ""]
+    #[doc = " \\param[out] hNode"]
+    #[doc = " \\param[in] attr"]
+    #[doc = " \\param[out] value"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess,"]
+    #[doc = " ::cudaErrorInvalidValue,"]
+    #[doc = " ::cudaErrorInvalidResourceHandle"]
+    #[doc = " \\notefnerr"]
+    #[doc = ""]
+    #[doc = " \\sa"]
+    #[doc = " ::cudaAccessPolicyWindow"]
+    pub fn cudaGraphKernelNodeSetAttribute(
+        hNode: cudaGraphNode_t,
+        attr: cudaKernelNodeAttrID,
+        value: *const cudaKernelNodeAttrValue,
+    ) -> cudaError_t;
+}
+extern "C" {
     #[doc = " \\brief Creates a memcpy node and adds it to a graph"]
     #[doc = ""]
     #[doc = " Creates a new memcpy node and adds it to \\p graph with \\p numDependencies"]
@@ -13742,6 +15164,9 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaMemcpy3D,"]
+    #[doc = " ::cudaGraphAddMemcpyNodeToSymbol,"]
+    #[doc = " ::cudaGraphAddMemcpyNodeFromSymbol,"]
+    #[doc = " ::cudaGraphAddMemcpyNode1D,"]
     #[doc = " ::cudaGraphMemcpyNodeGetParams,"]
     #[doc = " ::cudaGraphMemcpyNodeSetParams,"]
     #[doc = " ::cudaGraphCreate,"]
@@ -13757,6 +15182,44 @@ extern "C" {
         pDependencies: *const cudaGraphNode_t,
         numDependencies: usize,
         pCopyParams: *const cudaMemcpy3DParms,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphAddMemcpyNodeToSymbol(
+        pGraphNode: *mut cudaGraphNode_t,
+        graph: cudaGraph_t,
+        pDependencies: *const cudaGraphNode_t,
+        numDependencies: usize,
+        symbol: *const ::libc::c_void,
+        src: *const ::libc::c_void,
+        count: usize,
+        offset: usize,
+        kind: cudaMemcpyKind,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphAddMemcpyNodeFromSymbol(
+        pGraphNode: *mut cudaGraphNode_t,
+        graph: cudaGraph_t,
+        pDependencies: *const cudaGraphNode_t,
+        numDependencies: usize,
+        dst: *mut ::libc::c_void,
+        symbol: *const ::libc::c_void,
+        count: usize,
+        offset: usize,
+        kind: cudaMemcpyKind,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphAddMemcpyNode1D(
+        pGraphNode: *mut cudaGraphNode_t,
+        graph: cudaGraph_t,
+        pDependencies: *const cudaGraphNode_t,
+        numDependencies: usize,
+        dst: *mut ::libc::c_void,
+        src: *const ::libc::c_void,
+        count: usize,
+        kind: cudaMemcpyKind,
     ) -> cudaError_t;
 }
 extern "C" {
@@ -13802,11 +15265,43 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaMemcpy3D,"]
+    #[doc = " ::cudaGraphMemcpyNodeSetParamsToSymbol,"]
+    #[doc = " ::cudaGraphMemcpyNodeSetParamsFromSymbol,"]
+    #[doc = " ::cudaGraphMemcpyNodeSetParams1D,"]
     #[doc = " ::cudaGraphAddMemcpyNode,"]
     #[doc = " ::cudaGraphMemcpyNodeGetParams"]
     pub fn cudaGraphMemcpyNodeSetParams(
         node: cudaGraphNode_t,
         pNodeParams: *const cudaMemcpy3DParms,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphMemcpyNodeSetParamsToSymbol(
+        node: cudaGraphNode_t,
+        symbol: *const ::libc::c_void,
+        src: *const ::libc::c_void,
+        count: usize,
+        offset: usize,
+        kind: cudaMemcpyKind,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphMemcpyNodeSetParamsFromSymbol(
+        node: cudaGraphNode_t,
+        dst: *mut ::libc::c_void,
+        symbol: *const ::libc::c_void,
+        count: usize,
+        offset: usize,
+        kind: cudaMemcpyKind,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphMemcpyNodeSetParams1D(
+        node: cudaGraphNode_t,
+        dst: *mut ::libc::c_void,
+        src: *const ::libc::c_void,
+        count: usize,
+        kind: cudaMemcpyKind,
     ) -> cudaError_t;
 }
 extern "C" {
@@ -14109,6 +15604,88 @@ extern "C" {
         graph: cudaGraph_t,
         pDependencies: *const cudaGraphNode_t,
         numDependencies: usize,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphAddEventRecordNode(
+        pGraphNode: *mut cudaGraphNode_t,
+        graph: cudaGraph_t,
+        pDependencies: *const cudaGraphNode_t,
+        numDependencies: usize,
+        event: cudaEvent_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphEventRecordNodeGetEvent(
+        node: cudaGraphNode_t,
+        event_out: *mut cudaEvent_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphEventRecordNodeSetEvent(
+        node: cudaGraphNode_t,
+        event: cudaEvent_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphAddEventWaitNode(
+        pGraphNode: *mut cudaGraphNode_t,
+        graph: cudaGraph_t,
+        pDependencies: *const cudaGraphNode_t,
+        numDependencies: usize,
+        event: cudaEvent_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphEventWaitNodeGetEvent(
+        node: cudaGraphNode_t,
+        event_out: *mut cudaEvent_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphEventWaitNodeSetEvent(node: cudaGraphNode_t, event: cudaEvent_t)
+        -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphAddExternalSemaphoresSignalNode(
+        pGraphNode: *mut cudaGraphNode_t,
+        graph: cudaGraph_t,
+        pDependencies: *const cudaGraphNode_t,
+        numDependencies: usize,
+        nodeParams: *const cudaExternalSemaphoreSignalNodeParams,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExternalSemaphoresSignalNodeGetParams(
+        hNode: cudaGraphNode_t,
+        params_out: *mut cudaExternalSemaphoreSignalNodeParams,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExternalSemaphoresSignalNodeSetParams(
+        hNode: cudaGraphNode_t,
+        nodeParams: *const cudaExternalSemaphoreSignalNodeParams,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphAddExternalSemaphoresWaitNode(
+        pGraphNode: *mut cudaGraphNode_t,
+        graph: cudaGraph_t,
+        pDependencies: *const cudaGraphNode_t,
+        numDependencies: usize,
+        nodeParams: *const cudaExternalSemaphoreWaitNodeParams,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExternalSemaphoresWaitNodeGetParams(
+        hNode: cudaGraphNode_t,
+        params_out: *mut cudaExternalSemaphoreWaitNodeParams,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExternalSemaphoresWaitNodeSetParams(
+        hNode: cudaGraphNode_t,
+        nodeParams: *const cudaExternalSemaphoreWaitNodeParams,
     ) -> cudaError_t;
 }
 extern "C" {
@@ -14462,6 +16039,7 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphAddChildGraphNode,"]
@@ -14503,6 +16081,7 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphCreate,"]
+    #[doc = " ::cudaGraphUpload,"]
     #[doc = " ::cudaGraphLaunch,"]
     #[doc = " ::cudaGraphExecDestroy"]
     pub fn cudaGraphInstantiate(
@@ -14566,11 +16145,11 @@ extern "C" {
     #[doc = " or running launches of \\p hGraphExec are not affected by this call.  \\p node is also"]
     #[doc = " not modified by this call."]
     #[doc = ""]
-    #[doc = " Returns cudaErrorInvalidValue if the memory operands’ mappings changed or"]
+    #[doc = " Returns ::cudaErrorInvalidValue if the memory operands' mappings changed or"]
     #[doc = " either the original or new memory operands are multidimensional."]
     #[doc = ""]
     #[doc = " \\param hGraphExec  - The executable graph in which to set the specified node"]
-    #[doc = " \\param nodei       - Memcpy node from the graph which was used to instantiate graphExec"]
+    #[doc = " \\param node        - Memcpy node from the graph which was used to instantiate graphExec"]
     #[doc = " \\param pNodeParams - Updated Parameters to set"]
     #[doc = ""]
     #[doc = " \\return"]
@@ -14583,15 +16162,50 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphAddMemcpyNode,"]
-    #[doc = " ::cudaGraphMemcpyNodeSetParams"]
-    #[doc = " ::cudaGraphInstantiate"]
-    #[doc = " ::cudaGraphExecKernelNodeSetParams"]
-    #[doc = " ::cudaGraphExecMemsetNodeSetParams"]
+    #[doc = " ::cudaGraphMemcpyNodeSetParams,"]
+    #[doc = " ::cudaGraphInstantiate,"]
+    #[doc = " ::cudaGraphExecMemcpyNodeSetParamsToSymbol,"]
+    #[doc = " ::cudaGraphExecMemcpyNodeSetParamsFromSymbol,"]
+    #[doc = " ::cudaGraphExecMemcpyNodeSetParams1D,"]
+    #[doc = " ::cudaGraphExecKernelNodeSetParams,"]
+    #[doc = " ::cudaGraphExecMemsetNodeSetParams,"]
     #[doc = " ::cudaGraphExecHostNodeSetParams"]
     pub fn cudaGraphExecMemcpyNodeSetParams(
         hGraphExec: cudaGraphExec_t,
         node: cudaGraphNode_t,
         pNodeParams: *const cudaMemcpy3DParms,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExecMemcpyNodeSetParamsToSymbol(
+        hGraphExec: cudaGraphExec_t,
+        node: cudaGraphNode_t,
+        symbol: *const ::libc::c_void,
+        src: *const ::libc::c_void,
+        count: usize,
+        offset: usize,
+        kind: cudaMemcpyKind,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExecMemcpyNodeSetParamsFromSymbol(
+        hGraphExec: cudaGraphExec_t,
+        node: cudaGraphNode_t,
+        dst: *mut ::libc::c_void,
+        symbol: *const ::libc::c_void,
+        count: usize,
+        offset: usize,
+        kind: cudaMemcpyKind,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExecMemcpyNodeSetParams1D(
+        hGraphExec: cudaGraphExec_t,
+        node: cudaGraphNode_t,
+        dst: *mut ::libc::c_void,
+        src: *const ::libc::c_void,
+        count: usize,
+        kind: cudaMemcpyKind,
     ) -> cudaError_t;
 }
 extern "C" {
@@ -14610,7 +16224,7 @@ extern "C" {
     #[doc = " or running launches of \\p hGraphExec are not affected by this call.  \\p node is also"]
     #[doc = " not modified by this call."]
     #[doc = ""]
-    #[doc = " Returns cudaErrorInvalidValue if the memory operand’s mappings changed or"]
+    #[doc = " Returns cudaErrorInvalidValue if the memory operand's mappings changed or"]
     #[doc = " either the original or new memory operand are multidimensional."]
     #[doc = ""]
     #[doc = " \\param hGraphExec  - The executable graph in which to set the specified node"]
@@ -14675,6 +16289,41 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
+    pub fn cudaGraphExecChildGraphNodeSetParams(
+        hGraphExec: cudaGraphExec_t,
+        node: cudaGraphNode_t,
+        childGraph: cudaGraph_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExecEventRecordNodeSetEvent(
+        hGraphExec: cudaGraphExec_t,
+        hNode: cudaGraphNode_t,
+        event: cudaEvent_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExecEventWaitNodeSetEvent(
+        hGraphExec: cudaGraphExec_t,
+        hNode: cudaGraphNode_t,
+        event: cudaEvent_t,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExecExternalSemaphoresSignalNodeSetParams(
+        hGraphExec: cudaGraphExec_t,
+        hNode: cudaGraphNode_t,
+        nodeParams: *const cudaExternalSemaphoreSignalNodeParams,
+    ) -> cudaError_t;
+}
+extern "C" {
+    pub fn cudaGraphExecExternalSemaphoresWaitNodeSetParams(
+        hGraphExec: cudaGraphExec_t,
+        hNode: cudaGraphNode_t,
+        nodeParams: *const cudaExternalSemaphoreWaitNodeParams,
+    ) -> cudaError_t;
+}
+extern "C" {
     #[doc = " \\brief Check whether an executable graph can be updated with a graph and perform the update if possible"]
     #[doc = ""]
     #[doc = " Updates the node parameters in the instantiated graph specified by \\p hGraphExec with the"]
@@ -14683,7 +16332,9 @@ extern "C" {
     #[doc = " Limitations:"]
     #[doc = ""]
     #[doc = " - Kernel nodes:"]
-    #[doc = "   - The function must not change (same restriction as cudaGraphExecKernelNodeSetParams())"]
+    #[doc = "   - The owning context of the function cannot change."]
+    #[doc = "   - A node whose function originally did not use CUDA dynamic parallelism cannot be updated"]
+    #[doc = "     to a function which uses CDP"]
     #[doc = " - Memset and memcpy nodes:"]
     #[doc = "   - The CUDA device(s) to which the operand(s) was allocated/mapped cannot change."]
     #[doc = "   - The source/destination memory must be allocated from the same contexts as the original"]
@@ -14694,10 +16345,6 @@ extern "C" {
     #[doc = "     CU_MEMORYTYPE_ARRAY, etc.) is not supported."]
     #[doc = ""]
     #[doc = " Note:  The API may add further restrictions in future releases.  The return code should always be checked."]
-    #[doc = ""]
-    #[doc = " Some node types are not currently supported:"]
-    #[doc = " - Empty graph nodes(cudaGraphNodeTypeEmpty)"]
-    #[doc = " - Child graphs(cudaGraphNodeTypeGraph)."]
     #[doc = ""]
     #[doc = " cudaGraphExecUpdate sets \\p updateResult_out to cudaGraphExecUpdateErrorTopologyChanged under"]
     #[doc = " the following conditions:"]
@@ -14715,14 +16362,15 @@ extern "C" {
     #[doc = " - cudaGraphExecUpdateErrorTopologyChanged if the graph topology changed"]
     #[doc = " - cudaGraphExecUpdateErrorNodeTypeChanged if the type of a node changed, in which case"]
     #[doc = "   \\p hErrorNode_out is set to the node from \\p hGraph."]
-    #[doc = " - cudaGraphExecUpdateErrorFunctionChanged if the func field of a kernel changed, in which"]
-    #[doc = "   case \\p hErrorNode_out is set to the node from \\p hGraph"]
+    #[doc = " - cudaGraphExecUpdateErrorFunctionChanged if the function of a kernel node changed (CUDA driver < 11.2)"]
+    #[doc = " - cudaGraphExecUpdateErrorUnsupportedFunctionChange if the func field of a kernel changed in an"]
+    #[doc = "   unsupported way(see note above), in which case \\p hErrorNode_out is set to the node from \\p hGraph"]
     #[doc = " - cudaGraphExecUpdateErrorParametersChanged if any parameters to a node changed in a way"]
     #[doc = "   that is not supported, in which case \\p hErrorNode_out is set to the node from \\p hGraph"]
     #[doc = " - cudaGraphExecUpdateErrorNotSupported if something about a node is unsupported, like"]
-    #[doc = "   the node’s type or configuration, in which case \\p hErrorNode_out is set to the node from \\p hGraph"]
+    #[doc = "   the node's type or configuration, in which case \\p hErrorNode_out is set to the node from \\p hGraph"]
     #[doc = ""]
-    #[doc = " If \\p updateResult_out isn’t set in one of the situations described above, the update check passes"]
+    #[doc = " If \\p updateResult_out isn't set in one of the situations described above, the update check passes"]
     #[doc = " and cudaGraphExecUpdate updates \\p hGraphExec to match the contents of \\p hGraph.  If an error happens"]
     #[doc = " during the update, \\p updateResult_out will be set to cudaGraphExecUpdateError; otherwise,"]
     #[doc = " \\p updateResult_out is set to cudaGraphExecUpdateSuccess."]
@@ -14754,6 +16402,9 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
+    pub fn cudaGraphUpload(graphExec: cudaGraphExec_t, stream: cudaStream_t) -> cudaError_t;
+}
+extern "C" {
     #[doc = " \\brief Launches an executable graph in a stream"]
     #[doc = ""]
     #[doc = " Executes \\p graphExec in \\p stream. Only one instance of \\p graphExec may be executing"]
@@ -14774,6 +16425,7 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphInstantiate,"]
+    #[doc = " ::cudaGraphUpload,"]
     #[doc = " ::cudaGraphExecDestroy"]
     pub fn cudaGraphLaunch(graphExec: cudaGraphExec_t, stream: cudaStream_t) -> cudaError_t;
 }
@@ -14791,9 +16443,11 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphInstantiate,"]
+    #[doc = " ::cudaGraphUpload,"]
     #[doc = " ::cudaGraphLaunch"]
     pub fn cudaGraphExecDestroy(graphExec: cudaGraphExec_t) -> cudaError_t;
 }
@@ -14811,6 +16465,7 @@ extern "C" {
     #[doc = " \\notefnerr"]
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
+    #[doc = " \\note_destroy_ub"]
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphCreate"]
@@ -14823,8 +16478,25 @@ extern "C" {
         pExportTableId: *const cudaUUID_t,
     ) -> cudaError_t;
 }
+extern "C" {
+    #[doc = " \\brief Get pointer to device entry function that matches entry function \\p symbolPtr"]
+    #[doc = ""]
+    #[doc = " Returns in \\p functionPtr the device entry function corresponding to the symbol \\p symbolPtr."]
+    #[doc = ""]
+    #[doc = " \\param functionPtr     - Returns the device entry function"]
+    #[doc = " \\param symbolPtr       - Pointer to device entry function to search for"]
+    #[doc = ""]
+    #[doc = " \\return"]
+    #[doc = " ::cudaSuccess"]
+    #[doc = ""]
+    pub fn cudaGetFuncBySymbol(
+        functionPtr: *mut cudaFunction_t,
+        symbolPtr: *const ::libc::c_void,
+    ) -> cudaError_t;
+}
 pub type __int32_t = ::libc::c_int;
 pub type __uint32_t = ::libc::c_uint;
+pub type __int64_t = ::libc::c_long;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudnnContext {
@@ -14855,6 +16527,7 @@ pub enum cudnnStatus_t {
     CUDNN_STATUS_RUNTIME_PREREQUISITE_MISSING = 11,
     CUDNN_STATUS_RUNTIME_IN_PROGRESS = 12,
     CUDNN_STATUS_RUNTIME_FP_OVERFLOW = 13,
+    CUDNN_STATUS_VERSION_MISMATCH = 14,
 }
 extern "C" {
     pub fn cudnnGetErrorString(status: cudnnStatus_t) -> *const ::libc::c_char;
@@ -14902,12 +16575,6 @@ pub struct cudnnTensorStruct {
     _unused: [u8; 0],
 }
 pub type cudnnTensorDescriptor_t = *mut cudnnTensorStruct;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnConvolutionStruct {
-    _unused: [u8; 0],
-}
-pub type cudnnConvolutionDescriptor_t = *mut cudnnConvolutionStruct;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudnnPoolingStruct {
@@ -14983,6 +16650,7 @@ pub enum cudnnMathType_t {
     CUDNN_DEFAULT_MATH = 0,
     CUDNN_TENSOR_OP_MATH = 1,
     CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION = 2,
+    CUDNN_FMA_MATH = 3,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -14997,13 +16665,6 @@ pub enum cudnnNanPropagation_t {
 pub enum cudnnDeterminism_t {
     CUDNN_NON_DETERMINISTIC = 0,
     CUDNN_DETERMINISTIC = 1,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnReorderType_t {
-    CUDNN_DEFAULT_REORDER = 0,
-    CUDNN_NO_REORDER = 1,
 }
 extern "C" {
     pub fn cudnnCreateTensorDescriptor(tensorDesc: *mut cudnnTensorDescriptor_t) -> cudnnStatus_t;
@@ -15166,24 +16827,6 @@ extern "C" {
         beta: *const ::libc::c_void,
         destDesc: cudnnTensorDescriptor_t,
         destData: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetFoldedConvBackwardDataDescriptors(
-        handle: cudnnHandle_t,
-        filterDesc: cudnnFilterDescriptor_t,
-        diffDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        gradDesc: cudnnTensorDescriptor_t,
-        transformFormat: cudnnTensorFormat_t,
-        foldedFilterDesc: cudnnFilterDescriptor_t,
-        paddedDiffDesc: cudnnTensorDescriptor_t,
-        foldedConvDesc: cudnnConvolutionDescriptor_t,
-        foldedGradDesc: cudnnTensorDescriptor_t,
-        filterFoldTransDesc: cudnnTensorTransformDescriptor_t,
-        diffPadTransDesc: cudnnTensorTransformDescriptor_t,
-        gradFoldTransDesc: cudnnTensorTransformDescriptor_t,
-        gradUnfoldTransDesc: cudnnTensorTransformDescriptor_t,
     ) -> cudnnStatus_t;
 }
 extern "C" {
@@ -15358,13 +17001,6 @@ extern "C" {
         alpha: *const ::libc::c_void,
     ) -> cudnnStatus_t;
 }
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnConvolutionMode_t {
-    CUDNN_CONVOLUTION = 0,
-    CUDNN_CROSS_CORRELATION = 1,
-}
 extern "C" {
     pub fn cudnnCreateFilterDescriptor(filterDesc: *mut cudnnFilterDescriptor_t) -> cudnnStatus_t;
 }
@@ -15430,843 +17066,6 @@ extern "C" {
 extern "C" {
     pub fn cudnnDestroyFilterDescriptor(filterDesc: cudnnFilterDescriptor_t) -> cudnnStatus_t;
 }
-extern "C" {
-    pub fn cudnnReorderFilterAndBias(
-        handle: cudnnHandle_t,
-        filterDesc: cudnnFilterDescriptor_t,
-        reorderType: cudnnReorderType_t,
-        filterData: *const ::libc::c_void,
-        reorderedFilterData: *mut ::libc::c_void,
-        reorderBias: ::libc::c_int,
-        biasData: *const ::libc::c_void,
-        reorderedBiasData: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnCreateConvolutionDescriptor(
-        convDesc: *mut cudnnConvolutionDescriptor_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetConvolutionMathType(
-        convDesc: cudnnConvolutionDescriptor_t,
-        mathType: cudnnMathType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionMathType(
-        convDesc: cudnnConvolutionDescriptor_t,
-        mathType: *mut cudnnMathType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetConvolutionGroupCount(
-        convDesc: cudnnConvolutionDescriptor_t,
-        groupCount: ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionGroupCount(
-        convDesc: cudnnConvolutionDescriptor_t,
-        groupCount: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetConvolutionReorderType(
-        convDesc: cudnnConvolutionDescriptor_t,
-        reorderType: cudnnReorderType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionReorderType(
-        convDesc: cudnnConvolutionDescriptor_t,
-        reorderType: *mut cudnnReorderType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetConvolution2dDescriptor(
-        convDesc: cudnnConvolutionDescriptor_t,
-        pad_h: ::libc::c_int,
-        pad_w: ::libc::c_int,
-        u: ::libc::c_int,
-        v: ::libc::c_int,
-        dilation_h: ::libc::c_int,
-        dilation_w: ::libc::c_int,
-        mode: cudnnConvolutionMode_t,
-        computeType: cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolution2dDescriptor(
-        convDesc: cudnnConvolutionDescriptor_t,
-        pad_h: *mut ::libc::c_int,
-        pad_w: *mut ::libc::c_int,
-        u: *mut ::libc::c_int,
-        v: *mut ::libc::c_int,
-        dilation_h: *mut ::libc::c_int,
-        dilation_w: *mut ::libc::c_int,
-        mode: *mut cudnnConvolutionMode_t,
-        computeType: *mut cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolution2dForwardOutputDim(
-        convDesc: cudnnConvolutionDescriptor_t,
-        inputTensorDesc: cudnnTensorDescriptor_t,
-        filterDesc: cudnnFilterDescriptor_t,
-        n: *mut ::libc::c_int,
-        c: *mut ::libc::c_int,
-        h: *mut ::libc::c_int,
-        w: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetConvolutionNdDescriptor(
-        convDesc: cudnnConvolutionDescriptor_t,
-        arrayLength: ::libc::c_int,
-        padA: *const ::libc::c_int,
-        filterStrideA: *const ::libc::c_int,
-        dilationA: *const ::libc::c_int,
-        mode: cudnnConvolutionMode_t,
-        computeType: cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionNdDescriptor(
-        convDesc: cudnnConvolutionDescriptor_t,
-        arrayLengthRequested: ::libc::c_int,
-        arrayLength: *mut ::libc::c_int,
-        padA: *mut ::libc::c_int,
-        strideA: *mut ::libc::c_int,
-        dilationA: *mut ::libc::c_int,
-        mode: *mut cudnnConvolutionMode_t,
-        computeType: *mut cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionNdForwardOutputDim(
-        convDesc: cudnnConvolutionDescriptor_t,
-        inputTensorDesc: cudnnTensorDescriptor_t,
-        filterDesc: cudnnFilterDescriptor_t,
-        nbDims: ::libc::c_int,
-        tensorOuputDimA: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDestroyConvolutionDescriptor(
-        convDesc: cudnnConvolutionDescriptor_t,
-    ) -> cudnnStatus_t;
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnConvolutionFwdPreference_t {
-    CUDNN_CONVOLUTION_FWD_NO_WORKSPACE = 0,
-    CUDNN_CONVOLUTION_FWD_PREFER_FASTEST = 1,
-    CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT = 2,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnConvolutionFwdAlgo_t {
-    CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM = 0,
-    CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM = 1,
-    CUDNN_CONVOLUTION_FWD_ALGO_GEMM = 2,
-    CUDNN_CONVOLUTION_FWD_ALGO_DIRECT = 3,
-    CUDNN_CONVOLUTION_FWD_ALGO_FFT = 4,
-    CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING = 5,
-    CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD = 6,
-    CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED = 7,
-    CUDNN_CONVOLUTION_FWD_ALGO_COUNT = 8,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnConvolutionFwdAlgoPerf_t {
-    pub algo: cudnnConvolutionFwdAlgo_t,
-    pub status: cudnnStatus_t,
-    pub time: f32,
-    pub memory: usize,
-    pub determinism: cudnnDeterminism_t,
-    pub mathType: cudnnMathType_t,
-    pub reserved: [::libc::c_int; 3usize],
-}
-#[test]
-fn bindgen_test_layout_cudnnConvolutionFwdAlgoPerf_t() {
-    assert_eq!(
-        ::std::mem::size_of::<cudnnConvolutionFwdAlgoPerf_t>(),
-        48usize,
-        concat!("Size of: ", stringify!(cudnnConvolutionFwdAlgoPerf_t))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cudnnConvolutionFwdAlgoPerf_t>(),
-        8usize,
-        concat!("Alignment of ", stringify!(cudnnConvolutionFwdAlgoPerf_t))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).algo as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionFwdAlgoPerf_t),
-            "::",
-            stringify!(algo)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).status as *const _ as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionFwdAlgoPerf_t),
-            "::",
-            stringify!(status)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).time as *const _ as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionFwdAlgoPerf_t),
-            "::",
-            stringify!(time)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).memory as *const _ as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionFwdAlgoPerf_t),
-            "::",
-            stringify!(memory)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).determinism as *const _
-                as usize
-        },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionFwdAlgoPerf_t),
-            "::",
-            stringify!(determinism)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).mathType as *const _ as usize
-        },
-        28usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionFwdAlgoPerf_t),
-            "::",
-            stringify!(mathType)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).reserved as *const _ as usize
-        },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionFwdAlgoPerf_t),
-            "::",
-            stringify!(reserved)
-        )
-    );
-}
-extern "C" {
-    pub fn cudnnGetConvolutionForwardAlgorithmMaxCount(
-        handle: cudnnHandle_t,
-        count: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindConvolutionForwardAlgorithm(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        wDesc: cudnnFilterDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        yDesc: cudnnTensorDescriptor_t,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionFwdAlgoPerf_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindConvolutionForwardAlgorithmEx(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        convDesc: cudnnConvolutionDescriptor_t,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionFwdAlgoPerf_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionForwardAlgorithm(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        wDesc: cudnnFilterDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        yDesc: cudnnTensorDescriptor_t,
-        preference: cudnnConvolutionFwdPreference_t,
-        memoryLimitInBytes: usize,
-        algo: *mut cudnnConvolutionFwdAlgo_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionForwardAlgorithm_v7(
-        handle: cudnnHandle_t,
-        srcDesc: cudnnTensorDescriptor_t,
-        filterDesc: cudnnFilterDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        destDesc: cudnnTensorDescriptor_t,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionFwdAlgoPerf_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionForwardWorkspaceSize(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        wDesc: cudnnFilterDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        yDesc: cudnnTensorDescriptor_t,
-        algo: cudnnConvolutionFwdAlgo_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnConvolutionForward(
-        handle: cudnnHandle_t,
-        alpha: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        convDesc: cudnnConvolutionDescriptor_t,
-        algo: cudnnConvolutionFwdAlgo_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        beta: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnConvolutionBiasActivationForward(
-        handle: cudnnHandle_t,
-        alpha1: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        convDesc: cudnnConvolutionDescriptor_t,
-        algo: cudnnConvolutionFwdAlgo_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        alpha2: *const ::libc::c_void,
-        zDesc: cudnnTensorDescriptor_t,
-        z: *const ::libc::c_void,
-        biasDesc: cudnnTensorDescriptor_t,
-        bias: *const ::libc::c_void,
-        activationDesc: cudnnActivationDescriptor_t,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnConvolutionBackwardBias(
-        handle: cudnnHandle_t,
-        alpha: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dbDesc: cudnnTensorDescriptor_t,
-        db: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnConvolutionBwdFilterPreference_t {
-    CUDNN_CONVOLUTION_BWD_FILTER_NO_WORKSPACE = 0,
-    CUDNN_CONVOLUTION_BWD_FILTER_PREFER_FASTEST = 1,
-    CUDNN_CONVOLUTION_BWD_FILTER_SPECIFY_WORKSPACE_LIMIT = 2,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnConvolutionBwdFilterAlgo_t {
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0 = 0,
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 = 1,
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT = 2,
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 = 3,
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD = 4,
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED = 5,
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING = 6,
-    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_COUNT = 7,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnConvolutionBwdFilterAlgoPerf_t {
-    pub algo: cudnnConvolutionBwdFilterAlgo_t,
-    pub status: cudnnStatus_t,
-    pub time: f32,
-    pub memory: usize,
-    pub determinism: cudnnDeterminism_t,
-    pub mathType: cudnnMathType_t,
-    pub reserved: [::libc::c_int; 3usize],
-}
-#[test]
-fn bindgen_test_layout_cudnnConvolutionBwdFilterAlgoPerf_t() {
-    assert_eq!(
-        ::std::mem::size_of::<cudnnConvolutionBwdFilterAlgoPerf_t>(),
-        48usize,
-        concat!("Size of: ", stringify!(cudnnConvolutionBwdFilterAlgoPerf_t))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cudnnConvolutionBwdFilterAlgoPerf_t>(),
-        8usize,
-        concat!(
-            "Alignment of ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).algo as *const _
-                as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
-            "::",
-            stringify!(algo)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).status as *const _
-                as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
-            "::",
-            stringify!(status)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).time as *const _
-                as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
-            "::",
-            stringify!(time)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).memory as *const _
-                as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
-            "::",
-            stringify!(memory)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).determinism as *const _
-                as usize
-        },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
-            "::",
-            stringify!(determinism)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).mathType as *const _
-                as usize
-        },
-        28usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
-            "::",
-            stringify!(mathType)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).reserved as *const _
-                as usize
-        },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
-            "::",
-            stringify!(reserved)
-        )
-    );
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardFilterAlgorithmMaxCount(
-        handle: cudnnHandle_t,
-        count: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindConvolutionBackwardFilterAlgorithm(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        dyDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        dwDesc: cudnnFilterDescriptor_t,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionBwdFilterAlgoPerf_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindConvolutionBackwardFilterAlgorithmEx(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        convDesc: cudnnConvolutionDescriptor_t,
-        dwDesc: cudnnFilterDescriptor_t,
-        dw: *mut ::libc::c_void,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionBwdFilterAlgoPerf_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardFilterAlgorithm(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        dyDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        dwDesc: cudnnFilterDescriptor_t,
-        preference: cudnnConvolutionBwdFilterPreference_t,
-        memoryLimitInBytes: usize,
-        algo: *mut cudnnConvolutionBwdFilterAlgo_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardFilterAlgorithm_v7(
-        handle: cudnnHandle_t,
-        srcDesc: cudnnTensorDescriptor_t,
-        diffDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        gradDesc: cudnnFilterDescriptor_t,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionBwdFilterAlgoPerf_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardFilterWorkspaceSize(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        dyDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        gradDesc: cudnnFilterDescriptor_t,
-        algo: cudnnConvolutionBwdFilterAlgo_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnConvolutionBackwardFilter(
-        handle: cudnnHandle_t,
-        alpha: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        convDesc: cudnnConvolutionDescriptor_t,
-        algo: cudnnConvolutionBwdFilterAlgo_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        beta: *const ::libc::c_void,
-        dwDesc: cudnnFilterDescriptor_t,
-        dw: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnConvolutionBwdDataPreference_t {
-    CUDNN_CONVOLUTION_BWD_DATA_NO_WORKSPACE = 0,
-    CUDNN_CONVOLUTION_BWD_DATA_PREFER_FASTEST = 1,
-    CUDNN_CONVOLUTION_BWD_DATA_SPECIFY_WORKSPACE_LIMIT = 2,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnConvolutionBwdDataAlgo_t {
-    CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 = 0,
-    CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 = 1,
-    CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT = 2,
-    CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING = 3,
-    CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD = 4,
-    CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED = 5,
-    CUDNN_CONVOLUTION_BWD_DATA_ALGO_COUNT = 6,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnConvolutionBwdDataAlgoPerf_t {
-    pub algo: cudnnConvolutionBwdDataAlgo_t,
-    pub status: cudnnStatus_t,
-    pub time: f32,
-    pub memory: usize,
-    pub determinism: cudnnDeterminism_t,
-    pub mathType: cudnnMathType_t,
-    pub reserved: [::libc::c_int; 3usize],
-}
-#[test]
-fn bindgen_test_layout_cudnnConvolutionBwdDataAlgoPerf_t() {
-    assert_eq!(
-        ::std::mem::size_of::<cudnnConvolutionBwdDataAlgoPerf_t>(),
-        48usize,
-        concat!("Size of: ", stringify!(cudnnConvolutionBwdDataAlgoPerf_t))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<cudnnConvolutionBwdDataAlgoPerf_t>(),
-        8usize,
-        concat!(
-            "Alignment of ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).algo as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
-            "::",
-            stringify!(algo)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).status as *const _
-                as usize
-        },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
-            "::",
-            stringify!(status)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).time as *const _ as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
-            "::",
-            stringify!(time)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).memory as *const _
-                as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
-            "::",
-            stringify!(memory)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).determinism as *const _
-                as usize
-        },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
-            "::",
-            stringify!(determinism)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).mathType as *const _
-                as usize
-        },
-        28usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
-            "::",
-            stringify!(mathType)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).reserved as *const _
-                as usize
-        },
-        32usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
-            "::",
-            stringify!(reserved)
-        )
-    );
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardDataAlgorithmMaxCount(
-        handle: cudnnHandle_t,
-        count: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindConvolutionBackwardDataAlgorithm(
-        handle: cudnnHandle_t,
-        wDesc: cudnnFilterDescriptor_t,
-        dyDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        dxDesc: cudnnTensorDescriptor_t,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionBwdDataAlgoPerf_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindConvolutionBackwardDataAlgorithmEx(
-        handle: cudnnHandle_t,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        convDesc: cudnnConvolutionDescriptor_t,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionBwdDataAlgoPerf_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardDataAlgorithm(
-        handle: cudnnHandle_t,
-        wDesc: cudnnFilterDescriptor_t,
-        dyDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        dxDesc: cudnnTensorDescriptor_t,
-        preference: cudnnConvolutionBwdDataPreference_t,
-        memoryLimitInBytes: usize,
-        algo: *mut cudnnConvolutionBwdDataAlgo_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardDataAlgorithm_v7(
-        handle: cudnnHandle_t,
-        filterDesc: cudnnFilterDescriptor_t,
-        diffDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        gradDesc: cudnnTensorDescriptor_t,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnConvolutionBwdDataAlgoPerf_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetConvolutionBackwardDataWorkspaceSize(
-        handle: cudnnHandle_t,
-        wDesc: cudnnFilterDescriptor_t,
-        dyDesc: cudnnTensorDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        dxDesc: cudnnTensorDescriptor_t,
-        algo: cudnnConvolutionBwdDataAlgo_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnConvolutionBackwardData(
-        handle: cudnnHandle_t,
-        alpha: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        convDesc: cudnnConvolutionDescriptor_t,
-        algo: cudnnConvolutionBwdDataAlgo_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        beta: *const ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnIm2Col(
-        handle: cudnnHandle_t,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        convDesc: cudnnConvolutionDescriptor_t,
-        colBuffer: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
 #[repr(u32)]
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -16293,21 +17092,6 @@ extern "C" {
         beta: *const ::libc::c_void,
         yDesc: cudnnTensorDescriptor_t,
         y: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSoftmaxBackward(
-        handle: cudnnHandle_t,
-        algo: cudnnSoftmaxAlgorithm_t,
-        mode: cudnnSoftmaxMode_t,
-        alpha: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
     ) -> cudnnStatus_t;
 }
 #[repr(u32)]
@@ -16406,22 +17190,6 @@ extern "C" {
         y: *mut ::libc::c_void,
     ) -> cudnnStatus_t;
 }
-extern "C" {
-    pub fn cudnnPoolingBackward(
-        handle: cudnnHandle_t,
-        poolingDesc: cudnnPoolingDescriptor_t,
-        alpha: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
 #[repr(u32)]
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -16472,22 +17240,6 @@ extern "C" {
     ) -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnActivationBackward(
-        handle: cudnnHandle_t,
-        activationDesc: cudnnActivationDescriptor_t,
-        alpha: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
     pub fn cudnnCreateLRNDescriptor(normDesc: *mut cudnnLRNDescriptor_t) -> cudnnStatus_t;
 }
 #[repr(u32)]
@@ -16530,23 +17282,6 @@ extern "C" {
         y: *mut ::libc::c_void,
     ) -> cudnnStatus_t;
 }
-extern "C" {
-    pub fn cudnnLRNCrossChannelBackward(
-        handle: cudnnHandle_t,
-        normDesc: cudnnLRNDescriptor_t,
-        lrnMode: cudnnLRNMode_t,
-        alpha: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
 #[repr(u32)]
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -16567,24 +17302,6 @@ extern "C" {
         beta: *const ::libc::c_void,
         yDesc: cudnnTensorDescriptor_t,
         y: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDivisiveNormalizationBackward(
-        handle: cudnnHandle_t,
-        normDesc: cudnnLRNDescriptor_t,
-        mode: cudnnDivNormMode_t,
-        alpha: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        means: *const ::libc::c_void,
-        dy: *const ::libc::c_void,
-        temp: *mut ::libc::c_void,
-        temp2: *mut ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dXdMeansDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-        dMeans: *mut ::libc::c_void,
     ) -> cudnnStatus_t;
 }
 #[repr(u32)]
@@ -16611,94 +17328,6 @@ pub enum cudnnBatchNormOps_t {
     CUDNN_BATCHNORM_OPS_BN_ADD_ACTIVATION = 2,
 }
 extern "C" {
-    pub fn cudnnGetBatchNormalizationForwardTrainingExWorkspaceSize(
-        handle: cudnnHandle_t,
-        mode: cudnnBatchNormMode_t,
-        bnOps: cudnnBatchNormOps_t,
-        xDesc: cudnnTensorDescriptor_t,
-        zDesc: cudnnTensorDescriptor_t,
-        yDesc: cudnnTensorDescriptor_t,
-        bnScaleBiasMeanVarDesc: cudnnTensorDescriptor_t,
-        activationDesc: cudnnActivationDescriptor_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetBatchNormalizationBackwardExWorkspaceSize(
-        handle: cudnnHandle_t,
-        mode: cudnnBatchNormMode_t,
-        bnOps: cudnnBatchNormOps_t,
-        xDesc: cudnnTensorDescriptor_t,
-        yDesc: cudnnTensorDescriptor_t,
-        dyDesc: cudnnTensorDescriptor_t,
-        dzDesc: cudnnTensorDescriptor_t,
-        dxDesc: cudnnTensorDescriptor_t,
-        dBnScaleBiasDesc: cudnnTensorDescriptor_t,
-        activationDesc: cudnnActivationDescriptor_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetBatchNormalizationTrainingExReserveSpaceSize(
-        handle: cudnnHandle_t,
-        mode: cudnnBatchNormMode_t,
-        bnOps: cudnnBatchNormOps_t,
-        activationDesc: cudnnActivationDescriptor_t,
-        xDesc: cudnnTensorDescriptor_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnBatchNormalizationForwardTraining(
-        handle: cudnnHandle_t,
-        mode: cudnnBatchNormMode_t,
-        alpha: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-        bnScaleBiasMeanVarDesc: cudnnTensorDescriptor_t,
-        bnScale: *const ::libc::c_void,
-        bnBias: *const ::libc::c_void,
-        exponentialAverageFactor: f64,
-        resultRunningMean: *mut ::libc::c_void,
-        resultRunningVariance: *mut ::libc::c_void,
-        epsilon: f64,
-        resultSaveMean: *mut ::libc::c_void,
-        resultSaveInvVariance: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnBatchNormalizationForwardTrainingEx(
-        handle: cudnnHandle_t,
-        mode: cudnnBatchNormMode_t,
-        bnOps: cudnnBatchNormOps_t,
-        alpha: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        xData: *const ::libc::c_void,
-        zDesc: cudnnTensorDescriptor_t,
-        zData: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        yData: *mut ::libc::c_void,
-        bnScaleBiasMeanVarDesc: cudnnTensorDescriptor_t,
-        bnScale: *const ::libc::c_void,
-        bnBias: *const ::libc::c_void,
-        exponentialAverageFactor: f64,
-        resultRunningMean: *mut ::libc::c_void,
-        resultRunningVariance: *mut ::libc::c_void,
-        epsilon: f64,
-        resultSaveMean: *mut ::libc::c_void,
-        resultSaveInvVariance: *mut ::libc::c_void,
-        activationDesc: cudnnActivationDescriptor_t,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
     pub fn cudnnBatchNormalizationForwardInference(
         handle: cudnnHandle_t,
         mode: cudnnBatchNormMode_t,
@@ -16716,61 +17345,60 @@ extern "C" {
         epsilon: f64,
     ) -> cudnnStatus_t;
 }
-extern "C" {
-    pub fn cudnnBatchNormalizationBackward(
-        handle: cudnnHandle_t,
-        mode: cudnnBatchNormMode_t,
-        alphaDataDiff: *const ::libc::c_void,
-        betaDataDiff: *const ::libc::c_void,
-        alphaParamDiff: *const ::libc::c_void,
-        betaParamDiff: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-        dBnScaleBiasDesc: cudnnTensorDescriptor_t,
-        bnScale: *const ::libc::c_void,
-        dBnScaleResult: *mut ::libc::c_void,
-        dBnBiasResult: *mut ::libc::c_void,
-        epsilon: f64,
-        savedMean: *const ::libc::c_void,
-        savedInvVariance: *const ::libc::c_void,
-    ) -> cudnnStatus_t;
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnNormMode_t {
+    CUDNN_NORM_PER_ACTIVATION = 0,
+    CUDNN_NORM_PER_CHANNEL = 1,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnNormAlgo_t {
+    CUDNN_NORM_ALGO_STANDARD = 0,
+    CUDNN_NORM_ALGO_PERSIST = 1,
 }
 extern "C" {
-    pub fn cudnnBatchNormalizationBackwardEx(
-        handle: cudnnHandle_t,
-        mode: cudnnBatchNormMode_t,
-        bnOps: cudnnBatchNormOps_t,
-        alphaDataDiff: *const ::libc::c_void,
-        betaDataDiff: *const ::libc::c_void,
-        alphaParamDiff: *const ::libc::c_void,
-        betaParamDiff: *const ::libc::c_void,
+    pub fn cudnnDeriveNormTensorDescriptor(
+        derivedNormScaleBiasDesc: cudnnTensorDescriptor_t,
+        derivedNormMeanVarDesc: cudnnTensorDescriptor_t,
         xDesc: cudnnTensorDescriptor_t,
-        xData: *const ::libc::c_void,
-        yDesc: cudnnTensorDescriptor_t,
-        yData: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dyData: *const ::libc::c_void,
-        dzDesc: cudnnTensorDescriptor_t,
-        dzData: *mut ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dxData: *mut ::libc::c_void,
-        dBnScaleBiasDesc: cudnnTensorDescriptor_t,
-        bnScaleData: *const ::libc::c_void,
-        bnBiasData: *const ::libc::c_void,
-        dBnScaleData: *mut ::libc::c_void,
-        dBnBiasData: *mut ::libc::c_void,
-        epsilon: f64,
-        savedMean: *const ::libc::c_void,
-        savedInvVariance: *const ::libc::c_void,
+        mode: cudnnNormMode_t,
+        groupCnt: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnNormOps_t {
+    CUDNN_NORM_OPS_NORM = 0,
+    CUDNN_NORM_OPS_NORM_ACTIVATION = 1,
+    CUDNN_NORM_OPS_NORM_ADD_ACTIVATION = 2,
+}
+extern "C" {
+    pub fn cudnnNormalizationForwardInference(
+        handle: cudnnHandle_t,
+        mode: cudnnNormMode_t,
+        normOps: cudnnNormOps_t,
+        algo: cudnnNormAlgo_t,
+        alpha: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        normScaleBiasDesc: cudnnTensorDescriptor_t,
+        normScale: *const ::libc::c_void,
+        normBias: *const ::libc::c_void,
+        normMeanVarDesc: cudnnTensorDescriptor_t,
+        estimatedMean: *const ::libc::c_void,
+        estimatedVariance: *const ::libc::c_void,
+        zDesc: cudnnTensorDescriptor_t,
+        z: *const ::libc::c_void,
         activationDesc: cudnnActivationDescriptor_t,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        epsilon: f64,
+        groupCnt: ::libc::c_int,
     ) -> cudnnStatus_t;
 }
 #[repr(u32)]
@@ -16807,14 +17435,6 @@ extern "C" {
     ) -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnSpatialTfGridGeneratorBackward(
-        handle: cudnnHandle_t,
-        stDesc: cudnnSpatialTransformerDescriptor_t,
-        dgrid: *const ::libc::c_void,
-        dtheta: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
     pub fn cudnnSpatialTfSamplerForward(
         handle: cudnnHandle_t,
         stDesc: cudnnSpatialTransformerDescriptor_t,
@@ -16825,24 +17445,6 @@ extern "C" {
         beta: *const ::libc::c_void,
         yDesc: cudnnTensorDescriptor_t,
         y: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSpatialTfSamplerBackward(
-        handle: cudnnHandle_t,
-        stDesc: cudnnSpatialTransformerDescriptor_t,
-        alpha: *const ::libc::c_void,
-        xDesc: cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        beta: *const ::libc::c_void,
-        dxDesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-        alphaDgrid: *const ::libc::c_void,
-        dyDesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        grid: *const ::libc::c_void,
-        betaDgrid: *const ::libc::c_void,
-        dgrid: *mut ::libc::c_void,
     ) -> cudnnStatus_t;
 }
 #[repr(C)]
@@ -16912,17 +17514,56 @@ extern "C" {
         reserveSpaceSizeInBytes: usize,
     ) -> cudnnStatus_t;
 }
-extern "C" {
-    pub fn cudnnDropoutBackward(
-        handle: cudnnHandle_t,
-        dropoutDesc: cudnnDropoutDescriptor_t,
-        dydesc: cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        dxdesc: cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnAlgorithmStruct {
+    _unused: [u8; 0],
+}
+pub type cudnnAlgorithmDescriptor_t = *mut cudnnAlgorithmStruct;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnAlgorithmPerformanceStruct {
+    _unused: [u8; 0],
+}
+pub type cudnnAlgorithmPerformance_t = *mut cudnnAlgorithmPerformanceStruct;
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnConvolutionFwdAlgo_t {
+    CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM = 0,
+    CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMP_GEMM = 1,
+    CUDNN_CONVOLUTION_FWD_ALGO_GEMM = 2,
+    CUDNN_CONVOLUTION_FWD_ALGO_DIRECT = 3,
+    CUDNN_CONVOLUTION_FWD_ALGO_FFT = 4,
+    CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING = 5,
+    CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD = 6,
+    CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD_NONFUSED = 7,
+    CUDNN_CONVOLUTION_FWD_ALGO_COUNT = 8,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnConvolutionBwdFilterAlgo_t {
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_0 = 0,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 = 1,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT = 2,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_3 = 3,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD = 4,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_WINOGRAD_NONFUSED = 5,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_FFT_TILING = 6,
+    CUDNN_CONVOLUTION_BWD_FILTER_ALGO_COUNT = 7,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnConvolutionBwdDataAlgo_t {
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 = 0,
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 = 1,
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT = 2,
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING = 3,
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD = 4,
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD_NONFUSED = 5,
+    CUDNN_CONVOLUTION_BWD_DATA_ALGO_COUNT = 6,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -16936,961 +17577,9 @@ pub enum cudnnRNNAlgo_t {
 #[repr(u32)]
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnRNNMode_t {
-    CUDNN_RNN_RELU = 0,
-    CUDNN_RNN_TANH = 1,
-    CUDNN_LSTM = 2,
-    CUDNN_GRU = 3,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnRNNBiasMode_t {
-    CUDNN_RNN_NO_BIAS = 0,
-    CUDNN_RNN_SINGLE_INP_BIAS = 1,
-    CUDNN_RNN_DOUBLE_BIAS = 2,
-    CUDNN_RNN_SINGLE_REC_BIAS = 3,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnDirectionMode_t {
-    CUDNN_UNIDIRECTIONAL = 0,
-    CUDNN_BIDIRECTIONAL = 1,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnRNNInputMode_t {
-    CUDNN_LINEAR_INPUT = 0,
-    CUDNN_SKIP_INPUT = 1,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnRNNClipMode_t {
-    CUDNN_RNN_CLIP_NONE = 0,
-    CUDNN_RNN_CLIP_MINMAX = 1,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnRNNDataLayout_t {
-    CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_UNPACKED = 0,
-    CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_PACKED = 1,
-    CUDNN_RNN_DATA_LAYOUT_BATCH_MAJOR_UNPACKED = 2,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnRNNPaddingMode_t {
-    CUDNN_RNN_PADDED_IO_DISABLED = 0,
-    CUDNN_RNN_PADDED_IO_ENABLED = 1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnRNNStruct {
-    _unused: [u8; 0],
-}
-pub type cudnnRNNDescriptor_t = *mut cudnnRNNStruct;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnPersistentRNNPlan {
-    _unused: [u8; 0],
-}
-pub type cudnnPersistentRNNPlan_t = *mut cudnnPersistentRNNPlan;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnRNNDataStruct {
-    _unused: [u8; 0],
-}
-pub type cudnnRNNDataDescriptor_t = *mut cudnnRNNDataStruct;
-extern "C" {
-    pub fn cudnnCreateRNNDescriptor(rnnDesc: *mut cudnnRNNDescriptor_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDestroyRNNDescriptor(rnnDesc: cudnnRNNDescriptor_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetRNNDescriptor(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        hiddenSize: ::libc::c_int,
-        numLayers: ::libc::c_int,
-        dropoutDesc: cudnnDropoutDescriptor_t,
-        inputMode: cudnnRNNInputMode_t,
-        direction: cudnnDirectionMode_t,
-        mode: cudnnRNNMode_t,
-        algo: cudnnRNNAlgo_t,
-        mathPrec: cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNDescriptor(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        hiddenSize: *mut ::libc::c_int,
-        numLayers: *mut ::libc::c_int,
-        dropoutDesc: *mut cudnnDropoutDescriptor_t,
-        inputMode: *mut cudnnRNNInputMode_t,
-        direction: *mut cudnnDirectionMode_t,
-        mode: *mut cudnnRNNMode_t,
-        algo: *mut cudnnRNNAlgo_t,
-        mathPrec: *mut cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetRNNMatrixMathType(
-        rnnDesc: cudnnRNNDescriptor_t,
-        mType: cudnnMathType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNMatrixMathType(
-        rnnDesc: cudnnRNNDescriptor_t,
-        mType: *mut cudnnMathType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetRNNBiasMode(
-        rnnDesc: cudnnRNNDescriptor_t,
-        biasMode: cudnnRNNBiasMode_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNBiasMode(
-        rnnDesc: cudnnRNNDescriptor_t,
-        biasMode: *mut cudnnRNNBiasMode_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNSetClip(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        clipMode: cudnnRNNClipMode_t,
-        clipNanOpt: cudnnNanPropagation_t,
-        lclip: f64,
-        rclip: f64,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNGetClip(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        clipMode: *mut cudnnRNNClipMode_t,
-        clipNanOpt: *mut cudnnNanPropagation_t,
-        lclip: *mut f64,
-        rclip: *mut f64,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetRNNProjectionLayers(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        recProjSize: ::libc::c_int,
-        outProjSize: ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNProjectionLayers(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        recProjSize: *mut ::libc::c_int,
-        outProjSize: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnCreatePersistentRNNPlan(
-        rnnDesc: cudnnRNNDescriptor_t,
-        minibatch: ::libc::c_int,
-        dataType: cudnnDataType_t,
-        plan: *mut cudnnPersistentRNNPlan_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDestroyPersistentRNNPlan(plan: cudnnPersistentRNNPlan_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetPersistentRNNPlan(
-        rnnDesc: cudnnRNNDescriptor_t,
-        plan: cudnnPersistentRNNPlan_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNWorkspaceSize(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNTrainingReserveSize(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNParamsSize(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        xDesc: cudnnTensorDescriptor_t,
-        sizeInBytes: *mut usize,
-        dataType: cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNLinLayerMatrixParams(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        pseudoLayer: ::libc::c_int,
-        xDesc: cudnnTensorDescriptor_t,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        linLayerID: ::libc::c_int,
-        linLayerMatDesc: cudnnFilterDescriptor_t,
-        linLayerMat: *mut *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNLinLayerBiasParams(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        pseudoLayer: ::libc::c_int,
-        xDesc: cudnnTensorDescriptor_t,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        linLayerID: ::libc::c_int,
-        linLayerBiasDesc: cudnnFilterDescriptor_t,
-        linLayerBias: *mut *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNForwardInference(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-        hyDesc: cudnnTensorDescriptor_t,
-        hy: *mut ::libc::c_void,
-        cyDesc: cudnnTensorDescriptor_t,
-        cy: *mut ::libc::c_void,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNForwardTraining(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-        hyDesc: cudnnTensorDescriptor_t,
-        hy: *mut ::libc::c_void,
-        cyDesc: cudnnTensorDescriptor_t,
-        cy: *mut ::libc::c_void,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNBackwardData(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        dyDesc: *const cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        dhyDesc: cudnnTensorDescriptor_t,
-        dhy: *const ::libc::c_void,
-        dcyDesc: cudnnTensorDescriptor_t,
-        dcy: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        dxDesc: *const cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-        dhxDesc: cudnnTensorDescriptor_t,
-        dhx: *mut ::libc::c_void,
-        dcxDesc: cudnnTensorDescriptor_t,
-        dcx: *mut ::libc::c_void,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNBackwardWeights(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        workspace: *const ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        dwDesc: cudnnFilterDescriptor_t,
-        dw: *mut ::libc::c_void,
-        reserveSpace: *const ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetRNNPaddingMode(
-        rnnDesc: cudnnRNNDescriptor_t,
-        paddingMode: cudnnRNNPaddingMode_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNPaddingMode(
-        rnnDesc: cudnnRNNDescriptor_t,
-        paddingMode: *mut cudnnRNNPaddingMode_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnCreateRNNDataDescriptor(
-        rnnDataDesc: *mut cudnnRNNDataDescriptor_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDestroyRNNDataDescriptor(rnnDataDesc: cudnnRNNDataDescriptor_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetRNNDataDescriptor(
-        rnnDataDesc: cudnnRNNDataDescriptor_t,
-        dataType: cudnnDataType_t,
-        layout: cudnnRNNDataLayout_t,
-        maxSeqLength: ::libc::c_int,
-        batchSize: ::libc::c_int,
-        vectorSize: ::libc::c_int,
-        seqLengthArray: *const ::libc::c_int,
-        paddingFill: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNDataDescriptor(
-        rnnDataDesc: cudnnRNNDataDescriptor_t,
-        dataType: *mut cudnnDataType_t,
-        layout: *mut cudnnRNNDataLayout_t,
-        maxSeqLength: *mut ::libc::c_int,
-        batchSize: *mut ::libc::c_int,
-        vectorSize: *mut ::libc::c_int,
-        arrayLengthRequested: ::libc::c_int,
-        seqLengthArray: *mut ::libc::c_int,
-        paddingFill: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNForwardTrainingEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        xDesc: cudnnRNNDataDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        yDesc: cudnnRNNDataDescriptor_t,
-        y: *mut ::libc::c_void,
-        hyDesc: cudnnTensorDescriptor_t,
-        hy: *mut ::libc::c_void,
-        cyDesc: cudnnTensorDescriptor_t,
-        cy: *mut ::libc::c_void,
-        kDesc: cudnnRNNDataDescriptor_t,
-        keys: *const ::libc::c_void,
-        cDesc: cudnnRNNDataDescriptor_t,
-        cAttn: *mut ::libc::c_void,
-        iDesc: cudnnRNNDataDescriptor_t,
-        iAttn: *mut ::libc::c_void,
-        qDesc: cudnnRNNDataDescriptor_t,
-        queries: *mut ::libc::c_void,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNForwardInferenceEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        xDesc: cudnnRNNDataDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        yDesc: cudnnRNNDataDescriptor_t,
-        y: *mut ::libc::c_void,
-        hyDesc: cudnnTensorDescriptor_t,
-        hy: *mut ::libc::c_void,
-        cyDesc: cudnnTensorDescriptor_t,
-        cy: *mut ::libc::c_void,
-        kDesc: cudnnRNNDataDescriptor_t,
-        keys: *const ::libc::c_void,
-        cDesc: cudnnRNNDataDescriptor_t,
-        cAttn: *mut ::libc::c_void,
-        iDesc: cudnnRNNDataDescriptor_t,
-        iAttn: *mut ::libc::c_void,
-        qDesc: cudnnRNNDataDescriptor_t,
-        queries: *mut ::libc::c_void,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNBackwardDataEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        yDesc: cudnnRNNDataDescriptor_t,
-        y: *const ::libc::c_void,
-        dyDesc: cudnnRNNDataDescriptor_t,
-        dy: *const ::libc::c_void,
-        dcDesc: cudnnRNNDataDescriptor_t,
-        dcAttn: *const ::libc::c_void,
-        dhyDesc: cudnnTensorDescriptor_t,
-        dhy: *const ::libc::c_void,
-        dcyDesc: cudnnTensorDescriptor_t,
-        dcy: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        dxDesc: cudnnRNNDataDescriptor_t,
-        dx: *mut ::libc::c_void,
-        dhxDesc: cudnnTensorDescriptor_t,
-        dhx: *mut ::libc::c_void,
-        dcxDesc: cudnnTensorDescriptor_t,
-        dcx: *mut ::libc::c_void,
-        dkDesc: cudnnRNNDataDescriptor_t,
-        dkeys: *mut ::libc::c_void,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnRNNBackwardWeightsEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        xDesc: cudnnRNNDataDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        yDesc: cudnnRNNDataDescriptor_t,
-        y: *const ::libc::c_void,
-        workSpace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        dwDesc: cudnnFilterDescriptor_t,
-        dw: *mut ::libc::c_void,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnAlgorithmStruct {
-    _unused: [u8; 0],
-}
-pub type cudnnAlgorithmDescriptor_t = *mut cudnnAlgorithmStruct;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnAlgorithmPerformanceStruct {
-    _unused: [u8; 0],
-}
-pub type cudnnAlgorithmPerformance_t = *mut cudnnAlgorithmPerformanceStruct;
-extern "C" {
-    pub fn cudnnSetRNNAlgorithmDescriptor(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        algoDesc: cudnnAlgorithmDescriptor_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNForwardInferenceAlgorithmMaxCount(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        count: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindRNNForwardInferenceAlgorithmEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-        hyDesc: cudnnTensorDescriptor_t,
-        hy: *mut ::libc::c_void,
-        cyDesc: cudnnTensorDescriptor_t,
-        cy: *mut ::libc::c_void,
-        findIntensity: f32,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnAlgorithmPerformance_t,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNForwardTrainingAlgorithmMaxCount(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        count: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindRNNForwardTrainingAlgorithmEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *mut ::libc::c_void,
-        hyDesc: cudnnTensorDescriptor_t,
-        hy: *mut ::libc::c_void,
-        cyDesc: cudnnTensorDescriptor_t,
-        cy: *mut ::libc::c_void,
-        findIntensity: f32,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnAlgorithmPerformance_t,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNBackwardDataAlgorithmMaxCount(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        count: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindRNNBackwardDataAlgorithmEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        dyDesc: *const cudnnTensorDescriptor_t,
-        dy: *const ::libc::c_void,
-        dhyDesc: cudnnTensorDescriptor_t,
-        dhy: *const ::libc::c_void,
-        dcyDesc: cudnnTensorDescriptor_t,
-        dcy: *const ::libc::c_void,
-        wDesc: cudnnFilterDescriptor_t,
-        w: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        cxDesc: cudnnTensorDescriptor_t,
-        cx: *const ::libc::c_void,
-        dxDesc: *const cudnnTensorDescriptor_t,
-        dx: *mut ::libc::c_void,
-        dhxDesc: cudnnTensorDescriptor_t,
-        dhx: *mut ::libc::c_void,
-        dcxDesc: cudnnTensorDescriptor_t,
-        dcx: *mut ::libc::c_void,
-        findIntensity: f32,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnAlgorithmPerformance_t,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetRNNBackwardWeightsAlgorithmMaxCount(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        count: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnFindRNNBackwardWeightsAlgorithmEx(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        seqLength: ::libc::c_int,
-        xDesc: *const cudnnTensorDescriptor_t,
-        x: *const ::libc::c_void,
-        hxDesc: cudnnTensorDescriptor_t,
-        hx: *const ::libc::c_void,
-        yDesc: *const cudnnTensorDescriptor_t,
-        y: *const ::libc::c_void,
-        findIntensity: f32,
-        requestedAlgoCount: ::libc::c_int,
-        returnedAlgoCount: *mut ::libc::c_int,
-        perfResults: *mut cudnnAlgorithmPerformance_t,
-        workspace: *const ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        dwDesc: cudnnFilterDescriptor_t,
-        dw: *mut ::libc::c_void,
-        reserveSpace: *const ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnSeqDataAxis_t {
-    CUDNN_SEQDATA_TIME_DIM = 0,
-    CUDNN_SEQDATA_BATCH_DIM = 1,
-    CUDNN_SEQDATA_BEAM_DIM = 2,
-    CUDNN_SEQDATA_VECT_DIM = 3,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnSeqDataStruct {
-    _unused: [u8; 0],
-}
-pub type cudnnSeqDataDescriptor_t = *mut cudnnSeqDataStruct;
-extern "C" {
-    pub fn cudnnCreateSeqDataDescriptor(
-        seqDataDesc: *mut cudnnSeqDataDescriptor_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDestroySeqDataDescriptor(seqDataDesc: cudnnSeqDataDescriptor_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetSeqDataDescriptor(
-        seqDataDesc: cudnnSeqDataDescriptor_t,
-        dataType: cudnnDataType_t,
-        nbDims: ::libc::c_int,
-        dimA: *const ::libc::c_int,
-        axes: *const cudnnSeqDataAxis_t,
-        seqLengthArraySize: usize,
-        seqLengthArray: *const ::libc::c_int,
-        paddingFill: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetSeqDataDescriptor(
-        seqDataDesc: cudnnSeqDataDescriptor_t,
-        dataType: *mut cudnnDataType_t,
-        nbDims: *mut ::libc::c_int,
-        nbDimsRequested: ::libc::c_int,
-        dimA: *mut ::libc::c_int,
-        axes: *mut cudnnSeqDataAxis_t,
-        seqLengthArraySize: *mut usize,
-        seqLengthSizeRequested: usize,
-        seqLengthArray: *mut ::libc::c_int,
-        paddingFill: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-pub type cudnnAttnQueryMap_t = ::libc::c_uint;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct cudnnAttnStruct {
-    _unused: [u8; 0],
-}
-pub type cudnnAttnDescriptor_t = *mut cudnnAttnStruct;
-extern "C" {
-    pub fn cudnnCreateAttnDescriptor(attnDesc: *mut cudnnAttnDescriptor_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDestroyAttnDescriptor(attnDesc: cudnnAttnDescriptor_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetAttnDescriptor(
-        attnDesc: cudnnAttnDescriptor_t,
-        attnMode: ::libc::c_uint,
-        nHeads: ::libc::c_int,
-        smScaler: f64,
-        dataType: cudnnDataType_t,
-        computePrec: cudnnDataType_t,
-        mathType: cudnnMathType_t,
-        attnDropoutDesc: cudnnDropoutDescriptor_t,
-        postDropoutDesc: cudnnDropoutDescriptor_t,
-        qSize: ::libc::c_int,
-        kSize: ::libc::c_int,
-        vSize: ::libc::c_int,
-        qProjSize: ::libc::c_int,
-        kProjSize: ::libc::c_int,
-        vProjSize: ::libc::c_int,
-        oProjSize: ::libc::c_int,
-        qoMaxSeqLength: ::libc::c_int,
-        kvMaxSeqLength: ::libc::c_int,
-        maxBatchSize: ::libc::c_int,
-        maxBeamSize: ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetAttnDescriptor(
-        attnDesc: cudnnAttnDescriptor_t,
-        attnMode: *mut ::libc::c_uint,
-        nHeads: *mut ::libc::c_int,
-        smScaler: *mut f64,
-        dataType: *mut cudnnDataType_t,
-        computePrec: *mut cudnnDataType_t,
-        mathType: *mut cudnnMathType_t,
-        attnDropoutDesc: *mut cudnnDropoutDescriptor_t,
-        postDropoutDesc: *mut cudnnDropoutDescriptor_t,
-        qSize: *mut ::libc::c_int,
-        kSize: *mut ::libc::c_int,
-        vSize: *mut ::libc::c_int,
-        qProjSize: *mut ::libc::c_int,
-        kProjSize: *mut ::libc::c_int,
-        vProjSize: *mut ::libc::c_int,
-        oProjSize: *mut ::libc::c_int,
-        qoMaxSeqLength: *mut ::libc::c_int,
-        kvMaxSeqLength: *mut ::libc::c_int,
-        maxBatchSize: *mut ::libc::c_int,
-        maxBeamSize: *mut ::libc::c_int,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetMultiHeadAttnBuffers(
-        handle: cudnnHandle_t,
-        attnDesc: cudnnAttnDescriptor_t,
-        weightSizeInBytes: *mut usize,
-        workSpaceSizeInBytes: *mut usize,
-        reserveSpaceSizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnMultiHeadAttnWeightKind_t {
-    CUDNN_MH_ATTN_Q_WEIGHTS = 0,
-    CUDNN_MH_ATTN_K_WEIGHTS = 1,
-    CUDNN_MH_ATTN_V_WEIGHTS = 2,
-    CUDNN_MH_ATTN_O_WEIGHTS = 3,
-    CUDNN_MH_ATTN_Q_BIASES = 4,
-    CUDNN_MH_ATTN_K_BIASES = 5,
-    CUDNN_MH_ATTN_V_BIASES = 6,
-    CUDNN_MH_ATTN_O_BIASES = 7,
-}
-extern "C" {
-    pub fn cudnnGetMultiHeadAttnWeights(
-        handle: cudnnHandle_t,
-        attnDesc: cudnnAttnDescriptor_t,
-        wKind: cudnnMultiHeadAttnWeightKind_t,
-        weightSizeInBytes: usize,
-        weights: *const ::libc::c_void,
-        wDesc: cudnnTensorDescriptor_t,
-        wAddr: *mut *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnMultiHeadAttnForward(
-        handle: cudnnHandle_t,
-        attnDesc: cudnnAttnDescriptor_t,
-        currIdx: ::libc::c_int,
-        loWinIdx: *const ::libc::c_int,
-        hiWinIdx: *const ::libc::c_int,
-        devSeqLengthsQO: *const ::libc::c_int,
-        devSeqLengthsKV: *const ::libc::c_int,
-        qDesc: cudnnSeqDataDescriptor_t,
-        queries: *const ::libc::c_void,
-        residuals: *const ::libc::c_void,
-        kDesc: cudnnSeqDataDescriptor_t,
-        keys: *const ::libc::c_void,
-        vDesc: cudnnSeqDataDescriptor_t,
-        values: *const ::libc::c_void,
-        oDesc: cudnnSeqDataDescriptor_t,
-        out: *mut ::libc::c_void,
-        weightSizeInBytes: usize,
-        weights: *const ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        workSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnMultiHeadAttnBackwardData(
-        handle: cudnnHandle_t,
-        attnDesc: cudnnAttnDescriptor_t,
-        loWinIdx: *const ::libc::c_int,
-        hiWinIdx: *const ::libc::c_int,
-        devSeqLengthsDQDO: *const ::libc::c_int,
-        devSeqLengthsDKDV: *const ::libc::c_int,
-        doDesc: cudnnSeqDataDescriptor_t,
-        dout: *const ::libc::c_void,
-        dqDesc: cudnnSeqDataDescriptor_t,
-        dqueries: *mut ::libc::c_void,
-        queries: *const ::libc::c_void,
-        dkDesc: cudnnSeqDataDescriptor_t,
-        dkeys: *mut ::libc::c_void,
-        keys: *const ::libc::c_void,
-        dvDesc: cudnnSeqDataDescriptor_t,
-        dvalues: *mut ::libc::c_void,
-        values: *const ::libc::c_void,
-        weightSizeInBytes: usize,
-        weights: *const ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        workSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnWgradMode_t {
-    CUDNN_WGRAD_MODE_ADD = 0,
-    CUDNN_WGRAD_MODE_SET = 1,
-}
-extern "C" {
-    pub fn cudnnMultiHeadAttnBackwardWeights(
-        handle: cudnnHandle_t,
-        attnDesc: cudnnAttnDescriptor_t,
-        addGrad: cudnnWgradMode_t,
-        qDesc: cudnnSeqDataDescriptor_t,
-        queries: *const ::libc::c_void,
-        kDesc: cudnnSeqDataDescriptor_t,
-        keys: *const ::libc::c_void,
-        vDesc: cudnnSeqDataDescriptor_t,
-        values: *const ::libc::c_void,
-        doDesc: cudnnSeqDataDescriptor_t,
-        dout: *const ::libc::c_void,
-        weightSizeInBytes: usize,
-        weights: *const ::libc::c_void,
-        dweights: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-        workSpace: *mut ::libc::c_void,
-        reserveSpaceSizeInBytes: usize,
-        reserveSpace: *mut ::libc::c_void,
-    ) -> cudnnStatus_t;
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum cudnnCTCLossAlgo_t {
     CUDNN_CTC_LOSS_ALGO_DETERMINISTIC = 0,
     CUDNN_CTC_LOSS_ALGO_NON_DETERMINISTIC = 1,
-}
-#[repr(u32)]
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum cudnnLossNormalizationMode_t {
-    CUDNN_LOSS_NORMALIZATION_NONE = 0,
-    CUDNN_LOSS_NORMALIZATION_SOFTMAX = 1,
-}
-extern "C" {
-    pub fn cudnnCreateCTCLossDescriptor(
-        ctcLossDesc: *mut cudnnCTCLossDescriptor_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetCTCLossDescriptor(
-        ctcLossDesc: cudnnCTCLossDescriptor_t,
-        compType: cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnSetCTCLossDescriptorEx(
-        ctcLossDesc: cudnnCTCLossDescriptor_t,
-        compType: cudnnDataType_t,
-        normMode: cudnnLossNormalizationMode_t,
-        gradMode: cudnnNanPropagation_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetCTCLossDescriptor(
-        ctcLossDesc: cudnnCTCLossDescriptor_t,
-        compType: *mut cudnnDataType_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetCTCLossDescriptorEx(
-        ctcLossDesc: cudnnCTCLossDescriptor_t,
-        compType: *mut cudnnDataType_t,
-        normMode: *mut cudnnLossNormalizationMode_t,
-        gradMode: *mut cudnnNanPropagation_t,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnDestroyCTCLossDescriptor(ctcLossDesc: cudnnCTCLossDescriptor_t) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnCTCLoss(
-        handle: cudnnHandle_t,
-        probsDesc: cudnnTensorDescriptor_t,
-        probs: *const ::libc::c_void,
-        labels: *const ::libc::c_int,
-        labelLengths: *const ::libc::c_int,
-        inputLengths: *const ::libc::c_int,
-        costs: *mut ::libc::c_void,
-        gradientsDesc: cudnnTensorDescriptor_t,
-        gradients: *const ::libc::c_void,
-        algo: cudnnCTCLossAlgo_t,
-        ctcLossDesc: cudnnCTCLossDescriptor_t,
-        workspace: *mut ::libc::c_void,
-        workSpaceSizeInBytes: usize,
-    ) -> cudnnStatus_t;
-}
-extern "C" {
-    pub fn cudnnGetCTCLossWorkspaceSize(
-        handle: cudnnHandle_t,
-        probsDesc: cudnnTensorDescriptor_t,
-        gradientsDesc: cudnnTensorDescriptor_t,
-        labels: *const ::libc::c_int,
-        labelLengths: *const ::libc::c_int,
-        inputLengths: *const ::libc::c_int,
-        algo: cudnnCTCLossAlgo_t,
-        ctcLossDesc: cudnnCTCLossDescriptor_t,
-        sizeInBytes: *mut usize,
-    ) -> cudnnStatus_t;
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -18253,6 +17942,2120 @@ extern "C" {
         fptr: *mut cudnnCallback_t,
     ) -> cudnnStatus_t;
 }
+extern "C" {
+    pub fn cudnnOpsInferVersionCheck() -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSoftmaxBackward(
+        handle: cudnnHandle_t,
+        algo: cudnnSoftmaxAlgorithm_t,
+        mode: cudnnSoftmaxMode_t,
+        alpha: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnPoolingBackward(
+        handle: cudnnHandle_t,
+        poolingDesc: cudnnPoolingDescriptor_t,
+        alpha: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnActivationBackward(
+        handle: cudnnHandle_t,
+        activationDesc: cudnnActivationDescriptor_t,
+        alpha: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnLRNCrossChannelBackward(
+        handle: cudnnHandle_t,
+        normDesc: cudnnLRNDescriptor_t,
+        lrnMode: cudnnLRNMode_t,
+        alpha: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDivisiveNormalizationBackward(
+        handle: cudnnHandle_t,
+        normDesc: cudnnLRNDescriptor_t,
+        mode: cudnnDivNormMode_t,
+        alpha: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        means: *const ::libc::c_void,
+        dy: *const ::libc::c_void,
+        temp: *mut ::libc::c_void,
+        temp2: *mut ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dXdMeansDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        dMeans: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetBatchNormalizationForwardTrainingExWorkspaceSize(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        bnOps: cudnnBatchNormOps_t,
+        xDesc: cudnnTensorDescriptor_t,
+        zDesc: cudnnTensorDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        bnScaleBiasMeanVarDesc: cudnnTensorDescriptor_t,
+        activationDesc: cudnnActivationDescriptor_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetBatchNormalizationBackwardExWorkspaceSize(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        bnOps: cudnnBatchNormOps_t,
+        xDesc: cudnnTensorDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        dyDesc: cudnnTensorDescriptor_t,
+        dzDesc: cudnnTensorDescriptor_t,
+        dxDesc: cudnnTensorDescriptor_t,
+        dBnScaleBiasDesc: cudnnTensorDescriptor_t,
+        activationDesc: cudnnActivationDescriptor_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetBatchNormalizationTrainingExReserveSpaceSize(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        bnOps: cudnnBatchNormOps_t,
+        activationDesc: cudnnActivationDescriptor_t,
+        xDesc: cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBatchNormalizationForwardTraining(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        alpha: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        bnScaleBiasMeanVarDesc: cudnnTensorDescriptor_t,
+        bnScale: *const ::libc::c_void,
+        bnBias: *const ::libc::c_void,
+        exponentialAverageFactor: f64,
+        resultRunningMean: *mut ::libc::c_void,
+        resultRunningVariance: *mut ::libc::c_void,
+        epsilon: f64,
+        resultSaveMean: *mut ::libc::c_void,
+        resultSaveInvVariance: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBatchNormalizationForwardTrainingEx(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        bnOps: cudnnBatchNormOps_t,
+        alpha: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        xData: *const ::libc::c_void,
+        zDesc: cudnnTensorDescriptor_t,
+        zData: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        yData: *mut ::libc::c_void,
+        bnScaleBiasMeanVarDesc: cudnnTensorDescriptor_t,
+        bnScale: *const ::libc::c_void,
+        bnBias: *const ::libc::c_void,
+        exponentialAverageFactor: f64,
+        resultRunningMean: *mut ::libc::c_void,
+        resultRunningVariance: *mut ::libc::c_void,
+        epsilon: f64,
+        resultSaveMean: *mut ::libc::c_void,
+        resultSaveInvVariance: *mut ::libc::c_void,
+        activationDesc: cudnnActivationDescriptor_t,
+        workspace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBatchNormalizationBackward(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        alphaDataDiff: *const ::libc::c_void,
+        betaDataDiff: *const ::libc::c_void,
+        alphaParamDiff: *const ::libc::c_void,
+        betaParamDiff: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        dBnScaleBiasDesc: cudnnTensorDescriptor_t,
+        bnScale: *const ::libc::c_void,
+        dBnScaleResult: *mut ::libc::c_void,
+        dBnBiasResult: *mut ::libc::c_void,
+        epsilon: f64,
+        savedMean: *const ::libc::c_void,
+        savedInvVariance: *const ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBatchNormalizationBackwardEx(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        bnOps: cudnnBatchNormOps_t,
+        alphaDataDiff: *const ::libc::c_void,
+        betaDataDiff: *const ::libc::c_void,
+        alphaParamDiff: *const ::libc::c_void,
+        betaParamDiff: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        xData: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        yData: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dyData: *const ::libc::c_void,
+        dzDesc: cudnnTensorDescriptor_t,
+        dzData: *mut ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dxData: *mut ::libc::c_void,
+        dBnScaleBiasDesc: cudnnTensorDescriptor_t,
+        bnScaleData: *const ::libc::c_void,
+        bnBiasData: *const ::libc::c_void,
+        dBnScaleData: *mut ::libc::c_void,
+        dBnBiasData: *mut ::libc::c_void,
+        epsilon: f64,
+        savedMean: *const ::libc::c_void,
+        savedInvVariance: *const ::libc::c_void,
+        activationDesc: cudnnActivationDescriptor_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetNormalizationForwardTrainingWorkspaceSize(
+        handle: cudnnHandle_t,
+        mode: cudnnNormMode_t,
+        normOps: cudnnNormOps_t,
+        algo: cudnnNormAlgo_t,
+        xDesc: cudnnTensorDescriptor_t,
+        zDesc: cudnnTensorDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        normScaleBiasDesc: cudnnTensorDescriptor_t,
+        activationDesc: cudnnActivationDescriptor_t,
+        normMeanVarDesc: cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+        groupCnt: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetNormalizationBackwardWorkspaceSize(
+        handle: cudnnHandle_t,
+        mode: cudnnNormMode_t,
+        normOps: cudnnNormOps_t,
+        algo: cudnnNormAlgo_t,
+        xDesc: cudnnTensorDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        dyDesc: cudnnTensorDescriptor_t,
+        dzDesc: cudnnTensorDescriptor_t,
+        dxDesc: cudnnTensorDescriptor_t,
+        dNormScaleBiasDesc: cudnnTensorDescriptor_t,
+        activationDesc: cudnnActivationDescriptor_t,
+        normMeanVarDesc: cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+        groupCnt: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetNormalizationTrainingReserveSpaceSize(
+        handle: cudnnHandle_t,
+        mode: cudnnNormMode_t,
+        normOps: cudnnNormOps_t,
+        algo: cudnnNormAlgo_t,
+        activationDesc: cudnnActivationDescriptor_t,
+        xDesc: cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+        groupCnt: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnNormalizationForwardTraining(
+        handle: cudnnHandle_t,
+        mode: cudnnNormMode_t,
+        normOps: cudnnNormOps_t,
+        algo: cudnnNormAlgo_t,
+        alpha: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        xData: *const ::libc::c_void,
+        normScaleBiasDesc: cudnnTensorDescriptor_t,
+        normScale: *const ::libc::c_void,
+        normBias: *const ::libc::c_void,
+        exponentialAverageFactor: f64,
+        normMeanVarDesc: cudnnTensorDescriptor_t,
+        resultRunningMean: *mut ::libc::c_void,
+        resultRunningVariance: *mut ::libc::c_void,
+        epsilon: f64,
+        resultSaveMean: *mut ::libc::c_void,
+        resultSaveInvVariance: *mut ::libc::c_void,
+        activationDesc: cudnnActivationDescriptor_t,
+        zDesc: cudnnTensorDescriptor_t,
+        zData: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        yData: *mut ::libc::c_void,
+        workspace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+        groupCnt: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnNormalizationBackward(
+        handle: cudnnHandle_t,
+        mode: cudnnNormMode_t,
+        normOps: cudnnNormOps_t,
+        algo: cudnnNormAlgo_t,
+        alphaDataDiff: *const ::libc::c_void,
+        betaDataDiff: *const ::libc::c_void,
+        alphaParamDiff: *const ::libc::c_void,
+        betaParamDiff: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        xData: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        yData: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dyData: *const ::libc::c_void,
+        dzDesc: cudnnTensorDescriptor_t,
+        dzData: *mut ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dxData: *mut ::libc::c_void,
+        dNormScaleBiasDesc: cudnnTensorDescriptor_t,
+        normScaleData: *const ::libc::c_void,
+        normBiasData: *const ::libc::c_void,
+        dNormScaleData: *mut ::libc::c_void,
+        dNormBiasData: *mut ::libc::c_void,
+        epsilon: f64,
+        normMeanVarDesc: cudnnTensorDescriptor_t,
+        savedMean: *const ::libc::c_void,
+        savedInvVariance: *const ::libc::c_void,
+        activationDesc: cudnnActivationDescriptor_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+        groupCnt: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSpatialTfGridGeneratorBackward(
+        handle: cudnnHandle_t,
+        stDesc: cudnnSpatialTransformerDescriptor_t,
+        dgrid: *const ::libc::c_void,
+        dtheta: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSpatialTfSamplerBackward(
+        handle: cudnnHandle_t,
+        stDesc: cudnnSpatialTransformerDescriptor_t,
+        alpha: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        alphaDgrid: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        grid: *const ::libc::c_void,
+        betaDgrid: *const ::libc::c_void,
+        dgrid: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDropoutBackward(
+        handle: cudnnHandle_t,
+        dropoutDesc: cudnnDropoutDescriptor_t,
+        dydesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        dxdesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnOpsTrainVersionCheck() -> cudnnStatus_t;
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnForwardMode_t {
+    CUDNN_FWD_MODE_INFERENCE = 0,
+    CUDNN_FWD_MODE_TRAINING = 1,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnRNNMode_t {
+    CUDNN_RNN_RELU = 0,
+    CUDNN_RNN_TANH = 1,
+    CUDNN_LSTM = 2,
+    CUDNN_GRU = 3,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnRNNBiasMode_t {
+    CUDNN_RNN_NO_BIAS = 0,
+    CUDNN_RNN_SINGLE_INP_BIAS = 1,
+    CUDNN_RNN_DOUBLE_BIAS = 2,
+    CUDNN_RNN_SINGLE_REC_BIAS = 3,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnDirectionMode_t {
+    CUDNN_UNIDIRECTIONAL = 0,
+    CUDNN_BIDIRECTIONAL = 1,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnRNNInputMode_t {
+    CUDNN_LINEAR_INPUT = 0,
+    CUDNN_SKIP_INPUT = 1,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnRNNClipMode_t {
+    CUDNN_RNN_CLIP_NONE = 0,
+    CUDNN_RNN_CLIP_MINMAX = 1,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnRNNDataLayout_t {
+    CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_UNPACKED = 0,
+    CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_PACKED = 1,
+    CUDNN_RNN_DATA_LAYOUT_BATCH_MAJOR_UNPACKED = 2,
+}
+pub type cudnnRNNPaddingMode_t = ::libc::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnRNNStruct {
+    _unused: [u8; 0],
+}
+pub type cudnnRNNDescriptor_t = *mut cudnnRNNStruct;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnPersistentRNNPlan {
+    _unused: [u8; 0],
+}
+pub type cudnnPersistentRNNPlan_t = *mut cudnnPersistentRNNPlan;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnRNNDataStruct {
+    _unused: [u8; 0],
+}
+pub type cudnnRNNDataDescriptor_t = *mut cudnnRNNDataStruct;
+extern "C" {
+    pub fn cudnnCreateRNNDescriptor(rnnDesc: *mut cudnnRNNDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyRNNDescriptor(rnnDesc: cudnnRNNDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNDescriptor_v8(
+        rnnDesc: cudnnRNNDescriptor_t,
+        algo: cudnnRNNAlgo_t,
+        cellMode: cudnnRNNMode_t,
+        biasMode: cudnnRNNBiasMode_t,
+        dirMode: cudnnDirectionMode_t,
+        inputMode: cudnnRNNInputMode_t,
+        dataType: cudnnDataType_t,
+        mathPrec: cudnnDataType_t,
+        mathType: cudnnMathType_t,
+        inputSize: i32,
+        hiddenSize: i32,
+        projSize: i32,
+        numLayers: i32,
+        dropoutDesc: cudnnDropoutDescriptor_t,
+        auxFlags: u32,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNDescriptor_v8(
+        rnnDesc: cudnnRNNDescriptor_t,
+        algo: *mut cudnnRNNAlgo_t,
+        cellMode: *mut cudnnRNNMode_t,
+        biasMode: *mut cudnnRNNBiasMode_t,
+        dirMode: *mut cudnnDirectionMode_t,
+        inputMode: *mut cudnnRNNInputMode_t,
+        dataType: *mut cudnnDataType_t,
+        mathPrec: *mut cudnnDataType_t,
+        mathType: *mut cudnnMathType_t,
+        inputSize: *mut i32,
+        hiddenSize: *mut i32,
+        projSize: *mut i32,
+        numLayers: *mut i32,
+        dropoutDesc: *mut cudnnDropoutDescriptor_t,
+        auxFlags: *mut u32,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNDescriptor_v6(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        hiddenSize: ::libc::c_int,
+        numLayers: ::libc::c_int,
+        dropoutDesc: cudnnDropoutDescriptor_t,
+        inputMode: cudnnRNNInputMode_t,
+        direction: cudnnDirectionMode_t,
+        cellMode: cudnnRNNMode_t,
+        algo: cudnnRNNAlgo_t,
+        mathPrec: cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNDescriptor_v6(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        hiddenSize: *mut ::libc::c_int,
+        numLayers: *mut ::libc::c_int,
+        dropoutDesc: *mut cudnnDropoutDescriptor_t,
+        inputMode: *mut cudnnRNNInputMode_t,
+        direction: *mut cudnnDirectionMode_t,
+        cellMode: *mut cudnnRNNMode_t,
+        algo: *mut cudnnRNNAlgo_t,
+        mathPrec: *mut cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNMatrixMathType(
+        rnnDesc: cudnnRNNDescriptor_t,
+        mType: cudnnMathType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNMatrixMathType(
+        rnnDesc: cudnnRNNDescriptor_t,
+        mType: *mut cudnnMathType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNBiasMode(
+        rnnDesc: cudnnRNNDescriptor_t,
+        biasMode: cudnnRNNBiasMode_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNBiasMode(
+        rnnDesc: cudnnRNNDescriptor_t,
+        biasMode: *mut cudnnRNNBiasMode_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNSetClip_v8(
+        rnnDesc: cudnnRNNDescriptor_t,
+        clipMode: cudnnRNNClipMode_t,
+        clipNanOpt: cudnnNanPropagation_t,
+        lclip: f64,
+        rclip: f64,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNGetClip_v8(
+        rnnDesc: cudnnRNNDescriptor_t,
+        clipMode: *mut cudnnRNNClipMode_t,
+        clipNanOpt: *mut cudnnNanPropagation_t,
+        lclip: *mut f64,
+        rclip: *mut f64,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNSetClip(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        clipMode: cudnnRNNClipMode_t,
+        clipNanOpt: cudnnNanPropagation_t,
+        lclip: f64,
+        rclip: f64,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNGetClip(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        clipMode: *mut cudnnRNNClipMode_t,
+        clipNanOpt: *mut cudnnNanPropagation_t,
+        lclip: *mut f64,
+        rclip: *mut f64,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNProjectionLayers(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        recProjSize: ::libc::c_int,
+        outProjSize: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNProjectionLayers(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        recProjSize: *mut ::libc::c_int,
+        outProjSize: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnCreatePersistentRNNPlan(
+        rnnDesc: cudnnRNNDescriptor_t,
+        minibatch: ::libc::c_int,
+        dataType: cudnnDataType_t,
+        plan: *mut cudnnPersistentRNNPlan_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyPersistentRNNPlan(plan: cudnnPersistentRNNPlan_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetPersistentRNNPlan(
+        rnnDesc: cudnnRNNDescriptor_t,
+        plan: cudnnPersistentRNNPlan_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBuildRNNDynamic(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        miniBatch: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNWorkspaceSize(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNTrainingReserveSize(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNTempSpaceSizes(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        fMode: cudnnForwardMode_t,
+        xDesc: cudnnRNNDataDescriptor_t,
+        workSpaceSize: *mut usize,
+        reserveSpaceSize: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNParamsSize(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        xDesc: cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+        dataType: cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNWeightSpaceSize(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        weightSpaceSize: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNLinLayerMatrixParams(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        pseudoLayer: ::libc::c_int,
+        xDesc: cudnnTensorDescriptor_t,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        linLayerID: ::libc::c_int,
+        linLayerMatDesc: cudnnFilterDescriptor_t,
+        linLayerMat: *mut *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNLinLayerBiasParams(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        pseudoLayer: ::libc::c_int,
+        xDesc: cudnnTensorDescriptor_t,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        linLayerID: ::libc::c_int,
+        linLayerBiasDesc: cudnnFilterDescriptor_t,
+        linLayerBias: *mut *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNWeightParams(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        pseudoLayer: i32,
+        weightSpaceSize: usize,
+        weightSpace: *const ::libc::c_void,
+        linLayerID: i32,
+        mDesc: cudnnTensorDescriptor_t,
+        mAddr: *mut *mut ::libc::c_void,
+        bDesc: cudnnTensorDescriptor_t,
+        bAddr: *mut *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNForwardInference(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        hyDesc: cudnnTensorDescriptor_t,
+        hy: *mut ::libc::c_void,
+        cyDesc: cudnnTensorDescriptor_t,
+        cy: *mut ::libc::c_void,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNPaddingMode(
+        rnnDesc: cudnnRNNDescriptor_t,
+        paddingMode: ::libc::c_uint,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNPaddingMode(
+        rnnDesc: cudnnRNNDescriptor_t,
+        paddingMode: *mut ::libc::c_uint,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnCreateRNNDataDescriptor(
+        rnnDataDesc: *mut cudnnRNNDataDescriptor_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyRNNDataDescriptor(rnnDataDesc: cudnnRNNDataDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNDataDescriptor(
+        rnnDataDesc: cudnnRNNDataDescriptor_t,
+        dataType: cudnnDataType_t,
+        layout: cudnnRNNDataLayout_t,
+        maxSeqLength: ::libc::c_int,
+        batchSize: ::libc::c_int,
+        vectorSize: ::libc::c_int,
+        seqLengthArray: *const ::libc::c_int,
+        paddingFill: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNDataDescriptor(
+        rnnDataDesc: cudnnRNNDataDescriptor_t,
+        dataType: *mut cudnnDataType_t,
+        layout: *mut cudnnRNNDataLayout_t,
+        maxSeqLength: *mut ::libc::c_int,
+        batchSize: *mut ::libc::c_int,
+        vectorSize: *mut ::libc::c_int,
+        arrayLengthRequested: ::libc::c_int,
+        seqLengthArray: *mut ::libc::c_int,
+        paddingFill: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNForwardInferenceEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        xDesc: cudnnRNNDataDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        yDesc: cudnnRNNDataDescriptor_t,
+        y: *mut ::libc::c_void,
+        hyDesc: cudnnTensorDescriptor_t,
+        hy: *mut ::libc::c_void,
+        cyDesc: cudnnTensorDescriptor_t,
+        cy: *mut ::libc::c_void,
+        kDesc: cudnnRNNDataDescriptor_t,
+        keys: *const ::libc::c_void,
+        cDesc: cudnnRNNDataDescriptor_t,
+        cAttn: *mut ::libc::c_void,
+        iDesc: cudnnRNNDataDescriptor_t,
+        iAttn: *mut ::libc::c_void,
+        qDesc: cudnnRNNDataDescriptor_t,
+        queries: *mut ::libc::c_void,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNForward(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        fwdMode: cudnnForwardMode_t,
+        devSeqLengths: *const i32,
+        xDesc: cudnnRNNDataDescriptor_t,
+        x: *const ::libc::c_void,
+        yDesc: cudnnRNNDataDescriptor_t,
+        y: *mut ::libc::c_void,
+        hDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        hy: *mut ::libc::c_void,
+        cDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        cy: *mut ::libc::c_void,
+        weightSpaceSize: usize,
+        weightSpace: *const ::libc::c_void,
+        workSpaceSize: usize,
+        workSpace: *mut ::libc::c_void,
+        reserveSpaceSize: usize,
+        reserveSpace: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetRNNAlgorithmDescriptor(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        algoDesc: cudnnAlgorithmDescriptor_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNForwardInferenceAlgorithmMaxCount(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        count: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindRNNForwardInferenceAlgorithmEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        hyDesc: cudnnTensorDescriptor_t,
+        hy: *mut ::libc::c_void,
+        cyDesc: cudnnTensorDescriptor_t,
+        cy: *mut ::libc::c_void,
+        findIntensity: f32,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnAlgorithmPerformance_t,
+        workspace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnSeqDataAxis_t {
+    CUDNN_SEQDATA_TIME_DIM = 0,
+    CUDNN_SEQDATA_BATCH_DIM = 1,
+    CUDNN_SEQDATA_BEAM_DIM = 2,
+    CUDNN_SEQDATA_VECT_DIM = 3,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnSeqDataStruct {
+    _unused: [u8; 0],
+}
+pub type cudnnSeqDataDescriptor_t = *mut cudnnSeqDataStruct;
+extern "C" {
+    pub fn cudnnCreateSeqDataDescriptor(
+        seqDataDesc: *mut cudnnSeqDataDescriptor_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroySeqDataDescriptor(seqDataDesc: cudnnSeqDataDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetSeqDataDescriptor(
+        seqDataDesc: cudnnSeqDataDescriptor_t,
+        dataType: cudnnDataType_t,
+        nbDims: ::libc::c_int,
+        dimA: *const ::libc::c_int,
+        axes: *const cudnnSeqDataAxis_t,
+        seqLengthArraySize: usize,
+        seqLengthArray: *const ::libc::c_int,
+        paddingFill: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetSeqDataDescriptor(
+        seqDataDesc: cudnnSeqDataDescriptor_t,
+        dataType: *mut cudnnDataType_t,
+        nbDims: *mut ::libc::c_int,
+        nbDimsRequested: ::libc::c_int,
+        dimA: *mut ::libc::c_int,
+        axes: *mut cudnnSeqDataAxis_t,
+        seqLengthArraySize: *mut usize,
+        seqLengthSizeRequested: usize,
+        seqLengthArray: *mut ::libc::c_int,
+        paddingFill: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+pub type cudnnAttnQueryMap_t = ::libc::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnAttnStruct {
+    _unused: [u8; 0],
+}
+pub type cudnnAttnDescriptor_t = *mut cudnnAttnStruct;
+extern "C" {
+    pub fn cudnnCreateAttnDescriptor(attnDesc: *mut cudnnAttnDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyAttnDescriptor(attnDesc: cudnnAttnDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetAttnDescriptor(
+        attnDesc: cudnnAttnDescriptor_t,
+        attnMode: ::libc::c_uint,
+        nHeads: ::libc::c_int,
+        smScaler: f64,
+        dataType: cudnnDataType_t,
+        computePrec: cudnnDataType_t,
+        mathType: cudnnMathType_t,
+        attnDropoutDesc: cudnnDropoutDescriptor_t,
+        postDropoutDesc: cudnnDropoutDescriptor_t,
+        qSize: ::libc::c_int,
+        kSize: ::libc::c_int,
+        vSize: ::libc::c_int,
+        qProjSize: ::libc::c_int,
+        kProjSize: ::libc::c_int,
+        vProjSize: ::libc::c_int,
+        oProjSize: ::libc::c_int,
+        qoMaxSeqLength: ::libc::c_int,
+        kvMaxSeqLength: ::libc::c_int,
+        maxBatchSize: ::libc::c_int,
+        maxBeamSize: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetAttnDescriptor(
+        attnDesc: cudnnAttnDescriptor_t,
+        attnMode: *mut ::libc::c_uint,
+        nHeads: *mut ::libc::c_int,
+        smScaler: *mut f64,
+        dataType: *mut cudnnDataType_t,
+        computePrec: *mut cudnnDataType_t,
+        mathType: *mut cudnnMathType_t,
+        attnDropoutDesc: *mut cudnnDropoutDescriptor_t,
+        postDropoutDesc: *mut cudnnDropoutDescriptor_t,
+        qSize: *mut ::libc::c_int,
+        kSize: *mut ::libc::c_int,
+        vSize: *mut ::libc::c_int,
+        qProjSize: *mut ::libc::c_int,
+        kProjSize: *mut ::libc::c_int,
+        vProjSize: *mut ::libc::c_int,
+        oProjSize: *mut ::libc::c_int,
+        qoMaxSeqLength: *mut ::libc::c_int,
+        kvMaxSeqLength: *mut ::libc::c_int,
+        maxBatchSize: *mut ::libc::c_int,
+        maxBeamSize: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetMultiHeadAttnBuffers(
+        handle: cudnnHandle_t,
+        attnDesc: cudnnAttnDescriptor_t,
+        weightSizeInBytes: *mut usize,
+        workSpaceSizeInBytes: *mut usize,
+        reserveSpaceSizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnMultiHeadAttnWeightKind_t {
+    CUDNN_MH_ATTN_Q_WEIGHTS = 0,
+    CUDNN_MH_ATTN_K_WEIGHTS = 1,
+    CUDNN_MH_ATTN_V_WEIGHTS = 2,
+    CUDNN_MH_ATTN_O_WEIGHTS = 3,
+    CUDNN_MH_ATTN_Q_BIASES = 4,
+    CUDNN_MH_ATTN_K_BIASES = 5,
+    CUDNN_MH_ATTN_V_BIASES = 6,
+    CUDNN_MH_ATTN_O_BIASES = 7,
+}
+extern "C" {
+    pub fn cudnnGetMultiHeadAttnWeights(
+        handle: cudnnHandle_t,
+        attnDesc: cudnnAttnDescriptor_t,
+        wKind: cudnnMultiHeadAttnWeightKind_t,
+        weightSizeInBytes: usize,
+        weights: *const ::libc::c_void,
+        wDesc: cudnnTensorDescriptor_t,
+        wAddr: *mut *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnMultiHeadAttnForward(
+        handle: cudnnHandle_t,
+        attnDesc: cudnnAttnDescriptor_t,
+        currIdx: ::libc::c_int,
+        loWinIdx: *const ::libc::c_int,
+        hiWinIdx: *const ::libc::c_int,
+        devSeqLengthsQO: *const ::libc::c_int,
+        devSeqLengthsKV: *const ::libc::c_int,
+        qDesc: cudnnSeqDataDescriptor_t,
+        queries: *const ::libc::c_void,
+        residuals: *const ::libc::c_void,
+        kDesc: cudnnSeqDataDescriptor_t,
+        keys: *const ::libc::c_void,
+        vDesc: cudnnSeqDataDescriptor_t,
+        values: *const ::libc::c_void,
+        oDesc: cudnnSeqDataDescriptor_t,
+        out: *mut ::libc::c_void,
+        weightSizeInBytes: usize,
+        weights: *const ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        workSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnAdvInferVersionCheck() -> cudnnStatus_t;
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnWgradMode_t {
+    CUDNN_WGRAD_MODE_ADD = 0,
+    CUDNN_WGRAD_MODE_SET = 1,
+}
+extern "C" {
+    pub fn cudnnRNNForwardTraining(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        hyDesc: cudnnTensorDescriptor_t,
+        hy: *mut ::libc::c_void,
+        cyDesc: cudnnTensorDescriptor_t,
+        cy: *mut ::libc::c_void,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNBackwardData(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        dyDesc: *const cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        dhyDesc: cudnnTensorDescriptor_t,
+        dhy: *const ::libc::c_void,
+        dcyDesc: cudnnTensorDescriptor_t,
+        dcy: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        dxDesc: *const cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        dhxDesc: cudnnTensorDescriptor_t,
+        dhx: *mut ::libc::c_void,
+        dcxDesc: cudnnTensorDescriptor_t,
+        dcx: *mut ::libc::c_void,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNBackwardData_v8(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        devSeqLengths: *const i32,
+        yDesc: cudnnRNNDataDescriptor_t,
+        y: *const ::libc::c_void,
+        dy: *const ::libc::c_void,
+        xDesc: cudnnRNNDataDescriptor_t,
+        dx: *mut ::libc::c_void,
+        hDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        dhy: *const ::libc::c_void,
+        dhx: *mut ::libc::c_void,
+        cDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        dcy: *const ::libc::c_void,
+        dcx: *mut ::libc::c_void,
+        weightSpaceSize: usize,
+        weightSpace: *const ::libc::c_void,
+        workSpaceSize: usize,
+        workSpace: *mut ::libc::c_void,
+        reserveSpaceSize: usize,
+        reserveSpace: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNBackwardWeights(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        workSpace: *const ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        dwDesc: cudnnFilterDescriptor_t,
+        dw: *mut ::libc::c_void,
+        reserveSpace: *const ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNBackwardWeights_v8(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        addGrad: cudnnWgradMode_t,
+        devSeqLengths: *const i32,
+        xDesc: cudnnRNNDataDescriptor_t,
+        x: *const ::libc::c_void,
+        hDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        yDesc: cudnnRNNDataDescriptor_t,
+        y: *const ::libc::c_void,
+        weightSpaceSize: usize,
+        dweightSpace: *mut ::libc::c_void,
+        workSpaceSize: usize,
+        workSpace: *mut ::libc::c_void,
+        reserveSpaceSize: usize,
+        reserveSpace: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNForwardTrainingEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        xDesc: cudnnRNNDataDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        yDesc: cudnnRNNDataDescriptor_t,
+        y: *mut ::libc::c_void,
+        hyDesc: cudnnTensorDescriptor_t,
+        hy: *mut ::libc::c_void,
+        cyDesc: cudnnTensorDescriptor_t,
+        cy: *mut ::libc::c_void,
+        kDesc: cudnnRNNDataDescriptor_t,
+        keys: *const ::libc::c_void,
+        cDesc: cudnnRNNDataDescriptor_t,
+        cAttn: *mut ::libc::c_void,
+        iDesc: cudnnRNNDataDescriptor_t,
+        iAttn: *mut ::libc::c_void,
+        qDesc: cudnnRNNDataDescriptor_t,
+        queries: *mut ::libc::c_void,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNBackwardDataEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        yDesc: cudnnRNNDataDescriptor_t,
+        y: *const ::libc::c_void,
+        dyDesc: cudnnRNNDataDescriptor_t,
+        dy: *const ::libc::c_void,
+        dcDesc: cudnnRNNDataDescriptor_t,
+        dcAttn: *const ::libc::c_void,
+        dhyDesc: cudnnTensorDescriptor_t,
+        dhy: *const ::libc::c_void,
+        dcyDesc: cudnnTensorDescriptor_t,
+        dcy: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        dxDesc: cudnnRNNDataDescriptor_t,
+        dx: *mut ::libc::c_void,
+        dhxDesc: cudnnTensorDescriptor_t,
+        dhx: *mut ::libc::c_void,
+        dcxDesc: cudnnTensorDescriptor_t,
+        dcx: *mut ::libc::c_void,
+        dkDesc: cudnnRNNDataDescriptor_t,
+        dkeys: *mut ::libc::c_void,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnRNNBackwardWeightsEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        xDesc: cudnnRNNDataDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        yDesc: cudnnRNNDataDescriptor_t,
+        y: *const ::libc::c_void,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        dwDesc: cudnnFilterDescriptor_t,
+        dw: *mut ::libc::c_void,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNForwardTrainingAlgorithmMaxCount(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        count: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindRNNForwardTrainingAlgorithmEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        hyDesc: cudnnTensorDescriptor_t,
+        hy: *mut ::libc::c_void,
+        cyDesc: cudnnTensorDescriptor_t,
+        cy: *mut ::libc::c_void,
+        findIntensity: f32,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnAlgorithmPerformance_t,
+        workspace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNBackwardDataAlgorithmMaxCount(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        count: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindRNNBackwardDataAlgorithmEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        dyDesc: *const cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        dhyDesc: cudnnTensorDescriptor_t,
+        dhy: *const ::libc::c_void,
+        dcyDesc: cudnnTensorDescriptor_t,
+        dcy: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        cxDesc: cudnnTensorDescriptor_t,
+        cx: *const ::libc::c_void,
+        dxDesc: *const cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        dhxDesc: cudnnTensorDescriptor_t,
+        dhx: *mut ::libc::c_void,
+        dcxDesc: cudnnTensorDescriptor_t,
+        dcx: *mut ::libc::c_void,
+        findIntensity: f32,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnAlgorithmPerformance_t,
+        workspace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetRNNBackwardWeightsAlgorithmMaxCount(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        count: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindRNNBackwardWeightsAlgorithmEx(
+        handle: cudnnHandle_t,
+        rnnDesc: cudnnRNNDescriptor_t,
+        seqLength: ::libc::c_int,
+        xDesc: *const cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        hxDesc: cudnnTensorDescriptor_t,
+        hx: *const ::libc::c_void,
+        yDesc: *const cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        findIntensity: f32,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnAlgorithmPerformance_t,
+        workspace: *const ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        dwDesc: cudnnFilterDescriptor_t,
+        dw: *mut ::libc::c_void,
+        reserveSpace: *const ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnMultiHeadAttnBackwardData(
+        handle: cudnnHandle_t,
+        attnDesc: cudnnAttnDescriptor_t,
+        loWinIdx: *const ::libc::c_int,
+        hiWinIdx: *const ::libc::c_int,
+        devSeqLengthsDQDO: *const ::libc::c_int,
+        devSeqLengthsDKDV: *const ::libc::c_int,
+        doDesc: cudnnSeqDataDescriptor_t,
+        dout: *const ::libc::c_void,
+        dqDesc: cudnnSeqDataDescriptor_t,
+        dqueries: *mut ::libc::c_void,
+        queries: *const ::libc::c_void,
+        dkDesc: cudnnSeqDataDescriptor_t,
+        dkeys: *mut ::libc::c_void,
+        keys: *const ::libc::c_void,
+        dvDesc: cudnnSeqDataDescriptor_t,
+        dvalues: *mut ::libc::c_void,
+        values: *const ::libc::c_void,
+        weightSizeInBytes: usize,
+        weights: *const ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        workSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnMultiHeadAttnBackwardWeights(
+        handle: cudnnHandle_t,
+        attnDesc: cudnnAttnDescriptor_t,
+        addGrad: cudnnWgradMode_t,
+        qDesc: cudnnSeqDataDescriptor_t,
+        queries: *const ::libc::c_void,
+        kDesc: cudnnSeqDataDescriptor_t,
+        keys: *const ::libc::c_void,
+        vDesc: cudnnSeqDataDescriptor_t,
+        values: *const ::libc::c_void,
+        doDesc: cudnnSeqDataDescriptor_t,
+        dout: *const ::libc::c_void,
+        weightSizeInBytes: usize,
+        weights: *const ::libc::c_void,
+        dweights: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        workSpace: *mut ::libc::c_void,
+        reserveSpaceSizeInBytes: usize,
+        reserveSpace: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnLossNormalizationMode_t {
+    CUDNN_LOSS_NORMALIZATION_NONE = 0,
+    CUDNN_LOSS_NORMALIZATION_SOFTMAX = 1,
+}
+extern "C" {
+    pub fn cudnnCreateCTCLossDescriptor(
+        ctcLossDesc: *mut cudnnCTCLossDescriptor_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetCTCLossDescriptor(
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        compType: cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetCTCLossDescriptorEx(
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        compType: cudnnDataType_t,
+        normMode: cudnnLossNormalizationMode_t,
+        gradMode: cudnnNanPropagation_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetCTCLossDescriptor_v8(
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        compType: cudnnDataType_t,
+        normMode: cudnnLossNormalizationMode_t,
+        gradMode: cudnnNanPropagation_t,
+        maxLabelLength: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetCTCLossDescriptor(
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        compType: *mut cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetCTCLossDescriptorEx(
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        compType: *mut cudnnDataType_t,
+        normMode: *mut cudnnLossNormalizationMode_t,
+        gradMode: *mut cudnnNanPropagation_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetCTCLossDescriptor_v8(
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        compType: *mut cudnnDataType_t,
+        normMode: *mut cudnnLossNormalizationMode_t,
+        gradMode: *mut cudnnNanPropagation_t,
+        maxLabelLength: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyCTCLossDescriptor(ctcLossDesc: cudnnCTCLossDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnCTCLoss(
+        handle: cudnnHandle_t,
+        probsDesc: cudnnTensorDescriptor_t,
+        probs: *const ::libc::c_void,
+        hostLabels: *const ::libc::c_int,
+        hostLabelLengths: *const ::libc::c_int,
+        hostInputLengths: *const ::libc::c_int,
+        costs: *mut ::libc::c_void,
+        gradientsDesc: cudnnTensorDescriptor_t,
+        gradients: *mut ::libc::c_void,
+        algo: cudnnCTCLossAlgo_t,
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        workspace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnCTCLoss_v8(
+        handle: cudnnHandle_t,
+        algo: cudnnCTCLossAlgo_t,
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        probsDesc: cudnnTensorDescriptor_t,
+        probs: *const ::libc::c_void,
+        labels: *const ::libc::c_int,
+        labelLengths: *const ::libc::c_int,
+        inputLengths: *const ::libc::c_int,
+        costs: *mut ::libc::c_void,
+        gradientsDesc: cudnnTensorDescriptor_t,
+        gradients: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        workspace: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetCTCLossWorkspaceSize(
+        handle: cudnnHandle_t,
+        probsDesc: cudnnTensorDescriptor_t,
+        gradientsDesc: cudnnTensorDescriptor_t,
+        labels: *const ::libc::c_int,
+        labelLengths: *const ::libc::c_int,
+        inputLengths: *const ::libc::c_int,
+        algo: cudnnCTCLossAlgo_t,
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetCTCLossWorkspaceSize_v8(
+        handle: cudnnHandle_t,
+        algo: cudnnCTCLossAlgo_t,
+        ctcLossDesc: cudnnCTCLossDescriptor_t,
+        probsDesc: cudnnTensorDescriptor_t,
+        gradientsDesc: cudnnTensorDescriptor_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnAdvTrainVersionCheck() -> cudnnStatus_t;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnConvolutionStruct {
+    _unused: [u8; 0],
+}
+pub type cudnnConvolutionDescriptor_t = *mut cudnnConvolutionStruct;
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnConvolutionMode_t {
+    CUDNN_CONVOLUTION = 0,
+    CUDNN_CROSS_CORRELATION = 1,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnReorderType_t {
+    CUDNN_DEFAULT_REORDER = 0,
+    CUDNN_NO_REORDER = 1,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnConvolutionFwdAlgoPerf_t {
+    pub algo: cudnnConvolutionFwdAlgo_t,
+    pub status: cudnnStatus_t,
+    pub time: f32,
+    pub memory: usize,
+    pub determinism: cudnnDeterminism_t,
+    pub mathType: cudnnMathType_t,
+    pub reserved: [::libc::c_int; 3usize],
+}
+#[test]
+fn bindgen_test_layout_cudnnConvolutionFwdAlgoPerf_t() {
+    assert_eq!(
+        ::std::mem::size_of::<cudnnConvolutionFwdAlgoPerf_t>(),
+        48usize,
+        concat!("Size of: ", stringify!(cudnnConvolutionFwdAlgoPerf_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudnnConvolutionFwdAlgoPerf_t>(),
+        8usize,
+        concat!("Alignment of ", stringify!(cudnnConvolutionFwdAlgoPerf_t))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).algo as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionFwdAlgoPerf_t),
+            "::",
+            stringify!(algo)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).status as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionFwdAlgoPerf_t),
+            "::",
+            stringify!(status)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).time as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionFwdAlgoPerf_t),
+            "::",
+            stringify!(time)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).memory as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionFwdAlgoPerf_t),
+            "::",
+            stringify!(memory)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).determinism as *const _
+                as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionFwdAlgoPerf_t),
+            "::",
+            stringify!(determinism)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).mathType as *const _ as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionFwdAlgoPerf_t),
+            "::",
+            stringify!(mathType)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionFwdAlgoPerf_t>())).reserved as *const _ as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionFwdAlgoPerf_t),
+            "::",
+            stringify!(reserved)
+        )
+    );
+}
+extern "C" {
+    pub fn cudnnCreateConvolutionDescriptor(
+        convDesc: *mut cudnnConvolutionDescriptor_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnDestroyConvolutionDescriptor(
+        convDesc: cudnnConvolutionDescriptor_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetConvolutionMathType(
+        convDesc: cudnnConvolutionDescriptor_t,
+        mathType: cudnnMathType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionMathType(
+        convDesc: cudnnConvolutionDescriptor_t,
+        mathType: *mut cudnnMathType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetConvolutionGroupCount(
+        convDesc: cudnnConvolutionDescriptor_t,
+        groupCount: ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionGroupCount(
+        convDesc: cudnnConvolutionDescriptor_t,
+        groupCount: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetConvolutionReorderType(
+        convDesc: cudnnConvolutionDescriptor_t,
+        reorderType: cudnnReorderType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionReorderType(
+        convDesc: cudnnConvolutionDescriptor_t,
+        reorderType: *mut cudnnReorderType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetConvolution2dDescriptor(
+        convDesc: cudnnConvolutionDescriptor_t,
+        pad_h: ::libc::c_int,
+        pad_w: ::libc::c_int,
+        u: ::libc::c_int,
+        v: ::libc::c_int,
+        dilation_h: ::libc::c_int,
+        dilation_w: ::libc::c_int,
+        mode: cudnnConvolutionMode_t,
+        computeType: cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolution2dDescriptor(
+        convDesc: cudnnConvolutionDescriptor_t,
+        pad_h: *mut ::libc::c_int,
+        pad_w: *mut ::libc::c_int,
+        u: *mut ::libc::c_int,
+        v: *mut ::libc::c_int,
+        dilation_h: *mut ::libc::c_int,
+        dilation_w: *mut ::libc::c_int,
+        mode: *mut cudnnConvolutionMode_t,
+        computeType: *mut cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnSetConvolutionNdDescriptor(
+        convDesc: cudnnConvolutionDescriptor_t,
+        arrayLength: ::libc::c_int,
+        padA: *const ::libc::c_int,
+        filterStrideA: *const ::libc::c_int,
+        dilationA: *const ::libc::c_int,
+        mode: cudnnConvolutionMode_t,
+        computeType: cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionNdDescriptor(
+        convDesc: cudnnConvolutionDescriptor_t,
+        arrayLengthRequested: ::libc::c_int,
+        arrayLength: *mut ::libc::c_int,
+        padA: *mut ::libc::c_int,
+        strideA: *mut ::libc::c_int,
+        dilationA: *mut ::libc::c_int,
+        mode: *mut cudnnConvolutionMode_t,
+        computeType: *mut cudnnDataType_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolution2dForwardOutputDim(
+        convDesc: cudnnConvolutionDescriptor_t,
+        inputTensorDesc: cudnnTensorDescriptor_t,
+        filterDesc: cudnnFilterDescriptor_t,
+        n: *mut ::libc::c_int,
+        c: *mut ::libc::c_int,
+        h: *mut ::libc::c_int,
+        w: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionNdForwardOutputDim(
+        convDesc: cudnnConvolutionDescriptor_t,
+        inputTensorDesc: cudnnTensorDescriptor_t,
+        filterDesc: cudnnFilterDescriptor_t,
+        nbDims: ::libc::c_int,
+        tensorOuputDimA: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionForwardAlgorithmMaxCount(
+        handle: cudnnHandle_t,
+        count: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionForwardAlgorithm_v7(
+        handle: cudnnHandle_t,
+        srcDesc: cudnnTensorDescriptor_t,
+        filterDesc: cudnnFilterDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        destDesc: cudnnTensorDescriptor_t,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionFwdAlgoPerf_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindConvolutionForwardAlgorithm(
+        handle: cudnnHandle_t,
+        xDesc: cudnnTensorDescriptor_t,
+        wDesc: cudnnFilterDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionFwdAlgoPerf_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindConvolutionForwardAlgorithmEx(
+        handle: cudnnHandle_t,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        convDesc: cudnnConvolutionDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionFwdAlgoPerf_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnIm2Col(
+        handle: cudnnHandle_t,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        colBuffer: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnReorderFilterAndBias(
+        handle: cudnnHandle_t,
+        filterDesc: cudnnFilterDescriptor_t,
+        reorderType: cudnnReorderType_t,
+        filterData: *const ::libc::c_void,
+        reorderedFilterData: *mut ::libc::c_void,
+        reorderBias: ::libc::c_int,
+        biasData: *const ::libc::c_void,
+        reorderedBiasData: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionForwardWorkspaceSize(
+        handle: cudnnHandle_t,
+        xDesc: cudnnTensorDescriptor_t,
+        wDesc: cudnnFilterDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        algo: cudnnConvolutionFwdAlgo_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnConvolutionForward(
+        handle: cudnnHandle_t,
+        alpha: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        convDesc: cudnnConvolutionDescriptor_t,
+        algo: cudnnConvolutionFwdAlgo_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        beta: *const ::libc::c_void,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnConvolutionBiasActivationForward(
+        handle: cudnnHandle_t,
+        alpha1: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        convDesc: cudnnConvolutionDescriptor_t,
+        algo: cudnnConvolutionFwdAlgo_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        alpha2: *const ::libc::c_void,
+        zDesc: cudnnTensorDescriptor_t,
+        z: *const ::libc::c_void,
+        biasDesc: cudnnTensorDescriptor_t,
+        bias: *const ::libc::c_void,
+        activationDesc: cudnnActivationDescriptor_t,
+        yDesc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnConvolutionBwdDataAlgoPerf_t {
+    pub algo: cudnnConvolutionBwdDataAlgo_t,
+    pub status: cudnnStatus_t,
+    pub time: f32,
+    pub memory: usize,
+    pub determinism: cudnnDeterminism_t,
+    pub mathType: cudnnMathType_t,
+    pub reserved: [::libc::c_int; 3usize],
+}
+#[test]
+fn bindgen_test_layout_cudnnConvolutionBwdDataAlgoPerf_t() {
+    assert_eq!(
+        ::std::mem::size_of::<cudnnConvolutionBwdDataAlgoPerf_t>(),
+        48usize,
+        concat!("Size of: ", stringify!(cudnnConvolutionBwdDataAlgoPerf_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudnnConvolutionBwdDataAlgoPerf_t>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).algo as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
+            "::",
+            stringify!(algo)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).status as *const _
+                as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
+            "::",
+            stringify!(status)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).time as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
+            "::",
+            stringify!(time)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).memory as *const _
+                as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
+            "::",
+            stringify!(memory)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).determinism as *const _
+                as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
+            "::",
+            stringify!(determinism)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).mathType as *const _
+                as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
+            "::",
+            stringify!(mathType)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdDataAlgoPerf_t>())).reserved as *const _
+                as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdDataAlgoPerf_t),
+            "::",
+            stringify!(reserved)
+        )
+    );
+}
+extern "C" {
+    pub fn cudnnGetConvolutionBackwardDataAlgorithmMaxCount(
+        handle: cudnnHandle_t,
+        count: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindConvolutionBackwardDataAlgorithm(
+        handle: cudnnHandle_t,
+        wDesc: cudnnFilterDescriptor_t,
+        dyDesc: cudnnTensorDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        dxDesc: cudnnTensorDescriptor_t,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionBwdDataAlgoPerf_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindConvolutionBackwardDataAlgorithmEx(
+        handle: cudnnHandle_t,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        convDesc: cudnnConvolutionDescriptor_t,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionBwdDataAlgoPerf_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionBackwardDataAlgorithm_v7(
+        handle: cudnnHandle_t,
+        filterDesc: cudnnFilterDescriptor_t,
+        diffDesc: cudnnTensorDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        gradDesc: cudnnTensorDescriptor_t,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionBwdDataAlgoPerf_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionBackwardDataWorkspaceSize(
+        handle: cudnnHandle_t,
+        wDesc: cudnnFilterDescriptor_t,
+        dyDesc: cudnnTensorDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        dxDesc: cudnnTensorDescriptor_t,
+        algo: cudnnConvolutionBwdDataAlgo_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnConvolutionBackwardData(
+        handle: cudnnHandle_t,
+        alpha: *const ::libc::c_void,
+        wDesc: cudnnFilterDescriptor_t,
+        w: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        convDesc: cudnnConvolutionDescriptor_t,
+        algo: cudnnConvolutionBwdDataAlgo_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        beta: *const ::libc::c_void,
+        dxDesc: cudnnTensorDescriptor_t,
+        dx: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetFoldedConvBackwardDataDescriptors(
+        handle: cudnnHandle_t,
+        filterDesc: cudnnFilterDescriptor_t,
+        diffDesc: cudnnTensorDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        gradDesc: cudnnTensorDescriptor_t,
+        transformFormat: cudnnTensorFormat_t,
+        foldedFilterDesc: cudnnFilterDescriptor_t,
+        paddedDiffDesc: cudnnTensorDescriptor_t,
+        foldedConvDesc: cudnnConvolutionDescriptor_t,
+        foldedGradDesc: cudnnTensorDescriptor_t,
+        filterFoldTransDesc: cudnnTensorTransformDescriptor_t,
+        diffPadTransDesc: cudnnTensorTransformDescriptor_t,
+        gradFoldTransDesc: cudnnTensorTransformDescriptor_t,
+        gradUnfoldTransDesc: cudnnTensorTransformDescriptor_t,
+    ) -> cudnnStatus_t;
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudnnFusedOpsConstParamStruct {
@@ -18369,6 +20172,213 @@ pub enum cudnnFusedOpsVariantParamLabel_t {
     CUDNN_SCALAR_DOUBLE_BN_EPSILON = 103,
 }
 extern "C" {
+    pub fn cudnnCnnInferVersionCheck() -> cudnnStatus_t;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct cudnnConvolutionBwdFilterAlgoPerf_t {
+    pub algo: cudnnConvolutionBwdFilterAlgo_t,
+    pub status: cudnnStatus_t,
+    pub time: f32,
+    pub memory: usize,
+    pub determinism: cudnnDeterminism_t,
+    pub mathType: cudnnMathType_t,
+    pub reserved: [::libc::c_int; 3usize],
+}
+#[test]
+fn bindgen_test_layout_cudnnConvolutionBwdFilterAlgoPerf_t() {
+    assert_eq!(
+        ::std::mem::size_of::<cudnnConvolutionBwdFilterAlgoPerf_t>(),
+        48usize,
+        concat!("Size of: ", stringify!(cudnnConvolutionBwdFilterAlgoPerf_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<cudnnConvolutionBwdFilterAlgoPerf_t>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).algo as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
+            "::",
+            stringify!(algo)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).status as *const _
+                as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
+            "::",
+            stringify!(status)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).time as *const _
+                as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
+            "::",
+            stringify!(time)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).memory as *const _
+                as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
+            "::",
+            stringify!(memory)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).determinism as *const _
+                as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
+            "::",
+            stringify!(determinism)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).mathType as *const _
+                as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
+            "::",
+            stringify!(mathType)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<cudnnConvolutionBwdFilterAlgoPerf_t>())).reserved as *const _
+                as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(cudnnConvolutionBwdFilterAlgoPerf_t),
+            "::",
+            stringify!(reserved)
+        )
+    );
+}
+extern "C" {
+    pub fn cudnnGetConvolutionBackwardFilterAlgorithmMaxCount(
+        handle: cudnnHandle_t,
+        count: *mut ::libc::c_int,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindConvolutionBackwardFilterAlgorithm(
+        handle: cudnnHandle_t,
+        xDesc: cudnnTensorDescriptor_t,
+        dyDesc: cudnnTensorDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        dwDesc: cudnnFilterDescriptor_t,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionBwdFilterAlgoPerf_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnFindConvolutionBackwardFilterAlgorithmEx(
+        handle: cudnnHandle_t,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        y: *const ::libc::c_void,
+        convDesc: cudnnConvolutionDescriptor_t,
+        dwDesc: cudnnFilterDescriptor_t,
+        dw: *mut ::libc::c_void,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionBwdFilterAlgoPerf_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionBackwardFilterAlgorithm_v7(
+        handle: cudnnHandle_t,
+        srcDesc: cudnnTensorDescriptor_t,
+        diffDesc: cudnnTensorDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        gradDesc: cudnnFilterDescriptor_t,
+        requestedAlgoCount: ::libc::c_int,
+        returnedAlgoCount: *mut ::libc::c_int,
+        perfResults: *mut cudnnConvolutionBwdFilterAlgoPerf_t,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnGetConvolutionBackwardFilterWorkspaceSize(
+        handle: cudnnHandle_t,
+        xDesc: cudnnTensorDescriptor_t,
+        dyDesc: cudnnTensorDescriptor_t,
+        convDesc: cudnnConvolutionDescriptor_t,
+        gradDesc: cudnnFilterDescriptor_t,
+        algo: cudnnConvolutionBwdFilterAlgo_t,
+        sizeInBytes: *mut usize,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnConvolutionBackwardFilter(
+        handle: cudnnHandle_t,
+        alpha: *const ::libc::c_void,
+        xDesc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        convDesc: cudnnConvolutionDescriptor_t,
+        algo: cudnnConvolutionBwdFilterAlgo_t,
+        workSpace: *mut ::libc::c_void,
+        workSpaceSizeInBytes: usize,
+        beta: *const ::libc::c_void,
+        dwDesc: cudnnFilterDescriptor_t,
+        dw: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnConvolutionBackwardBias(
+        handle: cudnnHandle_t,
+        alpha: *const ::libc::c_void,
+        dyDesc: cudnnTensorDescriptor_t,
+        dy: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        dbDesc: cudnnTensorDescriptor_t,
+        db: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
     pub fn cudnnCreateFusedOpsConstParamPack(
         constPack: *mut cudnnFusedOpsConstParamPack_t,
         ops: cudnnFusedOps_t,
@@ -18444,28 +20454,260 @@ extern "C" {
     ) -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnSetRNNDescriptor_v6(
-        handle: cudnnHandle_t,
-        rnnDesc: cudnnRNNDescriptor_t,
-        hiddenSize: ::libc::c_int,
-        numLayers: ::libc::c_int,
-        dropoutDesc: cudnnDropoutDescriptor_t,
-        inputMode: cudnnRNNInputMode_t,
-        direction: cudnnDirectionMode_t,
-        mode: cudnnRNNMode_t,
-        algo: cudnnRNNAlgo_t,
-        mathPrec: cudnnDataType_t,
+    pub fn cudnnCnnTrainVersionCheck() -> cudnnStatus_t;
+}
+pub type cudnnBackendDescriptor_t = *mut ::libc::c_void;
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnPointwiseMode_t {
+    CUDNN_POINTWISE_ADD = 0,
+    CUDNN_POINTWISE_MUL = 1,
+    CUDNN_POINTWISE_MIN = 2,
+    CUDNN_POINTWISE_MAX = 3,
+    CUDNN_POINTWISE_SQRT = 4,
+    CUDNN_POINTWISE_RELU_FWD = 100,
+    CUDNN_POINTWISE_TANH_FWD = 101,
+    CUDNN_POINTWISE_SIGMOID_FWD = 102,
+    CUDNN_POINTWISE_ELU_FWD = 103,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnGenStatsMode_t {
+    CUDNN_GENSTATS_SUM_SQSUM = 0,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBackendAttributeName_t {
+    CUDNN_ATTR_POINTWISE_MODE = 0,
+    CUDNN_ATTR_POINTWISE_MATH_PREC = 1,
+    CUDNN_ATTR_POINTWISE_NAN_PROPAGATION = 2,
+    CUDNN_ATTR_POINTWISE_RELU_LOWER_CLIP = 3,
+    CUDNN_ATTR_POINTWISE_RELU_UPPER_CLIP = 4,
+    CUDNN_ATTR_CONVOLUTION_COMP_TYPE = 100,
+    CUDNN_ATTR_CONVOLUTION_CONV_MODE = 101,
+    CUDNN_ATTR_CONVOLUTION_DILATIONS = 102,
+    CUDNN_ATTR_CONVOLUTION_FILTER_STRIDES = 103,
+    CUDNN_ATTR_CONVOLUTION_POST_PADDINGS = 104,
+    CUDNN_ATTR_CONVOLUTION_PRE_PADDINGS = 105,
+    CUDNN_ATTR_CONVOLUTION_SPATIAL_DIMS = 106,
+    CUDNN_ATTR_ENGINEHEUR_MODE = 200,
+    CUDNN_ATTR_ENGINEHEUR_OPERATION_GRAPH = 201,
+    CUDNN_ATTR_ENGINEHEUR_RESULTS = 202,
+    CUDNN_ATTR_ENGINECFG_ENGINE = 300,
+    CUDNN_ATTR_ENGINECFG_INTERMEDIATE_INFO = 301,
+    CUDNN_ATTR_ENGINECFG_KNOB_CHOICES = 302,
+    CUDNN_ATTR_EXECUTION_PLAN_HANDLE = 400,
+    CUDNN_ATTR_EXECUTION_PLAN_ENGINE_CONFIG = 401,
+    CUDNN_ATTR_EXECUTION_PLAN_WORKSPACE_SIZE = 402,
+    CUDNN_ATTR_EXECUTION_PLAN_COMPUTED_INTERMEDIATE_UIDS = 403,
+    CUDNN_ATTR_EXECUTION_PLAN_RUN_ONLY_INTERMEDIATE_UIDS = 404,
+    CUDNN_ATTR_INTERMEDIATE_INFO_UNIQUE_ID = 500,
+    CUDNN_ATTR_INTERMEDIATE_INFO_SIZE = 501,
+    CUDNN_ATTR_INTERMEDIATE_INFO_DEPENDENT_DATA_UIDS = 502,
+    CUDNN_ATTR_INTERMEDIATE_INFO_DEPENDENT_ATTRIBUTES = 503,
+    CUDNN_ATTR_KNOB_CHOICE_KNOB_TYPE = 600,
+    CUDNN_ATTR_KNOB_CHOICE_KNOB_VALUE = 601,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_FORWARD_ALPHA = 700,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_FORWARD_BETA = 701,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_FORWARD_CONV_DESC = 702,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_FORWARD_W = 703,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_FORWARD_X = 704,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_FORWARD_Y = 705,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_DATA_ALPHA = 706,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_DATA_BETA = 707,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_DATA_CONV_DESC = 708,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_DATA_W = 709,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_DATA_DX = 710,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_DATA_DY = 711,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_FILTER_ALPHA = 712,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_FILTER_BETA = 713,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_FILTER_CONV_DESC = 714,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_FILTER_DW = 715,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_FILTER_X = 716,
+    CUDNN_ATTR_OPERATION_CONVOLUTION_BWD_FILTER_DY = 717,
+    CUDNN_ATTR_OPERATION_POINTWISE_PW_DESCRIPTOR = 750,
+    CUDNN_ATTR_OPERATION_POINTWISE_XDESC = 751,
+    CUDNN_ATTR_OPERATION_POINTWISE_BDESC = 752,
+    CUDNN_ATTR_OPERATION_POINTWISE_YDESC = 753,
+    CUDNN_ATTR_OPERATION_POINTWISE_ALPHA1 = 754,
+    CUDNN_ATTR_OPERATION_POINTWISE_ALPHA2 = 755,
+    CUDNN_ATTR_OPERATION_GENSTATS_MODE = 770,
+    CUDNN_ATTR_OPERATION_GENSTATS_MATH_PREC = 771,
+    CUDNN_ATTR_OPERATION_GENSTATS_XDESC = 772,
+    CUDNN_ATTR_OPERATION_GENSTATS_SUMDESC = 773,
+    CUDNN_ATTR_OPERATION_GENSTATS_SQSUMDESC = 774,
+    CUDNN_ATTR_OPERATIONGRAPH_HANDLE = 800,
+    CUDNN_ATTR_OPERATIONGRAPH_OPS = 801,
+    CUDNN_ATTR_OPERATIONGRAPH_ENGINE_GLOBAL_COUNT = 802,
+    CUDNN_ATTR_TENSOR_BYTE_ALIGNMENT = 900,
+    CUDNN_ATTR_TENSOR_DATA_TYPE = 901,
+    CUDNN_ATTR_TENSOR_DIMENSIONS = 902,
+    CUDNN_ATTR_TENSOR_STRIDES = 903,
+    CUDNN_ATTR_TENSOR_VECTOR_COUNT = 904,
+    CUDNN_ATTR_TENSOR_VECTORIZED_DIMENSION = 905,
+    CUDNN_ATTR_TENSOR_UNIQUE_ID = 906,
+    CUDNN_ATTR_TENSOR_IS_VIRTUAL = 907,
+    CUDNN_ATTR_VARIANT_PACK_UNIQUE_IDS = 1000,
+    CUDNN_ATTR_VARIANT_PACK_DATA_POINTERS = 1001,
+    CUDNN_ATTR_VARIANT_PACK_INTERMEDIATES = 1002,
+    CUDNN_ATTR_VARIANT_PACK_WORKSPACE = 1003,
+    CUDNN_ATTR_LAYOUT_INFO_TENSOR_UID = 1100,
+    CUDNN_ATTR_LAYOUT_INFO_TYPES = 1101,
+    CUDNN_ATTR_KNOB_INFO_TYPE = 1200,
+    CUDNN_ATTR_KNOB_INFO_MAXIMUM_VALUE = 1201,
+    CUDNN_ATTR_KNOB_INFO_MINIMUM_VALUE = 1202,
+    CUDNN_ATTR_KNOB_INFO_STRIDE = 1203,
+    CUDNN_ATTR_ENGINE_OPERATION_GRAPH = 1300,
+    CUDNN_ATTR_ENGINE_GLOBAL_INDEX = 1301,
+    CUDNN_ATTR_ENGINE_KNOB_INFO = 1302,
+    CUDNN_ATTR_ENGINE_NUMERICAL_NOTE = 1303,
+    CUDNN_ATTR_ENGINE_LAYOUT_INFO = 1304,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBackendAttributeType_t {
+    CUDNN_TYPE_HANDLE = 0,
+    CUDNN_TYPE_DATA_TYPE = 1,
+    CUDNN_TYPE_BOOLEAN = 2,
+    CUDNN_TYPE_INT64 = 3,
+    CUDNN_TYPE_FLOAT = 4,
+    CUDNN_TYPE_DOUBLE = 5,
+    CUDNN_TYPE_VOID_PTR = 6,
+    CUDNN_TYPE_CONVOLUTION_MODE = 7,
+    CUDNN_TYPE_HEUR_MODE = 8,
+    CUDNN_TYPE_KNOB_TYPE = 9,
+    CUDNN_TYPE_NAN_PROPOGATION = 10,
+    CUDNN_TYPE_NUMERICAL_NOTE = 11,
+    CUDNN_TYPE_LAYOUT_TYPE = 12,
+    CUDNN_TYPE_ATTRIB_NAME = 13,
+    CUDNN_TYPE_POINTWISE_MODE = 14,
+    CUDNN_TYPE_BACKEND_DESCRIPTOR = 15,
+    CUDNN_TYPE_GENSTATS_MODE = 16,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBackendDescriptorType_t {
+    CUDNN_BACKEND_POINTWISE_DESCRIPTOR = 0,
+    CUDNN_BACKEND_CONVOLUTION_DESCRIPTOR = 1,
+    CUDNN_BACKEND_ENGINE_DESCRIPTOR = 2,
+    CUDNN_BACKEND_ENGINECFG_DESCRIPTOR = 3,
+    CUDNN_BACKEND_ENGINEHEUR_DESCRIPTOR = 4,
+    CUDNN_BACKEND_EXECUTION_PLAN_DESCRIPTOR = 5,
+    CUDNN_BACKEND_INTERMEDIATE_INFO_DESCRIPTOR = 6,
+    CUDNN_BACKEND_KNOB_CHOICE_DESCRIPTOR = 7,
+    CUDNN_BACKEND_KNOB_INFO_DESCRIPTOR = 8,
+    CUDNN_BACKEND_LAYOUT_INFO_DESCRIPTOR = 9,
+    CUDNN_BACKEND_OPERATION_CONVOLUTION_FORWARD_DESCRIPTOR = 10,
+    CUDNN_BACKEND_OPERATION_CONVOLUTION_BACKWARD_FILTER_DESCRIPTOR = 11,
+    CUDNN_BACKEND_OPERATION_CONVOLUTION_BACKWARD_DATA_DESCRIPTOR = 12,
+    CUDNN_BACKEND_OPERATION_POINTWISE_DESCRIPTOR = 13,
+    CUDNN_BACKEND_OPERATION_GEN_STATS_DESCRIPTOR = 14,
+    CUDNN_BACKEND_OPERATIONGRAPH_DESCRIPTOR = 15,
+    CUDNN_BACKEND_VARIANT_PACK_DESCRIPTOR = 16,
+    CUDNN_BACKEND_TENSOR_DESCRIPTOR = 17,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBackendNumericalNote_t {
+    CUDNN_NUMERICAL_NOTE_TENSOR_CORE = 0,
+    CUDNN_NUMERICAL_NOTE_DOWN_CONVERT_INPUTS = 1,
+    CUDNN_NUMERICAL_NOTE_REDUCED_PRECISION_REDUCTION = 2,
+    CUDNN_NUMERICAL_NOTE_FFT = 3,
+    CUDNN_NUMERICAL_NOTE_NONDETERMINISTIC = 4,
+    CUDNN_NUMERICAL_NOTE_WINOGRAD = 5,
+    CUDNN_NUMERICAL_NOTE_TYPE_COUNT = 6,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBackendKnobType_t {
+    CUDNN_KNOB_TYPE_SPLIT_K = 0,
+    CUDNN_KNOB_TYPE_SWIZZLE = 1,
+    CUDNN_KNOB_TYPE_TILE_SIZE = 2,
+    CUDNN_KNOB_TYPE_USE_TEX = 3,
+    CUDNN_KNOB_TYPE_EDGE = 4,
+    CUDNN_KNOB_TYPE_KBLOCK = 5,
+    CUDNN_KNOB_TYPE_LDGA = 6,
+    CUDNN_KNOB_TYPE_LDGB = 7,
+    CUDNN_KNOB_TYPE_CHUNK_K = 8,
+    CUDNN_KNOB_TYPE_SPLIT_H = 9,
+    CUDNN_KNOB_TYPE_WINO_TILE = 10,
+    CUDNN_KNOB_TYPE_MULTIPLY = 11,
+    CUDNN_KNOB_TYPE_SPLIT_K_BUF = 12,
+    CUDNN_KNOB_TYPE_TILEK = 13,
+    CUDNN_KNOB_TYPE_STAGES = 14,
+    CUDNN_KNOB_TYPE_REDUCTION_MODE = 15,
+    CUDNN_KNOB_TYPE_CTA_SPLIT_K_MODE = 16,
+    CUDNN_KNOB_TYPE_SPLIT_K_SLC = 17,
+    CUDNN_KNOB_TYPE_IDX_MODE = 18,
+    CUDNN_KNOB_TYPE_SLICED = 19,
+    CUDNN_KNOB_TYPE_SPLIT_RS = 20,
+    CUDNN_KNOB_TYPE_SINGLEBUFFER = 21,
+    CUDNN_KNOB_TYPE_LDGC = 22,
+    CUDNN_KNOB_TYPE_SPECFILT = 23,
+    CUDNN_KNOB_TYPE_COUNTS = 24,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBackendLayoutType_t {
+    CUDNN_LAYOUT_TYPE_PREFERRED_NCHW = 0,
+    CUDNN_LAYOUT_TYPE_PREFERRED_NHWC = 1,
+    CUDNN_LAYOUT_TYPE_PREFERRED_PAD4CK = 2,
+    CUDNN_LAYOUT_TYPE_PREFERRED_PAD8CK = 3,
+    CUDNN_LAYOUT_TYPE_COUNT = 4,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBackendHeurMode_t {
+    CUDNN_HEUR_MODE_INSTANT = 0,
+    CUDNN_HEUR_MODES_COUNT = 1,
+}
+extern "C" {
+    pub fn cudnnBackendCreateDescriptor(
+        descriptorType: cudnnBackendDescriptorType_t,
+        descriptor: *mut cudnnBackendDescriptor_t,
     ) -> cudnnStatus_t;
 }
 extern "C" {
-    pub fn cudnnSetRNNDescriptor_v5(
-        rnnDesc: cudnnRNNDescriptor_t,
-        hiddenSize: ::libc::c_int,
-        numLayers: ::libc::c_int,
-        dropoutDesc: cudnnDropoutDescriptor_t,
-        inputMode: cudnnRNNInputMode_t,
-        direction: cudnnDirectionMode_t,
-        mode: cudnnRNNMode_t,
-        mathPrec: cudnnDataType_t,
+    pub fn cudnnBackendDestroyDescriptor(descriptor: cudnnBackendDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBackendInitialize(descriptor: cudnnBackendDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBackendFinalize(descriptor: cudnnBackendDescriptor_t) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBackendSetAttribute(
+        descriptor: cudnnBackendDescriptor_t,
+        attributeName: cudnnBackendAttributeName_t,
+        attributeType: cudnnBackendAttributeType_t,
+        elementCount: i64,
+        arrayOfElements: *const ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBackendGetAttribute(
+        descriptor: cudnnBackendDescriptor_t,
+        attributeName: cudnnBackendAttributeName_t,
+        attributeType: cudnnBackendAttributeType_t,
+        requestedElementCount: i64,
+        elementCount: *mut i64,
+        arrayOfElements: *mut ::libc::c_void,
+    ) -> cudnnStatus_t;
+}
+extern "C" {
+    pub fn cudnnBackendExecute(
+        handle: cudnnHandle_t,
+        executionPlan: cudnnBackendDescriptor_t,
+        variantPack: cudnnBackendDescriptor_t,
     ) -> cudnnStatus_t;
 }
