@@ -762,15 +762,15 @@ impl MathType {
 impl RnnPaddingMode {
     fn as_cudnn(&self) -> Result<cudnnRNNPaddingMode_t, Error> {
         match self {
-            RnnPaddingMode::Enabled => Ok(cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_ENABLED),
-            RnnPaddingMode::Disabled => Ok(cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_DISABLED)
+            RnnPaddingMode::Enabled => Ok(CUDNN_RNN_PADDED_IO_ENABLED),
+            RnnPaddingMode::Disabled => Ok(CUDNN_RNN_PADDED_IO_DISABLED)
         }
     }
 
     fn from_cudnn(padding_type: cudnnRNNPaddingMode_t) -> RnnPaddingMode {
         match padding_type {
-            cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_ENABLED => RnnPaddingMode::Enabled,
-            cudnnRNNPaddingMode_t::CUDNN_RNN_PADDED_IO_DISABLED => RnnPaddingMode::Disabled,
+            CUDNN_RNN_PADDED_IO_ENABLED => RnnPaddingMode::Enabled,
+            CUDNN_RNN_PADDED_IO_DISABLED => RnnPaddingMode::Disabled,
             _ => unreachable!(),
         }
     }
