@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `coaster-blas/src/frameworks/native.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>native.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../coaster_blas/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `coaster-blas/src/frameworks/native.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>native.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../coaster_blas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -337,30 +338,30 @@
 <span class="kw">use</span> <span class="ident">rblas</span>::<span class="ident">matrix</span>::<span class="ident">Matrix</span>;
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">read</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>();
     };
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">read_write</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read_write</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>();
     };
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">write_only</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">write_only</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>();
     };
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_asum_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">asum</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">r_slice</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
             <span class="ident">r_slice</span>[<span class="number">0</span>] <span class="op">=</span> <span class="ident">rblas</span>::<span class="ident">Asum</span>::<span class="ident">asum</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>));
             <span class="prelude-val">Ok</span>(())
@@ -369,13 +370,13 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_axpy_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">axpy</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="ident">rblas</span>::<span class="ident">Axpy</span>::<span class="ident">axpy</span>(
                 <span class="kw-2">&amp;</span><span class="macro">read</span><span class="macro">!</span>(<span class="ident">a</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>)[<span class="number">0</span>],
                 <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
@@ -387,12 +388,12 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_copy_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">copy</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="ident">rblas</span>::<span class="ident">Copy</span>::<span class="ident">copy</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>), <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>));
             <span class="prelude-val">Ok</span>(())
         }
@@ -400,13 +401,13 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_dot_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">dot</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">r_slice</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
             <span class="ident">r_slice</span>[<span class="number">0</span>] <span class="op">=</span> <span class="ident">rblas</span>::<span class="ident">Dot</span>::<span class="ident">dot</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>), <span class="macro">read</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>));
             <span class="prelude-val">Ok</span>(())
@@ -415,12 +416,12 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_nrm2_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">nrm2</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">r_slice</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
             <span class="ident">r_slice</span>[<span class="number">0</span>] <span class="op">=</span> <span class="ident">rblas</span>::<span class="ident">Nrm2</span>::<span class="ident">nrm2</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>));
             <span class="prelude-val">Ok</span>(())
@@ -429,12 +430,12 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_scal_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">scal</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="ident">rblas</span>::<span class="ident">Scal</span>::<span class="ident">scal</span>(<span class="kw-2">&amp;</span><span class="macro">read</span><span class="macro">!</span>(<span class="ident">a</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>)[<span class="number">0</span>], <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>));
             <span class="prelude-val">Ok</span>(())
         }
@@ -442,12 +443,12 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_swap_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">swap</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="ident">rblas</span>::<span class="ident">Swap</span>::<span class="ident">swap</span>(<span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>), <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">y</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>));
             <span class="prelude-val">Ok</span>(())
         }
@@ -455,7 +456,7 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_gbmv_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">gbmv</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">alpha</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
@@ -466,7 +467,7 @@
             <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">beta</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">a_slice</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">a</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">x_slice</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
             <span class="kw">let</span> <span class="ident">c_slice</span> <span class="op">=</span> <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
@@ -493,7 +494,7 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">iblas_gemm_for_native</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> {
         <span class="kw">fn</span> <span class="ident">gemm</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
             <span class="ident">alpha</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
@@ -503,7 +504,7 @@
             <span class="ident">b</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">beta</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
             <span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">coaster</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">c_dims</span> <span class="op">=</span> <span class="ident">c</span>.<span class="ident">desc</span>().<span class="ident">clone</span>(); <span class="comment">// FIXME: clone() can be removed</span>
 
             <span class="kw">let</span> <span class="ident">a_slice</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">a</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
@@ -529,7 +530,7 @@
 }
 
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_iblas_for</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=&gt;</span> {
         <span class="kw">impl</span> <span class="ident">IBlas</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {}
 
         <span class="comment">// Level 1</span>
@@ -580,7 +581,7 @@
 <span class="macro">impl_iblas_for</span><span class="macro">!</span>(<span class="ident">f64</span>, <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>);
 
 <span class="doccomment">/// Create a rblas-Matrix from a slice and dimensions.</span>
-<span class="kw">fn</span> <span class="ident">as_matrix</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span><span class="op">&gt;</span>(<span class="ident">slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>], <span class="ident">dims</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Mat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">as_matrix</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> ::<span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span><span class="op">&gt;</span>(<span class="ident">slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>], <span class="ident">dims</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-&gt;</span> <span class="ident">Mat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">dims</span>[<span class="number">0</span>];
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">dims</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">product</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mat</span>: <span class="ident">Mat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Mat</span>::<span class="ident">new</span>(<span class="ident">n</span>, <span class="ident">m</span>);
@@ -615,7 +616,7 @@
     <span class="kw">use</span> <span class="ident">coaster</span>::<span class="ident">frameworks</span>::<span class="ident">Native</span>;
     <span class="kw">use</span> <span class="ident">coaster</span>::<span class="ident">tensor</span>::<span class="ident">SharedTensor</span>;
 
-    <span class="kw">fn</span> <span class="ident">get_native_backend</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_native_backend</span>() <span class="op">-&gt;</span> <span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span> {
         <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>()
     }
 
@@ -650,4 +651,4 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "coaster_blas";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "coaster_blas";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

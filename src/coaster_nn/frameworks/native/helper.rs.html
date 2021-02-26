@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `coaster-nn/src/frameworks/native/helper.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>helper.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../coaster_nn/index.html'><div class='logo-container'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `coaster-nn/src/frameworks/native/helper.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>helper.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../coaster_nn/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -445,7 +446,7 @@
 <span class="doccomment">/// shortcut to reading a tensor as slice</span>
 <span class="doccomment">/// contains unwrap</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">read</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> (
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>().<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>()
     )
 }
@@ -453,7 +454,7 @@
 <span class="doccomment">/// shortcut to reading a tensor as mut slice</span>
 <span class="doccomment">/// contains unwrap</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">read_write</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> (
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read_write</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>().<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>()
     )
 }
@@ -461,7 +462,7 @@
 <span class="doccomment">/// shortcut to reading a tensor as mut slice</span>
 <span class="doccomment">/// contains unwrap</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">write_only</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=&gt;</span> (
         <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">write_only</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>().<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>()
     )
 }
@@ -477,23 +478,23 @@
 }
 
 <span class="doccomment">/// Computes the Sigmoid Function on the CPU</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sigmoid</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sigmoid</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
     (<span class="ident">T</span>::<span class="ident">one</span>()) <span class="op">/</span> (<span class="ident">T</span>::<span class="ident">one</span>() <span class="op">+</span> (<span class="op">-</span><span class="ident">x</span>).<span class="ident">exp</span>())
 }
 
 <span class="doccomment">/// Computes the Sigmoid Gradient on the CPU</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sigmoid_grad</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">dx</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sigmoid_grad</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">dx</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
     <span class="ident">x</span> <span class="op">*</span> (<span class="ident">T</span>::<span class="ident">one</span>() <span class="op">-</span> <span class="ident">x</span>) <span class="op">*</span> <span class="ident">dx</span>
 }
 
 <span class="doccomment">/// Computes the ReLU Function on the CPU</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relu</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relu</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
     <span class="kw">let</span> <span class="ident">x</span>: <span class="ident">T</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">clone</span>();
     <span class="ident">x</span>.<span class="ident">max</span>(<span class="ident">T</span>::<span class="ident">zero</span>())
 }
 
 <span class="doccomment">/// Computes the ReLU Gradient on the CPU</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relu_grad</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">dx</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relu_grad</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">dx</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
     <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span> <span class="ident">T</span>::<span class="ident">zero</span>() {
         <span class="kw">return</span> <span class="ident">dx</span>;
     }
@@ -501,23 +502,23 @@
 }
 
 <span class="doccomment">/// Computes the Tanh Function on the CPU</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tanh</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tanh</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
     <span class="ident">x</span>.<span class="ident">tanh</span>()
 }
 
 <span class="comment">// d/dx tanh x = sech2 x = 1 + tanh2 x</span>
 <span class="doccomment">/// Computes the Tanh Gradient on the CPU</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tanh_grad</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">dx</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tanh_grad</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Float</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="ident">T</span>, <span class="ident">dx</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
     (<span class="ident">T</span>::<span class="ident">one</span>() <span class="op">-</span> <span class="ident">x</span>.<span class="ident">powi</span>(<span class="number">2</span>)) <span class="op">*</span> <span class="ident">dx</span>
 }
 
 <span class="doccomment">/// sigmoid impl generation macro</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_ops_sigmoid_for</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=&gt;</span> (
         <span class="kw">impl</span> <span class="ident">Sigmoid</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">sigmoid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                       <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                       <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map1</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">sigmoid</span>)
@@ -529,7 +530,7 @@
                 <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map2</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
@@ -539,7 +540,7 @@
 
         <span class="kw">impl</span> <span class="ident">SigmoidPointwise</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">sigmoid_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                       <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                       <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map1_inplace</span>(<span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">sigmoid</span>)
             }
@@ -548,7 +549,7 @@
                 <span class="kw-2">&amp;</span><span class="self">self</span>,
                 <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(),  <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(),  <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                     <span class="kw">return</span>
                 <span class="ident">map2_inplace</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
@@ -561,10 +562,10 @@
 <span class="doccomment">/// relu impl generation macro</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_ops_relu_for</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=&gt;</span> (
         <span class="kw">impl</span> <span class="ident">Relu</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">relu</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                    <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map1</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">relu</span>)
@@ -576,7 +577,7 @@
                 <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map2</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
@@ -586,7 +587,7 @@
         <span class="kw">impl</span> <span class="ident">ReluPointwise</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
 
             <span class="kw">fn</span> <span class="ident">relu_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                    <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map1_inplace</span>(<span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">relu</span>)
             }
@@ -595,7 +596,7 @@
                 <span class="kw-2">&amp;</span><span class="self">self</span>,
                 <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map2_inplace</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">relu_grad</span>)
@@ -607,10 +608,10 @@
 <span class="doccomment">/// tanh impl generation macro</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_ops_tanh_for</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=&gt;</span> (
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">plugin</span>::<span class="ident">Tanh</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">tanh</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                    <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map1</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">tanh</span>)
@@ -622,7 +623,7 @@
                 <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map2</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
@@ -631,7 +632,7 @@
         }
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">plugin</span>::<span class="ident">TanhPointwise</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">tanh_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                    <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map1_inplace</span>(<span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">tanh</span>)
             }
@@ -640,7 +641,7 @@
                 <span class="kw-2">&amp;</span><span class="self">self</span>,
                 <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="ident">map2_inplace</span>(<span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="macro">read_write</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>),
                      <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">tanh_grad</span>)
@@ -681,10 +682,10 @@
 <span class="doccomment">/// softmax impl generation macro</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_ops_softmax_for</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=&gt;</span> (
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">plugin</span>::<span class="ident">Softmax</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">softmax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                       <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                       <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">xs</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
                 <span class="kw">let</span> <span class="ident">rs</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
 
@@ -692,10 +693,10 @@
 
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="op">=</span> <span class="number">0.0</span>; <span class="comment">// iter_arith is not stable yet</span>
                 <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">rs</span> {
-                    <span class="ident">sum</span> <span class="op">+</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">r</span>;
+                    <span class="ident">sum</span> <span class="op">+=</span> <span class="kw-2">*</span><span class="ident">r</span>;
                 }
                 <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">rs</span> {
-                    <span class="kw-2">*</span><span class="ident">r</span> <span class="op">/</span><span class="op">=</span> <span class="ident">sum</span>;
+                    <span class="kw-2">*</span><span class="ident">r</span> <span class="op">/=</span> <span class="ident">sum</span>;
                 }
                 <span class="prelude-val">Ok</span>(())
             }
@@ -705,7 +706,7 @@
                 <span class="kw-2">&amp;</span><span class="self">self</span>,
                 <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
-                <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+                <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 
                 <span class="kw">let</span> <span class="ident">xs</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
                 <span class="kw">let</span> <span class="ident">dxs</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
@@ -713,7 +714,7 @@
 
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dot</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="op">=</span> <span class="number">0.0</span>;
                 <span class="kw">for</span> (<span class="ident">t</span>, <span class="ident">dt</span>) <span class="kw">in</span> <span class="ident">xs</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">dxs</span>.<span class="ident">iter</span>()) {
-                    <span class="ident">dot</span> <span class="op">+</span><span class="op">=</span> <span class="ident">t</span> <span class="op">*</span> <span class="ident">dt</span>;
+                    <span class="ident">dot</span> <span class="op">+=</span> <span class="ident">t</span> <span class="op">*</span> <span class="ident">dt</span>;
                 }
 
                 <span class="ident">map2</span>(<span class="ident">xs</span>, <span class="ident">dxs</span>, <span class="ident">drs</span>, <span class="op">|</span><span class="ident">t</span>, <span class="ident">dt</span><span class="op">|</span> <span class="ident">t</span> <span class="op">*</span> (<span class="ident">dt</span> <span class="op">-</span> <span class="ident">dot</span>))
@@ -725,10 +726,10 @@
 <span class="doccomment">/// log softmax impl generation macro</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_ops_log_softmax_for</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=&gt;</span> (
         <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">plugin</span>::<span class="ident">LogSoftmax</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">log_softmax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                           <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                           <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">xs</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
                 <span class="kw">let</span> <span class="ident">rs</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
 
@@ -737,7 +738,7 @@
 
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">logsum</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="op">=</span> <span class="number">0.0</span>;
                 <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">xs</span> {
-                    <span class="ident">logsum</span> <span class="op">+</span><span class="op">=</span> (<span class="op">-</span>(<span class="ident">max_x</span> <span class="op">-</span> <span class="ident">t</span>)).<span class="ident">exp</span>();
+                    <span class="ident">logsum</span> <span class="op">+=</span> (<span class="op">-</span>(<span class="ident">max_x</span> <span class="op">-</span> <span class="ident">t</span>)).<span class="ident">exp</span>();
                 }
                 <span class="ident">logsum</span> <span class="op">=</span> <span class="ident">max_x</span> <span class="op">+</span> <span class="ident">logsum</span>.<span class="ident">ln</span>();
 
@@ -746,14 +747,14 @@
 
             <span class="kw">fn</span> <span class="ident">log_softmax_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                                 <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>)
-                                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+                                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">xs</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
                 <span class="kw">let</span> <span class="ident">dxs</span> <span class="op">=</span> <span class="macro">read</span><span class="macro">!</span>(<span class="ident">x_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
                 <span class="kw">let</span> <span class="ident">drs</span> <span class="op">=</span> <span class="macro">write_only</span><span class="macro">!</span>(<span class="ident">result_diff</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>, <span class="self">self</span>);
 
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="op">=</span> <span class="number">0.0</span>;
                 <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">grad_val</span> <span class="kw">in</span> <span class="ident">dxs</span>.<span class="ident">iter</span>() {
-                    <span class="ident">sum</span> <span class="op">+</span><span class="op">=</span> <span class="ident">grad_val</span>;
+                    <span class="ident">sum</span> <span class="op">+=</span> <span class="ident">grad_val</span>;
                 }
                 <span class="ident">map2</span>(<span class="ident">xs</span>, <span class="ident">dxs</span>, <span class="ident">drs</span>, <span class="op">|</span><span class="ident">t</span>, <span class="ident">dt</span><span class="op">|</span> <span class="ident">dt</span> <span class="op">-</span> <span class="ident">t</span>.<span class="ident">exp</span>() <span class="op">*</span> <span class="ident">sum</span>)
             }
@@ -766,7 +767,7 @@
 <span class="doccomment">/// TODO it&#39;s all unimplemented!() right now</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_ops_lrn_for</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> (
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span>:<span class="ident">ty</span>) <span class="op">=&gt;</span> (
         <span class="kw">impl</span> ::<span class="ident">plugin</span>::<span class="ident">LRN</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">b</span> {
             <span class="kw">fn</span> <span class="ident">new_lrn_config</span>(
                 <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -774,7 +775,7 @@
                 <span class="ident">alpha</span>: <span class="ident">f64</span>,
                 <span class="ident">beta</span>: <span class="ident">f64</span>,
                 <span class="ident">k</span>: <span class="ident">f64</span>
-            ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CLRN</span>, ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+            ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CLRN</span>, ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="macro">unimplemented</span><span class="macro">!</span>();
                 <span class="prelude-val">Ok</span>(::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">helper</span>::<span class="ident">NormalizationConfig</span>)
             }
@@ -784,7 +785,7 @@
                 <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>
-            ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+            ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="macro">unimplemented</span><span class="macro">!</span>();
                 <span class="prelude-val">Ok</span>(())
             }
@@ -794,7 +795,7 @@
                 <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>
-            ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+            ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="macro">unimplemented</span><span class="macro">!</span>();
                 <span class="prelude-val">Ok</span>(())
             }
@@ -806,7 +807,7 @@
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>
-            ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+            ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="macro">unimplemented</span><span class="macro">!</span>();
                 <span class="prelude-val">Ok</span>(())
             }
@@ -818,7 +819,7 @@
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
                 <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>
-            ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+            ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
                 <span class="macro">unimplemented</span><span class="macro">!</span>();
                 <span class="prelude-val">Ok</span>(())
             }
@@ -826,4 +827,4 @@
     );
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "coaster_nn";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "coaster_nn";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["greenglas"] = [{"text":"impl <a class=\"trait\" href=\"greenglas/modifier/trait.Set.html\" title=\"trait greenglas::modifier::Set\">Set</a> for <a class=\"struct\" href=\"greenglas/image/struct.Image.html\" title=\"struct greenglas::image::Image\">Image</a>","synthetic":false,"types":["greenglas::image::Image"]},{"text":"impl <a class=\"trait\" href=\"greenglas/modifier/trait.Set.html\" title=\"trait greenglas::modifier::Set\">Set</a> for <a class=\"struct\" href=\"greenglas/word/struct.Word.html\" title=\"struct greenglas::word::Word\">Word</a>","synthetic":false,"types":["greenglas::word::Word"]}];
+implementors["greenglas"] = [{"text":"impl Set for Image","synthetic":false,"types":[]},{"text":"impl Set for Word","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

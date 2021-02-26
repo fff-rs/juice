@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `coaster-nn/src/plugin.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>plugin.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../coaster_nn/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `coaster-nn/src/plugin.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>plugin.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../coaster_nn/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -743,10 +744,10 @@
 
 <span class="kw">impl</span> <span class="ident">ConvForwardAlgo</span> {
     <span class="doccomment">/// Check if algorithim should be chosen automatically.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_auto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_auto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">ConvForwardAlgo</span>::<span class="ident">Auto</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>
+            <span class="ident">ConvForwardAlgo</span>::<span class="ident">Auto</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>
         }
     }
 }
@@ -784,10 +785,10 @@
 
 <span class="kw">impl</span> <span class="ident">ConvBackwardFilterAlgo</span> {
     <span class="doccomment">/// Check if algorithim should be chosen automatically.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_auto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_auto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">ConvBackwardFilterAlgo</span>::<span class="ident">Auto</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>
+            <span class="ident">ConvBackwardFilterAlgo</span>::<span class="ident">Auto</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>
         }
     }
 }
@@ -829,10 +830,10 @@
 
 <span class="kw">impl</span> <span class="ident">ConvBackwardDataAlgo</span> {
     <span class="doccomment">/// Check if algorithim should be chosen automatically.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_auto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_auto</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">ConvBackwardDataAlgo</span>::<span class="ident">Auto</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>
+            <span class="ident">ConvBackwardDataAlgo</span>::<span class="ident">Auto</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>
         }
     }
 }
@@ -848,7 +849,7 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ConvolutionConfig</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Returns the largest workspace size in bytes needed</span>
     <span class="doccomment">/// for any of the convolution operations.</span>
-    <span class="kw">fn</span> <span class="ident">workspace_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">workspace_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
         <span class="number">0</span>
     }
 }
@@ -859,7 +860,7 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RnnConfig</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Workspace Size - Overwritten by each plugin method except native, which doesn&#39;t require</span>
     <span class="doccomment">/// a workspace size.</span>
-    <span class="kw">fn</span> <span class="ident">workspace_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> { <span class="number">0</span> }
+    <span class="kw">fn</span> <span class="ident">workspace_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> { <span class="number">0</span> }
 }
 
 <span class="doccomment">/// Provides the functionality for a backend to support Neural Network related operations.</span>
@@ -888,7 +889,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">sigmoid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+               <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of a [Sigmoid function][sigmoid] over the input Tensor `x`.</span>
     <span class="doccomment">/// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function</span>
@@ -896,7 +897,7 @@
     <span class="doccomment">/// Saves the result to `result_diff`.</span>
     <span class="kw">fn</span> <span class="ident">sigmoid_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                     <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                    <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for pointwise Sigmoid operations (overwrites the input with the result of the operation).</span>
@@ -907,13 +908,13 @@
     <span class="doccomment">/// Saves the result back to `x`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// For a no-memory managed version see `sigmoid_pointwise_plain`.</span>
-    <span class="kw">fn</span> <span class="ident">sigmoid_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">sigmoid_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of a [Sigmoid function][sigmoid] over the input Tensor `x`.</span>
     <span class="doccomment">/// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result back to `x_diff`.</span>
-    <span class="kw">fn</span> <span class="ident">sigmoid_pointwise_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">sigmoid_pointwise_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for a Backend to support ReLU operations.</span>
@@ -922,7 +923,7 @@
     <span class="doccomment">/// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
-    <span class="kw">fn</span> <span class="ident">relu</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">relu</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of [ReLU][relu] over the input Tensor `x`.</span>
     <span class="doccomment">/// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)</span>
@@ -930,7 +931,7 @@
     <span class="doccomment">/// Saves the result to `result_diff`.</span>
     <span class="kw">fn</span> <span class="ident">relu_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                  <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                 <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                 <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for pointwise ReLU operations (overwrites the input with the result of the operation).</span>
@@ -939,14 +940,14 @@
     <span class="doccomment">/// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result back to `x`.</span>
-    <span class="kw">fn</span> <span class="ident">relu_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">relu_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of [ReLU][relu] over the input Tensor `x`.</span>
     <span class="doccomment">/// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result back to `x_diff`.</span>
     <span class="kw">fn</span> <span class="ident">relu_pointwise_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                           <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                           <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for a Backend to support TanH operations.</span>
@@ -956,7 +957,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">tanh</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-            <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+            <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of [hyperbolic Tangent][tanh] over the input Tensor `x`.</span>
     <span class="doccomment">/// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function</span>
@@ -964,7 +965,7 @@
     <span class="doccomment">/// Saves the result to `result_diff`.</span>
     <span class="kw">fn</span> <span class="ident">tanh_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                  <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                 <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                 <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for pointwise ReLU operations (overwrites the input</span>
@@ -974,14 +975,14 @@
     <span class="doccomment">/// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result back to `x`.</span>
-    <span class="kw">fn</span> <span class="ident">tanh_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">tanh_pointwise</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of [tanh][tanh] over the input Tensor `x`.</span>
     <span class="doccomment">/// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result back to `x_diff`.</span>
     <span class="kw">fn</span> <span class="ident">tanh_pointwise_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                           <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                           <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provide the functionality for a Backend to support RNN operations</span>
@@ -1001,7 +1002,7 @@
         <span class="ident">num_layers</span>: <span class="ident">i32</span>,
         <span class="ident">batch_size</span>: <span class="ident">i32</span>,
         <span class="comment">// RC being RNNConfig</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CRNN</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CRNN</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Generate Weights for RNN</span>
     <span class="kw">fn</span> <span class="ident">generate_rnn_weight_description</span>(
@@ -1009,7 +1010,7 @@
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CRNN</span>,
         <span class="ident">batch_size</span>: <span class="ident">i32</span>,
         <span class="ident">input_size</span>: <span class="ident">i32</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Train a LSTM Network and Return Results</span>
     <span class="comment">// TODO: Create alternate rnn_forward or alternate path to work with pretrained networks</span>
@@ -1022,7 +1023,7 @@
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CRNN</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
         <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Calculates RNN Gradients for Input/Hidden/Cell</span>
     <span class="kw">fn</span> <span class="ident">rnn_backward_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -1033,7 +1034,7 @@
                          <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CRNN</span>,
                          <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                          <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>)
-                         <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                         <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Calculates RNN Gradients for Weights</span>
     <span class="kw">fn</span> <span class="ident">rnn_backward_weights</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -1042,7 +1043,7 @@
                             <span class="ident">filter</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                             <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CRNN</span>,
                             <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>)
-                            <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                            <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
@@ -1060,12 +1061,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RnnNetworkMode</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
-            <span class="ident">RnnNetworkMode</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;RelU&quot;</span>,
-            <span class="ident">RnnNetworkMode</span>::<span class="ident">Tanh</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Tanh&quot;</span>,
-            <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;LSTM&quot;</span>,
-            <span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;GRU&quot;</span>,
+            <span class="ident">RnnNetworkMode</span>::<span class="ident">ReLU</span> <span class="op">=&gt;</span> <span class="string">&quot;RelU&quot;</span>,
+            <span class="ident">RnnNetworkMode</span>::<span class="ident">Tanh</span> <span class="op">=&gt;</span> <span class="string">&quot;Tanh&quot;</span>,
+            <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span> <span class="op">=&gt;</span> <span class="string">&quot;LSTM&quot;</span>,
+            <span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span> <span class="op">=&gt;</span> <span class="string">&quot;GRU&quot;</span>,
         }.<span class="ident">to_owned</span>();
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
@@ -1073,13 +1074,13 @@
 
 <span class="kw">impl</span> <span class="ident">RnnNetworkMode</span> {
     <span class="doccomment">/// Convert RnnNetworkMode to String Representation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">input</span> {
-            <span class="string">&quot;GRU&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span>),
-            <span class="string">&quot;LSTM&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>),
-            <span class="string">&quot;ReLU&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">ReLU</span>),
-            <span class="string">&quot;Tanh&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">Tanh</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnType used - variants are GRU, LSTM, ReLU, and Tanhd&quot;</span>),
+            <span class="string">&quot;GRU&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span>),
+            <span class="string">&quot;LSTM&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>),
+            <span class="string">&quot;ReLU&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">ReLU</span>),
+            <span class="string">&quot;Tanh&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnNetworkMode</span>::<span class="ident">Tanh</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnType used - variants are GRU, LSTM, ReLU, and Tanhd&quot;</span>),
         }
     }
 }
@@ -1098,10 +1099,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RnnInputMode</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
-            <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;LinearInput&quot;</span>,
-            <span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;SkipInput&quot;</span>
+            <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span> <span class="op">=&gt;</span> <span class="string">&quot;LinearInput&quot;</span>,
+            <span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span> <span class="op">=&gt;</span> <span class="string">&quot;SkipInput&quot;</span>
         }.<span class="ident">to_owned</span>();
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
@@ -1109,11 +1110,11 @@
 
 <span class="kw">impl</span> <span class="ident">RnnInputMode</span> {
     <span class="doccomment">/// Convert to RnnInputMode from String Representation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">input</span> {
-            <span class="string">&quot;LinearInput&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>),
-            <span class="string">&quot;SkipInput&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnInputMode used - variants are LinearInput, SkipInput&quot;</span>),
+            <span class="string">&quot;LinearInput&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span>),
+            <span class="string">&quot;SkipInput&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnInputMode used - variants are LinearInput, SkipInput&quot;</span>),
         }
     }
 }
@@ -1129,10 +1130,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">DirectionMode</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
-            <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UniDirectional&quot;</span>,
-            <span class="ident">DirectionMode</span>::<span class="ident">BiDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;BiDirectional&quot;</span>
+            <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span> <span class="op">=&gt;</span> <span class="string">&quot;UniDirectional&quot;</span>,
+            <span class="ident">DirectionMode</span>::<span class="ident">BiDirectional</span> <span class="op">=&gt;</span> <span class="string">&quot;BiDirectional&quot;</span>
         }.<span class="ident">to_owned</span>();
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
@@ -1140,11 +1141,11 @@
 
 <span class="kw">impl</span> <span class="ident">DirectionMode</span> {
     <span class="doccomment">/// Convert to DirectionMode from String Representation</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">input</span> {
-            <span class="string">&quot;UniDirectional&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>),
-            <span class="string">&quot;BiDirectional&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">DirectionMode</span>::<span class="ident">BiDirectional</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown DirectionMode used - variants are UniDirectional, BiDirectional&quot;</span>),
+            <span class="string">&quot;UniDirectional&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span>),
+            <span class="string">&quot;BiDirectional&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">DirectionMode</span>::<span class="ident">BiDirectional</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown DirectionMode used - variants are UniDirectional, BiDirectional&quot;</span>),
         }
     }
 }
@@ -1167,12 +1168,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RnnAlgorithm</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
-            <span class="ident">RnnAlgorithm</span>::<span class="ident">Standard</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Standard&quot;</span>,
-            <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistStatic</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;PersistStatic&quot;</span>,
-            <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistDynamic</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;PersistDynamic&quot;</span>,
-            <span class="ident">RnnAlgorithm</span>::<span class="ident">Count</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>()
+            <span class="ident">RnnAlgorithm</span>::<span class="ident">Standard</span> <span class="op">=&gt;</span> <span class="string">&quot;Standard&quot;</span>,
+            <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistStatic</span> <span class="op">=&gt;</span> <span class="string">&quot;PersistStatic&quot;</span>,
+            <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistDynamic</span> <span class="op">=&gt;</span> <span class="string">&quot;PersistDynamic&quot;</span>,
+            <span class="ident">RnnAlgorithm</span>::<span class="ident">Count</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>()
         }.<span class="ident">to_owned</span>();
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
@@ -1180,12 +1181,12 @@
 
 <span class="kw">impl</span> <span class="ident">RnnAlgorithm</span> {
     <span class="doccomment">/// Convert to RnnAlgorithm from String Representation</span>
-    <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from_string</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">input</span> {
-            <span class="string">&quot;Standard&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnAlgorithm</span>::<span class="ident">Standard</span>),
-            <span class="string">&quot;PersistStatic&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnAlgorithm</span>::<span class="ident">PersistStatic</span>),
-            <span class="string">&quot;PersistDynamic&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnAlgorithm</span>::<span class="ident">PersistDynamic</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnAlgorithm used - variants are Standard, PersistStatic, PersistDynamic&quot;</span>),
+            <span class="string">&quot;Standard&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnAlgorithm</span>::<span class="ident">Standard</span>),
+            <span class="string">&quot;PersistStatic&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnAlgorithm</span>::<span class="ident">PersistStatic</span>),
+            <span class="string">&quot;PersistDynamic&quot;</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">RnnAlgorithm</span>::<span class="ident">PersistDynamic</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Unknown RnnAlgorithm used - variants are Standard, PersistStatic, PersistDynamic&quot;</span>),
         }
     }
 }
@@ -1225,7 +1226,7 @@
                               <span class="ident">algo_bwd_data</span>: <span class="ident">ConvBackwardDataAlgo</span>,
                               <span class="ident">stride</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>],
                               <span class="ident">zero_padding</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>])
-                              <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CC</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                              <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CC</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes a [CNN convolution][convolution] over the input Tensor `x`.</span>
     <span class="doccomment">/// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network</span>
@@ -1237,7 +1238,7 @@
                    <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                    <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
                    <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CC</span>)
-                   <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                   <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of a [CNN convolution][convolution] with respect to the filter.</span>
     <span class="doccomment">/// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network</span>
@@ -1249,7 +1250,7 @@
                                <span class="ident">filter_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                                <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
                                <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CC</span>)
-                               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                               <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of a [CNN convolution][convolution] over the input</span>
     <span class="doccomment">/// Tensor `x` with respect to the data.</span>
@@ -1262,7 +1263,7 @@
                              <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                              <span class="ident">workspace</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
                              <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CC</span>)
-                             <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                             <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="comment">// /// Computes the backward Convolution function w.r.t the bias.</span>
     <span class="comment">// ///</span>
@@ -1298,7 +1299,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">softmax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+               <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of a [Softmax][softmax] over the input Tensor `x`.</span>
     <span class="doccomment">/// [softmax]: https://en.wikipedia.org/wiki/Softmax_function</span>
@@ -1306,7 +1307,7 @@
     <span class="doccomment">/// Saves the result to `result_diff`.</span>
     <span class="kw">fn</span> <span class="ident">softmax_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                     <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                    <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                    <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for a Backend to support LogSoftmax operations.</span>
@@ -1315,14 +1316,14 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">log_softmax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                   <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                   <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of a logarithmic softmax over the input Tensor `x`.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result_diff`.</span>
     <span class="kw">fn</span> <span class="ident">log_softmax_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                         <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>)
-                        <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                        <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for a Backend to support Local Response Normalization operations.</span>
@@ -1330,14 +1331,14 @@
     <span class="doccomment">/// Creates a new (Local Response Normalization) LRNConfig, which needs to be</span>
     <span class="doccomment">/// passed to further LRN Operations.</span>
     <span class="kw">fn</span> <span class="ident">new_lrn_config</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">f64</span>, <span class="ident">beta</span>: <span class="ident">f64</span>, <span class="ident">k</span>: <span class="ident">f64</span>)
-                      <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CLRN</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                      <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CLRN</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes a [LRN][lrn] over the input Tensor `x`.</span>
     <span class="doccomment">/// [lrn]: https://en.wikipedia.org/wiki/lrnal_neural_network</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">lrn</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
-           <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+           <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of a [LRN][lrn] over the input Tensor `x`.</span>
     <span class="doccomment">/// [lrn]: https://en.wikipedia.org/wiki/lrnal_neural_network</span>
@@ -1347,21 +1348,21 @@
                 <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                 <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                 <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CLRN</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for a Backend to support Pooling operations.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Pooling</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> : <span class="ident">NN</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Creates a new PoolingConfig, which needs to be passed to further pooling Operations.</span>
     <span class="kw">fn</span> <span class="ident">new_pooling_config</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">window</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>], <span class="ident">stride</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>], <span class="ident">padding</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>])
-                          <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                          <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.</span>
     <span class="doccomment">/// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">pooling_max</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
-                   <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                   <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of [max Pooling][pooling] over the input Tensor `x`.</span>
     <span class="doccomment">/// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer</span>
@@ -1369,7 +1370,7 @@
     <span class="doccomment">/// Saves the result to `result_diff`.</span>
     <span class="kw">fn</span> <span class="ident">pooling_max_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                         <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
-                        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
 
     <span class="doccomment">/// Computes non-linear down-sampling ([average Pooling][pooling]) over the input Tensor `x`.</span>
@@ -1377,7 +1378,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">pooling_avg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
-                   <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                   <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes the gradient of [average Pooling][pooling] over the input Tensor `x`.</span>
     <span class="doccomment">/// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer</span>
@@ -1385,21 +1386,21 @@
     <span class="doccomment">/// Saves the result to `result_diff`.</span>
     <span class="kw">fn</span> <span class="ident">pooling_avg_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                         <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
-                        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CPOOL</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// Provides the functionality for a Backend to support Dropout operations.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Dropout</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> : <span class="ident">NN</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Creates a new DropoutConfig, which needs to be passed to further dropout Operations.</span>
     <span class="kw">fn</span> <span class="ident">new_dropout_config</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">dropout</span>: <span class="ident">f32</span>, <span class="ident">seed</span>: <span class="ident">u64</span>)
-                          <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CDROP</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                          <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">CDROP</span>, <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.</span>
     <span class="doccomment">/// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">dropout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
-                   <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CDROP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                   <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CDROP</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.</span>
     <span class="doccomment">/// [pooling]: https://en.wikipedia.org/wiki/Dropout_(neural_networks)</span>
@@ -1407,7 +1408,7 @@
     <span class="doccomment">/// Saves the result to `result`.</span>
     <span class="kw">fn</span> <span class="ident">dropout_grad</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">x_diff</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
                         <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>, <span class="ident">result_diff</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>,
-                        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CDROP</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+                        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">CDROP</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "coaster_nn";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "coaster_nn";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

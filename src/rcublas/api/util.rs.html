@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `rcublas/cublas/src/api/util.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>util.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rcublas/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `rcublas/cublas/src/api/util.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>util.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rcublas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -271,14 +272,14 @@
 <span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">Send</span> <span class="kw">for</span> <span class="ident">Cookie</span> { }
 
 <span class="kw">impl</span> <span class="ident">Cookie</span> {
-    <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cublasContext</span> {
+    <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cublasContext</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ptr</span>()
     }
 }
 
 <span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">cublasHandle_t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Cookie</span> {
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
-    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">handle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cublasContext</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>,<span class="self">Self</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">handle</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cublasContext</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>,<span class="self">Self</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nn</span>) <span class="op">=</span> <span class="ident">NonNull</span>::<span class="ident">new</span>(<span class="ident">handle</span>) {
             <span class="prelude-val">Ok</span>(<span class="ident">Cookie</span>(<span class="ident">nn</span>))
         } <span class="kw">else</span> {
@@ -288,7 +289,7 @@
 }
 
 <span class="macro">lazy_static</span><span class="macro">!</span> {
-    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TRACKER</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Cookie</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>  {
+    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TRACKER</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Cookie</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> <span class="op">=</span>  {
         <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">HashSet</span>::<span class="ident">with_capacity</span>(<span class="number">3</span>)))
     };
 }
@@ -323,7 +324,7 @@
     <span class="doccomment">/// The returned Context must be provided to future cuBLAS calls.</span>
     <span class="doccomment">/// Creating contexts all the time can lead to performance problems.</span>
     <span class="doccomment">/// Generally one Context per GPU device and configuration is recommended.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 
         <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_create</span>() }<span class="question-mark">?</span>;
         <span class="ident">track</span>(<span class="ident">handle</span>);
@@ -339,83 +340,83 @@
     <span class="doccomment">/// Instructs CUDA to remove the cuBLAS handle, causing any further instructions to fail.</span>
     <span class="doccomment">/// This should be called at the end of using cuBLAS and should ideally be handled by drop</span>
     <span class="doccomment">/// exclusively, and never called by the user.</span>
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">destroy</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">destroy</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">context</span>.<span class="ident">id_c</span>();
         <span class="ident">untrack</span>(<span class="ident">handle</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">API</span>::<span class="ident">ffi_destroy</span>(<span class="ident">handle</span>)<span class="question-mark">?</span>)
     }
 
     <span class="doccomment">/// Get CUBLAS Version</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_version</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_version</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
             <span class="ident">API</span>::<span class="ident">ffi_get_version</span>(<span class="kw-2">*</span><span class="ident">context</span>.<span class="ident">id_c</span>())
         }
     }
 
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_get_version</span>(<span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_get_version</span>(<span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">version</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="ident">version_ptr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">i32</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">version</span>;
         <span class="kw">match</span> <span class="ident">cublasGetVersion_v2</span>(<span class="ident">handle</span>, <span class="ident">version_ptr</span>) {
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">version</span>),
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to initialise CUBLAS Library&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Other Unknown Error with CUBLAS Get Version&quot;</span>)),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">version</span>),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to initialise CUBLAS Library&quot;</span>)),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Other Unknown Error with CUBLAS Get Version&quot;</span>)),
         }
     }
 
     <span class="doccomment">/// Retrieve the pointer mode for a given cuBLAS context.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_pointer_mode</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PointerMode</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_pointer_mode</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PointerMode</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">PointerMode</span>::<span class="ident">from_c</span>(
             <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_get_pointer_mode</span>(<span class="kw-2">*</span><span class="ident">context</span>.<span class="ident">id_c</span>()) }<span class="question-mark">?</span>,
         ))
     }
 
     <span class="doccomment">/// Set the pointer mode for a given cuBLAS context.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pointer_mode</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span>, <span class="ident">pointer_mode</span>: <span class="ident">PointerMode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_pointer_mode</span>(<span class="ident">context</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span>, <span class="ident">pointer_mode</span>: <span class="ident">PointerMode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="kw">unsafe</span> {
             <span class="ident">API</span>::<span class="ident">ffi_set_pointer_mode</span>(<span class="kw-2">*</span><span class="ident">context</span>.<span class="ident">id_c</span>(), <span class="ident">pointer_mode</span>.<span class="ident">as_c</span>())
         }<span class="question-mark">?</span>)
     }
 
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_create</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cublasHandle_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_create</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cublasHandle_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">handle</span>: <span class="ident">cublasHandle_t</span> <span class="op">=</span> <span class="ident">ptr</span>::<span class="ident">null_mut</span>();
         <span class="kw">match</span> <span class="ident">cublasCreate_v2</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">handle</span>) {
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">handle</span>),
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_ARCH_MISMATCH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ArchMismatch</span>),
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">handle</span>),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_ARCH_MISMATCH</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ArchMismatch</span>),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_ALLOC_FAILED</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to create the cuBLAS context/resources.&quot;</span>,
             )),
         }
     }
 
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_destroy</span>(<span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_destroy</span>(<span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cublasDestroy_v2</span>(<span class="ident">handle</span>) {
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to destroy the CUDA cuDNN context/resources.&quot;</span>,
             )),
         }
     }
 
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_get_pointer_mode</span>(<span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cublasPointerMode_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_get_pointer_mode</span>(<span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cublasPointerMode_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">pointer_mode</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">cublasPointerMode_t</span>::<span class="ident">CUBLAS_POINTER_MODE_HOST</span>];
         <span class="kw">match</span> <span class="ident">cublasGetPointerMode_v2</span>(<span class="ident">handle</span>, <span class="ident">pointer_mode</span>.<span class="ident">as_mut_ptr</span>()) {
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">pointer_mode</span>[<span class="number">0</span>]),
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get cuBLAS pointer mode.&quot;</span>)),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">pointer_mode</span>[<span class="number">0</span>]),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get cuBLAS pointer mode.&quot;</span>)),
         }
     }
 
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_set_pointer_mode</span>(
         <span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>,
         <span class="ident">pointer_mode</span>: <span class="ident">cublasPointerMode_t</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cublasSetPointerMode_v2</span>(<span class="ident">handle</span>, <span class="ident">pointer_mode</span>) {
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get cuBLAS pointer mode.&quot;</span>)),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_SUCCESS</span> <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">cublasStatus_t</span>::<span class="ident">CUBLAS_STATUS_NOT_INITIALIZED</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get cuBLAS pointer mode.&quot;</span>)),
         }
     }
 
@@ -486,4 +487,4 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "rcublas";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "rcublas";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
