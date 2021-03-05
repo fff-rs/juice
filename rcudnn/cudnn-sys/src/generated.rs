@@ -9,12 +9,12 @@
             
 
 pub const CUDNN_MAJOR: u32 = 8;
-pub const CUDNN_MINOR: u32 = 0;
-pub const CUDNN_PATCHLEVEL: u32 = 5;
-pub const CUDNN_VERSION: u32 = 8005;
+pub const CUDNN_MINOR: u32 = 1;
+pub const CUDNN_PATCHLEVEL: u32 = 0;
+pub const CUDNN_VERSION: u32 = 8100;
 pub const CUDNN_OPS_INFER_MAJOR: u32 = 8;
-pub const CUDNN_OPS_INFER_MINOR: u32 = 0;
-pub const CUDNN_OPS_INFER_PATCH: u32 = 5;
+pub const CUDNN_OPS_INFER_MINOR: u32 = 1;
+pub const CUDNN_OPS_INFER_PATCH: u32 = 0;
 pub const CUDNN_DIM_MAX: u32 = 8;
 pub const CUDNN_LRN_MIN_N: u32 = 1;
 pub const CUDNN_LRN_MAX_N: u32 = 16;
@@ -22,11 +22,11 @@ pub const CUDNN_LRN_MIN_K: f64 = 0.00001;
 pub const CUDNN_LRN_MIN_BETA: f64 = 0.01;
 pub const CUDNN_BN_MIN_EPSILON: f64 = 0.0;
 pub const CUDNN_OPS_TRAIN_MAJOR: u32 = 8;
-pub const CUDNN_OPS_TRAIN_MINOR: u32 = 0;
-pub const CUDNN_OPS_TRAIN_PATCH: u32 = 5;
+pub const CUDNN_OPS_TRAIN_MINOR: u32 = 1;
+pub const CUDNN_OPS_TRAIN_PATCH: u32 = 0;
 pub const CUDNN_ADV_INFER_MAJOR: u32 = 8;
-pub const CUDNN_ADV_INFER_MINOR: u32 = 0;
-pub const CUDNN_ADV_INFER_PATCH: u32 = 5;
+pub const CUDNN_ADV_INFER_MINOR: u32 = 1;
+pub const CUDNN_ADV_INFER_PATCH: u32 = 0;
 pub const CUDNN_RNN_PADDED_IO_DISABLED: u32 = 0;
 pub const CUDNN_RNN_PADDED_IO_ENABLED: u32 = 1;
 pub const CUDNN_SEQDATA_DIM_COUNT: u32 = 4;
@@ -36,14 +36,14 @@ pub const CUDNN_ATTN_DISABLE_PROJ_BIASES: u32 = 0;
 pub const CUDNN_ATTN_ENABLE_PROJ_BIASES: u32 = 2;
 pub const CUDNN_ATTN_WKIND_COUNT: u32 = 8;
 pub const CUDNN_ADV_TRAIN_MAJOR: u32 = 8;
-pub const CUDNN_ADV_TRAIN_MINOR: u32 = 0;
-pub const CUDNN_ADV_TRAIN_PATCH: u32 = 5;
+pub const CUDNN_ADV_TRAIN_MINOR: u32 = 1;
+pub const CUDNN_ADV_TRAIN_PATCH: u32 = 0;
 pub const CUDNN_CNN_INFER_MAJOR: u32 = 8;
-pub const CUDNN_CNN_INFER_MINOR: u32 = 0;
-pub const CUDNN_CNN_INFER_PATCH: u32 = 5;
+pub const CUDNN_CNN_INFER_MINOR: u32 = 1;
+pub const CUDNN_CNN_INFER_PATCH: u32 = 0;
 pub const CUDNN_CNN_TRAIN_MAJOR: u32 = 8;
-pub const CUDNN_CNN_TRAIN_MINOR: u32 = 0;
-pub const CUDNN_CNN_TRAIN_PATCH: u32 = 5;
+pub const CUDNN_CNN_TRAIN_MINOR: u32 = 1;
+pub const CUDNN_CNN_TRAIN_PATCH: u32 = 0;
 #[repr(u32)]
 #[non_exhaustive]
 #[doc = "                                                                              *"]
@@ -5752,8 +5752,11 @@ fn bindgen_test_layout_cudaKernelNodeParams() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudaExternalSemaphoreSignalNodeParams {
+    #[doc = "< Array of external semaphore handles."]
     pub extSemArray: *mut cudaExternalSemaphore_t,
+    #[doc = "< Array of external semaphore signal parameters."]
     pub paramsArray: *const cudaExternalSemaphoreSignalParams,
+    #[doc = "< Number of handles and parameters supplied in extSemArray and paramsArray."]
     pub numExtSems: ::libc::c_uint,
 }
 #[test]
@@ -5818,8 +5821,11 @@ fn bindgen_test_layout_cudaExternalSemaphoreSignalNodeParams() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudaExternalSemaphoreWaitNodeParams {
+    #[doc = "< Array of external semaphore handles."]
     pub extSemArray: *mut cudaExternalSemaphore_t,
+    #[doc = "< Array of external semaphore wait parameters."]
     pub paramsArray: *const cudaExternalSemaphoreWaitParams,
+    #[doc = "< Number of handles and parameters supplied in extSemArray and paramsArray."]
     pub numExtSems: ::libc::c_uint,
 }
 #[test]
@@ -9337,7 +9343,7 @@ extern "C" {
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
-    #[doc = " \\sa ::cudaImportExternalMemory"]
+    #[doc = " \\sa ::cudaImportExternalMemory,"]
     #[doc = " ::cudaDestroyExternalMemory,"]
     #[doc = " ::cudaExternalMemoryGetMappedMipmappedArray"]
     pub fn cudaExternalMemoryGetMappedBuffer(
@@ -9395,7 +9401,7 @@ extern "C" {
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
-    #[doc = " \\sa ::cudaImportExternalMemory"]
+    #[doc = " \\sa ::cudaImportExternalMemory,"]
     #[doc = " ::cudaDestroyExternalMemory,"]
     #[doc = " ::cudaExternalMemoryGetMappedBuffer"]
     #[doc = ""]
@@ -9426,7 +9432,7 @@ extern "C" {
     #[doc = " \\note_callback"]
     #[doc = " \\note_destroy_ub"]
     #[doc = ""]
-    #[doc = " \\sa ::cudaImportExternalMemory"]
+    #[doc = " \\sa ::cudaImportExternalMemory,"]
     #[doc = " ::cudaExternalMemoryGetMappedBuffer,"]
     #[doc = " ::cudaExternalMemoryGetMappedMipmappedArray"]
     pub fn cudaDestroyExternalMemory(extMem: cudaExternalMemory_t) -> cudaError_t;
@@ -11978,7 +11984,7 @@ extern "C" {
     #[doc = " ::cudaMemcpyFromSymbol, ::cudaMemcpy2DAsync,"]
     #[doc = " ::cudaMemcpy2DToArrayAsync,"]
     #[doc = " ::cudaMemcpy2DFromArrayAsync,"]
-    #[doc = " ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync"]
+    #[doc = " ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,"]
     #[doc = " ::cuMemcpyAsync,"]
     #[doc = " ::cuMemcpyDtoHAsync,"]
     #[doc = " ::cuMemcpyHtoDAsync,"]
@@ -12960,7 +12966,7 @@ extern "C" {
     #[doc = " \\note_init_rt"]
     #[doc = " \\note_callback"]
     #[doc = ""]
-    #[doc = " \\sa ::cudaMemRangeGetAttribute, ::cudaMemAdvise"]
+    #[doc = " \\sa ::cudaMemRangeGetAttribute, ::cudaMemAdvise,"]
     #[doc = " ::cudaMemPrefetchAsync,"]
     #[doc = " ::cuMemRangeGetAttributes"]
     pub fn cudaMemRangeGetAttributes(
@@ -13356,7 +13362,7 @@ extern "C" {
     ) -> cudaError_t;
 }
 extern "C" {
-    #[doc = " \\brief Sets attributes of a memory pool"]
+    #[doc = " \\brief Gets attributes of a memory pool"]
     #[doc = ""]
     #[doc = " Supported attributes are:"]
     #[doc = " - ::cudaMemPoolAttrReleaseThreshold: (value type = cuuint64_t)"]
@@ -14222,7 +14228,7 @@ extern "C" {
     #[doc = " \\ref ::cudaUnbindTexture(const struct textureReference*) \"cudaUnbindTexture (C API)\","]
     #[doc = " \\ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) \"cudaGetTextureAlignmentOffset (C API)\","]
     #[doc = " ::cuTexRefSetMipmappedArray,"]
-    #[doc = " ::cuTexRefSetMipmapFilterMode"]
+    #[doc = " ::cuTexRefSetMipmapFilterMode,"]
     #[doc = " ::cuTexRefSetMipmapLevelClamp,"]
     #[doc = " ::cuTexRefSetMipmapLevelBias,"]
     #[doc = " ::cuTexRefSetFormat,"]
@@ -16122,6 +16128,15 @@ extern "C" {
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphAddKernelNode,"]
     #[doc = " ::cudaGraphKernelNodeSetParams,"]
+    #[doc = " ::cudaGraphExecMemcpyNodeSetParams,"]
+    #[doc = " ::cudaGraphExecMemsetNodeSetParams,"]
+    #[doc = " ::cudaGraphExecHostNodeSetParams,"]
+    #[doc = " ::cudaGraphExecChildGraphNodeSetParams,"]
+    #[doc = " ::cudaGraphExecEventRecordNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecEventWaitNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,"]
+    #[doc = " ::cudaGraphExecUpdate,"]
     #[doc = " ::cudaGraphInstantiate"]
     pub fn cudaGraphExecKernelNodeSetParams(
         hGraphExec: cudaGraphExec_t,
@@ -16163,13 +16178,19 @@ extern "C" {
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphAddMemcpyNode,"]
     #[doc = " ::cudaGraphMemcpyNodeSetParams,"]
-    #[doc = " ::cudaGraphInstantiate,"]
     #[doc = " ::cudaGraphExecMemcpyNodeSetParamsToSymbol,"]
     #[doc = " ::cudaGraphExecMemcpyNodeSetParamsFromSymbol,"]
     #[doc = " ::cudaGraphExecMemcpyNodeSetParams1D,"]
     #[doc = " ::cudaGraphExecKernelNodeSetParams,"]
     #[doc = " ::cudaGraphExecMemsetNodeSetParams,"]
-    #[doc = " ::cudaGraphExecHostNodeSetParams"]
+    #[doc = " ::cudaGraphExecHostNodeSetParams,"]
+    #[doc = " ::cudaGraphExecChildGraphNodeSetParams,"]
+    #[doc = " ::cudaGraphExecEventRecordNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecEventWaitNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,"]
+    #[doc = " ::cudaGraphExecUpdate,"]
+    #[doc = " ::cudaGraphInstantiate"]
     pub fn cudaGraphExecMemcpyNodeSetParams(
         hGraphExec: cudaGraphExec_t,
         node: cudaGraphNode_t,
@@ -16241,11 +16262,17 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphAddMemsetNode,"]
-    #[doc = " ::cudaGraphMemsetNodeSetParams"]
+    #[doc = " ::cudaGraphMemsetNodeSetParams,"]
+    #[doc = " ::cudaGraphExecKernelNodeSetParams,"]
+    #[doc = " ::cudaGraphExecMemcpyNodeSetParams,"]
+    #[doc = " ::cudaGraphExecHostNodeSetParams,"]
+    #[doc = " ::cudaGraphExecChildGraphNodeSetParams,"]
+    #[doc = " ::cudaGraphExecEventRecordNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecEventWaitNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,"]
+    #[doc = " ::cudaGraphExecUpdate,"]
     #[doc = " ::cudaGraphInstantiate"]
-    #[doc = " ::cudaGraphExecKernelNodeSetParams"]
-    #[doc = " ::cudaGraphExecMemcpyNodeSetParams"]
-    #[doc = " ::cudaGraphExecHostNodeSetParams"]
     pub fn cudaGraphExecMemsetNodeSetParams(
         hGraphExec: cudaGraphExec_t,
         node: cudaGraphNode_t,
@@ -16277,11 +16304,17 @@ extern "C" {
     #[doc = ""]
     #[doc = " \\sa"]
     #[doc = " ::cudaGraphAddHostNode,"]
-    #[doc = " ::cudaGraphHostNodeSetParams"]
+    #[doc = " ::cudaGraphHostNodeSetParams,"]
+    #[doc = " ::cudaGraphExecKernelNodeSetParams,"]
+    #[doc = " ::cudaGraphExecMemcpyNodeSetParams,"]
+    #[doc = " ::cudaGraphExecMemsetNodeSetParams,"]
+    #[doc = " ::cudaGraphExecChildGraphNodeSetParams,"]
+    #[doc = " ::cudaGraphExecEventRecordNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecEventWaitNodeSetEvent,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,"]
+    #[doc = " ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,"]
+    #[doc = " ::cudaGraphExecUpdate,"]
     #[doc = " ::cudaGraphInstantiate"]
-    #[doc = " ::cudaGraphExecKernelNodeSetParams"]
-    #[doc = " ::cudaGraphExecMemcpyNodeSetParams"]
-    #[doc = " ::cudaGraphExecMemsetNodeSetParams"]
     pub fn cudaGraphExecHostNodeSetParams(
         hGraphExec: cudaGraphExec_t,
         node: cudaGraphNode_t,
@@ -16642,6 +16675,8 @@ pub enum cudnnDataType_t {
     CUDNN_DATA_UINT8 = 6,
     CUDNN_DATA_UINT8x4 = 7,
     CUDNN_DATA_INT8x32 = 8,
+    CUDNN_DATA_BFLOAT16 = 9,
+    CUDNN_DATA_INT64 = 10,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -17572,7 +17607,8 @@ pub enum cudnnRNNAlgo_t {
     CUDNN_RNN_ALGO_STANDARD = 0,
     CUDNN_RNN_ALGO_PERSIST_STATIC = 1,
     CUDNN_RNN_ALGO_PERSIST_DYNAMIC = 2,
-    CUDNN_RNN_ALGO_COUNT = 3,
+    CUDNN_RNN_ALGO_PERSIST_STATIC_SMALL_H = 3,
+    CUDNN_RNN_ALGO_COUNT = 4,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -20470,6 +20506,16 @@ pub enum cudnnPointwiseMode_t {
     CUDNN_POINTWISE_TANH_FWD = 101,
     CUDNN_POINTWISE_SIGMOID_FWD = 102,
     CUDNN_POINTWISE_ELU_FWD = 103,
+    CUDNN_POINTWISE_GELU_FWD = 104,
+    CUDNN_POINTWISE_SOFTPLUS_FWD = 105,
+    CUDNN_POINTWISE_SWISH_FWD = 106,
+    CUDNN_POINTWISE_RELU_BWD = 200,
+    CUDNN_POINTWISE_TANH_BWD = 201,
+    CUDNN_POINTWISE_SIGMOID_BWD = 202,
+    CUDNN_POINTWISE_ELU_BWD = 203,
+    CUDNN_POINTWISE_GELU_BWD = 204,
+    CUDNN_POINTWISE_SOFTPLUS_BWD = 205,
+    CUDNN_POINTWISE_SWISH_BWD = 206,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -20480,12 +20526,23 @@ pub enum cudnnGenStatsMode_t {
 #[repr(u32)]
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum cudnnBnFinalizeStatsMode_t {
+    CUDNN_BN_FINALIZE_STATISTICS_TRAINING = 0,
+    CUDNN_BN_FINALIZE_STATISTICS_INFERENCE = 1,
+}
+#[repr(u32)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum cudnnBackendAttributeName_t {
     CUDNN_ATTR_POINTWISE_MODE = 0,
     CUDNN_ATTR_POINTWISE_MATH_PREC = 1,
     CUDNN_ATTR_POINTWISE_NAN_PROPAGATION = 2,
     CUDNN_ATTR_POINTWISE_RELU_LOWER_CLIP = 3,
     CUDNN_ATTR_POINTWISE_RELU_UPPER_CLIP = 4,
+    CUDNN_ATTR_POINTWISE_RELU_LOWER_CLIP_SLOPE = 5,
+    CUDNN_ATTR_POINTWISE_ELU_ALPHA = 6,
+    CUDNN_ATTR_POINTWISE_SOFTPLUS_BETA = 7,
+    CUDNN_ATTR_POINTWISE_SWISH_BETA = 8,
     CUDNN_ATTR_CONVOLUTION_COMP_TYPE = 100,
     CUDNN_ATTR_CONVOLUTION_CONV_MODE = 101,
     CUDNN_ATTR_CONVOLUTION_DILATIONS = 102,
@@ -20534,11 +20591,30 @@ pub enum cudnnBackendAttributeName_t {
     CUDNN_ATTR_OPERATION_POINTWISE_YDESC = 753,
     CUDNN_ATTR_OPERATION_POINTWISE_ALPHA1 = 754,
     CUDNN_ATTR_OPERATION_POINTWISE_ALPHA2 = 755,
+    CUDNN_ATTR_OPERATION_POINTWISE_DXDESC = 756,
+    CUDNN_ATTR_OPERATION_POINTWISE_DYDESC = 757,
     CUDNN_ATTR_OPERATION_GENSTATS_MODE = 770,
     CUDNN_ATTR_OPERATION_GENSTATS_MATH_PREC = 771,
     CUDNN_ATTR_OPERATION_GENSTATS_XDESC = 772,
     CUDNN_ATTR_OPERATION_GENSTATS_SUMDESC = 773,
     CUDNN_ATTR_OPERATION_GENSTATS_SQSUMDESC = 774,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_STATS_MODE = 780,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_MATH_PREC = 781,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_Y_SUM_DESC = 782,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_Y_SQ_SUM_DESC = 783,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_SCALE_DESC = 784,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_BIAS_DESC = 785,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_PREV_RUNNING_MEAN_DESC = 786,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_PREV_RUNNING_VAR_DESC = 787,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_UPDATED_RUNNING_MEAN_DESC = 788,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_UPDATED_RUNNING_VAR_DESC = 789,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_SAVED_MEAN_DESC = 790,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_SAVED_INV_STD_DESC = 791,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_EQ_SCALE_DESC = 792,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_EQ_BIAS_DESC = 793,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_ACCUM_COUNT_DESC = 794,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_EPSILON_DESC = 795,
+    CUDNN_ATTR_OPERATION_BN_FINALIZE_EXP_AVERATE_FACTOR_DESC = 796,
     CUDNN_ATTR_OPERATIONGRAPH_HANDLE = 800,
     CUDNN_ATTR_OPERATIONGRAPH_OPS = 801,
     CUDNN_ATTR_OPERATIONGRAPH_ENGINE_GLOBAL_COUNT = 802,
@@ -20550,6 +20626,7 @@ pub enum cudnnBackendAttributeName_t {
     CUDNN_ATTR_TENSOR_VECTORIZED_DIMENSION = 905,
     CUDNN_ATTR_TENSOR_UNIQUE_ID = 906,
     CUDNN_ATTR_TENSOR_IS_VIRTUAL = 907,
+    CUDNN_ATTR_TENSOR_IS_BY_VALUE = 908,
     CUDNN_ATTR_VARIANT_PACK_UNIQUE_IDS = 1000,
     CUDNN_ATTR_VARIANT_PACK_DATA_POINTERS = 1001,
     CUDNN_ATTR_VARIANT_PACK_INTERMEDIATES = 1002,
@@ -20565,6 +20642,17 @@ pub enum cudnnBackendAttributeName_t {
     CUDNN_ATTR_ENGINE_KNOB_INFO = 1302,
     CUDNN_ATTR_ENGINE_NUMERICAL_NOTE = 1303,
     CUDNN_ATTR_ENGINE_LAYOUT_INFO = 1304,
+    CUDNN_ATTR_MATMUL_COMP_TYPE = 1500,
+    CUDNN_ATTR_OPERATION_MATMUL_ADESC = 1520,
+    CUDNN_ATTR_OPERATION_MATMUL_BDESC = 1521,
+    CUDNN_ATTR_OPERATION_MATMUL_CDESC = 1522,
+    CUDNN_ATTR_OPERATION_MATMUL_DESC = 1523,
+    CUDNN_ATTR_OPERATION_MATMUL_IRREGULARLY_STRIDED_BATCH_COUNT = 1524,
+    CUDNN_ATTR_REDUCTION_OPERATOR = 1600,
+    CUDNN_ATTR_REDUCTION_COMP_TYPE = 1601,
+    CUDNN_ATTR_OPERATION_REDUCTION_XDESC = 1610,
+    CUDNN_ATTR_OPERATION_REDUCTION_YDESC = 1611,
+    CUDNN_ATTR_OPERATION_REDUCTION_DESC = 1612,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -20587,6 +20675,8 @@ pub enum cudnnBackendAttributeType_t {
     CUDNN_TYPE_POINTWISE_MODE = 14,
     CUDNN_TYPE_BACKEND_DESCRIPTOR = 15,
     CUDNN_TYPE_GENSTATS_MODE = 16,
+    CUDNN_TYPE_BN_FINALIZE_STATS_MODE = 17,
+    CUDNN_TYPE_REDUCTION_OPERATOR_TYPE = 18,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -20610,6 +20700,11 @@ pub enum cudnnBackendDescriptorType_t {
     CUDNN_BACKEND_OPERATIONGRAPH_DESCRIPTOR = 15,
     CUDNN_BACKEND_VARIANT_PACK_DESCRIPTOR = 16,
     CUDNN_BACKEND_TENSOR_DESCRIPTOR = 17,
+    CUDNN_BACKEND_MATMUL_DESCRIPTOR = 18,
+    CUDNN_BACKEND_OPERATION_MATMUL_DESCRIPTOR = 19,
+    CUDNN_BACKEND_OPERATION_BN_FINALIZE_STATISTICS_DESCRIPTOR = 20,
+    CUDNN_BACKEND_REDUCTION_DESCRIPTOR = 21,
+    CUDNN_BACKEND_OPERATION_REDUCTION_DESCRIPTOR = 22,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -20651,7 +20746,8 @@ pub enum cudnnBackendKnobType_t {
     CUDNN_KNOB_TYPE_SINGLEBUFFER = 21,
     CUDNN_KNOB_TYPE_LDGC = 22,
     CUDNN_KNOB_TYPE_SPECFILT = 23,
-    CUDNN_KNOB_TYPE_COUNTS = 24,
+    CUDNN_KNOB_TYPE_KERNEL_CFG = 24,
+    CUDNN_KNOB_TYPE_COUNTS = 25,
 }
 #[repr(u32)]
 #[non_exhaustive]
@@ -20668,7 +20764,8 @@ pub enum cudnnBackendLayoutType_t {
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum cudnnBackendHeurMode_t {
     CUDNN_HEUR_MODE_INSTANT = 0,
-    CUDNN_HEUR_MODES_COUNT = 1,
+    CUDNN_HEUR_MODE_B = 1,
+    CUDNN_HEUR_MODES_COUNT = 2,
 }
 extern "C" {
     pub fn cudnnBackendCreateDescriptor(

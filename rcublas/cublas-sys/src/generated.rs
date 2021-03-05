@@ -9,10 +9,10 @@
             
 
 pub const CUBLAS_VER_MAJOR: u32 = 11;
-pub const CUBLAS_VER_MINOR: u32 = 3;
+pub const CUBLAS_VER_MINOR: u32 = 4;
 pub const CUBLAS_VER_PATCH: u32 = 1;
-pub const CUBLAS_VER_BUILD: u32 = 68;
-pub const CUBLAS_VERSION: u32 = 11301;
+pub const CUBLAS_VER_BUILD: u32 = 1026;
+pub const CUBLAS_VERSION: u32 = 11401;
 #[repr(C)]
 #[repr(align(8))]
 #[derive(Debug, Copy, Clone)]
@@ -5779,8 +5779,11 @@ fn bindgen_test_layout_cudaKernelNodeParams() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudaExternalSemaphoreSignalNodeParams {
+    #[doc = "< Array of external semaphore handles."]
     pub extSemArray: *mut cudaExternalSemaphore_t,
+    #[doc = "< Array of external semaphore signal parameters."]
     pub paramsArray: *const cudaExternalSemaphoreSignalParams,
+    #[doc = "< Number of handles and parameters supplied in extSemArray and paramsArray."]
     pub numExtSems: ::libc::c_uint,
 }
 #[test]
@@ -5845,8 +5848,11 @@ fn bindgen_test_layout_cudaExternalSemaphoreSignalNodeParams() {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct cudaExternalSemaphoreWaitNodeParams {
+    #[doc = "< Array of external semaphore handles."]
     pub extSemArray: *mut cudaExternalSemaphore_t,
+    #[doc = "< Array of external semaphore wait parameters."]
     pub paramsArray: *const cudaExternalSemaphoreWaitParams,
+    #[doc = "< Number of handles and parameters supplied in extSemArray and paramsArray."]
     pub numExtSems: ::libc::c_uint,
 }
 #[test]
