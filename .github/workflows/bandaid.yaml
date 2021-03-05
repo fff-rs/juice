@@ -1,0 +1,8 @@
+on: [push, pull_request, pull_request_review]
+jobs:
+  gpu_foo:
+    runs-on: [self-hosted, linux, x64]
+    container: quay.io/spearow/machine-learning-container-fedora-default
+    steps:
+      - uses: actions/checkout@v2
+      - run: nvidia-smi
