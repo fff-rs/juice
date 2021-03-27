@@ -1,14 +1,13 @@
-extern crate coaster as co;
-extern crate coaster_nn as nn;
+use coaster as co;
+use coaster_nn as nn;
 #[cfg(feature = "cuda")]
-extern crate rcublas;
+use rcublas;
 
 use co::prelude::*;
 use co::frameworks::native::flatbox::FlatBox;
-use nn::*;
 #[cfg(feature = "cuda")]
 use co::frameworks::cuda::get_cuda_backend;
-#[cfg(feature = "native")]
+#[cfg(not(feature = "cuda"))]
 use co::frameworks::native::get_native_backend;
 
 fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
@@ -20,14 +19,14 @@ fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
 
 fn main() {
     #[cfg(feature = "cuda")]
-        let backend = get_cuda_backend();
+    let backend = get_cuda_backend();
 
     #[cfg(not(feature = "cuda"))]
-        let backend = get_native_backend();
+    let backend = get_native_backend();
 
     // Initialize two SharedTensors.
     let mut x = SharedTensor::<f32>::new(&(1, 1, 3));
-    let mut result = SharedTensor::<f32>::new(&(1, 1, 3));
+    let result = SharedTensor::<f32>::new(&(1, 1, 3));
     // Fill `x` with some data.
     let payload: &[f32] = &::std::iter::repeat(1f32).take(x.capacity()).collect::<Vec<f32>>();
     let native = Backend::<Native>::default().unwrap();
@@ -36,8 +35,7 @@ fn main() {
     // FIXME: Sigmoid cannot be included from coaster-nn without using cuda and native features
     // from coaster-nn. This causes the error https://github.com/rust-lang/cargo/issues/6915 ,
     // and so sigmoid has been disabled for now.
-    //backend.sigmoid(&mut x, &mut result).unwrap();
+    backend.sigmoid(&mut x, &mut result).unwrap();
     // See the result.
     println!("{:?}", result.read(native.device()).unwrap().as_slice::<f32>());
 }
-

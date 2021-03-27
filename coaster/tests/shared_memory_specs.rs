@@ -7,6 +7,7 @@ mod shared_memory_spec {
     use crate::co::tensor::Error;
     use crate::co::frameworks::native::flatbox::FlatBox;
 
+    #[cfg(features = "cuda")]
     fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
         let mem_buffer = mem.as_mut_slice::<T>();
         for (index, datum) in data.iter().enumerate() {
