@@ -3,13 +3,11 @@
 //! A Recurrent Descriptor is used to hold information about the rnn,
 //! which is needed for forward and backward rnnal operations.
 
-use super::{API, Error};
-use super::utils::DataType;
 use ffi::*;
+use super::{API, Error};
+use crate::utils::DropoutConfig;
+use crate::utils::DataType;
 use crate::Cudnn;
-
-
-use utils::DropoutConfig;
 
 /// Describes a Recurrent Descriptor.
 #[derive(Debug)]

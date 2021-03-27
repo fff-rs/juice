@@ -79,7 +79,7 @@ fn main() {
                     &"./assets/mnist/",
                     "http://yann.lecun.com/exdb/mnist/").unwrap();
 
-                unzip_datasets(&datasets, &"./assets/mnist/");
+                unzip_datasets(&datasets, &"./assets/mnist/").unwrap();
             }
 
             "fashion" => {
@@ -97,7 +97,7 @@ fn main() {
                 ).unwrap();
                 println!("{}", "Fashion MNIST dataset downloaded".to_string());
 
-                unzip_datasets(&datasets, &"./assets/mnist-fashion/");
+                unzip_datasets(&datasets, &"./assets/mnist-fashion/").unwrap();
                 println!("{}", "Fashion MNIST dataset decompressed".to_string());
             }
             _ => println!("{}", "Failed to download MNIST dataset!".to_string()),

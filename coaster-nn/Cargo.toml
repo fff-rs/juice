@@ -14,6 +14,7 @@ documentation = "https://spearow.io/projects/coaster-nn/documentation"
 readme = "README.md"
 keywords = ["neural-network", "coaster", "computation", "hpc", "plugin"]
 license = "MIT OR Apache-2.0"
+edition = "2018"
 
 [dependencies]
 coaster = { version = "0.1", default-features = false }
