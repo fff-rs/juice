@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `juice/src/layer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>layer.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../juice/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice/src/layer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>layer.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../juice/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
@@ -1738,7 +1740,7 @@
     <span class="doccomment">/// This is the part that does most of the work ([forward][2]/[backward][3]).</span>
     <span class="doccomment">/// [2]: ./trait.ILayer.html#method.forward</span>
     <span class="doccomment">/// [3]: ./trait.ILayer.html#method.backward</span>
-    <span class="kw">pub</span> <span class="ident">worker</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">worker</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
     <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 
@@ -1747,15 +1749,15 @@
     <span class="ident">needs_backward</span>: <span class="ident">bool</span>,
 
     <span class="doccomment">/// The vector that stores shared references to the weights in the form of blobs.</span>
-    <span class="kw">pub</span> <span class="ident">weights_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">weights_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The vector that stores shared references to the weights in the form of blobs.</span>
-    <span class="kw">pub</span> <span class="ident">weights_gradient</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">weights_gradient</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="comment">// contains all the learnable weights (does not include bias(?) and shared weights)</span>
-    <span class="ident">learnable_weights</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">learnable_weights</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="comment">// learning rate for each weight</span>
-    <span class="ident">weights_lr</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">weights_lr</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="comment">// weight decay for each weight</span>
-    <span class="ident">weights_weight_decay</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">weights_weight_decay</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="comment">// display name for each weight</span>
     <span class="ident">weights_display_names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
@@ -1769,17 +1771,17 @@
     <span class="ident">weight_propagate_down</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// References to all the input blobs of the layer.</span>
-    <span class="kw">pub</span> <span class="ident">input_blobs_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">input_blobs_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="doccomment">/// References to all the input blobs of the layer.</span>
-    <span class="kw">pub</span> <span class="ident">input_blobs_gradient</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">input_blobs_gradient</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Names for all the input blobs of the layer.</span>
     <span class="kw">pub</span> <span class="ident">input_blob_names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">input_need_backwards</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// References to all the output blobs of the layer.</span>
-    <span class="kw">pub</span> <span class="ident">output_blobs_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">output_blobs_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="doccomment">/// References to all the output blobs of the layer.</span>
-    <span class="kw">pub</span> <span class="ident">output_blobs_gradient</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">output_blobs_gradient</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">output_blob_names</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// The vector that indicates whether each output blob contributes to</span>
     <span class="doccomment">/// the [loss][1] of the network and with which weight.</span>
@@ -1789,7 +1791,7 @@
     <span class="doccomment">/// All the blobs of the layer that can be addressed by name.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Does not contain anonymous blobs.</span>
-    <span class="kw">pub</span> <span class="ident">blob_names</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>)<span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">blob_names</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span><span class="op">&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
@@ -1805,12 +1807,12 @@
     <span class="doccomment">/// Called during initialization of containter layers.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">connect</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>)<span class="op">&gt;</span>,
+        <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
         <span class="ident">weight_registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span>
             <span class="ident">String</span>,
             (
-                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>,
-                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>,
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
                 <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
                 <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
             ),
@@ -1867,13 +1869,13 @@
     <span class="kw">fn</span> <span class="ident">connect_input</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">blob_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-        <span class="ident">available_blobs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>)<span class="op">&gt;</span>,
+        <span class="ident">available_blobs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
     ) {
         <span class="kw">let</span> <span class="ident">input_id</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">config</span>
             .<span class="ident">inputs</span>
             .<span class="ident">iter</span>()
-            .<span class="ident">position</span>(<span class="op">|</span><span class="ident">input_name</span><span class="op">|</span> <span class="ident">input_name</span> <span class="op">==</span> <span class="ident">blob_name</span>)
+            .<span class="ident">position</span>(<span class="op">|</span><span class="ident">input_name</span><span class="op">|</span> <span class="ident">input_name</span> <span class="op">=</span><span class="op">=</span> <span class="ident">blob_name</span>)
             .<span class="ident">unwrap</span>();
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">available_blobs</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">blob_name</span>) {
@@ -1922,15 +1924,15 @@
     <span class="kw">fn</span> <span class="ident">append_output</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">output_id</span>: <span class="ident">usize</span>,
-        <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>)<span class="op">&gt;</span>,
+        <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">String</span>, (<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
     ) {
         <span class="kw">let</span> <span class="ident">layer_config</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">config</span>;
 
         <span class="kw">let</span> <span class="ident">blob_name</span> <span class="op">=</span> <span class="ident">layer_config</span>.<span class="ident">output</span>(<span class="ident">output_id</span>).<span class="ident">unwrap</span>().<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">blob_data</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>;
-        <span class="kw">let</span> <span class="ident">blob_gradient</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>;
+        <span class="kw">let</span> <span class="ident">blob_data</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+        <span class="kw">let</span> <span class="ident">blob_gradient</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-        <span class="kw">if</span> <span class="ident">layer_config</span>.<span class="ident">input</span>(<span class="ident">output_id</span>).<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="kw-2">*</span><span class="ident">layer_config</span>.<span class="ident">input</span>(<span class="ident">output_id</span>).<span class="ident">unwrap</span>() <span class="op">==</span> <span class="ident">blob_name</span> {
+        <span class="kw">if</span> <span class="ident">layer_config</span>.<span class="ident">input</span>(<span class="ident">output_id</span>).<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="kw-2">*</span><span class="ident">layer_config</span>.<span class="ident">input</span>(<span class="ident">output_id</span>).<span class="ident">unwrap</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">blob_name</span> {
             <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Layer {:&lt;15} -&gt; Output {:&gt;15} (in-place)&quot;</span>, <span class="ident">layer_config</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
             <span class="ident">blob_data</span> <span class="op">=</span> <span class="ident">registry</span>[<span class="kw-2">&amp;</span><span class="ident">blob_name</span>].<span class="number">0</span>.<span class="ident">clone</span>();
             <span class="ident">blob_gradient</span> <span class="op">=</span> <span class="ident">registry</span>[<span class="kw-2">&amp;</span><span class="ident">blob_name</span>].<span class="number">1</span>.<span class="ident">clone</span>();
@@ -1945,7 +1947,7 @@
                 <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Output {} = {}&quot;</span>, <span class="ident">output_id</span>, <span class="ident">blob_name</span>);
             }
 
-            <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
+            <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
             <span class="ident">blob_data</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
             <span class="ident">blob_gradient</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>])));
             <span class="comment">// [1,1,1] for CUDA</span>
@@ -1971,7 +1973,7 @@
 
         <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;{} -&gt; {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
 
-        <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
+        <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">output_data</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
         <span class="kw">let</span> <span class="ident">output_gradient</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
         <span class="self">self</span>.<span class="ident">output_blobs_data</span>.<span class="ident">push</span>(<span class="ident">output_data</span>);
@@ -1984,8 +1986,8 @@
         <span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span>
             <span class="ident">String</span>,
             (
-                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>,
-                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>,
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+                <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>,
                 <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
                 <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
             ),
@@ -2038,7 +2040,7 @@
             <span class="comment">// This layer &quot;owns&quot; this weight blob -- it is either anonymous</span>
             <span class="comment">// (i.e., not given a weight_name) or explicitly given a name that we</span>
             <span class="comment">// haven&#39;t already seen.</span>
-            <span class="kw">if</span> <span class="ident">weight_name</span>.<span class="ident">is_empty</span>() <span class="op">||</span> <span class="op">!</span><span class="ident">registry</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">registry_name</span>) {
+            <span class="kw">if</span> <span class="ident">weight_name</span>.<span class="ident">is_empty</span>() <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">registry</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">registry_name</span>) {
                 <span class="comment">// self.weight_owners.push(None);</span>
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">weight_name</span>.<span class="ident">is_empty</span>() {
                     <span class="ident">registry</span>.<span class="ident">insert</span>(
@@ -2109,7 +2111,7 @@
 
     <span class="kw">fn</span> <span class="ident">reshape</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">is_using_in_place</span>() {
-            <span class="bool-val">false</span> <span class="op">=&gt;</span> {
+            <span class="bool-val">false</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">reshape</span>(
                     <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>(),
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">input_blobs_data</span>,
@@ -2120,7 +2122,7 @@
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">output_blobs_gradient</span>,
                 );
             }
-            <span class="bool-val">true</span> <span class="op">=&gt;</span> {
+            <span class="bool-val">true</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">reshape</span>(
                     <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>(),
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro">vec</span><span class="macro">!</span>[],
@@ -2149,11 +2151,11 @@
             <span class="kw">let</span> <span class="ident">blob_name</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">output_blob_names</span>.<span class="ident">get</span>(<span class="ident">output_id</span>);
 
             <span class="comment">// layer is a loss layer or under a loss layer</span>
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">loss</span>(<span class="ident">output_id</span>).<span class="ident">is_some</span>() <span class="op">||</span> <span class="ident">blob_name</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="ident">blobs_under_loss</span>.<span class="ident">contains</span>(<span class="ident">blob_name</span>.<span class="ident">unwrap</span>()) {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">loss</span>(<span class="ident">output_id</span>).<span class="ident">is_some</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">blob_name</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="ident">blobs_under_loss</span>.<span class="ident">contains</span>(<span class="ident">blob_name</span>.<span class="ident">unwrap</span>()) {
                 <span class="ident">layer_contributes_loss</span> <span class="op">=</span> <span class="bool-val">true</span>;
             }
             <span class="comment">// layer is not marked to skip backpropagation</span>
-            <span class="kw">if</span> <span class="ident">blob_name</span>.<span class="ident">is_none</span>() <span class="op">||</span> <span class="ident">blob_name</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">blobs_skip_backp</span>.<span class="ident">contains</span>(<span class="ident">blob_name</span>.<span class="ident">unwrap</span>()) {
+            <span class="kw">if</span> <span class="ident">blob_name</span>.<span class="ident">is_none</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">blob_name</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">blobs_skip_backp</span>.<span class="ident">contains</span>(<span class="ident">blob_name</span>.<span class="ident">unwrap</span>()) {
                 <span class="ident">layer_skip_propagate_down</span> <span class="op">=</span> <span class="bool-val">false</span>;
             }
             <span class="comment">// layer contributes loss to some</span>
@@ -2231,14 +2233,14 @@
     <span class="doccomment">/// Uses the underlying layer implementation to compute a forward step.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// See [ILayer.forward](./trait.ILayer.html#method.forward)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">forward</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">inputs</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>]) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">forward</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">inputs</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;LAYER: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>);
         <span class="kw">for</span> (<span class="ident">input_i</span>, <span class="ident">input</span>) <span class="kw">in</span> <span class="ident">inputs</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
             <span class="kw">let</span> <span class="ident">reshaped_shape</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input_blobs_data</span>[<span class="ident">input_i</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">desc</span>().<span class="ident">clone</span>();
             <span class="self">self</span>.<span class="ident">input_blobs_data</span>[<span class="ident">input_i</span>] <span class="op">=</span> <span class="ident">input</span>.<span class="ident">clone</span>();
             <span class="comment">// reshape input tensor to the reshaped shape</span>
             <span class="kw">let</span> <span class="ident">old_shape</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input_blobs_data</span>[<span class="ident">input_i</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">desc</span>().<span class="ident">clone</span>();
-            <span class="kw">if</span> <span class="ident">old_shape</span>.<span class="ident">size</span>() <span class="op">!=</span> <span class="ident">reshaped_shape</span>.<span class="ident">size</span>() {
+            <span class="kw">if</span> <span class="ident">old_shape</span>.<span class="ident">size</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">reshaped_shape</span>.<span class="ident">size</span>() {
                 <span class="macro">panic</span><span class="macro">!</span>(
                     <span class="string">&quot;Input Shape Mismatch\nExpected {:?}\nActual {:?}&quot;</span>,
                     <span class="ident">reshaped_shape</span>,
@@ -2272,7 +2274,7 @@
     <span class="doccomment">/// Uses the underlying layer implementation to compute a backward step.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// See [ILayer.backward](./trait.ILayer.html#method.backward)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">backward</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>]) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">backward</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">needs_backward</span> {
             <span class="kw">let</span> <span class="ident">input_gradients</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backward_input</span>(<span class="ident">output_gradients</span>);
             <span class="self">self</span>.<span class="ident">backward_parameters</span>();
@@ -2287,8 +2289,8 @@
     <span class="doccomment">/// This method is mostly used when doing backpropagation.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">backward_input</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-    ) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">for</span> (<span class="ident">output_i</span>, <span class="ident">output</span>) <span class="kw">in</span> <span class="ident">output_gradients</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
             <span class="self">self</span>.<span class="ident">output_blobs_gradient</span>[<span class="ident">output_i</span>] <span class="op">=</span> <span class="ident">output</span>.<span class="ident">clone</span>();
         }
@@ -2344,7 +2346,7 @@
     <span class="doccomment">/// The update value is computed in previous steps according to the [learning rate policy][3]</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [3]: ../solver/enum.LRPolicy.html</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_weights</span><span class="op">&lt;</span><span class="ident">SolverB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">SolverB</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_weights</span><span class="op">&lt;</span><span class="ident">SolverB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">SolverB</span>) {
         <span class="comment">// PERF: allocate this scalar once</span>
         <span class="kw">let</span> <span class="ident">shared_a</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">native_scalar</span>(<span class="op">-</span><span class="number">1f32</span>);
         <span class="kw">for</span> (<span class="ident">weight_gradient</span>, <span class="ident">weight_data</span>) <span class="kw">in</span> <span class="self">self</span>
@@ -2413,7 +2415,7 @@
     <span class="doccomment">/// #    }</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">save</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">save</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_ref</span>();
         <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">create</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
 
@@ -2464,10 +2466,10 @@
     <span class="doccomment">/// #    }</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span><span class="op">&lt;</span><span class="ident">LB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;&gt;</span>(
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span><span class="op">&lt;</span><span class="ident">LB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(
         <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">LB</span><span class="op">&gt;</span>,
         <span class="ident">path</span>: <span class="ident">P</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">LB</span><span class="op">&gt;&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">LB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_ref</span>();
         <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">file</span>);
@@ -2490,7 +2492,7 @@
         <span class="kw">for</span> (<span class="ident">i</span>, (<span class="ident">name</span>, <span class="ident">weight</span>)) <span class="kw">in</span> <span class="ident">names</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">weights_data</span>).<span class="ident">enumerate</span>() {
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">read_weights</span>.<span class="ident">len</span>() {
                 <span class="kw">let</span> <span class="ident">capnp_weight</span> <span class="op">=</span> <span class="ident">read_weights</span>.<span class="ident">get</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>);
-                <span class="kw">if</span> <span class="ident">capnp_weight</span>.<span class="ident">get_name</span>().<span class="ident">unwrap</span>() <span class="op">!=</span> <span class="ident">name</span> {
+                <span class="kw">if</span> <span class="ident">capnp_weight</span>.<span class="ident">get_name</span>().<span class="ident">unwrap</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">name</span> {
                     <span class="kw">continue</span>;
                 }
 
@@ -2524,7 +2526,7 @@
     <span class="doccomment">/// See [`weight_propagate_down`][1]</span>
     <span class="doccomment">/// ./struct.Layer.html</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_weight_propagate_down</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">weight_id</span>: <span class="ident">usize</span>, <span class="ident">value</span>: <span class="ident">bool</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">weight_propagate_down</span>.<span class="ident">len</span>() <span class="op">&lt;=</span> <span class="ident">weight_id</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">weight_propagate_down</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">weight_id</span> {
             <span class="self">self</span>.<span class="ident">weight_propagate_down</span>.<span class="ident">resize</span>(<span class="ident">weight_id</span> <span class="op">+</span> <span class="number">1</span>, <span class="bool-val">true</span>);
         }
         <span class="self">self</span>.<span class="ident">weight_propagate_down</span>[<span class="ident">weight_id</span>] <span class="op">=</span> <span class="ident">value</span>;
@@ -2534,22 +2536,22 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// For a layer to use in-place computation it needs to support it via `compute_in_place`</span>
     <span class="doccomment">/// and the names of the first input and output tensor have to match.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_using_in_place</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_using_in_place</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">compute_in_place</span>()
             <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">input_blob_names</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">is_some</span>()
             <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">output_blob_names</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">is_some</span>()
-            <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">input_blob_names</span>[<span class="number">0</span>] <span class="op">==</span> <span class="self">self</span>.<span class="ident">output_blob_names</span>[<span class="number">0</span>]
+            <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">input_blob_names</span>[<span class="number">0</span>] <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">output_blob_names</span>[<span class="number">0</span>]
     }
 
     <span class="doccomment">/// Returns the names of all the input blobs.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">input_blob_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">String</span>] {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">input_blob_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">String</span>] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">input_blob_names</span>
     }
 
     <span class="doccomment">/// Returns the [loss weight][1] associated with the weight blob</span>
     <span class="doccomment">/// with id `weight_id`.</span>
     <span class="doccomment">/// [1]: http://caffe.berkeleyvision.org/tutorial/loss.html</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">loss</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">weight_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">f32</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">loss</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">weight_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">f32</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">loss</span>.<span class="ident">get</span>(<span class="ident">weight_id</span>)
     }
 
@@ -2557,7 +2559,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If the layer is a container layer it will return all the weights of the</span>
     <span class="doccomment">/// layers inside it.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">weights</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">learnable_weights</span>() {
             <span class="ident">weights</span>
         } <span class="kw">else</span> {
@@ -2569,7 +2571,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If the layer is a container layer it will return all the gradients of the</span>
     <span class="doccomment">/// layers inside it.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">gradients</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">learnable_weights_gradients</span>() {
             <span class="ident">gradients</span>
         } <span class="kw">else</span> {
@@ -2581,7 +2583,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If the layer is a container layer it will return all the names of the</span>
     <span class="doccomment">/// layers inside it.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">names</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">learnable_weights_names</span>() {
             <span class="ident">names</span>
         } <span class="kw">else</span> {
@@ -2593,7 +2595,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If the layer is a container layer it will return all learning rates of the</span>
     <span class="doccomment">/// layers inside it.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_lr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">learnable_weights_lr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">lr</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">learnable_weights_lr</span>() {
             <span class="ident">lr</span>
         }
@@ -2602,7 +2604,7 @@
             <span class="self">self</span>.<span class="ident">learnable_weights_data</span>()
                 .<span class="ident">iter</span>()
                 .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Some</span>(<span class="number">1f32</span>))
-                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
+                .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
         }
     }
 }
@@ -2656,7 +2658,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="kw">crate</span>::<span class="ident">coblas</span>::<span class="ident">plugin</span>::<span class="ident">Copy</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Creates a new Layer from a [LayerConfig][1].</span>
     <span class="doccomment">/// [1]: ./struct.LayerConfig.html</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>) <span class="op">-&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cl</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">clone</span>();
         <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="op">&lt;</span><span class="ident">LayerConfig</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">cl</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">Layer</span> {
@@ -2699,24 +2701,24 @@
     <span class="doccomment">/// [1]: #method.from_config</span>
     <span class="doccomment">/// [2]: ./enum.LayerType.html</span>
     <span class="doccomment">/// [3]: ../layers/index.html</span>
-    <span class="kw">fn</span> <span class="ident">worker_from_config</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>) <span class="op">-&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">worker_from_config</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">config</span>.<span class="ident">layer_type</span>.<span class="ident">clone</span>() {
-            <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Convolution</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Rnn</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Linear</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">LogSoftmax</span>::<span class="ident">default</span>()),
-            <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Pooling</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sequential</span>::<span class="ident">from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Softmax</span>::<span class="ident">default</span>()),
-            <span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ReLU</span>),
-            <span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TanH</span>),
-            <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sigmoid</span>),
-            <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Convolution</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Rnn</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Linear</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">LogSoftmax</span>::<span class="ident">default</span>()),
+            <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Pooling</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sequential</span>::<span class="ident">from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Softmax</span>::<span class="ident">default</span>()),
+            <span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ReLU</span>),
+            <span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TanH</span>),
+            <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sigmoid</span>),
+            <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">NegativeLogLikelihood</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>))
             }
-            <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MeanSquaredError</span>),
-            <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Reshape</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="ident">layer_config</span>) <span class="op">=&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Dropout</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MeanSquaredError</span>),
+            <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Reshape</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Dropout</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
         }
     }
 }
@@ -2740,12 +2742,12 @@
     <span class="kw">fn</span> <span class="ident">reshape</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">input_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">output_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">input_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">output_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     ) {
     }
 
@@ -2762,8 +2764,8 @@
     <span class="kw">fn</span> <span class="ident">resize_shared_workspace</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-        <span class="ident">workspace</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+        <span class="ident">workspace</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="ident">workspace</span>
     }
 
@@ -2779,21 +2781,21 @@
     <span class="kw">fn</span> <span class="ident">forward</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
     ) {
         <span class="comment">// aquire all the locks</span>
         <span class="kw">let</span> <span class="ident">inp</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">input_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">input_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">inp</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">input_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">inp</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
 
         <span class="kw">let</span> <span class="ident">wgts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">weights_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="ident">w</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">weights_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">wgts</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">weights_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">wgts</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
 
-        <span class="kw">let</span> <span class="ident">out_ref</span> <span class="op">=</span> <span class="ident">output_data</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">out_ref</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="ident">output_w</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">out</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">output_w</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">out_ref</span> <span class="op">=</span> <span class="ident">output_data</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">out_ref</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">output_w</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">out</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">output_w</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
 
         <span class="self">self</span>.<span class="ident">compute_output</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">weights_data_</span>, <span class="kw-2">&amp;</span><span class="ident">input_data_</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output_data_</span>);
     }
@@ -2809,24 +2811,24 @@
     <span class="kw">fn</span> <span class="ident">backward_input</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
     ) {
         <span class="kw">let</span> <span class="ident">wgts_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">weights_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">weights_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">wgts_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">weights_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">wgts_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
         <span class="kw">let</span> <span class="ident">out_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">output_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">output_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">out_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">output_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">out_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
         <span class="kw">let</span> <span class="ident">out_gradient</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">output_gradients</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">output_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">out_gradient</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">output_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">out_gradient</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
         <span class="kw">let</span> <span class="ident">inp_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">input_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">input_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">inp_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">btm_gradient_ref</span> <span class="op">=</span> <span class="ident">input_gradients</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="ident">btm_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">btm_gradient_ref</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="ident">input_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">btm_gradient</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span>
+        <span class="kw">let</span> <span class="ident">input_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">inp_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">btm_gradient_ref</span> <span class="op">=</span> <span class="ident">input_gradients</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">btm_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">btm_gradient_ref</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">input_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">btm_gradient</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
             <span class="ident">input_gradient</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
 
         <span class="self">self</span>.<span class="ident">compute_input_gradient</span>(
@@ -2850,21 +2852,21 @@
     <span class="kw">fn</span> <span class="ident">backward_parameters</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
-        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
-        <span class="ident">weights_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
+        <span class="ident">weights_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>],
     ) {
         <span class="kw">let</span> <span class="ident">out_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">output_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">output_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">out_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">output_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">out_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
         <span class="kw">let</span> <span class="ident">out_gradients</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">output_gradients</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">output_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">out_gradients</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">output_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">out_gradients</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
         <span class="kw">let</span> <span class="ident">inp_data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">input_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">input_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">inp_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">wgt_gradient_ref</span> <span class="op">=</span> <span class="ident">weights_gradients</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="ident">wgt_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wgt_gradient_ref</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="ident">weights_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wgt_gradient</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weights_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span>
+        <span class="kw">let</span> <span class="ident">input_data_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">inp_data</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">wgt_gradient_ref</span> <span class="op">=</span> <span class="ident">weights_gradients</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">wgt_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wgt_gradient_ref</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="ident">weights_gradient</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">wgt_gradient</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weights_gradients_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
             <span class="ident">weights_gradient</span>.<span class="ident">iter_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">val</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">val</span>).<span class="ident">collect</span>();
 
         <span class="self">self</span>.<span class="ident">compute_parameters_gradient</span>(
@@ -2883,7 +2885,7 @@
     <span class="doccomment">/// [min_output_blobs][2].</span>
     <span class="doccomment">/// [1]: #method.exact_num_output_blobs</span>
     <span class="doccomment">/// [2]: #method.min_output_blobs</span>
-    <span class="kw">fn</span> <span class="ident">auto_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">auto_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">false</span>
     }
     <span class="doccomment">/// Returns the minimum number of output blobs required by the layer,</span>
@@ -2891,7 +2893,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This method should be overridden to return a positive value if your</span>
     <span class="doccomment">/// layer expects some minimum number of output blobs.</span>
-    <span class="kw">fn</span> <span class="ident">min_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">min_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="number">0</span>
     }
     <span class="doccomment">/// Returns the exact number of output blobs required by the layer,</span>
@@ -2899,14 +2901,14 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This method should be overridden to return a positive value if your</span>
     <span class="doccomment">/// layer expects some exact number of output blobs.</span>
-    <span class="kw">fn</span> <span class="ident">exact_num_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">exact_num_output_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
     <span class="doccomment">/// Return whether weight blobs are created automatically for the layer.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If this method returns true, Network::init will create a weight blob</span>
     <span class="doccomment">/// for every output blob.</span>
-    <span class="kw">fn</span> <span class="ident">auto_weight_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">auto_weight_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">false</span>
     }
     <span class="doccomment">/// Returns the exact number of input blobs required by the layer,</span>
@@ -2914,7 +2916,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This method should be overridden to return a positive value if your</span>
     <span class="doccomment">/// layer expects some exact number of input blobs.</span>
-    <span class="kw">fn</span> <span class="ident">exact_num_input_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">exact_num_input_blobs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
     <span class="doccomment">/// Return whether to allow force_backward for a given input blob index.</span>
@@ -2922,7 +2924,7 @@
     <span class="doccomment">/// If allow_force_backward(i) == false, we will ignore the force_backward</span>
     <span class="doccomment">/// setting and backpropagate to blob i only if it needs gradient information</span>
     <span class="doccomment">/// (as is done when force_backward == false).</span>
-    <span class="kw">fn</span> <span class="ident">allow_force_backward</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">allow_force_backward</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">true</span>
     }
     <span class="doccomment">/// Return wether a simple native backend should be used to [sync][1] instead of the default backend.</span>
@@ -2930,7 +2932,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// If `false` is returned the default backend will be used, otherwise a new native backend</span>
     <span class="doccomment">/// will be created and provided as argument to `sync`.</span>
-    <span class="kw">fn</span> <span class="ident">sync_native</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">sync_native</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">false</span>
     }
     <span class="doccomment">/// Return wether the computations of a layer should be done in-place (the output will be written where the input was read from).</span>
@@ -2940,7 +2942,7 @@
     <span class="doccomment">/// If `false` is returned the layer behaves as normal, otherwise</span>
     <span class="doccomment">/// if a layer is provided a identiacla &quot;input&quot; and &quot;output&quot;, it will only be supplied an</span>
     <span class="doccomment">/// &quot;output_data&quot; when doing a `compute_output`.</span>
-    <span class="kw">fn</span> <span class="ident">compute_in_place</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">compute_in_place</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">false</span>
     }
 
@@ -2948,7 +2950,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This turns of certain behaviour for containers which would lead to problems:</span>
     <span class="doccomment">/// - RwLocks will not be aquired for forward/backward since it would lead to deadlocks.</span>
-    <span class="kw">fn</span> <span class="ident">is_container</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">is_container</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="bool-val">false</span>
     }
 
@@ -2957,7 +2959,7 @@
     <span class="doccomment">/// If loss_weight(i) == `None`, no loss will be calculated for the output blob.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is usually overridden by loss layers.</span>
-    <span class="kw">fn</span> <span class="ident">loss_weight</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">output_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">loss_weight</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">output_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -2965,7 +2967,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the tensors are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">inputs_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">inputs_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -2973,7 +2975,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the tensors are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">inputs_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">inputs_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -2981,7 +2983,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the tensors are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">outputs_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">outputs_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -2989,7 +2991,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the tensors are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">outputs_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">outputs_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -2997,7 +2999,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the weights are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">learnable_weights</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">learnable_weights</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -3005,7 +3007,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the weights are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">learnable_weights_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">learnable_weights_gradients</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -3013,7 +3015,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the weights are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">learnable_weights_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">learnable_weights_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 
@@ -3021,7 +3023,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This should only be overridden by container layers,</span>
     <span class="doccomment">/// where the weights are not easily exposable.</span>
-    <span class="kw">fn</span> <span class="ident">learnable_weights_lr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">learnable_weights_lr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="prelude-val">None</span>
     }
 }
@@ -3067,7 +3069,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;({})&quot;</span>, <span class="string">&quot;ILayer&quot;</span>)
     }
 }
@@ -3136,22 +3138,22 @@
 <span class="comment">// TODO an in place operation or not, this thing here makes no sense whatsoever</span>
 <span class="kw">impl</span> <span class="ident">LayerType</span> {
     <span class="doccomment">/// Returns wether the LayerType supports in-place operations.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">supports_in_place</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">supports_in_place</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
     }
 }
@@ -3162,41 +3164,41 @@
     <span class="doccomment">/// Write the LayerType into a capnp message.</span>
     <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>::<span class="ident">Builder</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_linear</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=&gt;</span> <span class="ident">builder</span>.<span class="ident">set_log_softmax</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_log_softmax</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_sequential</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=&gt;</span> <span class="ident">builder</span>.<span class="ident">set_softmax</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=&gt;</span> <span class="ident">builder</span>.<span class="ident">set_relu</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=&gt;</span> <span class="ident">builder</span>.<span class="ident">set_tanh</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=&gt;</span> <span class="ident">builder</span>.<span class="ident">set_sigmoid</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_softmax</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_relu</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_tanh</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_sigmoid</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_negative_log_likelihood</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=&gt;</span> <span class="ident">builder</span>.<span class="ident">set_mean_squared_error</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_mean_squared_error</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_reshape</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_convolution</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_rnn</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_pooling</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_dropout</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
@@ -3207,43 +3209,43 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpRead</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LayerType</span> {
     <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_layer_type</span>::<span class="ident">Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">match</span> <span class="ident">reader</span>.<span class="ident">which</span>().<span class="ident">unwrap</span>() {
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Linear</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Linear</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">LinearConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">LogSoftmax</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Sequential</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">LogSoftmax</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span>,
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Sequential</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">SequentialConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Softmax</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">LayerType</span>::<span class="ident">Softmax</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Relu</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">LayerType</span>::<span class="ident">ReLU</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Tanh</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">LayerType</span>::<span class="ident">TanH</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Sigmoid</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Softmax</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">Softmax</span>,
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Relu</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">ReLU</span>,
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Tanh</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">TanH</span>,
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Sigmoid</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span>,
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">NegativeLogLikelihoodConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">MeanSquaredError</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Reshape</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">MeanSquaredError</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span>,
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Reshape</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ReshapeConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Pooling</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Pooling</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">PoolingConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Convolution</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Convolution</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ConvolutionConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Rnn</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Rnn</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">RnnConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Dropout</span>(<span class="ident">read_config</span>) <span class="op">=&gt;</span> {
+            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Dropout</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">DropoutConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
                 <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="ident">config</span>)
             }
@@ -3253,7 +3255,7 @@
 
 <span class="kw">impl</span> <span class="ident">LayerConfig</span> {
     <span class="doccomment">/// Creates a new LayerConfig</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">LayerType</span><span class="op">&gt;&gt;</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">layer_type</span>: <span class="ident">L</span>) <span class="op">-&gt;</span> <span class="ident">LayerConfig</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">L</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">LayerType</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">layer_type</span>: <span class="ident">L</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LayerConfig</span> {
         <span class="ident">LayerConfig</span> {
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_owned</span>(),
             <span class="ident">layer_type</span>: <span class="ident">layer_type</span>.<span class="ident">into</span>(),
@@ -3267,12 +3269,12 @@
     }
 
     <span class="doccomment">/// Returns the Name of the requested output Blob</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">output_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">output</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">output_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">outputs</span>.<span class="ident">get</span>(<span class="ident">output_id</span>)
     }
 
     <span class="doccomment">/// Returns the number of output Blobs</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">outputs_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">outputs_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">outputs</span>.<span class="ident">len</span>()
     }
 
@@ -3282,12 +3284,12 @@
     }
 
     <span class="doccomment">/// Returns the Name of the requested input Blob</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">input</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inputs</span>.<span class="ident">get</span>(<span class="ident">input_id</span>)
     }
 
     <span class="doccomment">/// Returns the number of input Blobs</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inputs_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inputs_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">inputs</span>.<span class="ident">len</span>()
     }
 
@@ -3297,24 +3299,24 @@
     }
 
     <span class="doccomment">/// Returns the requested WeightConfig</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">param</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">param_id</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WeightConfig</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">param</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">param_id</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WeightConfig</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">get</span>(<span class="ident">param_id</span>)
     }
 
     <span class="doccomment">/// Returns the number of params</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">params_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">params_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">len</span>()
     }
 
     <span class="doccomment">/// Check if the configured parameters make sense.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">validate_propagate_down_len</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Checks if propagate down length makes sense.</span>
-    <span class="kw">fn</span> <span class="ident">validate_propagate_down_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">propagate_down</span>.<span class="ident">is_empty</span>() <span class="op">||</span> <span class="self">self</span>.<span class="ident">propagate_down</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="self">self</span>.<span class="ident">inputs_len</span>() {
+    <span class="kw">fn</span> <span class="ident">validate_propagate_down_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">propagate_down</span>.<span class="ident">is_empty</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">propagate_down</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">inputs_len</span>() {
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="string">&quot;propagate_down config must be specified either 0 or inputs_len times&quot;</span>)
@@ -3363,7 +3365,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpRead</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LayerConfig</span> {
     <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_layer_config</span>::<span class="ident">Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_name</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>();
         <span class="kw">let</span> <span class="ident">layer_type</span> <span class="op">=</span> <span class="ident">LayerType</span>::<span class="ident">read_capnp</span>(<span class="ident">reader</span>.<span class="ident">get_layer_type</span>());
 
@@ -3401,4 +3403,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "juice";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="juice"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

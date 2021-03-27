@@ -1,5 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaGetDeviceProperties` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaGetDeviceProperties"><title>rcudnn_sys::cudaGetDeviceProperties - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rcudnn_sys</a></p><script>window.sidebarCurrent = {name: 'cudaGetDeviceProperties', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
-                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rcudnn_sys/generated.rs.html#6702-6703' title='goto source code'>[src]</a></span><span class='in-band'>Function <a href='index.html'>rcudnn_sys</a>::<wbr><a class="fn" href=''>cudaGetDeviceProperties</a></span></h1><pre class='rust fn'>pub unsafe extern &quot;C&quot; fn cudaGetDeviceProperties(<br>&nbsp;&nbsp;&nbsp;&nbsp;prop: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../rcudnn_sys/struct.cudaDeviceProp.html" title="struct rcudnn_sys::cudaDeviceProp">cudaDeviceProp</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;device: c_int<br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class='docblock'><p>\brief Returns information about the compute-device</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaGetDeviceProperties` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaGetDeviceProperties"><title>rcudnn_sys::cudaGetDeviceProperties - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rcudnn_sys/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">rcudnn_sys</a></p><div id="sidebar-vars" data-name="cudaGetDeviceProperties" data-ty="fn" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn_sys</a>::<wbr><a class="fn" href="">cudaGetDeviceProperties</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#7699-7700" title="goto source code">[src]</a></span></h1><pre class="rust fn">pub unsafe extern &quot;C&quot; fn cudaGetDeviceProperties(<br>&nbsp;&nbsp;&nbsp;&nbsp;prop: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../rcudnn_sys/struct.cudaDeviceProp.html" title="struct rcudnn_sys::cudaDeviceProp">cudaDeviceProp</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;device: c_int<br>) -&gt; <a class="enum" href="../rcudnn_sys/enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></pre><div class="docblock"><p>\brief Returns information about the compute-device</p>
 <p>Returns in \p *prop the properties of device \p dev. The ::cudaDeviceProp
 structure is defined as:
 \code
@@ -58,6 +60,7 @@ int unifiedAddressing;
 int memoryClockRate;
 int memoryBusWidth;
 int l2CacheSize;
+int persistingL2CacheMaxSize;
 int maxThreadsPerMultiProcessor;
 int streamPrioritiesSupported;
 int globalL1CacheSupported;
@@ -76,6 +79,7 @@ int cooperativeLaunch;
 int cooperativeMultiDeviceLaunch;
 int pageableMemoryAccessUsesHostPageTables;
 int directManagedMemAccessFromHost;
+int accessPolicyMaxWindowSize;
 }
 \endcode
 where:</p>
@@ -214,6 +218,7 @@ clock frequency in kilohertz.</li>
 <li>\ref ::cudaDeviceProp::memoryBusWidth &quot;memoryBusWidth&quot; is the memory bus width
 in bits.</li>
 <li>\ref ::cudaDeviceProp::l2CacheSize &quot;l2CacheSize&quot; is L2 cache size in bytes.</li>
+<li>\ref ::cudaDeviceProp::persistingL2CacheMaxSize &quot;persistingL2CacheMaxSize&quot; is L2 cache's maximum persisting lines size in bytes.</li>
 <li>\ref ::cudaDeviceProp::maxThreadsPerMultiProcessor &quot;maxThreadsPerMultiProcessor&quot;
 is the number of maximum resident threads per multiprocessor.</li>
 <li>\ref ::cudaDeviceProp::streamPrioritiesSupported &quot;streamPrioritiesSupported&quot;
@@ -254,6 +259,10 @@ supports launching cooperative kernels via ::cudaLaunchCooperativeKernelMultiDev
 pageable memory via the host's page tables, and 0 otherwise.</li>
 <li>\ref ::cudaDeviceProp::directManagedMemAccessFromHost &quot;directManagedMemAccessFromHost&quot; is 1 if the host can directly access managed
 memory on the device without migration, and 0 otherwise.</li>
+<li>\ref ::cudaDeviceProp::maxBlocksPerMultiProcessor &quot;maxBlocksPerMultiProcessor&quot; is the maximum number of thread blocks
+that can reside on a multiprocessor.</li>
+<li>\ref ::cudaDeviceProp::accessPolicyMaxWindowSize &quot;accessPolicyMaxWindowSize&quot; is
+the maximum value of ::cudaAccessPolicyWindow::num_bytes.</li>
 </ul>
 <p>\param prop   - Properties for the specified device
 \param device - Device number to get properties for</p>
@@ -267,4 +276,5 @@ memory on the device without migration, and 0 otherwise.</li>
 ::cudaDeviceGetAttribute,
 ::cuDeviceGetAttribute,
 ::cuDeviceGetName</p>
-</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rcudnn_sys";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn_sys"></div>
+    <script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
