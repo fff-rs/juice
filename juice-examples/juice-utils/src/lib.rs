@@ -9,18 +9,19 @@ pub fn download_datasets(datasets: &[&str], asset_path: &str, base_url: &str) ->
     std::fs::create_dir_all(asset_path)?;
     for dataset in datasets {
         let url = format!("{}/{}", base_url, dataset);
+        log::info!("Downloading {}", dataset);
         let resp = client.get(&url).send()?.bytes()?;
-        println!("Downloading {}", dataset);
         let name = format!("{}/{}", asset_path, dataset);
         let mut f = fs::File::create(name.clone()).expect("Failed to create file");
-        f.write_all(&resp).unwrap();
+        f.write_all(&resp)?;
+        log::info!("Download of {} complete.", dataset);
     }
     Ok(())
 }
 
 pub fn unzip_datasets(datasets: &[&str], asset_path: &str) -> io::Result<()> {
     for filename in datasets {
-        println!("Decompressing: {}", filename);
+        log::info!("Decompressing: {}", filename);
 
         let file_handle = fs::File::open(&format!("{}/{}", asset_path, filename)).unwrap();
         let mut decoder = GzDecoder::new(file_handle);
@@ -29,6 +30,7 @@ pub fn unzip_datasets(datasets: &[&str], asset_path: &str) -> io::Result<()> {
 
         let mut dest = fs::File::create(format!("{}/{}", asset_path, filename_string))?;
         std::io::copy(&mut decoder, &mut dest)?;
+        log::info!("Decompression of {} complete.", filename);
     }
     Ok(())
 }
