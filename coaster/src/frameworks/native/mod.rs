@@ -58,12 +58,10 @@ impl IFramework for Native {
     fn ID() -> &'static str { "NATIVE" }
 
     fn new() -> Native {
-        match Native::load_hardwares() {
-            Ok(hardwares) => Native {
-                hardwares,
-                binary: Binary::new(),
-            },
-            Err(err) => panic!(err)
+        let hardwares = Native::load_hardwares().expect("Native hardwares are always ok. qed");
+        Self {
+            hardwares,
+            binary: Binary::new(),
         }
     }
 

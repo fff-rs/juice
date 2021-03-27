@@ -51,14 +51,10 @@ impl IFramework for OpenCL {
     fn ID() -> &'static str { "OPENCL" }
 
     fn new() -> OpenCL {
-        match OpenCL::load_hardwares() {
-            Ok(hardwares) => {
-                OpenCL {
-                    hardwares: hardwares,
-                    binary: Program::from_isize(1)
-                }
-            },
-            Err(err) => panic!(err)
+        let hardwares = OpenCL::load_hardwares().expect("Acquiring hw never fails. qed");
+        Self {
+            hardwares,
+            binary: Program::from_isize(1)
         }
     }
 
