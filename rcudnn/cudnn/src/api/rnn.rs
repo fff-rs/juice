@@ -4,7 +4,7 @@
 
 use crate::ffi::*;
 use crate::{Error, API};
-use utils::DataType;
+use crate::utils::DataType;
 
 // Workspace
 impl API {
@@ -480,7 +480,7 @@ impl API {
         cy_desc: cudnnTensorDescriptor_t,
         cy: *mut ::libc::c_void,
         work_space: *mut ::libc::c_void,
-        work_size_in_bytes: ::libc::size_t, 
+        work_size_in_bytes: ::libc::size_t,
     ) -> Result<(), Error> {
        unsafe {
            API::ffi_rnn_forward_inference(
@@ -505,7 +505,7 @@ impl API {
                work_size_in_bytes,
 
            )
-       } 
+       }
     }
     #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_rnn_forward_inference(
@@ -777,7 +777,7 @@ impl API {
         dw_desc: cudnnFilterDescriptor_t,
         dw: *mut ::libc::c_void,
         reserve_space: *const ::libc::c_void,
-        reserve_space_size_in_bytes: usize, 
+        reserve_space_size_in_bytes: usize,
     ) -> Result<(), Error> {
         unsafe {
             API::ffi_rnn_backward_weights(

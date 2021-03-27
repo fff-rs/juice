@@ -8,7 +8,7 @@ authors = [
     "Michael Hirn",
     "Maximilian Goisser",
 ]
-
+edition = "2018"
 repository = "https://github.com/spearow/coaster"
 homepage = "https://spearow.io/projects/coaster"
 documentation = "https://spearow.github.io/coaster"

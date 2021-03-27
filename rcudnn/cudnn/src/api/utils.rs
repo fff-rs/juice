@@ -3,7 +3,7 @@
 use crate::ffi::*;
 use std::ptr;
 use crate::{Error, API};
-use utils::DataType;
+use crate::utils::DataType;
 
 impl API {
     /// Initialize the CUDA cuDNN API with needed context and resources.

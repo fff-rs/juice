@@ -24,11 +24,11 @@ Usage:  mackey-glass-example train [--file=<path>] [--batchSize=<batch>] [--lear
         mackey-glass-example test [--file=<path>]
 
 Options:
-    --file=<path>  Filepath for saving trained network.
+    --file=<path>        Filepath for saving trained network.
     --batchSize=<batch>  Network Batch Size.
     --learningRate=<lr>  Learning Rate.
-    --momentum=<float>  Momentum.
-    -h, --help  Show this screen.
+    --momentum=<float>   Momentum.
+    -h, --help           Show this screen.
 ";
 
 #[allow(non_snake_case)]
@@ -49,17 +49,23 @@ enum DataMode {
     Test,
 }
 
+impl DataMode {
+    fn as_path(&self) -> &'static str {
+        match self {
+            DataMode::Train => "assets/norm_mackeyglass_train.csv",
+            DataMode::Test => "assets/norm_mackeyglass_test.csv",
+        }
+    }
+}
+
 const TRAIN_ROWS: usize = 35192;
 const TEST_ROWS: usize = 8798;
 const DATA_COLUMNS: usize = 10;
 
 // Provide an Iterator over the input data
 fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
-    let path = match data {
-        DataMode::Train => "assets/norm_mackeyglass_train.csv",
-        DataMode::Test => "assets/norm_mackeyglass_test.csv",
-    };
-    let rdr = Reader::from_reader(File::open(path).unwrap());
+
+    let rdr = Reader::from_reader(File::open(data.as_path()).unwrap());
     rdr.into_deserialize().map(move |row| match row {
         Ok(value) => {
             let row_vec: Box<Vec<f32>> = Box::new(value);
@@ -68,7 +74,7 @@ fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
             (label, columns)
         }
         _ => {
-            println!("no value");
+            log::error!("file seems to be empty");
             panic!();
         }
     })

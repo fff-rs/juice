@@ -1,5 +1,5 @@
-extern crate coaster as co;
-extern crate libc;
+use coaster as co;
+use libc;
 
 #[cfg(test)]
 mod shared_memory_spec {

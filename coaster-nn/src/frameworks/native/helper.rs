@@ -5,7 +5,7 @@ use crate::co::plugin::Error as PluginError;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::frameworks::native::flatbox::FlatBox;
 use crate::{DirectionMode, RnnInputMode};
-use RnnNetworkMode;
+use crate::RnnNetworkMode;
 
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]

@@ -2,7 +2,6 @@
 name = "coaster-blas"
 description = "Coaster library for full BLAS support"
 version = "0.3.0"
-edition = "2018"
 authors = [
     "Bernhard Schuster <bernhard@ahoi.io>",
     "Lissa Hyacinth <lissahyacinth@gmail.com>",
@@ -16,6 +15,7 @@ documentation = "https://spearow.github.com/coaster-blas"
 readme = "README.md"
 keywords = ["blas", "coaster", "computation", "hpc", "plugin"]
 license = "MIT OR Apache-2.0"
+edition = "2018"
 
 [dependencies]
 coaster = { version = "0.1", path = "../coaster", default-features = false }

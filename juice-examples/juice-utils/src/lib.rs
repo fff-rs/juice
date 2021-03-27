@@ -1,12 +1,8 @@
-extern crate bytes;
-extern crate flate2;
-
 use flate2::read::GzDecoder;
-use reqwest;
 use reqwest::blocking::Client;
-use std::fs::File;
+use fs_err as fs;
 use std::io::prelude::*;
-
+use std::io;
 
 pub fn download_datasets(datasets: &[&str], asset_path: &str, base_url: &str) -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new();
@@ -16,31 +12,23 @@ pub fn download_datasets(datasets: &[&str], asset_path: &str, base_url: &str) ->
         let resp = client.get(&url).send()?.bytes()?;
         println!("Downloading {}", dataset);
         let name = format!("{}/{}", asset_path, dataset);
-        let mut f = File::create(name.clone()).expect("Failed to create file");
-        f.write(&resp).unwrap();
+        let mut f = fs::File::create(name.clone()).expect("Failed to create file");
+        f.write_all(&resp).unwrap();
     }
     Ok(())
 }
 
-pub fn unzip_datasets(datasets: &[&str], asset_path: &str) {
+pub fn unzip_datasets(datasets: &[&str], asset_path: &str) -> io::Result<()> {
     for filename in datasets {
         println!("Decompressing: {}", filename);
 
-        let mut file_handle = File::open(&format!("{}/{}", asset_path, filename)).unwrap();
-        let mut in_file: Vec<u8> = Vec::new();
-        let mut decompressed_file: Vec<u8> = Vec::new();
-
-        file_handle.read_to_end(&mut in_file).unwrap();
-
-        let mut decoder = GzDecoder::new(in_file.as_slice());
-
-        decoder.read_to_end(&mut decompressed_file).unwrap();
+        let file_handle = fs::File::open(&format!("{}/{}", asset_path, filename)).unwrap();
+        let mut decoder = GzDecoder::new(file_handle);
 
         let filename_string = filename.split(".").nth(0).unwrap();
 
-        File::create(format!("{}/{}", asset_path, filename_string))
-            .unwrap()
-            .write_all(&decompressed_file as &[u8])
-            .unwrap();
+        let mut dest = fs::File::create(format!("{}/{}", asset_path, filename_string))?;
+        std::io::copy(&mut decoder, &mut dest)?;
     }
+    Ok(())
 }

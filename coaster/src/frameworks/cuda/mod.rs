@@ -19,7 +19,7 @@ pub use self::device::{Device, DeviceInfo};
 pub use self::api::{Driver, DriverError};
 use crate::cudnn::*;
 use crate::cublas;
-use BackendConfig;
+use crate::BackendConfig;
 
 pub mod device;
 pub mod context;

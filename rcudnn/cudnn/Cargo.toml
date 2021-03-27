@@ -2,7 +2,7 @@
 name = "rcudnn"
 description = "safe Rust wrapper for CUDA's cuDNN"
 version = "1.7.0"
-#edition = "2018"
+edition = "2018"
 authors = [
     "Bernhard Schuster <bernhard@ahoi.io>",
     "Lissa Hyacinth <lissahyacinth@gmail.com>",
