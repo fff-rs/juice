@@ -3,7 +3,7 @@ use coaster_nn as nn;
 #[cfg(feature = "cuda")]
 use rcublas;
 
-use nn::;
+use nn::*;
 use co::prelude::*;
 use co::frameworks::native::flatbox::FlatBox;
 #[cfg(feature = "cuda")]
