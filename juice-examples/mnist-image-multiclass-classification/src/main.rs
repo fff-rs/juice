@@ -5,8 +5,9 @@ extern crate juice;
 extern crate juice_utils;
 extern crate mnist;
 
-#[cfg(all(feature = "cuda"))]
+#[cfg(feature = "cuda")]
 use co::frameworks::cuda::get_cuda_backend;
+#[cfg(not(feature = "cuda"))]
 use co::frameworks::native::get_native_backend;
 use co::prelude::*;
 use juice::layer::*;
