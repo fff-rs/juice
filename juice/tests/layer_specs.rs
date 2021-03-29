@@ -7,6 +7,7 @@ mod layer_spec {
     use juice::layer::*;
     use juice::weight::{DimCheckMode, WeightConfig};
     use std::rc::Rc;
+
     // only used by cuda right now
     #[allow(dead_code)]
     fn new_layer_config() -> LayerConfig {
@@ -119,6 +120,76 @@ mod layer_spec {
 
     #[cfg(feature = "cuda")]
     mod cuda {
+        macro_rules! assert_slice_eq {
+            ($lv:expr, $rv:expr, $eps:expr, $($arg:tt)+) => {
+                {
+                    let eps = $eps;
+                    let lv = $lv;
+                    let rv = $rv;
+                    for (i,(a,b)) in lv.iter().zip(rv.iter()).enumerate() {
+                        let delta = if *a < *b {
+                            *a - *b
+                        } else if *b < *a {
+                            *b - *a
+                        } else {
+                            continue;
+                        };
+                        if delta > eps {
+                            ::std::panic!(r#"assertion failed: `(left == right)`
+                            left: `{:?}`,
+                           right: `{:?}`: since value {} at index {} did not match {} ± {}: {}"#,
+                           &lv, &rv, a, i, b, $eps,
+                           ::std::format_args!($($arg)+))
+                        }
+                    }
+                    assert_eq!(lv.iter().count(), rv.iter().count(), "Left and right handside have matching prefix, but not length.");
+                }
+            };
+
+            ($lv:expr, $rv:expr, $eps:expr) => {
+                {
+                    let eps = $eps;
+                    let lv = $lv;
+                    let rv = $rv;
+                    for (i,(a,b)) in lv.iter().zip(rv.iter()).enumerate() {
+                        let delta = if *a < *b {
+                            *b - *a
+                        } else if *b < *a {
+                            *a - *b
+                        } else {
+                            continue;
+                        };
+                        if delta > eps {
+                            ::std::panic!(r#"assertion failed: `(left == right)`
+                            left: `{:?}`,
+                           right: `{:?}`: since value {} at index {} did not match {} ± {}"#,
+                           &lv, &rv, a, i, b, $eps);
+                        }
+                    }
+                    assert_eq!(lv.iter().count(), rv.iter().count(), "Left and right handside have matching prefix, but not length.");
+                }
+            };
+        }
+
+        #[test]
+        fn macro_test_assert_slice_eq() {
+            assert_slice_eq!(&[0.51], &[0.52], 0.19999999);
+            assert_slice_eq!(&[0.51], &[0.51], 0.00000001);
+        }
+
+
+        #[test]
+        #[should_panic]
+        fn macro_test_assert_slice_eq_not() {
+            assert_slice_eq!(&[0.51], &[0.52], 0.00000001);
+        }
+
+        #[test]
+        #[should_panic]
+        fn macro_test_assert_slice_eq_len() {
+            assert_slice_eq!(&[0.50, 0.50], &[0.50], 0.00000001);
+        }
+
         use super::{cuda_backend, native_backend};
         use crate::co::prelude::*;
         use juice::layer::*;
@@ -211,21 +282,24 @@ mod layer_spec {
             let normal_tensor_output = normal_network.forward(&[Arc::new(RwLock::new(normal_tensor))])[0].clone();
             let normal_tensor_output_native_ = normal_tensor_output.read().unwrap();
             let normal_tensor_output_native = normal_tensor_output_native_.read(native_backend.device()).unwrap();
-            assert_eq!(
+            assert_slice_eq!(
                 &[0.7310585786f32, 0.7310586f32, 0.880797f32],
-                normal_tensor_output_native.as_slice::<f32>()
+                normal_tensor_output_native.as_slice::<f32>(),
+                1e-6_f32
             );
 
             let reshape_tensor_output = reshape_network.forward(&[Arc::new(RwLock::new(reshape_tensor))])[0].clone();
             let reshape_tensor_output_native_ = reshape_tensor_output.read().unwrap();
             let reshape_tensor_output_native = reshape_tensor_output_native_.read(native_backend.device()).unwrap();
-            assert_eq!(
+            assert_slice_eq!(
                 &[0.7310585786f32, 0.7310586f32, 0.880797f32],
-                reshape_tensor_output_native.as_slice::<f32>()
+                reshape_tensor_output_native.as_slice::<f32>(),
+                1e-6_f32
             );
-            assert_eq!(
+            assert_slice_eq!(
                 normal_tensor_output_native.as_slice::<f32>(),
-                reshape_tensor_output_native.as_slice::<f32>()
+                reshape_tensor_output_native.as_slice::<f32>(),
+                1e-6_f32
             );
         }
     }
