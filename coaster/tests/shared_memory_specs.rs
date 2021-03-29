@@ -3,9 +3,9 @@ use libc;
 
 #[cfg(test)]
 mod shared_memory_spec {
-    use crate::co::prelude::*;
-    use crate::co::tensor::Error;
-    use crate::co::frameworks::native::flatbox::FlatBox;
+    use super::co::prelude::*;
+    use super::co::tensor::Error;
+    use super::co::frameworks::native::flatbox::FlatBox;
 
     #[cfg(features = "cuda")]
     fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {
