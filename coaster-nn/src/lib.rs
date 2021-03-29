@@ -66,7 +66,7 @@
 //! #
 //! # fn main() {
 //! #     if cfg!(feature = "cuda") {
-//! #         ::cuda::main();
+//! #         cuda::main();
 //! #    }
 //! # }
 //! ```
