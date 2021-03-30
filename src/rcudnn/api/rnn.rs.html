@@ -853,7 +853,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
-<span class="kw">use</span> <span class="ident">utils</span>::<span class="ident">DataType</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DataType</span>;
 
 <span class="comment">// Workspace</span>
 <span class="kw">impl</span> <span class="ident">API</span> {
@@ -1329,7 +1329,7 @@
         <span class="ident">cy_desc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
         <span class="ident">cy</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
         <span class="ident">work_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">work_size_in_bytes</span>: ::<span class="ident">libc</span>::<span class="ident">size_t</span>, 
+        <span class="ident">work_size_in_bytes</span>: ::<span class="ident">libc</span>::<span class="ident">size_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
        <span class="kw">unsafe</span> {
            <span class="ident">API</span>::<span class="ident">ffi_rnn_forward_inference</span>(
@@ -1354,7 +1354,7 @@
                <span class="ident">work_size_in_bytes</span>,
 
            )
-       } 
+       }
     }
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_rnn_forward_inference</span>(
@@ -1626,7 +1626,7 @@
         <span class="ident">dw_desc</span>: <span class="ident">cudnnFilterDescriptor_t</span>,
         <span class="ident">dw</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
         <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_space_size_in_bytes</span>: <span class="ident">usize</span>, 
+        <span class="ident">reserve_space_size_in_bytes</span>: <span class="ident">usize</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
             <span class="ident">API</span>::<span class="ident">ffi_rnn_backward_weights</span>(

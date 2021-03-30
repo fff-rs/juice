@@ -76,21 +76,17 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Defines a Recurrent Descriptor.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! A Recurrent Descriptor is used to hold information about the rnn,</span>
 <span class="doccomment">//! which is needed for forward and backward rnnal operations.</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">API</span>, <span class="ident">Error</span>};
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">utils</span>::<span class="ident">DataType</span>;
 <span class="kw">use</span> <span class="ident">ffi</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">API</span>, <span class="ident">Error</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DropoutConfig</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DataType</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Cudnn</span>;
-
-
-<span class="kw">use</span> <span class="ident">utils</span>::<span class="ident">DropoutConfig</span>;
 
 <span class="doccomment">/// Describes a Recurrent Descriptor.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>

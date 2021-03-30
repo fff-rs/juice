@@ -284,6 +284,12 @@
 <span id="281">281</span>
 <span id="282">282</span>
 <span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster</span> <span class="kw">as</span> <span class="ident">co</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster_nn</span> <span class="kw">as</span> <span class="ident">conn</span>;
@@ -311,11 +317,11 @@ Usage:  mackey-glass-example train [--file=&lt;path&gt;] [--batchSize=&lt;batch&
         mackey-glass-example test [--file=&lt;path&gt;]
 
 Options:
-    --file=&lt;path&gt;  Filepath for saving trained network.
+    --file=&lt;path&gt;        Filepath for saving trained network.
     --batchSize=&lt;batch&gt;  Network Batch Size.
     --learningRate=&lt;lr&gt;  Learning Rate.
-    --momentum=&lt;float&gt;  Momentum.
-    -h, --help  Show this screen.
+    --momentum=&lt;float&gt;   Momentum.
+    -h, --help           Show this screen.
 &quot;</span>;
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
@@ -336,17 +342,23 @@ Options:
     <span class="ident">Test</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">DataMode</span> {
+    <span class="kw">fn</span> <span class="ident">as_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">DataMode</span>::<span class="ident">Train</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;assets/norm_mackeyglass_train.csv&quot;</span>,
+            <span class="ident">DataMode</span>::<span class="ident">Test</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;assets/norm_mackeyglass_test.csv&quot;</span>,
+        }
+    }
+}
+
 <span class="kw">const</span> <span class="ident">TRAIN_ROWS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">35192</span>;
 <span class="kw">const</span> <span class="ident">TEST_ROWS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8798</span>;
 <span class="kw">const</span> <span class="ident">DATA_COLUMNS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;
 
 <span class="comment">// Provide an Iterator over the input data</span>
 <span class="kw">fn</span> <span class="ident">data_generator</span>(<span class="ident">data</span>: <span class="ident">DataMode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">f32</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">data</span> {
-        <span class="ident">DataMode</span>::<span class="ident">Train</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;assets/norm_mackeyglass_train.csv&quot;</span>,
-        <span class="ident">DataMode</span>::<span class="ident">Test</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;assets/norm_mackeyglass_test.csv&quot;</span>,
-    };
-    <span class="kw">let</span> <span class="ident">rdr</span> <span class="op">=</span> <span class="ident">Reader</span>::<span class="ident">from_reader</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">path</span>).<span class="ident">unwrap</span>());
+
+    <span class="kw">let</span> <span class="ident">rdr</span> <span class="op">=</span> <span class="ident">Reader</span>::<span class="ident">from_reader</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">data</span>.<span class="ident">as_path</span>()).<span class="ident">unwrap</span>());
     <span class="ident">rdr</span>.<span class="ident">into_deserialize</span>().<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">row</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">row</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="kw">let</span> <span class="ident">row_vec</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">value</span>);
@@ -355,7 +367,7 @@ Options:
             (<span class="ident">label</span>, <span class="ident">columns</span>)
         }
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;no value&quot;</span>);
+            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;file seems to be empty&quot;</span>);
             <span class="macro">panic</span><span class="macro">!</span>();
         }
     })
