@@ -23,7 +23,8 @@ enum_primitive = "0.1"
 byteorder = "1"
 num = "0.2"
 lazy_static = "1"
-regex = "1"
+regex = "1.2"
+thiserror = "1.0"
 rcudnn = { version = "1.7", path = "../rcudnn/cudnn", optional = true }
 rcublas = { version = "0.5", path = "../rcublas/cublas", optional = true }
 

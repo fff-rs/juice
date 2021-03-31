@@ -46,7 +46,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `src_desc` is not supported for RNN.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Forward Workspace size.")),
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Forward Workspace size.", status as i32 as u64)),
+
         }
     }
 
@@ -82,7 +83,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `src_desc` is not supported for RNN.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Training Reserve size.")),
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Training Reserve size.", status as i32 as u64)),
+
         }
     }
     /// cudnnGetRNNParamsSize[1]
@@ -120,7 +122,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("One of the following; rnnDesc is invalid, x_desc is invalid, x_desc isn't fully packed, dataType & tensor Description type don't match")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `rnn_desc` is not supported for RNN.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Params Size")),
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN RNN Params Size", status as i32 as u64)),
+
         }
     }
 }
@@ -138,8 +141,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated"))
             }
-            _ => Err(Error::Unknown(
-                "Unable create generic CUDA cuDNN RNN Descriptor",
+           status => Err(Error::Unknown("Unable create generic CUDA cuDNN RNN Descriptor", status as i32 as u64
+
             )),
         }
     }
@@ -155,7 +158,8 @@ impl API {
         let mut rnn_data_descriptor: cudnnRNNDataDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateRNNDataDescriptor(&mut rnn_data_descriptor) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_data_descriptor),
-            _ => Err(Error::Unknown("Unable to create Data Descriptor"))
+           status => Err(Error::Unknown("Unable to create Data Descriptor", status as i32 as u64)),
+
         }
     }
 
@@ -168,8 +172,8 @@ impl API {
     unsafe fn ffi_destroy_rnn_descriptor(rnn_desc: cudnnRNNDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyRNNDescriptor(rnn_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown(
-                "Unable to destroy CUDA cuDNN Dropout Descriptor",
+           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Dropout Descriptor", status as i32 as u64
+
             )),
         }
     }
@@ -237,7 +241,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("FIXME RNN")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Descriptor.")),
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Descriptor.", status as i32 as u64)),
+
         }
     }
 
@@ -259,7 +264,8 @@ impl API {
              cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
              cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("FIXME RNN")),
              cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
-             _ => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Matrix Math Type.")),
+            status => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Matrix Math Type.", status as i32 as u64)),
+
          }
     }
 
@@ -283,7 +289,8 @@ impl API {
         ) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("cudnnSetRnnPaddingMode - Bad Param - Either RNN Desc is Null or paddingMode has an invalid enum (Unlikely due to Bindgen. Likely RNN Desc is somehow NULL")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Padding Mode.")),
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Padding Mode.", status as i32 as u64)),
+
         }
     }
 }
@@ -423,7 +430,10 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions was met: rnnDesc is invalid, hx_desc, w_desc, hy_desc, cy_desc, or one of the x_desc or y_desc is invalid. The descriptors for x_desc, cx_desc, _hx_desc, w_desc, y_desc, hy_desc, cy_desc have incorrect strides/diemnsions. Workspace size is too small. Reserve space size is too small.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN rnnal forward.")),
+            cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("The function failed to launch on the GPU.")),
+            cudnnStatus_t::CUDNN_STATUS_INVALID_VALUE => Err(Error::InvalidValue("cudnnSetPersistentRNNPlan() was not called prior to the current function when CUDNN_RNN_ALGO_PERSIST_DYNAMIC was selected in the RNN descriptor.")),
+            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The function was unable to allocate memory.")),
+            status => Err(Error::Unknown("Unable to compute CUDA cuDNN rnn forward.", status as u64)),
         }
     }
 
@@ -554,7 +564,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: At least one of the following is NULL: `handle`, `src_desc`, `rnn_desc`, `conv_desc`, `dest_desc`, `src_data`, `alpha`, `beta`. `src_desc` and `dest_desc` have a non-matching number of dimensions. `src_desc` and `rnn_desc` have a non-matching number of dimensions. `src_desc` has fewer than three number of dimensions. `src_desc`s number of dimensions is not equal to `conv_desc`s `array_length` + 2. `src_desc` and `rnn_desc` have a non-matching number of input feature maps per image. `src_desc`, `rnn_desc` and `dest_desc` have a non-matching data type. For some spatial dimension, `rnn_desc` has a spatial size that is larger than the input spatial size (including zero-padding size).")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN rnnal forward.")),
+           status => Err(Error::Unknown("Unable to compute CUDA cuDNN rnnal forward.", status as i32 as u64)),
+
         }
     }
 }
@@ -730,7 +741,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met:  `diff_desc` or `grad_desc` have negative tensor striding. `diff_desc`, `rnn_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
             cudnnStatus_t::CUDNN_STATUS_MAPPING_ERROR => Err(Error::MappingError("An error occurs during the texture binding of the rnn data or the input differential tensor data.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN rnnal backward data.")),
+           status => Err(Error::Unknown("Unable to compute CUDA cuDNN rnnal backward data.", status as i32 as u64)),
+
         }
     }
 
@@ -839,7 +851,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `src_desc` or `diff_desc` have negative tensor striding. `src_desc`, `diff_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
             cudnnStatus_t::CUDNN_STATUS_MAPPING_ERROR => Err(Error::MappingError("An error occurs during the texture binding of the rnn data.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN rnnal backward rnn.")),
+           status => Err(Error::Unknown("Unable to compute CUDA cuDNN rnnal backward rnn.", status as i32 as u64)),
+
         }
     }
 }

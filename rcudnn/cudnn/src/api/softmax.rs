@@ -72,7 +72,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`algorithm` or `mode` are invalid or dimensions or data types of input and output tensor differ or `data_type` or strides of the tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute softmax forward.")),
+           status => Err(Error::Unknown("Unable to compute softmax forward.", status as i32 as u64)),
+
         }
     }
 
@@ -94,7 +95,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`algorithm` or `mode` are invalid or dimensions or data types of input and output tensor differ or `data_type` or strides of the tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute softmax backward.")),
+           status => Err(Error::Unknown("Unable to compute softmax backward.", status as i32 as u64)),
+
         }
     }
 }

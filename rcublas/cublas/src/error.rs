@@ -1,82 +1,39 @@
 //! Provides Rust Errors for every cuBLAS status.
 
-use std::{fmt, error};
+#[allow(unused)]
+pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, thiserror::Error)]
 /// Defines cuBLAS errors.
 pub enum Error {
     /// Failure with cuBLAS initialization.
+    #[error("CUDA Driver/Runtime API not initialized.")]
     NotInitialized,
     /// Failure with allocation.
+    #[error("The resources could not be allocated.")]
     AllocFailed,
     /// Failure with cuDNN.
+    #[error("Internal: {0}")]
     InternalError(&'static str),
     /// Failure with provided value.
+    #[error("Invalid value: {0}")]
     InvalidValue(&'static str),
     /// Failure with the hardware architecture.
+    #[error("cuBLAS only supports devices with compute capabilities greater than or equal to 1.3.")]
     ArchMismatch,
     /// Failure with memory access or internal error/bug.
+    #[error("There was an error accessing GPU memory.")]
     MappingError,
     /// Failure with Kernel execution.
+    #[error("Execution failed to launch on the GPU.")]
     ExecutionFailed,
     /// Failure with an unsupported request.
+    #[error("Not supported: {0}")]
     NotSupported(&'static str),
     /// Failure CUDA License.
+    #[error("There is an error with the license. Check that it is present, unexpired and the NVIDIA_LICENSE_FILE environment variable has been set correctly.")]
     LicenseError,
     /// Failure
-    Unknown(&'static str),
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let msg = match *self {
-            Error::NotInitialized => "Failure with cuBLAS initialization.".to_string(),
-            Error::AllocFailed => "Failure with allocation.".to_string(),
-            Error::InternalError(ref err) => (*err).to_string(),
-            Error::InvalidValue(ref err) => (*err).to_string(),
-            Error::ArchMismatch => "Failure with the hardware architecture.".to_string(),
-            Error::MappingError => "Failure with memory access or internal error/bug.".to_string(),
-            Error::ExecutionFailed => "Failure with Kernel execution.".to_string(),
-            Error::NotSupported(ref err) => (*err).to_string(),
-            Error::LicenseError => "Failure CUDA License".to_string(),
-            Error::Unknown(ref err) => (*err).to_string(),
-        };
-        write!(f, "{:?}", msg)
-    }
-}
-
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::NotInitialized => "CUDA Driver/Runtime API not initialized.",
-            Error::AllocFailed => "The resources could not be allocated.",
-            Error::InternalError(ref err) => err,
-            Error::InvalidValue(ref err) => err,
-            Error::ArchMismatch => {
-                "cuBLAS only supports devices with compute capabilities greater than or equal to 1.3."
-            }
-            Error::MappingError => "There was an error accessing GPU memory.",
-            Error::ExecutionFailed => "Execution failed to launch on the GPU.",
-            Error::NotSupported(ref err) => err,
-            Error::LicenseError => {
-                "There is an error with the license. Check that it is present, unexpired and the NVIDIA_LICENSE_FILE environment variable has been set correctly."
-            }
-            Error::Unknown(ref err) => err,
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
-        match *self {
-            Error::NotInitialized => None,
-            Error::AllocFailed => None,
-            Error::InternalError(_) => None,
-            Error::InvalidValue(_) => None,
-            Error::ArchMismatch => None,
-            Error::MappingError => None,
-            Error::ExecutionFailed => None,
-            Error::NotSupported(_) => None,
-            Error::LicenseError => None,
-            Error::Unknown(_) => None,
-        }
-    }
+    #[error("Unknown error: {0} - code {1}")]
+    Unknown(&'static str, u64),
 }

@@ -202,8 +202,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-            _ => Err(Error::Unknown(
-                "Unable to create generic CUDA cuDNN Pooling Descriptor.",
+           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Pooling Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -211,8 +211,8 @@ impl API {
     unsafe fn ffi_destroy_pooling_descriptor(desc: cudnnPoolingDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyPoolingDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown(
-                "Unable to destroy CUDA cuDNN Pooling Descriptor.",
+           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Pooling Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -239,8 +239,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-            _ => Err(Error::Unknown(
-                "Unable to set CUDA cuDNN Pooling Descriptor.",
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -270,8 +270,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-            _ => Err(Error::Unknown(
-                "Unable to get CUDA cuDNN Pooling Descriptor.",
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -303,8 +303,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-            _ => Err(Error::Unknown(
-                "Unable to set CUDA cuDNN Pooling Descriptor 2D.",
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor 2D.", status as i32 as u64
+
             )),
         }
     }
@@ -336,8 +336,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-            _ => Err(Error::Unknown(
-                "Unable to get CUDA cuDNN Pooling Descriptor 2D.",
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Descriptor 2D.", status as i32 as u64
+
             )),
         }
     }
@@ -351,7 +351,8 @@ impl API {
         match cudnnGetPoolingNdForwardOutputDim(pooling_desc, input_desc, nb_dims, out_dim_a) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`pooling_desc` not initialized or `nb_dims` is inconsistent with `pooling_desc` and `input_desc`.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Forward Output dimensions.")),
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Forward Output dimensions.", status as i32 as u64)),
+
         }
     }
 
@@ -371,7 +372,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The dimensions n, c of the input tensor and output tensors differ. The datatype of the input tensor and output tensors differs.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The `w_stride` of input tensor or output tensor is not 1.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute pooling forward.")),
+           status => Err(Error::Unknown("Unable to compute pooling forward.", status as i32 as u64)),
+
         }
     }
 
@@ -395,7 +397,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The dimensions n,c,h,w of the `src_desc` and `src_diff_desc` tensors differ. The strides nStride, cStride, hStride, wStride of the `src_desc` and `src_diff_desc` tensors differ. The dimensions n,c,h,w of the `dest_desc` and `dest_diff_desc` tensors differ. The strides nStride, cStride, hStride, wStride of the `dest_desc` and `dest_diff_desc` tensors differ. The datatype of the four tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The `w_stride` of input tensor or output tensor is not 1.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute pooling backward.")),
+           status => Err(Error::Unknown("Unable to compute pooling backward.", status as i32 as u64)),
+
         }
     }
 }

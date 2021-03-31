@@ -142,8 +142,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-            _ => Err(Error::Unknown(
-                "Unable to create generic CUDA cuDNN LRN Descriptor.",
+           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN LRN Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -151,8 +151,8 @@ impl API {
     unsafe fn ffi_destroy_lrn_descriptor(desc: cudnnLRNDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyLRNDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown(
-                "Unable to destroy CUDA cuDNN LRN Descriptor.",
+           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN LRN Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -169,8 +169,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "One of the input parameters was out of range.",
             )),
-            _ => Err(Error::Unknown(
-                "Unable to set CUDA cuDNN Pooling Descriptor.",
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -192,7 +192,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the tensor pointers  `src_data`, `dest_data` is NULL. Number of input tensor dimensions is 2 or less. LRN Descriptor params are out of valid range. Input Tensor is 5D but is not NCDHW DHW-packed format.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`data_type`, `sride`, `dimensions` mismatch or tensor strides are negative.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute LRN cross channel forward.")),
+           status => Err(Error::Unknown("Unable to compute LRN cross channel forward.", status as i32 as u64)),
+
         }
     }
 
@@ -217,7 +218,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the tensor pointers  `src_data`, `dest_data` is NULL. Number of input tensor dimensions is 2 or less. LRN Descriptor params are out of valid range. Input Tensor is 5D but is not NCDHW DHW-packed format.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`data_type`, `sride`, `dimensions` mismatch or tensor strides are negative.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute LRN cross channel backward.")),
+           status => Err(Error::Unknown("Unable to compute LRN cross channel backward.", status as i32 as u64)),
+
         }
     }
 
@@ -241,7 +243,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the tensor pointers  `src_data`, `dest_data`, `tmp_data`, `tmp_data2` is NULL. Number of input tensor or output tensor dimensions is outside of [4,5] range. A mismatch in dimensions between any two of the input or output tensors. For in-place computation (`src_data` == `dest_data`), a mismatch in strides between the input data and output data tensors. Alpha or beta pointer is NULL. LRN descriptor parameters are outside or their valid ranges. Any of the tensor strides are negative.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("stried of the input and output tensors mismatch.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute divisive normalization forward.")),
+           status => Err(Error::Unknown("Unable to compute divisive normalization forward.", status as i32 as u64)),
+
         }
     }
 
@@ -267,7 +270,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the tensor pointers  `src_data`, `dest_data`, `tmp_data`, `tmp_data2` is NULL. Number of input tensor or output tensor dimensions is outside of [4,5] range. A mismatch in dimensions between any two of the input or output tensors. For in-place computation (`src_data` == `dest_data`), a mismatch in strides between the input data and output data tensors. Alpha or beta pointer is NULL. LRN descriptor parameters are outside or their valid ranges. Any of the tensor strides are negative.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`mode` is invalid or dimensions of input and output tensor differ or `data_type` or strides of the tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute divisive normalization backward.")),
+           status => Err(Error::Unknown("Unable to compute divisive normalization backward.", status as i32 as u64)),
+
         }
     }
 }

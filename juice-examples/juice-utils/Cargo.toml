@@ -4,6 +4,7 @@ description = "Utilities for running Juice Examples"
 version = "0.0.1"
 authors = ["Lissa Hyacinth <lissahyacinth@gmail.com>", "Bernhard Schuster <bernhard@spearow.io>"]
 edition = "2018"
+publish = false
 
 [dependencies]
 reqwest= {version = "0.11.2", features = ["blocking"]}

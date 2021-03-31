@@ -1,82 +1,43 @@
 //! Provides Rust Errors for CUDA's cuDNN status.
 
-use std::{error, fmt};
+#[allow(unused)]
+pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Copy, Clone)]
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, thiserror::Error)]
 /// Defines CUDA's cuDNN errors.
 pub enum Error {
     /// Failure with CUDA cuDNN initialization.
+    #[error("{0:?}")]
     NotInitialized(&'static str),
     /// Failure with allocation.
+    #[error("{0:?}")]
     AllocFailed(&'static str),
     /// Failure with a provided parameter.
+    #[error("{0:?}")]
     BadParam(&'static str),
     /// Failure with cuDNN.
+    #[error("{0:?}")]
     InternalError(&'static str),
     /// Failure with provided value.
+    #[error("{0:?}")]
     InvalidValue(&'static str),
     /// Failure with the hardware architecture.
+    #[error("{0:?}")]
     ArchMismatch(&'static str),
     /// Failure with memory access or internal error/bug.
+    #[error("{0:?}")]
     MappingError(&'static str),
     /// Failure with Kernel execution.
+    #[error("{0:?}")]
     ExecutionFailed(&'static str),
     /// Failure with an unsupported request.
+    #[error("{0:?}")]
     NotSupported(&'static str),
     /// Failure CUDA License.
+    #[error("{0:?}")]
     LicenseError(&'static str),
     /// Failure
-    Unknown(&'static str),
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Error::NotInitialized(ref err) => write!(f, "{:?}", err),
-            Error::AllocFailed(ref err) => write!(f, "{:?}", err),
-            Error::BadParam(ref err) => write!(f, "{:?}", err),
-            Error::InternalError(ref err) => write!(f, "{:?}", err),
-            Error::InvalidValue(ref err) => write!(f, "{:?}", err),
-            Error::ArchMismatch(ref err) => write!(f, "{:?}", err),
-            Error::MappingError(ref err) => write!(f, "{:?}", err),
-            Error::ExecutionFailed(ref err) => write!(f, "{:?}", err),
-            Error::NotSupported(ref err) => write!(f, "{:?}", err),
-            Error::LicenseError(ref err) => write!(f, "{:?}", err),
-            Error::Unknown(ref err) => write!(f, "{:?}", err),
-        }
-    }
-}
-
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::NotInitialized(ref err) => err,
-            Error::AllocFailed(ref err) => err,
-            Error::BadParam(ref err) => err,
-            Error::InternalError(ref err) => err,
-            Error::InvalidValue(ref err) => err,
-            Error::ArchMismatch(ref err) => err,
-            Error::MappingError(ref err) => err,
-            Error::ExecutionFailed(ref err) => err,
-            Error::NotSupported(ref err) => err,
-            Error::LicenseError(ref err) => err,
-            Error::Unknown(ref err) => err,
-        }
-    }
-
-    fn cause(&self) -> Option<&dyn error::Error> {
-        match *self {
-            Error::NotInitialized(_) => None,
-            Error::AllocFailed(_) => None,
-            Error::BadParam(_) => None,
-            Error::InternalError(_) => None,
-            Error::InvalidValue(_) => None,
-            Error::ArchMismatch(_) => None,
-            Error::MappingError(_) => None,
-            Error::ExecutionFailed(_) => None,
-            Error::NotSupported(_) => None,
-            Error::LicenseError(_) => None,
-            Error::Unknown(_) => None,
-        }
-    }
+    #[error("{0:?}: {1}")]
+    Unknown(&'static str, u64),
 }

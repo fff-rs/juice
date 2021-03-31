@@ -39,7 +39,7 @@ impl API {
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
             CUresult::CUDA_ERROR_OUT_OF_MEMORY => Err(Error::OutOfMemory("Device is out of memory.")),
-            _ => Err(Error::Unknown("Unable to allocate memory.")),
+           status => Err(Error::Unknown("Unable to allocate memory.", status as i32 as u64)),
         }
     }
 
@@ -50,7 +50,8 @@ impl API {
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => Err(Error::Unknown("Unable to free memory.")),
+           status => Err(Error::Unknown("Unable to free memory.", status as i32 as u64)),
+
         }
     }
 
@@ -65,7 +66,8 @@ impl API {
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => Err(Error::Unknown("Unable to copy memory from host to device.")),
+           status => Err(Error::Unknown("Unable to copy memory from host to device.", status as i32 as u64)),
+
         }
     }
 
@@ -81,7 +83,7 @@ impl API {
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => { println!("{:?}", status); Err(Error::Unknown("Unable to copy memory from device to host.")) },
+            status => Err(Error::Unknown("Unable to copy memory from device to host.", status as i32 as u64)),
         }
     }
 }

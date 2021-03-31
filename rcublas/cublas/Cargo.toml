@@ -19,6 +19,7 @@ libc = "0.2"
 rcublas-sys = { version = "0.4", path = "../cublas-sys" }
 lazy_static = "1"
 log = "0.4"
+thiserror = "1.0"
 
 [dev-dependencies]
 coaster = { path = "../../coaster", default-features = false, features = ["cuda", "native"], version = "0.1" }

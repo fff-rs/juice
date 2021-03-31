@@ -38,7 +38,8 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => Err(Error::AllocFailed),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown("Unable to calculate sum of x.")),
+           status => Err(Error::Unknown("Unable to calculate sum of x.", status as i32 as u64)),
+
         }
     }
 
@@ -80,7 +81,8 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown("Unable to calculate axpy (alpha * x + y).")),
+           status => Err(Error::Unknown("Unable to calculate axpy (alpha * x + y).", status as i32 as u64)),
+
         }
     }
 
@@ -119,7 +121,8 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown("Unable to calculate copy from x to y.")),
+           status => Err(Error::Unknown("Unable to calculate copy from x to y.", status as i32 as u64)),
+
         }
     }
 
@@ -154,7 +157,8 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown("Unable to calculate dot product of x and y.")),
+           status => Err(Error::Unknown("Unable to calculate dot product of x and y.", status as i32 as u64)),
+
         }
     }
 
@@ -188,10 +192,10 @@ impl API {
             },
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => {
+            status => {
                 dbg!("Unknown!");
                 Err(Error::Unknown(
-                    "Unable to calculate the euclidian norm of x.",
+                    "Unable to calculate the euclidian norm of x.", status as i32 as u64
                 ))
             },
         }
@@ -228,7 +232,8 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown("Unable to scale the vector x.")),
+           status => Err(Error::Unknown("Unable to scale the vector x.", status as i32 as u64)),
+
         }
     }
 
@@ -261,7 +266,8 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown("Unable to swap vector x and y.")),
+           status => Err(Error::Unknown("Unable to swap vector x and y.", status as i32 as u64)),
+
         }
     }
 }

@@ -38,7 +38,7 @@ impl TryFrom<cublasHandle_t> for Cookie {
         if let Some(nn) = NonNull::new(handle) {
             Ok(Cookie(nn))
         } else {
-            Err(Error::Unknown("cublasHandle is a nullptr"))
+            Err(Error::Unknown("cublasHandle is a nullptr", 0))
         }
     }
 }
@@ -113,8 +113,9 @@ impl API {
         let version_ptr: *mut i32 = &mut version;
         match cublasGetVersion_v2(handle, version_ptr) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(version),
-            cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::Unknown("Unable to initialise CUBLAS Library")),
-            _ => Err(Error::Unknown("Other Unknown Error with CUBLAS Get Version")),
+            cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
+           status => Err(Error::Unknown("Other Unknown Error with CUBLAS Get Version", status as i32 as u64)),
+
         }
     }
 
@@ -139,8 +140,8 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => Err(Error::AllocFailed),
-            _ => Err(Error::Unknown(
-                "Unable to create the cuBLAS context/resources.",
+           status => Err(Error::Unknown("Unable to create the cuBLAS context/resources.", status as i32 as u64
+
             )),
         }
     }
@@ -149,8 +150,8 @@ impl API {
         match cublasDestroy_v2(handle) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-            _ => Err(Error::Unknown(
-                "Unable to destroy the CUDA cuDNN context/resources.",
+           status => Err(Error::Unknown("Unable to destroy the CUDA cuDNN context/resources.", status as i32 as u64
+
             )),
         }
     }
@@ -160,7 +161,8 @@ impl API {
         match cublasGetPointerMode_v2(handle, pointer_mode.as_mut_ptr()) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(pointer_mode[0]),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-            _ => Err(Error::Unknown("Unable to get cuBLAS pointer mode.")),
+           status => Err(Error::Unknown("Unable to get cuBLAS pointer mode.", status as i32 as u64)),
+
         }
     }
 
@@ -171,7 +173,8 @@ impl API {
         match cublasSetPointerMode_v2(handle, pointer_mode) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-            _ => Err(Error::Unknown("Unable to get cuBLAS pointer mode.")),
+           status => Err(Error::Unknown("Unable to get cuBLAS pointer mode.", status as i32 as u64)),
+
         }
     }
 

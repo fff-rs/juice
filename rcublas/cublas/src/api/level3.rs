@@ -87,7 +87,8 @@ impl API {
             ),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-            _ => Err(Error::Unknown("Unable to calculate axpy (alpha * x + y).")),
+           status => Err(Error::Unknown("Unable to calculate axpy (alpha * x + y).", status as i32 as u64)),
+
         }
     }
 }

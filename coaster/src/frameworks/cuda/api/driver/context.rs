@@ -45,8 +45,8 @@ impl API {
             CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
             CUresult::CUDA_ERROR_OUT_OF_MEMORY => Err(Error::OutOfMemory("Device is out of memory.")),
-            CUresult::CUDA_ERROR_UNKNOWN => Err(Error::Unknown("An unknown Error occured. Check the CUDA DRIVER API manual for more details.")),
-            _ => Err(Error::Unknown("Unable to create Cuda context.")),
+            status @ CUresult::CUDA_ERROR_UNKNOWN => Err(Error::Unknown("An unknown Error occured. Check the CUDA DRIVER API manual for more details.", status as i32 as u64)),
+            status => Err(Error::Unknown("Unable to create Cuda context.", status as i32 as u64)),
         }
     }
 
@@ -59,7 +59,7 @@ impl API {
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => Err(Error::Unknown("Unable to destroy Cuda context.")),
+            status => Err(Error::Unknown("Unable to destroy Cuda context.", status as i32 as u64)),
         }
     }
 
@@ -70,7 +70,7 @@ impl API {
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => Err(Error::Unknown("Unable to synchronize CUDA context.")),
+            status => Err(Error::Unknown("Unable to synchronize CUDA context.", status as i32 as u64)),
         }
     }
 }

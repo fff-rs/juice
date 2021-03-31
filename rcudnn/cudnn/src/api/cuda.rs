@@ -28,8 +28,8 @@ impl API {
             cudaError_t::cudaErrorMemoryAllocation => {
                 Err(Error::AllocFailed("Unable to allocate CUDA device memory."))
             }
-            _ => Err(Error::Unknown(
-                "Unable to allocate CUDA device memory for unknown reasons.",
+           status => Err(Error::Unknown("Unable to allocate CUDA device memory for unknown reasons.", status as i32 as u64
+
             )),
         }
     }
@@ -39,12 +39,13 @@ impl API {
             cudaError_t::cudaSuccess => Ok(()),
             // TODO, more error enums sigh
             cudaError_t::cudaErrorInvalidDevicePointer => {
-                Err(Error::Unknown("Unable to free the CUDA device memory."))
+                Err(Error::InvalidValue("Unable to free the CUDA device memory due to invalid device pointer."))
             }
             cudaError_t::cudaErrorInitializationError => {
-                Err(Error::Unknown("CUDA Driver/Runtime API not initialized."))
+                Err(Error::NotInitialized("CUDA Driver/Runtime API not initialized."))
             }
-            _ => Err(Error::Unknown("Unable to free the CUDA device memory.")),
+           status => Err(Error::Unknown("Unable to free the CUDA device memory.", status as i32 as u64)),
+
         }
     }
 }
