@@ -19,6 +19,7 @@ license = "MIT OR Apache-2.0"
 libc = "0.2"
 rcudnn-sys = { version = "0.4", path = "../cudnn-sys" }
 num = "0.1"
+thiserror = "1.0"
 
 [dev-dependencies]
 coaster = { default-features = false, features = ["native", "cuda"], version = "0.1" }

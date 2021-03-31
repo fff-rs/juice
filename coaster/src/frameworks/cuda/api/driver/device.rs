@@ -77,7 +77,8 @@ impl API {
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => Err(Error::Unknown("Unable to get Device count.")),
+           status => Err(Error::Unknown("Unable to get Device count.", status as i32 as u64)),
+
         }
     }
 
@@ -90,7 +91,8 @@ impl API {
             CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            _ => Err(Error::Unknown("Unable to get Device count.")),
+           status => Err(Error::Unknown("Unable to get Device count.", status as i32 as u64)),
+
         }
     }
 
@@ -106,7 +108,8 @@ impl API {
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
             CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
-            _ => Err(Error::Unknown("Unable to get device attribute."))
+           status => Err(Error::Unknown("Unable to get device attribute.", status as i32 as u64)),
+
         }
     }
 
@@ -122,7 +125,8 @@ impl API {
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
             CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
-            _ => Err(Error::Unknown("Unable to get device name."))
+           status => Err(Error::Unknown("Unable to get device name.", status as i32 as u64)),
+
         }
     }
 
@@ -137,7 +141,7 @@ impl API {
             CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
             CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
             CUresult::CUDA_ERROR_INVALID_DEVICE => Err(Error::InvalidValue("Invalid value for `device` provided.")),
-            _ => Err(Error::Unknown("Unable to get total mem of device."))
+            status => Err(Error::Unknown("Unable to get total mem of device.", status as i32 as u64))
         }
     }
 }

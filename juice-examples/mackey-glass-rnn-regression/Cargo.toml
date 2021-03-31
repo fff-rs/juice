@@ -4,6 +4,7 @@ description = "Juice Framework example for RNN Regression using Mackey-Glass Dat
 version = "0.0.1"
 authors = ["Lissa Hyacinth <lissahyacinth@gmail.com>"]
 edition = "2018"
+publish = false
 
 [dependencies]
 greenglas = { version = "0.2" }

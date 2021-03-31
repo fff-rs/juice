@@ -92,7 +92,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`mode` is invalid or dimensions of input and output tensor differ or `data_type` or strides of the tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute activation forward.")),
+           status => Err(Error::Unknown("Unable to compute activation forward.", status as i32 as u64)),
+
         }
     }
 
@@ -116,7 +117,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("`mode` is invalid or dimensions of input and output tensor differ or `data_type` or strides of the tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`mode` is invalid or dimensions of input and output tensor differ or `data_type` or strides of the tensors differ.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute activation backward.")),
+           status => Err(Error::Unknown("Unable to compute activation backward.", status as i32 as u64)),
+
         }
     }
 
@@ -127,8 +129,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-            _ => Err(Error::Unknown(
-                "Unable to create generic CUDA cuDNN Activation Descriptor.",
+           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Activation Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -138,8 +140,8 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnDestroyActivationDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown(
-                "Unable to destroy CUDA cuDNN Activation Descriptor.",
+           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Activation Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -155,8 +157,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )), // FIXME
-            _ => Err(Error::Unknown(
-                "Unable to set CUDA cuDNN Activation Descriptor.",
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN Activation Descriptor.", status as i32 as u64
+
             )),
         }
     }

@@ -6,6 +6,7 @@ authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Michael Hirn",
            "Maximilian Goisser"]
 edition = "2018"
+publish = false
 
 [dependencies]
 greenglas = { version = "0.2" }

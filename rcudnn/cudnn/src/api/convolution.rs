@@ -42,8 +42,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-            _ => Err(Error::Unknown(
-                "Unable to create generic CUDA cuDNN Filter Descriptor.",
+           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Filter Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -51,8 +51,8 @@ impl API {
     unsafe fn ffi_destroy_filter_descriptor(desc: cudnnFilterDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyFilterDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown(
-                "Unable to destroy CUDA cuDNN Filter Descriptor.",
+           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Filter Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -72,8 +72,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => {
                 Err(Error::NotSupported("`nb_dims` exceeds CUDNN_DIM_MAX."))
             }
-            _ => Err(Error::Unknown(
-                "Unable to set CUDA cuDNN Filter Descriptor.",
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN Filter Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -217,7 +217,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")),
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
-            _ => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Forward Algorithm.")),
+           status => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Forward Algorithm.", status as i32 as u64)),
+
         }
     }
 
@@ -235,7 +236,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Forward Workspace size.")),
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Forward Workspace size.", status as i32 as u64)),
+
         }
     }
 
@@ -251,7 +253,8 @@ impl API {
             cudnnConvolutionBwdFilterAlgoPerf_t::default(),
         ];
         match cudnnFindConvolutionBackwardFilterAlgorithm(handle, src_desc, dest_desc, conv_desc, filter_desc, 2, &mut 0, perf_results.as_mut_ptr()) { cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results), cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")), cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
-            _ => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Backward Filter Algorithm.")),
+           status => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Backward Filter Algorithm.", status as i32 as u64)),
+
         }
     }
 
@@ -268,7 +271,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Filter Workspace size.")),
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Filter Workspace size.", status as i32 as u64)),
+
         }
     }
 
@@ -287,7 +291,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(perf_results),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.")),
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The resources could not be allocated.")),
-            _ => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Backward Data Algorithm.")),
+           status => Err(Error::Unknown("Unable to find CUDA cuDNN Convolution Backward Data Algorithm.", status as i32 as u64)),
+
         }
     }
 
@@ -304,7 +309,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.")),
-            _ => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Data Workspace size.")),
+           status => Err(Error::Unknown("Unable to get CUDA cuDNN Convolution Backward Data Workspace size.", status as i32 as u64)),
+
         }
     }
 
@@ -479,8 +485,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-            _ => Err(Error::Unknown(
-                "Unable to create generic CUDA cuDNN Convolution Descriptor.",
+           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Convolution Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -490,8 +496,8 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnDestroyConvolutionDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            _ => Err(Error::Unknown(
-                "Unable to destroy CUDA cuDNN Convolution Descriptor.",
+           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Convolution Descriptor.", status as i32 as u64
+
             )),
         }
     }
@@ -509,7 +515,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: `desc` is NULL. `array_length` is negative, `mode` or `data_type` is invalid, element of `pad_a` is negative, element of `stride_a` is negative or zero.")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `array_length` is greater than CUDNN_DIM_MAX. `upscale_a` contains an element different from 1.")),
-            _ => Err(Error::Unknown("Unable to set CUDA cuDNN Convolution Descriptor.")),
+           status => Err(Error::Unknown("Unable to set CUDA cuDNN Convolution Descriptor.", status as i32 as u64)),
+
         }
     }
 
@@ -548,7 +555,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: At least one of the following is NULL: `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc`, `src_data`, `alpha`, `beta`. `src_desc` and `dest_desc` have a non-matching number of dimensions. `src_desc` and `filter_desc` have a non-matching number of dimensions. `src_desc` has fewer than three number of dimensions. `src_desc`s number of dimensions is not equal to `conv_desc`s `array_length` + 2. `src_desc` and `filter_desc` have a non-matching number of input feature maps per image. `src_desc`, `filter_desc` and `dest_desc` have a non-matching data type. For some spatial dimension, `filter_desc` has a spatial size that is larger than the input spatial size (including zero-padding size).")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `filter_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional forward.")),
+           status => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional forward.", status as i32 as u64)),
+
         }
     }
 
@@ -564,7 +572,8 @@ impl API {
         match cudnnConvolutionBackwardBias(handle, alpha, src_desc, src_data, beta, dest_desc, dest_data) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters  n,h,w of the output tensor is not 1. The numbers of feature maps of the input tensor and output tensor differ. The  dataType of the two tensor descriptors are different.")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional backward bias.")),
+           status => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional backward bias.", status as i32 as u64)),
+
         }
     }
 
@@ -590,7 +599,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `src_desc` or `diff_desc` have negative tensor striding. `src_desc`, `diff_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
             cudnnStatus_t::CUDNN_STATUS_MAPPING_ERROR => Err(Error::MappingError("An error occurs during the texture binding of the filter data.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional backward filter.")),
+           status => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional backward filter.", status as i32 as u64)),
+
         }
     }
 
@@ -616,7 +626,8 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met:  `diff_desc` or `grad_desc` have negative tensor striding. `diff_desc`, `filter_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
             cudnnStatus_t::CUDNN_STATUS_MAPPING_ERROR => Err(Error::MappingError("An error occurs during the texture binding of the filter data or the input differential tensor data.")),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
-            _ => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional backward data.")),
+           status => Err(Error::Unknown("Unable to compute CUDA cuDNN convolutional backward data.", status as i32 as u64)),
+
         }
     }
 }
