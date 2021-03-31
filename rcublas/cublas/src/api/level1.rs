@@ -1,6 +1,6 @@
-use crate::{API, Error};
 use super::Context;
 use crate::ffi::*;
+use crate::{Error, API};
 
 impl API {
     // TODO: cublasIsamax_v2 x 4
@@ -38,8 +38,10 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => Err(Error::AllocFailed),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-           status => Err(Error::Unknown("Unable to calculate sum of x.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to calculate sum of x.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -81,8 +83,10 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-           status => Err(Error::Unknown("Unable to calculate axpy (alpha * x + y).", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to calculate axpy (alpha * x + y).",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -121,8 +125,10 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-           status => Err(Error::Unknown("Unable to calculate copy from x to y.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to calculate copy from x to y.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -157,8 +163,10 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-           status => Err(Error::Unknown("Unable to calculate dot product of x and y.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to calculate dot product of x and y.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -189,15 +197,16 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => {
                 dbg!("Alloc failed");
                 Err(Error::AllocFailed)
-            },
+            }
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
             status => {
                 dbg!("Unknown!");
                 Err(Error::Unknown(
-                    "Unable to calculate the euclidian norm of x.", status as i32 as u64
+                    "Unable to calculate the euclidian norm of x.",
+                    status as i32 as u64,
                 ))
-            },
+            }
         }
     }
 
@@ -232,8 +241,10 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-           status => Err(Error::Unknown("Unable to scale the vector x.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to scale the vector x.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -266,19 +277,21 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-           status => Err(Error::Unknown("Unable to swap vector x and y.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to swap vector x and y.",
+                status as i32 as u64,
+            )),
         }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::API;
     use crate::api::context::Context;
     use crate::api::enums::PointerMode;
-    use crate::co::tensor::SharedTensor;
     use crate::chore::*;
+    use crate::co::tensor::SharedTensor;
+    use crate::API;
 
     #[test]
     fn use_cuda_memory_for_asum() {
@@ -346,7 +359,6 @@ mod test {
             }
         }
 
-
         let native_y = y.read(native.device()).unwrap();
         assert_eq!(&[7f32, 7f32, 7f32, 7f32, 7f32], native_y.as_slice::<f32>());
 
@@ -380,7 +392,6 @@ mod test {
                 API::ffi_scopy(*ctx.id_c(), n, x_addr, 1, y_addr, 1).unwrap();
             }
         }
-
 
         let native_y = y.read(native.device()).unwrap();
         assert_eq!(&[2f32, 2f32, 2f32, 2f32, 2f32], native_y.as_slice::<f32>());
@@ -455,7 +466,6 @@ mod test {
             }
         }
 
-
         let native_result = result.read(native.device()).unwrap();
         assert_eq!(&[3f32], native_result.as_slice::<f32>());
 
@@ -488,7 +498,6 @@ mod test {
                 API::ffi_sscal(*ctx.id_c(), n, alpha_addr, x_addr, 1).unwrap();
             }
         }
-
 
         let native_x = x.read(native.device()).unwrap();
         assert_eq!(&[5f32, 5f32, 5f32], native_x.as_slice::<f32>());

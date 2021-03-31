@@ -40,7 +40,7 @@ impl ConvForwardAlgo {
     pub fn is_auto(&self) -> bool {
         match *self {
             ConvForwardAlgo::Auto => true,
-            _ => false
+            _ => false,
         }
     }
 }
@@ -81,7 +81,7 @@ impl ConvBackwardFilterAlgo {
     pub fn is_auto(&self) -> bool {
         match *self {
             ConvBackwardFilterAlgo::Auto => true,
-            _ => false
+            _ => false,
         }
     }
 }
@@ -126,7 +126,7 @@ impl ConvBackwardDataAlgo {
     pub fn is_auto(&self) -> bool {
         match *self {
             ConvBackwardDataAlgo::Auto => true,
-            _ => false
+            _ => false,
         }
     }
 }
@@ -153,7 +153,9 @@ pub trait ConvolutionConfig<F> {
 pub trait RnnConfig<F> {
     /// Workspace Size - Overwritten by each plugin method except native, which doesn't require
     /// a workspace size.
-    fn workspace_size(&self) -> usize { 0 }
+    fn workspace_size(&self) -> usize {
+        0
+    }
 }
 
 /// Provides the functionality for a backend to support Neural Network related operations.
@@ -176,25 +178,32 @@ pub trait NN<F> {
 }
 
 /// Provides the functionality for a Backend to support Sigmoid operations.
-pub trait Sigmoid<F> : NN<F> {
+pub trait Sigmoid<F>: NN<F> {
     /// Computes the [Sigmoid function][sigmoid] over the input Tensor `x`.
     /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
     ///
     /// Saves the result to `result`.
-    fn sigmoid(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>)
-               -> Result<(), crate::co::error::Error>;
+    fn sigmoid(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [Sigmoid function][sigmoid] over the input Tensor `x`.
     /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
     ///
     /// Saves the result to `result_diff`.
-    fn sigmoid_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                    result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>)
-                    -> Result<(), crate::co::error::Error>;
+    fn sigmoid_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for pointwise Sigmoid operations (overwrites the input with the result of the operation).
-pub trait SigmoidPointwise<F> : NN<F> {
+pub trait SigmoidPointwise<F>: NN<F> {
     /// Computes the [Sigmoid function][sigmoid] over the input Tensor `x`.
     /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
     ///
@@ -207,28 +216,40 @@ pub trait SigmoidPointwise<F> : NN<F> {
     /// [sigmoid]: https://en.wikipedia.org/wiki/Sigmoid_function
     ///
     /// Saves the result back to `x_diff`.
-    fn sigmoid_pointwise_grad(&self, x: &SharedTensor<F>, x_diff: &mut SharedTensor<F>) -> Result<(), crate::co::error::Error>;
+    fn sigmoid_pointwise_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support ReLU operations.
-pub trait Relu<F> : NN<F> {
+pub trait Relu<F>: NN<F> {
     /// Computes the [Rectified linear units][relu] over the input Tensor `x`.
     /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
     ///
     /// Saves the result to `result`.
-    fn relu(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>) -> Result<(), crate::co::error::Error>;
+    fn relu(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of [ReLU][relu] over the input Tensor `x`.
     /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
     ///
     /// Saves the result to `result_diff`.
-    fn relu_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                 result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>)
-                 -> Result<(), crate::co::error::Error>;
+    fn relu_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for pointwise ReLU operations (overwrites the input with the result of the operation).
-pub trait ReluPointwise<F> : NN<F> {
+pub trait ReluPointwise<F>: NN<F> {
     /// Computes the [Rectified linear units][relu] over the input Tensor `x`.
     /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
     ///
@@ -239,31 +260,41 @@ pub trait ReluPointwise<F> : NN<F> {
     /// [relu]: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
     ///
     /// Saves the result back to `x_diff`.
-    fn relu_pointwise_grad(&self, x: &SharedTensor<F>, x_diff: &mut SharedTensor<F>)
-                           -> Result<(), crate::co::error::Error>;
+    fn relu_pointwise_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support TanH operations.
-pub trait Tanh<F> : NN<F> {
+pub trait Tanh<F>: NN<F> {
     /// Computes the [hyperbolic Tangent][tanh] over the input Tensor `x`.
     /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
     ///
     /// Saves the result to `result`.
-    fn tanh(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>)
-            -> Result<(), crate::co::error::Error>;
+    fn tanh(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of [hyperbolic Tangent][tanh] over the input Tensor `x`.
     /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
     ///
     /// Saves the result to `result_diff`.
-    fn tanh_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                 result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>)
-                 -> Result<(), crate::co::error::Error>;
+    fn tanh_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for pointwise ReLU operations (overwrites the input
 /// with the result of the operation).
-pub trait TanhPointwise<F> : NN<F> {
+pub trait TanhPointwise<F>: NN<F> {
     /// Computes the [hyperbolic Tangent][tanh] over the input Tensor `x`.
     /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
     ///
@@ -274,8 +305,11 @@ pub trait TanhPointwise<F> : NN<F> {
     /// [tanh]: https://en.wikipedia.org/wiki/Hyperbolic_function
     ///
     /// Saves the result back to `x_diff`.
-    fn tanh_pointwise_grad(&self, x: &SharedTensor<F>, x_diff: &mut SharedTensor<F>)
-                           -> Result<(), crate::co::error::Error>;
+    fn tanh_pointwise_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provide the functionality for a Backend to support RNN operations
@@ -319,24 +353,26 @@ pub trait Rnn<F>: NN<F> {
     ) -> Result<(), crate::co::error::Error>;
 
     /// Calculates RNN Gradients for Input/Hidden/Cell
-    fn rnn_backward_data(&self,
-                         src: &SharedTensor<F>,
-                         src_gradient: &mut SharedTensor<F>,
-                         output: &SharedTensor<F>,
-                         output_gradient: &SharedTensor<F>,
-                         rnn_config: &Self::CRNN,
-                         weight: &SharedTensor<F>,
-                         workspace: &mut SharedTensor<u8>)
-                         -> Result<(), crate::co::error::Error>;
+    fn rnn_backward_data(
+        &self,
+        src: &SharedTensor<F>,
+        src_gradient: &mut SharedTensor<F>,
+        output: &SharedTensor<F>,
+        output_gradient: &SharedTensor<F>,
+        rnn_config: &Self::CRNN,
+        weight: &SharedTensor<F>,
+        workspace: &mut SharedTensor<u8>,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Calculates RNN Gradients for Weights
-    fn rnn_backward_weights(&self,
-                            src: &SharedTensor<F>,
-                            output: &SharedTensor<F>,
-                            filter: &mut SharedTensor<F>,
-                            rnn_config: &Self::CRNN,
-                            workspace: &mut SharedTensor<u8>)
-                            -> Result<(), crate::co::error::Error>;
+    fn rnn_backward_weights(
+        &self,
+        src: &SharedTensor<F>,
+        output: &SharedTensor<F>,
+        filter: &mut SharedTensor<F>,
+        rnn_config: &Self::CRNN,
+        workspace: &mut SharedTensor<u8>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -350,7 +386,7 @@ pub enum RnnNetworkMode {
     /// Four-gate LSTM Network with no peephole connection
     LSTM,
     /// Three-gate network with Gated Recurrent Units
-    GRU
+    GRU,
 }
 
 impl std::fmt::Display for RnnNetworkMode {
@@ -360,7 +396,8 @@ impl std::fmt::Display for RnnNetworkMode {
             RnnNetworkMode::Tanh => "Tanh",
             RnnNetworkMode::LSTM => "LSTM",
             RnnNetworkMode::GRU => "GRU",
-        }.to_owned();
+        }
+        .to_owned();
         write!(f, "{}", result)
     }
 }
@@ -395,8 +432,9 @@ impl std::fmt::Display for RnnInputMode {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let result = match &self {
             RnnInputMode::LinearInput => "LinearInput",
-            RnnInputMode::SkipInput => "SkipInput"
-        }.to_owned();
+            RnnInputMode::SkipInput => "SkipInput",
+        }
+        .to_owned();
         write!(f, "{}", result)
     }
 }
@@ -426,8 +464,9 @@ impl std::fmt::Display for DirectionMode {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let result = match &self {
             DirectionMode::UniDirectional => "UniDirectional",
-            DirectionMode::BiDirectional => "BiDirectional"
-        }.to_owned();
+            DirectionMode::BiDirectional => "BiDirectional",
+        }
+        .to_owned();
         write!(f, "{}", result)
     }
 }
@@ -466,8 +505,9 @@ impl std::fmt::Display for RnnAlgorithm {
             RnnAlgorithm::Standard => "Standard",
             RnnAlgorithm::PersistStatic => "PersistStatic",
             RnnAlgorithm::PersistDynamic => "PersistDynamic",
-            RnnAlgorithm::Count => unreachable!()
-        }.to_owned();
+            RnnAlgorithm::Count => unreachable!(),
+        }
+        .to_owned();
         write!(f, "{}", result)
     }
 }
@@ -479,7 +519,9 @@ impl RnnAlgorithm {
             "Standard" => Ok(RnnAlgorithm::Standard),
             "PersistStatic" => Ok(RnnAlgorithm::PersistStatic),
             "PersistDynamic" => Ok(RnnAlgorithm::PersistDynamic),
-            _ => Err("Unknown RnnAlgorithm used - variants are Standard, PersistStatic, PersistDynamic"),
+            _ => Err(
+                "Unknown RnnAlgorithm used - variants are Standard, PersistStatic, PersistDynamic",
+            ),
         }
     }
 }
@@ -503,60 +545,64 @@ pub enum MathType {
     /// Uses Tensor Core ops
     TensorOPMath,
     /// Uses FP32 Tensors for input/output
-    TensorOPMathAllowConversion
+    TensorOPMathAllowConversion,
 }
 
 /// Provides the functionality for a Backend to support Convolution operations.
-pub trait Convolution<F> : NN<F> {
+pub trait Convolution<F>: NN<F> {
     /// Creates a new ConvolutionConfig, which needs to be passed to further
     /// convolution Operations.
-    fn new_convolution_config(&self,
-                              src: &SharedTensor<F>,
-                              dest: &SharedTensor<F>,
-                              filter: &SharedTensor<F>,
-                              algo_fwd: ConvForwardAlgo,
-                              algo_bwd_filter: ConvBackwardFilterAlgo,
-                              algo_bwd_data: ConvBackwardDataAlgo,
-                              stride: &[i32],
-                              zero_padding: &[i32])
-                              -> Result<Self::CC, crate::co::error::Error>;
+    fn new_convolution_config(
+        &self,
+        src: &SharedTensor<F>,
+        dest: &SharedTensor<F>,
+        filter: &SharedTensor<F>,
+        algo_fwd: ConvForwardAlgo,
+        algo_bwd_filter: ConvBackwardFilterAlgo,
+        algo_bwd_data: ConvBackwardDataAlgo,
+        stride: &[i32],
+        zero_padding: &[i32],
+    ) -> Result<Self::CC, crate::co::error::Error>;
 
     /// Computes a [CNN convolution][convolution] over the input Tensor `x`.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
     ///
     /// Saves the result to `result`.
-    fn convolution(&self,
-                   filter: &SharedTensor<F>,
-                   x: &SharedTensor<F>,
-                   result: &mut SharedTensor<F>,
-                   workspace: &mut SharedTensor<u8>,
-                   config: &Self::CC)
-                   -> Result<(), crate::co::error::Error>;
+    fn convolution(
+        &self,
+        filter: &SharedTensor<F>,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+        workspace: &mut SharedTensor<u8>,
+        config: &Self::CC,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] with respect to the filter.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
     ///
     /// Saves the result to `filter_diff`.
-    fn convolution_grad_filter(&self,
-                               src_data: &SharedTensor<F>,
-                               dest_diff: &SharedTensor<F>,
-                               filter_diff: &mut SharedTensor<F>,
-                               workspace: &mut SharedTensor<u8>,
-                               config: &Self::CC)
-                               -> Result<(), crate::co::error::Error>;
+    fn convolution_grad_filter(
+        &self,
+        src_data: &SharedTensor<F>,
+        dest_diff: &SharedTensor<F>,
+        filter_diff: &mut SharedTensor<F>,
+        workspace: &mut SharedTensor<u8>,
+        config: &Self::CC,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] over the input
     /// Tensor `x` with respect to the data.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
     ///
     /// Saves the result to `result_diff`.
-    fn convolution_grad_data(&self,
-                             filter: &SharedTensor<F>,
-                             x_diff: &SharedTensor<F>,
-                             result_diff: &mut SharedTensor<F>,
-                             workspace: &mut SharedTensor<u8>,
-                             config: &Self::CC)
-                             -> Result<(), crate::co::error::Error>;
+    fn convolution_grad_data(
+        &self,
+        filter: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+        workspace: &mut SharedTensor<u8>,
+        config: &Self::CC,
+    ) -> Result<(), crate::co::error::Error>;
 
     // /// Computes the backward Convolution function w.r.t the bias.
     // ///
@@ -586,120 +632,177 @@ pub trait Convolution<F> : NN<F> {
 }
 
 /// Provides the functionality for a Backend to support Softmax operations.
-pub trait Softmax<F> : NN<F> {
+pub trait Softmax<F>: NN<F> {
     /// Computes a [Softmax][softmax] over the input Tensor `x`.
     /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function
     ///
     /// Saves the result to `result`.
-    fn softmax(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>)
-               -> Result<(), crate::co::error::Error>;
+    fn softmax(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [Softmax][softmax] over the input Tensor `x`.
     /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function
     ///
     /// Saves the result to `result_diff`.
-    fn softmax_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                    result_diff: &mut SharedTensor<F>)
-                    -> Result<(), crate::co::error::Error>;
+    fn softmax_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support LogSoftmax operations.
-pub trait LogSoftmax<F> : NN<F> {
+pub trait LogSoftmax<F>: NN<F> {
     /// Computes a logarithmic softmax over the input Tensor `x`.
     ///
     /// Saves the result to `result`.
-    fn log_softmax(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>)
-                   -> Result<(), crate::co::error::Error>;
+    fn log_softmax(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a logarithmic softmax over the input Tensor `x`.
     ///
     /// Saves the result to `result_diff`.
-    fn log_softmax_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                        result_diff: &mut SharedTensor<F>)
-                        -> Result<(), crate::co::error::Error>;
+    fn log_softmax_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support Local Response Normalization operations.
-pub trait LRN<F> : NN<F> {
+pub trait LRN<F>: NN<F> {
     /// Creates a new (Local Response Normalization) LRNConfig, which needs to be
     /// passed to further LRN Operations.
-    fn new_lrn_config(&self, n: u32, alpha: f64, beta: f64, k: f64)
-                      -> Result<Self::CLRN, crate::co::error::Error>;
+    fn new_lrn_config(
+        &self,
+        n: u32,
+        alpha: f64,
+        beta: f64,
+        k: f64,
+    ) -> Result<Self::CLRN, crate::co::error::Error>;
 
     /// Computes a [LRN][lrn] over the input Tensor `x`.
     /// [lrn]: https://en.wikipedia.org/wiki/lrnal_neural_network
     ///
     /// Saves the result to `result`.
-    fn lrn(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>,
-           config: &Self::CLRN) -> Result<(), crate::co::error::Error>;
+    fn lrn(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+        config: &Self::CLRN,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [LRN][lrn] over the input Tensor `x`.
     /// [lrn]: https://en.wikipedia.org/wiki/lrnal_neural_network
     ///
     /// Saves the result to `result_diff`.
-    fn lrn_grad(&self,
-                x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
-                config: &Self::CLRN)
-                -> Result<(), crate::co::error::Error>;
+    fn lrn_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+        config: &Self::CLRN,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support Pooling operations.
-pub trait Pooling<F> : NN<F> {
+pub trait Pooling<F>: NN<F> {
     /// Creates a new PoolingConfig, which needs to be passed to further pooling Operations.
-    fn new_pooling_config(&self, window: &[i32], stride: &[i32], padding: &[i32])
-                          -> Result<Self::CPOOL, crate::co::error::Error>;
+    fn new_pooling_config(
+        &self,
+        window: &[i32],
+        stride: &[i32],
+        padding: &[i32],
+    ) -> Result<Self::CPOOL, crate::co::error::Error>;
 
     /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.
     /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
     ///
     /// Saves the result to `result`.
-    fn pooling_max(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>,
-                   config: &Self::CPOOL) -> Result<(), crate::co::error::Error>;
+    fn pooling_max(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+        config: &Self::CPOOL,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of [max Pooling][pooling] over the input Tensor `x`.
     /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
     ///
     /// Saves the result to `result_diff`.
-    fn pooling_max_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                        result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
-                        config: &Self::CPOOL) -> Result<(), crate::co::error::Error>;
-
+    fn pooling_max_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+        config: &Self::CPOOL,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes non-linear down-sampling ([average Pooling][pooling]) over the input Tensor `x`.
     /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
     ///
     /// Saves the result to `result`.
-    fn pooling_avg(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>,
-                   config: &Self::CPOOL) -> Result<(), crate::co::error::Error>;
+    fn pooling_avg(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+        config: &Self::CPOOL,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of [average Pooling][pooling] over the input Tensor `x`.
     /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
     ///
     /// Saves the result to `result_diff`.
-    fn pooling_avg_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                        result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
-                        config: &Self::CPOOL) -> Result<(), crate::co::error::Error>;
+    fn pooling_avg_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+        config: &Self::CPOOL,
+    ) -> Result<(), crate::co::error::Error>;
 }
 
 /// Provides the functionality for a Backend to support Dropout operations.
-pub trait Dropout<F> : NN<F> {
+pub trait Dropout<F>: NN<F> {
     /// Creates a new DropoutConfig, which needs to be passed to further dropout Operations.
-    fn new_dropout_config(&self, dropout: f32, seed: u64)
-                          -> Result<Self::CDROP, crate::co::error::Error>;
+    fn new_dropout_config(
+        &self,
+        dropout: f32,
+        seed: u64,
+    ) -> Result<Self::CDROP, crate::co::error::Error>;
 
     /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.
     /// [pooling]: https://en.wikipedia.org/wiki/Convolutional_neural_network#Pooling_layer
     ///
     /// Saves the result to `result`.
-    fn dropout(&self, x: &SharedTensor<F>, result: &mut SharedTensor<F>,
-                   config: &Self::CDROP) -> Result<(), crate::co::error::Error>;
+    fn dropout(
+        &self,
+        x: &SharedTensor<F>,
+        result: &mut SharedTensor<F>,
+        config: &Self::CDROP,
+    ) -> Result<(), crate::co::error::Error>;
 
     /// Computes non-linear down-sampling ([max Pooling][pooling]) over the input Tensor `x`.
     /// [pooling]: https://en.wikipedia.org/wiki/Dropout_(neural_networks)
     ///
     /// Saves the result to `result`.
-    fn dropout_grad(&self, x: &SharedTensor<F>, x_diff: &SharedTensor<F>,
-                        result: &SharedTensor<F>, result_diff: &mut SharedTensor<F>,
-                        config: &Self::CDROP) -> Result<(), crate::co::error::Error>;
+    fn dropout_grad(
+        &self,
+        x: &SharedTensor<F>,
+        x_diff: &SharedTensor<F>,
+        result: &SharedTensor<F>,
+        result_diff: &mut SharedTensor<F>,
+        config: &Self::CDROP,
+    ) -> Result<(), crate::co::error::Error>;
 }

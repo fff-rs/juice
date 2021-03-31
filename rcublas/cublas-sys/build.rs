@@ -55,14 +55,13 @@ fn main() {
 
     println!("cargo:rerun-if-changed=build.rs");
 
-    #[cfg(feature="generate")]
+    #[cfg(feature = "generate")]
     {
         println!("cargo:warning=Running bindgen(cublas-sys), make sure to have all required host libs installed!");
 
         use std::path::PathBuf;
 
-        let include_dir = include_dir
-            .unwrap_or_else(|| String::from("/usr/include/cuda"));
+        let include_dir = include_dir.unwrap_or_else(|| String::from("/usr/include/cuda"));
 
         let bindings = bindgen::Builder::default()
             .rust_target(bindgen::RustTarget::Stable_1_40)
@@ -79,13 +78,13 @@ fn main() {
             .size_t_is_usize(true)
             .clang_arg("-I")
             .clang_arg(include_dir)
-            .header( "wrapper.h")
+            .header("wrapper.h")
             .rustified_non_exhaustive_enum("cublas[A-Za-z]+_t")
             .rustified_non_exhaustive_enum("cuda.*")
             .whitelist_function("cu.*")
             .whitelist_var("CUBLAS.*")
             .whitelist_type("[Cc][Uu].*")
-            .default_alias_style(bindgen::AliasVariation::TypeAlias )
+            .default_alias_style(bindgen::AliasVariation::TypeAlias)
             .parse_callbacks(Box::new(bindgen::CargoCallbacks))
             .rustfmt_bindings(true)
             .generate()

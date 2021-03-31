@@ -1,7 +1,7 @@
 //! Provides a Rust wrapper around OpenCL's Program.
 
-use binary::IBinary;
 use super::api::types as cl;
+use binary::IBinary;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a OpenCL Program.
@@ -15,16 +15,12 @@ pub struct Program {
 impl Program {
     /// Initializes a new OpenCL device.
     pub fn from_isize(id: isize) -> Program {
-        Program {
-            id: id,
-        }
+        Program { id: id }
     }
 
     /// Initializes a new OpenCL device from its C type.
     pub fn from_c(id: cl::kernel_id) -> Program {
-        Program {
-            id: id as isize,
-        }
+        Program { id: id as isize }
     }
 
     /// Returns the id as its C type.

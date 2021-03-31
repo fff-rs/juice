@@ -142,8 +142,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN LRN Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to create generic CUDA cuDNN LRN Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -151,8 +152,9 @@ impl API {
     unsafe fn ffi_destroy_lrn_descriptor(desc: cudnnLRNDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyLRNDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN LRN Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN LRN Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -169,8 +171,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "One of the input parameters was out of range.",
             )),
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Pooling Descriptor.",
+                status as i32 as u64,
             )),
         }
     }

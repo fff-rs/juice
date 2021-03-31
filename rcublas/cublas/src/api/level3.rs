@@ -1,7 +1,7 @@
-use crate::{API, Error};
 use super::Context;
 use super::Operation;
 use crate::ffi::*;
+use crate::{Error, API};
 
 impl API {
     /// Performs a general matrix-matrix multiplication.
@@ -65,42 +65,31 @@ impl API {
         ldc: i32,
     ) -> Result<(), Error> {
         match cublasSgemm_v2(
-            handle,
-            transa,
-            transb,
-            m,
-            n,
-            k,
-            alpha,
-            a,
-            lda,
-            b,
-            ldb,
-            beta,
-            c,
-            ldc,
+            handle, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc,
         ) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-            cublasStatus_t::CUBLAS_STATUS_INVALID_VALUE => Err(
-                Error::InvalidValue("m, n, or k < 0"),
-            ),
+            cublasStatus_t::CUBLAS_STATUS_INVALID_VALUE => {
+                Err(Error::InvalidValue("m, n, or k < 0"))
+            }
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed),
-           status => Err(Error::Unknown("Unable to calculate axpy (alpha * x + y).", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to calculate axpy (alpha * x + y).",
+                status as i32 as u64,
+            )),
         }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::ffi::*;
-    use crate::API;
     use crate::api::context::Context;
     use crate::api::enums::PointerMode;
-    use crate::co::tensor::SharedTensor;
     use crate::chore::*;
+    use crate::co::tensor::SharedTensor;
+    use crate::ffi::*;
+    use crate::API;
 
     #[test]
     fn use_cuda_memory_for_gemm() {
@@ -169,7 +158,8 @@ mod test {
                     beta_addr,
                     c_addr,
                     ldc,
-                ).unwrap();
+                )
+                .unwrap();
             }
         }
 

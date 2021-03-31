@@ -202,8 +202,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Pooling Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to create generic CUDA cuDNN Pooling Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -211,8 +212,9 @@ impl API {
     unsafe fn ffi_destroy_pooling_descriptor(desc: cudnnPoolingDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyPoolingDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Pooling Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Pooling Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -239,8 +241,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Pooling Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -270,8 +273,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-           status => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to get CUDA cuDNN Pooling Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -303,8 +307,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Pooling Descriptor 2D.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Pooling Descriptor 2D.",
+                status as i32 as u64,
             )),
         }
     }
@@ -336,8 +341,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
                 "`window_dim_a`, `padding_a` or `stride_a` has negative element or invalid `mode`.",
             )),
-           status => Err(Error::Unknown("Unable to get CUDA cuDNN Pooling Descriptor 2D.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to get CUDA cuDNN Pooling Descriptor 2D.",
+                status as i32 as u64,
             )),
         }
     }

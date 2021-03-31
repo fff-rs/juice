@@ -4,8 +4,8 @@ extern crate libc;
 #[cfg(test)]
 #[cfg(feature = "cuda")]
 mod framework_cuda_spec {
-    use crate::co::prelude::*;
     use crate::co::frameworks::cuda::memory::*;
+    use crate::co::prelude::*;
 
     #[test]
     fn it_works() {

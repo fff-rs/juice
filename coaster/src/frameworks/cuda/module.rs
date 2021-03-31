@@ -14,9 +14,7 @@ pub struct Module {
 impl Module {
     /// Initializes a new Cuda Module.
     pub fn from_isize(id: isize) -> Module {
-        Module {
-            id,
-        }
+        Module { id }
     }
 
     // /// Initializes a new Cuda Module from its C type.

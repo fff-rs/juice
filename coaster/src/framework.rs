@@ -18,13 +18,13 @@
 //! // let backend: Backend = framework.create_backend();
 //! ```
 
-use crate::hardware::IHardware;
-use crate::device::IDevice;
 use crate::binary::IBinary;
-#[cfg(feature = "opencl")]
-use frameworks::opencl::Error as OpenCLError;
+use crate::device::IDevice;
 #[cfg(feature = "cuda")]
 use crate::frameworks::cuda::DriverError as CudaError;
+use crate::hardware::IHardware;
+#[cfg(feature = "opencl")]
+use frameworks::opencl::Error as OpenCLError;
 use std::error;
 use std::fmt;
 
@@ -47,7 +47,9 @@ pub trait IFramework {
     /// Initializes a new Framework.
     ///
     /// Loads all the available hardwares
-    fn new() -> Self where Self: Sized;
+    fn new() -> Self
+    where
+        Self: Sized;
 
     /// Initializes all the available hardwares.
     fn load_hardwares() -> Result<Vec<Self::H>, Error>;

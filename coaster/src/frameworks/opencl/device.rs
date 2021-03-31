@@ -1,10 +1,10 @@
 //! Provides a Rust wrapper around OpenCL's device.
 
-use hardware::{IHardware, HardwareType};
 use super::api::types as cl;
 use super::api::API;
-use std::io::Cursor;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
+use hardware::{HardwareType, IHardware};
+use std::io::Cursor;
 
 use regex::Regex;
 use std::cmp::Ordering;
@@ -43,7 +43,6 @@ impl Ord for Version {
     }
 }
 
-
 impl PartialOrd for Version {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -51,7 +50,7 @@ impl PartialOrd for Version {
 }
 
 impl Version {
-    fn new(major : usize, minor : usize, ext : Option<String>) -> Version {
+    fn new(major: usize, minor: usize, ext: Option<String>) -> Version {
         Version { major, minor, ext }
     }
 }
@@ -86,12 +85,18 @@ impl Default for Device {
 impl Device {
     /// Initializes a new OpenCL device.
     pub fn from_isize(id: isize) -> Device {
-        Device { id: id, ..Device::default() }
+        Device {
+            id: id,
+            ..Device::default()
+        }
     }
 
     /// Initializes a new OpenCL device from its C type.
     pub fn from_c(id: cl::device_id) -> Device {
-        Device { id: id as isize, ..Device::default() }
+        Device {
+            id: id as isize,
+            ..Device::default()
+        }
     }
 
     /// Returns the id as its C type.
@@ -103,7 +108,7 @@ impl Device {
     pub fn load_name(&mut self) -> Self {
         self.name = match API::load_device_info(self, cl::CL_DEVICE_NAME) {
             Ok(result) => Some(result.to_string()),
-            Err(_) => None
+            Err(_) => None,
         };
         self.clone()
     }
@@ -119,10 +124,10 @@ impl Device {
                     cl::CL_DEVICE_TYPE_ACCELERATOR => Some(HardwareType::ACCELERATOR),
                     cl::CL_DEVICE_TYPE_DEFAULT => Some(HardwareType::OTHER),
                     cl::CL_DEVICE_TYPE_CUSTOM => Some(HardwareType::OTHER),
-                    _ => None
+                    _ => None,
                 }
-            },
-            Err(_) => None
+            }
+            Err(_) => None,
         };
         self.clone()
     }
@@ -131,7 +136,7 @@ impl Device {
     pub fn load_compute_units(&mut self) -> Self {
         self.compute_units = match API::load_device_info(self, cl::CL_DEVICE_MAX_COMPUTE_UNITS) {
             Ok(result) => Some(result.to_isize()),
-            Err(_) => None
+            Err(_) => None,
         };
         self.clone()
     }
@@ -140,7 +145,7 @@ impl Device {
     pub fn load_version(&mut self) -> Self {
         self.version = match API::load_device_info(self, cl::CL_DEVICE_VERSION) {
             Ok(result) => Some(result.to_version()),
-            Err(_) => None
+            Err(_) => None,
         };
         self.clone()
     }
@@ -149,7 +154,7 @@ impl Device {
     pub fn load_vendor(&mut self) -> Self {
         self.vendor = match API::load_device_info(self, cl::CL_DEVICE_VENDOR) {
             Ok(result) => Some(result.to_string()),
-            Err(_) => None
+            Err(_) => None,
         };
         self.clone()
     }
@@ -209,7 +214,6 @@ pub struct DeviceInfo {
 }
 
 impl DeviceInfo {
-
     /// Initializes a new Device Info
     pub fn new(info: Vec<u8>) -> DeviceInfo {
         DeviceInfo { info: info }
@@ -235,15 +239,17 @@ impl DeviceInfo {
     #[allow(missing_docs)]
     pub fn to_version(self) -> Version {
         lazy_static! {
-            static ref VERSION_RE: Regex = Regex::new(r"OpenCL\s([0-9])+\.([0-9]*)\s([[:print:]])").unwrap();
+            static ref VERSION_RE: Regex =
+                Regex::new(r"OpenCL\s([0-9])+\.([0-9]*)\s([[:print:]])").unwrap();
         }
         let version_string = unsafe { String::from_utf8_unchecked(self.info) };
         for cap in VERSION_RE.captures_iter(version_string.as_str()) {
-            return Version::new(cap[1].to_string().parse::<usize>().unwrap(),
-                                cap[2].to_string().parse::<usize>().unwrap(),
-                                Some(cap[3].to_string()))
+            return Version::new(
+                cap[1].to_string().parse::<usize>().unwrap(),
+                cap[2].to_string().parse::<usize>().unwrap(),
+                Some(cap[3].to_string()),
+            );
         }
-        Version::new(0,0,None)
+        Version::new(0, 0, None)
     }
-
 }

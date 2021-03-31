@@ -6,9 +6,9 @@ pub use self::error::Error;
 /// Defines the Cuda API.
 pub struct API;
 
-mod error;
 mod context;
 mod device;
-mod memory;
+mod error;
 pub mod ffi;
+mod memory;
 mod utils;

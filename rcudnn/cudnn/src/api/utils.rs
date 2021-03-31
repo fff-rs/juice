@@ -1,9 +1,9 @@
 //! Provides utility functionality for the CUDA cuDNN API.
 
 use crate::ffi::*;
-use std::ptr;
-use crate::{Error, API};
 use crate::utils::DataType;
+use crate::{Error, API};
+use std::ptr;
 
 impl API {
     /// Initialize the CUDA cuDNN API with needed context and resources.
@@ -49,8 +49,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized(
                 "CUDA Driver/Runtime API not initialized.",
             )),
-           status => Err(Error::Unknown("Unable to destroy the CUDA cuDNN context/resources.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy the CUDA cuDNN context/resources.",
+                status as i32 as u64,
             )),
         }
     }
@@ -62,7 +63,7 @@ impl API {
         match data_type {
             DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
             DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
-            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF
+            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF,
         }
     }
 }

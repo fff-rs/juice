@@ -1,9 +1,9 @@
+use crate::image_crate::{load_from_memory, open, DynamicImage, ImageBuffer};
 use std::path::Path;
-use crate::image_crate::{DynamicImage, ImageBuffer, open, load_from_memory};
 
-use crate::{Set, Transformer};
-use crate::transformer::TransformerError;
 pub use self::modifiers::*;
+use crate::transformer::TransformerError;
+use crate::{Set, Transformer};
 
 /// The Modifiers form `Image`
 pub mod modifiers;
@@ -23,25 +23,26 @@ impl Transformer for Image {
 }
 
 impl Image {
-
     /// Create a new Image from a DynamicImage
     pub fn new(image: DynamicImage) -> Image {
-        Image {
-            value: image
-        }
+        Image { value: image }
     }
 
     /// Create a new Image from a Path
     pub fn from_path<P>(path: P) -> Image
-        where P: AsRef<Path>
+    where
+        P: AsRef<Path>,
     {
-        Image { value: open(path).unwrap() }
+        Image {
+            value: open(path).unwrap(),
+        }
     }
 
     /// Create a new Image from Buffer
-    pub fn from_buffer(buf: &[u8]) -> Image
-    {
-        Image { value: load_from_memory(buf).unwrap() }
+    pub fn from_buffer(buf: &[u8]) -> Image {
+        Image {
+            value: load_from_memory(buf).unwrap(),
+        }
     }
 
     /// Create a new Image from RGB style pixel container such as `Vec`
@@ -49,7 +50,7 @@ impl Image {
         let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageRgb8);
         match dynamic_image {
             Some(image) => Ok(Image { value: image }),
-            None => Err(TransformerError::InvalidRgbPixels)
+            None => Err(TransformerError::InvalidRgbPixels),
         }
     }
 
@@ -58,7 +59,7 @@ impl Image {
         let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageRgba8);
         match dynamic_image {
             Some(image) => Ok(Image { value: image }),
-            None => Err(TransformerError::InvalidRgbaPixels)
+            None => Err(TransformerError::InvalidRgbaPixels),
         }
     }
 
@@ -67,7 +68,7 @@ impl Image {
         let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageLuma8);
         match dynamic_image {
             Some(image) => Ok(Image { value: image }),
-            None => Err(TransformerError::InvalidLumaPixels)
+            None => Err(TransformerError::InvalidLumaPixels),
         }
     }
 
@@ -76,7 +77,7 @@ impl Image {
         let dynamic_image = ImageBuffer::from_raw(w, h, buf).map(DynamicImage::ImageLumaA8);
         match dynamic_image {
             Some(image) => Ok(Image { value: image }),
-            None => Err(TransformerError::InvalidLumaAlphaPixels)
+            None => Err(TransformerError::InvalidLumaAlphaPixels),
         }
     }
 }

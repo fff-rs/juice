@@ -1,21 +1,21 @@
 #![feature(test)]
 
-extern crate test;
 extern crate coaster as co;
 extern crate rand;
+extern crate test;
 
-use test::Bencher;
-use crate::co::device::IDevice;
 use crate::co::backend::{Backend, BackendConfig};
+use crate::co::device::IDevice;
 use crate::co::framework::IFramework;
 use crate::co::tensor::SharedTensor;
+use test::Bencher;
 
+#[cfg(feature = "cuda")]
+use crate::co::frameworks::Cuda;
 #[cfg(feature = "native")]
 use crate::co::frameworks::Native;
 #[cfg(feature = "opencl")]
 use co::frameworks::OpenCL;
-#[cfg(feature = "cuda")]
-use crate::co::frameworks::Cuda;
 
 #[cfg(feature = "native")]
 fn native_backend() -> Backend<Native> {
@@ -36,12 +36,15 @@ fn opencl_backend() -> Backend<OpenCL> {
 #[cfg(feature = "cuda")]
 use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
 
-fn sync_back_and_forth<F1, F2>(b: &mut Bencher,
-                               backend1: Backend<F1>, backend2: Backend<F2>,
-                               mem_size: usize)
-    where F1: co::IFramework + Clone,
-          F2: co::IFramework + Clone {
-
+fn sync_back_and_forth<F1, F2>(
+    b: &mut Bencher,
+    backend1: Backend<F1>,
+    backend2: Backend<F2>,
+    mem_size: usize,
+) where
+    F1: co::IFramework + Clone,
+    F2: co::IFramework + Clone,
+{
     let dev1 = backend1.device();
     let dev2 = backend2.device();
 
@@ -58,12 +61,15 @@ fn sync_back_and_forth<F1, F2>(b: &mut Bencher,
     });
 }
 
-fn unidirectional_sync<F1, F2>(b: &mut Bencher,
-                               src_backend: Backend<F1>, dst_backend: Backend<F2>,
-                               mem_size: usize)
-    where F1: co::IFramework + Clone,
-          F2: co::IFramework + Clone {
-
+fn unidirectional_sync<F1, F2>(
+    b: &mut Bencher,
+    src_backend: Backend<F1>,
+    dst_backend: Backend<F2>,
+    mem_size: usize,
+) where
+    F1: co::IFramework + Clone,
+    F2: co::IFramework + Clone,
+{
     let src_dev = src_backend.device();
     let dst_dev = dst_backend.device();
 
@@ -82,18 +88,13 @@ fn unidirectional_sync<F1, F2>(b: &mut Bencher,
 #[cfg(feature = "native")]
 #[cfg(feature = "opencl")]
 mod opencl_and_native {
-    use test::Bencher;
-    use co::device::{IDevice};
+    use super::{native_backend, opencl_backend, sync_back_and_forth, unidirectional_sync};
+    use co::device::IDevice;
     use co::frameworks::opencl;
-    use super::{native_backend, opencl_backend,
-                sync_back_and_forth, unidirectional_sync};
+    use test::Bencher;
 
     #[inline(never)]
-    fn bench_256_alloc_1mb_opencl_profile(
-        b: &mut Bencher,
-        device: &opencl::Context,
-        size: usize
-    ) {
+    fn bench_256_alloc_1mb_opencl_profile(b: &mut Bencher, device: &opencl::Context, size: usize) {
         b.iter(|| {
             for _ in 0..256 {
                 device.alloc_memory(size).unwrap();
@@ -154,13 +155,11 @@ mod opencl_and_native {
     }
 }
 
-
 #[cfg(feature = "native")]
 #[cfg(feature = "cuda")]
 mod cuda_and_native {
+    use super::{cuda_backend, native_backend, sync_back_and_forth, unidirectional_sync};
     use test::Bencher;
-    use super::{native_backend, cuda_backend,
-                sync_back_and_forth, unidirectional_sync};
 
     #[bench]
     fn bench_sync_1kb_native_cuda_back_and_forth(b: &mut Bencher) {

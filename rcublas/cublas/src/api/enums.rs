@@ -11,7 +11,7 @@ impl PointerMode {
         match in_mode {
             cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST => PointerMode::Host,
             cublasPointerMode_t::CUBLAS_POINTER_MODE_DEVICE => PointerMode::Device,
-            _ => unreachable!("wrapping library is newer than this impl, please file a BUG")
+            _ => unreachable!("wrapping library is newer than this impl, please file a BUG"),
         }
     }
 
@@ -36,7 +36,7 @@ impl Operation {
             cublasOperation_t::CUBLAS_OP_N => Operation::NoTrans,
             cublasOperation_t::CUBLAS_OP_T => Operation::Trans,
             cublasOperation_t::CUBLAS_OP_C => Operation::ConjTrans,
-            _ => unreachable!("wrapping library is newer than this impl, please file a BUG")
+            _ => unreachable!("wrapping library is newer than this impl, please file a BUG"),
         }
     }
 

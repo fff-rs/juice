@@ -118,18 +118,18 @@
 pub use crate::plugin::*;
 
 extern crate coaster as co;
-#[cfg(feature = "cuda")]
-extern crate rcudnn as cudnn;
 extern crate libc;
 extern crate log;
+#[cfg(feature = "cuda")]
+extern crate rcudnn as cudnn;
 
-#[cfg(feature = "native")]
-extern crate rand_hc;
 #[cfg(feature = "native")]
 extern crate rand;
+#[cfg(feature = "native")]
+extern crate rand_hc;
 
-mod plugin;
 pub mod frameworks;
+mod plugin;
 
 #[cfg(test)]
 mod tests;

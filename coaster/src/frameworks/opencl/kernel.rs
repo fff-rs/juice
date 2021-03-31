@@ -1,7 +1,7 @@
 //! Provides a Rust wrapper around OpenCL's Kernel.
 
-use operation::IOperation;
 use super::api::types as cl;
+use operation::IOperation;
 
 #[derive(Debug, Copy, Clone)]
 /// Defines a OpenCL Kernel.

@@ -64,7 +64,6 @@ const DATA_COLUMNS: usize = 10;
 
 // Provide an Iterator over the input data
 fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
-
     let rdr = Reader::from_reader(File::open(data.as_path()).unwrap());
     rdr.into_deserialize().map(move |row| match row {
         Ok(value) => {

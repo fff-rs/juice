@@ -11,9 +11,7 @@ pub struct Binary {
 impl Binary {
     /// Initializes the native CPU binary.
     pub fn new() -> Binary {
-        Binary {
-            id: 0,
-        }
+        Binary { id: 0 }
     }
 }
 

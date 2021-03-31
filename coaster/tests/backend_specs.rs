@@ -5,8 +5,8 @@ extern crate libc;
 mod backend_spec {
     #[cfg(feature = "native")]
     mod native {
-        use std::rc::Rc;
         use crate::co::prelude::*;
+        use std::rc::Rc;
 
         #[test]
         fn it_can_create_default_backend() {
@@ -23,7 +23,7 @@ mod backend_spec {
         }
 
         fn use_ibackend<B: IBackend>(backend: Rc<B>) {
-            let backend: Rc<dyn IBackend<F=B::F>> = backend.clone();
+            let backend: Rc<dyn IBackend<F = B::F>> = backend.clone();
             backend.device();
         }
     }

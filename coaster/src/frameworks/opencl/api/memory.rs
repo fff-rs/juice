@@ -2,11 +2,11 @@
 //!
 //! At Coaster device can be understood as a synonym to OpenCL's context.
 
-use std::ptr;
-use libc;
-use frameworks::opencl::{API, Error, Event, Context, Memory, MemoryFlags, Queue};
-use super::types as cl;
 use super::ffi::*;
+use super::types as cl;
+use frameworks::opencl::{Context, Error, Event, Memory, MemoryFlags, Queue, API};
+use libc;
+use std::ptr;
 
 impl API {
     /// Allocates memory on the OpenCL device.
@@ -15,16 +15,26 @@ impl API {
     /// object can be a scalar data type (such as an int, float), vector data type, or a
     /// user-defined structure.
     /// Returns a memory id for the created buffer, which can now be writen to.
-    pub fn create_buffer(context: &Context, flags: MemoryFlags, size: usize, host_pointer: Option<*mut u8>) -> Result<Memory, Error> {
+    pub fn create_buffer(
+        context: &Context,
+        flags: MemoryFlags,
+        size: usize,
+        host_pointer: Option<*mut u8>,
+    ) -> Result<Memory, Error> {
         let host_ptr = host_pointer.unwrap_or(ptr::null_mut());
         Ok(Memory::from_c(unsafe {
-            API::ffi_create_buffer(context.id() as *mut libc::c_void, flags.bits(), size, host_ptr as *mut libc::c_void)
+            API::ffi_create_buffer(
+                context.id() as *mut libc::c_void,
+                flags.bits(),
+                size,
+                host_ptr as *mut libc::c_void,
+            )
         }?))
     }
 
     /// Releases allocated memory from the OpenCL device.
     pub fn release_memory(memory: &mut Memory) -> Result<(), Error> {
-        Ok(unsafe {API::ffi_release_mem_object(memory.id_c())}?)
+        Ok(unsafe { API::ffi_release_mem_object(memory.id_c()) }?)
     }
 
     /// Reads from a OpenCL memory object to the host memory.
@@ -46,18 +56,22 @@ impl API {
             ptr::null_mut()
         };
         let new_event: cl::event = 0 as *mut libc::c_void;
-        let res = unsafe {API::ffi_enqueue_read_buffer(queue.id_c(),
-                                      mem.id_c(),
-                                      blocking_read as cl::boolean,
-                                      offset,
-                                      size,
-                                      host_mem,
-                                      num_events_in_wait_list as cl::uint,
-                                      event_list,
-                                      new_event as *mut cl::event)};
+        let res = unsafe {
+            API::ffi_enqueue_read_buffer(
+                queue.id_c(),
+                mem.id_c(),
+                blocking_read as cl::boolean,
+                offset,
+                size,
+                host_mem,
+                num_events_in_wait_list as cl::uint,
+                event_list,
+                new_event as *mut cl::event,
+            )
+        };
         match res {
             Ok(_) => Ok(Event::from_c(new_event)),
-            Err(err) => Err(err)
+            Err(err) => Err(err),
         }
     }
 
@@ -80,18 +94,22 @@ impl API {
             ptr::null_mut()
         };
         let new_event: cl::event = 0 as *mut libc::c_void;
-        let res = unsafe {API::ffi_enqueue_write_buffer(queue.id_c(),
-                                      mem.id_c(),
-                                      blocking_write as cl::boolean,
-                                      offset,
-                                      size,
-                                      host_mem,
-                                      num_events_in_wait_list as cl::uint,
-                                      event_list,
-                                      new_event as *mut cl::event)};
+        let res = unsafe {
+            API::ffi_enqueue_write_buffer(
+                queue.id_c(),
+                mem.id_c(),
+                blocking_write as cl::boolean,
+                offset,
+                size,
+                host_mem,
+                num_events_in_wait_list as cl::uint,
+                event_list,
+                new_event as *mut cl::event,
+            )
+        };
         match res {
             Ok(_) => Ok(Event::from_c(new_event)),
-            Err(err) => Err(err)
+            Err(err) => Err(err),
         }
     }
 
@@ -99,7 +117,7 @@ impl API {
         context: cl::context_id,
         flags: cl::mem_flags,
         size: libc::size_t,
-        host_ptr: *mut libc::c_void
+        host_ptr: *mut libc::c_void,
     ) -> Result<cl::memory_id, Error> {
         let mut errcode: i32 = 0;
         let memory_id = clCreateBuffer(context, flags, size, host_ptr, &mut errcode);
@@ -119,10 +137,16 @@ impl API {
     unsafe fn ffi_release_mem_object(memobj: cl::memory_id) -> Result<(), Error> {
         match clReleaseMemObject(memobj) {
             cl::Status::SUCCESS => Ok(()),
-            cl::Status::INVALID_MEM_OBJECT => Err(Error::InvalidMemObject("memobj is not a valid memory object.")),
-            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Failure to allocate resources on the device")),
-            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
-            _ => Err(Error::Other("Unable to release memory object."))
+            cl::Status::INVALID_MEM_OBJECT => Err(Error::InvalidMemObject(
+                "memobj is not a valid memory object.",
+            )),
+            cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources(
+                "Failure to allocate resources on the device",
+            )),
+            cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory(
+                "Failure to allocate resources on the host",
+            )),
+            _ => Err(Error::Other("Unable to release memory object.")),
         }
     }
 
@@ -135,7 +159,7 @@ impl API {
         ptr: *mut libc::c_void,
         num_events_in_wait_list: cl::uint,
         event_wait_list: *const cl::event,
-        event: *mut cl::event
+        event: *mut cl::event,
     ) -> Result<(), Error> {
         match clEnqueueReadBuffer(command_queue, buffer, blocking_read, offset, cb, ptr, num_events_in_wait_list, event_wait_list, event) {
             cl::Status::SUCCESS => Ok(()),
@@ -163,7 +187,7 @@ impl API {
         ptr: *const libc::c_void,
         num_events_in_wait_list: cl::uint,
         event_wait_list: *const cl::event,
-        event: *mut cl::event
+        event: *mut cl::event,
     ) -> Result<(), Error> {
         match clEnqueueWriteBuffer(command_queue, buffer, blocking_write, offset, cb, ptr, num_events_in_wait_list, event_wait_list, event) {
             cl::Status::SUCCESS => Ok(()),

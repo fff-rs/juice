@@ -6,15 +6,15 @@
 
 use super::utils::{
     ActivationConfig, ConvolutionConfig, DataTypeInfo, DropoutConfig, NormalizationConfig,
-    PoolingConfig, ScalParams, RnnConfig
+    PoolingConfig, RnnConfig, ScalParams,
 };
 use super::*;
 
 use crate::cuda::CudaDeviceMemory;
 use num::traits::Float;
 use std::mem::transmute_copy;
-use utils::DataType;
 use tensor_descriptor::tensor_vec_id_c;
+use utils::DataType;
 
 #[derive(Debug, Clone)]
 /// Provides a the high-level interface to CUDA's cuDNN.
@@ -176,7 +176,8 @@ impl Cudnn {
     pub fn init_dropout(&self, probability: f32, seed: u64) -> Result<DropoutConfig, Error> {
         let reserve_required: usize = API::dropout_get_states_size(*self.id_c())?;
         let reserve = CudaDeviceMemory::new(reserve_required)?;
-        let dropout = DropoutDescriptor::new(&self, probability, seed, *reserve.id_c(), reserve.size())?;
+        let dropout =
+            DropoutDescriptor::new(&self, probability, seed, *reserve.id_c(), reserve.size())?;
         Ok(DropoutConfig::new(dropout, reserve))
     }
 
@@ -195,35 +196,31 @@ impl Cudnn {
         network_mode: cudnnRNNMode_t,
         algorithm: cudnnRNNAlgo_t,
         data_type: DataType,
-        math_type: cudnnMathType_t
+        math_type: cudnnMathType_t,
     ) -> Result<RnnConfig, Error> {
-
-        let data_type =  match data_type {
+        let data_type = match data_type {
             DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
             DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
-            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF
+            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF,
         };
 
-        API::set_rnn_matrix_math_type(
-            *rnn_desc.id_c(),
-            math_type
-        )?;
+        API::set_rnn_matrix_math_type(*rnn_desc.id_c(), math_type)?;
 
-        let workspace_size : usize = API::get_rnn_workspace_size(
+        let workspace_size: usize = API::get_rnn_workspace_size(
             *self.id_c(),
             *rnn_desc.id_c(),
             seq_length,
-            tensor_vec_id_c(x_desc)
+            tensor_vec_id_c(x_desc),
         )?;
 
-        let training_reserve_size : usize = API::get_rnn_training_reserve_size(
+        let training_reserve_size: usize = API::get_rnn_training_reserve_size(
             *self.id_c(),
             *rnn_desc.id_c(),
             seq_length,
-            tensor_vec_id_c(x_desc)
+            tensor_vec_id_c(x_desc),
         )?;
 
-        let training_reserve : CudaDeviceMemory = CudaDeviceMemory::new(training_reserve_size)?;
+        let training_reserve: CudaDeviceMemory = CudaDeviceMemory::new(training_reserve_size)?;
 
         Ok(RnnConfig::new(
             rnn_desc,
@@ -238,7 +235,7 @@ impl Cudnn {
             data_type,
             workspace_size,
             training_reserve_size,
-            training_reserve
+            training_reserve,
         ))
     }
 
@@ -264,9 +261,11 @@ impl Cudnn {
         cell_output_desc: &TensorDescriptor,
         cell_output: *mut ::libc::c_void,
         workspace: *mut ::libc::c_void,
-        reserve_data: *mut ::libc::c_void
+        reserve_data: *mut ::libc::c_void,
     ) -> Result<(), Error>
-    where T: Float + DataTypeInfo {
+    where
+        T: Float + DataTypeInfo,
+    {
         API::rnn_forward_training(
             *self.id_c(),
             *(rnn_config.rnn_desc().id_c()),
@@ -288,7 +287,7 @@ impl Cudnn {
             workspace,
             rnn_config.rnn_workspace_size(),
             reserve_data,
-            rnn_config.training_reserve_size()
+            rnn_config.training_reserve_size(),
         )
     }
 
@@ -322,7 +321,9 @@ impl Cudnn {
         workspace: *mut ::libc::c_void,
         reserve_data: *mut ::libc::c_void,
     ) -> Result<(), Error>
-        where T: Float + DataTypeInfo {
+    where
+        T: Float + DataTypeInfo,
+    {
         API::rnn_backward_data(
             *self.id_c(),
             *(rnn_config.rnn_desc().id_c()),
@@ -371,7 +372,9 @@ impl Cudnn {
         workspace: *mut ::libc::c_void,
         reserve_data: *mut ::libc::c_void,
     ) -> Result<(), Error>
-        where T: Float + DataTypeInfo {
+    where
+        T: Float + DataTypeInfo,
+    {
         API::rnn_backward_weights(
             *self.id_c(),
             *(rnn_config.rnn_desc().id_c()),

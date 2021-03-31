@@ -1,9 +1,9 @@
 //! Provides a Rust wrapper around Cuda's memory.
 
-use super::api::{Driver, DriverFFI, DriverError};
+use super::api::{Driver, DriverError, DriverFFI};
 use crate::device::IMemory;
 
-use std::{ptr, fmt};
+use std::{fmt, ptr};
 
 /// Defines a Cuda Memory.
 pub struct Memory {

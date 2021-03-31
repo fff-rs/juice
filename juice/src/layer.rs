@@ -539,8 +539,7 @@ impl<B: IBackend> Layer<B> {
             if old_shape.size() != reshaped_shape.size() {
                 panic!(
                     "Input Shape Mismatch\nExpected {:?}\nActual {:?}",
-                    reshaped_shape,
-                    old_shape
+                    reshaped_shape, old_shape
                 );
             }
             self.input_blobs_data[input_i]

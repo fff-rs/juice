@@ -1,6 +1,6 @@
-extern crate rcudnn as cudnn;
 extern crate coaster as co;
 extern crate libc;
+extern crate rcudnn as cudnn;
 
 extern crate rcudnn_sys as ffi;
 use crate::ffi::*;
@@ -11,14 +11,13 @@ use crate::ffi::*;
 mod cudnn_spec {
 
     use crate::co::framework::IFramework;
-    
+
     use crate::co::frameworks::Cuda;
     use crate::cudnn::cuda::CudaDeviceMemory;
     use crate::cudnn::utils::DataType;
     use crate::cudnn::utils::DropoutConfig;
     use crate::cudnn::{
-        ActivationDescriptor, ConvolutionDescriptor, Cudnn, FilterDescriptor,
-        TensorDescriptor, API,
+        ActivationDescriptor, ConvolutionDescriptor, Cudnn, FilterDescriptor, TensorDescriptor, API,
     };
 
     #[test]
@@ -51,7 +50,8 @@ mod cudnn_spec {
         let cudnn = Cudnn::new().unwrap();
         let desc = TensorDescriptor::new(&[2, 2, 2], &[4, 2, 1], DataType::Float).unwrap();
         let acti =
-            ActivationDescriptor::new(crate::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID).unwrap();
+            ActivationDescriptor::new(crate::cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID)
+                .unwrap();
 
         let mut a: u64 = 1;
         let a_ptr: *mut u64 = &mut a;

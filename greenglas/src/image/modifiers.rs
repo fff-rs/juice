@@ -1,6 +1,6 @@
-use crate::modifier::Modifier;
-use crate::image_crate::imageops::FilterType;
 use super::Image;
+use crate::image_crate::imageops::FilterType;
+use crate::modifier::Modifier;
 
 #[derive(Debug, Clone, Copy)]
 /// Resize Modifier for `Image`
@@ -13,7 +13,9 @@ pub struct Resize {
 
 impl Modifier<Image> for Resize {
     fn modify(self, image: &mut Image) {
-        image.value = image.value.resize(self.width, self.height, FilterType::Triangle)
+        image.value = image
+            .value
+            .resize(self.width, self.height, FilterType::Triangle)
     }
 }
 

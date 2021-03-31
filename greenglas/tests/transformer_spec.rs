@@ -1,17 +1,19 @@
-extern crate greenglas;
 extern crate coaster;
+extern crate greenglas;
 
 #[cfg(test)]
 mod transformer_spec {
 
-    use greenglas::{Set, Transformer, Image};
-    use greenglas::image::{Crop};
-    use greenglas::transformer::TransformerError;
     use coaster::prelude::*;
+    use greenglas::image::Crop;
+    use greenglas::transformer::TransformerError;
+    use greenglas::{Image, Set, Transformer};
     use std::path::Path;
 
     fn expected_result() -> Vec<f32> {
-        vec![255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 0.0, 0.0, 0.0]
+        vec![
+            255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 0.0, 0.0, 0.0,
+        ]
     }
 
     #[test]
@@ -20,7 +22,7 @@ mod transformer_spec {
         let img = Image::from_path(&path);
         match img.transform(&vec![2, 2, 3]) {
             Ok(_) => assert!(true),
-            _ => assert!(false)
+            _ => assert!(false),
         }
     }
 
@@ -33,8 +35,8 @@ mod transformer_spec {
                 let native_backend = Backend::<Native>::default().unwrap();
                 let data = tensor.read(native_backend.device()).unwrap().as_slice();
                 assert_eq!(expected_result(), data);
-            },
-            _ => assert!(false)
+            }
+            _ => assert!(false),
         }
     }
 
@@ -44,7 +46,7 @@ mod transformer_spec {
         let img = Image::from_path(&path);
         match img.transform(&vec![3, 3, 3]) {
             Err(TransformerError::InvalidShape) => assert!(true),
-            _ => assert!(false)
+            _ => assert!(false),
         }
     }
 
@@ -52,10 +54,15 @@ mod transformer_spec {
     fn transform_returns_a_valid_result_with_modifiers() {
         let path = Path::new("tests/assets/test_image.png");
         let img = Image::from_path(&path);
-        let crop = Crop { x: 0, y: 0, width: 1, height: 1 };
+        let crop = Crop {
+            x: 0,
+            y: 0,
+            width: 1,
+            height: 1,
+        };
         match img.set(crop).transform(&vec![1, 1, 3]) {
             Ok(_) => assert!(true),
-            _ => assert!(false)
+            _ => assert!(false),
         }
     }
 }

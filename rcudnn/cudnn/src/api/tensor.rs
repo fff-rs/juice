@@ -134,8 +134,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Tensor Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to create generic CUDA cuDNN Tensor Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -145,8 +146,9 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnDestroyTensorDescriptor(tensor_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Tensor Descriptor context.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Tensor Descriptor context.",
+                status as i32 as u64,
             )),
         }
     }
@@ -166,8 +168,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported(
                 "`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.",
             )),
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Tensor Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Tensor Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -195,8 +198,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported(
                 "`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.",
             )),
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Tensor Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Tensor Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -252,8 +256,10 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => {
                 Err(Error::ExecutionFailed("Execution failed to launch on GPU."))
             }
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Tensor.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Tensor.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -271,8 +277,10 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => {
                 Err(Error::ExecutionFailed("Execution failed to launch on GPU."))
             }
-           status => Err(Error::Unknown("Unable to scale CUDA cuDNN Tensor.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to scale CUDA cuDNN Tensor.",
+                status as i32 as u64,
+            )),
         }
     }
 }

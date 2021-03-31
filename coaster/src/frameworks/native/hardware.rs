@@ -1,6 +1,6 @@
 //! Provides a hardware aka. the host CPU.
 
-use crate::hardware::{IHardware, HardwareType};
+use crate::hardware::{HardwareType, IHardware};
 
 #[derive(Debug, Clone)]
 /// Defines the host CPU Hardware.
@@ -28,7 +28,10 @@ impl Default for Hardware {
 impl Hardware {
     /// Initializes a new OpenCL hardware.
     pub fn new(id: isize) -> Hardware {
-        Hardware { id, ..Hardware::default() }
+        Hardware {
+            id,
+            ..Hardware::default()
+        }
     }
 }
 

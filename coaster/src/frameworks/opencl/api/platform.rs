@@ -1,11 +1,11 @@
 //! Provides the OpenCL API with its platform functionality.
 
-use frameworks::opencl::{API, Error};
-use frameworks::opencl::Platform;
-use super::types as cl;
 use super::ffi::*;
-use std::ptr;
+use super::types as cl;
+use frameworks::opencl::Platform;
+use frameworks::opencl::{Error, API};
 use std::iter::repeat;
+use std::ptr;
 use std::sync::Mutex;
 
 impl API {
@@ -27,21 +27,23 @@ impl API {
         }
 
         let guard = PLATFORM_MUTEX.lock();
-        unsafe {API::ffi_get_platform_ids(0, ptr::null_mut(), &mut num_platforms)}?;
+        unsafe { API::ffi_get_platform_ids(0, ptr::null_mut(), &mut num_platforms) }?;
 
-        let mut ids: Vec<cl::device_id> = repeat(0 as cl::device_id).take(num_platforms as usize).collect();
+        let mut ids: Vec<cl::device_id> = repeat(0 as cl::device_id)
+            .take(num_platforms as usize)
+            .collect();
 
-        unsafe {API::ffi_get_platform_ids(num_platforms, ids.as_mut_ptr(), &mut num_platforms)}?;
+        unsafe { API::ffi_get_platform_ids(num_platforms, ids.as_mut_ptr(), &mut num_platforms) }?;
 
         let _ = guard;
 
-        Ok(ids.iter().map(|id| Platform::from_c(*id) ).collect())
+        Ok(ids.iter().map(|id| Platform::from_c(*id)).collect())
     }
 
     unsafe fn ffi_get_platform_ids(
         num_entries: cl::uint,
         platforms: *mut cl::platform_id,
-        num_platforms: *mut cl::uint
+        num_platforms: *mut cl::uint,
     ) -> Result<(), Error> {
         match clGetPlatformIDs(num_entries, platforms, num_platforms) {
             cl::Status::SUCCESS => Ok(()),

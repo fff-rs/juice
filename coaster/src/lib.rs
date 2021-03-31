@@ -141,46 +141,45 @@
     clippy::unused_qualifications,
     clippy::complexity
 )]
-
 #![cfg_attr(feature = "unstable_alloc", feature(alloc))]
 #[cfg(feature = "unstable_alloc")]
 extern crate alloc;
 
-extern crate libc;
 extern crate bitflags;
 extern crate enum_primitive;
 extern crate lazy_static;
+extern crate libc;
 
+extern crate byteorder;
+extern crate num;
 #[cfg(feature = "opencl")]
 extern crate regex;
-extern crate num;
-extern crate byteorder;
 
 pub mod backend;
+pub mod binary;
 pub mod device;
-pub mod hardware;
+pub mod error;
 pub mod framework;
 pub mod frameworks;
-pub mod tensor;
+pub mod hardware;
 pub mod operation;
-pub mod binary;
-pub mod error;
 pub mod plugin;
+pub mod tensor;
 
 // These will be exported with the prelude.
 pub use crate::backend::*;
 pub use crate::device::{IDevice, IMemory};
-pub use crate::hardware::{IHardware, HardwareType};
 pub use crate::framework::IFramework;
-pub use crate::tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
-#[cfg(feature = "native")]
-pub use crate::frameworks::Native;
 #[cfg(feature = "cuda")]
 pub use crate::frameworks::Cuda;
-#[cfg(feature = "cuda")]
-extern crate rcudnn as cudnn;
+#[cfg(feature = "native")]
+pub use crate::frameworks::Native;
+pub use crate::hardware::{HardwareType, IHardware};
+pub use crate::tensor::{ITensorDesc, IntoTensorDesc, SharedTensor, TensorDesc};
 #[cfg(feature = "cuda")]
 extern crate rcublas as cublas;
+#[cfg(feature = "cuda")]
+extern crate rcudnn as cudnn;
 
 #[cfg(feature = "opencl")]
 pub use frameworks::OpenCL;
@@ -204,14 +203,14 @@ pub use crate::error::Error;
 pub mod prelude {
     pub use crate::backend::*;
     pub use crate::device::{IDevice, IMemory};
-    pub use crate::hardware::{IHardware, HardwareType};
     pub use crate::framework::IFramework;
     pub use crate::frameworks::native::flatbox::FlatBox;
-    pub use crate::tensor::{SharedTensor, TensorDesc, ITensorDesc, IntoTensorDesc};
-    #[cfg(feature = "native")]
-    pub use crate::frameworks::Native;
     #[cfg(feature = "cuda")]
     pub use crate::frameworks::Cuda;
+    #[cfg(feature = "native")]
+    pub use crate::frameworks::Native;
+    pub use crate::hardware::{HardwareType, IHardware};
+    pub use crate::tensor::{ITensorDesc, IntoTensorDesc, SharedTensor, TensorDesc};
     #[cfg(feature = "opencl")]
     pub use frameworks::OpenCL;
 }

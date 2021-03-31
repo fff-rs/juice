@@ -7,27 +7,26 @@
 //! Cuda device -> Hardware
 //! Cuda context -> Device
 
-extern {}
+extern "C" {}
 
-use crate::backend::{Backend, IBackend};
-use crate::framework::IFramework;
-pub use self::memory::Memory;
-pub use self::context::Context;
-pub use self::function::Function;
-pub use self::module::Module;
-pub use self::device::{Device, DeviceInfo};
 pub use self::api::{Driver, DriverError};
-use crate::cudnn::*;
+pub use self::context::Context;
+pub use self::device::{Device, DeviceInfo};
+pub use self::function::Function;
+pub use self::memory::Memory;
+pub use self::module::Module;
+use crate::backend::{Backend, IBackend};
 use crate::cublas;
+use crate::cudnn::*;
+use crate::framework::IFramework;
 use crate::BackendConfig;
 
-pub mod device;
+mod api;
 pub mod context;
+pub mod device;
 pub mod function;
 pub mod memory;
 pub mod module;
-mod api;
-
 
 /// Initialise the CUDA, CUBLAS, and CUDNN APIs
 ///
@@ -65,7 +64,9 @@ impl Cuda {
     pub fn initialise_cublas(&mut self) -> Result<(), crate::framework::Error> {
         self.cublas = {
             let mut context = cublas::Context::new().unwrap();
-            context.set_pointer_mode(cublas::api::PointerMode::Device).unwrap();
+            context
+                .set_pointer_mode(cublas::api::PointerMode::Device)
+                .unwrap();
             Some(context)
         };
         Ok(())
@@ -75,7 +76,7 @@ impl Cuda {
     pub fn initialise_cudnn(&mut self) -> Result<(), crate::framework::Error> {
         self.cudnn = match Cudnn::new() {
             Ok(cudnn_ptr) => Some(cudnn_ptr),
-            Err(_) => None
+            Err(_) => None,
         };
         Ok(())
     }
@@ -84,7 +85,7 @@ impl Cuda {
     pub fn cudnn(&self) -> &Cudnn {
         match &self.cudnn {
             Some(cudnn) => cudnn,
-            None => panic!("Couldn't find a CUDNN Handle - Initialise CUDNN has not been called")
+            None => panic!("Couldn't find a CUDNN Handle - Initialise CUDNN has not been called"),
         }
     }
 
@@ -92,7 +93,7 @@ impl Cuda {
     pub fn cublas(&self) -> &cublas::Context {
         match &self.cublas {
             Some(cublas) => cublas,
-            None => panic!("Couldn't find a CUBLAS Handle - Initialise CUBLAS has not been called")
+            None => panic!("Couldn't find a CUBLAS Handle - Initialise CUBLAS has not been called"),
         }
     }
 }
@@ -102,7 +103,9 @@ impl IFramework for Cuda {
     type D = Context;
     type B = Module;
 
-    fn ID() -> &'static str { "CUDA" }
+    fn ID() -> &'static str {
+        "CUDA"
+    }
 
     fn new() -> Cuda {
         // Init function must be called before any other function from the Cuda Driver API can be
@@ -111,15 +114,13 @@ impl IFramework for Cuda {
             panic!("Unable to initialize Cuda Framework: {}", err);
         }
         match Cuda::load_hardwares() {
-            Ok(hardwares) => {
-                Cuda {
-                    hardwares,
-                    binary: Module::from_isize(1),
-                    cudnn: None,
-                    cublas: None,
-                }
+            Ok(hardwares) => Cuda {
+                hardwares,
+                binary: Module::from_isize(1),
+                cudnn: None,
+                cublas: None,
             },
-            Err(err) => panic!("Could not initialize Cuda Framework, due to: {}", err)
+            Err(err) => panic!("Could not initialize Cuda Framework, due to: {}", err),
         }
     }
 

@@ -42,8 +42,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Filter Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to create generic CUDA cuDNN Filter Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -51,8 +52,9 @@ impl API {
     unsafe fn ffi_destroy_filter_descriptor(desc: cudnnFilterDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyFilterDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Filter Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Filter Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -72,8 +74,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => {
                 Err(Error::NotSupported("`nb_dims` exceeds CUDNN_DIM_MAX."))
             }
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Filter Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Filter Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -485,8 +488,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated."))
             }
-           status => Err(Error::Unknown("Unable to create generic CUDA cuDNN Convolution Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to create generic CUDA cuDNN Convolution Descriptor.",
+                status as i32 as u64,
             )),
         }
     }
@@ -496,8 +500,9 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnDestroyConvolutionDescriptor(desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Convolution Descriptor.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Convolution Descriptor.",
+                status as i32 as u64,
             )),
         }
     }

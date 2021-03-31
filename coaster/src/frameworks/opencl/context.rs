@@ -1,24 +1,24 @@
 //! Provides a Rust wrapper around OpenCL's context.
 
-use device::{IDevice, MemorySync};
-use device::Error as DeviceError;
 use super::api::types as cl;
-use super::{API, Error, Device, Queue, Platform};
 use super::memory::*;
-#[cfg(feature = "native")]
-use frameworks::native::flatbox::FlatBox;
+use super::{Device, Error, Platform, Queue, API};
+use device::Error as DeviceError;
+use device::{IDevice, MemorySync};
 #[cfg(feature = "native")]
 use frameworks::native::device::Cpu;
+#[cfg(feature = "native")]
+use frameworks::native::flatbox::FlatBox;
 use std::any::Any;
-use std::{ptr, mem};
 use std::hash::{Hash, Hasher};
+use std::{mem, ptr};
 
 #[derive(Debug, Clone)]
 /// Defines a OpenCL Context.
 pub struct Context {
     id: isize,
     devices: Vec<Device>,
-    queue: Option<Queue>
+    queue: Option<Queue>,
 }
 
 /// The individual properties for `ContextInfo::Properties`
@@ -40,7 +40,7 @@ pub enum ContextInfoQuery {
     /// The properties the context was configured with.
     Properties,
     /// The devices (IDs) in the context.
-    Devices
+    Devices,
 }
 
 /// OpenCL context info types. Each variant is returned from the same function,
@@ -67,7 +67,7 @@ pub enum ContextInfo {
     /// depending on CL extensions.
     Properties(Vec<ContextProperties>),
     /// The devices (IDs) in the context.
-    Devices(Vec<Device>)
+    Devices(Vec<Device>),
 }
 
 impl Context {
@@ -75,8 +75,9 @@ impl Context {
     pub fn new(devices: Vec<Device>) -> Result<Context, Error> {
         let callback = unsafe { mem::transmute(ptr::null::<fn()>()) };
         let mut context = Context::from_c(
-                        API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())?,
-                        devices.clone());
+            API::create_context(devices.clone(), ptr::null(), callback, ptr::null_mut())?,
+            devices.clone(),
+        );
         // initialize queue
         context.queue_mut();
         Ok(context)
@@ -84,7 +85,11 @@ impl Context {
 
     /// Initializes a new OpenCL platform from its C type.
     pub fn from_c(id: cl::context_id, devices: Vec<Device>) -> Context {
-        Context { id: id as isize, devices: devices, queue: None }
+        Context {
+            id: id as isize,
+            devices: devices,
+            queue: None,
+        }
     }
 
     /// Returns Queue for first device.
@@ -103,7 +108,7 @@ impl Context {
     }
 
     /// Get certain parameters of the context, defined by `ContextInfoQuery`.
-    pub fn get_context_info(&self, query : ContextInfoQuery) -> Result<ContextInfo, Error> {
+    pub fn get_context_info(&self, query: ContextInfoQuery) -> Result<ContextInfo, Error> {
         API::get_context_info(self.id as cl::context_id, query)
     }
 
@@ -136,37 +141,56 @@ impl IDevice for Context {
 }
 
 impl MemorySync for Context {
-    fn sync_in(&self, my_memory: &mut Any, src_device: &Any, src_memory: &Any)
-               -> Result<(), DeviceError> {
+    fn sync_in(
+        &self,
+        my_memory: &mut Any,
+        src_device: &Any,
+        src_memory: &Any,
+    ) -> Result<(), DeviceError> {
         if let Some(_) = src_device.downcast_ref::<Cpu>() {
             let mut my_mem = my_memory.downcast_mut::<Memory>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
 
             API::write_to_memory(
-                self.queue().unwrap(), my_mem, true, 0,
-                src_mem.byte_size(), src_mem.as_slice().as_ptr(), &[])?;
+                self.queue().unwrap(),
+                my_mem,
+                true,
+                0,
+                src_mem.byte_size(),
+                src_mem.as_slice().as_ptr(),
+                &[],
+            )?;
             Ok(())
         } else {
             Err(DeviceError::NoMemorySyncRoute)
         }
     }
 
-    fn sync_out(&self, my_memory: &Any, dst_device: &Any, dst_memory: &mut Any)
-                -> Result<(), DeviceError> {
+    fn sync_out(
+        &self,
+        my_memory: &Any,
+        dst_device: &Any,
+        dst_memory: &mut Any,
+    ) -> Result<(), DeviceError> {
         if let Some(_) = dst_device.downcast_ref::<Cpu>() {
             let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
             let mut dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();
 
             API::read_from_memory(
-                self.queue().unwrap(), my_mem, true, 0,
-                dst_mem.byte_size(), dst_mem.as_mut_slice().as_mut_ptr(), &[])?;
+                self.queue().unwrap(),
+                my_mem,
+                true,
+                0,
+                dst_mem.byte_size(),
+                dst_mem.as_mut_slice().as_mut_ptr(),
+                &[],
+            )?;
             Ok(())
         } else {
             Err(DeviceError::NoMemorySyncRoute)
         }
     }
 }
-
 
 impl PartialEq for Context {
     fn eq(&self, other: &Self) -> bool {

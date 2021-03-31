@@ -1,0 +1,18 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: quay.io/spearow/machine-learning-container-fedora-cuda
+    tag: latest
+
+inputs:
+- name: juice
+
+caches:
+- path: cargo_home
+
+run:
+  path: bash
+  dir: juice
+

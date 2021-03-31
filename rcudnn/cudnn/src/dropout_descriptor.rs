@@ -49,9 +49,7 @@ impl DropoutDescriptor {
 
     /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.
     pub fn from_c(id: cudnnDropoutDescriptor_t) -> DropoutDescriptor {
-        DropoutDescriptor {
-            id
-        }
+        DropoutDescriptor { id }
     }
 
     /// Returns the CUDA cuDNN Tensor Descriptor as its C type.

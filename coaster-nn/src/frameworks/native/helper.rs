@@ -1,11 +1,11 @@
 //! Provides useful macros for easier NN implementation for native.
 
 use crate::co;
-use crate::co::plugin::Error as PluginError;
-use crate::co::plugin::numeric_helpers::Float;
 use crate::co::frameworks::native::flatbox::FlatBox;
-use crate::{DirectionMode, RnnInputMode};
+use crate::co::plugin::numeric_helpers::Float;
+use crate::co::plugin::Error as PluginError;
 use crate::RnnNetworkMode;
+use crate::{DirectionMode, RnnInputMode};
 
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
@@ -20,7 +20,6 @@ pub struct PoolingConfig {
     pub stride: Vec<i32>,
 }
 
-
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
 pub struct DropoutConfig {
@@ -31,30 +30,31 @@ pub struct DropoutConfig {
 /// shortcut to reading a tensor as slice
 /// contains unwrap
 macro_rules! read {
-    ($x:ident, $t:ident, $slf:ident) => (
+    ($x:ident, $t:ident, $slf:ident) => {
         $x.read($slf.device()).unwrap().as_slice::<$t>()
-    )
+    };
 }
 
 /// shortcut to reading a tensor as mut slice
 /// contains unwrap
 macro_rules! read_write {
-    ($x:ident, $t: ident, $slf:ident) => (
+    ($x:ident, $t: ident, $slf:ident) => {
         $x.read_write($slf.device()).unwrap().as_mut_slice::<$t>()
-    )
+    };
 }
 
 /// shortcut to reading a tensor as mut slice
 /// contains unwrap
 macro_rules! write_only {
-    ($x:ident, $t: ident, $slf:ident) => (
+    ($x:ident, $t: ident, $slf:ident) => {
         $x.write_only($slf.device()).unwrap().as_mut_slice::<$t>()
-    )
+    };
 }
 
 /// Just a helper function until SharedTensor has a nice interface for writing data
 pub fn write_to_memory<T: Iterator>(mem: &mut FlatBox, data: T)
-    where T::Item: Clone
+where
+    T::Item: Clone,
 {
     let mem_buffer = mem.as_mut_slice::<T::Item>();
     for (index, datum) in data.enumerate() {
@@ -100,13 +100,18 @@ pub fn tanh_grad<T: Float>(x: T, dx: T) -> T {
 /// sigmoid impl generation macro
 #[macro_export]
 macro_rules! impl_ops_sigmoid_for {
-    ($t:ident, $b:ty) => (
+    ($t:ident, $b:ty) => {
         impl Sigmoid<$t> for $b {
-            fn sigmoid(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                       -> Result<(), Error> {
-                map1(read!(x, $t, self),
-                     write_only!(result, $t, self),
-                     crate::frameworks::native::helper::sigmoid)
+            fn sigmoid(
+                &self,
+                x: &SharedTensor<$t>,
+                result: &mut SharedTensor<$t>,
+            ) -> Result<(), Error> {
+                map1(
+                    read!(x, $t, self),
+                    write_only!(result, $t, self),
+                    crate::frameworks::native::helper::sigmoid,
+                )
             }
 
             fn sigmoid_grad(
@@ -114,46 +119,55 @@ macro_rules! impl_ops_sigmoid_for {
                 x: &SharedTensor<$t>,
                 x_diff: &SharedTensor<$t>,
                 result: &SharedTensor<$t>,
-                result_diff: &mut SharedTensor<$t>)
-                -> Result<(), Error> {
-                map2(read!(x, $t, self),
-                     read!(x_diff, $t, self),
-                     write_only!(result_diff, $t, self),
-                     crate::frameworks::native::helper::sigmoid_grad)
+                result_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), Error> {
+                map2(
+                    read!(x, $t, self),
+                    read!(x_diff, $t, self),
+                    write_only!(result_diff, $t, self),
+                    crate::frameworks::native::helper::sigmoid_grad,
+                )
             }
         }
 
         impl SigmoidPointwise<$t> for $b {
-            fn sigmoid_pointwise(&self, x: &mut SharedTensor<$t>)
-                       -> Result<(), Error> {
-                map1_inplace(read_write!(x, $t, self),
-                     crate::frameworks::native::helper::sigmoid)
+            fn sigmoid_pointwise(&self, x: &mut SharedTensor<$t>) -> Result<(), Error> {
+                map1_inplace(
+                    read_write!(x, $t, self),
+                    crate::frameworks::native::helper::sigmoid,
+                )
             }
 
             fn sigmoid_pointwise_grad(
                 &self,
                 x: &SharedTensor<$t>,
-                x_diff: &mut SharedTensor<$t>)
-                -> Result<(),  $crate::co::error::Error> {
-                    return
-                map2_inplace(read!(x, $t, self),
-                     read_write!(x_diff, $t, self),
-                     crate::frameworks::native::helper::sigmoid_grad)
+                x_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
+                return map2_inplace(
+                    read!(x, $t, self),
+                    read_write!(x_diff, $t, self),
+                    crate::frameworks::native::helper::sigmoid_grad,
+                );
             }
         }
-    );
+    };
 }
 
 /// relu impl generation macro
 #[macro_export]
 macro_rules! impl_ops_relu_for {
-    ($t:ident, $b:ty) => (
+    ($t:ident, $b:ty) => {
         impl Relu<$t> for $b {
-            fn relu(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                    -> Result<(), $crate::co::error::Error> {
-                map1(read!(x, $t, self),
-                     write_only!(result, $t, self),
-                     crate::frameworks::native::helper::relu)
+            fn relu(
+                &self,
+                x: &SharedTensor<$t>,
+                result: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
+                map1(
+                    read!(x, $t, self),
+                    write_only!(result, $t, self),
+                    crate::frameworks::native::helper::relu,
+                )
             }
 
             fn relu_grad(
@@ -161,45 +175,57 @@ macro_rules! impl_ops_relu_for {
                 x: &SharedTensor<$t>,
                 x_diff: &SharedTensor<$t>,
                 result: &SharedTensor<$t>,
-                result_diff: &mut SharedTensor<$t>)
-                -> Result<(), Error> {
-                map2(read!(x, $t, self),
-                     read!(x_diff, $t, self),
-                     write_only!(result_diff, $t, self),
-                     crate::frameworks::native::helper::relu_grad)
+                result_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), Error> {
+                map2(
+                    read!(x, $t, self),
+                    read!(x_diff, $t, self),
+                    write_only!(result_diff, $t, self),
+                    crate::frameworks::native::helper::relu_grad,
+                )
             }
         }
         impl ReluPointwise<$t> for $b {
-
-            fn relu_pointwise(&self, x: &mut SharedTensor<$t>)
-                    -> Result<(), $crate::co::error::Error> {
-                map1_inplace(read_write!(x, $t, self),
-                     crate::frameworks::native::helper::relu)
+            fn relu_pointwise(
+                &self,
+                x: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
+                map1_inplace(
+                    read_write!(x, $t, self),
+                    crate::frameworks::native::helper::relu,
+                )
             }
 
             fn relu_pointwise_grad(
                 &self,
                 x: &SharedTensor<$t>,
-                x_diff: &mut SharedTensor<$t>)
-                -> Result<(), $crate::co::error::Error> {
-                map2_inplace(read!(x, $t, self),
-                     read_write!(x_diff, $t, self),
-                     crate::frameworks::native::helper::relu_grad)
+                x_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
+                map2_inplace(
+                    read!(x, $t, self),
+                    read_write!(x_diff, $t, self),
+                    crate::frameworks::native::helper::relu_grad,
+                )
             }
         }
-    );
+    };
 }
 
 /// tanh impl generation macro
 #[macro_export]
 macro_rules! impl_ops_tanh_for {
-    ($t:ident, $b:ty) => (
+    ($t:ident, $b:ty) => {
         impl $crate::plugin::Tanh<$t> for $b {
-            fn tanh(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                    -> Result<(), $crate::co::error::Error> {
-                map1(read!(x, $t, self),
-                     write_only!(result, $t, self),
-                     crate::frameworks::native::helper::tanh)
+            fn tanh(
+                &self,
+                x: &SharedTensor<$t>,
+                result: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
+                map1(
+                    read!(x, $t, self),
+                    write_only!(result, $t, self),
+                    crate::frameworks::native::helper::tanh,
+                )
             }
 
             fn tanh_grad(
@@ -207,32 +233,40 @@ macro_rules! impl_ops_tanh_for {
                 x: &SharedTensor<$t>,
                 x_diff: &SharedTensor<$t>,
                 result: &SharedTensor<$t>,
-                result_diff: &mut SharedTensor<$t>)
-                -> Result<(), Error> {
-                map2(read!(x, $t, self),
-                     read!(x_diff, $t, self),
-                     write_only!(result_diff, $t, self),
-                     crate::frameworks::native::helper::tanh_grad)
+                result_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), Error> {
+                map2(
+                    read!(x, $t, self),
+                    read!(x_diff, $t, self),
+                    write_only!(result_diff, $t, self),
+                    crate::frameworks::native::helper::tanh_grad,
+                )
             }
         }
         impl $crate::plugin::TanhPointwise<$t> for $b {
-            fn tanh_pointwise(&self, x: &mut SharedTensor<$t>)
-                    -> Result<(), $crate::co::error::Error> {
-                map1_inplace(read_write!(x, $t, self),
-                     crate::frameworks::native::helper::tanh)
+            fn tanh_pointwise(
+                &self,
+                x: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
+                map1_inplace(
+                    read_write!(x, $t, self),
+                    crate::frameworks::native::helper::tanh,
+                )
             }
 
             fn tanh_pointwise_grad(
                 &self,
                 x: &SharedTensor<$t>,
-                x_diff: &mut SharedTensor<$t>)
-                -> Result<(), Error> {
-                map2_inplace(read!(x, $t, self),
-                     read_write!(x_diff, $t, self),
-                     crate::frameworks::native::helper::tanh_grad)
+                x_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), Error> {
+                map2_inplace(
+                    read!(x, $t, self),
+                    read_write!(x_diff, $t, self),
+                    crate::frameworks::native::helper::tanh_grad,
+                )
             }
         }
-    );
+    };
 }
 
 #[derive(Debug, Clone)]
@@ -242,7 +276,6 @@ pub struct ConvolutionConfig {
     pub stride: Vec<i32>,
     pub padding: Vec<i32>,
 }
-
 
 #[derive(Debug, Clone, Copy)]
 #[allow(missing_docs)]
@@ -267,10 +300,13 @@ pub struct RnnConfig {
 /// softmax impl generation macro
 #[macro_export]
 macro_rules! impl_ops_softmax_for {
-    ($t:ident, $b:ty) => (
+    ($t:ident, $b:ty) => {
         impl $crate::plugin::Softmax<$t> for $b {
-            fn softmax(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                       -> Result<(), Error> {
+            fn softmax(
+                &self,
+                x: &SharedTensor<$t>,
+                result: &mut SharedTensor<$t>,
+            ) -> Result<(), Error> {
                 let xs = read!(x, $t, self);
                 let rs = write_only!(result, $t, self);
 
@@ -291,8 +327,8 @@ macro_rules! impl_ops_softmax_for {
                 &self,
                 x: &SharedTensor<$t>,
                 x_diff: &SharedTensor<$t>,
-                result_diff: &mut SharedTensor<$t>) -> Result<(), Error> {
-
+                result_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), Error> {
                 let xs = read!(x, $t, self);
                 let dxs = read!(x_diff, $t, self);
                 let drs = write_only!(result_diff, $t, self);
@@ -305,23 +341,27 @@ macro_rules! impl_ops_softmax_for {
                 map2(xs, dxs, drs, |t, dt| t * (dt - dot))
             }
         }
-    );
+    };
 }
 
 /// log softmax impl generation macro
 #[macro_export]
 macro_rules! impl_ops_log_softmax_for {
-    ($t:ident, $b:ty) => (
+    ($t:ident, $b:ty) => {
         impl $crate::plugin::LogSoftmax<$t> for $b {
-            fn log_softmax(&self, x: &SharedTensor<$t>, result: &mut SharedTensor<$t>)
-                           -> Result<(), $crate::co::error::Error> {
+            fn log_softmax(
+                &self,
+                x: &SharedTensor<$t>,
+                result: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
                 let xs = read!(x, $t, self);
                 let rs = write_only!(result, $t, self);
 
-                let max_x = xs.iter().fold(::std::$t::NEG_INFINITY,
-                                           |acc, &t| acc.max(t));
+                let max_x = xs
+                    .iter()
+                    .fold(::std::$t::NEG_INFINITY, |acc, &t| acc.max(t));
 
-                let mut logsum : $t = 0.0;
+                let mut logsum: $t = 0.0;
                 for t in xs {
                     logsum += (-(max_x - t)).exp();
                 }
@@ -330,36 +370,38 @@ macro_rules! impl_ops_log_softmax_for {
                 map1(xs, rs, |t| t - logsum)
             }
 
-            fn log_softmax_grad(&self, x: &SharedTensor<$t>, x_diff: &SharedTensor<$t>,
-                                result_diff: &mut SharedTensor<$t>)
-                                -> Result<(), $crate::co::error::Error> {
+            fn log_softmax_grad(
+                &self,
+                x: &SharedTensor<$t>,
+                x_diff: &SharedTensor<$t>,
+                result_diff: &mut SharedTensor<$t>,
+            ) -> Result<(), $crate::co::error::Error> {
                 let xs = read!(x, $t, self);
                 let dxs = read!(x_diff, $t, self);
                 let drs = write_only!(result_diff, $t, self);
 
-                let mut sum : $t = 0.0;
+                let mut sum: $t = 0.0;
                 for &grad_val in dxs.iter() {
                     sum += grad_val;
                 }
                 map2(xs, dxs, drs, |t, dt| dt - t.exp() * sum)
             }
         }
-    );
+    };
 }
-
 
 /// lrn impl generation macro
 /// TODO it's all unimplemented!() right now
 #[macro_export]
 macro_rules! impl_ops_lrn_for {
-    ($t:ident, $b:ty) => (
+    ($t:ident, $b:ty) => {
         impl ::plugin::LRN<$t> for $b {
             fn new_lrn_config(
                 &self,
                 n: u32,
                 alpha: f64,
                 beta: f64,
-                k: f64
+                k: f64,
             ) -> Result<Self::CLRN, ::co::error::Error> {
                 unimplemented!();
                 Ok(::frameworks::native::helper::NormalizationConfig)
@@ -369,7 +411,7 @@ macro_rules! impl_ops_lrn_for {
                 &self,
                 x: &mut SharedTensor<$t>,
                 result: &mut SharedTensor<$t>,
-                config: &Self::CLRN
+                config: &Self::CLRN,
             ) -> Result<(), ::co::error::Error> {
                 unimplemented!();
                 Ok(())
@@ -379,7 +421,7 @@ macro_rules! impl_ops_lrn_for {
                 &self,
                 x: &SharedTensor<$t>,
                 result: &mut SharedTensor<$t>,
-                config: &Self::CLRN
+                config: &Self::CLRN,
             ) -> Result<(), ::co::error::Error> {
                 unimplemented!();
                 Ok(())
@@ -391,7 +433,7 @@ macro_rules! impl_ops_lrn_for {
                 x_diff: &mut SharedTensor<$t>,
                 result: &mut SharedTensor<$t>,
                 result_diff: &mut SharedTensor<$t>,
-                config: &Self::CLRN
+                config: &Self::CLRN,
             ) -> Result<(), ::co::error::Error> {
                 unimplemented!();
                 Ok(())
@@ -403,11 +445,11 @@ macro_rules! impl_ops_lrn_for {
                 x_diff: &SharedTensor<$t>,
                 result: &SharedTensor<$t>,
                 result_diff: &mut SharedTensor<$t>,
-                config: &Self::CLRN
+                config: &Self::CLRN,
             ) -> Result<(), ::co::error::Error> {
                 unimplemented!();
                 Ok(())
             }
         }
-    );
+    };
 }
