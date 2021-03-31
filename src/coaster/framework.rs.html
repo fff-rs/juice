@@ -121,6 +121,8 @@
 <span id="118">118</span>
 <span id="119">119</span>
 <span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the generic functionality of a hardware supporting frameworks such as native CPU, OpenCL,</span>
 <span class="doccomment">//! CUDA, etc..</span>
@@ -142,13 +144,13 @@
 <span class="doccomment">//! // let backend: Backend = framework.create_backend();</span>
 <span class="doccomment">//! ```</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::<span class="ident">IHardware</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::<span class="ident">IDevice</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">binary</span>::<span class="ident">IBinary</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">frameworks</span>::<span class="ident">opencl</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">OpenCLError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::<span class="ident">IDevice</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">cuda</span>::<span class="ident">DriverError</span> <span class="kw">as</span> <span class="ident">CudaError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::<span class="ident">IHardware</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">frameworks</span>::<span class="ident">opencl</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">OpenCLError</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">error</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -171,7 +173,9 @@
     <span class="doccomment">/// Initializes a new Framework.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Loads all the available hardwares</span>
-    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> <span class="kw">where</span> <span class="self">Self</span>: <span class="ident">Sized</span>;
+    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="self">Self</span>: <span class="ident">Sized</span>;
 
     <span class="doccomment">/// Initializes all the available hardwares.</span>
     <span class="kw">fn</span> <span class="ident">load_hardwares</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">H</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span>;

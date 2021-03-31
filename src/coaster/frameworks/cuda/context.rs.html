@@ -129,16 +129,22 @@
 <span id="126">126</span>
 <span id="127">127</span>
 <span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a Rust wrapper around Cuda&#39;s context.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::{<span class="ident">IDevice</span>, <span class="ident">MemorySync</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">DeviceError</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">api</span>::<span class="ident">DriverFFI</span>;
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Driver</span>, <span class="ident">DriverError</span>, <span class="ident">Device</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">memory</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">flatbox</span>::<span class="ident">FlatBox</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Device</span>, <span class="ident">Driver</span>, <span class="ident">DriverError</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">DeviceError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::{<span class="ident">IDevice</span>, <span class="ident">MemorySync</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">device</span>::<span class="ident">Cpu</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">flatbox</span>::<span class="ident">FlatBox</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
@@ -163,19 +169,17 @@
 <span class="kw">impl</span> <span class="ident">Context</span> {
     <span class="doccomment">/// Initializes a new Cuda context.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">devices</span>: <span class="ident">Device</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">DriverError</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(
-            <span class="ident">Context</span>::<span class="ident">from_c</span>(
-                <span class="ident">Driver</span>::<span class="ident">create_context</span>(<span class="ident">devices</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>,
-                <span class="macro">vec</span><span class="macro">!</span>(<span class="ident">devices</span>)
-            )
-        )
+        <span class="prelude-val">Ok</span>(<span class="ident">Context</span>::<span class="ident">from_c</span>(
+            <span class="ident">Driver</span>::<span class="ident">create_context</span>(<span class="ident">devices</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>,
+            <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">devices</span>],
+        ))
     }
 
     <span class="doccomment">/// Initializes a new Cuda platform from its C type.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_c</span>(<span class="ident">id</span>: <span class="ident">DriverFFI</span>::<span class="ident">CUcontext</span>, <span class="ident">devices</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Device</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Context</span> {
         <span class="ident">Context</span> {
             <span class="ident">id</span>: <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">id</span> <span class="kw">as</span> <span class="ident">isize</span>),
-            <span class="ident">devices</span>
+            <span class="ident">devices</span>,
         }
     }
 
@@ -221,8 +225,12 @@
 }
 
 <span class="kw">impl</span> <span class="ident">MemorySync</span> <span class="kw">for</span> <span class="ident">Context</span> {
-    <span class="kw">fn</span> <span class="ident">sync_in</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">src_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">src_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>)
-               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DeviceError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">sync_in</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">src_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">src_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DeviceError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">src_device</span>.<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">Cpu</span><span class="op">&gt;</span>().<span class="ident">is_some</span>() {
             <span class="kw">let</span> <span class="ident">my_mem</span> <span class="op">=</span> <span class="ident">my_memory</span>.<span class="ident">downcast_mut</span>::<span class="op">&lt;</span><span class="ident">Memory</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">src_mem</span> <span class="op">=</span> <span class="ident">src_memory</span>.<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">FlatBox</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
@@ -233,8 +241,12 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">sync_out</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">dst_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">dst_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DeviceError</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">sync_out</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">dst_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">dst_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">DeviceError</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">dst_device</span>.<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">Cpu</span><span class="op">&gt;</span>().<span class="ident">is_some</span>() {
             <span class="kw">let</span> <span class="ident">my_mem</span> <span class="op">=</span> <span class="ident">my_memory</span>.<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">Memory</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="ident">dst_mem</span> <span class="op">=</span> <span class="ident">dst_memory</span>.<span class="ident">downcast_mut</span>::<span class="op">&lt;</span><span class="ident">FlatBox</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();

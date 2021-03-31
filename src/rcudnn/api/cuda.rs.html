@@ -51,12 +51,16 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides utility functionality for the CUDA cuDNN API.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
 
 <span class="kw">impl</span> <span class="ident">API</span> {
     <span class="doccomment">/// Initialize the CUDA cuDNN API with needed context and resources.</span>
@@ -82,8 +86,9 @@
             <span class="ident">cudaError_t</span>::<span class="ident">cudaErrorMemoryAllocation</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;Unable to allocate CUDA device memory.&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to allocate CUDA device memory for unknown reasons.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -92,13 +97,16 @@
         <span class="kw">match</span> <span class="ident">cudaFree</span>(<span class="ident">ptr</span>) {
             <span class="ident">cudaError_t</span>::<span class="ident">cudaSuccess</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="comment">// TODO, more error enums sigh</span>
-            <span class="ident">cudaError_t</span>::<span class="ident">cudaErrorInvalidDevicePointer</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to free the CUDA device memory.&quot;</span>))
-            }
-            <span class="ident">cudaError_t</span>::<span class="ident">cudaErrorInitializationError</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;CUDA Driver/Runtime API not initialized.&quot;</span>))
-            }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to free the CUDA device memory.&quot;</span>)),
+            <span class="ident">cudaError_t</span>::<span class="ident">cudaErrorInvalidDevicePointer</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidValue</span>(
+                <span class="string">&quot;Unable to free the CUDA device memory due to invalid device pointer.&quot;</span>,
+            )),
+            <span class="ident">cudaError_t</span>::<span class="ident">cudaErrorInitializationError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>(
+                <span class="string">&quot;CUDA Driver/Runtime API not initialized.&quot;</span>,
+            )),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to free the CUDA device memory.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
         }
     }
 }

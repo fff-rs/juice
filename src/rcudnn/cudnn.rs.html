@@ -1074,6 +1074,9 @@
 <span id="1071">1071</span>
 <span id="1072">1072</span>
 <span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Describes the high-level CUDA cuDNN instance.</span>
 <span class="doccomment">//!</span>
@@ -1083,15 +1086,15 @@
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">utils</span>::{
     <span class="ident">ActivationConfig</span>, <span class="ident">ConvolutionConfig</span>, <span class="ident">DataTypeInfo</span>, <span class="ident">DropoutConfig</span>, <span class="ident">NormalizationConfig</span>,
-    <span class="ident">PoolingConfig</span>, <span class="ident">ScalParams</span>, <span class="ident">RnnConfig</span>
+    <span class="ident">PoolingConfig</span>, <span class="ident">RnnConfig</span>, <span class="ident">ScalParams</span>,
 };
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cuda</span>::<span class="ident">CudaDeviceMemory</span>;
 <span class="kw">use</span> <span class="ident">num</span>::<span class="ident">traits</span>::<span class="ident">Float</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">transmute_copy</span>;
-<span class="kw">use</span> <span class="ident">utils</span>::<span class="ident">DataType</span>;
 <span class="kw">use</span> <span class="ident">tensor_descriptor</span>::<span class="ident">tensor_vec_id_c</span>;
+<span class="kw">use</span> <span class="ident">utils</span>::<span class="ident">DataType</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="doccomment">/// Provides a the high-level interface to CUDA&#39;s cuDNN.</span>
@@ -1253,7 +1256,8 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_dropout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">probability</span>: <span class="ident">f32</span>, <span class="ident">seed</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DropoutConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">reserve_required</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">dropout_get_states_size</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>())<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">reserve</span> <span class="op">=</span> <span class="ident">CudaDeviceMemory</span>::<span class="ident">new</span>(<span class="ident">reserve_required</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">dropout</span> <span class="op">=</span> <span class="ident">DropoutDescriptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">probability</span>, <span class="ident">seed</span>, <span class="kw-2">*</span><span class="ident">reserve</span>.<span class="ident">id_c</span>(), <span class="ident">reserve</span>.<span class="ident">size</span>())<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">dropout</span> <span class="op">=</span>
+            <span class="ident">DropoutDescriptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">probability</span>, <span class="ident">seed</span>, <span class="kw-2">*</span><span class="ident">reserve</span>.<span class="ident">id_c</span>(), <span class="ident">reserve</span>.<span class="ident">size</span>())<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">DropoutConfig</span>::<span class="ident">new</span>(<span class="ident">dropout</span>, <span class="ident">reserve</span>))
     }
 
@@ -1272,35 +1276,31 @@
         <span class="ident">network_mode</span>: <span class="ident">cudnnRNNMode_t</span>,
         <span class="ident">algorithm</span>: <span class="ident">cudnnRNNAlgo_t</span>,
         <span class="ident">data_type</span>: <span class="ident">DataType</span>,
-        <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>
+        <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RnnConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-
-        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span>  <span class="kw">match</span> <span class="ident">data_type</span> {
+        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">data_type</span> {
             <span class="ident">DataType</span>::<span class="ident">Float</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_FLOAT</span>,
             <span class="ident">DataType</span>::<span class="ident">Double</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_DOUBLE</span>,
-            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>
+            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>,
         };
 
-        <span class="ident">API</span>::<span class="ident">set_rnn_matrix_math_type</span>(
-            <span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(),
-            <span class="ident">math_type</span>
-        )<span class="question-mark">?</span>;
+        <span class="ident">API</span>::<span class="ident">set_rnn_matrix_math_type</span>(<span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(), <span class="ident">math_type</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">workspace_size</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_rnn_workspace_size</span>(
+        <span class="kw">let</span> <span class="ident">workspace_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_rnn_workspace_size</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">seq_length</span>,
-            <span class="ident">tensor_vec_id_c</span>(<span class="ident">x_desc</span>)
+            <span class="ident">tensor_vec_id_c</span>(<span class="ident">x_desc</span>),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">training_reserve_size</span> : <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_rnn_training_reserve_size</span>(
+        <span class="kw">let</span> <span class="ident">training_reserve_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_rnn_training_reserve_size</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">seq_length</span>,
-            <span class="ident">tensor_vec_id_c</span>(<span class="ident">x_desc</span>)
+            <span class="ident">tensor_vec_id_c</span>(<span class="ident">x_desc</span>),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">training_reserve</span> : <span class="ident">CudaDeviceMemory</span> <span class="op">=</span> <span class="ident">CudaDeviceMemory</span>::<span class="ident">new</span>(<span class="ident">training_reserve_size</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">training_reserve</span>: <span class="ident">CudaDeviceMemory</span> <span class="op">=</span> <span class="ident">CudaDeviceMemory</span>::<span class="ident">new</span>(<span class="ident">training_reserve_size</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="ident">RnnConfig</span>::<span class="ident">new</span>(
             <span class="ident">rnn_desc</span>,
@@ -1315,7 +1315,7 @@
             <span class="ident">data_type</span>,
             <span class="ident">workspace_size</span>,
             <span class="ident">training_reserve_size</span>,
-            <span class="ident">training_reserve</span>
+            <span class="ident">training_reserve</span>,
         ))
     }
 
@@ -1341,9 +1341,11 @@
         <span class="ident">cell_output_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
         <span class="ident">cell_output</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
         <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>
+        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span> {
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
+    {
         <span class="ident">API</span>::<span class="ident">rnn_forward_training</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span>(<span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>()),
@@ -1365,7 +1367,7 @@
             <span class="ident">workspace</span>,
             <span class="ident">rnn_config</span>.<span class="ident">rnn_workspace_size</span>(),
             <span class="ident">reserve_data</span>,
-            <span class="ident">rnn_config</span>.<span class="ident">training_reserve_size</span>()
+            <span class="ident">rnn_config</span>.<span class="ident">training_reserve_size</span>(),
         )
     }
 
@@ -1399,7 +1401,9 @@
         <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
         <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span> {
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
+    {
         <span class="ident">API</span>::<span class="ident">rnn_backward_data</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span>(<span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>()),
@@ -1448,7 +1452,9 @@
         <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
         <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span> {
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
+    {
         <span class="ident">API</span>::<span class="ident">rnn_backward_weights</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span>(<span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>()),

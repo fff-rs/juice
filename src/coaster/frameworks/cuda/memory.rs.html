@@ -53,10 +53,10 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a Rust wrapper around Cuda&#39;s memory.</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">api</span>::{<span class="ident">Driver</span>, <span class="ident">DriverFFI</span>, <span class="ident">DriverError</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">api</span>::{<span class="ident">Driver</span>, <span class="ident">DriverError</span>, <span class="ident">DriverFFI</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::<span class="ident">IMemory</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">ptr</span>, <span class="ident">fmt</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">ptr</span>};
 
 <span class="doccomment">/// Defines a Cuda Memory.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Memory</span> {

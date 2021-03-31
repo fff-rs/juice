@@ -275,6 +275,18 @@
 <span id="272">272</span>
 <span id="273">273</span>
 <span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the tensor functionality from the CUDA cuDNN API.</span>
 <span class="doccomment">//!</span>
@@ -412,8 +424,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated.&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to create generic CUDA cuDNN Tensor Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -423,8 +436,9 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnDestroyTensorDescriptor</span>(<span class="ident">tensor_desc</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to destroy CUDA cuDNN Tensor Descriptor context.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -444,8 +458,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(
                 <span class="string">&quot;`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.&quot;</span>,
             )),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to set CUDA cuDNN Tensor Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -473,8 +488,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(
                 <span class="string">&quot;`nb_dims` exceeds CUDNN_DIM_MAX or 2 Giga-elements.&quot;</span>,
             )),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to set CUDA cuDNN Tensor Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -492,7 +508,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;the dimensions n, c, h, w or the data type of the two tensor descriptors are different.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to transform CUDA cuDNN Tensor.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to transform CUDA cuDNN Tensor.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -510,7 +527,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;The dimensions of the bias tensor refer to an amount of data that is incompatible the output tensor dimensions or the  data type of the two tensor descriptors are different.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The dimensions of the bias tensor and the output tensor dimensions are above 5.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to add CUDA cuDNN Tensor.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to add CUDA cuDNN Tensor.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -528,7 +546,10 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN Tensor.&quot;</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to set CUDA cuDNN Tensor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
         }
     }
 
@@ -546,7 +567,10 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to scale CUDA cuDNN Tensor.&quot;</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to scale CUDA cuDNN Tensor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
         }
     }
 }

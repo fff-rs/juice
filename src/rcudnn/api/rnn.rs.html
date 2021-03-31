@@ -846,14 +846,30 @@
 <span id="843">843</span>
 <span id="844">844</span>
 <span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the RNN functionality from the CUDA cuDNN API.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Includes the RNN functionality.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DataType</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
 
 <span class="comment">// Workspace</span>
 <span class="kw">impl</span> <span class="ident">API</span> {
@@ -895,7 +911,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The data type used in `src_desc` is not supported for RNN.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Forward Workspace size.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Forward Workspace size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -911,27 +928,26 @@
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
         <span class="ident">seq_length</span>: ::<span class="ident">libc</span>::<span class="ident">c_int</span>,
-        <span class="ident">x_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">cudnnTensorDescriptor_t</span><span class="op">&gt;</span>
+        <span class="ident">x_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">cudnnTensorDescriptor_t</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
-            <span class="ident">API</span>::<span class="ident">ffi_get_rnn_training_reserve_size</span>(
-                <span class="ident">handle</span>, <span class="ident">rnn_desc</span>, <span class="ident">seq_length</span>, <span class="ident">x_desc</span>.<span class="ident">as_slice</span>()
-            )
+            <span class="ident">API</span>::<span class="ident">ffi_get_rnn_training_reserve_size</span>(<span class="ident">handle</span>, <span class="ident">rnn_desc</span>, <span class="ident">seq_length</span>, <span class="ident">x_desc</span>.<span class="ident">as_slice</span>())
         }
     }
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_get_rnn_training_reserve_size</span>(
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
         <span class="ident">seq_length</span>: ::<span class="ident">libc</span>::<span class="ident">c_int</span>,
-        <span class="ident">x_desc</span>: <span class="kw-2">&amp;</span>[<span class="ident">cudnnTensorDescriptor_t</span>]
+        <span class="ident">x_desc</span>: <span class="kw-2">&amp;</span>[<span class="ident">cudnnTensorDescriptor_t</span>],
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>::<span class="ident">libc</span>::<span class="ident">size_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size</span>: ::<span class="ident">libc</span>::<span class="ident">size_t</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">size_ptr</span> : <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">size_t</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">size</span>;
+        <span class="kw">let</span> <span class="ident">size_ptr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">size_t</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">size</span>;
         <span class="kw">match</span> <span class="ident">cudnnGetRNNTrainingReserveSize</span>(<span class="ident">handle</span>, <span class="ident">rnn_desc</span>,<span class="ident">seq_length</span>, <span class="ident">x_desc</span>.<span class="ident">as_ptr</span>(), <span class="ident">size_ptr</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The data type used in `src_desc` is not supported for RNN.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Training Reserve size.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Training Reserve size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
     <span class="doccomment">/// cudnnGetRNNParamsSize[1]</span>
@@ -946,22 +962,17 @@
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
         <span class="ident">x_desc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">data_type</span>: <span class="ident">DataType</span>
+        <span class="ident">data_type</span>: <span class="ident">DataType</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
-            <span class="ident">API</span>::<span class="ident">ffi_get_rnn_params_size</span>(
-                <span class="ident">handle</span>,
-                <span class="ident">rnn_desc</span>,
-                <span class="ident">x_desc</span>,
-                <span class="ident">API</span>::<span class="ident">cudnn_data_type</span>(<span class="ident">data_type</span>)
-            )
+            <span class="ident">API</span>::<span class="ident">ffi_get_rnn_params_size</span>(<span class="ident">handle</span>, <span class="ident">rnn_desc</span>, <span class="ident">x_desc</span>, <span class="ident">API</span>::<span class="ident">cudnn_data_type</span>(<span class="ident">data_type</span>))
         }
     }
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_get_rnn_params_size</span>(
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
         <span class="ident">x_desc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">data_type</span>: <span class="ident">cudnnDataType_t</span>
+        <span class="ident">data_type</span>: <span class="ident">cudnnDataType_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>::<span class="ident">libc</span>::<span class="ident">size_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size</span>: ::<span class="ident">libc</span>::<span class="ident">size_t</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="ident">size_ptr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">size_t</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">size</span>;
@@ -969,7 +980,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;One of the following; rnnDesc is invalid, x_desc is invalid, x_desc isn&#39;t fully packed, dataType &amp; tensor Description type don&#39;t match&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The data type used in `rnn_desc` is not supported for RNN.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Params Size&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Params Size&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 }
@@ -987,8 +999,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable create generic CUDA cuDNN RNN Descriptor&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -996,15 +1009,16 @@
     <span class="doccomment">/// cudnnCreateRNNDataDescriptor()</span>
     <span class="doccomment">/// https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnCreateRNNDataDescriptor</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_rnn_data_descriptor</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cudnnRNNDataDescriptor_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> {
-            <span class="ident">API</span>::<span class="ident">ffi_create_rnn_data_descriptor</span>()
-        }
+        <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_create_rnn_data_descriptor</span>() }
     }
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_create_rnn_data_descriptor</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cudnnRNNDataDescriptor_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rnn_data_descriptor</span>: <span class="ident">cudnnRNNDataDescriptor_t</span> <span class="op">=</span> ::<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
         <span class="kw">match</span> <span class="ident">cudnnCreateRNNDataDescriptor</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rnn_data_descriptor</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">rnn_data_descriptor</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to create Data Descriptor&quot;</span>))
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to create Data Descriptor&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
         }
     }
 
@@ -1017,8 +1031,9 @@
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_destroy_rnn_descriptor</span>(<span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnDestroyRNNDescriptor</span>(<span class="ident">rnn_desc</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to destroy CUDA cuDNN Dropout Descriptor&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -1037,10 +1052,10 @@
         <span class="ident">algorithm</span>: <span class="ident">cudnnRNNAlgo_t</span>,
         <span class="ident">data_type</span>: <span class="ident">DataType</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span>  <span class="kw">match</span> <span class="ident">data_type</span> {
+        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">data_type</span> {
             <span class="ident">DataType</span>::<span class="ident">Float</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_FLOAT</span>,
             <span class="ident">DataType</span>::<span class="ident">Double</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_DOUBLE</span>,
-            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>
+            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>,
         };
 
         <span class="kw">unsafe</span> {
@@ -1086,7 +1101,10 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;FIXME RNN&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;FIXME RNN&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN RNN Descriptor.&quot;</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to set CUDA cuDNN RNN Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
         }
     }
 
@@ -1095,21 +1113,25 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnSetRNNMatrixMathType</span>
     <span class="doccomment">/// [2]: https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#tensor-ops-rnn-functions-pre-req</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_rnn_matrix_math_type</span>(<span class="ident">rnn_desc</span> : <span class="ident">cudnnRNNDescriptor_t</span>, <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span>{
-            <span class="ident">API</span>::<span class="ident">ffi_set_rnn_matrix_math_type</span>(<span class="ident">rnn_desc</span>, <span class="ident">math_type</span>)
-        }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_rnn_matrix_math_type</span>(
+        <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
+        <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_set_rnn_matrix_math_type</span>(<span class="ident">rnn_desc</span>, <span class="ident">math_type</span>) }
     }
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_set_rnn_matrix_math_type</span>(<span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>, <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-         <span class="kw">match</span> <span class="ident">cudnnSetRNNMatrixMathType</span>(
-             <span class="ident">rnn_desc</span>,
-             <span class="ident">math_type</span>
-         ) {
-             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;FIXME RNN&quot;</span>)),
-             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;FIXME RNN&quot;</span>)),
-             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN RNN Matrix Math Type.&quot;</span>)),
-         }
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_set_rnn_matrix_math_type</span>(
+        <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
+        <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="ident">cudnnSetRNNMatrixMathType</span>(<span class="ident">rnn_desc</span>, <span class="ident">math_type</span>) {
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;FIXME RNN&quot;</span>)),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;FIXME RNN&quot;</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to set CUDA cuDNN RNN Matrix Math Type.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
+        }
     }
 
     <span class="doccomment">/// Set RNN Padding Model [cudnnSetRNNPaddingMode][1]</span>
@@ -1120,19 +1142,24 @@
     <span class="doccomment">/// By default, the padded RNN input/output is not enabled.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnSetRNNPaddingMode</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_rnn_padding_mode</span>(<span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>, <span class="ident">padding_mode</span>: <span class="ident">cudnnRNNPaddingMode_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> {
-            <span class="ident">API</span>::<span class="ident">ffi_set_rnn_padding_mode</span>(<span class="ident">rnn_desc</span>, <span class="ident">padding_mode</span>)
-        }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_rnn_padding_mode</span>(
+        <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
+        <span class="ident">padding_mode</span>: <span class="ident">cudnnRNNPaddingMode_t</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_set_rnn_padding_mode</span>(<span class="ident">rnn_desc</span>, <span class="ident">padding_mode</span>) }
     }
-    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_set_rnn_padding_mode</span>(<span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>, <span class="ident">padding_mode</span>: <span class="ident">cudnnRNNPaddingMode_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_set_rnn_padding_mode</span>(
+        <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
+        <span class="ident">padding_mode</span>: <span class="ident">cudnnRNNPaddingMode_t</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnSetRNNPaddingMode</span>(
             <span class="ident">rnn_desc</span>,
             <span class="ident">padding_mode</span>,
         ) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;cudnnSetRnnPaddingMode - Bad Param - Either RNN Desc is Null or paddingMode has an invalid enum (Unlikely due to Bindgen. Likely RNN Desc is somehow NULL&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN RNN Padding Mode.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN RNN Padding Mode.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 }
@@ -1272,7 +1299,10 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions was met: rnnDesc is invalid, hx_desc, w_desc, hy_desc, cy_desc, or one of the x_desc or y_desc is invalid. The descriptors for x_desc, cx_desc, _hx_desc, w_desc, y_desc, hy_desc, cy_desc have incorrect strides/diemnsions. Workspace size is too small. Reserve space size is too small.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal forward.&quot;</span>)),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;The function failed to launch on the GPU.&quot;</span>)),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_INVALID_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidValue</span>(<span class="string">&quot;cudnnSetPersistentRNNPlan() was not called prior to the current function when CUDNN_RNN_ALGO_PERSIST_DYNAMIC was selected in the RNN descriptor.&quot;</span>)),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The function was unable to allocate memory.&quot;</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnn forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">u64</span>)),
         }
     }
 
@@ -1331,30 +1361,29 @@
         <span class="ident">work_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
         <span class="ident">work_size_in_bytes</span>: ::<span class="ident">libc</span>::<span class="ident">size_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-       <span class="kw">unsafe</span> {
-           <span class="ident">API</span>::<span class="ident">ffi_rnn_forward_inference</span>(
-               <span class="ident">handle</span>,
-               <span class="ident">rnn_desc</span>,
-               <span class="ident">seq_length</span>,
-               <span class="ident">x_desc</span>,
-               <span class="ident">x</span>,
-               <span class="ident">hx_desc</span>,
-               <span class="ident">hx</span>,
-               <span class="ident">cx_desc</span>,
-               <span class="ident">cx</span>,
-               <span class="ident">w_desc</span>,
-               <span class="ident">w</span>,
-               <span class="ident">y_desc</span>,
-               <span class="ident">y</span>,
-               <span class="ident">hy_desc</span>,
-               <span class="ident">hy</span>,
-               <span class="ident">cy_desc</span>,
-               <span class="ident">cy</span>,
-               <span class="ident">work_space</span>,
-               <span class="ident">work_size_in_bytes</span>,
-
-           )
-       }
+        <span class="kw">unsafe</span> {
+            <span class="ident">API</span>::<span class="ident">ffi_rnn_forward_inference</span>(
+                <span class="ident">handle</span>,
+                <span class="ident">rnn_desc</span>,
+                <span class="ident">seq_length</span>,
+                <span class="ident">x_desc</span>,
+                <span class="ident">x</span>,
+                <span class="ident">hx_desc</span>,
+                <span class="ident">hx</span>,
+                <span class="ident">cx_desc</span>,
+                <span class="ident">cx</span>,
+                <span class="ident">w_desc</span>,
+                <span class="ident">w</span>,
+                <span class="ident">y_desc</span>,
+                <span class="ident">y</span>,
+                <span class="ident">hy_desc</span>,
+                <span class="ident">hy</span>,
+                <span class="ident">cy_desc</span>,
+                <span class="ident">cy</span>,
+                <span class="ident">work_space</span>,
+                <span class="ident">work_size_in_bytes</span>,
+            )
+        }
     }
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_rnn_forward_inference</span>(
@@ -1403,7 +1432,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: At least one of the following is NULL: `handle`, `src_desc`, `rnn_desc`, `conv_desc`, `dest_desc`, `src_data`, `alpha`, `beta`. `src_desc` and `dest_desc` have a non-matching number of dimensions. `src_desc` and `rnn_desc` have a non-matching number of dimensions. `src_desc` has fewer than three number of dimensions. `src_desc`s number of dimensions is not equal to `conv_desc`s `array_length` + 2. `src_desc` and `rnn_desc` have a non-matching number of input feature maps per image. `src_desc`, `rnn_desc` and `dest_desc` have a non-matching data type. For some spatial dimension, `rnn_desc` has a spatial size that is larger than the input spatial size (including zero-padding size).&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal forward.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 }
@@ -1579,7 +1609,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met:  `diff_desc` or `grad_desc` have negative tensor striding. `diff_desc`, `rnn_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_MAPPING_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">MappingError</span>(<span class="string">&quot;An error occurs during the texture binding of the rnn data or the input differential tensor data.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward data.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward data.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -1589,27 +1620,27 @@
     <span class="doccomment">/// the weight gradients calculated will be added to those already existing in `dw`.</span>
     <span class="doccomment">/// Workspace is required for intermediate storage.</span>
     <span class="doccomment">/// The data in reserveSpace must have previously been generated by cudnnRNNBackwardData().</span>
-   <span class="doccomment">///</span>
-   <span class="doccomment">/// # Arguments</span>
-   <span class="doccomment">/// `handle` Handle to a previously created [cudNN context][0]</span>
-   <span class="doccomment">/// `rnn_desc` A previously initialised [RNN descriptor][1]</span>
-   <span class="doccomment">/// `seq_length` Number of iterations for the RNN to unroll over.</span>
-   <span class="doccomment">/// `x_desc` Array of packed tensor descriptors.</span>
-   <span class="doccomment">/// `x` Data pointer for Input</span>
-   <span class="doccomment">/// `hx_desc` Fully packed tensor descriptor for the initial hidden state of the RNN.</span>
-   <span class="doccomment">/// `hx` Data pointer for initial hidden state - if null will initialize state to zero.</span>
-   <span class="doccomment">/// `y_desc` Array of packed [tensor descriptors][1] describing the *output* from each recurrent</span>
-   <span class="doccomment">/// iteration.</span>
-   <span class="doccomment">/// `y` Data pointer to GPU memory for output at each iteration</span>
-   <span class="doccomment">/// `dw_desc` Handle to previously initialized filter descriptor for the gradient of the</span>
-   <span class="doccomment">/// weights.</span>
-   <span class="doccomment">/// `dw` Data pointer to GPU memory for the descriptor of the gradient of the weights.</span>
-   <span class="doccomment">/// `workspace` Data pointer to GPU memory to be used as a workspace for this call</span>
-   <span class="doccomment">/// `workspace_in_bytes` Size in bytes of the provided workspace</span>
-   <span class="doccomment">/// `reserve_space` Data pointer for GPU memory to be used as a reserve space for this call</span>
-   <span class="doccomment">/// `reserve_space_in_bytes` Size in bytes for `reserve_space`</span>
-   <span class="doccomment">/// [0]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t</span>
-   <span class="doccomment">/// [1]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Arguments</span>
+    <span class="doccomment">/// `handle` Handle to a previously created [cudNN context][0]</span>
+    <span class="doccomment">/// `rnn_desc` A previously initialised [RNN descriptor][1]</span>
+    <span class="doccomment">/// `seq_length` Number of iterations for the RNN to unroll over.</span>
+    <span class="doccomment">/// `x_desc` Array of packed tensor descriptors.</span>
+    <span class="doccomment">/// `x` Data pointer for Input</span>
+    <span class="doccomment">/// `hx_desc` Fully packed tensor descriptor for the initial hidden state of the RNN.</span>
+    <span class="doccomment">/// `hx` Data pointer for initial hidden state - if null will initialize state to zero.</span>
+    <span class="doccomment">/// `y_desc` Array of packed [tensor descriptors][1] describing the *output* from each recurrent</span>
+    <span class="doccomment">/// iteration.</span>
+    <span class="doccomment">/// `y` Data pointer to GPU memory for output at each iteration</span>
+    <span class="doccomment">/// `dw_desc` Handle to previously initialized filter descriptor for the gradient of the</span>
+    <span class="doccomment">/// weights.</span>
+    <span class="doccomment">/// `dw` Data pointer to GPU memory for the descriptor of the gradient of the weights.</span>
+    <span class="doccomment">/// `workspace` Data pointer to GPU memory to be used as a workspace for this call</span>
+    <span class="doccomment">/// `workspace_in_bytes` Size in bytes of the provided workspace</span>
+    <span class="doccomment">/// `reserve_space` Data pointer for GPU memory to be used as a reserve space for this call</span>
+    <span class="doccomment">/// `reserve_space_in_bytes` Size in bytes for `reserve_space`</span>
+    <span class="doccomment">/// [0]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t</span>
+    <span class="doccomment">/// [1]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rnn_backward_weights</span>(
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
@@ -1688,7 +1719,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `diff_desc` have negative tensor striding. `src_desc`, `diff_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_MAPPING_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">MappingError</span>(<span class="string">&quot;An error occurs during the texture binding of the rnn data.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward rnn.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward rnn.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 }

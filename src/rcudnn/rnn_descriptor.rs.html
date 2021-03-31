@@ -73,20 +73,17 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Defines a Recurrent Descriptor.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! A Recurrent Descriptor is used to hold information about the rnn,</span>
 <span class="doccomment">//! which is needed for forward and backward rnnal operations.</span>
 
-<span class="kw">use</span> <span class="ident">ffi</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">API</span>, <span class="ident">Error</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DropoutConfig</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DataType</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DropoutConfig</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">Cudnn</span>;
+<span class="kw">use</span> <span class="ident">ffi</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Describes a Recurrent Descriptor.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
@@ -118,23 +115,20 @@
         <span class="ident">padding_mode</span>: <span class="ident">cudnnRNNPaddingMode_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RnnDescriptor</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">generic_rnn_desc</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">create_rnn_descriptor</span>()<span class="question-mark">?</span>;
-         <span class="ident">API</span>::<span class="ident">set_rnn_descriptor</span>(
-             <span class="kw-2">*</span><span class="ident">handle</span>.<span class="ident">id_c</span>(),
-             <span class="ident">generic_rnn_desc</span>,
-             <span class="ident">hidden_size</span>,
-             <span class="ident">num_layers</span>,
-             <span class="kw-2">*</span><span class="ident">dropout_config</span>.<span class="ident">dropout_desc</span>().<span class="ident">id_c</span>(),
-             <span class="ident">input_mode</span>,
-             <span class="ident">direction</span>,
-             <span class="ident">mode</span>,
-             <span class="ident">algorithm</span>,
-             <span class="ident">data_type</span>,
-         )<span class="question-mark">?</span>;
-
-        <span class="ident">API</span>::<span class="ident">set_rnn_padding_mode</span>(
+        <span class="ident">API</span>::<span class="ident">set_rnn_descriptor</span>(
+            <span class="kw-2">*</span><span class="ident">handle</span>.<span class="ident">id_c</span>(),
             <span class="ident">generic_rnn_desc</span>,
-            <span class="ident">padding_mode</span>,
+            <span class="ident">hidden_size</span>,
+            <span class="ident">num_layers</span>,
+            <span class="kw-2">*</span><span class="ident">dropout_config</span>.<span class="ident">dropout_desc</span>().<span class="ident">id_c</span>(),
+            <span class="ident">input_mode</span>,
+            <span class="ident">direction</span>,
+            <span class="ident">mode</span>,
+            <span class="ident">algorithm</span>,
+            <span class="ident">data_type</span>,
         )<span class="question-mark">?</span>;
+
+        <span class="ident">API</span>::<span class="ident">set_rnn_padding_mode</span>(<span class="ident">generic_rnn_desc</span>, <span class="ident">padding_mode</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="ident">RnnDescriptor</span> {
             <span class="ident">id</span>: <span class="ident">generic_rnn_desc</span>,

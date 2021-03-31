@@ -71,7 +71,7 @@
         <span class="kw">match</span> <span class="ident">in_mode</span> {
             <span class="ident">cublasPointerMode_t</span>::<span class="ident">CUBLAS_POINTER_MODE_HOST</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">PointerMode</span>::<span class="ident">Host</span>,
             <span class="ident">cublasPointerMode_t</span>::<span class="ident">CUBLAS_POINTER_MODE_DEVICE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">PointerMode</span>::<span class="ident">Device</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;wrapping library is newer than this impl, please file a BUG&quot;</span>)
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;wrapping library is newer than this impl, please file a BUG&quot;</span>),
         }
     }
 
@@ -96,7 +96,7 @@
             <span class="ident">cublasOperation_t</span>::<span class="ident">CUBLAS_OP_N</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Operation</span>::<span class="ident">NoTrans</span>,
             <span class="ident">cublasOperation_t</span>::<span class="ident">CUBLAS_OP_T</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Operation</span>::<span class="ident">Trans</span>,
             <span class="ident">cublasOperation_t</span>::<span class="ident">CUBLAS_OP_C</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Operation</span>::<span class="ident">ConjTrans</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;wrapping library is newer than this impl, please file a BUG&quot;</span>)
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(<span class="string">&quot;wrapping library is newer than this impl, please file a BUG&quot;</span>),
         }
     }
 

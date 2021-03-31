@@ -101,6 +101,8 @@
 <span id="98"> 98</span>
 <span id="99"> 99</span>
 <span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the softmax functionality from the CUDA cuDNN API.</span>
 
@@ -176,7 +178,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;`algorithm` or `mode` are invalid or dimensions or data types of input and output tensor differ or `data_type` or strides of the tensors differ.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute softmax forward.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute softmax forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -198,7 +201,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;`algorithm` or `mode` are invalid or dimensions or data types of input and output tensor differ or `data_type` or strides of the tensors differ.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute softmax backward.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute softmax backward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 }

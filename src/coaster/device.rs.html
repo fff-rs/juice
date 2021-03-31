@@ -128,6 +128,15 @@
 <span id="125">125</span>
 <span id="126">126</span>
 <span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a representation for one or many ready to use hardwares.</span>
 <span class="doccomment">//!</span>
@@ -138,22 +147,23 @@
 <span class="doccomment">//! [backend]: ../backend/index.html</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">any</span>::<span class="ident">Any</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::<span class="ident">IHardware</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">NativeError</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">frameworks</span>::<span class="ident">opencl</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">OpenCLError</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">cuda</span>::<span class="ident">DriverError</span> <span class="kw">as</span> <span class="ident">CudaError</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">error</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">NativeError</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::<span class="ident">IHardware</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">frameworks</span>::<span class="ident">opencl</span>::<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">OpenCLError</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error</span>, <span class="ident">fmt</span>};
 
 <span class="doccomment">/// Marker trait for backing memory.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IMemory</span> { }
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IMemory</span> {}
 
 <span class="doccomment">/// Specifies Hardware behavior across frameworks.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IDevice</span>
-    <span class="kw">where</span> <span class="self">Self</span>: <span class="ident">Any</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Any</span> <span class="op">+</span> <span class="ident">MemorySync</span> {
-
+<span class="kw">where</span>
+    <span class="self">Self</span>: <span class="ident">Any</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Any</span> <span class="op">+</span> <span class="ident">MemorySync</span>,
+{
     <span class="doccomment">/// The Hardware representation for this Device.</span>
     <span class="kw">type</span> <span class="ident">H</span>: <span class="ident">IHardware</span>;
     <span class="doccomment">/// The Memory representation for this Device.</span>
@@ -172,11 +182,19 @@
 <span class="doccomment">/// so that base crate knows nothing about it at all.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MemorySync</span> {
     <span class="doccomment">/// FIXME</span>
-    <span class="kw">fn</span> <span class="ident">sync_in</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">src_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">src_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>)
-               <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">sync_in</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">src_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">src_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>;
     <span class="doccomment">/// FIXME</span>
-    <span class="kw">fn</span> <span class="ident">sync_out</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">dst_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>, <span class="ident">dst_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>)
-                <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">sync_out</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">my_memory</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">dst_device</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Any</span>,
+        <span class="ident">dst_memory</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Any</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
@@ -212,7 +230,7 @@
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
             <span class="ident">Error</span>::<span class="ident">OpenCL</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;OpenCL error: {}&quot;</span>, <span class="ident">err</span>.<span class="ident">to_string</span>()),
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
-            <span class="ident">Error</span>::<span class="ident">Cuda</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cuda error: {}&quot;</span>, <span class="ident">err</span>.<span class="ident">to_string</span>())
+            <span class="ident">Error</span>::<span class="ident">Cuda</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Cuda error: {}&quot;</span>, <span class="ident">err</span>.<span class="ident">to_string</span>()),
         };
 
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>)

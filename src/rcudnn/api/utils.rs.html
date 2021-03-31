@@ -68,13 +68,15 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides utility functionality for the CUDA cuDNN API.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">utils</span>::<span class="ident">DataType</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
 
 <span class="kw">impl</span> <span class="ident">API</span> {
     <span class="doccomment">/// Initialize the CUDA cuDNN API with needed context and resources.</span>
@@ -109,7 +111,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>(<span class="string">&quot;CUDA Driver/Runtime API not initialized.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ARCH_MISMATCH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ArchMismatch</span>(<span class="string">&quot;cuDNN only supports devices with compute capabilities greater than or equal to 3.0.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to create the CUDA cuDNN context/resources.&quot;</span>))
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to create the CUDA cuDNN context/resources.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -119,8 +122,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_INITIALIZED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotInitialized</span>(
                 <span class="string">&quot;CUDA Driver/Runtime API not initialized.&quot;</span>,
             )),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to destroy the CUDA cuDNN context/resources.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -132,7 +136,7 @@
         <span class="kw">match</span> <span class="ident">data_type</span> {
             <span class="ident">DataType</span>::<span class="ident">Float</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_FLOAT</span>,
             <span class="ident">DataType</span>::<span class="ident">Double</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_DOUBLE</span>,
-            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>
+            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>,
         }
     }
 }

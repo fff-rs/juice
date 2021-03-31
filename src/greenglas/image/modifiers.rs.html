@@ -48,10 +48,12 @@
 <span id="45">45</span>
 <span id="46">46</span>
 <span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">modifier</span>::<span class="ident">Modifier</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">image_crate</span>::<span class="ident">imageops</span>::<span class="ident">FilterType</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Image</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">image_crate</span>::<span class="ident">imageops</span>::<span class="ident">FilterType</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">modifier</span>::<span class="ident">Modifier</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="doccomment">/// Resize Modifier for `Image`</span>
@@ -64,7 +66,9 @@
 
 <span class="kw">impl</span> <span class="ident">Modifier</span><span class="op">&lt;</span><span class="ident">Image</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Resize</span> {
     <span class="kw">fn</span> <span class="ident">modify</span>(<span class="self">self</span>, <span class="ident">image</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Image</span>) {
-        <span class="ident">image</span>.<span class="ident">value</span> <span class="op">=</span> <span class="ident">image</span>.<span class="ident">value</span>.<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">width</span>, <span class="self">self</span>.<span class="ident">height</span>, <span class="ident">FilterType</span>::<span class="ident">Triangle</span>)
+        <span class="ident">image</span>.<span class="ident">value</span> <span class="op">=</span> <span class="ident">image</span>
+            .<span class="ident">value</span>
+            .<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">width</span>, <span class="self">self</span>.<span class="ident">height</span>, <span class="ident">FilterType</span>::<span class="ident">Triangle</span>)
     }
 }
 

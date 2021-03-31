@@ -623,6 +623,22 @@
 <span id="620">620</span>
 <span id="621">621</span>
 <span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the convolution functionality from the CUDA cuDNN API.</span>
 <span class="doccomment">//!</span>
@@ -668,8 +684,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated.&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to create generic CUDA cuDNN Filter Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -677,8 +694,9 @@
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_destroy_filter_descriptor</span>(<span class="ident">desc</span>: <span class="ident">cudnnFilterDescriptor_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnDestroyFilterDescriptor</span>(<span class="ident">desc</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to destroy CUDA cuDNN Filter Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -698,8 +716,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;`nb_dims` exceeds CUDNN_DIM_MAX.&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to set CUDA cuDNN Filter Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -843,7 +862,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">perf_results</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to find CUDA cuDNN Convolution Forward Algorithm.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to find CUDA cuDNN Convolution Forward Algorithm.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -861,7 +881,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN Convolution Forward Workspace size.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN Convolution Forward Workspace size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -877,7 +898,8 @@
             <span class="ident">cudnnConvolutionBwdFilterAlgoPerf_t</span>::<span class="ident">default</span>(),
         ];
         <span class="kw">match</span> <span class="ident">cudnnFindConvolutionBackwardFilterAlgorithm</span>(<span class="ident">handle</span>, <span class="ident">src_desc</span>, <span class="ident">dest_desc</span>, <span class="ident">conv_desc</span>, <span class="ident">filter_desc</span>, <span class="number">2</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="number">0</span>, <span class="ident">perf_results</span>.<span class="ident">as_mut_ptr</span>()) { <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">perf_results</span>), <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.&quot;</span>)), <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to find CUDA cuDNN Convolution Backward Filter Algorithm.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to find CUDA cuDNN Convolution Backward Filter Algorithm.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -894,7 +916,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN Convolution Backward Filter Workspace size.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN Convolution Backward Filter Workspace size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -913,7 +936,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">perf_results</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: The handle is not allocated properly. The `src-`, `filter-` or `dest-` descriptor is not allocated properly. The `src-`, `filter-` or `dest-` descriptor has fewer than 1 dimension. Either `returnedCount` or `perfResults` is pointing to NULL. The requestedCount is less than 1.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to find CUDA cuDNN Convolution Backward Data Algorithm.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to find CUDA cuDNN Convolution Backward Data Algorithm.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -930,7 +954,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc` is NULL. The tensor `dest_desc` or `filter_desc` are not of the same dimension as `src_desc`. The tensor `src_desc`, `dest_desc` or `filter_desc` are not of the same data type. The numbers of feature maps of the tensor `src_desc` and `filter_desc` differ. The tensor `src_desc` has a dimension smaller than 3.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The combination of the tensor descriptors, filter descriptor and convolution descriptor is not supported for the specified algorithm.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN Convolution Backward Data Workspace size.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN Convolution Backward Data Workspace size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -1105,8 +1130,9 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated.&quot;</span>))
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to create generic CUDA cuDNN Convolution Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -1116,8 +1142,9 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnDestroyConvolutionDescriptor</span>(<span class="ident">desc</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
                 <span class="string">&quot;Unable to destroy CUDA cuDNN Convolution Descriptor.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
@@ -1135,7 +1162,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: `desc` is NULL. `array_length` is negative, `mode` or `data_type` is invalid, element of `pad_a` is negative, element of `stride_a` is negative or zero.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `array_length` is greater than CUDNN_DIM_MAX. `upscale_a` contains an element different from 1.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN Convolution Descriptor.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN Convolution Descriptor.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -1174,7 +1202,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: At least one of the following is NULL: `handle`, `src_desc`, `filter_desc`, `conv_desc`, `dest_desc`, `src_data`, `alpha`, `beta`. `src_desc` and `dest_desc` have a non-matching number of dimensions. `src_desc` and `filter_desc` have a non-matching number of dimensions. `src_desc` has fewer than three number of dimensions. `src_desc`s number of dimensions is not equal to `conv_desc`s `array_length` + 2. `src_desc` and `filter_desc` have a non-matching number of input feature maps per image. `src_desc`, `filter_desc` and `dest_desc` have a non-matching data type. For some spatial dimension, `filter_desc` has a spatial size that is larger than the input spatial size (including zero-padding size).&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `filter_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional forward.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -1190,7 +1219,8 @@
         <span class="kw">match</span> <span class="ident">cudnnConvolutionBackwardBias</span>(<span class="ident">handle</span>, <span class="ident">alpha</span>, <span class="ident">src_desc</span>, <span class="ident">src_data</span>, <span class="ident">beta</span>, <span class="ident">dest_desc</span>, <span class="ident">dest_data</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters  n,h,w of the output tensor is not 1. The numbers of feature maps of the input tensor and output tensor differ. The  dataType of the two tensor descriptors are different.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional backward bias.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional backward bias.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -1216,7 +1246,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `diff_desc` have negative tensor striding. `src_desc`, `diff_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_MAPPING_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">MappingError</span>(<span class="string">&quot;An error occurs during the texture binding of the filter data.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional backward filter.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional backward filter.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 
@@ -1242,7 +1273,8 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met:  `diff_desc` or `grad_desc` have negative tensor striding. `diff_desc`, `filter_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_MAPPING_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">MappingError</span>(<span class="string">&quot;An error occurs during the texture binding of the filter data or the input differential tensor data.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional backward data.&quot;</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN convolutional backward data.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+
         }
     }
 }

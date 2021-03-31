@@ -25,11 +25,18 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides Cuda Driver API utility functionality.</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">API</span>, <span class="ident">Error</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
 
 <span class="kw">impl</span> <span class="ident">API</span> {
     <span class="doccomment">/// Initialize the Cuda Driver API.</span>
@@ -40,13 +47,20 @@
     }
 
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_init</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">const</span> <span class="ident">FLAGS</span> : <span class="ident">u32</span> <span class="op">=</span> <span class="number">0u32</span>;
+        <span class="kw">const</span> <span class="ident">FLAGS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0u32</span>;
         <span class="kw">match</span> <span class="ident">cuInit</span>(<span class="ident">FLAGS</span>) {
             <span class="ident">CUresult</span>::<span class="ident">CUDA_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">CUresult</span>::<span class="ident">CUDA_ERROR_INVALID_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidValue</span>(<span class="string">&quot;Invalid value provided.&quot;</span>)),
+            <span class="ident">CUresult</span>::<span class="ident">CUDA_ERROR_INVALID_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidValue</span>(<span class="string">&quot;Invalid value provided.&quot;</span>))
+            }
             <span class="ident">CUresult</span>::<span class="ident">CUDA_ERROR_INVALID_DEVICE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidDevice</span>(<span class="string">&quot;Invalid device.&quot;</span>)),
-            <span class="ident">CUresult</span>::<span class="ident">CUDA_ERROR_NO_DEVICE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NoDevice</span>(<span class="string">&quot;Unable to find a CUDA device. Try run `nvidia-smi` on your console.&quot;</span>)),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to initialze the Cuda Driver API.&quot;</span>)),
+            <span class="ident">CUresult</span>::<span class="ident">CUDA_ERROR_NO_DEVICE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NoDevice</span>(
+                <span class="string">&quot;Unable to find a CUDA device. Try run `nvidia-smi` on your console.&quot;</span>,
+            )),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to initialze the Cuda Driver API.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
         }
     }
 }

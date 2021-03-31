@@ -37,8 +37,6 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a Rust wrapper around Cuda&#39;s Module.</span>
 
@@ -56,9 +54,7 @@
 <span class="kw">impl</span> <span class="ident">Module</span> {
     <span class="doccomment">/// Initializes a new Cuda Module.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_isize</span>(<span class="ident">id</span>: <span class="ident">isize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Module</span> {
-        <span class="ident">Module</span> {
-            <span class="ident">id</span>,
-        }
+        <span class="ident">Module</span> { <span class="ident">id</span> }
     }
 
     <span class="comment">// /// Initializes a new Cuda Module from its C type.</span>

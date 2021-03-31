@@ -38,7 +38,6 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
-<span id="38">38</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Greenglas provides convenient and universal Machine Learning Transformer</span>
 <span class="doccomment">//! for non-numeric data types such as: `Strings`, `Images` and `Audio`.</span>
@@ -56,22 +55,21 @@
 )]</span>
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster</span> <span class="kw">as</span> <span class="ident">co</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">murmurhash3</span> <span class="kw">as</span> <span class="ident">murmur3</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">image</span> <span class="kw">as</span> <span class="ident">image_crate</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">murmurhash3</span> <span class="kw">as</span> <span class="ident">murmur3</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">image</span>::<span class="ident">Image</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">word</span>::<span class="ident">Word</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">transformer</span>::<span class="ident">Transformer</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">word</span>::<span class="ident">Word</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">modifier</span>::<span class="ident">Set</span>;
 
-<span class="doccomment">/// Transformer</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">transformer</span>;
 <span class="doccomment">/// The Image Struct and its Modifiers</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">image</span>;
+<span class="doccomment">/// Transformer</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">transformer</span>;
 <span class="doccomment">/// The Word Struct and its Modifiers</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">word</span>;
-
 
 <span class="doccomment">/// Re-exports from the modifier crate.</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">modifier</span> {

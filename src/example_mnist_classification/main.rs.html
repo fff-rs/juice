@@ -313,6 +313,20 @@
 <span id="310">310</span>
 <span id="311">311</span>
 <span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster</span> <span class="kw">as</span> <span class="ident">co</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster_nn</span> <span class="kw">as</span> <span class="ident">conn</span>;
@@ -388,12 +402,14 @@ Options:
                     <span class="string">&quot;train-images-idx3-ubyte.gz&quot;</span>,
                     <span class="string">&quot;train-labels-idx1-ubyte.gz&quot;</span>,
                     <span class="string">&quot;t10k-images-idx3-ubyte.gz&quot;</span>,
-                    <span class="string">&quot;t10k-labels-idx1-ubyte.gz&quot;</span>
+                    <span class="string">&quot;t10k-labels-idx1-ubyte.gz&quot;</span>,
                 ];
                 <span class="ident">download_datasets</span>(
                     <span class="kw-2">&amp;</span><span class="ident">datasets</span>,
                     <span class="kw-2">&amp;</span><span class="string">&quot;./assets/mnist/&quot;</span>,
-                    <span class="string">&quot;http://yann.lecun.com/exdb/mnist/&quot;</span>).<span class="ident">unwrap</span>();
+                    <span class="string">&quot;http://yann.lecun.com/exdb/mnist/&quot;</span>,
+                )
+                .<span class="ident">unwrap</span>();
 
                 <span class="ident">unzip_datasets</span>(<span class="kw-2">&amp;</span><span class="ident">datasets</span>, <span class="kw-2">&amp;</span><span class="string">&quot;./assets/mnist/&quot;</span>).<span class="ident">unwrap</span>();
             }
@@ -410,7 +426,8 @@ Options:
                     <span class="kw-2">&amp;</span><span class="ident">datasets</span>,
                     <span class="kw-2">&amp;</span><span class="string">&quot;./assets/mnist-fashion/&quot;</span>,
                     <span class="string">&quot;http://fashion-mnist.s3-website.eu-central-1.amazonaws.com&quot;</span>,
-                ).<span class="ident">unwrap</span>();
+                )
+                .<span class="ident">unwrap</span>();
                 <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Fashion MNIST dataset downloaded&quot;</span>.<span class="ident">to_string</span>());
 
                 <span class="ident">unzip_datasets</span>(<span class="kw-2">&amp;</span><span class="ident">datasets</span>, <span class="kw-2">&amp;</span><span class="string">&quot;./assets/mnist-fashion/&quot;</span>).<span class="ident">unwrap</span>();
@@ -420,7 +437,7 @@ Options:
         }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_mnist</span> {
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-            <span class="ident">run_mnist</span>(
+        <span class="ident">run_mnist</span>(
             <span class="ident">MnistType</span>::<span class="ident">Numbers</span>,
             <span class="ident">args</span>.<span class="ident">arg_model_name</span>,
             <span class="ident">args</span>.<span class="ident">arg_batch_size</span>,
@@ -428,12 +445,12 @@ Options:
             <span class="ident">args</span>.<span class="ident">arg_momentum</span>,
         );
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-            {
-                <span class="macro">println</span><span class="macro">!</span>(
+        {
+            <span class="macro">println</span><span class="macro">!</span>(
                     <span class="string">&quot;Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda.&quot;</span>
                 );
-                <span class="macro">panic</span><span class="macro">!</span>()
-            }
+            <span class="macro">panic</span><span class="macro">!</span>()
+        }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_fashion</span> {
         <span class="ident">run_mnist</span>(
             <span class="ident">MnistType</span>::<span class="ident">Fashion</span>,
@@ -446,7 +463,11 @@ Options:
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-<span class="kw">fn</span> <span class="ident">add_conv_net</span>(<span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>, <span class="ident">batch_size</span>: <span class="ident">usize</span>, <span class="ident">pixel_dim</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
+<span class="kw">fn</span> <span class="ident">add_conv_net</span>(
+    <span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>,
+    <span class="ident">batch_size</span>: <span class="ident">usize</span>,
+    <span class="ident">pixel_dim</span>: <span class="ident">usize</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
     <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
         <span class="string">&quot;reshape&quot;</span>,
         <span class="ident">ReshapeConfig</span>::<span class="ident">of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>, <span class="ident">pixel_dim</span>, <span class="ident">pixel_dim</span>]),
@@ -482,7 +503,11 @@ Options:
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-<span class="kw">fn</span> <span class="ident">add_conv_net</span>(<span class="ident">_net_cfg</span>: <span class="ident">SequentialConfig</span>, <span class="ident">_batch_size</span>: <span class="ident">usize</span>, <span class="ident">_pixel_dim</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
+<span class="kw">fn</span> <span class="ident">add_conv_net</span>(
+    <span class="ident">_net_cfg</span>: <span class="ident">SequentialConfig</span>,
+    <span class="ident">_batch_size</span>: <span class="ident">usize</span>,
+    <span class="ident">_pixel_dim</span>: <span class="ident">usize</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
     <span class="macro">println</span><span class="macro">!</span>(
         <span class="string">&quot;Currently Juice does not have a native pooling function to use with Conv Nets - you can either try
         the CUDA implementation, or use a different type of layer&quot;</span>
@@ -490,7 +515,11 @@ Options:
     <span class="macro">panic</span><span class="macro">!</span>()
 }
 
-<span class="kw">fn</span> <span class="ident">add_mlp</span>(<span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>, <span class="ident">batch_size</span>: <span class="ident">usize</span>, <span class="ident">pixel_count</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
+<span class="kw">fn</span> <span class="ident">add_mlp</span>(
+    <span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>,
+    <span class="ident">batch_size</span>: <span class="ident">usize</span>,
+    <span class="ident">pixel_count</span>: <span class="ident">usize</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
     <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
         <span class="string">&quot;reshape&quot;</span>,
         <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="ident">ReshapeConfig</span>::<span class="ident">of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">pixel_count</span>])),
@@ -515,7 +544,6 @@ Options:
     <span class="ident">net_cfg</span>
 }
 
-
 <span class="kw">fn</span> <span class="ident">run_mnist</span>(
     <span class="ident">mnist_type</span>: <span class="ident">MnistType</span>,
     <span class="ident">model_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
@@ -530,7 +558,7 @@ Options:
 
     <span class="kw">let</span> <span class="ident">asset_path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">mnist_type</span> {
         <span class="ident">MnistType</span>::<span class="ident">Fashion</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist-fashion&quot;</span>,
-        <span class="ident">MnistType</span>::<span class="ident">Numbers</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist&quot;</span>
+        <span class="ident">MnistType</span>::<span class="ident">Numbers</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist&quot;</span>,
     };
 
     <span class="kw">let</span> <span class="ident">Mnist</span> {
@@ -574,9 +602,9 @@ Options:
 
     <span class="comment">// set up backends</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-        <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_cuda_backend</span>());
+    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_cuda_backend</span>());
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-        <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_native_backend</span>());
+    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_native_backend</span>());
 
     <span class="comment">// set up solver</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solver_cfg</span> <span class="op">=</span> <span class="ident">SolverConfig</span> {
@@ -604,7 +632,7 @@ Options:
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
 
         <span class="kw">for</span> (<span class="ident">batch_n</span>, (<span class="ident">label_val</span>, <span class="kw-2">ref</span> <span class="ident">input</span>)) <span class="kw">in</span>
-        <span class="ident">decoded_images</span>.<span class="ident">by_ref</span>().<span class="ident">take</span>(<span class="ident">batch_size</span>).<span class="ident">enumerate</span>()
+            <span class="ident">decoded_images</span>.<span class="ident">by_ref</span>().<span class="ident">take</span>(<span class="ident">batch_size</span>).<span class="ident">enumerate</span>()
         {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input_tensor</span> <span class="op">=</span> <span class="ident">inp_lock</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">label_tensor</span> <span class="op">=</span> <span class="ident">label_lock</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();

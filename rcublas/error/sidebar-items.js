@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Error","Defines cuBLAS errors."]]});
+initSidebarItems({"enum":[["Error","Defines cuBLAS errors."]],"type":[["Result",""]]});

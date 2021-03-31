@@ -1700,7 +1700,6 @@
 <span id="1697">1697</span>
 <span id="1698">1698</span>
 <span id="1699">1699</span>
-<span id="1700">1700</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the generics and interfaces for the specific Layers.</span>
 <span class="doccomment">//!</span>
@@ -2243,8 +2242,7 @@
             <span class="kw">if</span> <span class="ident">old_shape</span>.<span class="ident">size</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">reshaped_shape</span>.<span class="ident">size</span>() {
                 <span class="macro">panic</span><span class="macro">!</span>(
                     <span class="string">&quot;Input Shape Mismatch\nExpected {:?}\nActual {:?}&quot;</span>,
-                    <span class="ident">reshaped_shape</span>,
-                    <span class="ident">old_shape</span>
+                    <span class="ident">reshaped_shape</span>, <span class="ident">old_shape</span>
                 );
             }
             <span class="self">self</span>.<span class="ident">input_blobs_data</span>[<span class="ident">input_i</span>]

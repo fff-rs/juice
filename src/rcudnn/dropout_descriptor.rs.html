@@ -60,8 +60,6 @@
 <span id="57">57</span>
 <span id="58">58</span>
 <span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Defines a Dropout Descriptor.</span>
 <span class="doccomment">//!</span>
@@ -114,9 +112,7 @@
 
     <span class="doccomment">/// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_c</span>(<span class="ident">id</span>: <span class="ident">cudnnDropoutDescriptor_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DropoutDescriptor</span> {
-        <span class="ident">DropoutDescriptor</span> {
-            <span class="ident">id</span>
-        }
+        <span class="ident">DropoutDescriptor</span> { <span class="ident">id</span> }
     }
 
     <span class="doccomment">/// Returns the CUDA cuDNN Tensor Descriptor as its C type.</span>

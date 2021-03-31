@@ -217,7 +217,6 @@
 <span id="214">214</span>
 <span id="215">215</span>
 <span id="216">216</span>
-<span id="217">217</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides a simple and unified API to run fast and highly parallel computations on different</span>
 <span class="doccomment">//! devices such as CPUs and GPUs, accross different computation languages such as OpenCL and</span>
@@ -362,46 +361,45 @@
     <span class="ident">clippy</span>::<span class="ident">unused_qualifications</span>,
     <span class="ident">clippy</span>::<span class="ident">complexity</span>
 )]</span>
-
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable_alloc&quot;</span>, <span class="ident">feature</span>(<span class="ident">alloc</span>))]</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable_alloc&quot;</span>)]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">alloc</span>;
 
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">libc</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bitflags</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">enum_primitive</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">lazy_static</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">libc</span>;
 
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">byteorder</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">num</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">regex</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">num</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">byteorder</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">backend</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">binary</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">device</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hardware</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">framework</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">frameworks</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tensor</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">hardware</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">operation</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">binary</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">plugin</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tensor</span>;
 
 <span class="comment">// These will be exported with the prelude.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">backend</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::{<span class="ident">IDevice</span>, <span class="ident">IMemory</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::{<span class="ident">IHardware</span>, <span class="ident">HardwareType</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">framework</span>::<span class="ident">IFramework</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tensor</span>::{<span class="ident">SharedTensor</span>, <span class="ident">TensorDesc</span>, <span class="ident">ITensorDesc</span>, <span class="ident">IntoTensorDesc</span>};
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Native</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Cuda</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rcudnn</span> <span class="kw">as</span> <span class="ident">cudnn</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Native</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::{<span class="ident">HardwareType</span>, <span class="ident">IHardware</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tensor</span>::{<span class="ident">ITensorDesc</span>, <span class="ident">IntoTensorDesc</span>, <span class="ident">SharedTensor</span>, <span class="ident">TensorDesc</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rcublas</span> <span class="kw">as</span> <span class="ident">cublas</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rcudnn</span> <span class="kw">as</span> <span class="ident">cudnn</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frameworks</span>::<span class="ident">OpenCL</span>;
@@ -425,14 +423,14 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">prelude</span> {
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">backend</span>::<span class="kw-2">*</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">device</span>::{<span class="ident">IDevice</span>, <span class="ident">IMemory</span>};
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::{<span class="ident">IHardware</span>, <span class="ident">HardwareType</span>};
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">framework</span>::<span class="ident">IFramework</span>;
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">flatbox</span>::<span class="ident">FlatBox</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tensor</span>::{<span class="ident">SharedTensor</span>, <span class="ident">TensorDesc</span>, <span class="ident">ITensorDesc</span>, <span class="ident">IntoTensorDesc</span>};
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Native</span>;
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Cuda</span>;
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">frameworks</span>::<span class="ident">Native</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">hardware</span>::{<span class="ident">HardwareType</span>, <span class="ident">IHardware</span>};
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tensor</span>::{<span class="ident">ITensorDesc</span>, <span class="ident">IntoTensorDesc</span>, <span class="ident">SharedTensor</span>, <span class="ident">TensorDesc</span>};
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;opencl&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frameworks</span>::<span class="ident">OpenCL</span>;
 }

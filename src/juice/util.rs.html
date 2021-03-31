@@ -142,8 +142,6 @@
 <span id="139">139</span>
 <span id="140">140</span>
 <span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides common utility functions</span>
 
@@ -188,9 +186,7 @@
 <span class="doccomment">/// is assumed to be the batchsize.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Allocates memory on a Native Backend if neccessary.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_batch_sample</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">NumCast</span> <span class="op">+</span> ::<span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">Copy</span><span class="op">&gt;</span>(
-    <span class="ident">tensor</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-    <span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>], <span class="ident">i</span>: <span class="ident">usize</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_batch_sample</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">NumCast</span> <span class="op">+</span> ::<span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">Copy</span><span class="op">&gt;</span>(<span class="ident">tensor</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>, <span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>], <span class="ident">i</span>: <span class="ident">usize</span>) {
     <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">native_backend</span>();
     <span class="kw">let</span> <span class="ident">tensor_desc</span> <span class="op">=</span> <span class="ident">tensor</span>.<span class="ident">desc</span>();
     <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="ident">tensor_desc</span>[<span class="number">0</span>];

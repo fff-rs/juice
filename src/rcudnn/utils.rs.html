@@ -410,12 +410,14 @@
 <span id="407">407</span>
 <span id="408">408</span>
 <span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Describes utility functionality for CUDA cuDNN.</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::{
     <span class="ident">ActivationDescriptor</span>, <span class="ident">ConvolutionDescriptor</span>, <span class="ident">DropoutDescriptor</span>, <span class="ident">FilterDescriptor</span>,
-    <span class="ident">NormalizationDescriptor</span>, <span class="ident">PoolingDescriptor</span>, <span class="ident">RnnDescriptor</span>
+    <span class="ident">NormalizationDescriptor</span>, <span class="ident">PoolingDescriptor</span>, <span class="ident">RnnDescriptor</span>,
 };
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cuda</span>::<span class="ident">CudaDeviceMemory</span>;
 
@@ -688,14 +690,14 @@
 <span class="doccomment">/// * `hidden_size` Size of the hidden layer</span>
 <span class="doccomment">/// * `num_layers` Number of layers</span>
 <span class="doccomment">/// * `dropout_desc` Descriptor to a previously created &amp; initialized dropout descriptor, applied</span>
-<span class="doccomment">/// between layers. </span>
+<span class="doccomment">/// between layers.</span>
 <span class="doccomment">/// * `input_mode` Specifies behaviour at the input to the first layer</span>
 <span class="doccomment">/// * `direction_mode` Specifies the recurrence pattern - i.e bidirectional</span>
 <span class="doccomment">/// * `rnn_mode` Type of network used in routines ForwardInference, ForwardTraining, BackwardData,</span>
 <span class="doccomment">/// BackwardWeights. Can be ReLU, tanh, LSTM (Long Short Term Memory), or GRU (Gated Recurrent Unit).</span>
 <span class="doccomment">/// * `algo` - Only required in v6 implementation FIXME: Should this be checked in compilation?</span>
 <span class="doccomment">/// * `data_type` Math Precision - default f32</span>
-<span class="doccomment">/// </span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// The LSTM network offered by CUDNN is a four-gate network that does not use peephole connections.</span>
 <span class="doccomment">/// Greff, et al. (2015)[1] suggests it doesn&#39;t matter what kind of network it is, although</span>
 <span class="doccomment">/// Jozefowicz, et al. (2015)[2] suggests that the most important gates are the forget and input,</span>
@@ -742,7 +744,7 @@
         <span class="ident">data_type</span>: <span class="ident">cudnnDataType_t</span>,
         <span class="ident">workspace_size</span>: <span class="ident">usize</span>,
         <span class="ident">training_reserve_size</span>: <span class="ident">usize</span>,
-        <span class="ident">training_reserve</span>: <span class="ident">CudaDeviceMemory</span>
+        <span class="ident">training_reserve</span>: <span class="ident">CudaDeviceMemory</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RnnConfig</span> {
         <span class="ident">RnnConfig</span> {
             <span class="ident">rnn_desc</span>,
@@ -757,7 +759,7 @@
             <span class="ident">data_type</span>,
             <span class="ident">workspace_size</span>,
             <span class="ident">training_reserve_size</span>,
-            <span class="ident">training_reserve</span>
+            <span class="ident">training_reserve</span>,
         }
     }
 
@@ -770,10 +772,12 @@
         <span class="self">self</span>.<span class="ident">rnn_workspace_size</span>()
     }
     <span class="doccomment">/// Training Reserve Size for RNN</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">training_reserve_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> { <span class="self">self</span>.<span class="ident">training_reserve_size</span> }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">training_reserve_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+        <span class="self">self</span>.<span class="ident">training_reserve_size</span>
+    }
     <span class="doccomment">/// Training Reserve Space on GPU for RNN</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">training_reserve</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">CudaDeviceMemory</span> {
-         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">training_reserve</span>
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">training_reserve</span>
     }
 
     <span class="doccomment">/// Accessor function for Rnn Descriptor</span>
