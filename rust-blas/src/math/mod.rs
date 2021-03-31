@@ -8,8 +8,8 @@ use std::ops::{BitXor, Deref};
 
 pub use self::mat::Mat;
 
-pub mod mat;
 pub mod bandmat;
+pub mod mat;
 pub mod matrix;
 pub mod matrix_vector;
 pub mod vector;

@@ -1,7 +1,7 @@
-use crate::ffi::*;
-use crate::{API, Error};
 use super::Context;
 use super::PointerMode;
+use crate::ffi::*;
+use crate::{Error, API};
 use lazy_static::lazy_static;
 use log::debug;
 use std::collections::HashSet;
@@ -9,9 +9,7 @@ use std::convert::AsRef;
 use std::convert::TryFrom;
 use std::ptr;
 use std::ptr::NonNull;
-use std::sync::{Mutex,Arc};
-
-
+use std::sync::{Arc, Mutex};
 
 // TODO:
 // extract the cookie tracking into a separate crate
@@ -21,10 +19,10 @@ use std::sync::{Mutex,Arc};
 //  * cudaMalloc / cudaFree
 //  * cublasContext_new / _destroy
 //  * cudnnContext_new / _destroy
-#[derive(Hash,Eq,PartialEq)]
+#[derive(Hash, Eq, PartialEq)]
 struct Cookie(NonNull<cublasContext>);
 
-unsafe impl std::marker::Send for Cookie { }
+unsafe impl std::marker::Send for Cookie {}
 
 impl Cookie {
     fn as_ptr(&self) -> *mut cublasContext {
@@ -34,7 +32,7 @@ impl Cookie {
 
 impl TryFrom<cublasHandle_t> for Cookie {
     type Error = Error;
-    fn try_from(handle: *mut cublasContext) -> std::result::Result<Self,Self::Error> {
+    fn try_from(handle: *mut cublasContext) -> std::result::Result<Self, Self::Error> {
         if let Some(nn) = NonNull::new(handle) {
             Ok(Cookie(nn))
         } else {
@@ -44,18 +42,15 @@ impl TryFrom<cublasHandle_t> for Cookie {
 }
 
 lazy_static! {
-    static ref TRACKER: Arc<Mutex<HashSet<Cookie>>> =  {
-        Arc::new(Mutex::new(HashSet::with_capacity(3)))
-    };
+    static ref TRACKER: Arc<Mutex<HashSet<Cookie>>> =
+        { Arc::new(Mutex::new(HashSet::with_capacity(3))) };
 }
-
 
 fn track(handle: cublasHandle_t) {
     let mut guard = TRACKER.as_ref().lock().unwrap();
     let _ = guard.insert(Cookie::try_from(handle as *mut cublasContext).unwrap());
     debug!("Added handle {:?}, total of {}", handle, guard.len());
 }
-
 
 fn untrack(handle: cublasHandle_t) {
     let mut guard = TRACKER.as_ref().lock().unwrap();
@@ -80,7 +75,6 @@ impl API {
     /// Creating contexts all the time can lead to performance problems.
     /// Generally one Context per GPU device and configuration is recommended.
     pub fn create() -> Result<Context, Error> {
-
         let handle = unsafe { API::ffi_create() }?;
         track(handle);
         Ok(Context::from_c(handle))
@@ -103,9 +97,7 @@ impl API {
 
     /// Get CUBLAS Version
     pub fn get_version(context: &Context) -> Result<i32, Error> {
-        unsafe {
-            API::ffi_get_version(*context.id_c())
-        }
+        unsafe { API::ffi_get_version(*context.id_c()) }
     }
 
     unsafe fn ffi_get_version(handle: cublasHandle_t) -> Result<i32, Error> {
@@ -114,23 +106,23 @@ impl API {
         match cublasGetVersion_v2(handle, version_ptr) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(version),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-           status => Err(Error::Unknown("Other Unknown Error with CUBLAS Get Version", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Other Unknown Error with CUBLAS Get Version",
+                status as i32 as u64,
+            )),
         }
     }
 
     /// Retrieve the pointer mode for a given cuBLAS context.
     pub fn get_pointer_mode(context: &Context) -> Result<PointerMode, Error> {
-        Ok(PointerMode::from_c(
-            unsafe { API::ffi_get_pointer_mode(*context.id_c()) }?,
-        ))
+        Ok(PointerMode::from_c(unsafe {
+            API::ffi_get_pointer_mode(*context.id_c())
+        }?))
     }
 
     /// Set the pointer mode for a given cuBLAS context.
     pub fn set_pointer_mode(context: &mut Context, pointer_mode: PointerMode) -> Result<(), Error> {
-        Ok(unsafe {
-            API::ffi_set_pointer_mode(*context.id_c(), pointer_mode.as_c())
-        }?)
+        Ok(unsafe { API::ffi_set_pointer_mode(*context.id_c(), pointer_mode.as_c()) }?)
     }
 
     unsafe fn ffi_create() -> Result<cublasHandle_t, Error> {
@@ -140,8 +132,9 @@ impl API {
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
             cublasStatus_t::CUBLAS_STATUS_ARCH_MISMATCH => Err(Error::ArchMismatch),
             cublasStatus_t::CUBLAS_STATUS_ALLOC_FAILED => Err(Error::AllocFailed),
-           status => Err(Error::Unknown("Unable to create the cuBLAS context/resources.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to create the cuBLAS context/resources.",
+                status as i32 as u64,
             )),
         }
     }
@@ -150,8 +143,9 @@ impl API {
         match cublasDestroy_v2(handle) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-           status => Err(Error::Unknown("Unable to destroy the CUDA cuDNN context/resources.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy the CUDA cuDNN context/resources.",
+                status as i32 as u64,
             )),
         }
     }
@@ -161,8 +155,10 @@ impl API {
         match cublasGetPointerMode_v2(handle, pointer_mode.as_mut_ptr()) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(pointer_mode[0]),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-           status => Err(Error::Unknown("Unable to get cuBLAS pointer mode.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to get cuBLAS pointer mode.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -173,8 +169,10 @@ impl API {
         match cublasSetPointerMode_v2(handle, pointer_mode) {
             cublasStatus_t::CUBLAS_STATUS_SUCCESS => Ok(()),
             cublasStatus_t::CUBLAS_STATUS_NOT_INITIALIZED => Err(Error::NotInitialized),
-           status => Err(Error::Unknown("Unable to get cuBLAS pointer mode.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to get cuBLAS pointer mode.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -196,8 +194,8 @@ impl API {
 #[cfg(test)]
 mod test {
     use crate::ffi::cublasPointerMode_t;
-    use crate::API;
     use crate::Context;
+    use crate::API;
 
     #[test]
     fn manual_context_creation() {
@@ -231,13 +229,15 @@ mod test {
             API::ffi_set_pointer_mode(
                 *context.id_c(),
                 cublasPointerMode_t::CUBLAS_POINTER_MODE_DEVICE,
-            ).unwrap();
+            )
+            .unwrap();
             let mode = API::ffi_get_pointer_mode(*context.id_c()).unwrap();
             assert_eq!(cublasPointerMode_t::CUBLAS_POINTER_MODE_DEVICE, mode);
             API::ffi_set_pointer_mode(
                 *context.id_c(),
                 cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST,
-            ).unwrap();
+            )
+            .unwrap();
             let mode2 = API::ffi_get_pointer_mode(*context.id_c()).unwrap();
             assert_eq!(cublasPointerMode_t::CUBLAS_POINTER_MODE_HOST, mode2);
         }

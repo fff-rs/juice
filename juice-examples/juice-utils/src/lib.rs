@@ -1,10 +1,14 @@
 use flate2::read::GzDecoder;
-use reqwest::blocking::Client;
 use fs_err as fs;
-use std::io::prelude::*;
+use reqwest::blocking::Client;
 use std::io;
+use std::io::prelude::*;
 
-pub fn download_datasets(datasets: &[&str], asset_path: &str, base_url: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn download_datasets(
+    datasets: &[&str],
+    asset_path: &str,
+    base_url: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new();
     std::fs::create_dir_all(asset_path)?;
     for dataset in datasets {

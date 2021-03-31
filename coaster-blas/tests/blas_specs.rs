@@ -354,7 +354,6 @@ macro_rules! test_blas {
                 test_nrm2::<$t, _>($backend_getter());
             }
 
-
             #[test]
             fn it_computes_correct_scal() {
                 test_scal::<$t, _>($backend_getter());

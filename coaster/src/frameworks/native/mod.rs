@@ -4,30 +4,29 @@
 //!
 //!
 
-use crate::framework::IFramework;
-use crate::backend::{Backend, IBackend};
-use crate::hardware::{HardwareType, IHardware};
-use self::hardware::Hardware;
-pub use self::device::Cpu;
-pub use self::function::Function;
 pub use self::binary::Binary;
+pub use self::device::Cpu;
 pub use self::error::Error;
+pub use self::function::Function;
+use self::hardware::Hardware;
 #[cfg(not(feature = "unstable_alloc"))]
 pub use self::stable_alloc::allocate_boxed_slice;
 #[cfg(feature = "unstable_alloc")]
 pub use self::unstable_alloc::allocate_boxed_slice;
+use crate::backend::{Backend, IBackend};
+use crate::framework::IFramework;
+use crate::hardware::{HardwareType, IHardware};
 
-pub mod device;
-pub mod flatbox;
-pub mod hardware;
-pub mod function;
 pub mod binary;
+pub mod device;
 mod error;
+pub mod flatbox;
+pub mod function;
+pub mod hardware;
 #[cfg(not(feature = "unstable_alloc"))]
 mod stable_alloc;
 #[cfg(feature = "unstable_alloc")]
 mod unstable_alloc;
-
 
 /// Initialise the Native Backend for running Tensor Operations
 pub fn get_native_backend() -> Backend<Native> {
@@ -55,7 +54,9 @@ impl IFramework for Native {
     type D = Cpu;
     type B = Binary;
 
-    fn ID() -> &'static str { "NATIVE" }
+    fn ID() -> &'static str {
+        "NATIVE"
+    }
 
     fn new() -> Native {
         let hardwares = Native::load_hardwares().expect("Native hardwares are always ok. qed");
@@ -71,7 +72,7 @@ impl IFramework for Native {
             .set_hardware_type(Some(HardwareType::CPU))
             .set_compute_units(Some(1))
             .build();
-        Ok(vec!(cpu))
+        Ok(vec![cpu])
     }
 
     fn hardwares(&self) -> &[Hardware] {

@@ -1,9 +1,9 @@
 //! Provides the Cuda API with its memory/buffer functionality.
 
-use super::{API, Error};
-use crate::frameworks::native::flatbox::FlatBox;
-use crate::frameworks::cuda::Memory;
 use super::ffi::*;
+use super::{Error, API};
+use crate::frameworks::cuda::Memory;
+use crate::frameworks::native::flatbox::FlatBox;
 
 impl API {
     /// Allocates memory on the Cuda device.
@@ -12,46 +12,81 @@ impl API {
     /// aligned for any kind of variable. The memory is not cleared.
     /// Returns a memory id for the created buffer, which can now be writen to.
     pub fn mem_alloc(bytesize: size_t) -> Result<Memory, Error> {
-        Ok(Memory::from_c(unsafe {API::ffi_mem_alloc(bytesize)}?))
+        Ok(Memory::from_c(unsafe { API::ffi_mem_alloc(bytesize) }?))
     }
 
     /// Releases allocated memory from the Cuda device.
     pub fn mem_free(memory: CUdeviceptr) -> Result<(), Error> {
-        unsafe {API::ffi_mem_free(memory)}
+        unsafe { API::ffi_mem_free(memory) }
     }
 
     /// Copies memory from the Host to the Cuda device.
     pub fn mem_cpy_h_to_d(host_mem: &FlatBox, device_mem: &mut Memory) -> Result<(), Error> {
-        unsafe {API::ffi_mem_cpy_h_to_d(*device_mem.id_c(), host_mem.as_slice().as_ptr(), host_mem.byte_size())}
+        unsafe {
+            API::ffi_mem_cpy_h_to_d(
+                *device_mem.id_c(),
+                host_mem.as_slice().as_ptr(),
+                host_mem.byte_size(),
+            )
+        }
     }
 
     /// Copies memory from the Cuda device to the Host.
     pub fn mem_cpy_d_to_h(device_mem: &Memory, host_mem: &mut FlatBox) -> Result<(), Error> {
-        unsafe {API::ffi_mem_cpy_d_to_h(host_mem.as_mut_slice().as_mut_ptr(), *device_mem.id_c(), host_mem.byte_size())}
+        unsafe {
+            API::ffi_mem_cpy_d_to_h(
+                host_mem.as_mut_slice().as_mut_ptr(),
+                *device_mem.id_c(),
+                host_mem.byte_size(),
+            )
+        }
     }
 
     unsafe fn ffi_mem_alloc(bytesize: size_t) -> Result<CUdeviceptr, Error> {
         let mut memory_id: CUdeviceptr = 0;
         match cuMemAlloc_v2(&mut memory_id, bytesize) {
             CUresult::CUDA_SUCCESS => Ok(memory_id),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            CUresult::CUDA_ERROR_OUT_OF_MEMORY => Err(Error::OutOfMemory("Device is out of memory.")),
-           status => Err(Error::Unknown("Unable to allocate memory.", status as i32 as u64)),
+            CUresult::CUDA_ERROR_DEINITIALIZED => {
+                Err(Error::Deinitialized("CUDA got deinitialized."))
+            }
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => {
+                Err(Error::NotInitialized("CUDA is not initialized."))
+            }
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => {
+                Err(Error::InvalidContext("No valid context available."))
+            }
+            CUresult::CUDA_ERROR_INVALID_VALUE => {
+                Err(Error::InvalidValue("Invalid value provided."))
+            }
+            CUresult::CUDA_ERROR_OUT_OF_MEMORY => {
+                Err(Error::OutOfMemory("Device is out of memory."))
+            }
+            status => Err(Error::Unknown(
+                "Unable to allocate memory.",
+                status as i32 as u64,
+            )),
         }
     }
 
     unsafe fn ffi_mem_free(dptr: CUdeviceptr) -> Result<(), Error> {
         match cuMemFree_v2(dptr) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-           status => Err(Error::Unknown("Unable to free memory.", status as i32 as u64)),
-
+            CUresult::CUDA_ERROR_DEINITIALIZED => {
+                Err(Error::Deinitialized("CUDA got deinitialized."))
+            }
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => {
+                Err(Error::NotInitialized("CUDA is not initialized."))
+            }
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => {
+                Err(Error::InvalidContext("No valid context available."))
+            }
+            CUresult::CUDA_ERROR_INVALID_VALUE => {
+                Err(Error::InvalidValue("Invalid value provided."))
+            }
+            status => Err(Error::Unknown(
+                "Unable to free memory.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -62,12 +97,22 @@ impl API {
     ) -> Result<(), Error> {
         match cuMemcpyHtoD_v2(dst_device, src_host, byte_count) {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-           status => Err(Error::Unknown("Unable to copy memory from host to device.", status as i32 as u64)),
-
+            CUresult::CUDA_ERROR_DEINITIALIZED => {
+                Err(Error::Deinitialized("CUDA got deinitialized."))
+            }
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => {
+                Err(Error::NotInitialized("CUDA is not initialized."))
+            }
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => {
+                Err(Error::InvalidContext("No valid context available."))
+            }
+            CUresult::CUDA_ERROR_INVALID_VALUE => {
+                Err(Error::InvalidValue("Invalid value provided."))
+            }
+            status => Err(Error::Unknown(
+                "Unable to copy memory from host to device.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -79,11 +124,22 @@ impl API {
         let status = cuMemcpyDtoH_v2(dst_host, src_device, byte_count);
         match status {
             CUresult::CUDA_SUCCESS => Ok(()),
-            CUresult::CUDA_ERROR_DEINITIALIZED => Err(Error::Deinitialized("CUDA got deinitialized.")),
-            CUresult::CUDA_ERROR_NOT_INITIALIZED => Err(Error::NotInitialized("CUDA is not initialized.")),
-            CUresult::CUDA_ERROR_INVALID_CONTEXT => Err(Error::InvalidContext("No valid context available.")),
-            CUresult::CUDA_ERROR_INVALID_VALUE => Err(Error::InvalidValue("Invalid value provided.")),
-            status => Err(Error::Unknown("Unable to copy memory from device to host.", status as i32 as u64)),
+            CUresult::CUDA_ERROR_DEINITIALIZED => {
+                Err(Error::Deinitialized("CUDA got deinitialized."))
+            }
+            CUresult::CUDA_ERROR_NOT_INITIALIZED => {
+                Err(Error::NotInitialized("CUDA is not initialized."))
+            }
+            CUresult::CUDA_ERROR_INVALID_CONTEXT => {
+                Err(Error::InvalidContext("No valid context available."))
+            }
+            CUresult::CUDA_ERROR_INVALID_VALUE => {
+                Err(Error::InvalidValue("Invalid value provided."))
+            }
+            status => Err(Error::Unknown(
+                "Unable to copy memory from device to host.",
+                status as i32 as u64,
+            )),
         }
     }
 }

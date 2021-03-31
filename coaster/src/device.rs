@@ -7,22 +7,23 @@
 //! [backend]: ../backend/index.html
 use std::any::Any;
 
-use crate::hardware::IHardware;
-#[cfg(feature = "native")]
-use crate::frameworks::native::Error as NativeError;
-#[cfg(feature = "opencl")]
-use frameworks::opencl::Error as OpenCLError;
 #[cfg(feature = "cuda")]
 use crate::frameworks::cuda::DriverError as CudaError;
-use std::{fmt, error};
+#[cfg(feature = "native")]
+use crate::frameworks::native::Error as NativeError;
+use crate::hardware::IHardware;
+#[cfg(feature = "opencl")]
+use frameworks::opencl::Error as OpenCLError;
+use std::{error, fmt};
 
 /// Marker trait for backing memory.
-pub trait IMemory { }
+pub trait IMemory {}
 
 /// Specifies Hardware behavior across frameworks.
 pub trait IDevice
-    where Self: Any + Clone + Eq + Any + MemorySync {
-
+where
+    Self: Any + Clone + Eq + Any + MemorySync,
+{
     /// The Hardware representation for this Device.
     type H: IHardware;
     /// The Memory representation for this Device.
@@ -41,11 +42,19 @@ pub trait IDevice
 /// so that base crate knows nothing about it at all.
 pub trait MemorySync {
     /// FIXME
-    fn sync_in(&self, my_memory: &mut dyn Any, src_device: &dyn Any, src_memory: &dyn Any)
-               -> Result<(), Error>;
+    fn sync_in(
+        &self,
+        my_memory: &mut dyn Any,
+        src_device: &dyn Any,
+        src_memory: &dyn Any,
+    ) -> Result<(), Error>;
     /// FIXME
-    fn sync_out(&self, my_memory: &dyn Any, dst_device: &dyn Any, dst_memory: &mut dyn Any)
-                -> Result<(), Error>;
+    fn sync_out(
+        &self,
+        my_memory: &dyn Any,
+        dst_device: &dyn Any,
+        dst_memory: &mut dyn Any,
+    ) -> Result<(), Error>;
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -81,7 +90,7 @@ impl fmt::Display for Error {
             #[cfg(feature = "opencl")]
             Error::OpenCL(ref err) => format!("OpenCL error: {}", err.to_string()),
             #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => format!("Cuda error: {}", err.to_string())
+            Error::Cuda(ref err) => format!("Cuda error: {}", err.to_string()),
         };
 
         write!(f, "{}", msg)

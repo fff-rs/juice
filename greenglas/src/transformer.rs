@@ -1,12 +1,11 @@
-use crate::co::prelude::*;
 use crate::co::plugin::numeric_helpers::*;
+use crate::co::prelude::*;
 
 /// The Transformer Trait
 ///
 /// Gets implemented for all Transformable Data Types.
 /// Allows all Transformable Data Types to get transformed into a `Blob`.
 pub trait Transformer {
-
     /// Transforms non-numeric data into a numeric `SharedTensor`
     ///
     /// The shape attribute is used to control the dimensions/shape of the Blob.
@@ -27,18 +26,27 @@ pub trait Transformer {
     fn transform_to_vec(&self) -> Vec<f32>;
 
     /// Write into a native Coaster Memory.
-    fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T]) -> Result<(), TransformerError> {
+    fn write_to_memory<T: NumCast + ::std::marker::Copy>(
+        mem: &mut FlatBox,
+        data: &[T],
+    ) -> Result<(), TransformerError> {
         Self::write_to_memory_offset(mem, data, 0)
     }
 
     /// Write into a native Coaster Memory with a offset.
-    fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) -> Result<(), TransformerError> {
+    fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(
+        mem: &mut FlatBox,
+        data: &[T],
+        offset: usize,
+    ) -> Result<(), TransformerError> {
         let mem_buffer = mem.as_mut_slice::<f32>();
         if offset == 0 && mem_buffer.len() != data.len() {
             return Err(TransformerError::InvalidShape);
         }
         for (index, datum) in data.iter().enumerate() {
-            let old_val = mem_buffer.get_mut(index + offset).ok_or(TransformerError::InvalidShape)?;
+            let old_val = mem_buffer
+                .get_mut(index + offset)
+                .ok_or(TransformerError::InvalidShape)?;
             *old_val = cast(*datum).unwrap();
         }
         Ok(())

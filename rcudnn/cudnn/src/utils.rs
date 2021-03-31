@@ -2,7 +2,7 @@
 
 use super::{
     ActivationDescriptor, ConvolutionDescriptor, DropoutDescriptor, FilterDescriptor,
-    NormalizationDescriptor, PoolingDescriptor, RnnDescriptor
+    NormalizationDescriptor, PoolingDescriptor, RnnDescriptor,
 };
 use crate::cuda::CudaDeviceMemory;
 
@@ -275,14 +275,14 @@ impl DropoutConfig {
 /// * `hidden_size` Size of the hidden layer
 /// * `num_layers` Number of layers
 /// * `dropout_desc` Descriptor to a previously created & initialized dropout descriptor, applied
-/// between layers. 
+/// between layers.
 /// * `input_mode` Specifies behaviour at the input to the first layer
 /// * `direction_mode` Specifies the recurrence pattern - i.e bidirectional
 /// * `rnn_mode` Type of network used in routines ForwardInference, ForwardTraining, BackwardData,
 /// BackwardWeights. Can be ReLU, tanh, LSTM (Long Short Term Memory), or GRU (Gated Recurrent Unit).
 /// * `algo` - Only required in v6 implementation FIXME: Should this be checked in compilation?
 /// * `data_type` Math Precision - default f32
-/// 
+///
 /// The LSTM network offered by CUDNN is a four-gate network that does not use peephole connections.
 /// Greff, et al. (2015)[1] suggests it doesn't matter what kind of network it is, although
 /// Jozefowicz, et al. (2015)[2] suggests that the most important gates are the forget and input,
@@ -329,7 +329,7 @@ impl RnnConfig {
         data_type: cudnnDataType_t,
         workspace_size: usize,
         training_reserve_size: usize,
-        training_reserve: CudaDeviceMemory
+        training_reserve: CudaDeviceMemory,
     ) -> RnnConfig {
         RnnConfig {
             rnn_desc,
@@ -344,7 +344,7 @@ impl RnnConfig {
             data_type,
             workspace_size,
             training_reserve_size,
-            training_reserve
+            training_reserve,
         }
     }
 
@@ -357,10 +357,12 @@ impl RnnConfig {
         self.rnn_workspace_size()
     }
     /// Training Reserve Size for RNN
-    pub fn training_reserve_size(&self) -> usize { self.training_reserve_size }
+    pub fn training_reserve_size(&self) -> usize {
+        self.training_reserve_size
+    }
     /// Training Reserve Space on GPU for RNN
     pub fn training_reserve(&self) -> &CudaDeviceMemory {
-         &self.training_reserve
+        &self.training_reserve
     }
 
     /// Accessor function for Rnn Descriptor

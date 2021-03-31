@@ -8,7 +8,7 @@ use std::slice;
 /// A Box without any knowledge of its underlying type.
 pub struct FlatBox {
     len: usize,
-    raw_box: *mut [u8]
+    raw_box: *mut [u8],
 }
 
 impl FlatBox {
@@ -16,7 +16,7 @@ impl FlatBox {
     pub fn from_box(b: Box<[u8]>) -> FlatBox {
         FlatBox {
             len: b.len(),
-            raw_box: Box::into_raw(b)
+            raw_box: Box::into_raw(b),
         }
     }
 
@@ -24,24 +24,14 @@ impl FlatBox {
     ///
     /// The preffered way to access native memory.
     pub fn as_slice<T>(&self) -> &[T] {
-        unsafe {
-            slice::from_raw_parts_mut(
-                self.raw_box as *mut T,
-                self.len / mem::size_of::<T>()
-            )
-        }
+        unsafe { slice::from_raw_parts_mut(self.raw_box as *mut T, self.len / mem::size_of::<T>()) }
     }
 
     /// Access memory as mutable slice.
     ///
     /// The preffered way to access native memory.
     pub fn as_mut_slice<T>(&mut self) -> &mut [T] {
-        unsafe {
-            slice::from_raw_parts_mut(
-                self.raw_box as *mut T,
-                self.len / mem::size_of::<T>()
-            )
-        }
+        unsafe { slice::from_raw_parts_mut(self.raw_box as *mut T, self.len / mem::size_of::<T>()) }
     }
 
     /// Returns memory size of the Flatbox.

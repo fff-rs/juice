@@ -40,9 +40,9 @@
 //! }
 //! ```
 
+use crate::device::IDevice;
 use crate::error::Error;
 use crate::framework::IFramework;
-use crate::device::IDevice;
 
 #[derive(Debug, Clone)]
 /// Defines the main and highest struct of Coaster.
@@ -67,12 +67,10 @@ impl<F: IFramework + Clone> Backend<F> {
     /// Initialize a new native Backend from a BackendConfig.
     pub fn new(config: BackendConfig<F>) -> Result<Backend<F>, Error> {
         let device = config.framework.new_device(config.hardwares)?;
-        Ok(
-            Backend {
-                framework: Box::new(config.framework),
-                device,
-            }
-        )
+        Ok(Backend {
+            framework: Box::new(config.framework),
+            device,
+        })
     }
 
     /// Returns the available hardware.
@@ -95,8 +93,9 @@ impl<F: IFramework + Clone> Backend<F> {
 ///
 /// Serves as a marker trait and helps for extern implementation.
 pub trait IBackend
-    where <<Self as IBackend>::F as IFramework>::D : IDevice {
-
+where
+    <<Self as IBackend>::F as IFramework>::D: IDevice,
+{
     /// Represents the Framework of a Backend.
     type F: IFramework + Clone;
 
@@ -104,7 +103,10 @@ pub trait IBackend
     fn device(&self) -> &<<Self as IBackend>::F as IFramework>::D;
 
     /// Try to create a default backend.
-    fn default() -> Result<Backend<Self::F>, Error> where Self: Sized {
+    fn default() -> Result<Backend<Self::F>, Error>
+    where
+        Self: Sized,
+    {
         let hw_framework = Self::F::new();
         let hardwares = hw_framework.hardwares();
         let framework = Self::F::new(); // dirty dirty hack to get around borrowing
@@ -113,7 +115,9 @@ pub trait IBackend
     }
 
     /// Synchronize backend.
-    fn synchronize(&self) -> Result<(), crate::framework::Error> { Ok(()) }
+    fn synchronize(&self) -> Result<(), crate::framework::Error> {
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone)]

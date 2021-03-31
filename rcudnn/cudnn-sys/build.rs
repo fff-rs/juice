@@ -55,14 +55,13 @@ fn main() {
 
     println!("cargo:rerun-if-changed=build.rs");
 
-    #[cfg(feature="generate")]
+    #[cfg(feature = "generate")]
     {
         println!("cargo:warning=Running bindgen(cudnn-sys), make sure to have all required host libs installed!");
 
         use std::path::PathBuf;
 
-        let include_dir = include_dir
-            .unwrap_or_else(|| String::from("/usr/include/cuda"));
+        let include_dir = include_dir.unwrap_or_else(|| String::from("/usr/include/cuda"));
 
         let bindings = bindgen::Builder::default()
             .rust_target(bindgen::LATEST_STABLE_RUST)

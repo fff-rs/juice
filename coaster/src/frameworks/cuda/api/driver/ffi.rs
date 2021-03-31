@@ -35,10 +35,14 @@ pub struct Struct_Unnamed1 {
     pub __val: [::libc::c_int; 2usize],
 }
 impl ::std::clone::Clone for Struct_Unnamed1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type __fsid_t = Struct_Unnamed1;
 pub type __clock_t = ::libc::c_long;
@@ -88,10 +92,14 @@ impl Union_wait {
     }
 }
 impl ::std::clone::Clone for Union_wait {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_wait {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -99,10 +107,14 @@ pub struct Struct_Unnamed2 {
     pub _bindgen_bitfield_1_: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_Unnamed2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -110,10 +122,14 @@ pub struct Struct_Unnamed3 {
     pub _bindgen_bitfield_1_: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_Unnamed3 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed3 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -131,10 +147,14 @@ impl Union_Unnamed4 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed4 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed4 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type __WAIT_STATUS = Union_Unnamed4;
 #[repr(C)]
@@ -144,10 +164,14 @@ pub struct Struct_Unnamed5 {
     pub rem: ::libc::c_int,
 }
 impl ::std::clone::Clone for Struct_Unnamed5 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed5 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type div_t = Struct_Unnamed5;
 #[repr(C)]
@@ -157,10 +181,14 @@ pub struct Struct_Unnamed6 {
     pub rem: ::libc::c_long,
 }
 impl ::std::clone::Clone for Struct_Unnamed6 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed6 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type ldiv_t = Struct_Unnamed6;
 #[repr(C)]
@@ -170,10 +198,14 @@ pub struct Struct_Unnamed7 {
     pub rem: ::libc::c_longlong,
 }
 impl ::std::clone::Clone for Struct_Unnamed7 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed7 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type lldiv_t = Struct_Unnamed7;
 pub type u_char = __u_char;
@@ -220,10 +252,14 @@ pub struct Struct_Unnamed8 {
     pub __val: [::libc::c_ulong; 16usize],
 }
 impl ::std::clone::Clone for Struct_Unnamed8 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed8 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type __sigset_t = Struct_Unnamed8;
 pub type sigset_t = __sigset_t;
@@ -234,10 +270,14 @@ pub struct Struct_timespec {
     pub tv_nsec: __syscall_slong_t,
 }
 impl ::std::clone::Clone for Struct_timespec {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_timespec {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -246,10 +286,14 @@ pub struct Struct_timeval {
     pub tv_usec: __suseconds_t,
 }
 impl ::std::clone::Clone for Struct_timeval {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_timeval {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type suseconds_t = __suseconds_t;
 pub type __fd_mask = ::libc::c_long;
@@ -259,10 +303,14 @@ pub struct Struct_Unnamed9 {
     pub __fds_bits: [__fd_mask; 16usize],
 }
 impl ::std::clone::Clone for Struct_Unnamed9 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed9 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type fd_set = Struct_Unnamed9;
 pub type fd_mask = __fd_mask;
@@ -287,10 +335,14 @@ impl Union_pthread_attr_t {
     }
 }
 impl ::std::clone::Clone for Union_pthread_attr_t {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_pthread_attr_t {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_attr_t = Union_pthread_attr_t;
 #[repr(C)]
@@ -300,10 +352,14 @@ pub struct Struct___pthread_internal_list {
     pub __next: *mut Struct___pthread_internal_list,
 }
 impl ::std::clone::Clone for Struct___pthread_internal_list {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct___pthread_internal_list {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type __pthread_list_t = Struct___pthread_internal_list;
 #[repr(C)]
@@ -326,10 +382,14 @@ impl Union_Unnamed10 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed10 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed10 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -344,10 +404,14 @@ pub struct Struct___pthread_mutex_s {
     pub __list: __pthread_list_t,
 }
 impl ::std::clone::Clone for Struct___pthread_mutex_s {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct___pthread_mutex_s {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_mutex_t = Union_Unnamed10;
 #[repr(C)]
@@ -366,10 +430,14 @@ impl Union_Unnamed11 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed11 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed11 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_mutexattr_t = Union_Unnamed11;
 #[repr(C)]
@@ -392,10 +460,14 @@ impl Union_Unnamed12 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed12 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed12 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -410,10 +482,14 @@ pub struct Struct_Unnamed13 {
     pub __broadcast_seq: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_Unnamed13 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed13 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_cond_t = Union_Unnamed12;
 #[repr(C)]
@@ -432,10 +508,14 @@ impl Union_Unnamed14 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed14 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed14 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_condattr_t = Union_Unnamed14;
 pub type pthread_key_t = ::libc::c_uint;
@@ -460,10 +540,14 @@ impl Union_Unnamed15 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed15 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed15 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -482,10 +566,14 @@ pub struct Struct_Unnamed16 {
     pub __flags: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_Unnamed16 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed16 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_rwlock_t = Union_Unnamed15;
 #[repr(C)]
@@ -504,10 +592,14 @@ impl Union_Unnamed17 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed17 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed17 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_rwlockattr_t = Union_Unnamed17;
 pub type pthread_spinlock_t = ::libc::c_int;
@@ -527,10 +619,14 @@ impl Union_Unnamed18 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed18 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed18 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_barrier_t = Union_Unnamed18;
 #[repr(C)]
@@ -549,10 +645,14 @@ impl Union_Unnamed19 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed19 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed19 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type pthread_barrierattr_t = Union_Unnamed19;
 #[repr(C)]
@@ -567,10 +667,14 @@ pub struct Struct_random_data {
     pub end_ptr: *mut int32_t,
 }
 impl ::std::clone::Clone for Struct_random_data {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_random_data {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -582,38 +686,41 @@ pub struct Struct_drand48_data {
     pub __a: ::libc::c_ulonglong,
 }
 impl ::std::clone::Clone for Struct_drand48_data {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_drand48_data {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
-pub type __compar_fn_t =
-    ::std::option::Option<unsafe extern "C" fn(arg1: *const ::libc::c_void,
-                                               arg2: *const ::libc::c_void)
-                              -> ::libc::c_int>;
+pub type __compar_fn_t = ::std::option::Option<
+    unsafe extern "C" fn(arg1: *const ::libc::c_void, arg2: *const ::libc::c_void) -> ::libc::c_int,
+>;
 pub type CUdeviceptr = ::libc::c_ulonglong;
 pub type CUdevice = ::libc::c_int;
 #[allow(missing_copy_implementations)]
 #[derive(Debug)]
-pub enum Struct_CUctx_st { }
+pub enum Struct_CUctx_st {}
 pub type CUcontext = *mut Struct_CUctx_st;
-pub enum Struct_CUmod_st { }
+pub enum Struct_CUmod_st {}
 pub type CUmodule = *mut Struct_CUmod_st;
-pub enum Struct_CUfunc_st { }
+pub enum Struct_CUfunc_st {}
 pub type CUfunction = *mut Struct_CUfunc_st;
-pub enum Struct_CUarray_st { }
+pub enum Struct_CUarray_st {}
 pub type CUarray = *mut Struct_CUarray_st;
-pub enum Struct_CUmipmappedArray_st { }
+pub enum Struct_CUmipmappedArray_st {}
 pub type CUmipmappedArray = *mut Struct_CUmipmappedArray_st;
-pub enum Struct_CUtexref_st { }
+pub enum Struct_CUtexref_st {}
 pub type CUtexref = *mut Struct_CUtexref_st;
-pub enum Struct_CUsurfref_st { }
+pub enum Struct_CUsurfref_st {}
 pub type CUsurfref = *mut Struct_CUsurfref_st;
-pub enum Struct_CUevent_st { }
+pub enum Struct_CUevent_st {}
 pub type CUevent = *mut Struct_CUevent_st;
-pub enum Struct_CUstream_st { }
+pub enum Struct_CUstream_st {}
 pub type CUstream = *mut Struct_CUstream_st;
-pub enum Struct_CUgraphicsResource_st { }
+pub enum Struct_CUgraphicsResource_st {}
 pub type CUgraphicsResource = *mut Struct_CUgraphicsResource_st;
 pub type CUtexObject = ::libc::c_ulonglong;
 pub type CUsurfObject = ::libc::c_ulonglong;
@@ -623,10 +730,14 @@ pub struct Struct_CUuuid_st {
     pub bytes: [::libc::c_char; 16usize],
 }
 impl ::std::clone::Clone for Struct_CUuuid_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUuuid_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUuuid = Struct_CUuuid_st;
 #[repr(C)]
@@ -635,10 +746,14 @@ pub struct Struct_CUipcEventHandle_st {
     pub reserved: [::libc::c_char; 64usize],
 }
 impl ::std::clone::Clone for Struct_CUipcEventHandle_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUipcEventHandle_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUipcEventHandle = Struct_CUipcEventHandle_st;
 #[repr(C)]
@@ -647,10 +762,14 @@ pub struct Struct_CUipcMemHandle_st {
     pub reserved: [::libc::c_char; 64usize],
 }
 impl ::std::clone::Clone for Struct_CUipcMemHandle_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUipcMemHandle_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUipcMemHandle = Struct_CUipcMemHandle_st;
 pub type Enum_CUipcMem_flags_enum = ::libc::c_uint;
@@ -815,10 +934,14 @@ pub struct Struct_CUdevprop_st {
     pub textureAlign: ::libc::c_int,
 }
 impl ::std::clone::Clone for Struct_CUdevprop_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUdevprop_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUdevprop = Struct_CUdevprop_st;
 pub type Enum_CUpointer_attribute_enum = ::libc::c_uint;
@@ -914,7 +1037,7 @@ pub const CU_JIT_INPUT_OBJECT: ::libc::c_uint = 3;
 pub const CU_JIT_INPUT_LIBRARY: ::libc::c_uint = 4;
 pub const CU_JIT_NUM_INPUT_TYPES: ::libc::c_uint = 5;
 pub type CUjitInputType = Enum_CUjitInputType_enum;
-pub enum Struct_CUlinkState_st { }
+pub enum Struct_CUlinkState_st {}
 pub type CUlinkState = *mut Struct_CUlinkState_st;
 pub type Enum_CUgraphicsRegisterFlags_enum = ::libc::c_uint;
 pub const CU_GRAPHICS_REGISTER_FLAGS_NONE: ::libc::c_uint = 0;
@@ -1012,11 +1135,9 @@ pub enum CUresult {
     CUDA_ERROR_NOT_SUPPORTED = 801,
     CUDA_ERROR_UNKNOWN = 999,
 }
-pub type CUstreamCallback =
-    ::std::option::Option<unsafe extern "C" fn(hStream: CUstream,
-                                               status: CUresult,
-                                               userData: *mut ::libc::c_void)
-                              -> ()>;
+pub type CUstreamCallback = ::std::option::Option<
+    unsafe extern "C" fn(hStream: CUstream, status: CUresult, userData: *mut ::libc::c_void) -> (),
+>;
 pub type CUoccupancyB2DSize =
     ::std::option::Option<extern "C" fn(blockSize: ::libc::c_int) -> size_t>;
 #[repr(C)]
@@ -1040,10 +1161,14 @@ pub struct Struct_CUDA_MEMCPY2D_st {
     pub Height: size_t,
 }
 impl ::std::clone::Clone for Struct_CUDA_MEMCPY2D_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_MEMCPY2D_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_MEMCPY2D = Struct_CUDA_MEMCPY2D_st;
 #[repr(C)]
@@ -1076,10 +1201,14 @@ pub struct Struct_CUDA_MEMCPY3D_st {
     pub Depth: size_t,
 }
 impl ::std::clone::Clone for Struct_CUDA_MEMCPY3D_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_MEMCPY3D_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_MEMCPY3D = Struct_CUDA_MEMCPY3D_st;
 #[repr(C)]
@@ -1112,10 +1241,14 @@ pub struct Struct_CUDA_MEMCPY3D_PEER_st {
     pub Depth: size_t,
 }
 impl ::std::clone::Clone for Struct_CUDA_MEMCPY3D_PEER_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_MEMCPY3D_PEER_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_MEMCPY3D_PEER = Struct_CUDA_MEMCPY3D_PEER_st;
 #[repr(C)]
@@ -1127,10 +1260,14 @@ pub struct Struct_CUDA_ARRAY_DESCRIPTOR_st {
     pub NumChannels: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_CUDA_ARRAY_DESCRIPTOR_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_ARRAY_DESCRIPTOR_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_ARRAY_DESCRIPTOR = Struct_CUDA_ARRAY_DESCRIPTOR_st;
 #[repr(C)]
@@ -1144,10 +1281,14 @@ pub struct Struct_CUDA_ARRAY3D_DESCRIPTOR_st {
     pub Flags: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_CUDA_ARRAY3D_DESCRIPTOR_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_ARRAY3D_DESCRIPTOR_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_ARRAY3D_DESCRIPTOR = Struct_CUDA_ARRAY3D_DESCRIPTOR_st;
 #[repr(C)]
@@ -1158,10 +1299,14 @@ pub struct Struct_CUDA_RESOURCE_DESC_st {
     pub flags: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_CUDA_RESOURCE_DESC_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_RESOURCE_DESC_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1191,10 +1336,14 @@ impl Union_Unnamed20 {
     }
 }
 impl ::std::clone::Clone for Union_Unnamed20 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Union_Unnamed20 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1202,10 +1351,14 @@ pub struct Struct_Unnamed21 {
     pub hArray: CUarray,
 }
 impl ::std::clone::Clone for Struct_Unnamed21 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed21 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1213,10 +1366,14 @@ pub struct Struct_Unnamed22 {
     pub hMipmappedArray: CUmipmappedArray,
 }
 impl ::std::clone::Clone for Struct_Unnamed22 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed22 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1227,10 +1384,14 @@ pub struct Struct_Unnamed23 {
     pub sizeInBytes: size_t,
 }
 impl ::std::clone::Clone for Struct_Unnamed23 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed23 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1243,10 +1404,14 @@ pub struct Struct_Unnamed24 {
     pub pitchInBytes: size_t,
 }
 impl ::std::clone::Clone for Struct_Unnamed24 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed24 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1254,10 +1419,14 @@ pub struct Struct_Unnamed25 {
     pub reserved: [::libc::c_int; 32usize],
 }
 impl ::std::clone::Clone for Struct_Unnamed25 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_Unnamed25 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_RESOURCE_DESC = Struct_CUDA_RESOURCE_DESC_st;
 #[repr(C)]
@@ -1274,10 +1443,14 @@ pub struct Struct_CUDA_TEXTURE_DESC_st {
     pub reserved: [::libc::c_int; 16usize],
 }
 impl ::std::clone::Clone for Struct_CUDA_TEXTURE_DESC_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_TEXTURE_DESC_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_TEXTURE_DESC = Struct_CUDA_TEXTURE_DESC_st;
 pub type Enum_CUresourceViewFormat_enum = ::libc::c_uint;
@@ -1331,10 +1504,14 @@ pub struct Struct_CUDA_RESOURCE_VIEW_DESC_st {
     pub reserved: [::libc::c_uint; 16usize],
 }
 impl ::std::clone::Clone for Struct_CUDA_RESOURCE_VIEW_DESC_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_RESOURCE_VIEW_DESC_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_RESOURCE_VIEW_DESC = Struct_CUDA_RESOURCE_VIEW_DESC_st;
 #[repr(C)]
@@ -1344,10 +1521,14 @@ pub struct Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st {
     pub vaSpaceToken: ::libc::c_uint,
 }
 impl ::std::clone::Clone for Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl ::std::default::Default for Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type CUDA_POINTER_ATTRIBUTE_P2P_TOKENS = Struct_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st;
 
@@ -1356,7 +1537,7 @@ extern "C" {
     // CUDA ERROR HANDLING
     pub fn cuGetErrorString(error: CUresult, pStr: *mut *const ::libc::c_char) -> CUresult;
 
-    pub fn cuGetErrorName(error: CUresult, pStr: *mut *const ::libc::c_char)-> CUresult;
+    pub fn cuGetErrorName(error: CUresult, pStr: *mut *const ::libc::c_char) -> CUresult;
 
     // CUDA INITIALIZATION
     pub fn cuInit(Flags: ::libc::c_uint) -> CUresult;
@@ -1372,7 +1553,7 @@ extern "C" {
     pub fn cuDeviceGetName(
         name: *mut ::libc::c_char,
         len: ::libc::c_int,
-        dev: CUdevice
+        dev: CUdevice,
     ) -> CUresult;
 
     pub fn cuDeviceTotalMem_v2(bytes: *mut size_t, dev: CUdevice) -> CUresult;
@@ -1380,7 +1561,7 @@ extern "C" {
     pub fn cuDeviceGetAttribute(
         pi: *mut ::libc::c_int,
         attrib: CUdevice_attribute,
-        dev: CUdevice
+        dev: CUdevice,
     ) -> CUresult;
 
     // CUDA PRIMARY CONTEXT MANAGEMENT
@@ -1391,17 +1572,13 @@ extern "C" {
     pub fn cuDevicePrimaryCtxGetState(
         dev: CUdevice,
         flags: *mut ::libc::c_uint,
-        active: *mut ::libc::c_int
+        active: *mut ::libc::c_int,
     ) -> CUresult;
 
     pub fn cuDevicePrimaryCtxReset(dev: CUdevice) -> CUresult;
 
     // CUDA CONTEXT MANAGEMENT
-    pub fn cuCtxCreate_v2(
-        pctx: *mut CUcontext,
-        flags: ::libc::c_uint,
-        dev: CUdevice
-    ) -> CUresult;
+    pub fn cuCtxCreate_v2(pctx: *mut CUcontext, flags: ::libc::c_uint, dev: CUdevice) -> CUresult;
 
     pub fn cuCtxDestroy_v2(ctx: CUcontext) -> CUresult;
 
@@ -1435,32 +1612,25 @@ extern "C" {
 
     pub fn cuCtxGetStreamPriorityRange(
         leastPriority: *mut ::libc::c_int,
-        greatestPriority: *mut ::libc::c_int
+        greatestPriority: *mut ::libc::c_int,
     ) -> CUresult;
-
 
     // CUDA MODULE MANAGEMENT
-    pub fn cuModuleLoad(
-        module: *mut CUmodule,
-        fname: *const ::libc::c_char
-    ) -> CUresult;
+    pub fn cuModuleLoad(module: *mut CUmodule, fname: *const ::libc::c_char) -> CUresult;
 
-    pub fn cuModuleLoadData(
-        module: *mut CUmodule,
-        image: *const ::libc::c_void
-    ) -> CUresult;
+    pub fn cuModuleLoadData(module: *mut CUmodule, image: *const ::libc::c_void) -> CUresult;
 
     pub fn cuModuleLoadDataEx(
         module: *mut CUmodule,
         image: *const ::libc::c_void,
         numOptions: ::libc::c_uint,
         options: *mut CUjit_option,
-        optionValues: *mut *mut ::libc::c_void
+        optionValues: *mut *mut ::libc::c_void,
     ) -> CUresult;
 
     pub fn cuModuleLoadFatBinary(
         module: *mut CUmodule,
-        fatCubin: *const ::libc::c_void
+        fatCubin: *const ::libc::c_void,
     ) -> CUresult;
 
     pub fn cuModuleUnload(hmod: CUmodule) -> CUresult;
@@ -1468,33 +1638,33 @@ extern "C" {
     pub fn cuModuleGetFunction(
         hfunc: *mut CUfunction,
         hmod: CUmodule,
-        name: *const ::libc::c_char
+        name: *const ::libc::c_char,
     ) -> CUresult;
 
     pub fn cuModuleGetGlobal_v2(
         dptr: *mut CUdeviceptr,
         bytes: *mut size_t,
         hmod: CUmodule,
-        name: *const ::libc::c_char
+        name: *const ::libc::c_char,
     ) -> CUresult;
 
     pub fn cuModuleGetTexRef(
         pTexRef: *mut CUtexref,
         hmod: CUmodule,
-        name: *const ::libc::c_char
+        name: *const ::libc::c_char,
     ) -> CUresult;
 
     pub fn cuModuleGetSurfRef(
         pSurfRef: *mut CUsurfref,
         hmod: CUmodule,
-        name: *const ::libc::c_char
+        name: *const ::libc::c_char,
     ) -> CUresult;
 
     pub fn cuLinkCreate_v2(
         numOptions: ::libc::c_uint,
         options: *mut CUjit_option,
         optionValues: *mut *mut ::libc::c_void,
-        stateOut: *mut CUlinkState
+        stateOut: *mut CUlinkState,
     ) -> CUresult;
 
     pub fn cuLinkAddData_v2(
@@ -1505,7 +1675,7 @@ extern "C" {
         name: *const ::libc::c_char,
         numOptions: ::libc::c_uint,
         options: *mut CUjit_option,
-        optionValues: *mut *mut ::libc::c_void
+        optionValues: *mut *mut ::libc::c_void,
     ) -> CUresult;
 
     pub fn cuLinkAddFile_v2(
@@ -1514,13 +1684,13 @@ extern "C" {
         path: *const ::libc::c_char,
         numOptions: ::libc::c_uint,
         options: *mut CUjit_option,
-        optionValues: *mut *mut ::libc::c_void
+        optionValues: *mut *mut ::libc::c_void,
     ) -> CUresult;
 
     pub fn cuLinkComplete(
         state: CUlinkState,
         cubinOut: *mut *mut ::libc::c_void,
-        sizeOut: *mut size_t
+        sizeOut: *mut size_t,
     ) -> CUresult;
 
     pub fn cuLinkDestroy(state: CUlinkState) -> CUresult;
@@ -1535,7 +1705,7 @@ extern "C" {
         pPitch: *mut size_t,
         WidthInBytes: size_t,
         Height: size_t,
-        ElementSizeBytes: ::libc::c_uint
+        ElementSizeBytes: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuMemFree_v2(dptr: CUdeviceptr) -> CUresult;
@@ -1543,7 +1713,7 @@ extern "C" {
     pub fn cuMemGetAddressRange_v2(
         pbase: *mut CUdeviceptr,
         psize: *mut size_t,
-        dptr: CUdeviceptr
+        dptr: CUdeviceptr,
     ) -> CUresult;
 
     pub fn cuMemAllocHost_v2(pp: *mut *mut ::libc::c_void, bytesize: size_t) -> CUresult;
@@ -1553,53 +1723,41 @@ extern "C" {
     pub fn cuMemHostAlloc(
         pp: *mut *mut ::libc::c_void,
         bytesize: size_t,
-        Flags: ::libc::c_uint
+        Flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuMemHostGetDevicePointer_v2(
         pdptr: *mut CUdeviceptr,
         p: *mut ::libc::c_void,
-        Flags: ::libc::c_uint
+        Flags: ::libc::c_uint,
     ) -> CUresult;
 
-    pub fn cuMemHostGetFlags(
-        pFlags: *mut ::libc::c_uint,
-        p: *mut ::libc::c_void
-    ) -> CUresult;
+    pub fn cuMemHostGetFlags(pFlags: *mut ::libc::c_uint, p: *mut ::libc::c_void) -> CUresult;
 
     pub fn cuMemAllocManaged(
         dptr: *mut CUdeviceptr,
         bytesize: size_t,
-        flags: ::libc::c_uint
+        flags: ::libc::c_uint,
     ) -> CUresult;
 
-    pub fn cuDeviceGetByPCIBusId(
-        dev: *mut CUdevice,
-        pciBusId: *const ::libc::c_char
-    ) -> CUresult;
+    pub fn cuDeviceGetByPCIBusId(dev: *mut CUdevice, pciBusId: *const ::libc::c_char) -> CUresult;
 
     pub fn cuDeviceGetPCIBusId(
         pciBusId: *mut ::libc::c_char,
         len: ::libc::c_int,
-        dev: CUdevice
+        dev: CUdevice,
     ) -> CUresult;
 
-    pub fn cuIpcGetEventHandle(
-        pHandle: *mut CUipcEventHandle,
-        event: CUevent
-    ) -> CUresult;
+    pub fn cuIpcGetEventHandle(pHandle: *mut CUipcEventHandle, event: CUevent) -> CUresult;
 
-    pub fn cuIpcOpenEventHandle(
-        phEvent: *mut CUevent,
-        handle: CUipcEventHandle
-    ) -> CUresult;
+    pub fn cuIpcOpenEventHandle(phEvent: *mut CUevent, handle: CUipcEventHandle) -> CUresult;
 
     pub fn cuIpcGetMemHandle(pHandle: *mut CUipcMemHandle, dptr: CUdeviceptr) -> CUresult;
 
     pub fn cuIpcOpenMemHandle(
         pdptr: *mut CUdeviceptr,
         handle: CUipcMemHandle,
-        Flags: ::libc::c_uint
+        Flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuIpcCloseMemHandle(dptr: CUdeviceptr) -> CUresult;
@@ -1607,7 +1765,7 @@ extern "C" {
     pub fn cuMemHostRegister_v2(
         p: *mut ::libc::c_void,
         bytesize: size_t,
-        Flags: ::libc::c_uint
+        Flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuMemHostUnregister(p: *mut ::libc::c_void) -> CUresult;
@@ -1619,52 +1777,53 @@ extern "C" {
         dstContext: CUcontext,
         srcDevice: CUdeviceptr,
         srcContext: CUcontext,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyHtoD_v2(
         dstDevice: CUdeviceptr,
         srcHost: *const ::libc::c_void,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyDtoH_v2(
         dstHost: *mut ::libc::c_void,
         srcDevice: CUdeviceptr,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyDtoD_v2(
         dstDevice: CUdeviceptr,
         srcDevice: CUdeviceptr,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyDtoA_v2(
         dstArray: CUarray,
         dstOffset: size_t,
         srcDevice: CUdeviceptr,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyAtoD_v2(
         dstDevice: CUdeviceptr,
         srcArray: CUarray,
-        srcOffset: size_t, ByteCount: size_t
+        srcOffset: size_t,
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyHtoA_v2(
         dstArray: CUarray,
         dstOffset: size_t,
         srcHost: *const ::libc::c_void,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyAtoH_v2(
         dstHost: *mut ::libc::c_void,
         srcArray: CUarray,
         srcOffset: size_t,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpyAtoA_v2(
@@ -1672,7 +1831,7 @@ extern "C" {
         dstOffset: size_t,
         srcArray: CUarray,
         srcOffset: size_t,
-        ByteCount: size_t
+        ByteCount: size_t,
     ) -> CUresult;
 
     pub fn cuMemcpy2D_v2(pCopy: *const CUDA_MEMCPY2D) -> CUresult;
@@ -1687,7 +1846,7 @@ extern "C" {
         dst: CUdeviceptr,
         src: CUdeviceptr,
         ByteCount: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemcpyPeerAsync(
@@ -1696,28 +1855,28 @@ extern "C" {
         srcDevice: CUdeviceptr,
         srcContext: CUcontext,
         ByteCount: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemcpyHtoDAsync_v2(
         dstDevice: CUdeviceptr,
         srcHost: *const ::libc::c_void,
         ByteCount: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemcpyDtoHAsync_v2(
         dstHost: *mut ::libc::c_void,
         srcDevice: CUdeviceptr,
         ByteCount: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemcpyDtoDAsync_v2(
         dstDevice: CUdeviceptr,
         srcDevice: CUdeviceptr,
         ByteCount: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemcpyHtoAAsync_v2(
@@ -1725,7 +1884,7 @@ extern "C" {
         dstOffset: size_t,
         srcHost: *const ::libc::c_void,
         ByteCount: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemcpyAtoHAsync_v2(
@@ -1733,44 +1892,26 @@ extern "C" {
         srcArray: CUarray,
         srcOffset: size_t,
         ByteCount: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
     pub fn cuMemcpy2DAsync_v2(pCopy: *const CUDA_MEMCPY2D, hStream: CUstream) -> CUresult;
 
-    pub fn cuMemcpy3DAsync_v2(
-        pCopy: *const CUDA_MEMCPY3D,
-        hStream: CUstream
-    ) -> CUresult;
+    pub fn cuMemcpy3DAsync_v2(pCopy: *const CUDA_MEMCPY3D, hStream: CUstream) -> CUresult;
 
-    pub fn cuMemcpy3DPeerAsync(
-        pCopy: *const CUDA_MEMCPY3D_PEER,
-        hStream: CUstream
-    ) -> CUresult;
+    pub fn cuMemcpy3DPeerAsync(pCopy: *const CUDA_MEMCPY3D_PEER, hStream: CUstream) -> CUresult;
 
-    pub fn cuMemsetD8_v2(
-        dstDevice: CUdeviceptr,
-        uc: ::libc::c_uchar,
-        N: size_t
-    ) -> CUresult;
+    pub fn cuMemsetD8_v2(dstDevice: CUdeviceptr, uc: ::libc::c_uchar, N: size_t) -> CUresult;
 
-    pub fn cuMemsetD16_v2(
-        dstDevice: CUdeviceptr,
-        us: ::libc::c_ushort,
-        N: size_t
-    ) -> CUresult;
+    pub fn cuMemsetD16_v2(dstDevice: CUdeviceptr, us: ::libc::c_ushort, N: size_t) -> CUresult;
 
-    pub fn cuMemsetD32_v2(
-        dstDevice: CUdeviceptr,
-        ui: ::libc::c_uint,
-        N: size_t
-    ) -> CUresult;
+    pub fn cuMemsetD32_v2(dstDevice: CUdeviceptr, ui: ::libc::c_uint, N: size_t) -> CUresult;
 
     pub fn cuMemsetD2D8_v2(
         dstDevice: CUdeviceptr,
         dstPitch: size_t,
         uc: ::libc::c_uchar,
         Width: size_t,
-        Height: size_t
+        Height: size_t,
     ) -> CUresult;
 
     pub fn cuMemsetD2D16_v2(
@@ -1778,7 +1919,7 @@ extern "C" {
         dstPitch: size_t,
         us: ::libc::c_ushort,
         Width: size_t,
-        Height: size_t
+        Height: size_t,
     ) -> CUresult;
 
     pub fn cuMemsetD2D32_v2(
@@ -1786,28 +1927,28 @@ extern "C" {
         dstPitch: size_t,
         ui: ::libc::c_uint,
         Width: size_t,
-        Height: size_t
+        Height: size_t,
     ) -> CUresult;
 
     pub fn cuMemsetD8Async(
         dstDevice: CUdeviceptr,
         uc: ::libc::c_uchar,
         N: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemsetD16Async(
         dstDevice: CUdeviceptr,
         us: ::libc::c_ushort,
         N: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemsetD32Async(
         dstDevice: CUdeviceptr,
         ui: ::libc::c_uint,
         N: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemsetD2D8Async(
@@ -1816,7 +1957,7 @@ extern "C" {
         uc: ::libc::c_uchar,
         Width: size_t,
         Height: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemsetD2D16Async(
@@ -1825,7 +1966,7 @@ extern "C" {
         us: ::libc::c_ushort,
         Width: size_t,
         Height: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuMemsetD2D32Async(
@@ -1834,41 +1975,41 @@ extern "C" {
         ui: ::libc::c_uint,
         Width: size_t,
         Height: size_t,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuArrayCreate_v2(
         pHandle: *mut CUarray,
-        pAllocateArray: *const CUDA_ARRAY_DESCRIPTOR
+        pAllocateArray: *const CUDA_ARRAY_DESCRIPTOR,
     ) -> CUresult;
 
     pub fn cuArrayGetDescriptor_v2(
         pArrayDescriptor: *mut CUDA_ARRAY_DESCRIPTOR,
-        hArray: CUarray
+        hArray: CUarray,
     ) -> CUresult;
 
     pub fn cuArrayDestroy(hArray: CUarray) -> CUresult;
 
     pub fn cuArray3DCreate_v2(
         pHandle: *mut CUarray,
-        pAllocateArray: *const CUDA_ARRAY3D_DESCRIPTOR
+        pAllocateArray: *const CUDA_ARRAY3D_DESCRIPTOR,
     ) -> CUresult;
 
     pub fn cuArray3DGetDescriptor_v2(
         pArrayDescriptor: *mut CUDA_ARRAY3D_DESCRIPTOR,
-        hArray: CUarray
+        hArray: CUarray,
     ) -> CUresult;
 
     pub fn cuMipmappedArrayCreate(
         pHandle: *mut CUmipmappedArray,
         pMipmappedArrayDesc: *const CUDA_ARRAY3D_DESCRIPTOR,
-        numMipmapLevels: ::libc::c_uint
+        numMipmapLevels: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuMipmappedArrayGetLevel(
         pLevelArray: *mut CUarray,
         hMipmappedArray: CUmipmappedArray,
-        level: ::libc::c_uint
+        level: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuMipmappedArrayDestroy(hMipmappedArray: CUmipmappedArray) -> CUresult;
@@ -1876,61 +2017,49 @@ extern "C" {
     pub fn cuPointerGetAttribute(
         data: *mut ::libc::c_void,
         attribute: CUpointer_attribute,
-        ptr: CUdeviceptr
+        ptr: CUdeviceptr,
     ) -> CUresult;
 
     pub fn cuPointerSetAttribute(
         value: *const ::libc::c_void,
         attribute: CUpointer_attribute,
-        ptr: CUdeviceptr
+        ptr: CUdeviceptr,
     ) -> CUresult;
 
     pub fn cuPointerGetAttributes(
         numAttributes: ::libc::c_uint,
         attributes: *mut CUpointer_attribute,
         data: *mut *mut ::libc::c_void,
-        ptr: CUdeviceptr
+        ptr: CUdeviceptr,
     ) -> CUresult;
 
-    pub fn cuStreamCreate(
-        phStream: *mut CUstream,
-        Flags: ::libc::c_uint
-    ) -> CUresult;
+    pub fn cuStreamCreate(phStream: *mut CUstream, Flags: ::libc::c_uint) -> CUresult;
 
     pub fn cuStreamCreateWithPriority(
         phStream: *mut CUstream,
         flags: ::libc::c_uint,
-        priority: ::libc::c_int
+        priority: ::libc::c_int,
     ) -> CUresult;
 
-    pub fn cuStreamGetPriority(
-        hStream: CUstream,
-        priority: *mut ::libc::c_int
-    ) -> CUresult;
+    pub fn cuStreamGetPriority(hStream: CUstream, priority: *mut ::libc::c_int) -> CUresult;
 
-    pub fn cuStreamGetFlags(
-        hStream: CUstream,
-        flags: *mut ::libc::c_uint
-    ) -> CUresult;
+    pub fn cuStreamGetFlags(hStream: CUstream, flags: *mut ::libc::c_uint) -> CUresult;
 
-    pub fn cuStreamWaitEvent(
-        hStream: CUstream,
-        hEvent: CUevent,
-        Flags: ::libc::c_uint
-    ) -> CUresult;
+    pub fn cuStreamWaitEvent(hStream: CUstream, hEvent: CUevent, Flags: ::libc::c_uint)
+        -> CUresult;
 
     pub fn cuStreamAddCallback(
         hStream: CUstream,
         callback: CUstreamCallback,
         userData: *mut ::libc::c_void,
-        flags: ::libc::c_uint
+        flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuStreamAttachMemAsync(
         hStream: CUstream,
         dptr: CUdeviceptr,
         length: size_t,
-        flags: ::libc::c_uint
+        flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuStreamQuery(hStream: CUstream) -> CUresult;
@@ -1939,10 +2068,7 @@ extern "C" {
 
     pub fn cuStreamDestroy_v2(hStream: CUstream) -> CUresult;
 
-    pub fn cuEventCreate(
-        phEvent: *mut CUevent,
-        Flags: ::libc::c_uint
-    ) -> CUresult;
+    pub fn cuEventCreate(phEvent: *mut CUevent, Flags: ::libc::c_uint) -> CUresult;
 
     pub fn cuEventRecord(hEvent: CUevent, hStream: CUstream) -> CUresult;
 
@@ -1955,13 +2081,13 @@ extern "C" {
     pub fn cuEventElapsedTime(
         pMilliseconds: *mut ::libc::c_float,
         hStart: CUevent,
-        hEnd: CUevent
+        hEnd: CUevent,
     ) -> CUresult;
 
     pub fn cuFuncGetAttribute(
         pi: *mut ::libc::c_int,
         attrib: CUfunction_attribute,
-        hfunc: CUfunction
+        hfunc: CUfunction,
     ) -> CUresult;
 
     pub fn cuFuncSetCacheConfig(hfunc: CUfunction, config: CUfunc_cache) -> CUresult;
@@ -1975,16 +2101,17 @@ extern "C" {
         blockDimX: ::libc::c_uint,
         blockDimY: ::libc::c_uint,
         blockDimZ: ::libc::c_uint,
-        sharedMemBytes: ::libc::c_uint, hStream: CUstream,
+        sharedMemBytes: ::libc::c_uint,
+        hStream: CUstream,
         kernelParams: *mut *mut ::libc::c_void,
-        extra: *mut *mut ::libc::c_void
+        extra: *mut *mut ::libc::c_void,
     ) -> CUresult;
 
     pub fn cuOccupancyMaxActiveBlocksPerMultiprocessor(
         numBlocks: *mut ::libc::c_int,
         func: CUfunction,
         blockSize: ::libc::c_int,
-        dynamicSMemSize: size_t
+        dynamicSMemSize: size_t,
     ) -> CUresult;
 
     pub fn cuOccupancyMaxActiveBlocksPerMultiprocessorWithFlags(
@@ -1992,7 +2119,7 @@ extern "C" {
         func: CUfunction,
         blockSize: ::libc::c_int,
         dynamicSMemSize: size_t,
-        flags: ::libc::c_uint
+        flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuOccupancyMaxPotentialBlockSize(
@@ -2001,7 +2128,7 @@ extern "C" {
         func: CUfunction,
         blockSizeToDynamicSMemSize: CUoccupancyB2DSize,
         dynamicSMemSize: size_t,
-        blockSizeLimit: ::libc::c_int
+        blockSizeLimit: ::libc::c_int,
     ) -> CUresult;
 
     pub fn cuOccupancyMaxPotentialBlockSizeWithFlags(
@@ -2011,58 +2138,53 @@ extern "C" {
         blockSizeToDynamicSMemSize: CUoccupancyB2DSize,
         dynamicSMemSize: size_t,
         blockSizeLimit: ::libc::c_int,
-        flags: ::libc::c_uint
+        flags: ::libc::c_uint,
     ) -> CUresult;
 
-    pub fn cuTexRefSetArray(
-        hTexRef: CUtexref,
-        hArray: CUarray,
-        Flags: ::libc::c_uint
-    ) -> CUresult;
+    pub fn cuTexRefSetArray(hTexRef: CUtexref, hArray: CUarray, Flags: ::libc::c_uint) -> CUresult;
 
     pub fn cuTexRefSetMipmappedArray(
         hTexRef: CUtexref,
         hMipmappedArray: CUmipmappedArray,
-        Flags: ::libc::c_uint
+        Flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuTexRefSetAddress_v2(
         ByteOffset: *mut size_t,
         hTexRef: CUtexref,
-        dptr: CUdeviceptr, bytes: size_t
+        dptr: CUdeviceptr,
+        bytes: size_t,
     ) -> CUresult;
 
     pub fn cuTexRefSetAddress2D_v3(
         hTexRef: CUtexref,
         desc: *const CUDA_ARRAY_DESCRIPTOR,
-        dptr: CUdeviceptr, Pitch: size_t
+        dptr: CUdeviceptr,
+        Pitch: size_t,
     ) -> CUresult;
 
     pub fn cuTexRefSetFormat(
         hTexRef: CUtexref,
         fmt: CUarray_format,
-        NumPackedComponents: ::libc::c_int
+        NumPackedComponents: ::libc::c_int,
     ) -> CUresult;
 
     pub fn cuTexRefSetAddressMode(
         hTexRef: CUtexref,
         dim: ::libc::c_int,
-        am: CUaddress_mode
+        am: CUaddress_mode,
     ) -> CUresult;
 
     pub fn cuTexRefSetFilterMode(hTexRef: CUtexref, fm: CUfilter_mode) -> CUresult;
 
     pub fn cuTexRefSetMipmapFilterMode(hTexRef: CUtexref, fm: CUfilter_mode) -> CUresult;
 
-    pub fn cuTexRefSetMipmapLevelBias(
-        hTexRef: CUtexref,
-        bias: ::libc::c_float
-    ) -> CUresult;
+    pub fn cuTexRefSetMipmapLevelBias(hTexRef: CUtexref, bias: ::libc::c_float) -> CUresult;
 
     pub fn cuTexRefSetMipmapLevelClamp(
         hTexRef: CUtexref,
         minMipmapLevelClamp: ::libc::c_float,
-        maxMipmapLevelClamp: ::libc::c_float
+        maxMipmapLevelClamp: ::libc::c_float,
     ) -> CUresult;
 
     pub fn cuTexRefSetMaxAnisotropy(hTexRef: CUtexref, maxAniso: ::libc::c_uint) -> CUresult;
@@ -2075,13 +2197,13 @@ extern "C" {
 
     pub fn cuTexRefGetMipmappedArray(
         phMipmappedArray: *mut CUmipmappedArray,
-        hTexRef: CUtexref
+        hTexRef: CUtexref,
     ) -> CUresult;
 
     pub fn cuTexRefGetAddressMode(
         pam: *mut CUaddress_mode,
         hTexRef: CUtexref,
-        dim: ::libc::c_int
+        dim: ::libc::c_int,
     ) -> CUresult;
 
     pub fn cuTexRefGetFilterMode(pfm: *mut CUfilter_mode, hTexRef: CUtexref) -> CUresult;
@@ -2089,87 +2211,74 @@ extern "C" {
     pub fn cuTexRefGetFormat(
         pFormat: *mut CUarray_format,
         pNumChannels: *mut ::libc::c_int,
-        hTexRef: CUtexref
+        hTexRef: CUtexref,
     ) -> CUresult;
 
-    pub fn cuTexRefGetMipmapFilterMode(
-        pfm: *mut CUfilter_mode,
-        hTexRef: CUtexref
-    ) -> CUresult;
+    pub fn cuTexRefGetMipmapFilterMode(pfm: *mut CUfilter_mode, hTexRef: CUtexref) -> CUresult;
 
-    pub fn cuTexRefGetMipmapLevelBias(
-        pbias: *mut ::libc::c_float,
-        hTexRef: CUtexref
-    ) -> CUresult;
+    pub fn cuTexRefGetMipmapLevelBias(pbias: *mut ::libc::c_float, hTexRef: CUtexref) -> CUresult;
 
     pub fn cuTexRefGetMipmapLevelClamp(
         pminMipmapLevelClamp: *mut ::libc::c_float,
         pmaxMipmapLevelClamp: *mut ::libc::c_float,
-        hTexRef: CUtexref
+        hTexRef: CUtexref,
     ) -> CUresult;
 
-    pub fn cuTexRefGetMaxAnisotropy(
-        pmaxAniso: *mut ::libc::c_int,
-        hTexRef: CUtexref
-    ) -> CUresult;
+    pub fn cuTexRefGetMaxAnisotropy(pmaxAniso: *mut ::libc::c_int, hTexRef: CUtexref) -> CUresult;
 
     pub fn cuTexRefGetFlags(pFlags: *mut ::libc::c_uint, hTexRef: CUtexref) -> CUresult;
 
     pub fn cuSurfRefSetArray(
-        hSurfRef: CUsurfref, hArray: CUarray,
-        Flags: ::libc::c_uint
+        hSurfRef: CUsurfref,
+        hArray: CUarray,
+        Flags: ::libc::c_uint,
     ) -> CUresult;
 
-    pub fn cuSurfRefGetArray(
-        phArray: *mut CUarray,
-        hSurfRef: CUsurfref
-    ) -> CUresult;
+    pub fn cuSurfRefGetArray(phArray: *mut CUarray, hSurfRef: CUsurfref) -> CUresult;
 
     pub fn cuTexObjectCreate(
         pTexObject: *mut CUtexObject,
         pResDesc: *const CUDA_RESOURCE_DESC,
         pTexDesc: *const CUDA_TEXTURE_DESC,
-        pResViewDesc: *const CUDA_RESOURCE_VIEW_DESC
+        pResViewDesc: *const CUDA_RESOURCE_VIEW_DESC,
     ) -> CUresult;
 
     pub fn cuTexObjectDestroy(texObject: CUtexObject) -> CUresult;
 
     pub fn cuTexObjectGetResourceDesc(
         pResDesc: *mut CUDA_RESOURCE_DESC,
-        texObject: CUtexObject
+        texObject: CUtexObject,
     ) -> CUresult;
 
     pub fn cuTexObjectGetTextureDesc(
         pTexDesc: *mut CUDA_TEXTURE_DESC,
-        texObject: CUtexObject
+        texObject: CUtexObject,
     ) -> CUresult;
 
     pub fn cuTexObjectGetResourceViewDesc(
         pResViewDesc: *mut CUDA_RESOURCE_VIEW_DESC,
-        texObject: CUtexObject
+        texObject: CUtexObject,
     ) -> CUresult;
 
     pub fn cuSurfObjectCreate(
         pSurfObject: *mut CUsurfObject,
-        pResDesc: *const CUDA_RESOURCE_DESC
+        pResDesc: *const CUDA_RESOURCE_DESC,
     ) -> CUresult;
 
     pub fn cuSurfObjectDestroy(surfObject: CUsurfObject) -> CUresult;
 
     pub fn cuSurfObjectGetResourceDesc(
         pResDesc: *mut CUDA_RESOURCE_DESC,
-        surfObject: CUsurfObject
+        surfObject: CUsurfObject,
     ) -> CUresult;
 
     pub fn cuDeviceCanAccessPeer(
         canAccessPeer: *mut ::libc::c_int,
-        dev: CUdevice, peerDev: CUdevice
+        dev: CUdevice,
+        peerDev: CUdevice,
     ) -> CUresult;
 
-    pub fn cuCtxEnablePeerAccess(
-        peerContext: CUcontext,
-        Flags: ::libc::c_uint
-    ) -> CUresult;
+    pub fn cuCtxEnablePeerAccess(peerContext: CUcontext, Flags: ::libc::c_uint) -> CUresult;
 
     pub fn cuCtxDisablePeerAccess(peerContext: CUcontext) -> CUresult;
 
@@ -2179,39 +2288,39 @@ extern "C" {
         pArray: *mut CUarray,
         resource: CUgraphicsResource,
         arrayIndex: ::libc::c_uint,
-        mipLevel: ::libc::c_uint
+        mipLevel: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuGraphicsResourceGetMappedMipmappedArray(
         pMipmappedArray: *mut CUmipmappedArray,
-        resource: CUgraphicsResource
+        resource: CUgraphicsResource,
     ) -> CUresult;
 
     pub fn cuGraphicsResourceGetMappedPointer_v2(
         pDevPtr: *mut CUdeviceptr,
         pSize: *mut size_t,
-        resource: CUgraphicsResource
+        resource: CUgraphicsResource,
     ) -> CUresult;
 
     pub fn cuGraphicsResourceSetMapFlags_v2(
         resource: CUgraphicsResource,
-        flags: ::libc::c_uint
+        flags: ::libc::c_uint,
     ) -> CUresult;
 
     pub fn cuGraphicsMapResources(
         count: ::libc::c_uint,
         resources: *mut CUgraphicsResource,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuGraphicsUnmapResources(
         count: ::libc::c_uint,
         resources: *mut CUgraphicsResource,
-        hStream: CUstream
+        hStream: CUstream,
     ) -> CUresult;
 
     pub fn cuGetExportTable(
         ppExportTable: *mut *const ::libc::c_void,
-        pExportTableId: *const CUuuid
+        pExportTableId: *const CUuuid,
     ) -> CUresult;
 }

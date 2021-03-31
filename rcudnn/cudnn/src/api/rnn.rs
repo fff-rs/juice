@@ -3,8 +3,8 @@
 //! Includes the RNN functionality.
 
 use crate::ffi::*;
-use crate::{Error, API};
 use crate::utils::DataType;
+use crate::{Error, API};
 
 // Workspace
 impl API {
@@ -63,22 +63,20 @@ impl API {
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         seq_length: ::libc::c_int,
-        x_desc: Vec<cudnnTensorDescriptor_t>
+        x_desc: Vec<cudnnTensorDescriptor_t>,
     ) -> Result<usize, Error> {
         unsafe {
-            API::ffi_get_rnn_training_reserve_size(
-                handle, rnn_desc, seq_length, x_desc.as_slice()
-            )
+            API::ffi_get_rnn_training_reserve_size(handle, rnn_desc, seq_length, x_desc.as_slice())
         }
     }
     unsafe fn ffi_get_rnn_training_reserve_size(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         seq_length: ::libc::c_int,
-        x_desc: &[cudnnTensorDescriptor_t]
+        x_desc: &[cudnnTensorDescriptor_t],
     ) -> Result<::libc::size_t, Error> {
         let mut size: ::libc::size_t = 0;
-        let size_ptr : *mut ::libc::size_t = &mut size;
+        let size_ptr: *mut ::libc::size_t = &mut size;
         match cudnnGetRNNTrainingReserveSize(handle, rnn_desc,seq_length, x_desc.as_ptr(), size_ptr) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.")),
@@ -99,22 +97,17 @@ impl API {
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         x_desc: cudnnTensorDescriptor_t,
-        data_type: DataType
+        data_type: DataType,
     ) -> Result<usize, Error> {
         unsafe {
-            API::ffi_get_rnn_params_size(
-                handle,
-                rnn_desc,
-                x_desc,
-                API::cudnn_data_type(data_type)
-            )
+            API::ffi_get_rnn_params_size(handle, rnn_desc, x_desc, API::cudnn_data_type(data_type))
         }
     }
     unsafe fn ffi_get_rnn_params_size(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         x_desc: cudnnTensorDescriptor_t,
-        data_type: cudnnDataType_t
+        data_type: cudnnDataType_t,
     ) -> Result<::libc::size_t, Error> {
         let mut size: ::libc::size_t = 0;
         let size_ptr: *mut ::libc::size_t = &mut size;
@@ -141,8 +134,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated"))
             }
-           status => Err(Error::Unknown("Unable create generic CUDA cuDNN RNN Descriptor", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable create generic CUDA cuDNN RNN Descriptor",
+                status as i32 as u64,
             )),
         }
     }
@@ -150,16 +144,16 @@ impl API {
     /// cudnnCreateRNNDataDescriptor()
     /// https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnCreateRNNDataDescriptor
     pub fn create_rnn_data_descriptor() -> Result<cudnnRNNDataDescriptor_t, Error> {
-        unsafe {
-            API::ffi_create_rnn_data_descriptor()
-        }
+        unsafe { API::ffi_create_rnn_data_descriptor() }
     }
     unsafe fn ffi_create_rnn_data_descriptor() -> Result<cudnnRNNDataDescriptor_t, Error> {
         let mut rnn_data_descriptor: cudnnRNNDataDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateRNNDataDescriptor(&mut rnn_data_descriptor) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_data_descriptor),
-           status => Err(Error::Unknown("Unable to create Data Descriptor", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to create Data Descriptor",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -172,8 +166,9 @@ impl API {
     unsafe fn ffi_destroy_rnn_descriptor(rnn_desc: cudnnRNNDescriptor_t) -> Result<(), Error> {
         match cudnnDestroyRNNDescriptor(rnn_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Dropout Descriptor", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Dropout Descriptor",
+                status as i32 as u64,
             )),
         }
     }
@@ -192,10 +187,10 @@ impl API {
         algorithm: cudnnRNNAlgo_t,
         data_type: DataType,
     ) -> Result<(), Error> {
-        let data_type =  match data_type {
+        let data_type = match data_type {
             DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
             DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
-            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF
+            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF,
         };
 
         unsafe {
@@ -241,8 +236,10 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("FIXME RNN")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Descriptor.", status as i32 as u64)),
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN RNN Descriptor.",
+                status as i32 as u64,
+            )),
         }
     }
 
@@ -251,22 +248,25 @@ impl API {
     ///
     /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnSetRNNMatrixMathType
     /// [2]: https://docs.nvidia.com/deeplearning/sdk/cudnn-developer-guide/index.html#tensor-ops-rnn-functions-pre-req
-    pub fn set_rnn_matrix_math_type(rnn_desc : cudnnRNNDescriptor_t, math_type: cudnnMathType_t) -> Result<(), Error> {
-        unsafe{
-            API::ffi_set_rnn_matrix_math_type(rnn_desc, math_type)
-        }
+    pub fn set_rnn_matrix_math_type(
+        rnn_desc: cudnnRNNDescriptor_t,
+        math_type: cudnnMathType_t,
+    ) -> Result<(), Error> {
+        unsafe { API::ffi_set_rnn_matrix_math_type(rnn_desc, math_type) }
     }
-    unsafe fn ffi_set_rnn_matrix_math_type(rnn_desc: cudnnRNNDescriptor_t, math_type: cudnnMathType_t) -> Result<(), Error> {
-         match cudnnSetRNNMatrixMathType(
-             rnn_desc,
-             math_type
-         ) {
-             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("FIXME RNN")),
-             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
-            status => Err(Error::Unknown("Unable to set CUDA cuDNN RNN Matrix Math Type.", status as i32 as u64)),
-
-         }
+    unsafe fn ffi_set_rnn_matrix_math_type(
+        rnn_desc: cudnnRNNDescriptor_t,
+        math_type: cudnnMathType_t,
+    ) -> Result<(), Error> {
+        match cudnnSetRNNMatrixMathType(rnn_desc, math_type) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("FIXME RNN")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("FIXME RNN")),
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN RNN Matrix Math Type.",
+                status as i32 as u64,
+            )),
+        }
     }
 
     /// Set RNN Padding Model [cudnnSetRNNPaddingMode][1]
@@ -277,12 +277,16 @@ impl API {
     /// By default, the padded RNN input/output is not enabled.
     ///
     /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnSetRNNPaddingMode
-    pub fn set_rnn_padding_mode(rnn_desc: cudnnRNNDescriptor_t, padding_mode: cudnnRNNPaddingMode_t) -> Result<(), Error> {
-        unsafe {
-            API::ffi_set_rnn_padding_mode(rnn_desc, padding_mode)
-        }
+    pub fn set_rnn_padding_mode(
+        rnn_desc: cudnnRNNDescriptor_t,
+        padding_mode: cudnnRNNPaddingMode_t,
+    ) -> Result<(), Error> {
+        unsafe { API::ffi_set_rnn_padding_mode(rnn_desc, padding_mode) }
     }
-    unsafe fn ffi_set_rnn_padding_mode(rnn_desc: cudnnRNNDescriptor_t, padding_mode: cudnnRNNPaddingMode_t) -> Result<(), Error> {
+    unsafe fn ffi_set_rnn_padding_mode(
+        rnn_desc: cudnnRNNDescriptor_t,
+        padding_mode: cudnnRNNPaddingMode_t,
+    ) -> Result<(), Error> {
         match cudnnSetRNNPaddingMode(
             rnn_desc,
             padding_mode,
@@ -492,30 +496,29 @@ impl API {
         work_space: *mut ::libc::c_void,
         work_size_in_bytes: ::libc::size_t,
     ) -> Result<(), Error> {
-       unsafe {
-           API::ffi_rnn_forward_inference(
-               handle,
-               rnn_desc,
-               seq_length,
-               x_desc,
-               x,
-               hx_desc,
-               hx,
-               cx_desc,
-               cx,
-               w_desc,
-               w,
-               y_desc,
-               y,
-               hy_desc,
-               hy,
-               cy_desc,
-               cy,
-               work_space,
-               work_size_in_bytes,
-
-           )
-       }
+        unsafe {
+            API::ffi_rnn_forward_inference(
+                handle,
+                rnn_desc,
+                seq_length,
+                x_desc,
+                x,
+                hx_desc,
+                hx,
+                cx_desc,
+                cx,
+                w_desc,
+                w,
+                y_desc,
+                y,
+                hy_desc,
+                hy,
+                cy_desc,
+                cy,
+                work_space,
+                work_size_in_bytes,
+            )
+        }
     }
     #[allow(clippy::too_many_arguments)]
     unsafe fn ffi_rnn_forward_inference(
@@ -752,27 +755,27 @@ impl API {
     /// the weight gradients calculated will be added to those already existing in `dw`.
     /// Workspace is required for intermediate storage.
     /// The data in reserveSpace must have previously been generated by cudnnRNNBackwardData().
-   ///
-   /// # Arguments
-   /// `handle` Handle to a previously created [cudNN context][0]
-   /// `rnn_desc` A previously initialised [RNN descriptor][1]
-   /// `seq_length` Number of iterations for the RNN to unroll over.
-   /// `x_desc` Array of packed tensor descriptors.
-   /// `x` Data pointer for Input
-   /// `hx_desc` Fully packed tensor descriptor for the initial hidden state of the RNN.
-   /// `hx` Data pointer for initial hidden state - if null will initialize state to zero.
-   /// `y_desc` Array of packed [tensor descriptors][1] describing the *output* from each recurrent
-   /// iteration.
-   /// `y` Data pointer to GPU memory for output at each iteration
-   /// `dw_desc` Handle to previously initialized filter descriptor for the gradient of the
-   /// weights.
-   /// `dw` Data pointer to GPU memory for the descriptor of the gradient of the weights.
-   /// `workspace` Data pointer to GPU memory to be used as a workspace for this call
-   /// `workspace_in_bytes` Size in bytes of the provided workspace
-   /// `reserve_space` Data pointer for GPU memory to be used as a reserve space for this call
-   /// `reserve_space_in_bytes` Size in bytes for `reserve_space`
-   /// [0]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t
-   /// [1]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t
+    ///
+    /// # Arguments
+    /// `handle` Handle to a previously created [cudNN context][0]
+    /// `rnn_desc` A previously initialised [RNN descriptor][1]
+    /// `seq_length` Number of iterations for the RNN to unroll over.
+    /// `x_desc` Array of packed tensor descriptors.
+    /// `x` Data pointer for Input
+    /// `hx_desc` Fully packed tensor descriptor for the initial hidden state of the RNN.
+    /// `hx` Data pointer for initial hidden state - if null will initialize state to zero.
+    /// `y_desc` Array of packed [tensor descriptors][1] describing the *output* from each recurrent
+    /// iteration.
+    /// `y` Data pointer to GPU memory for output at each iteration
+    /// `dw_desc` Handle to previously initialized filter descriptor for the gradient of the
+    /// weights.
+    /// `dw` Data pointer to GPU memory for the descriptor of the gradient of the weights.
+    /// `workspace` Data pointer to GPU memory to be used as a workspace for this call
+    /// `workspace_in_bytes` Size in bytes of the provided workspace
+    /// `reserve_space` Data pointer for GPU memory to be used as a reserve space for this call
+    /// `reserve_space_in_bytes` Size in bytes for `reserve_space`
+    /// [0]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnHandle_t
+    /// [1]:https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNDescriptor_t
     #[allow(clippy::too_many_arguments)]
     pub fn rnn_backward_weights(
         handle: cudnnHandle_t,

@@ -2,13 +2,13 @@
 //!
 //! At Coaster device can be understood as a synonym to OpenCL's context.
 
-use libc;
-use frameworks::opencl::{API, Device, Error, Platform};
-use frameworks::opencl::context::{ContextInfo,ContextInfoQuery,ContextProperties};
-use super::types as cl;
 use super::ffi::*;
-use std::ptr;
+use super::types as cl;
+use frameworks::opencl::context::{ContextInfo, ContextInfoQuery, ContextProperties};
+use frameworks::opencl::{Device, Error, Platform, API};
+use libc;
 use std::mem::size_of;
+use std::ptr;
 
 impl API {
     /// Creates a OpenCL context.
@@ -20,13 +20,24 @@ impl API {
     pub fn create_context(
         devices: Vec<Device>,
         properties: *const cl::context_properties,
-        callback: extern fn (*const libc::c_char, *const libc::c_void, libc::size_t, *mut libc::c_void),
-        user_data: *mut libc::c_void
+        callback: extern "C" fn(
+            *const libc::c_char,
+            *const libc::c_void,
+            libc::size_t,
+            *mut libc::c_void,
+        ),
+        user_data: *mut libc::c_void,
     ) -> Result<cl::context_id, Error> {
         let device_ids: Vec<cl::device_id> = devices.iter().map(|device| device.id_c()).collect();
-        Ok(
-            unsafe { API::ffi_create_context(properties, device_ids.len() as u32, device_ids.as_ptr(), callback, user_data) }?
-        )
+        Ok(unsafe {
+            API::ffi_create_context(
+                properties,
+                device_ids.len() as u32,
+                device_ids.as_ptr(),
+                callback,
+                user_data,
+            )
+        }?)
     }
 
     /// FFI Creates an OpenCL context.
@@ -34,11 +45,23 @@ impl API {
         properties: *const cl::context_properties,
         num_devices: cl::uint,
         devices: *const cl::device_id,
-        pfn_notify: extern fn (*const libc::c_char, *const libc::c_void, libc::size_t, *mut libc::c_void),
-        user_data: *mut libc::c_void
+        pfn_notify: extern "C" fn(
+            *const libc::c_char,
+            *const libc::c_void,
+            libc::size_t,
+            *mut libc::c_void,
+        ),
+        user_data: *mut libc::c_void,
     ) -> Result<cl::context_id, Error> {
         let mut errcode: i32 = 0;
-        let context_id = clCreateContext(properties, num_devices, devices, pfn_notify, user_data, &mut errcode);
+        let context_id = clCreateContext(
+            properties,
+            num_devices,
+            devices,
+            pfn_notify,
+            user_data,
+            &mut errcode,
+        );
         match errcode {
             errcode if errcode == cl::Status::SUCCESS as i32 => Ok(context_id),
             errcode if errcode == cl::Status::INVALID_PLATFORM as i32 => Err(Error::InvalidPlatform("properties is NULL and no platform could be selected or if platform value specified in propertiesis not a valid platform.")),
@@ -55,10 +78,9 @@ impl API {
     /// Gets info about one of the available properties of an OpenCL context.
     pub fn get_context_info(
         context: cl::context_id,
-        query: ContextInfoQuery ,
+        query: ContextInfoQuery,
     ) -> Result<ContextInfo, Error> {
-
-        let info_name : cl::context_info = match query {
+        let info_name: cl::context_info = match query {
             ContextInfoQuery::ReferenceCount => cl::CL_CONTEXT_REFERENCE_COUNT,
             ContextInfoQuery::NumDevices => cl::CL_CONTEXT_NUM_DEVICES,
             ContextInfoQuery::Properties => cl::CL_CONTEXT_PROPERTIES,
@@ -69,106 +91,113 @@ impl API {
             unsafe {
                 let mut zero: usize = 0;
                 let info_size: *mut usize = &mut zero;
-                API::ffi_get_context_info_size(context, info_name, info_size)
-                    .and_then(|_| {
-                        let mut buffer = vec![0u8; *info_size];
-                        let info_ptr: *mut libc::c_void = buffer.as_mut_ptr() as *mut libc::c_void;
-                        API::ffi_get_context_info(context,
-                                                  info_name,
-                                                  *info_size,
-                                                  info_ptr)
-                        .and_then(|_| {
-                        match info_name {
-                            cl::CL_CONTEXT_REFERENCE_COUNT => {
-                                let reference_count : u32 = *(info_ptr as *mut u32);
-                                Ok(ContextInfo::ReferenceCount(reference_count))
-                            },
-                            cl::CL_CONTEXT_DEVICES => {
-                                let len = *info_size / size_of::<cl::device_id>();
-                                let mut dev_ids : Vec<cl::device_id> = Vec::new();
-                                let info_ptr : *mut cl::device_id = info_ptr as *mut cl::device_id;
-                                for i in 0..len as isize {
-                                    dev_ids.push(*info_ptr.offset(i));
+                API::ffi_get_context_info_size(context, info_name, info_size).and_then(|_| {
+                    let mut buffer = vec![0u8; *info_size];
+                    let info_ptr: *mut libc::c_void = buffer.as_mut_ptr() as *mut libc::c_void;
+                    API::ffi_get_context_info(context, info_name, *info_size, info_ptr).and_then(
+                        |_| {
+                            match info_name {
+                                cl::CL_CONTEXT_REFERENCE_COUNT => {
+                                    let reference_count: u32 = *(info_ptr as *mut u32);
+                                    Ok(ContextInfo::ReferenceCount(reference_count))
                                 }
-                                Ok(ContextInfo::Devices(
-                                    dev_ids
-                                        .iter()
-                                        .map(|&id| Device::from_isize(id as isize))
-                                        .collect()
-                                ))
-                            },
-                            cl::CL_CONTEXT_NUM_DEVICES => {
-                                let device_count : u32 = *(info_ptr as *mut u32);
-                                Ok(ContextInfo::NumDevices(device_count))
-                            },
-                            cl::CL_CONTEXT_PROPERTIES => {
-                                let mut v : Vec<ContextProperties> = Vec::new();
-                                let mut ptr : *mut u8 = info_ptr as *mut u8;
-                                let mut total_decoded: isize = 0;
-                                let info_size = *info_size as isize;
-                                while total_decoded < info_size {
-                                    // get the identifier and advance by identifier size count bytes
-                                    let identifier : *mut cl::context_properties = ptr as *mut cl::context_properties;
-                                    let identifier = *identifier;
-                                    ptr = ptr.offset(size_of::<cl::context_properties>() as isize);
-                                    // depending on the identifier decode the per identifier payload/argument with the
-                                    // corresponding type
-                                    match identifier {
-                                        cl::CL_CONTEXT_PLATFORM => {
-                                            let platform_id : *const cl::platform_id = info_ptr  as *const cl::platform_id;
-                                            let platform_id = *platform_id;
-                                            let size = size_of::<cl::platform_id>() as isize;
-                                            total_decoded += size;
-                                            ptr = ptr.offset(size);
-                                            v.push(ContextProperties::Platform(Platform::from_c(platform_id)));
-                                        },
-                                        cl::CL_CONTEXT_INTEROP_USER_SYNC => {
-                                            let interop_user_sync : *const cl::boolean = info_ptr as *const cl::boolean;
-                                            let interop_user_sync = *interop_user_sync == 0;
-                                            let size = size_of::<cl::boolean>() as isize;
-                                            total_decoded += size;
-                                            ptr = ptr.offset(size);
-                                            v.push(ContextProperties::InteropUserSync(interop_user_sync));
-                                        },
-                                        0 => {
-                                            break;
-                                        }
-                                        _ => {
-                                            return Err(Error::Other("Unknown property"));
-                                        }
-                                    };
+                                cl::CL_CONTEXT_DEVICES => {
+                                    let len = *info_size / size_of::<cl::device_id>();
+                                    let mut dev_ids: Vec<cl::device_id> = Vec::new();
+                                    let info_ptr: *mut cl::device_id =
+                                        info_ptr as *mut cl::device_id;
+                                    for i in 0..len as isize {
+                                        dev_ids.push(*info_ptr.offset(i));
+                                    }
+                                    Ok(ContextInfo::Devices(
+                                        dev_ids
+                                            .iter()
+                                            .map(|&id| Device::from_isize(id as isize))
+                                            .collect(),
+                                    ))
                                 }
-                                Ok(ContextInfo::Properties(v))
+                                cl::CL_CONTEXT_NUM_DEVICES => {
+                                    let device_count: u32 = *(info_ptr as *mut u32);
+                                    Ok(ContextInfo::NumDevices(device_count))
+                                }
+                                cl::CL_CONTEXT_PROPERTIES => {
+                                    let mut v: Vec<ContextProperties> = Vec::new();
+                                    let mut ptr: *mut u8 = info_ptr as *mut u8;
+                                    let mut total_decoded: isize = 0;
+                                    let info_size = *info_size as isize;
+                                    while total_decoded < info_size {
+                                        // get the identifier and advance by identifier size count bytes
+                                        let identifier: *mut cl::context_properties =
+                                            ptr as *mut cl::context_properties;
+                                        let identifier = *identifier;
+                                        ptr = ptr
+                                            .offset(size_of::<cl::context_properties>() as isize);
+                                        // depending on the identifier decode the per identifier payload/argument with the
+                                        // corresponding type
+                                        match identifier {
+                                            cl::CL_CONTEXT_PLATFORM => {
+                                                let platform_id: *const cl::platform_id =
+                                                    info_ptr as *const cl::platform_id;
+                                                let platform_id = *platform_id;
+                                                let size = size_of::<cl::platform_id>() as isize;
+                                                total_decoded += size;
+                                                ptr = ptr.offset(size);
+                                                v.push(ContextProperties::Platform(
+                                                    Platform::from_c(platform_id),
+                                                ));
+                                            }
+                                            cl::CL_CONTEXT_INTEROP_USER_SYNC => {
+                                                let interop_user_sync: *const cl::boolean =
+                                                    info_ptr as *const cl::boolean;
+                                                let interop_user_sync = *interop_user_sync == 0;
+                                                let size = size_of::<cl::boolean>() as isize;
+                                                total_decoded += size;
+                                                ptr = ptr.offset(size);
+                                                v.push(ContextProperties::InteropUserSync(
+                                                    interop_user_sync,
+                                                ));
+                                            }
+                                            0 => {
+                                                break;
+                                            }
+                                            _ => {
+                                                return Err(Error::Other("Unknown property"));
+                                            }
+                                        };
+                                    }
+                                    Ok(ContextInfo::Properties(v))
+                                }
+                                _ => Err(Error::Other("Unknown property")),
                             }
-                            _ => {
-                                Err(Error::Other("Unknown property"))
-                            }
-                        }
-                    })
-                    })
+                        },
+                    )
+                })
             }
-
         }?)
     }
-    
+
     // This function calls clGetContextInfo with the return data pointer set to
     // NULL to find out the needed memory allocation first.
     unsafe fn ffi_get_context_info_size(
         context: cl::context_id,
         param_name: cl::context_info,
-        param_value_size_ret: *mut libc::size_t
+        param_value_size_ret: *mut libc::size_t,
     ) -> Result<(), Error> {
-        match clGetContextInfo(context,
-                               param_name,
-                               0,
-                               ptr::null_mut(),
-                               param_value_size_ret) {
+        match clGetContextInfo(
+            context,
+            param_name,
+            0,
+            ptr::null_mut(),
+            param_value_size_ret,
+        ) {
             cl::Status::SUCCESS => Ok(()),
             cl::Status::INVALID_CONTEXT => Err(Error::InvalidContext("Invalid context")),
             cl::Status::INVALID_VALUE => Err(Error::InvalidValue("Invalid value")),
             cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Out of resources")),
             cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Out of host memory")),
-            _ => Err(Error::Other("Could not determine needed memory to allocate context info."))
+            _ => Err(Error::Other(
+                "Could not determine needed memory to allocate context info.",
+            )),
         }
     }
 
@@ -179,18 +208,23 @@ impl API {
         context: cl::context_id,
         param_name: cl::context_info,
         param_value_size: libc::size_t,
-        param_value: *mut libc::c_void) -> Result<(), Error> {
-        match clGetContextInfo(context,
-                               param_name,
-                               param_value_size,
-                               param_value,
-                               ptr::null_mut()) {
+        param_value: *mut libc::c_void,
+    ) -> Result<(), Error> {
+        match clGetContextInfo(
+            context,
+            param_name,
+            param_value_size,
+            param_value,
+            ptr::null_mut(),
+        ) {
             cl::Status::SUCCESS => Ok(()),
             cl::Status::INVALID_CONTEXT => Err(Error::InvalidContext("Invalid context")),
             cl::Status::INVALID_VALUE => Err(Error::InvalidValue("Invalid value")),
             cl::Status::OUT_OF_RESOURCES => Err(Error::OutOfResources("Out of resources")),
             cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Out of host memory")),
-            _ => Err(Error::Other("Could not determine needed memory to allocate context info."))
+            _ => Err(Error::Other(
+                "Could not determine needed memory to allocate context info.",
+            )),
         }
     }
 }

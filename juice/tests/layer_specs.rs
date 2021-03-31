@@ -177,7 +177,6 @@ mod layer_spec {
             assert_slice_eq!(&[0.51], &[0.51], 0.00000001);
         }
 
-
         #[test]
         #[should_panic]
         fn macro_test_assert_slice_eq_not() {

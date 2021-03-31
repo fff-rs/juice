@@ -4,8 +4,8 @@ extern crate libc;
 #[cfg(test)]
 #[cfg(feature = "opencl")]
 mod hardware_spec {
-    use co::prelude::*;
     use co::frameworks::opencl::Device;
+    use co::prelude::*;
 
     #[test]
     fn it_works() {
@@ -30,7 +30,7 @@ mod hardware_spec {
 
         assert!(match hardware.hardware_type() {
             Some(HardwareType::CPU) => true,
-            _ => false
+            _ => false,
         });
     }
 
@@ -42,19 +42,17 @@ mod hardware_spec {
 
         assert!(match hardware.name() {
             Some(_) => true,
-            _ => false
+            _ => false,
         });
     }
 
     #[test]
     fn it_sets_compute_units() {
-        let hardware = Device::from_isize(42)
-            .set_compute_units(Some(400))
-            .build();
+        let hardware = Device::from_isize(42).set_compute_units(Some(400)).build();
 
         assert!(match hardware.compute_units() {
             Some(400) => true,
-            _ => false
+            _ => false,
         });
     }
 }

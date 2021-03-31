@@ -1,9 +1,9 @@
 //! Provides a Rust wrapper around Cuda's device.
 
-use crate::hardware::{IHardware, HardwareType};
 use super::api::{Driver, DriverFFI};
-use std::io::Cursor;
+use crate::hardware::{HardwareType, IHardware};
 use byteorder::{LittleEndian, ReadBytesExt};
+use std::io::Cursor;
 
 #[derive(Debug, Clone)]
 /// Defines a Cuda Device.
@@ -30,12 +30,18 @@ impl Default for Device {
 impl Device {
     /// Initializes a new Cuda device.
     pub fn from_isize(id: isize) -> Device {
-        Device { id, ..Device::default() }
+        Device {
+            id,
+            ..Device::default()
+        }
     }
 
     /// Initializes a new Cuda device from its C type.
     pub fn from_c(id: DriverFFI::CUdevice) -> Device {
-        Device { id: id as isize, ..Device::default() }
+        Device {
+            id: id as isize,
+            ..Device::default()
+        }
     }
 
     /// Returns the id as its C type.
@@ -45,10 +51,11 @@ impl Device {
 
     /// Loads the name of the device via a foreign Cuda call.
     pub fn load_name(&mut self) -> Self {
-        self.name = match Driver::load_device_info(self, DriverFFI::CUdevice_attribute::CU_DEVICE_NAME) {
-            Ok(result) => Some(result.to_string()),
-            Err(_) => None
-        };
+        self.name =
+            match Driver::load_device_info(self, DriverFFI::CUdevice_attribute::CU_DEVICE_NAME) {
+                Ok(result) => Some(result.to_string()),
+                Err(_) => None,
+            };
         self.clone()
     }
 
@@ -60,9 +67,12 @@ impl Device {
 
     /// Loads the compute units of the device via a foreign Cuda call.
     pub fn load_compute_units(&mut self) -> Self {
-        self.compute_units = match Driver::load_device_info(self, DriverFFI::CUdevice_attribute::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT) {
+        self.compute_units = match Driver::load_device_info(
+            self,
+            DriverFFI::CUdevice_attribute::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,
+        ) {
             Ok(result) => Some(result.to_isize()),
-            Err(_) => None
+            Err(_) => None,
         };
         self.clone()
     }

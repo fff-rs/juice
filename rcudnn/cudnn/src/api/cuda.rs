@@ -1,8 +1,8 @@
 //! Provides utility functionality for the CUDA cuDNN API.
 
 use crate::ffi::*;
-use std::ptr;
 use crate::{Error, API};
+use std::ptr;
 
 impl API {
     /// Initialize the CUDA cuDNN API with needed context and resources.
@@ -28,8 +28,9 @@ impl API {
             cudaError_t::cudaErrorMemoryAllocation => {
                 Err(Error::AllocFailed("Unable to allocate CUDA device memory."))
             }
-           status => Err(Error::Unknown("Unable to allocate CUDA device memory for unknown reasons.", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to allocate CUDA device memory for unknown reasons.",
+                status as i32 as u64,
             )),
         }
     }
@@ -38,14 +39,16 @@ impl API {
         match cudaFree(ptr) {
             cudaError_t::cudaSuccess => Ok(()),
             // TODO, more error enums sigh
-            cudaError_t::cudaErrorInvalidDevicePointer => {
-                Err(Error::InvalidValue("Unable to free the CUDA device memory due to invalid device pointer."))
-            }
-            cudaError_t::cudaErrorInitializationError => {
-                Err(Error::NotInitialized("CUDA Driver/Runtime API not initialized."))
-            }
-           status => Err(Error::Unknown("Unable to free the CUDA device memory.", status as i32 as u64)),
-
+            cudaError_t::cudaErrorInvalidDevicePointer => Err(Error::InvalidValue(
+                "Unable to free the CUDA device memory due to invalid device pointer.",
+            )),
+            cudaError_t::cudaErrorInitializationError => Err(Error::NotInitialized(
+                "CUDA Driver/Runtime API not initialized.",
+            )),
+            status => Err(Error::Unknown(
+                "Unable to free the CUDA device memory.",
+                status as i32 as u64,
+            )),
         }
     }
 }

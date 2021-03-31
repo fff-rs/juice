@@ -11,7 +11,8 @@ macro_rules! bench_activation {
             let x = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
             let mut r = SharedTensor::<$t>::new(&[$n]);
 
-            for _ in 0..3 { // warmup
+            for _ in 0..3 {
+                // warmup
                 backend.$f(&x, &mut r).unwrap();
                 backend.synchronize().unwrap();
             }
@@ -26,14 +27,15 @@ macro_rules! bench_activation {
         pub fn $bench_grad_name(b: &mut Bencher) {
             let backend = ::tests::$backend_getter();
 
-            let mut x  = SharedTensor::<$t>::new(&[$n]);
+            let mut x = SharedTensor::<$t>::new(&[$n]);
             let dx = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
-            let r  = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
+            let r = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
             let mut dr = SharedTensor::<$t>::new(&[$n]);
 
             backend.$f(&r, &mut x).unwrap();
 
-            for _ in 0..3 { // warmup
+            for _ in 0..3 {
+                // warmup
                 backend.$f_grad(&x, &dx, &r, &mut dr).unwrap();
                 backend.synchronize().unwrap();
             }
@@ -43,7 +45,7 @@ macro_rules! bench_activation {
                 backend.synchronize().unwrap();
             });
         }
-    }
+    };
 }
 
 // softmax differs from activations only in arg count for grad function...
@@ -57,7 +59,8 @@ macro_rules! bench_softmax {
             let x = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
             let mut r = SharedTensor::<$t>::new(&[$n]);
 
-            for _ in 0..3 { // warmup
+            for _ in 0..3 {
+                // warmup
                 backend.$f(&x, &mut r).unwrap();
                 backend.synchronize().unwrap();
             }
@@ -72,14 +75,15 @@ macro_rules! bench_softmax {
         pub fn $bench_grad_name(b: &mut Bencher) {
             let backend = ::tests::$backend_getter();
 
-            let mut x  = SharedTensor::<$t>::new(&[$n]);
+            let mut x = SharedTensor::<$t>::new(&[$n]);
             let dx = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
-            let r  = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
+            let r = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
             let mut dr = SharedTensor::<$t>::new(&[$n]);
 
             backend.$f(&r, &mut x).unwrap();
 
-            for _ in 0..3 { // warmup
+            for _ in 0..3 {
+                // warmup
                 backend.$f_grad(&x, &dx, &mut dr).unwrap();
                 backend.synchronize().unwrap();
             }
@@ -89,7 +93,7 @@ macro_rules! bench_softmax {
                 backend.synchronize().unwrap();
             });
         }
-    }
+    };
 }
 
 macro_rules! define_benches { ($b:ident, $t:ident) => {
@@ -143,11 +147,18 @@ macro_rules! define_benches { ($b:ident, $t:ident) => {
     bench_pooling!($b, $t, pooling_max, pooling_max_10k, pooling_max_grad_10k, 10_000)
 }}
 
-
-mod native_f32 { define_benches!(get_native_backend, f32); }
-mod native_f64 { define_benches!(get_native_backend, f64); }
+mod native_f32 {
+    define_benches!(get_native_backend, f32);
+}
+mod native_f64 {
+    define_benches!(get_native_backend, f64);
+}
 
 #[cfg(feature = "cuda")]
-mod cuda_f32 { define_benches!(get_cuda_backend, f32); }
+mod cuda_f32 {
+    define_benches!(get_cuda_backend, f32);
+}
 #[cfg(feature = "cuda")]
-mod cuda_f64 { define_benches!(get_cuda_backend, f64); }
+mod cuda_f64 {
+    define_benches!(get_cuda_backend, f64);
+}

@@ -109,7 +109,7 @@ impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
             // is stated in https://cs231n.github.io/neural-networks-2/#init for non-LSTM types.
             let initialisation_constant = rand::random::<f32>();
             let filler = FillerType::Constant {
-                value: initialisation_constant * (2.0 / initialisation_constant).sqrt()
+                value: initialisation_constant * (2.0 / initialisation_constant).sqrt(),
             };
             filler.fill(&mut weight.write().unwrap());
         }

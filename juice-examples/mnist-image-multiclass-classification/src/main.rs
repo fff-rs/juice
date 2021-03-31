@@ -72,12 +72,14 @@ fn main() {
                     "train-images-idx3-ubyte.gz",
                     "train-labels-idx1-ubyte.gz",
                     "t10k-images-idx3-ubyte.gz",
-                    "t10k-labels-idx1-ubyte.gz"
+                    "t10k-labels-idx1-ubyte.gz",
                 ];
                 download_datasets(
                     &datasets,
                     &"./assets/mnist/",
-                    "http://yann.lecun.com/exdb/mnist/").unwrap();
+                    "http://yann.lecun.com/exdb/mnist/",
+                )
+                .unwrap();
 
                 unzip_datasets(&datasets, &"./assets/mnist/").unwrap();
             }
@@ -94,7 +96,8 @@ fn main() {
                     &datasets,
                     &"./assets/mnist-fashion/",
                     "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com",
-                ).unwrap();
+                )
+                .unwrap();
                 println!("{}", "Fashion MNIST dataset downloaded".to_string());
 
                 unzip_datasets(&datasets, &"./assets/mnist-fashion/").unwrap();
@@ -104,7 +107,7 @@ fn main() {
         }
     } else if args.cmd_mnist {
         #[cfg(all(feature = "cuda"))]
-            run_mnist(
+        run_mnist(
             MnistType::Numbers,
             args.arg_model_name,
             args.arg_batch_size,
@@ -112,12 +115,12 @@ fn main() {
             args.arg_momentum,
         );
         #[cfg(not(feature = "cuda"))]
-            {
-                println!(
+        {
+            println!(
                     "Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda."
                 );
-                panic!()
-            }
+            panic!()
+        }
     } else if args.cmd_fashion {
         run_mnist(
             MnistType::Fashion,
@@ -130,7 +133,11 @@ fn main() {
 }
 
 #[cfg(all(feature = "cuda"))]
-fn add_conv_net(mut net_cfg: SequentialConfig, batch_size: usize, pixel_dim: usize) -> SequentialConfig {
+fn add_conv_net(
+    mut net_cfg: SequentialConfig,
+    batch_size: usize,
+    pixel_dim: usize,
+) -> SequentialConfig {
     net_cfg.add_layer(LayerConfig::new(
         "reshape",
         ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
@@ -166,7 +173,11 @@ fn add_conv_net(mut net_cfg: SequentialConfig, batch_size: usize, pixel_dim: usi
 }
 
 #[cfg(not(feature = "cuda"))]
-fn add_conv_net(_net_cfg: SequentialConfig, _batch_size: usize, _pixel_dim: usize) -> SequentialConfig {
+fn add_conv_net(
+    _net_cfg: SequentialConfig,
+    _batch_size: usize,
+    _pixel_dim: usize,
+) -> SequentialConfig {
     println!(
         "Currently Juice does not have a native pooling function to use with Conv Nets - you can either try
         the CUDA implementation, or use a different type of layer"
@@ -174,7 +185,11 @@ fn add_conv_net(_net_cfg: SequentialConfig, _batch_size: usize, _pixel_dim: usiz
     panic!()
 }
 
-fn add_mlp(mut net_cfg: SequentialConfig, batch_size: usize, pixel_count: usize) -> SequentialConfig {
+fn add_mlp(
+    mut net_cfg: SequentialConfig,
+    batch_size: usize,
+    pixel_count: usize,
+) -> SequentialConfig {
     net_cfg.add_layer(LayerConfig::new(
         "reshape",
         LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
@@ -199,7 +214,6 @@ fn add_linear_net(mut net_cfg: SequentialConfig) -> SequentialConfig {
     net_cfg
 }
 
-
 fn run_mnist(
     mnist_type: MnistType,
     model_name: Option<String>,
@@ -214,7 +228,7 @@ fn run_mnist(
 
     let asset_path = match mnist_type {
         MnistType::Fashion => "./assets/mnist-fashion",
-        MnistType::Numbers => "./assets/mnist"
+        MnistType::Numbers => "./assets/mnist",
     };
 
     let Mnist {
@@ -258,9 +272,9 @@ fn run_mnist(
 
     // set up backends
     #[cfg(all(feature = "cuda"))]
-        let backend = Rc::new(get_cuda_backend());
+    let backend = Rc::new(get_cuda_backend());
     #[cfg(not(feature = "cuda"))]
-        let backend = Rc::new(get_native_backend());
+    let backend = Rc::new(get_native_backend());
 
     // set up solver
     let mut solver_cfg = SolverConfig {
@@ -288,7 +302,7 @@ fn run_mnist(
         let mut targets = Vec::new();
 
         for (batch_n, (label_val, ref input)) in
-        decoded_images.by_ref().take(batch_size).enumerate()
+            decoded_images.by_ref().take(batch_size).enumerate()
         {
             let mut input_tensor = inp_lock.write().unwrap();
             let mut label_tensor = label_lock.write().unwrap();

@@ -6,11 +6,11 @@ pub use self::error::Error;
 /// Defines the OpenCL API.
 pub struct API;
 
-mod error;
 mod context;
 mod device;
+mod error;
+mod ffi;
 mod memory;
 mod platform;
 mod queue;
-mod ffi;
 pub mod types;

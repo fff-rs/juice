@@ -1,6 +1,6 @@
-use crate::ffi::*;
-use crate::{API, Error};
 use super::{Operation, PointerMode};
+use crate::ffi::*;
+use crate::{Error, API};
 
 #[derive(Debug, Clone)]
 /// Provides a the low-level cuBLAS context.
@@ -147,34 +147,19 @@ impl Context {
         ldc: i32,
     ) -> Result<(), Error> {
         API::gemm(
-            self,
-            transa,
-            transb,
-            m,
-            n,
-            k,
-            alpha,
-            a,
-            lda,
-            b,
-            ldb,
-            beta,
-            c,
-            ldc,
+            self, transa, transb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc,
         )
     }
 
-    pub fn get_version(
-        &self
-    ) -> i32 {
+    pub fn get_version(&self) -> i32 {
         API::get_version(self).unwrap()
     }
 }
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use super::super::PointerMode;
+    use super::*;
     use crate::chore::*;
 
     #[test]

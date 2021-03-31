@@ -1,10 +1,10 @@
 #![allow(missing_docs)]
 use super::api::types as cl;
-use super::api::{API, Error};
+use super::api::{Error, API};
 use super::Context;
 use device::IMemory;
 
-use std::{ptr, fmt};
+use std::{fmt, ptr};
 
 /// Holds a OpenCL memory id and manages its deallocation
 pub struct Memory {

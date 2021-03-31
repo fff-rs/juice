@@ -7,27 +7,27 @@
 //! OpenCL device -> Hardware
 //! OpenCL context -> Device
 
-use backend::{Backend, IBackend};
-use framework::IFramework;
-pub use self::platform::Platform;
+pub use self::api::{Error, API};
 pub use self::context::Context;
-pub use self::memory::{Memory, MemoryFlags};
-pub use self::queue::{Queue, QueueFlags};
+pub use self::device::{Device, DeviceInfo};
 pub use self::event::Event;
 pub use self::kernel::Kernel;
+pub use self::memory::{Memory, MemoryFlags};
+pub use self::platform::Platform;
 pub use self::program::Program;
-pub use self::device::{Device, DeviceInfo};
-pub use self::api::{API, Error};
+pub use self::queue::{Queue, QueueFlags};
+use backend::{Backend, IBackend};
+use framework::IFramework;
 
-pub mod device;
-pub mod platform;
+mod api;
 pub mod context;
-pub mod memory;
-pub mod queue;
+pub mod device;
 pub mod event;
 pub mod kernel;
+pub mod memory;
+pub mod platform;
 pub mod program;
-mod api;
+pub mod queue;
 
 #[derive(Debug, Clone)]
 /// Provides the OpenCL Framework.
@@ -48,20 +48,22 @@ impl IFramework for OpenCL {
     type D = Context;
     type B = Program;
 
-    fn ID() -> &'static str { "OPENCL" }
+    fn ID() -> &'static str {
+        "OPENCL"
+    }
 
     fn new() -> OpenCL {
         let hardwares = OpenCL::load_hardwares().expect("Acquiring hw never fails. qed");
         Self {
             hardwares,
-            binary: Program::from_isize(1)
+            binary: Program::from_isize(1),
         }
     }
 
     fn load_hardwares() -> Result<Vec<Device>, ::framework::Error> {
         let platforms = API::load_platforms()?;
 
-        let mut hardware_container: Vec<Device> = vec!();
+        let mut hardware_container: Vec<Device> = vec![];
         for platform in &platforms {
             if let Ok(hardwares) = API::load_devices(platform) {
                 hardware_container.append(&mut hardwares.clone())

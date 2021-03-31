@@ -11,7 +11,7 @@
 //! synchronization.
 
 use super::api::types as cl;
-use super::api::{API, Error};
+use super::api::{Error, API};
 use super::Context;
 use super::Device;
 use super::Event;
@@ -28,7 +28,11 @@ impl Queue {
     /// Create a new command queue for the provided `context` and `device`.
     ///
     /// If no `queue_flags` are provided, the defaults are used.
-    pub fn new(context: &Context, device: &Device, queue_flags: Option<&QueueFlags>) -> Result<Queue, Error> {
+    pub fn new(
+        context: &Context,
+        device: &Device,
+        queue_flags: Option<&QueueFlags>,
+    ) -> Result<Queue, Error> {
         let default_flags = QueueFlags::default();
         let flags = queue_flags.unwrap_or(&default_flags);
         API::create_queue(context, device, flags)
@@ -62,9 +66,17 @@ impl Queue {
         global_work_offset: usize,
         global_work_size: usize,
         local_work_size: usize,
-        event_wait_list: &[Event]
+        event_wait_list: &[Event],
     ) -> Result<Event, Error> {
-        API::enqueue_kernel(self, kernel, work_dim, global_work_offset, global_work_size, local_work_size, event_wait_list)
+        API::enqueue_kernel(
+            self,
+            kernel,
+            work_dim,
+            global_work_offset,
+            global_work_size,
+            local_work_size,
+            event_wait_list,
+        )
     }
 }
 

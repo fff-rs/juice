@@ -1,6 +1,5 @@
 /// Defines a generic set of Native Errors.
-
-use std::{fmt, error};
+use std::{error, fmt};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Defines the Native Error.

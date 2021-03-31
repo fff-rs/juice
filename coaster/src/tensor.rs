@@ -47,14 +47,14 @@
 //! # }
 //! ```
 
-use crate::device::{IDevice, MemorySync};
 use crate::device::Error as DeviceError;
+use crate::device::{IDevice, MemorySync};
 
 use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::marker::PhantomData;
-use std::{fmt, mem, error};
 use std::ops::Deref;
+use std::{error, fmt, mem};
 
 /// Describes the Descriptor of a SharedTensor.
 pub type TensorDesc = Vec<usize>;
@@ -131,7 +131,7 @@ pub trait ITensorDesc {
             1 => {
                 strides.push(1);
                 strides
-            },
+            }
             _ => {
                 let imp_dims = &self.dims()[1..dim_length];
                 for (i, _) in imp_dims.iter().enumerate() {
@@ -252,7 +252,7 @@ impl ITensorDesc for TensorDesc {
     fn size(&self) -> usize {
         match self.rank() {
             0 => 1,
-            _ => self.iter().product()
+            _ => self.iter().product(),
         }
     }
 
@@ -265,8 +265,7 @@ impl ITensorDesc for TensorDesc {
     }
 }
 
-
-impl <T> fmt::Debug for SharedTensor<T> {
+impl<T> fmt::Debug for SharedTensor<T> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(f, "SharedTensor desc={:?}", self.desc)
     }
@@ -294,7 +293,9 @@ impl<T> SharedTensor<T> {
             self.desc = new_desc;
             Ok(())
         } else {
-            Err(Error::InvalidShape("Size of the provided shape is not equal to the old shape."))
+            Err(Error::InvalidShape(
+                "Size of the provided shape is not equal to the old shape.",
+            ))
         }
     }
 
@@ -323,8 +324,7 @@ impl<T> SharedTensor<T> {
 
     /// Looks up `device` in self.locations and returns its index. If lookup
     /// fails then new location is created and its index is returned.
-    fn get_or_create_location_index<D: IDevice>(&self, device: &D)
-                                                -> Result<usize, Error> {
+    fn get_or_create_location_index<D: IDevice>(&self, device: &D) -> Result<usize, Error> {
         if let Some(i) = self.get_location_index(device) {
             return Ok(i);
         }
@@ -376,36 +376,49 @@ impl<T> SharedTensor<T> {
         // about CUDA at all. So if first attempt fails we change order and
         // try again.
         match src_loc.mem_transfer.sync_out(
-            src_loc.mem.deref(), dst_loc.device.deref(), dst_loc.mem.as_mut()) {
-            Err(DeviceError::NoMemorySyncRoute) => {},
+            src_loc.mem.deref(),
+            dst_loc.device.deref(),
+            dst_loc.mem.as_mut(),
+        ) {
+            Err(DeviceError::NoMemorySyncRoute) => {}
             x => return x.map_err(|e| e.into()),
         }
 
         match dst_loc.mem_transfer.sync_in(
-        	dst_loc.mem.as_mut(), src_loc.device.deref(), src_loc.mem.deref()) {
-            Err(DeviceError::NoMemorySyncRoute) => {},
+            dst_loc.mem.as_mut(),
+            src_loc.device.deref(),
+            src_loc.mem.deref(),
+        ) {
+            Err(DeviceError::NoMemorySyncRoute) => {}
             x => return x.map_err(|e| e.into()),
         }
 
-		// If there is no direct path, we take the detour via native
-		// and do an indirect transfer.
-		if cfg!(feature = "native") {
-			use crate::framework::IFramework;
-			use crate::frameworks::native::Native;
-			let native_framework = Native::new();
-			let native_device = native_framework.new_device(native_framework.hardwares()).unwrap(); // FIXME
-			let mut native_mem = native_device.alloc_memory(self.desc.size()).unwrap(); // FIXME calculate size
-		    match src_loc.mem_transfer.sync_out(
-		        src_loc.mem.deref(), &native_device, &mut native_mem) {
-		        Err(DeviceError::NoMemorySyncRoute) => {},
-		        x => return x.map_err(|e| e.into()),
-		    }
-		    match dst_loc.mem_transfer.sync_in(
-		    	dst_loc.mem.as_mut(), &native_device, &native_mem) {
-		        Err(DeviceError::NoMemorySyncRoute) => {},
-		        x => return x.map_err(|e| e.into()),
-		    }
-		    Ok(())
+        // If there is no direct path, we take the detour via native
+        // and do an indirect transfer.
+        if cfg!(feature = "native") {
+            use crate::framework::IFramework;
+            use crate::frameworks::native::Native;
+            let native_framework = Native::new();
+            let native_device = native_framework
+                .new_device(native_framework.hardwares())
+                .unwrap(); // FIXME
+            let mut native_mem = native_device.alloc_memory(self.desc.size()).unwrap(); // FIXME calculate size
+            match src_loc.mem_transfer.sync_out(
+                src_loc.mem.deref(),
+                &native_device,
+                &mut native_mem,
+            ) {
+                Err(DeviceError::NoMemorySyncRoute) => {}
+                x => return x.map_err(|e| e.into()),
+            }
+            match dst_loc
+                .mem_transfer
+                .sync_in(dst_loc.mem.as_mut(), &native_device, &native_mem)
+            {
+                Err(DeviceError::NoMemorySyncRoute) => {}
+                x => return x.map_err(|e| e.into()),
+            }
+            Ok(())
         } else {
             Err(DeviceError::NoMemorySyncRoute.into())
         }
@@ -431,7 +444,10 @@ impl<T> SharedTensor<T> {
         self.up_to_date.set(self.up_to_date.get() | (1 << i));
 
         let locs = self.locations.borrow();
-        let mem: &D::M = &locs[i].mem.deref().downcast_ref()
+        let mem: &D::M = &locs[i]
+            .mem
+            .deref()
+            .downcast_ref()
             .expect("Broken invariant: wrong memory type");
         let mem_a: &'a D::M = unsafe { ::std::mem::transmute(mem) };
         Ok(mem_a)
@@ -439,8 +455,7 @@ impl<T> SharedTensor<T> {
 
     /// Get memory for reading and writing on the specified `device`.
     /// Can fail if memory allocation fails, or if tensor wasn't initialized yet.
-    pub fn read_write<'a, D: IDevice>(&'a mut self, device: &D)
-                          -> Result<&'a mut D::M, Error> {
+    pub fn read_write<'a, D: IDevice>(&'a mut self, device: &D) -> Result<&'a mut D::M, Error> {
         if self.up_to_date.get() == 0 {
             return Err(Error::UninitializedMemory);
         }
@@ -449,7 +464,10 @@ impl<T> SharedTensor<T> {
         self.up_to_date.set(1 << i);
 
         let mut locs = self.locations.borrow_mut();
-        let mem: &mut D::M = &mut locs[i].mem.as_mut().downcast_mut()
+        let mem: &mut D::M = &mut locs[i]
+            .mem
+            .as_mut()
+            .downcast_mut()
             .expect("Broken invariant: wrong memory type");
         let mem_a: &'a mut D::M = unsafe { ::std::mem::transmute(mem) };
         Ok(mem_a)
@@ -462,13 +480,15 @@ impl<T> SharedTensor<T> {
     /// uninitialized data later. If caller has failed to overwrite memory,
     /// for some reason, it must call `invalidate()` to return vector to
     /// uninitialized state.
-    pub fn write_only<'a, D: IDevice>(&'a mut self, device: &D)
-                          -> Result<&'a mut D::M, Error> {
+    pub fn write_only<'a, D: IDevice>(&'a mut self, device: &D) -> Result<&'a mut D::M, Error> {
         let i = self.get_or_create_location_index(device)?;
         self.up_to_date.set(1 << i);
 
         let mut locs = self.locations.borrow_mut();
-        let mem: &mut D::M = &mut locs[i].mem.as_mut().downcast_mut()
+        let mem: &mut D::M = &mut locs[i]
+            .mem
+            .as_mut()
+            .downcast_mut()
             .expect("Broken invariant: wrong memory type");
         let mem_a: &'a mut D::M = unsafe { ::std::mem::transmute(mem) };
         Ok(mem_a)
@@ -488,14 +508,15 @@ impl<T> SharedTensor<T> {
                 let upper = (up_to_date >> 1) & (!mask);
                 self.up_to_date.set(lower | upper);
                 Ok(())
-            },
-            None =>
-                Err(Error::InvalidRemove("Memory isn't allocated on this device"))
+            }
+            None => Err(Error::InvalidRemove(
+                "Memory isn't allocated on this device",
+            )),
         }
     }
-	// force synchronize initialized memory to a device
-	/// Allocates an already filled memory block on a device.
-	/// This is a special needs function for performance concerns and should be avoided where possible.
+    // force synchronize initialized memory to a device
+    /// Allocates an already filled memory block on a device.
+    /// This is a special needs function for performance concerns and should be avoided where possible.
     fn sync<D: IDevice>(&mut self, device: &D) -> Result<(), Error> {
         if self.up_to_date.get() == 0 {
             return Err(Error::UninitializedMemory);
@@ -546,7 +567,7 @@ impl fmt::Display for Error {
             Error::InvalidRemove(e) => (*e).to_string(),
             Error::InvalidShape(e) => (*e).to_string(),
             Error::CapacityExceeded => "CapacityExceeded".to_string(),
-            Error::UninitializedMemory => "UninitializedMemory".to_string()
+            Error::UninitializedMemory => "UninitializedMemory".to_string(),
         };
         write!(f, "{}", msg)
     }

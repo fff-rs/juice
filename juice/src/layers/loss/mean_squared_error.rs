@@ -98,7 +98,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeInputGradient<f32, B> for MeanSquaredEr
             &native_scalar(-2f32),
             &mut writable_input,
         )
-            .unwrap();
+        .unwrap();
 
         write_to_memory(
             input_gradients[0].write_only(native.device()).unwrap(),

@@ -109,8 +109,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => {
                 Err(Error::AllocFailed("The resources could not be allocated"))
             }
-           status => Err(Error::Unknown("Unable create generic CUDA cuDNN Dropout Descriptor", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable create generic CUDA cuDNN Dropout Descriptor",
+                status as i32 as u64,
             )),
         }
     }
@@ -119,8 +120,9 @@ impl API {
     ) -> Result<(), Error> {
         match cudnnDestroyDropoutDescriptor(dropout_desc) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-           status => Err(Error::Unknown("Unable to destroy CUDA cuDNN Dropout Descriptor", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to destroy CUDA cuDNN Dropout Descriptor",
+                status as i32 as u64,
             )),
         }
     }
@@ -128,8 +130,9 @@ impl API {
         let mut size_in_bytes: usize = 0;
         match cudnnDropoutGetStatesSize(handle, &mut size_in_bytes) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size_in_bytes),
-           status => Err(Error::Unknown("Unable to get CUDA cuDNN Dropout Descriptor states size", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to get CUDA cuDNN Dropout Descriptor states size",
+                status as i32 as u64,
             )),
         }
     }
@@ -139,8 +142,9 @@ impl API {
         let mut size_in_bytes: usize = 0;
         match cudnnDropoutGetReserveSpaceSize(xdesc, &mut size_in_bytes) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size_in_bytes),
-           status => Err(Error::Unknown("Unable to get CUDA cuDNN Dropout Descriptor reserved space size", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to get CUDA cuDNN Dropout Descriptor reserved space size",
+                status as i32 as u64,
             )),
         }
     }
@@ -167,8 +171,9 @@ impl API {
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed(
                 "The function failed to launch on the GPU",
             )),
-           status => Err(Error::Unknown("Unable to set CUDA cuDNN Dropout Descriptor", status as i32 as u64
-
+            status => Err(Error::Unknown(
+                "Unable to set CUDA cuDNN Dropout Descriptor",
+                status as i32 as u64,
             )),
         }
     }

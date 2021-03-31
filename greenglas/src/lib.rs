@@ -14,22 +14,21 @@
 )]
 
 extern crate coaster as co;
-extern crate murmurhash3 as murmur3;
 extern crate image as image_crate;
+extern crate murmurhash3 as murmur3;
 
 pub use crate::image::Image;
-pub use crate::word::Word;
 pub use crate::transformer::Transformer;
+pub use crate::word::Word;
 
 pub use crate::modifier::Set;
 
-/// Transformer
-pub mod transformer;
 /// The Image Struct and its Modifiers
 pub mod image;
+/// Transformer
+pub mod transformer;
 /// The Word Struct and its Modifiers
 pub mod word;
-
 
 /// Re-exports from the modifier crate.
 pub mod modifier {

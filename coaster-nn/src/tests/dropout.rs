@@ -1,42 +1,39 @@
 use std::fmt;
 
-use crate::co::prelude::*;
 use crate::co::plugin::numeric_helpers::Float;
+use crate::co::prelude::*;
 
 use crate::plugin::Dropout;
-use crate::tests::{Epsilon, filled_tensor, tensor_assert_eq_tensor, tensor_assert_ne_tensor};
+use crate::tests::{filled_tensor, tensor_assert_eq_tensor, tensor_assert_ne_tensor, Epsilon};
 
 pub fn test_dropout<T, F: IFramework>(backend: Backend<F>)
-    where T: Float + Epsilon + fmt::Debug,
-          Backend<F>: Dropout<T> + IBackend {
+where
+    T: Float + Epsilon + fmt::Debug,
+    Backend<F>: Dropout<T> + IBackend,
+{
+    let test =
+        |dims: &[usize],
+         probability: f32,
+         seed: u64,
+         tensor_assert_func: &dyn Fn(&SharedTensor<T>, &SharedTensor<T>, f64)| {
+            let conf = Dropout::<T>::new_dropout_config(&backend, probability, seed).unwrap();
 
-    let test = |dims : &[usize],
-                probability : f32,
-                seed : u64,
-                tensor_assert_func : &dyn Fn(&SharedTensor<T>, &SharedTensor<T>, f64) | {
+            let inp_element_num = dims.iter().fold(1, |factorial, f| factorial * f);
 
-        let conf = Dropout::<T>::new_dropout_config(&backend, probability, seed)
-            .unwrap();
+            let inp_vals: Vec<f64> = (0..inp_element_num).map(|i| (i * i) as f64).collect();
 
-        let inp_element_num = dims.iter().fold(1, |factorial, f| factorial * f );
+            let x = filled_tensor(&backend, dims, &inp_vals);
+            let mut r = SharedTensor::<T>::new(&dims);
 
-        let inp_vals : Vec<f64> = (0..inp_element_num).map(|i| (i*i) as f64).collect();
+            backend.dropout(&x, &mut r, &conf).unwrap();
 
-        let x  = filled_tensor(&backend, dims, &inp_vals);
-        let mut r = SharedTensor::<T>::new(&dims);
-
-        backend.dropout(&x,
-               &mut r,
-               &conf).unwrap();
-
-        tensor_assert_func(&x, &r, 0.0);
-    };
+            tensor_assert_func(&x, &r, 0.0);
+        };
 
     test(&[1, 5, 5, 2], 0.999, 77777, &tensor_assert_ne_tensor);
     test(&[1, 1, 1, 1], 0.000, 77777, &tensor_assert_eq_tensor);
     test(&[5, 200, 200, 4], 0.5, 77777, &tensor_assert_ne_tensor);
 }
-
 
 // TODO
 // pub fn test_dropout_grad<T, F: IFramework>(backend: Backend<F>)

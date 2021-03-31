@@ -1,6 +1,6 @@
 //! Provides Rust Errors for OpenCL's status.
 
-use std::{fmt, error};
+use std::{error, fmt};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Defines OpenCL errors.

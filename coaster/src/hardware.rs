@@ -17,7 +17,7 @@ pub enum HardwareType {
     /// Hardware Accelerator devices
     ACCELERATOR,
     /// Used for anything else
-    OTHER
+    OTHER,
 }
 
 /// Specifies Hardware behavior accross frameworks.

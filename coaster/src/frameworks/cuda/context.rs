@@ -1,12 +1,12 @@
 //! Provides a Rust wrapper around Cuda's context.
 
-use crate::device::{IDevice, MemorySync};
-use crate::device::Error as DeviceError;
 use super::api::DriverFFI;
-use super::{Driver, DriverError, Device};
 use super::memory::*;
-use crate::frameworks::native::flatbox::FlatBox;
+use super::{Device, Driver, DriverError};
+use crate::device::Error as DeviceError;
+use crate::device::{IDevice, MemorySync};
 use crate::frameworks::native::device::Cpu;
+use crate::frameworks::native::flatbox::FlatBox;
 use std::any::Any;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
@@ -31,19 +31,17 @@ impl Drop for Context {
 impl Context {
     /// Initializes a new Cuda context.
     pub fn new(devices: Device) -> Result<Context, DriverError> {
-        Ok(
-            Context::from_c(
-                Driver::create_context(devices.clone())?,
-                vec!(devices)
-            )
-        )
+        Ok(Context::from_c(
+            Driver::create_context(devices.clone())?,
+            vec![devices],
+        ))
     }
 
     /// Initializes a new Cuda platform from its C type.
     pub fn from_c(id: DriverFFI::CUcontext, devices: Vec<Device>) -> Context {
         Context {
             id: Rc::new(id as isize),
-            devices
+            devices,
         }
     }
 
@@ -89,8 +87,12 @@ impl IDevice for Context {
 }
 
 impl MemorySync for Context {
-    fn sync_in(&self, my_memory: &mut dyn Any, src_device: &dyn Any, src_memory: &dyn Any)
-               -> Result<(), DeviceError> {
+    fn sync_in(
+        &self,
+        my_memory: &mut dyn Any,
+        src_device: &dyn Any,
+        src_memory: &dyn Any,
+    ) -> Result<(), DeviceError> {
         if src_device.downcast_ref::<Cpu>().is_some() {
             let my_mem = my_memory.downcast_mut::<Memory>().unwrap();
             let src_mem = src_memory.downcast_ref::<FlatBox>().unwrap();
@@ -101,8 +103,12 @@ impl MemorySync for Context {
         }
     }
 
-    fn sync_out(&self, my_memory: &dyn Any, dst_device: &dyn Any, dst_memory: &mut dyn Any)
-                -> Result<(), DeviceError> {
+    fn sync_out(
+        &self,
+        my_memory: &dyn Any,
+        dst_device: &dyn Any,
+        dst_memory: &mut dyn Any,
+    ) -> Result<(), DeviceError> {
         if dst_device.downcast_ref::<Cpu>().is_some() {
             let my_mem = my_memory.downcast_ref::<Memory>().unwrap();
             let dst_mem = dst_memory.downcast_mut::<FlatBox>().unwrap();

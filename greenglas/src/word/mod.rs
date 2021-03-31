@@ -1,7 +1,6 @@
 use crate::murmur3::murmurhash3_x86_32 as murmur3;
 use crate::{Set, Transformer};
 
-
 /// The Modifiers for `Word`
 pub mod modifiers;
 

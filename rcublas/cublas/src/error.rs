@@ -19,7 +19,9 @@ pub enum Error {
     #[error("Invalid value: {0}")]
     InvalidValue(&'static str),
     /// Failure with the hardware architecture.
-    #[error("cuBLAS only supports devices with compute capabilities greater than or equal to 1.3.")]
+    #[error(
+        "cuBLAS only supports devices with compute capabilities greater than or equal to 1.3."
+    )]
     ArchMismatch,
     /// Failure with memory access or internal error/bug.
     #[error("There was an error accessing GPU memory.")]

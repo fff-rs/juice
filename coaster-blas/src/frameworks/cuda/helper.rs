@@ -56,7 +56,7 @@ macro_rules! iblas_asum_for_cuda {
             let x_mem = read!(x, self);
             let r_mem = write_only!(result, self);
 
-            let ctx : &cublas::Context = self.framework().cublas();
+            let ctx: &cublas::Context = self.framework().cublas();
             exec!(
                 asum,
                 (*ctx).asum(trans!(x_mem, $t), trans!(r_mem, $t), n, None)
@@ -131,7 +131,7 @@ macro_rules! iblas_nrm2_for_cuda {
             let x_mem = read!(x, self);
             let r_mem = write_only!(result, self);
 
-            let ctx : &cublas::Context = self.framework().cublas();
+            let ctx: &cublas::Context = self.framework().cublas();
 
             exec!(
                 nrm2,
@@ -155,7 +155,7 @@ macro_rules! iblas_dot_for_cuda {
             let x_mem = read!(x, self);
             let y_mem = read!(y, self);
             let r_mem = write_only!(result, self);
-            let ctx : &cublas::Context = self.framework().cublas();
+            let ctx: &cublas::Context = self.framework().cublas();
             exec!(
                 dot,
                 (*ctx).dot(
@@ -183,7 +183,7 @@ macro_rules! iblas_scal_for_cuda {
             let n = x.desc().size() as i32;
             let a_mem = read!(a, self);
             let x_mem = read_write!(x, self);
-            let ctx : &cublas::Context = self.framework().cublas();
+            let ctx: &cublas::Context = self.framework().cublas();
 
             exec!(
                 scal,
@@ -205,7 +205,7 @@ macro_rules! iblas_swap_for_cuda {
             let n = x.desc().size() as i32;
             let x_mem = read_write!(x, self);
             let y_mem = read_write!(y, self);
-            let ctx : &cublas::Context = self.framework().cublas();
+            let ctx: &cublas::Context = self.framework().cublas();
 
             exec!(
                 swap,
@@ -273,7 +273,7 @@ macro_rules! iblas_gemm_for_cuda {
             let ldb = b_1;
             let ldc = c_1;
 
-            let ctx : &cublas::Context = self.framework().cublas();
+            let ctx: &cublas::Context = self.framework().cublas();
 
             exec!(
                 gemm,

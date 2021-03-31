@@ -47,7 +47,7 @@ use crate::conn;
 use crate::conn::RnnConfig as connRnnConfig;
 use crate::juice_capnp::rnn_config as capnp_config;
 use crate::layer::*;
-use crate::util::{ArcLock, native_backend};
+use crate::util::{native_backend, ArcLock};
 use crate::weight::FillerType;
 
 #[derive(Debug, Clone)]
@@ -137,10 +137,7 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
             .unwrap();
 
         let filter_dimensions: TensorDesc = backend
-            .generate_rnn_weight_description(
-                &config,
-                batch_size as i32,
-                input_size as i32)
+            .generate_rnn_weight_description(&config, batch_size as i32, input_size as i32)
             .unwrap();
 
         weights_data[0].write().unwrap().resize(&filter_dimensions).unwrap();
@@ -151,9 +148,7 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
             output_size: batch_size * self.num_layers * self.hidden_size,
         };
 
-        let bias_filler = FillerType::Constant {
-            value: 1.0
-        };
+        let bias_filler = FillerType::Constant { value: 1.0 };
 
         filler.fill(&mut weights_data[0].write().unwrap());
         bias_filler.fill(&mut weights_data[1].write().unwrap());
@@ -204,11 +199,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         backend
-            .rnn_forward(&input_data[0],
-                         output_data[0],
-                         rnn_config,
-                         weights[0],
-                         &mut workspace)
+            .rnn_forward(&input_data[0], output_data[0], rnn_config, weights[0], &mut workspace)
             .unwrap();
     }
 }
@@ -232,9 +223,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
         let input_size = input_shape[1];
         let sequence_length = input_shape[2];
         let native_backend = native_backend();
-        let readable_input = src
-            .read(native_backend.device()).unwrap()
-            .as_slice::<f32>().to_vec();
+        let readable_input = src.read(native_backend.device()).unwrap().as_slice::<f32>().to_vec();
 
         backend
             .rnn_backward_data(
@@ -359,12 +348,12 @@ impl<'a> CapnpRead<'a> for RnnConfig {
 mod tests {
     use std::rc::Rc;
 
-    use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
     use conn::Rnn as coRnn;
+    use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
 
-    use crate::co::*;
     #[cfg(feature = "cuda")]
     use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
+    use crate::co::*;
     use crate::layer::ILayer;
     use crate::util::native_backend;
     use crate::weight::FillerType;

@@ -21,7 +21,7 @@ use crate::conn;
 use crate::conn::ConvolutionConfig as connConvolutionConfig;
 use crate::juice_capnp::convolution_config as capnp_config;
 use crate::layer::*;
-use crate::util::{ArcLock, cast_vec_usize_to_i32};
+use crate::util::{cast_vec_usize_to_i32, ArcLock};
 use crate::weight::FillerType;
 
 use super::FilterLayer;
@@ -359,8 +359,8 @@ impl<'a> CapnpRead<'a> for ConvolutionConfig {
 mod tests {
     use crate::co::*;
 
-    use super::{Convolution, ConvolutionConfig};
     use super::super::FilterLayer;
+    use super::{Convolution, ConvolutionConfig};
 
     #[test]
     #[cfg(feature = "cuda")]
