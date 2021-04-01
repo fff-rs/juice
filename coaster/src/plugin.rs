@@ -37,46 +37,21 @@ pub mod numeric_helpers {
     pub use num::traits::*;
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, thiserror::Error)]
 /// Defines a high-level Plugin Error.
 pub enum Error {
     /// Failure related to `SharedTensor`: use of uninitialized memory,
     /// synchronization error or memory allocation failure.
-    SharedTensor(tensor::Error),
+    #[error("SharedTensor error")]
+    SharedTensor(#[from] tensor::Error),
     /// Failure at the execution of the Operation.
+    #[error("Operation error")]
     Operation(&'static str),
-    /// Failure at the Plugin.
+
+    #[error("Plugin error: {0}")]
     Plugin(&'static str),
-}
 
-impl ::std::fmt::Display for Error {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        match *self {
-            Error::SharedTensor(ref err) => write!(f, "SharedTensor error: {}", err),
-            Error::Operation(ref err) => write!(f, "Operation error: {}", err),
-            Error::Plugin(ref err) => write!(f, "Plugin error: {}", err),
-        }
-    }
-}
-
-impl ::std::error::Error for Error {
-    fn source(&self) -> Option<&(dyn (::std::error::Error) + 'static)> {
-        match *self {
-            Error::SharedTensor(ref err) => err.source(),
-            Error::Operation(_) => None,
-            Error::Plugin(_) => None,
-        }
-    }
-}
-
-impl From<Error> for crate::error::Error {
-    fn from(err: Error) -> crate::error::Error {
-        crate::error::Error::Plugin(err)
-    }
-}
-
-impl From<tensor::Error> for Error {
-    fn from(err: tensor::Error) -> Error {
-        Error::SharedTensor(err)
-    }
+    /// Failure at the Plugin with an inner error type.
+    #[error(transparent)]
+    PluginInner(#[from] Box<dyn std::error::Error + Send + Sync + 'static>),
 }

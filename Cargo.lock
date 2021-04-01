@@ -283,6 +283,7 @@ dependencies = [
  "rand 0.7.3",
  "rand_hc",
  "rcudnn",
+ "thiserror",
 ]
 
 [[package]]

@@ -117,9 +117,8 @@
 
 pub use crate::plugin::*;
 
-extern crate coaster as co;
-extern crate libc;
-extern crate log;
+use coaster as co;
+
 #[cfg(feature = "cuda")]
 extern crate rcudnn as cudnn;
 

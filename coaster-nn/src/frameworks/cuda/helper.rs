@@ -31,3 +31,13 @@ macro_rules! trans_mut {
         unsafe { ::std::mem::transmute::<u64, *mut ::libc::c_void>(*$mem.id_c()) }
     };
 }
+
+macro_rules! exec {
+    ($f:expr => $msg:literal) => {{
+        let res = $f;
+        res.map_err::<crate::co::Error, _>(|e| {
+            log::debug!("Unable to execute operation {}: {:?}", $msg, e);
+            crate::co::Error::Plugin(PluginError::PluginInner(Box::new(e)))
+        })
+    }};
+}

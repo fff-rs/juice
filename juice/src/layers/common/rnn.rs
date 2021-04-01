@@ -510,13 +510,13 @@ mod tests {
         filler.fill(&mut weights_data[1]);
 
         layer.resize_shared_workspace(Rc::from(cuda_backend()), None);
-        let mut workspace_forward = match layer.workspace.as_ref() {
-            Some(workspace) => match workspace.write() {
-                Ok(workspace) => workspace,
-                Err(_) => panic!("Couldn't unwrap write for workspace"),
-            },
-            None => panic!("No workspace found"),
-        };
+        let mut workspace_forward = layer
+            .workspace
+            .as_ref()
+            .expect("Workspace exists. qed")
+            .write()
+            .expect("Workspace write works. qed");
+
         match backend.rnn_forward(
             &input_data,
             &mut output_data,
