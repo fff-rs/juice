@@ -432,7 +432,7 @@ where
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
 
-        exec!(cudnn_framework.sigmoid_forward(
+        exec2!(cudnn_framework.sigmoid_forward(
             &cudnn_framework.init_activation().unwrap(),
             &x.cudnn_tensor_desc_flat()?,
             trans!(x_mem),
@@ -457,7 +457,7 @@ where
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        exec!(cudnn_framework.sigmoid_backward(
+        exec2!(cudnn_framework.sigmoid_backward(
             &cudnn_framework.init_activation().unwrap(),
             &x.cudnn_tensor_desc_flat()?,
             trans!(x_mem),
@@ -597,7 +597,7 @@ where
         let r_mem = write_only!(result, self);
         let w_mem = write_only!(workspace, self);
 
-        exec!(cudnn_framework.convolution_forward(
+        exec2!(cudnn_framework.convolution_forward(
             config,
             trans_mut!(w_mem),
             trans!(f_mem),
@@ -624,7 +624,7 @@ where
         let dd_mem = read!(dest_diff, self);
         let df_mem = write_only!(filter_diff, self);
         let w_mem = write_only!(workspace, self);
-        exec!(cudnn_framework.convolution_backward_filter(
+        exec2!(cudnn_framework.convolution_backward_filter(
             config,
             trans_mut!(w_mem),
             &src_data.cudnn_tensor_desc()?,
@@ -653,7 +653,7 @@ where
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
         let w_mem = write_only!(workspace, self);
-        exec!(cudnn_framework.convolution_backward_data(
+        exec2!(cudnn_framework.convolution_backward_data(
             config,
             trans_mut!(w_mem),
             trans!(f_mem),
@@ -843,7 +843,7 @@ where
         let x_desc_single_iterator =
             TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap();
 
-        let weight_size: usize = exec!(API::get_rnn_params_size(
+        let weight_size: usize = exec2!(API::get_rnn_params_size(
             *cudnn_framework.id_c(),
             *rnn_config.rnn_desc().id_c(),
             // Input. A fully packed tensor descriptor describing the input to one recurrent iteration.
@@ -878,7 +878,7 @@ where
         let algorithm = algorithm.as_cudnn()?;
         let src_description = src.desc();
 
-        let drop_desc = exec!(cudnn_framework.init_dropout(
+        let drop_desc = exec2!(cudnn_framework.init_dropout(
             dropout_probability.unwrap_or(0.5),
             dropout_seed.unwrap_or(0),
         ) => "Unable to create Dropout Layer")?;
@@ -895,7 +895,7 @@ where
         )?
         .x_desc;
 
-        let rnn_desc = exec!(RnnDescriptor::new(
+        let rnn_desc = exec2!(RnnDescriptor::new(
             &cudnn_framework,
             hidden_size,
             num_layers,
@@ -908,7 +908,7 @@ where
             (RnnPaddingMode::Disabled).as_cudnn().unwrap(),
         ) => "Failed to create RNN descriptor")?;
 
-        exec!(cudnn_framework.init_rnn(
+        exec2!(cudnn_framework.init_rnn(
             &x_desc,
             rnn_desc,
             hidden_size,
@@ -952,7 +952,7 @@ where
         let output_mem = output.write_only(self.device()).unwrap();
         let workspace_mem = workspace.write_only(self.device()).unwrap();
 
-        exec!(cudnn_framework.rnn_forward::<f32>(
+        exec2!(cudnn_framework.rnn_forward::<f32>(
             rnn_config,
             sequence_descriptors.x_desc,
             trans!(src_mem),
@@ -1002,7 +1002,7 @@ where
         let output_gradient_mem = read!(output_gradient, self);
         let workspace_mem = write_only!(workspace, self);
         let reserve_space = rnn_config.training_reserve();
-        exec!(cudnn_framework.rnn_backward_data::<f32>(
+        exec2!(cudnn_framework.rnn_backward_data::<f32>(
             rnn_config,
             sequence_descriptors.y_desc,
             trans!(output_mem),
@@ -1056,7 +1056,7 @@ where
         let workspace_mem = write_only!(workspace, self);
         let filter_mem = write_only!(filter, self);
         let reserve_space = rnn_config.training_reserve();
-        exec!(cudnn_framework.rnn_backward_weights::<f32>(
+        exec2!(cudnn_framework.rnn_backward_weights::<f32>(
             rnn_config,
             sequence_descriptors.x_desc,
             trans!(src_mem),
@@ -1083,7 +1083,7 @@ where
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
-        exec!(cudnn_framework.sigmoid_forward(
+        exec2!(cudnn_framework.sigmoid_forward(
             &cudnn_framework.init_activation().unwrap(),
             &x_desc,
             trans!(x_mem),
@@ -1106,7 +1106,7 @@ where
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
         // TODO move config one level up
-        exec!(cudnn_framework.sigmoid_backward(
+        exec2!(cudnn_framework.sigmoid_backward(
             &cudnn_framework.init_activation().unwrap(),
             &x_desc,
             trans!(x_mem),
@@ -1132,7 +1132,7 @@ where
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        exec!(cudnn_framework.relu_forward(
+        exec2!(cudnn_framework.relu_forward(
             &cudnn_framework.init_activation().unwrap(),
             &x.cudnn_tensor_desc_flat()?,
             trans!(x_mem),
@@ -1158,7 +1158,7 @@ where
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
 
-        exec!(cudnn_framework.relu_backward(
+        exec2!(cudnn_framework.relu_backward(
             &cudnn_framework.init_activation().unwrap(),
             &x.cudnn_tensor_desc_flat()?,
             trans!(x_mem),
@@ -1184,7 +1184,7 @@ where
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
 
-        exec!(cudnn_framework.relu_forward(
+        exec2!(cudnn_framework.relu_forward(
             &cudnn_framework.init_activation().unwrap(),
             &x_desc,
             trans!(x_mem),
@@ -1207,7 +1207,7 @@ where
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
 
-        exec!(cudnn_framework.relu_backward(
+        exec2!(cudnn_framework.relu_backward(
             &cudnn_framework.init_activation().unwrap(),
             &x_desc,
             trans!(x_mem),
@@ -1233,7 +1233,7 @@ where
         let r_desc = result.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        exec!(cudnn_framework.tanh_forward(
+        exec2!(cudnn_framework.tanh_forward(
             &cudnn_framework.init_activation().unwrap(),
             &x.cudnn_tensor_desc_flat()?,
             trans!(x_mem),
@@ -1258,7 +1258,7 @@ where
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        exec!(cudnn_framework.tanh_backward(
+        exec2!(cudnn_framework.tanh_backward(
             &cudnn_framework.init_activation().unwrap(),
             &x.cudnn_tensor_desc_flat()?,
             trans!(x_mem),
@@ -1283,7 +1283,7 @@ where
             crate::cudnn::utils::ScalParams::default();
         let x_desc = x.cudnn_tensor_desc_flat()?;
         let x_mem = read_write!(x, self);
-        exec!(cudnn_framework.tanh_forward(
+        exec2!(cudnn_framework.tanh_forward(
             &cudnn_framework.init_activation().unwrap(),
             &x_desc,
             trans!(x_mem),
@@ -1305,7 +1305,7 @@ where
         let dx_desc = x_diff.cudnn_tensor_desc_flat()?;
         let x_mem = read!(x, self);
         let dx_mem = read_write!(x_diff, self);
-        exec!(cudnn_framework.tanh_backward(
+        exec2!(cudnn_framework.tanh_backward(
             &cudnn_framework.init_activation().unwrap(),
             &x_desc,
             trans!(x_mem),
@@ -1331,7 +1331,7 @@ where
         let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        exec!(cudnn_framework.softmax_forward(
+        exec2!(cudnn_framework.softmax_forward(
             &x.cudnn_tensor_desc_softmax()?,
             trans!(x_mem),
             &r_desc,
@@ -1353,7 +1353,7 @@ where
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
-        exec!(cudnn_framework.softmax_backward(
+        exec2!(cudnn_framework.softmax_backward(
             &x.cudnn_tensor_desc_softmax()?,
             trans!(x_mem),
             &x_diff.cudnn_tensor_desc_softmax()?,
@@ -1376,7 +1376,7 @@ where
         let r_desc = result.cudnn_tensor_desc_softmax()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        exec!(cudnn_framework.log_softmax_forward(
+        exec2!(cudnn_framework.log_softmax_forward(
             &x.cudnn_tensor_desc_softmax()?,
             trans!(x_mem),
             &r_desc,
@@ -1397,7 +1397,7 @@ where
         let x_mem = read!(x, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
-        exec!(cudnn_framework.log_softmax_backward(
+        exec2!(cudnn_framework.log_softmax_backward(
             &x.cudnn_tensor_desc_softmax()?,
             trans!(x_mem),
             &x_diff.cudnn_tensor_desc_softmax()?,
@@ -1432,7 +1432,7 @@ where
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        exec!(cudnn_framework.lrn_forward(
+        exec2!(cudnn_framework.lrn_forward(
                 config,
                 &x.cudnn_tensor_desc()?,
                 trans!(x_mem),
@@ -1460,7 +1460,7 @@ where
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        exec!(cudnn_framework.lrn_backward(
+        exec2!(cudnn_framework.lrn_backward(
             config,
             &x.cudnn_tensor_desc()?,
             trans!(x_mem),
@@ -1518,7 +1518,7 @@ where
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        exec!(cudnn_framework.pooling_max_forward(
+        exec2!(cudnn_framework.pooling_max_forward(
                 config,
                 &x.cudnn_tensor_desc()?,
                 trans!(x_mem),
@@ -1546,7 +1546,7 @@ where
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        exec!(cudnn_framework.pooling_max_backward(
+        exec2!(cudnn_framework.pooling_max_backward(
             config,
             &x.cudnn_tensor_desc()?,
             trans!(x_mem),
@@ -1572,7 +1572,7 @@ where
         let r_desc = result.cudnn_tensor_desc()?;
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        exec!(cudnn_framework.pooling_avg_forward(
+        exec2!(cudnn_framework.pooling_avg_forward(
             config,
             &x.cudnn_tensor_desc()?,
             trans!(x_mem),
@@ -1599,7 +1599,7 @@ where
         let dx_mem = read!(x_diff, self);
         let r_mem = read!(result, self);
         let dr_mem = write_only!(result_diff, self);
-        exec!(cudnn_framework.pooling_avg_backward(
+        exec2!(cudnn_framework.pooling_avg_backward(
             config,
             &x.cudnn_tensor_desc()?,
             trans!(x_mem),
@@ -1634,7 +1634,7 @@ where
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
 
-        exec!(cudnn_framework.dropout_forward::<f32>(
+        exec2!(cudnn_framework.dropout_forward::<f32>(
             config,
             &x.cudnn_tensor_desc()?,
             trans!(x_mem),
@@ -1658,7 +1658,7 @@ where
         // let dx_mem = read!(x_diff, self);
         // let r_mem = write_only!(result, self);
         // let dr_mem = write_only!(result_diff, self);
-        // exec!(cudnn_framework.dropout_backward::<f32>(config,
+        // exec2!(cudnn_framework.dropout_backward::<f32>(config,
         //                          &x.cudnn_tensor_desc()?,
         //                          trans!(x_mem),
         //                          &result.cudnn_tensor_desc()?,

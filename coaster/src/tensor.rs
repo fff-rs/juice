@@ -54,7 +54,7 @@ use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::marker::PhantomData;
 use std::ops::Deref;
-use std::{error, fmt, mem};
+use std::{fmt, mem};
 
 /// Describes the Descriptor of a SharedTensor.
 pub type TensorDesc = Vec<usize>;

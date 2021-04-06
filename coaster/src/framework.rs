@@ -25,8 +25,6 @@ use crate::frameworks::cuda::DriverError as CudaError;
 use crate::hardware::IHardware;
 #[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
-use std::error;
-use std::fmt;
 
 /// Defines a Framework.
 pub trait IFramework {

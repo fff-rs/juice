@@ -35,9 +35,18 @@ macro_rules! trans_mut {
 macro_rules! exec {
     ($f:expr => $msg:literal) => {{
         let res = $f;
-        res.map_err::<crate::co::Error, _>(|e| {
+        res.map_err(|e| {
             log::debug!("Unable to execute operation {}: {:?}", $msg, e);
-            crate::co::Error::Plugin(PluginError::PluginInner(Box::new(e)))
+            co::plugin::Error::PluginInner(Box::new(e))
         })
+    }};
+    ($f:expr => $msg:literal as $err:ty) => {{
+        exec!($f => $msg).map_err(<$err>::from)
+    }};
+}
+
+macro_rules! exec2 {
+    ($f:expr => $msg:literal) => {{
+        exec!($f => $msg as co::Error)
     }};
 }
