@@ -117,15 +117,10 @@
 
 pub use crate::plugin::*;
 
-use coaster as co;
-
 #[cfg(feature = "cuda")]
-extern crate rcudnn as cudnn;
+use rcudnn as cudnn;
 
-#[cfg(feature = "native")]
-extern crate rand;
-#[cfg(feature = "native")]
-extern crate rand_hc;
+pub(crate) use coaster as co;
 
 pub mod frameworks;
 mod plugin;

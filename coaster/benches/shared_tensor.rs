@@ -1,19 +1,16 @@
 #![feature(test)]
 
-extern crate coaster as co;
-extern crate rand;
-extern crate test;
-
-use crate::co::backend::{Backend, BackendConfig};
-use crate::co::device::IDevice;
-use crate::co::framework::IFramework;
-use crate::co::tensor::SharedTensor;
+use coaster as co;
+use co::backend::{Backend, BackendConfig};
+use co::device::IDevice;
+use co::framework::IFramework;
+use co::tensor::SharedTensor;
 use test::Bencher;
 
 #[cfg(feature = "cuda")]
-use crate::co::frameworks::Cuda;
+use co::frameworks::Cuda;
 #[cfg(feature = "native")]
-use crate::co::frameworks::Native;
+use co::frameworks::Native;
 #[cfg(feature = "opencl")]
 use co::frameworks::OpenCL;
 
@@ -34,7 +31,7 @@ fn opencl_backend() -> Backend<OpenCL> {
 }
 
 #[cfg(feature = "cuda")]
-use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
+use co::frameworks::cuda::get_cuda_backend as cuda_backend;
 
 fn sync_back_and_forth<F1, F2>(
     b: &mut Bencher,

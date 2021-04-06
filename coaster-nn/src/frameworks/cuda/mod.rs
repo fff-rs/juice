@@ -1,10 +1,11 @@
 //! Provides NN for a CUDA backend.
 #![allow(missing_docs)]
 
-use crate::co::plugin::numeric_helpers::Float;
-use crate::co::plugin::Error as PluginError;
-use crate::co::prelude::*;
-use crate::co::Error;
+use coaster as co;
+use co::plugin::numeric_helpers::Float;
+use co::plugin::Error as PluginError;
+use co::prelude::*;
+use co::Error;
 pub use crate::cudnn::utils::{DataType, DataTypeInfo};
 use crate::cudnn::*;
 use crate::plugin::*;

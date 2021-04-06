@@ -9,15 +9,14 @@ use std::fmt::Debug;
 use std::ops::*;
 
 #[cfg(feature = "native")]
-use rand::{Rng, SeedableRng};
-#[cfg(feature = "native")]
-use rand_hc as hc128;
+use rand::{Rng, SeedableRng, distributions::Distribution};
 
-use crate::co::plugin::numeric_helpers::Bounded;
-use crate::co::plugin::numeric_helpers::Float;
-use crate::co::plugin::Error as PluginError;
-use crate::co::prelude::*;
-use crate::co::Error;
+use coaster as co;
+use co::plugin::numeric_helpers::Bounded;
+use co::plugin::numeric_helpers::Float;
+use co::plugin::Error as PluginError;
+use co::prelude::*;
+use co::Error;
 use crate::plugin::*;
 
 #[macro_use]
@@ -965,12 +964,16 @@ where
         output.clone_from_slice(input);
 
         let seed: [u8; 8] = config.seed.to_le_bytes();
-        let mut extrapolated_seed = [0u8; 32];
-        extrapolated_seed[0..8].copy_from_slice(&seed[..]);
-        let mut rng = hc128::Hc128Rng::from_seed(extrapolated_seed);
+        let mut extrapolated_seed = [0u8;32];
+        extrapolated_seed[0..8].copy_from_slice(&seed);
+        extrapolated_seed[12..20].copy_from_slice(&seed);
+        extrapolated_seed[24..32].copy_from_slice(&seed);
+        let mut rng = ::rand_chacha::ChaChaRng::from_seed(extrapolated_seed);
+
+        let dist = ::rand::distributions::Uniform::<f32>::new_inclusive(0., 1.);
 
         for i in 0..output.len() {
-            if rng.gen_range(0f32, 1f32) >= config.probability {
+            if dist.sample(&mut rng) >= config.probability {
                 output[i] = input[i];
             } else {
                 output[i] = T::zero();

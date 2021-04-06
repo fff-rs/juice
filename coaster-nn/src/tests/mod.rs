@@ -87,10 +87,13 @@ pub fn uniformly_random_tensor<T, F>(
     high: T,
 ) -> SharedTensor<T>
 where
-    T: Copy + PartialEq + PartialOrd + rand::distributions::uniform::SampleUniform,
+    T: Copy + PartialEq + PartialOrd + ::rand::distributions::uniform::SampleBorrow,
     F: IFramework,
     Backend<F>: IBackend,
 {
+    let dist = ::rand::distributions::Uniform::<T>::new_inclusive(low, high);
+    let mut rng = thread_rng();
+
     let mut xs = SharedTensor::new(&dims);
     {
         let native = get_native_backend();
@@ -99,9 +102,8 @@ where
             let mem = xs.write_only(native_dev).unwrap();
             let mem_slice = mem.as_mut_slice::<T>();
 
-            let mut rng = thread_rng();
             for x in mem_slice {
-                *x = Rng::gen_range(&mut rng, low, high);
+                *x = dist.sample(&mut rng);
             }
         }
         // not functional since, PartialEq has yet to be implemented for Device
