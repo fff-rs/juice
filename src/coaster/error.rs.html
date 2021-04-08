@@ -19,64 +19,24 @@
 <span id="16">16</span>
 <span id="17">17</span>
 <span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Defines the general set of error types in Coaster.</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error</span>, <span class="ident">fmt</span>};
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror</span>::<span class="ident">Error</span>)]</span>
 <span class="doccomment">/// Defines the set of available Coaster error types.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
     <span class="doccomment">/// Failure related to the Framework implementation.</span>
-    <span class="ident">Framework</span>(<span class="kw">crate</span>::<span class="ident">framework</span>::<span class="ident">Error</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Framework error&quot;</span>)]</span>
+    <span class="ident">Framework</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="kw">crate</span>::<span class="ident">framework</span>::<span class="ident">Error</span>),
     <span class="doccomment">/// Failure related to the Tensor.</span>
-    <span class="ident">Tensor</span>(<span class="kw">crate</span>::<span class="ident">tensor</span>::<span class="ident">Error</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Tensor error&quot;</span>)]</span>
+    <span class="ident">Tensor</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="kw">crate</span>::<span class="ident">tensor</span>::<span class="ident">Error</span>),
     <span class="doccomment">/// Failure at Plugin Operation.</span>
-    <span class="ident">Plugin</span>(<span class="kw">crate</span>::<span class="ident">plugin</span>::<span class="ident">Error</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Tensor error&quot;</span>)]</span>
+    <span class="ident">Plugin</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="kw">crate</span>::<span class="ident">plugin</span>::<span class="ident">Error</span>),
     <span class="doccomment">/// Failure related to a Device.</span>
-    <span class="ident">Device</span>(<span class="kw">crate</span>::<span class="ident">device</span>::<span class="ident">Error</span>),
-}
-
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">Error</span>::<span class="ident">Framework</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Framwork error: {}&quot;</span>, <span class="ident">err</span>),
-            <span class="ident">Error</span>::<span class="ident">Tensor</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Tensor error: {}&quot;</span>, <span class="ident">err</span>),
-            <span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Plugin error: {}&quot;</span>, <span class="ident">err</span>),
-            <span class="ident">Error</span>::<span class="ident">Device</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Device error: {}&quot;</span>, <span class="ident">err</span>),
-        }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">error</span>::<span class="ident">Error</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">error</span>::<span class="ident">Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">Error</span>::<span class="ident">Framework</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-            <span class="ident">Error</span>::<span class="ident">Tensor</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-            <span class="ident">Error</span>::<span class="ident">Plugin</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-            <span class="ident">Error</span>::<span class="ident">Device</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-        }
-    }
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Device error&quot;</span>)]</span>
+    <span class="ident">Device</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="kw">crate</span>::<span class="ident">device</span>::<span class="ident">Error</span>),
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="coaster"></div>

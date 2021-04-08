@@ -567,38 +567,6 @@
 <span id="564">564</span>
 <span id="565">565</span>
 <span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the functionality for memory management across devices.</span>
 <span class="doccomment">//!</span>
@@ -656,7 +624,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::{<span class="ident">Cell</span>, <span class="ident">RefCell</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Deref</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error</span>, <span class="ident">fmt</span>, <span class="ident">mem</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">mem</span>};
 
 <span class="doccomment">/// Describes the Descriptor of a SharedTensor.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TensorDesc</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>;
@@ -1148,55 +1116,23 @@
 }
 
 <span class="doccomment">/// Errors than can occur when synchronizing memory.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">thiserror</span>::<span class="ident">Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
     <span class="doccomment">/// Error caused by operations with device: allocation, memory synchronization, etc.</span>
-    <span class="ident">DeviceError</span>(<span class="ident">DeviceError</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+    <span class="ident">DeviceError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">DeviceError</span>),
     <span class="doccomment">/// Unable to remove Memory copy from SharedTensor.</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid remove: {0}&quot;</span>)]</span>
     <span class="ident">InvalidRemove</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>),
     <span class="doccomment">/// Shape provided for reshaping is not compatible with old shape.</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid shape: {0}&quot;</span>)]</span>
     <span class="ident">InvalidShape</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>),
     <span class="doccomment">/// Maximal number of backing memories has been reached.</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Capacity exceeded&quot;</span>)]</span>
     <span class="ident">CapacityExceeded</span>,
     <span class="doccomment">/// Memory is requested for reading, but it hasn&#39;t been initialized.</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Attempt to read uninitialized memory&quot;</span>)]</span>
     <span class="ident">UninitializedMemory</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Error</span>::<span class="ident">DeviceError</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">to_string</span>(),
-            <span class="ident">Error</span>::<span class="ident">InvalidRemove</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">to_string</span>(),
-            <span class="ident">Error</span>::<span class="ident">InvalidShape</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> (<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">to_string</span>(),
-            <span class="ident">Error</span>::<span class="ident">CapacityExceeded</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;CapacityExceeded&quot;</span>.<span class="ident">to_string</span>(),
-            <span class="ident">Error</span>::<span class="ident">UninitializedMemory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UninitializedMemory&quot;</span>.<span class="ident">to_string</span>(),
-        };
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">msg</span>)
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">error</span>::<span class="ident">Error</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">error</span>::<span class="ident">Error</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>)<span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">Error</span>::<span class="ident">DeviceError</span>(<span class="kw-2">ref</span> <span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">err</span>),
-            <span class="ident">Error</span>::<span class="ident">InvalidRemove</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-            <span class="ident">Error</span>::<span class="ident">InvalidShape</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-            <span class="ident">Error</span>::<span class="ident">CapacityExceeded</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-            <span class="ident">Error</span>::<span class="ident">UninitializedMemory</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-        }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">DeviceError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">DeviceError</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Error</span> {
-        <span class="ident">Error</span>::<span class="ident">DeviceError</span>(<span class="ident">err</span>)
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">Error</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">Error</span> {
-        <span class="kw">crate</span>::<span class="ident">error</span>::<span class="ident">Error</span>::<span class="ident">Tensor</span>(<span class="ident">err</span>)
-    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="coaster"></div>

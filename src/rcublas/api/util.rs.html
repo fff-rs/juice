@@ -293,7 +293,7 @@
 
 <span class="macro">lazy_static</span><span class="macro">!</span> {
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TRACKER</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Cookie</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
-        { <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">HashSet</span>::<span class="ident">with_capacity</span>(<span class="number">3</span>))) };
+        <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">HashSet</span>::<span class="ident">with_capacity</span>(<span class="number">3</span>)));
 }
 
 <span class="kw">fn</span> <span class="ident">track</span>(<span class="ident">handle</span>: <span class="ident">cublasHandle_t</span>) {
