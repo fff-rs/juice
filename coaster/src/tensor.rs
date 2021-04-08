@@ -54,7 +54,7 @@ use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::marker::PhantomData;
 use std::ops::Deref;
-use std::{error, fmt, mem};
+use std::{fmt, mem};
 
 /// Describes the Descriptor of a SharedTensor.
 pub type TensorDesc = Vec<usize>;
@@ -546,53 +546,21 @@ impl<T> SharedTensor<T> {
 }
 
 /// Errors than can occur when synchronizing memory.
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum Error {
     /// Error caused by operations with device: allocation, memory synchronization, etc.
-    DeviceError(DeviceError),
+    #[error(transparent)]
+    DeviceError(#[from] DeviceError),
     /// Unable to remove Memory copy from SharedTensor.
+    #[error("Invalid remove: {0}")]
     InvalidRemove(&'static str),
     /// Shape provided for reshaping is not compatible with old shape.
+    #[error("Invalid shape: {0}")]
     InvalidShape(&'static str),
     /// Maximal number of backing memories has been reached.
+    #[error("Capacity exceeded")]
     CapacityExceeded,
     /// Memory is requested for reading, but it hasn't been initialized.
+    #[error("Attempt to read uninitialized memory")]
     UninitializedMemory,
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let msg = match self {
-            Error::DeviceError(e) => (*e).to_string(),
-            Error::InvalidRemove(e) => (*e).to_string(),
-            Error::InvalidShape(e) => (*e).to_string(),
-            Error::CapacityExceeded => "CapacityExceeded".to_string(),
-            Error::UninitializedMemory => "UninitializedMemory".to_string(),
-        };
-        write!(f, "{}", msg)
-    }
-}
-
-impl error::Error for Error {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match *self {
-            Error::DeviceError(ref err) => Some(err),
-            Error::InvalidRemove(_) => None,
-            Error::InvalidShape(_) => None,
-            Error::CapacityExceeded => None,
-            Error::UninitializedMemory => None,
-        }
-    }
-}
-
-impl From<DeviceError> for Error {
-    fn from(err: DeviceError) -> Error {
-        Error::DeviceError(err)
-    }
-}
-
-impl From<Error> for crate::error::Error {
-    fn from(err: Error) -> crate::error::Error {
-        crate::error::Error::Tensor(err)
-    }
 }

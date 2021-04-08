@@ -37,7 +37,7 @@ impl API {
 
         let _ = guard;
 
-        Ok(ids.iter().map(|id| Platform::from_c(*id)).collect())
+        Ok(ids.into_iter().map(Platform::from_c).collect())
     }
 
     unsafe fn ffi_get_platform_ids(
@@ -49,7 +49,7 @@ impl API {
             cl::Status::SUCCESS => Ok(()),
             cl::Status::INVALID_VALUE => Err(Error::InvalidValue("`num_entries` is equal to zero and `platforms` is not NULL or if both `num_platforms` and `platforms` are NULL")),
             cl::Status::OUT_OF_HOST_MEMORY => Err(Error::OutOfHostMemory("Failure to allocate resources on the host")),
-            _ => Err(Error::Other("Unable to get platform ids"))
+            _status => Err(Error::Other("Unable to get platform ids"))
         }
     }
 }

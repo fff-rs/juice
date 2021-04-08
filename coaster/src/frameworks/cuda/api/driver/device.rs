@@ -43,8 +43,10 @@ impl API {
     ) -> Result<DeviceInfo, Error> {
         match info {
             CUdevice_attribute::CU_DEVICE_NAME => {
-                let mut name: [i8; 1024] = [0; 1024];
-                unsafe { API::ffi_device_get_name(name.as_mut_ptr(), 1024, device.id_c()) }?;
+                let mut name: [std::os::raw::c_char; 1024] = [0; 1024];
+                unsafe {
+                    API::ffi_device_get_name(name.as_mut_ptr(), name.len() as i32, device.id_c())
+                }?;
                 let mut buf: Vec<u8> = vec![];
                 // Removes obsolete whitespaces.
                 for (i, char) in name.iter().enumerate() {

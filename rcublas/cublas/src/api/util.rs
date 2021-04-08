@@ -43,7 +43,7 @@ impl TryFrom<cublasHandle_t> for Cookie {
 
 lazy_static! {
     static ref TRACKER: Arc<Mutex<HashSet<Cookie>>> =
-        { Arc::new(Mutex::new(HashSet::with_capacity(3))) };
+        Arc::new(Mutex::new(HashSet::with_capacity(3)));
 }
 
 fn track(handle: cublasHandle_t) {

@@ -9,7 +9,7 @@
 use std;
 use std::fmt;
 
-use rand::{thread_rng, Rng};
+use rand::{thread_rng, Rng, RngCore, SeedableRng, distributions::{Distribution, self}};
 
 use crate::co::plugin::numeric_helpers::{cast, NumCast};
 use crate::co::prelude::*;
@@ -87,10 +87,13 @@ pub fn uniformly_random_tensor<T, F>(
     high: T,
 ) -> SharedTensor<T>
 where
-    T: Copy + PartialEq + PartialOrd + rand::distributions::uniform::SampleUniform,
+    T: Copy + PartialEq + PartialOrd + distributions::uniform::SampleUniform,
     F: IFramework,
     Backend<F>: IBackend,
 {
+    let dist = distributions::Uniform::<T>::new_inclusive(low, high);
+    let mut rng = thread_rng();
+
     let mut xs = SharedTensor::new(&dims);
     {
         let native = get_native_backend();
@@ -99,9 +102,8 @@ where
             let mem = xs.write_only(native_dev).unwrap();
             let mem_slice = mem.as_mut_slice::<T>();
 
-            let mut rng = thread_rng();
             for x in mem_slice {
-                *x = Rng::gen_range(&mut rng, low, high);
+                *x = dist.sample(&mut rng);
             }
         }
         // not functional since, PartialEq has yet to be implemented for Device

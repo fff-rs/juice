@@ -69,10 +69,7 @@ impl API {
                 new_event as *mut cl::event,
             )
         };
-        match res {
-            Ok(_) => Ok(Event::from_c(new_event)),
-            Err(err) => Err(err),
-        }
+        res.map(Event::from_c)
     }
 
     /// Write to a OpenCL memory object from host memory.
@@ -107,10 +104,7 @@ impl API {
                 new_event as *mut cl::event,
             )
         };
-        match res {
-            Ok(_) => Ok(Event::from_c(new_event)),
-            Err(err) => Err(err),
-        }
+        res.map(Event::from_c)
     }
 
     unsafe fn ffi_create_buffer(

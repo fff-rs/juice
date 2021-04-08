@@ -25,8 +25,6 @@ use crate::frameworks::cuda::DriverError as CudaError;
 use crate::hardware::IHardware;
 #[cfg(feature = "opencl")]
 use frameworks::opencl::Error as OpenCLError;
-use std::error;
-use std::fmt;
 
 /// Defines a Framework.
 pub trait IFramework {
@@ -64,59 +62,18 @@ pub trait IFramework {
     fn new_device(&self, _: &[Self::H]) -> Result<Self::D, Error>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 /// Defines a generic set of Framework Errors.
 pub enum Error {
     /// Failures related to the OpenCL framework implementation.
+    #[cfg_attr(feature = "opencl", error(transparent))]
     #[cfg(feature = "opencl")]
-    OpenCL(OpenCLError),
+    OpenCL(#[from] OpenCLError),
     /// Failures related to the Cuda framework implementation.
+    #[cfg_attr(feature = "cuda", error(transparent))]
     #[cfg(feature = "cuda")]
-    Cuda(CudaError),
+    Cuda(#[from] CudaError),
     /// Failure related to the Coaster implementation of a specific Framework.
+    #[error("Coaster implementation error: {0}")]
     Implementation(String),
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            #[cfg(feature = "opencl")]
-            Error::OpenCL(ref err) => write!(f, "OpenCL error: {}", err),
-            #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => write!(f, "Cuda error: {}", err),
-            Error::Implementation(ref err) => write!(f, "Coaster Implementation error: {}", err),
-        }
-    }
-}
-
-impl error::Error for Error {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match *self {
-            #[cfg(feature = "opencl")]
-            Error::OpenCL(ref err) => Some(err),
-            #[cfg(feature = "cuda")]
-            Error::Cuda(ref err) => Some(err),
-            Error::Implementation(_) => None,
-        }
-    }
-}
-
-#[cfg(feature = "opencl")]
-impl From<OpenCLError> for Error {
-    fn from(err: OpenCLError) -> Error {
-        Error::OpenCL(err)
-    }
-}
-
-#[cfg(feature = "cuda")]
-impl From<CudaError> for Error {
-    fn from(err: CudaError) -> Error {
-        Error::Cuda(err)
-    }
-}
-
-impl From<Error> for crate::error::Error {
-    fn from(err: Error) -> crate::error::Error {
-        crate::error::Error::Framework(err)
-    }
 }
