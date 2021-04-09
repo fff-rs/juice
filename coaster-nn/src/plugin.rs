@@ -2,7 +2,7 @@
 use crate::co::tensor::SharedTensor;
 use std::fmt::Formatter;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Different algorithms to compute the convolution forward algorithm.
 pub enum ConvForwardAlgo {
     /// Attempt to automatically find the best algorithm of all the other available ones.
@@ -45,7 +45,7 @@ impl ConvForwardAlgo {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Different algorithms to compute the gradient with respect to the filter.
 pub enum ConvBackwardFilterAlgo {
     /// Attempt to automatically find the best algorithm of all the other available ones.
@@ -86,7 +86,7 @@ impl ConvBackwardFilterAlgo {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Different algorithms to compute the gradient with respect to the filter.
 pub enum ConvBackwardDataAlgo {
     /// Attempt to automatically find the best algorithm of all the other available ones.
@@ -375,7 +375,7 @@ pub trait Rnn<F>: NN<F> {
     ) -> Result<(), crate::co::error::Error>;
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Network Type for RNN Networks [cudnnRNNMOde_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNMode_t
 pub enum RnnNetworkMode {
@@ -391,13 +391,12 @@ pub enum RnnNetworkMode {
 
 impl std::fmt::Display for RnnNetworkMode {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let result = match &self {
+        let result = match self {
             RnnNetworkMode::ReLU => "RelU",
             RnnNetworkMode::Tanh => "Tanh",
             RnnNetworkMode::LSTM => "LSTM",
             RnnNetworkMode::GRU => "GRU",
-        }
-        .to_owned();
+        };
         write!(f, "{}", result)
     }
 }
@@ -415,7 +414,7 @@ impl RnnNetworkMode {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Input Modes for RNN [cudnnRNNInputMode_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNInputMode_t
 pub enum RnnInputMode {
@@ -430,11 +429,10 @@ pub enum RnnInputMode {
 
 impl std::fmt::Display for RnnInputMode {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let result = match &self {
+        let result = match self {
             RnnInputMode::LinearInput => "LinearInput",
             RnnInputMode::SkipInput => "SkipInput",
-        }
-        .to_owned();
+        };
         write!(f, "{}", result)
     }
 }
@@ -450,7 +448,7 @@ impl RnnInputMode {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Direction Mode for RNN [cudnnDirectionMode_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnDirectionMode_t
 pub enum DirectionMode {
@@ -462,11 +460,10 @@ pub enum DirectionMode {
 
 impl std::fmt::Display for DirectionMode {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let result = match &self {
+        let result = match self {
             DirectionMode::UniDirectional => "UniDirectional",
             DirectionMode::BiDirectional => "BiDirectional",
-        }
-        .to_owned();
+        };
         write!(f, "{}", result)
     }
 }
@@ -482,7 +479,7 @@ impl DirectionMode {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 /// Algorithm for RNN [cudnnRNNAlgo_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNAlgo_t
 ///
@@ -501,13 +498,12 @@ pub enum RnnAlgorithm {
 
 impl std::fmt::Display for RnnAlgorithm {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let result = match &self {
+        let result = match self {
             RnnAlgorithm::Standard => "Standard",
             RnnAlgorithm::PersistStatic => "PersistStatic",
             RnnAlgorithm::PersistDynamic => "PersistDynamic",
             RnnAlgorithm::Count => unreachable!(),
-        }
-        .to_owned();
+        };
         write!(f, "{}", result)
     }
 }
