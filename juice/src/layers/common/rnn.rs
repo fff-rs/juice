@@ -441,17 +441,17 @@ mod tests {
     fn rnn_forward_pass() {
         let backend: Backend<Cuda> = cuda_backend();
         let cfg = RnnConfig {
-            hidden_size: 8,
-            num_layers: 8,
+            hidden_size: 11,
+            num_layers: 7,
             dropout_probability: 0.0,
-            dropout_seed: 0,
+            dropout_seed: 1337,
             rnn_type: RnnNetworkMode::LSTM,
             input_mode: RnnInputMode::LinearInput,
             direction_mode: DirectionMode::UniDirectional,
         };
 
-        let batch_size = 8;
-        let sequence_length = 8;
+        let batch_size = 5;
+        let sequence_length = 3;
         let native_backend = native_backend();
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
