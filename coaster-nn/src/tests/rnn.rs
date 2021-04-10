@@ -30,11 +30,11 @@ where
 
     let src = filled_tensor::<T, F>(
         &backend,
-        &[num_layers, batch_size, input_size],
-        &vec![1.0f64; input_size*batch_size*num_layers],
+        &[batch_size, input_size, 1],
+        &vec![1.0f64; input_size*batch_size],
     );
 
-    let mut output = SharedTensor::<T>::new(&[num_layers, batch_size, hidden_size]);
+    let mut output = SharedTensor::<T>::new(&[batch_size, hidden_size, 1]);
 
     let rnn_config = backend
         .new_rnn_config(
