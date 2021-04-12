@@ -17,17 +17,17 @@ coaster-nn = { version = "0.4.2", default-features = false }
 juice-utils = {path = "../juice-utils"}
 
 csv = "1"
-hyper = "0.13"
-hyper-rustls = "0.20"
+hyper = "0.14"
+hyper-rustls = "0.22"
 futures = "0.3"
 futures-util = "0.3"
 
-tokio = "0.2"
+tokio = "1"
 flate2 = "1"
 mnist = "0.4.0"
 
 log = "0.4"
-env_logger = "0.7"
+env_logger = "0.8"
 timeit = "0.1.2"
 
 docopt = "1"

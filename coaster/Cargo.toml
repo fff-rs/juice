@@ -21,7 +21,7 @@ libc = "0.2"
 bitflags = "1"
 enum_primitive = "0.1"
 byteorder = "1"
-num = "0.2"
+num = "0.4"
 lazy_static = "1"
 regex = "1.2"
 thiserror = "1.0"
@@ -30,7 +30,7 @@ rcublas = { version = "0.5", path = "../rcublas/cublas", optional = true }
 
 [dev-dependencies]
 coaster-nn = { version = "0.4", default-features = false }
-compiletest_rs = { version = "0.5" }
+compiletest_rs = { version = "0.6" }
 
 [features]
 default = ["native"]

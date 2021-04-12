@@ -18,8 +18,8 @@ build = "build.rs"
 edition = "2018"
 
 [dependencies]
-num = "0.2"
-num-complex = "0.2"
+num = "0.4"
+num-complex = "0.4"
 libc = "0.2"
 
 [build-dependencies]

@@ -18,7 +18,7 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 libc = "0.2"
 rcudnn-sys = { version = "0.4", path = "../cudnn-sys" }
-num = "0.1"
+num = "0.4"
 thiserror = "1.0"
 log = "0.4"
 
