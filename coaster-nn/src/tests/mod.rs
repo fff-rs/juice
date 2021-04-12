@@ -33,8 +33,6 @@ impl Epsilon for f64 {
     }
 }
 
-
-
 pub trait Zero {
     fn zero() -> Self;
 }

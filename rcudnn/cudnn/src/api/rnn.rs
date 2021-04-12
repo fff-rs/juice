@@ -318,7 +318,7 @@ impl API {
                 direction,
                 mode,
                 algorithm,
-            API::cudnn_data_type(data_type),
+                API::cudnn_data_type(data_type),
             )
         }
     }

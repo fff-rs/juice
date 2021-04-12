@@ -462,7 +462,9 @@ mod tests {
 
         input_data.resize(&input_shape).unwrap();
 
-        let data = std::iter::repeat(0.5_f32).take(BATCH_SIZE * SEQUENCE_LENGTH * 4).collect::<Vec<f32>>();
+        let data = std::iter::repeat(0.5_f32)
+            .take(BATCH_SIZE * SEQUENCE_LENGTH * 4)
+            .collect::<Vec<f32>>();
         input_data
             .write_only(native_backend.device())
             .unwrap()
@@ -519,12 +521,14 @@ mod tests {
             .write()
             .expect("Workspace write works. qed");
 
-        backend.rnn_forward(
-            &input_data,
-            &mut output_data,
-            layer.rnn_config.as_ref().expect("layer has rnn config"),
-            &weights_data[0],
-            &mut workspace_forward,
-        ).expect("RNN Forward completes successfully");
+        backend
+            .rnn_forward(
+                &input_data,
+                &mut output_data,
+                layer.rnn_config.as_ref().expect("layer has rnn config"),
+                &weights_data[0],
+                &mut workspace_forward,
+            )
+            .expect("RNN Forward completes successfully");
     }
 }

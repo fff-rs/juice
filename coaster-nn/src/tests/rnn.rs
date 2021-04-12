@@ -6,7 +6,7 @@ use coaster as co;
 use crate::plugin::{
     self, DirectionMode, RnnAlgorithm, RnnConfig, RnnInputMode, RnnNetworkMode, RnnPaddingMode,
 };
-use crate::tests::{filled_tensor, uniformly_random_tensor, Epsilon, Zero, One};
+use crate::tests::{filled_tensor, uniformly_random_tensor, Epsilon, One, Zero};
 use crate::{co::plugin::numeric_helpers::Float, Rnn};
 
 pub fn test_rnn<T, F: IFramework>(backend: Backend<F>)
@@ -30,7 +30,7 @@ where
     let src = filled_tensor::<T, F>(
         &backend,
         &[batch_size, input_size, 1],
-        &vec![1.0f64; input_size*batch_size],
+        &vec![1.0f64; input_size * batch_size],
     );
 
     let mut output = SharedTensor::<T>::new(&[batch_size, hidden_size, 1]);
