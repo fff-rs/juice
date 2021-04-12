@@ -3,7 +3,9 @@
 CLI for running [juice](https://github.com/spearow/juice) networks for the MNIST dataset.
 
 ## Installing CLI
+
 Compile and call the build.
+
 ```bash
 # install rust, if you need to
 curl -sSf https://static.rust-lang.org/rustup.sh | sh
@@ -15,32 +17,35 @@ cargo build --release
 ../target/release/juice-examples --help
 # which means, you can run the examples from below
 ```
-*Note for OSX El Capitan users: `openssl` no longer ships with OSX by default. `brew link --force openssl` should fix the problem. If not, [see this Github issue](https://github.com/sfackler/rust-openssl/issues/255) for more details.*
 
 ## Environmental Variables
-Some of these examples rely upon CUDA and CUDNN to build, and Juice must be able to find both on your machine at build and runtime. The easiest way to ensure this 
-is to set the following environmental variables; 
+
+Some of these examples rely upon CUDA and CUDNN to build, and Juice must be able to find both on your machine at build and runtime. The easiest way to ensure this
+is to set the following environmental variables;
 
 ### RUSTFLAGS
+
 Rustflags must be set to link natively to `cuda.lib` and `cudnn.h` in the pattern
 
 ```RUSTFLAGS=-L native={ CUDA LIB DIR } -L native={ CUDNN HEADER DIRECTORY }```
- 
- or 
+
+ or
 
 ```RUSTFLAGS=-L native={ CUDA&CUDNN LIB Directory }```
 
 if both files are located in the same directory.
 
 ### LLVM_CONFIG_PATH
+
 `LLVM_CONFIG_PATH` must point to your llvm-config binary, including the binary itself, i.e.
 
 `LLVM_CONFIG_PATH=D:\llvm\llvm-9.0.1.src\Release\bin\llvm-config.exe`
 
 ### CUDNN_INCLUDE_DIR
-`CUDNN_INCLUDE_DIR` must point at the `\include` directory for your version of CUDA, i.e. for CUDA version 10.1 it would be:
 
-`CUDNN_INCLUDE_DIR=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include`
+`CUDNN_INCLUDE_DIR` must point at the `\include` directory for your version of CUDA, i.e. for CUDA version 11.2 on windows it would be:
+
+`CUDNN_INCLUDE_DIR=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2\include`
 
 ## MNIST
 

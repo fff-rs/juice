@@ -15,8 +15,8 @@ coaster-nn = { path = "../../coaster-nn", default-features = false }
 csv = "1"
 serde = { version = "1", features = ["derive"] }
 env_logger = "0.8"
-log = "0.4.14"
-docopt= "1.1.0"
+log = "0.4"
+docopt= "1.1"
 
 [features]
 default = ["native", "cuda"]
