@@ -1,14 +1,15 @@
-extern crate coaster as co;
-extern crate coaster_nn as conn;
-extern crate env_logger;
-extern crate juice;
+#![allow(unused_must_use)]
 
-use std::fs::File;
+use coaster as co;
+use coaster_nn as conn;
+
+use fs_err::File;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
 use csv::Reader;
 use serde::Deserialize;
+use std::path::{Path, PathBuf};
 
 #[cfg(all(feature = "cuda"))]
 use co::frameworks::cuda::get_cuda_backend;
@@ -20,28 +21,27 @@ use juice::solver::*;
 use juice::util::*;
 
 const MAIN_USAGE: &str = "
-Usage:  mackey-glass-example train [--file=<path>] [--batchSize=<batch>] [--learningRate=<lr>] [--momentum=<float>]
-        mackey-glass-example test [--file=<path>]
+Usage:  mackey-glass-example train [--batch-size=<batch>] [--learning-rate=<lr>] [--momentum=<f>] [<networkfile>]
+        mackey-glass-example test <networkfile>
 
 Options:
-    --file=<path>        Filepath for saving trained network.
-    --batchSize=<batch>  Network Batch Size.
-    --learningRate=<lr>  Learning Rate.
-    --momentum=<float>   Momentum.
-    -h, --help           Show this screen.
+    <networkfile>            Filepath for saving/loading the trained network.
+    -b,--batch-size=<batch>  Network Batch Size. Default: 10
+    -r,--learning-rate=<lr>  Learning Rate. Default: 0.10
+    -m,--momentum=<f>        Momentum. Default: 0.00
+    -h, --help               Show this screen.
 ";
 
 #[allow(non_snake_case)]
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Default)]
 struct Args {
     cmd_train: bool,
     cmd_test: bool,
-    flag_file: Option<String>,
-    #[allow(non_snake_case)]
-    flag_batchSize: Option<usize>,
-    #[allow(non_snake_case)]
-    flag_learningRate: Option<f32>,
-    flag_momentum: Option<f32>,
+    flag_batch_size: usize,
+    flag_learning_rate: f32,
+    flag_momentum: f32,
+    /// Path to the stored network.
+    arg_networkfile: Option<PathBuf>,
 }
 
 enum DataMode {
@@ -65,9 +65,9 @@ const DATA_COLUMNS: usize = 10;
 // Provide an Iterator over the input data
 fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
     let rdr = Reader::from_reader(File::open(data.as_path()).unwrap());
-    rdr.into_deserialize().map(move |row| match row {
-        Ok(value) => {
-            let row_vec: Box<Vec<f32>> = Box::new(value);
+    rdr.into_deserialize()
+        .map(move |row : Result<Vec<f32>, _>| match row {
+        Ok(row_vec) => {
             let label = row_vec[0];
             let columns = row_vec[1..=DATA_COLUMNS].to_vec();
             (label, columns)
@@ -102,7 +102,7 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
         "LSTMInitial",
         RnnConfig {
             hidden_size: 5,
-            num_layers: 1,
+            num_layers: 2,
             dropout_seed: 123,
             dropout_probability: 0.5,
             rnn_type: RnnNetworkMode::LSTM,
@@ -115,7 +115,6 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
     net_cfg
 }
 
-#[cfg(all(feature = "cuda"))]
 fn add_solver(
     net_cfg: SequentialConfig,
     backend: Rc<Backend<Cuda>>,
@@ -148,20 +147,15 @@ fn add_solver(
     Solver::from_config(backend.clone(), backend, &solver_cfg)
 }
 
-#[cfg(all(feature = "cuda"))]
-#[allow(dead_code)]
+/// Train, and optionally, save the resulting network state/weights
 fn train(
-    batch_size: Option<usize>,
-    learning_rate: Option<f32>,
-    momentum: Option<f32>,
-    file: Option<String>,
+    batch_size: usize,
+    learning_rate: f32,
+    momentum: f32,
+    file: Option<&PathBuf>,
 ) {
     // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
     let backend = Rc::new(get_cuda_backend());
-
-    let batch_size = batch_size.unwrap_or(10);
-    let learning_rate = learning_rate.unwrap_or(0.1f32);
-    let momentum = momentum.unwrap_or(0.00f32);
 
     // Initialise a Sequential Layer
     let net_cfg = create_network(batch_size, DATA_COLUMNS);
@@ -208,17 +202,14 @@ fn train(
     }
 }
 
-#[cfg(all(feature = "cuda"))]
-#[allow(dead_code)]
-fn test(batch_size: Option<usize>, file: Option<String>) -> Result<(), Box<dyn std::error::Error>> {
+
+/// Test a the validation subset of data items against the trained network state.
+fn test(batch_size: usize, file: &Path) -> Result<(), Box<dyn std::error::Error>> {
     // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
     let backend = Rc::new(get_cuda_backend());
 
-    // Load in the Network, and some test data
-    let batch_size = batch_size.unwrap_or(10);
-
     // Load in a pre-trained network
-    let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file.unwrap())?;
+    let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file)?;
 
     // Define Input & Labels
     let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
@@ -256,8 +247,6 @@ fn test(batch_size: Option<usize>, file: Option<String>) -> Result<(), Box<dyn s
     Ok(())
 }
 
-#[cfg(not(test))]
-#[allow(unused_must_use)]
 fn main() {
     env_logger::builder().filter_level(log::LevelFilter::Trace).init();
     // Parse Arguments
@@ -268,21 +257,21 @@ fn main() {
     if args.cmd_train {
         #[cfg(all(feature = "cuda"))]
         train(
-            args.flag_batchSize,
-            args.flag_learningRate,
+            args.flag_batch_size,
+            args.flag_learning_rate,
             args.flag_momentum,
-            args.flag_file,
+            args.arg_networkfile.as_ref(),
         );
         #[cfg(not(feature = "cuda"))]
         panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
                 on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
-                or the 2020 road map https://github.com/spearow/juice/issues/30")
+                or the 2021/2022 road map https://github.com/spearow/juice/issues/30")
     } else if args.cmd_test {
         #[cfg(all(feature = "cuda"))]
-        test(args.flag_batchSize, args.flag_file);
+        test(args.flag_batch_size, args.arg_networkfile.as_ref().expect("File exists. qed"));
         #[cfg(not(feature = "cuda"))]
         panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
                     on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
-                    or the 2020 road map https://github.com/spearow/juice/issues/30")
+                    or the 2021/2022 road map https://github.com/spearow/juice/issues/30")
     }
 }
