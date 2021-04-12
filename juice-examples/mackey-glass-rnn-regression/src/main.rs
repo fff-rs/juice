@@ -259,7 +259,7 @@ fn test(batch_size: Option<usize>, file: Option<String>) -> Result<(), Box<dyn s
 #[cfg(not(test))]
 #[allow(unused_must_use)]
 fn main() {
-    env_logger::builder().filter_level(log::FilterLevel::Trace).init();
+    env_logger::builder().filter_level(log::LevelFilter::Trace).init();
     // Parse Arguments
     let args: Args = docopt::Docopt::new(MAIN_USAGE)
         .and_then(|d| d.deserialize())
