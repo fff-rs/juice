@@ -243,6 +243,7 @@ name = "coaster-nn"
 version = "0.4.2"
 dependencies = [
  "coaster",
+ "env_logger 0.8.3",
  "libc",
  "log",
  "num",
@@ -521,6 +522,7 @@ dependencies = [
  "csv",
  "docopt",
  "env_logger 0.8.3",
+ "fs-err",
  "greenglas",
  "juice",
  "log",
