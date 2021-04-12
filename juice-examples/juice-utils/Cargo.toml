@@ -7,7 +7,7 @@ edition = "2018"
 publish = false
 
 [dependencies]
-reqwest= {version = "0.11.2", features = ["blocking"]}
+reqwest= { version = "0.11", features = ["blocking", "rustls-tls"]}
 flate2 = "1"
-fs-err = "2.5.0"
+fs-err = "2"
 log = "0.4"
