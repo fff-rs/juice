@@ -887,10 +887,11 @@ where
     ) -> Result<Self::CRNN, Error> {
         let cudnn_framework = self.framework().cudnn();
         let input_mode = input_mode.as_cudnn()?;
-        let direction_mode = direction_mode.as_cudnn()?;
         let network_mode = network_mode.as_cudnn()?;
         let algorithm = algorithm.as_cudnn()?;
+
         let src_description = src.desc();
+        let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
         let drop_desc = exec2!(cudnn_framework.init_dropout(
             dropout_probability.unwrap_or(0.5),
@@ -905,10 +906,12 @@ where
             hidden_size,
             batch_size,
             num_layers,
-            DirectionMode::UniDirectional,
-            <T as DataTypeInfo>::cudnn_data_type(),
+            direction_mode,
+            data_type,
         )?
         .x_desc;
+
+        let direction_mode = direction_mode.as_cudnn()?;
 
         let rnn_desc = exec2!(RnnDescriptor::new(
             &cudnn_framework,
@@ -919,7 +922,7 @@ where
             direction_mode,
             network_mode,
             algorithm,
-            <T as DataTypeInfo>::cudnn_data_type(),
+            data_type,
             (RnnPaddingMode::Disabled).as_cudnn().unwrap(),
         ) => "Failed to create RNN descriptor")?;
 
