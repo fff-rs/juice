@@ -44,6 +44,24 @@ struct Args {
     arg_networkfile: Option<PathBuf>,
 }
 
+
+impl std::cmp::PartialEq for Args {
+    fn eq(&self, other: &Self) -> bool {
+        if (self.flag_learning_rate - other.flag_learning_rate).abs() > 1e6 {
+            return false;
+        }
+        if (self.flag_momentum - other.flag_momentum).abs() > 1e6 {
+            return false;
+        }
+        self.cmd_test == other.cmd_test &&
+        self.cmd_train == other.cmd_train &&
+        self.arg_networkfile == other.arg_networkfile &&
+        self.flag_batch_size == other.flag_batch_size
+    }
+}
+
+impl std::cmp::Eq for Args {}
+
 enum DataMode {
     Train,
     Test,
@@ -274,4 +292,33 @@ fn main() {
                     on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
                     or the 2021/2022 road map https://github.com/spearow/juice/issues/30")
     }
+}
+
+
+#[test]
+fn docopt_works() {
+    let check = |args: &[&'static str], expected: Args| {
+        let docopt = docopt::Docopt::new(MAIN_USAGE).expect("Docopt spec if valid. qed");
+        let args: Args = docopt.argv(args).deserialize().expect("Must deserialize. qed");
+
+        assert_eq!(args, expected, "Expectations of {:?} stay unmet.", args);
+    };
+
+    check(&["foo", "train"], Args {
+        cmd_train: true,
+        cmd_test: false,
+        flag_batch_size: 10_usize,
+        flag_learning_rate: 0.10_f32,
+        flag_momentum: 0.00_f32,
+        arg_networkfile: None,
+    });
+
+    check(&["foo", "test", "--batch-size=11", "--learning-rate=0.4", "ahoi.capnp"], Args {
+        cmd_train: false,
+        cmd_test: true,
+        flag_batch_size: 11_usize,
+        flag_learning_rate: 0.4_f32,
+        flag_momentum: 0.00_f32,
+        arg_networkfile: Some(PathBuf::from("ahoi.capnp")),
+    });
 }
