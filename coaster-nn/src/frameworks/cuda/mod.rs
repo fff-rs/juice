@@ -855,8 +855,7 @@ where
         let stride_x = vec![dim_x[2] * dim_x[1], dim_x[2], 1];
 
         // dummy desc to get the param size
-        let x_desc =
-            TensorDescriptor::new(&dim_x, &stride_x, data_type).unwrap();
+        let x_desc = TensorDescriptor::new(&dim_x, &stride_x, data_type).unwrap();
 
         let weight_size: usize = exec2!(API::get_rnn_params_size(
             *cudnn_framework.id_c(),
