@@ -14,45 +14,51 @@ where
     T: Float + Epsilon + One + Zero + rand::distributions::uniform::SampleUniform + fmt::Debug,
     Backend<F>: Rnn<T> + IBackend,
 {
+    let _ = env_logger::builder().is_test(true).filter_level(log::LevelFilter::Trace).try_init();
+
     let direction_mode = DirectionMode::UniDirectional;
     let network_mode = RnnNetworkMode::LSTM;
     let algorithm = RnnAlgorithm::Standard;
     let input_mode = RnnInputMode::LinearInput;
-    let sequence_length = 7;
-    let hidden_size = 5;
-    let num_layers = 3;
-    let batch_size = 2;
-    let input_size = 11;
+    const SEQUENCE_LENGTH: usize = 7;
+    const HIDDEN_SIZE: usize = 5;
+    const NUM_LAYERS: usize = 3;
+    const BATCH_SIZE: usize = 2;
+    const INPUT_SIZE: usize = 11;
 
     let dropout_probability = Some(0.05_f32);
     let dropout_seed = Some(27_u64);
 
     let src = filled_tensor::<T, F>(
         &backend,
-        &[batch_size, input_size, 1],
-        &vec![1.0f64; input_size * batch_size],
+        &[BATCH_SIZE, INPUT_SIZE, 1],
+        &vec![1.0f64; INPUT_SIZE * BATCH_SIZE],
     );
 
-    let mut output = SharedTensor::<T>::new(&[batch_size, hidden_size, 1]);
+    let mut output = SharedTensor::<T>::new(&[BATCH_SIZE, HIDDEN_SIZE, 1]);
 
     let rnn_config = backend
         .new_rnn_config(
             &src,
             dropout_probability,
             dropout_seed,
-            sequence_length,
+            SEQUENCE_LENGTH as i32,
             network_mode,
             input_mode,
             direction_mode,
             algorithm,
-            hidden_size as i32,
-            num_layers as i32,
-            batch_size as i32,
+            HIDDEN_SIZE as i32,
+            NUM_LAYERS as i32,
+            BATCH_SIZE as i32,
         )
         .unwrap();
 
     let filter_dimensions = backend
-        .generate_rnn_weight_description(&rnn_config, batch_size as i32, input_size as i32)
+        .generate_rnn_weight_description(
+            &rnn_config,
+            BATCH_SIZE as i32,
+            INPUT_SIZE as i32
+        )
         .unwrap();
 
     let w = uniformly_random_tensor::<T, F>(
