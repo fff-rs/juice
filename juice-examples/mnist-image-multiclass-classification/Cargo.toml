@@ -9,10 +9,10 @@ edition = "2018"
 publish = false
 
 [dependencies]
-greenglas = { version = "0.2" }
-juice = { version = "0.2.4", default-features = false }
-coaster = { version = "0.1.1", default-features = false }
-coaster-nn = { version = "0.4.2", default-features = false }
+greenglas = { path = "../../greenglas" }
+juice = { path = "../../juice", default-features = false }
+coaster = { path = "../../coaster", default-features = false }
+coaster-nn = { path = "../../coaster-nn", default-features = false }
 
 juice-utils = {path = "../juice-utils"}
 
