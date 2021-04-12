@@ -248,11 +248,11 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
 
-        let src = input_data[0];
-        let input_shape = src.desc();
-        let batch_size = input_shape[0];
-        let input_size = input_shape[1];
-        let sequence_length = input_shape[2];
+        // let src = input_data[0];
+        // let input_shape = src.desc();
+        // let batch_size = input_shape[0];
+        // let input_size = input_shape[1];
+        // let sequence_length = input_shape[2];
 
         backend
             .rnn_backward_weights(
@@ -439,29 +439,37 @@ mod tests {
         let _ = env_logger::builder().is_test(true).filter_level(log::LevelFilter::Trace).try_init();
 
         let backend: Backend<Cuda> = cuda_backend();
-        const NUM_LAYERS: usize = 2;
+        const SEQUENCE_LENGTH: usize = 7;
+        const HIDDEN_SIZE: usize = 5;
+        const NUM_LAYERS: usize = 3;
+        const BATCH_SIZE: usize = 2;
+        const INPUT_SIZE: usize = 11;
+
         let cfg = RnnConfig {
-            hidden_size: 8,
+            hidden_size: HIDDEN_SIZE,
             num_layers: NUM_LAYERS,
-            dropout_probability: 0.0,
+            dropout_probability: 0.5,
             dropout_seed: 1337,
             rnn_type: RnnNetworkMode::LSTM,
             input_mode: RnnInputMode::LinearInput,
             direction_mode: DirectionMode::UniDirectional,
         };
 
-        const BATCH_SIZE: usize = 2;
-        const SEQUENCE_LENGTH: usize = 5;
         let native_backend = native_backend();
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
-        let input_shape = vec![BATCH_SIZE, SEQUENCE_LENGTH, 4, 1];
+        let input_shape = vec![
+            BATCH_SIZE,
+            INPUT_SIZE,
+            1,
+            1,
+        ];
 
         let mut input_data = SharedTensor::<f32>::new(&input_shape);
         let mut input_gradients = SharedTensor::<f32>::new(&input_shape);
 
         let data = std::iter::repeat(0.5_f32)
-            .take(BATCH_SIZE * SEQUENCE_LENGTH * 4)
+            .take(BATCH_SIZE * INPUT_SIZE)
             .collect::<Vec<f32>>();
         input_data
             .write_only(native_backend.device())
@@ -469,7 +477,12 @@ mod tests {
             .as_mut_slice()
             .copy_from_slice(&data);
 
-        let output_shape = vec![BATCH_SIZE, cfg.hidden_size, NUM_LAYERS];
+        let output_shape = vec![
+            BATCH_SIZE,
+            HIDDEN_SIZE,
+            1,
+        ];
+
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
 
         let config = backend
@@ -482,7 +495,7 @@ mod tests {
                 RnnInputMode::LinearInput,
                 DirectionMode::UniDirectional,
                 RnnAlgorithm::Standard,
-                cfg.hidden_size as i32,
+                HIDDEN_SIZE as i32,
                 NUM_LAYERS as i32,
                 BATCH_SIZE as i32,
             )
@@ -492,7 +505,7 @@ mod tests {
             &backend,
             &config,
             BATCH_SIZE as i32,
-            cfg.hidden_size as i32,
+            INPUT_SIZE as i32,
         )
         .unwrap();
 

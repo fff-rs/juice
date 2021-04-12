@@ -189,9 +189,9 @@ mod cudnn_spec {
         let sequence_length = 7;
         let hidden_size = 5;
         let num_layers = 3;
-        let batch_size = 1;
-        let data_type = DataType::Float;
+        let batch_size = 2;
         let input_size = 11;
+        let data_type = DataType::Float;
 
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
