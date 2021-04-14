@@ -25,7 +25,7 @@ Demonstrate RNN caps of juice with the cuda backend.
 
 Usage:
     mackey-glass-example train [--batch-size=<batch>] [--learning-rate=<lr>] [--momentum=<f>] <networkfile>
-    mackey-glass-example test <networkfile>
+    mackey-glass-example test [--batch-size=<batch>] <networkfile>
 
 Options:
     -b, --batch-size=<batch>    Network Batch Size.
@@ -117,17 +117,18 @@ const DATA_COLUMNS: usize = 10;
 
 // Provide an Iterator over the input data
 fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
-    let rdr = Reader::from_reader(File::open(data.as_path()).unwrap());
+    let file = File::open(data.as_path()).expect("File opens as read. qed");
+    let rdr = Reader::from_reader(file);
     rdr.into_deserialize()
-        .map(move |row : Result<Vec<f32>, _>| match row {
+        .filter_map(move |row : Result<Vec<f32>, _>| match row {
         Ok(row_vec) => {
             let label = row_vec[0];
             let columns = row_vec[1..=DATA_COLUMNS].to_vec();
-            (label, columns)
+            Some((label, columns))
         }
-        _ => {
-            log::error!("file seems to be empty");
-            panic!();
+        Err(e) => {
+            log::error!("file seems to be empty: {:?}", e);
+            None
         }
     })
 }
@@ -226,6 +227,7 @@ pub(crate) fn train(
     regression_evaluator.set_capacity(Some(2000));
 
     let mut data_rows = data_generator(DataMode::Train);
+    let mut total = 0;
     for _ in 0..(TRAIN_ROWS / batch_size) {
         let mut targets = Vec::new();
         for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
@@ -235,6 +237,13 @@ pub(crate) fn train(
             write_batch_sample(&mut label_tensor, &[label_val], batch_n);
             targets.push(label_val);
         }
+        if targets.is_empty() {
+            log::error!("Inconsistency detected - batch was empty");
+            break;
+        }
+
+        total += targets.len();
+
         // Train the network
         let inferred_out = solver.train_minibatch(input_lock.clone(), label_lock.clone());
         let mut inferred = inferred_out.write().unwrap();
@@ -246,8 +255,12 @@ pub(crate) fn train(
         );
     }
 
-    solver.mut_network().save(file).unwrap();
 
+    if total > 0 {
+        solver.mut_network().save(file).expect("Saving network to file works. qed");
+    } else {
+        panic!("No data was used for training");
+    }
 }
 
 
@@ -295,7 +308,7 @@ pub(crate) fn test(backend: Rc<Backend<Cuda>>, batch_size: usize, file: &Path) -
 }
 
 fn main() {
-    env_logger::builder().filter_level(log::LevelFilter::Trace).init();
+    env_logger::builder().filter_level(log::LevelFilter::Info).init();
     // Parse Arguments
     let args: Args = docopt::Docopt::new(MAIN_USAGE)
         .and_then(|d| d.deserialize())
@@ -347,7 +360,6 @@ fn docopt_works() {
         flag_momentum: Some(0.17_f32),
         arg_networkfile: PathBuf::from("ahoi.capnp"),
     });
-
 
     check(&["mackey-glass-example", "test", "ahoi.capnp"], Args {
         cmd_train: false,
