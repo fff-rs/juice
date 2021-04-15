@@ -7,7 +7,6 @@ use fs_err::File;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
-use csv::Reader;
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
 
@@ -20,117 +19,73 @@ use juice::layers::*;
 use juice::solver::*;
 use juice::util::*;
 
-const MAIN_USAGE: &str = "
-Demonstrate RNN caps of juice with the cuda backend.
+mod args;
 
-Usage:
-    mackey-glass-example train [--batch-size=<batch>] [--learning-rate=<lr>] [--momentum=<f>] <networkfile>
-    mackey-glass-example test [--batch-size=<batch>] <networkfile>
+use args::*;
 
-Options:
-    -b, --batch-size=<batch>    Network Batch Size.
-    -l, --learning-rate=<lr>    Learning Rate.
-    -m, --momentum=<f>         Momentum.
-    -h, --help                 Show this screen.
-";
+pub(crate) const TRAIN_ROWS: usize = 35192;
+pub(crate) const TEST_ROWS: usize = 8798;
+pub(crate) const DATA_COLUMNS: usize = 10;
 
-#[allow(non_snake_case)]
-#[derive(Deserialize, Debug, Default)]
-struct Args {
-    cmd_train: bool,
-    cmd_test: bool,
-    flag_batch_size: Option<usize>,
-    flag_learning_rate: Option<f32>,
-    flag_momentum: Option<f32>,
-    /// Path to the stored network.
-    arg_networkfile: PathBuf,
+
+#[derive(Debug, Deserialize)]
+struct Record {
+    #[serde(rename = "Target")]
+    target: f32,
+    b1: f32,
+    b2: f32,
+    b3: f32,
+    b4: f32,
+    b5: f32,
+    b6: f32,
+    b7: f32,
+    b8: f32,
+    b9: f32,
+    b10: f32,
 }
 
-impl Args {
-    pub(crate) fn data_mode(&self) -> DataMode {
-        assert_ne!(self.cmd_train, self.cmd_test);
-        if self.cmd_train {
-            return DataMode::Train
-        }
-        if self.cmd_test {
-            return DataMode::Test
-        }
-        unreachable!("nope");
+impl Record {
+    pub(crate) const fn target(&self) -> f32 {
+        self.target
+    }
+
+
+    pub(crate) fn bs(&self) -> Vec<f32> {
+        // only the b's
+        vec![
+            self.b1,
+            self.b2,
+            self.b3,
+            self.b4,
+            self.b5,
+            self.b6,
+            self.b7,
+            self.b8,
+            self.b9,
+            self.b10
+        ]
     }
 }
-
-const fn default_learning_rate() -> f32 {
-    0.10_f32
-}
-
-const fn default_momentum() -> f32 {
-    0.00
-}
-
-const fn default_batch_size() -> usize {
-    10
-}
-
-impl std::cmp::PartialEq for Args {
-    fn eq(&self, other: &Self) -> bool {
-        match (self.flag_learning_rate, other.flag_learning_rate) {
-            (Some(lhs), Some(rhs)) if (rhs - lhs).abs() < 1e6 => {}
-            (None, None) => {},
-            _ => return false,
-        }
-        match (self.flag_momentum, other.flag_momentum) {
-            (Some(lhs), Some(rhs)) if (rhs - lhs).abs() < 1e6 => {}
-            (None, None) => {},
-            _ => return false,
-        }
-        self.cmd_test == other.cmd_test &&
-        self.cmd_train == other.cmd_train &&
-        self.arg_networkfile == other.arg_networkfile &&
-        self.flag_batch_size == other.flag_batch_size
-    }
-}
-
-impl std::cmp::Eq for Args {}
-
-enum DataMode {
-    Train,
-    Test,
-}
-
-impl DataMode {
-    fn as_path(&self) -> &'static str {
-        match self {
-            DataMode::Train => "assets/norm_mackeyglass_train.csv",
-            DataMode::Test => "assets/norm_mackeyglass_test.csv",
-        }
-    }
-}
-
-
-mod work {
-
-use super::*;
-
-const TRAIN_ROWS: usize = 35192;
-const TEST_ROWS: usize = 8798;
-const DATA_COLUMNS: usize = 10;
 
 // Provide an Iterator over the input data
-fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
+pub(crate) fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
     let file = File::open(data.as_path()).expect("File opens as read. qed");
-    let rdr = Reader::from_reader(file);
+    let mut rdr = csv::ReaderBuilder::new()
+        .delimiter(b',')
+        .from_reader(file);
+
+    assert!(rdr.has_headers());
+
     rdr.into_deserialize()
-        .filter_map(move |row : Result<Vec<f32>, _>| match row {
-        Ok(row_vec) => {
-            let label = row_vec[0];
-            let columns = row_vec[1..=DATA_COLUMNS].to_vec();
-            Some((label, columns))
-        }
-        Err(e) => {
-            log::error!("file seems to be empty: {:?}", e);
-            None
-        }
-    })
+        .enumerate()
+        .map(move |(idx, row) : (_, Result<Record, _>)| {
+            let record: Record = match row {
+                Ok(record) => record,
+                Err(err) =>
+                panic!("All rows (including row {} (base-0)) in assets are valid. qed -> {:?}", idx, err),
+            };
+            (record.target(), record.bs())
+        })
 }
 
 fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
@@ -305,8 +260,6 @@ pub(crate) fn test(backend: Rc<Backend<Cuda>>, batch_size: usize, file: &Path) -
     Ok(())
 }
 
-}
-
 fn main() {
     env_logger::builder().filter_level(log::LevelFilter::Info).init();
     // Parse Arguments
@@ -322,7 +275,7 @@ fn main() {
 
         match args.data_mode() {
             DataMode::Train =>
-                work::train(
+                train(
                     backend,
                     args.flag_batch_size.unwrap_or(default_batch_size()),
                     args.flag_learning_rate.unwrap_or(default_learning_rate()),
@@ -330,7 +283,7 @@ fn main() {
                     &args.arg_networkfile,
                 ),
             DataMode::Test =>
-                work::test(
+                test(
                     backend,
                     args.flag_batch_size.unwrap_or(default_batch_size()),
                     &args.arg_networkfile).unwrap(),
@@ -369,4 +322,12 @@ fn docopt_works() {
         flag_momentum: None,
         arg_networkfile: PathBuf::from("ahoi.capnp"),
     });
+}
+
+
+
+#[test]
+fn test_data_is_ok() {
+    assert_eq!(data_generator(DataMode::Train).count(), TRAIN_ROWS);
+    assert_eq!(data_generator(DataMode::Test).count(), TEST_ROWS);
 }
