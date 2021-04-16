@@ -70,8 +70,9 @@ impl Record {
 // Provide an Iterator over the input data
 pub(crate) fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f32>)> {
     let file = File::open(data.as_path()).expect("File opens as read. qed");
-    let mut rdr = csv::ReaderBuilder::new()
+    let rdr = csv::ReaderBuilder::new()
         .delimiter(b',')
+        .trim(csv::Trim::All)
         .from_reader(file);
 
     assert!(rdr.has_headers());
