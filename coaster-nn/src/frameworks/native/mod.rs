@@ -12,12 +12,12 @@ use std::ops::*;
 use rand::{distributions::Distribution, Rng, SeedableRng};
 
 use crate::plugin::*;
-use coaster as co;
 use co::plugin::numeric_helpers::Bounded;
 use co::plugin::numeric_helpers::Float;
 use co::plugin::Error as PluginError;
 use co::prelude::*;
 use co::Error;
+use coaster as co;
 
 #[macro_use]
 pub mod helper;

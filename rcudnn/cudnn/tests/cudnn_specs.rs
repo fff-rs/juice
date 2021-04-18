@@ -211,7 +211,6 @@ mod cudnn_spec {
             }
         }
 
-
         // Treating the input split by batch then input like in a typical NCHW cell.
         let dim_input = vec![num_layers, batch_size, input_size];
         let dim_output = vec![num_layers, batch_size, hidden_size];
@@ -248,11 +247,7 @@ mod cudnn_spec {
         )
         .unwrap() as i32;
 
-        let filter_dims = vec![
-            weights_size / std::mem::size_of::<f32>() as i32,
-            1,
-            1,
-        ];
+        let filter_dims = vec![weights_size / std::mem::size_of::<f32>() as i32, 1, 1];
 
         let w_desc = FilterDescriptor::new(&filter_dims, data_type).unwrap();
         let w = CudaDeviceMemory::new(weights_size as usize).unwrap();

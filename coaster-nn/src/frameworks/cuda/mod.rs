@@ -22,9 +22,7 @@ pub(crate) fn rnn_sequence_descriptors(
     direction_mode: DirectionMode,
     data_type: DataType,
 ) -> Result<RnnSequenceDescriptors, Error> {
-
-    let bidirectional = if direction_mode == DirectionMode::UniDirectional
-    {
+    let bidirectional = if direction_mode == DirectionMode::UniDirectional {
         1
     } else {
         2 // bidirection needs twice as much memory
@@ -34,22 +32,13 @@ pub(crate) fn rnn_sequence_descriptors(
     let dim_input = vec![num_layers, batch_size, input_size];
     let dim_output = vec![num_layers, batch_size, hidden_size];
     let dim_hidden_cell = vec![num_layers * bidirectional, batch_size, hidden_size];
-    let _stride_input = vec![
-        dim_input[2] * dim_input[1],
-        dim_input[2],
-        1,
-    ];
-    let _stride_output = vec![
-        dim_output[2] * dim_output[1],
-        dim_output[2],
-        1,
-    ];
+    let _stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
+    let _stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
     let stride_hidden_cell = vec![
         dim_hidden_cell[2] * dim_hidden_cell[1],
         dim_hidden_cell[2],
         1,
     ];
-
 
     let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
     let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
