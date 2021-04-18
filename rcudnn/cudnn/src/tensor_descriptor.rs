@@ -43,41 +43,16 @@ impl TensorDescriptor {
         let dims_ptr = dims.as_ptr();
         let strides_ptr = strides.as_ptr();
         let generic_tensor_desc = API::create_tensor_descriptor()?;
-        match data_type {
-            DataType::Float => {
-                let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                API::set_tensor_descriptor(
-                    generic_tensor_desc,
-                    d_type,
-                    nb_dims,
-                    dims_ptr,
-                    strides_ptr,
-                )?;
-                Ok(TensorDescriptor::from_c(generic_tensor_desc))
-            }
-            DataType::Double => {
-                let d_type = cudnnDataType_t::CUDNN_DATA_DOUBLE;
-                API::set_tensor_descriptor(
-                    generic_tensor_desc,
-                    d_type,
-                    nb_dims,
-                    dims_ptr,
-                    strides_ptr,
-                )?;
-                Ok(TensorDescriptor::from_c(generic_tensor_desc))
-            }
-            DataType::Half => {
-                let d_type = cudnnDataType_t::CUDNN_DATA_HALF;
-                API::set_tensor_descriptor(
-                    generic_tensor_desc,
-                    d_type,
-                    nb_dims,
-                    dims_ptr,
-                    strides_ptr,
-                )?;
-                Ok(TensorDescriptor::from_c(generic_tensor_desc))
-            }
-        }
+        let data_type = API::cudnn_data_type(data_type);
+
+        API::set_tensor_descriptor(
+            generic_tensor_desc,
+            data_type,
+            nb_dims,
+            dims_ptr,
+            strides_ptr,
+        )?;
+        Ok(TensorDescriptor::from_c(generic_tensor_desc))
     }
 
     /// Initializes a new CUDA cuDNN Tensor Descriptor from its C type.

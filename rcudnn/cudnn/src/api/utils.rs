@@ -59,7 +59,7 @@ impl API {
 
 impl API {
     /// Convert to CUDNN Data Type
-    pub fn cudnn_data_type(data_type: DataType) -> cudnnDataType_t {
+    pub const fn cudnn_data_type(data_type: DataType) -> cudnnDataType_t {
         match data_type {
             DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
             DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
