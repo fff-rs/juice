@@ -167,20 +167,17 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
         workspace: Option<ArcLock<SharedTensor<u8>>>,
     ) -> Option<ArcLock<SharedTensor<u8>>> {
         let required_size = self.rnn_config.as_ref().unwrap().workspace_size();
-        let new_workspace = if workspace.is_none() {
-            Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
-        } else {
-            let old_workspace = workspace.as_ref().unwrap().clone();
-            let old_workspace_size = old_workspace.read().unwrap().capacity();
-            if old_workspace_size < required_size {
-                Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
-            } else {
-                workspace.unwrap()
-            }
-        };
 
-        self.workspace = Some(new_workspace.clone());
-        Some(new_workspace)
+        if let Some(old_workspace) = workspace.clone() {
+            let old_workspace_size = old_workspace.read().unwrap().capacity();
+            if old_workspace_size >= required_size {
+                return Some(old_workspace)
+            }
+        }
+        self.workspace = Some(
+            Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
+        );
+        self.workspace.clone()
     }
 }
 
