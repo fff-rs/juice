@@ -1,11 +1,11 @@
 //! Provides useful macros for easier NN implementation for native.
 
-use coaster as co;
+use crate::RnnNetworkMode;
+use crate::{DirectionMode, RnnInputMode};
 use co::frameworks::native::flatbox::FlatBox;
 use co::plugin::numeric_helpers::Float;
 use co::plugin::Error as PluginError;
-use crate::RnnNetworkMode;
-use crate::{DirectionMode, RnnInputMode};
+use coaster as co;
 
 #[derive(Debug, Copy, Clone)]
 #[allow(missing_docs)]
