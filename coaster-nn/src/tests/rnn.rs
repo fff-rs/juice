@@ -8,8 +8,8 @@ use crate::plugin::{
     DirectionMode,
     RnnAlgorithm, RnnConfig, RnnInputMode, RnnNetworkMode, RnnPaddingMode,
 };
-use crate::tests::{filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, Epsilon};
-use rcudnn::cudaDataType as DataType;
+use crate::tests::{filled_tensor, Epsilon};
+
 
 pub fn test_rnn<T, F: IFramework>(backend: Backend<F>)
 where
@@ -17,9 +17,9 @@ where
     Backend<F>: Rnn<T> + IBackend,
 {
 
-    let forward_mode = rcudnn::cudnnForwardMode_t::CUDNN_FWD_MODE_TRAINING;
+    let _forward_mode = rcudnn::cudnnForwardMode_t::CUDNN_FWD_MODE_TRAINING;
     let direction_mode = DirectionMode::UniDirectional;
-    let bidirectional = if direction_mode == DirectionMode::UniDirectional
+    let _bidirectional = if direction_mode == DirectionMode::UniDirectional
     {
         1
     } else {
@@ -37,10 +37,10 @@ where
     let dropout_probability = Some(0.05);
     let dropout_seed = Some(27_u64);
 
-    let x = filled_tensor::<T,_>(&backend, &[1, 1, 3], &[1.0, 1.0, 2.0]);
-    let mut src = SharedTensor::<T>::new(&[num_layers, batch_size, input_size]);
+    let _x = filled_tensor::<T,_>(&backend, &[1, 1, 3], &[1.0, 1.0, 2.0]);
+    let src = SharedTensor::<T>::new(&[num_layers, batch_size, input_size]);
     let mut output = SharedTensor::<T>::new(&[num_layers, batch_size, hidden_size]);
-    let mut weight = SharedTensor::<T>::new(&[1, 1, 3]);
+    let _weight = SharedTensor::<T>::new(&[1, 1, 3]);
     let mut workspace = SharedTensor::<u8>::new(&[1, 1, 3]);
 
     let rnn_config = backend.new_rnn_config(
@@ -64,8 +64,8 @@ where
     )
     .unwrap();
 
-    let mut w = SharedTensor::<T>::new(&filter_dimensions);
-    let mut dw = SharedTensor::<T>::new(&filter_dimensions);
+    let w = SharedTensor::<T>::new(&filter_dimensions);
+    let _dw = SharedTensor::<T>::new(&filter_dimensions);
 
     // let filler = FillerType::Constant { value: 0.02 };
 

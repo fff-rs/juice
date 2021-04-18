@@ -217,15 +217,15 @@ mod cudnn_spec {
         let dim_output = vec![num_layers, batch_size, hidden_size];
         let dim_hidden_cell = vec![num_layers * bidirectional, batch_size, hidden_size];
 
-        let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
-        let stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
+        let _stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
+        let _stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
         let stride_hidden_cell = vec![
             dim_hidden_cell[2] * dim_hidden_cell[1],
             dim_hidden_cell[2],
             1,
         ];
 
-        let mut rnn_desc = API::create_rnn_descriptor().unwrap();
+        let rnn_desc = API::create_rnn_descriptor().unwrap();
         API::set_rnn_descriptor(
             *cudnn.id_c(),
             rnn_desc,
