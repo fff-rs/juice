@@ -13,7 +13,7 @@ use crate::plugin::*;
 #[macro_use]
 pub mod helper;
 
-fn rnn_sequence_descriptors(
+pub(crate) fn rnn_sequence_descriptors(
     sequence_length: i32,
     input_size: i32,
     hidden_size: i32,
