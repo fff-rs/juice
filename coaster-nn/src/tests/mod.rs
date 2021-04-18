@@ -14,8 +14,12 @@ use rand::{
     thread_rng,
 };
 
-use crate::co::plugin::numeric_helpers::{cast, NumCast};
-use crate::co::prelude::*;
+use coaster as co;
+
+use co::plugin::numeric_helpers::{cast, NumCast};
+use co::prelude::*;
+
+pub use num::{Zero, One};
 
 pub trait Epsilon {
     fn epsilon() -> Self;
@@ -33,36 +37,6 @@ impl Epsilon for f64 {
     }
 }
 
-pub trait Zero {
-    fn zero() -> Self;
-}
-
-impl Zero for f32 {
-    fn zero() -> Self {
-        0.0_f32
-    }
-}
-
-impl Zero for f64 {
-    fn zero() -> Self {
-        0.0_f64
-    }
-}
-pub trait One {
-    fn one() -> Self;
-}
-
-impl One for f32 {
-    fn one() -> Self {
-        1.0_f32
-    }
-}
-
-impl One for f64 {
-    fn one() -> Self {
-        1.0_f64
-    }
-}
 
 #[cfg(feature = "native")]
 fn get_native_backend() -> Backend<Native> {
