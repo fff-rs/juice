@@ -353,6 +353,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ComputeOutput<f32, B> for Sequential
         input_data: &[&SharedTensor<f32>],
         output_data: &mut [&mut SharedTensor<f32>],
     ) {
+        unreachable!("This is never called, since an override in `compute_output` prevents this. qed")
     }
 }
 
@@ -367,6 +368,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ComputeInputGradient<f32, B> for Seq
         input_data: &[&SharedTensor<f32>],
         input_gradients: &mut [&mut SharedTensor<f32>],
     ) {
+        unreachable!("This is never called, since an override in `compute_input_gradient` prevents this. qed")
     }
 }
 
@@ -380,6 +382,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ComputeParametersGradient<f32, B> fo
         input_data: &[&SharedTensor<f32>],
         parameters_gradients: &mut [&mut SharedTensor<f32>],
     ) {
+        unreachable!("This is never called, since an override in `compute_parameters_gradient` prevents this. qed")
     }
 }
 
