@@ -248,12 +248,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
         let rnn_config = self.rnn_config.as_ref().unwrap();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
 
-        // let src = input_data[0];
-        // let input_shape = src.desc();
-        // let batch_size = input_shape[0];
-        // let input_size = input_shape[1];
-        // let sequence_length = input_shape[2];
-
+        // weights
         backend
             .rnn_backward_weights(
                 &input_data[0],
@@ -264,6 +259,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
             )
             .unwrap();
 
+        // bias
         backend
             .rnn_backward_weights(
                 &input_data[0],
