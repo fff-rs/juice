@@ -509,12 +509,12 @@ mod tests {
 
         let mut weights_data = vec![
             SharedTensor::<f32>::new(&filter_dimensions),
-            SharedTensor::<f32>::new(&filter_dimensions), // bias, XXX unused
+            SharedTensor::<f32>::new(&filter_dimensions), // bias
         ];
 
         let weights_gradient = vec![
             SharedTensor::<f32>::new(&filter_dimensions),
-            SharedTensor::<f32>::new(&(1, SEQUENCE_LENGTH)), // bias, XXX unused
+            SharedTensor::<f32>::new(&(1, SEQUENCE_LENGTH)), // bias
         ];
 
         let filler = FillerType::Constant { value: 0.02 };
