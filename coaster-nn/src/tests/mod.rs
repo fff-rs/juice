@@ -33,6 +33,39 @@ impl Epsilon for f64 {
     }
 }
 
+
+
+pub trait Zero {
+    fn zero() -> Self;
+}
+
+impl Zero for f32 {
+    fn zero() -> Self {
+        0.0_f32
+    }
+}
+
+impl Zero for f64 {
+    fn zero() -> Self {
+        0.0_f64
+    }
+}
+pub trait One {
+    fn one() -> Self;
+}
+
+impl One for f32 {
+    fn one() -> Self {
+        1.0_f32
+    }
+}
+
+impl One for f64 {
+    fn one() -> Self {
+        1.0_f64
+    }
+}
+
 #[cfg(feature = "native")]
 fn get_native_backend() -> Backend<Native> {
     Backend::<Native>::default().unwrap()
@@ -275,6 +308,6 @@ mod activation;
 mod bench_all;
 mod convolutional;
 mod dropout;
-mod rnn;
 mod pooling;
+mod rnn;
 mod softmax;
