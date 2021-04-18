@@ -105,8 +105,8 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
         // Input Shape is Batch, Number of Inputs, Sequence Length
         let input_shape = input.desc();
         let batch_size = input_shape[0];
-        let sequence_length = input_shape[1];
-        let input_size = input_shape[2];
+        let input_size = input_shape[1];
+        let sequence_length = input_shape[2];
 
         let hidden_size = self.hidden_size;
 
