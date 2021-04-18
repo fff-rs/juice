@@ -21,15 +21,17 @@ use juice::solver::*;
 use juice::util::*;
 
 const MAIN_USAGE: &str = "
-Usage:  mackey-glass-example train [--batch-size=<batch>] [--learning-rate=<lr>] [--momentum=<f>] [<networkfile>]
-        mackey-glass-example test <networkfile>
+Demonstrate RNN caps of juice with the cuda backend.
+
+Usage:
+    mackey-glass-example train [--batch-size=<batch>] [--learning-rate=<lr>] [--momentum=<f>] <networkfile>
+    mackey-glass-example test <networkfile>
 
 Options:
-    <networkfile>            Filepath for saving/loading the trained network.
-    -b,--batch-size=<batch>  Network Batch Size. Default: 10
-    -r,--learning-rate=<lr>  Learning Rate. Default: 0.10
-    -m,--momentum=<f>        Momentum. Default: 0.00
-    -h, --help               Show this screen.
+    -b, --batch-size=<batch>    Network Batch Size.
+    -l, --learning-rate=<lr>    Learning Rate.
+    -m, --momentum=<f>         Momentum.
+    -h, --help                 Show this screen.
 ";
 
 #[allow(non_snake_case)]
@@ -37,21 +39,49 @@ Options:
 struct Args {
     cmd_train: bool,
     cmd_test: bool,
-    flag_batch_size: usize,
-    flag_learning_rate: f32,
-    flag_momentum: f32,
+    flag_batch_size: Option<usize>,
+    flag_learning_rate: Option<f32>,
+    flag_momentum: Option<f32>,
     /// Path to the stored network.
-    arg_networkfile: Option<PathBuf>,
+    arg_networkfile: PathBuf,
 }
 
+impl Args {
+    pub(crate) fn data_mode(&self) -> DataMode {
+        assert_ne!(self.cmd_train, self.cmd_test);
+        if self.cmd_train {
+            return DataMode::Train
+        }
+        if self.cmd_test {
+            return DataMode::Test
+        }
+        unreachable!("nope");
+    }
+}
+
+const fn default_learning_rate() -> f32 {
+    0.10_f32
+}
+
+const fn default_momentum() -> f32 {
+    0.00
+}
+
+const fn default_batch_size() -> usize {
+    10
+}
 
 impl std::cmp::PartialEq for Args {
     fn eq(&self, other: &Self) -> bool {
-        if (self.flag_learning_rate - other.flag_learning_rate).abs() > 1e6 {
-            return false;
+        match (self.flag_learning_rate, other.flag_learning_rate) {
+            (Some(lhs), Some(rhs)) if (rhs - lhs).abs() < 1e6 => {}
+            (None, None) => {},
+            _ => return false,
         }
-        if (self.flag_momentum - other.flag_momentum).abs() > 1e6 {
-            return false;
+        match (self.flag_momentum, other.flag_momentum) {
+            (Some(lhs), Some(rhs)) if (rhs - lhs).abs() < 1e6 => {}
+            (None, None) => {},
+            _ => return false,
         }
         self.cmd_test == other.cmd_test &&
         self.cmd_train == other.cmd_train &&
@@ -75,6 +105,11 @@ impl DataMode {
         }
     }
 }
+
+
+mod work {
+
+use super::*;
 
 const TRAIN_ROWS: usize = 35192;
 const TEST_ROWS: usize = 8798;
@@ -134,8 +169,8 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
 }
 
 fn add_solver(
-    net_cfg: SequentialConfig,
     backend: Rc<Backend<Cuda>>,
+    net_cfg: SequentialConfig,
     batch_size: usize,
     learning_rate: f32,
     momentum: f32,
@@ -166,18 +201,16 @@ fn add_solver(
 }
 
 /// Train, and optionally, save the resulting network state/weights
-fn train(
+pub(crate) fn train(
+    backend: Rc<Backend<Cuda>>,
     batch_size: usize,
     learning_rate: f32,
     momentum: f32,
-    file: Option<&PathBuf>,
+    file: &PathBuf,
 ) {
-    // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
-    let backend = Rc::new(get_cuda_backend());
-
     // Initialise a Sequential Layer
     let net_cfg = create_network(batch_size, DATA_COLUMNS);
-    let mut solver = add_solver(net_cfg, backend, batch_size, learning_rate, momentum);
+    let mut solver = add_solver(backend, net_cfg,  batch_size, learning_rate, momentum);
 
     // Define Input & Labels
     let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
@@ -213,19 +246,13 @@ fn train(
         );
     }
 
-    // Write the network to a file
-    if let Some(f) = file {
-        //let path = Path::new(&f);
-        solver.mut_network().save(f).unwrap();
-    }
+    solver.mut_network().save(file).unwrap();
+
 }
 
 
 /// Test a the validation subset of data items against the trained network state.
-fn test(batch_size: usize, file: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
-    let backend = Rc::new(get_cuda_backend());
-
+pub(crate) fn test(backend: Rc<Backend<Cuda>>, batch_size: usize, file: &Path) -> Result<(), Box<dyn std::error::Error>> {
     // Load in a pre-trained network
     let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file)?;
 
@@ -265,6 +292,8 @@ fn test(batch_size: usize, file: &Path) -> Result<(), Box<dyn std::error::Error>
     Ok(())
 }
 
+}
+
 fn main() {
     env_logger::builder().filter_level(log::LevelFilter::Trace).init();
     // Parse Arguments
@@ -272,26 +301,32 @@ fn main() {
         .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
 
-    if args.cmd_train {
-        #[cfg(all(feature = "cuda"))]
-        train(
-            args.flag_batch_size,
-            args.flag_learning_rate,
-            args.flag_momentum,
-            args.arg_networkfile.as_ref(),
-        );
-        #[cfg(not(feature = "cuda"))]
-        panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
+    #[cfg(all(feature = "cuda"))]
+    {
+
+        // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
+        let backend = Rc::new(get_cuda_backend());
+
+        match args.data_mode() {
+            DataMode::Train =>
+                work::train(
+                    backend,
+                    args.flag_batch_size.unwrap_or(default_batch_size()),
+                    args.flag_learning_rate.unwrap_or(default_learning_rate()),
+                    args.flag_momentum.unwrap_or(default_momentum()),
+                    &args.arg_networkfile,
+                ),
+            DataMode::Test =>
+                work::test(
+                    backend,
+                    args.flag_batch_size.unwrap_or(default_batch_size()),
+                    &args.arg_networkfile).unwrap(),
+        }
+    }
+    #[cfg(not(feature = "cuda"))]
+    panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
                 on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
                 or the 2021/2022 road map https://github.com/spearow/juice/issues/30")
-    } else if args.cmd_test {
-        #[cfg(all(feature = "cuda"))]
-        test(args.flag_batch_size, args.arg_networkfile.as_ref().expect("File exists. qed"));
-        #[cfg(not(feature = "cuda"))]
-        panic!("Juice currently only supports RNNs via CUDA & CUDNN. If you'd like to check progress \
-                    on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
-                    or the 2021/2022 road map https://github.com/spearow/juice/issues/30")
-    }
 }
 
 
@@ -304,21 +339,22 @@ fn docopt_works() {
         assert_eq!(args, expected, "Expectations of {:?} stay unmet.", args);
     };
 
-    check(&["foo", "train"], Args {
+    check(&["mackey-glass-example", "train", "--learning-rate=0.4", "--batch-size=11", "--momentum=0.17", "ahoi.capnp"], Args {
         cmd_train: true,
         cmd_test: false,
-        flag_batch_size: 10_usize,
-        flag_learning_rate: 0.10_f32,
-        flag_momentum: 0.00_f32,
-        arg_networkfile: None,
+        flag_batch_size: Some(11),
+        flag_learning_rate: Some(0.4_f32),
+        flag_momentum: Some(0.17_f32),
+        arg_networkfile: PathBuf::from("ahoi.capnp"),
     });
 
-    check(&["foo", "test", "--batch-size=11", "--learning-rate=0.4", "ahoi.capnp"], Args {
+
+    check(&["mackey-glass-example", "test", "ahoi.capnp"], Args {
         cmd_train: false,
         cmd_test: true,
-        flag_batch_size: 11_usize,
-        flag_learning_rate: 0.4_f32,
-        flag_momentum: 0.00_f32,
-        arg_networkfile: Some(PathBuf::from("ahoi.capnp")),
+        flag_batch_size: None,
+        flag_learning_rate: None,
+        flag_momentum: None,
+        arg_networkfile: PathBuf::from("ahoi.capnp"),
     });
 }
