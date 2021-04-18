@@ -473,9 +473,9 @@ impl API {
         cy_desc: cudnnTensorDescriptor_t,
         cy: *mut ::libc::c_void,
         workspace: *mut ::libc::c_void,
-        work_space_size_in_bytes: usize,
-        reserve_space: *mut ::libc::c_void,
-        reserve_space_size_in_bytes: usize,
+        workspace_size_in_bytes: usize,
+        reserve: *mut ::libc::c_void,
+        reserve_size_in_bytes: usize,
     ) -> Result<(), Error> {
         unsafe {
             API::ffi_rnn_forward_training(
@@ -497,9 +497,9 @@ impl API {
                 cy_desc,
                 cy,
                 workspace,
-                work_space_size_in_bytes,
-                reserve_space,
-                reserve_space_size_in_bytes,
+                workspace_size_in_bytes,
+                reserve,
+                reserve_size_in_bytes,
             )
         }
     }
