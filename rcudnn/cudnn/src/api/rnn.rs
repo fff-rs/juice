@@ -307,12 +307,6 @@ impl API {
         algorithm: cudnnRNNAlgo_t,
         data_type: DataType,
     ) -> Result<(), Error> {
-        let data_type = match data_type {
-            DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
-            DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
-            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF,
-        };
-
         unsafe {
             API::ffi_set_rnn_descriptor(
                 handle,
@@ -324,7 +318,7 @@ impl API {
                 direction,
                 mode,
                 algorithm,
-                data_type,
+            API::cudnn_data_type(data_type),
             )
         }
     }
