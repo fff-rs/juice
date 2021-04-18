@@ -29,8 +29,8 @@ run:
     export DIRX="rcudnn/cudnn coaster-nn"
     export RUST_BACKTRACE=full
 
-    cargo t -p coaster-nn cuda::rnn_f32
-    cargo t -p juice rnn_roundtrip_pass
+    cargo t -p coaster-nn cuda::rnn_f32 -- --nocapture
+    cargo t -p juice rnn_roundtrip_pass -- --nocapture
     cd juice-examples/mackey-glass-rnn-regression
 
     cargo run -p example-rnn-regression -- train --file=netstate.capnp --batchSize=4 --learningRate=0.1 --momentum=0.2
