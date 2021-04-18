@@ -189,9 +189,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
         input_data: &[&SharedTensor<f32>],
         output_data: &mut [&mut SharedTensor<f32>],
     ) {
-        let src = input_data[0];
-
-        let input_shape = src.desc();
+        let input_shape = input_data[0].desc();
         let batch_size = input_shape[0];
         let input_size = input_shape[1];
         let sequence_length = input_shape[2];
