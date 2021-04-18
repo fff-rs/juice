@@ -13,7 +13,6 @@ pub fn test_rnn<T, F: IFramework>(backend: Backend<F>)
 where
     T: Float + Epsilon + One + Zero + rand::distributions::uniform::SampleUniform + fmt::Debug,
     Backend<F>: Rnn<T> + IBackend,
-    // <coaster::Backend<F> as plugin::NN<T>>::CRNN: plugin::RnnConfig<F>,
 {
     let direction_mode = DirectionMode::UniDirectional;
     let network_mode = RnnNetworkMode::LSTM;
