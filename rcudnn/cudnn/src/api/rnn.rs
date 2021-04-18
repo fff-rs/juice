@@ -10,7 +10,7 @@ use crate::{Error, API};
 impl API {
     /// This function computes the work and reserve space buffer sizes based on the RNN network geometry stored in rnnDesc, designated usage (inference or training) defined by the fMode argument, and the current RNN data dimensions (maxSeqLength, batchSize) retrieved from xDesc. When RNN data dimensions change, the cudnnGetRNNTempSpaceSizes() must be called again because RNN temporary buffer sizes are not monotonic.
     #[allow(clippy::too_many_arguments)]
-    pub fn get_rnn_temp_space_size(
+    pub fn get_rnn_temp_space_sizes(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         mode: cudnnForwardMode_t,
@@ -19,7 +19,7 @@ impl API {
         let mut work_space_size: ::libc::size_t = 0;
         let mut reserved_space_size: ::libc::size_t = 0;
         unsafe {
-            API::ffi_get_rnn_temp_space_size(
+            API::ffi_get_rnn_temp_space_sizes(
                 handle,
                 rnn_desc,
                 mode,
@@ -32,7 +32,7 @@ impl API {
     }
 
     #[allow(clippy::too_many_arguments)]
-    unsafe fn ffi_get_rnn_temp_space_size(
+    unsafe fn ffi_get_rnn_temp_space_sizes(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         mode: cudnnForwardMode_t,
