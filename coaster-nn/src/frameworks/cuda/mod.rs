@@ -949,7 +949,7 @@ where
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
-        let src_dimensions = src.desc().clone();
+        let src_dimensions = src.desc();
         let sequence_descriptors = rnn_sequence_descriptors(
             *rnn_config.sequence_length(),
             src_dimensions[1] as i32,
