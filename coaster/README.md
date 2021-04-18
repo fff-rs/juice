@@ -85,8 +85,9 @@ that you have added both `coaster` and the coaster Plugin `coaster-nn`
 to your Cargo manifest.
 
 ```rust
-extern crate coaster as co;
-extern crate coaster_nn as nn;
+use coaster as co;
+use coaster_nn as nn;
+
 use co::prelude::*;
 use nn::*;
 
