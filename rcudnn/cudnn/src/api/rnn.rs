@@ -15,7 +15,7 @@ impl API {
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         mode: cudnnForwardMode_t,
-        mut x_desc: Vec<cudnnTensorDescriptor_t>
+        x_desc: cudnnRNNDataDescriptor_t
     ) -> Result<(usize, usize), Error>
     {
         let mut work_space_size: ::libc::size_t = 0;
@@ -25,7 +25,7 @@ impl API {
                 handle,
                 rnn_desc,
                 mode,
-                x_desc.as_mut_slice().as_mut_ptr() as *mut cudnnRNNDataStruct,
+                x_desc,
                 &mut work_space_size,
                 &mut reserved_space_size,
             )
@@ -38,7 +38,7 @@ impl API {
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         mode: cudnnForwardMode_t,
-        x_desc: *mut cudnnRNNDataStruct,
+        x_desc: cudnnRNNDataDescriptor_t,
         work_space_size: *mut ::libc::size_t,
         reserved_space_size: *mut ::libc::size_t) -> Result<(), Error>
     {
