@@ -221,6 +221,13 @@ mod cudnn_spec {
         ).unwrap();
 
 
+        for _ in 0..sequence_length {
+            x_desc.push(TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap());
+            dx_desc.push(TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap());
+            y_desc.push(TensorDescriptor::new(&dim_output, &stride_output, data_type).unwrap());
+            dy_desc.push(TensorDescriptor::new(&dim_output, &stride_output, data_type).unwrap());
+        }
+
         let weights_size = API::get_rnn_params_size(*cudnn.id_c(),
             rnn_desc,
             *x_desc[0].id_c(),
@@ -275,13 +282,6 @@ mod cudnn_spec {
             x_desc.iter().map(|x| *x.id_c() ).collect::<Vec<cudnnTensorDescriptor_t>>(),
         ).unwrap();
 
-
-        for _ in 0..sequence_length {
-            x_desc.push(TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap());
-            dx_desc.push(TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap());
-            y_desc.push(TensorDescriptor::new(&dim_output, &stride_output, data_type).unwrap());
-            dy_desc.push(TensorDescriptor::new(&dim_output, &stride_output, data_type).unwrap());
-        }
 
         // assert_eq!(workspace_size, rnn.workspace_size());
         // assert_eq!(reserved_size, rnn.training_reserve_size());
