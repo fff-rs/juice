@@ -439,9 +439,9 @@ mod tests {
         let _ = env_logger::builder().is_test(true).filter_level(log::LevelFilter::Trace).try_init();
 
         let backend: Backend<Cuda> = cuda_backend();
-        const NUM_LAYERS: usize = 7;
+        const NUM_LAYERS: usize = 2;
         let cfg = RnnConfig {
-            hidden_size: 11,
+            hidden_size: 8,
             num_layers: NUM_LAYERS,
             dropout_probability: 0.0,
             dropout_seed: 1337,
@@ -450,8 +450,8 @@ mod tests {
             direction_mode: DirectionMode::UniDirectional,
         };
 
-        const BATCH_SIZE: usize = 5;
-        const SEQUENCE_LENGTH: usize = 3;
+        const BATCH_SIZE: usize = 2;
+        const SEQUENCE_LENGTH: usize = 5;
         let native_backend = native_backend();
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
