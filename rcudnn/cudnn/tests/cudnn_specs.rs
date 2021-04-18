@@ -396,23 +396,5 @@ mod cudnn_spec {
             reserved_size,
         )
         .unwrap();
-        // cudnn.rnn_forward(rnn_config,
-        //     src_desc,
-        //     src,
-        //     output_desc,
-        //     output,
-        //     hidden_desc,
-        //     hidden,
-        //     cell_desc,
-        //     cell,
-        //     weight_desc,
-        //     weight,
-        //     hidden_output_desc,
-        //     hidden_output,
-        //     cell_output_desc,
-        //     cell_output,
-        //     workspace,
-        //     reserve_data)
-        //     .expect("rnn_forward works");
     }
 }
