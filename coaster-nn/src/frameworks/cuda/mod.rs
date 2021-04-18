@@ -949,6 +949,11 @@ where
         workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
+
+        log::trace!("rnn_forward: src[dims] = {:?}", src.desc());
+        log::trace!("rnn_forward: output[dims] = {:?}", output.desc());
+        log::trace!("rnn_forward: weight[dims] = {:?}", weight.desc());
+
         let src_dimensions = src.desc();
         let sequence_descriptors = rnn_sequence_descriptors(
             *rnn_config.sequence_length(),
