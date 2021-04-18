@@ -546,8 +546,11 @@ impl API {
         );
         match status {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions was met: rnnDesc is invalid, hx_desc, w_desc, hy_desc, cy_desc, or one of the x_desc or y_desc is invalid. The descriptors for x_desc, cx_desc, _hx_desc, w_desc, y_desc, hy_desc, cy_desc have incorrect strides/diemnsions. Workspace size is too small. Reserve space size is too small.")),
-            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo")),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions was met: rnnDesc is invalid, hx_desc, w_desc, hy_desc, cy_desc, or one of the x_desc or y_desc is invalid. The descriptors for x_desc, cx_desc, _hx_desc, w_desc, y_desc, hy_desc, cy_desc have incorrect strides/dimensions. Workspace size is too small. Reserve space size is too small.")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported(r#"At least one of the following conditions are met:
+ * `src_desc` or `dest_desc` have negative tensor striding.
+ * `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5.
+ * The chosen `algo` does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo"#)),
             cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("The function failed to launch on the GPU.")),
             cudnnStatus_t::CUDNN_STATUS_INVALID_VALUE => Err(Error::InvalidValue("cudnnSetPersistentRNNPlan() was not called prior to the current function when CUDNN_RNN_ALGO_PERSIST_DYNAMIC was selected in the RNN descriptor.")),
             cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The function was unable to allocate memory.")),
