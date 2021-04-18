@@ -198,10 +198,25 @@ mod cudnn_spec {
         let mut dx_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dy_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
 
+        {
+            let dim_x = vec![batch_size, input_size, 1];
+            let stride_x = vec![dim_x[2] * dim_x[1], dim_x[2], 1];
+            let dim_y = vec![batch_size, hidden_size * bidirectional, 1];
+            let stride_y = vec![dim_y[2] * dim_y[1], dim_y[2], 1];
+            for _ in 0..sequence_length {
+                x_desc.push(TensorDescriptor::new(&dim_x, &stride_x, data_type).unwrap());
+                dx_desc.push(TensorDescriptor::new(&dim_x, &stride_x, data_type).unwrap());
+                y_desc.push(TensorDescriptor::new(&dim_y, &stride_y, data_type).unwrap());
+                dy_desc.push(TensorDescriptor::new(&dim_y, &stride_y, data_type).unwrap());
+            }
+        }
+
+
         // Treating the input split by batch then input like in a typical NCHW cell.
-        let dim_input = vec![batch_size, input_size, 1];
-        let dim_output = vec![batch_size, hidden_size, 1];
-        let dim_hidden_cell = vec![num_layers, batch_size, hidden_size];
+        let dim_input = vec![num_layers, batch_size, input_size];
+        let dim_output = vec![num_layers, batch_size, hidden_size];
+        let dim_hidden_cell = vec![num_layers * bidirectional, batch_size, hidden_size];
+
         let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
         let stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
         let stride_hidden_cell = vec![
@@ -225,13 +240,6 @@ mod cudnn_spec {
         )
         .unwrap();
 
-        for _ in 0..sequence_length {
-            x_desc.push(TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap());
-            dx_desc.push(TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap());
-            y_desc.push(TensorDescriptor::new(&dim_output, &stride_output, data_type).unwrap());
-            dy_desc.push(TensorDescriptor::new(&dim_output, &stride_output, data_type).unwrap());
-        }
-
         let weights_size = API::get_rnn_params_size(
             *cudnn.id_c(),
             rnn_desc,
@@ -239,7 +247,13 @@ mod cudnn_spec {
             data_type,
         )
         .unwrap() as i32;
-        let filter_dims = vec![weights_size / std::mem::size_of::<f32>() as i32, 1_i32, 1];
+
+        let filter_dims = vec![
+            weights_size / std::mem::size_of::<f32>() as i32,
+            1,
+            1,
+        ];
+
         let w_desc = FilterDescriptor::new(&filter_dims, data_type).unwrap();
         let w = CudaDeviceMemory::new(weights_size as usize).unwrap();
         let dw_desc = FilterDescriptor::new(&filter_dims, data_type).unwrap();
