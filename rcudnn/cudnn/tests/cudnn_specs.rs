@@ -161,7 +161,7 @@ mod cudnn_spec {
     }
 
     #[test]
-    fn it_computes_rnn_forward_backward_data() {
+    fn it_computes_rnn_f32_forward_backward_data() {
         let _ = env_logger::builder()
             .filter_level(log::LevelFilter::Trace)
             .is_test(true)
