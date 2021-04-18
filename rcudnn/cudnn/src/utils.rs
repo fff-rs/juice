@@ -25,15 +25,22 @@ pub enum DataType {
 pub trait DataTypeInfo {
     /// Mostly internal.
     fn cudnn_data_type() -> DataType;
+    fn size() -> usize;
 }
 impl DataTypeInfo for f32 {
     fn cudnn_data_type() -> DataType {
         DataType::Float
     }
+    fn size() -> usize {
+        4_usize
+    }
 }
 impl DataTypeInfo for f64 {
     fn cudnn_data_type() -> DataType {
         DataType::Double
+    }
+    fn size() -> usize {
+        8_usize
     }
 }
 // TODO f16
