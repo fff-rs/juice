@@ -438,6 +438,8 @@ mod tests {
     #[test]
     #[cfg(feature = "cuda")]
     fn rnn_roundtrip_pass() {
+        let _ = env_logger::builder().is_test(true).filter_level(log::LevelFilter::Trace).try_init();
+
         let backend: Backend<Cuda> = cuda_backend();
         const NUM_LAYERS: usize = 7;
         let cfg = RnnConfig {
