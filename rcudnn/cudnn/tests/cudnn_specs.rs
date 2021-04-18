@@ -276,14 +276,19 @@ mod cudnn_spec {
         let dcy_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let dcy = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-
-        let (workspace_size, reserved_size) = API::get_rnn_temp_space_size(
+        let workspace_size: usize = API::get_rnn_workspace_size(
             *cudnn.id_c(),
             rnn_desc,
-            forward_mode,
-            x_desc.iter().map(|x| *x.id_c() ).collect::<Vec<cudnnTensorDescriptor_t>>(),
+            sequence_length,
+            tensor_vec_id_c(&x_desc),
         ).unwrap();
 
+        let reserved_size: usize = API::get_rnn_training_reserve_size(
+            *cudnn.id_c(),
+            rnn_desc,
+            sequence_length,
+            tensor_vec_id_c(&x_desc),
+        ).unwrap();
 
         // assert_eq!(workspace_size, rnn.workspace_size());
         // assert_eq!(reserved_size, rnn.training_reserve_size());
