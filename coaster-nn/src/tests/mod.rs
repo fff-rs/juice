@@ -9,7 +9,7 @@
 use std;
 use std::fmt;
 
-use rand::{thread_rng, Rng, RngCore, SeedableRng, distributions::{Distribution, self}};
+use rand::{thread_rng, distributions::{Distribution, self}};
 
 use crate::co::plugin::numeric_helpers::{cast, NumCast};
 use crate::co::prelude::*;
