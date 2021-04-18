@@ -140,7 +140,9 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
             .generate_rnn_weight_description(&config, batch_size as i32, input_size as i32)
             .unwrap();
 
+        // weights
         weights_data[0].write().unwrap().resize(&filter_dimensions).unwrap();
+        // biases
         weights_data[1].write().unwrap().resize(&(1, self.hidden_size)).unwrap();
 
         let filler = FillerType::Glorot {
@@ -499,13 +501,15 @@ mod tests {
 
         layer.rnn_config = Some(Rc::from(config));
 
-        let mut weights_data = Vec::with_capacity(4);
-        weights_data.push(SharedTensor::<f32>::new(&filter_dimensions));
-        weights_data.push(SharedTensor::<f32>::new(&(1, cfg.hidden_size)));
+        let mut weights_data = vec![
+            SharedTensor::<f32>::new(&filter_dimensions),
+            SharedTensor::<f32>::new(&(1, cfg.hidden_size)),
+        ];
 
-        let mut weights_gradient = Vec::new();
-        weights_gradient.push(SharedTensor::<f32>::new(&filter_dimensions));
-        weights_gradient.push(SharedTensor::<f32>::new(&(1, cfg.hidden_size)));
+        let mut weights_gradient = vec![
+            SharedTensor::<f32>::new(&filter_dimensions),
+            SharedTensor::<f32>::new(&(1, cfg.hidden_size)),
+        ];
 
         let filler = FillerType::Constant { value: 0.02 };
 
