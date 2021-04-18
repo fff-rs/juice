@@ -34,12 +34,12 @@ pub(crate) fn rnn_sequence_descriptors(
     let dim_input = vec![num_layers, batch_size, input_size];
     let dim_output = vec![num_layers, batch_size, hidden_size];
     let dim_hidden_cell = vec![num_layers * bidirectional, batch_size, hidden_size];
-    let stride_input = vec![
+    let _stride_input = vec![
         dim_input[2] * dim_input[1],
         dim_input[2],
         1,
     ];
-    let stride_output = vec![
+    let _stride_output = vec![
         dim_output[2] * dim_output[1],
         dim_output[2],
         1,

@@ -220,7 +220,7 @@ impl API {
         batch_size: i32,
         vector_size: i32,
         sequence_length_array: &[i32],
-        padding: *mut ::libc::c_void,
+        _padding: *mut ::libc::c_void,
     ) -> Result<cudnnRNNDataDescriptor_t, Error> {
         unsafe {
             API::ffi_set_rnn_data_descriptor(
