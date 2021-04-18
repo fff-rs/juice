@@ -513,36 +513,33 @@ mod tests {
         filler.fill(&mut weights_data[1]);
 
         layer.resize_shared_workspace(Rc::from(cuda_backend()), None);
-        let mut workspace_forward = layer
-            .workspace
-            .as_ref()
-            .expect("Workspace exists. qed")
-            .write()
-            .expect("Workspace write works. qed");
-
 
         layer.compute_output(
-            &backend,
-            &weights_data.as_ref(),
-            &input_data,
-            &mut output_data.as_mut_ref(),
+            &cuda_backend(),
+            &weights_data.iter().collect::<Vec<_>>(),
+            &[&input_data],
+            &mut [&mut output_data],
         );
 
+        // simulate some feedback
+        let mut output_gradients = SharedTensor::<f32>::new(&output_shape);
+        filler.fill(&mut output_gradients);
+
         layer.compute_input_gradient(
-            &backend,
-            weights_data.as_ref(),
-            &output_data.as_ref(),
-            &output_gradient.as_ref(),
-            &input_data,
-            &mut input_gradients.as_mut_ref(),
+            &cuda_backend(),
+            &weights_data.iter().collect::<Vec<_>>(),
+            &[&output_data],
+            &[&output_gradients],
+            &[&input_data],
+            &mut[&mut input_gradients],
         );
 
         layer.compute_parameters_gradient(
-            &backend,
-            &output_data,
-            &output_gradients.as_ref(),
-            &input_data.as_ref(),
-            &mut weights_gradient.as_mut_ref(),
+            &cuda_backend(),
+            &[&output_data],
+            &[&output_gradients],
+            &[&input_data],
+            &mut weights_data.iter_mut().collect::<Vec<_>>(),
         );
     }
 }
