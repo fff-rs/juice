@@ -199,9 +199,65 @@ impl API {
         let mut rnn_data_descriptor: cudnnRNNDataDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateRNNDataDescriptor(&mut rnn_data_descriptor) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_data_descriptor),
-            status => Err(Error::Unknown(
-                "Unable to create Data Descriptor",
-                status as i32 as u64,
+             status => Err(Error::Unknown(
+                "Unable to create RNN Data Descriptor",
+                 status as i32 as u64,
+            )),
+        }
+    }
+
+    pub fn set_rnn_data_descriptor(
+        rnn_data_descriptor: cudnnRNNDataDescriptor_t,
+        data_type: cudnnDataType_t,
+        layout: cudnnRNNDataLayout_t,
+        max_sequence_length: i32,
+        batch_size: i32,
+        vector_size: i32,
+        sequence_length_array: &[i32],
+        padding: *mut ::libc::c_void,
+    ) -> Result<cudnnRNNDataDescriptor_t, Error> {
+        unsafe { API::ffi_set_rnn_data_descriptor(
+            rnn_data_descriptor,
+        data_type,
+        layout,
+        max_sequence_length,
+        batch_size,
+        vector_size,
+        sequence_length_array,
+        ::std::ptr::null_mut() as *mut ::libc::c_void,
+        ) }
+    }
+    unsafe fn ffi_set_rnn_data_descriptor(rnn_data_descriptor: cudnnRNNDataDescriptor_t,
+        data_type: cudnnDataType_t,
+        layout: cudnnRNNDataLayout_t,
+        max_sequence_length: i32,
+        batch_size: i32,
+        vector_size: i32,
+        sequence_length_array: &[i32],
+        padding: *mut ::libc::c_void,
+    ) -> Result<cudnnRNNDataDescriptor_t, Error> {
+        match cudnnSetRNNDataDescriptor(rnn_data_descriptor,
+            data_type,
+            layout,
+            max_sequence_length,
+            batch_size,
+            vector_size,
+            sequence_length_array.as_ptr(),
+            padding,
+
+        ) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_data_descriptor),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("dataType is not one of CUDNN_DATA_HALF, CUDNN_DATA_FLOAT or CUDNN_DATA_DOUBLE")),
+            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The allocation of internal array storage has failed.")),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(r#"One of these have occurred:
+ * rnn_data_desc is `null`.
+ * Any one of `max_sequence_length`, `batch_size` or `sequence_length_array` is less than or equal to zero.
+ * An element of `sequence_length_array` is less than zero or greater than `max_sequence_length`.
+ * `layout` is not one of `CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_UNPACKED`, `CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_PACKED` or `CUDNN_RNN_DATA_LAYOUT_BATCH_MAJOR_UNPACKED`.
+"#)),
+             status => Err(Error::Unknown(
+                "Unable to set RNN Data Descriptor",
+                 status as i32 as u64,
             )),
         }
     }
