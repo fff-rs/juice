@@ -354,7 +354,7 @@ mod tests {
     #[cfg(feature = "cuda")]
     use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
     use crate::co::*;
-    use crate::layer::ILayer;
+    use crate::layer::{ILayer, ComputeInputGradient, ComputeOutput, ComputeParametersGradient};
     use crate::util::native_backend;
     use crate::weight::FillerType;
 
@@ -459,8 +459,7 @@ mod tests {
         let input_shape = vec![BATCH_SIZE, SEQUENCE_LENGTH, 4, 1];
 
         let mut input_data = SharedTensor::<f32>::new(&input_shape);
-
-        input_data.resize(&input_shape).unwrap();
+        let mut input_gradients = SharedTensor::<f32>::new(&input_shape);
 
         let data = std::iter::repeat(0.5_f32)
             .take(BATCH_SIZE * SEQUENCE_LENGTH * 4)
@@ -521,15 +520,29 @@ mod tests {
             .write()
             .expect("Workspace write works. qed");
 
-        backend
-            .rnn_forward(
-                &input_data,
-                &mut output_data,
-                layer.rnn_config.as_ref().expect("layer has rnn config"),
-                &weights_data[0],
-                &mut workspace_forward,
-            )
-            .expect("RNN Forward completes successfully");
 
+        layer.compute_output(
+            &backend,
+            &weights_data.as_ref(),
+            &input_data,
+            &mut output_data.as_mut_ref(),
+        );
+
+        layer.compute_input_gradient(
+            &backend,
+            weights_data.as_ref(),
+            &output_data.as_ref(),
+            &output_gradient.as_ref(),
+            &input_data,
+            &mut input_gradients.as_mut_ref(),
+        );
+
+        layer.compute_parameters_gradient(
+            &backend,
+            &output_data,
+            &output_gradients.as_ref(),
+            &input_data.as_ref(),
+            &mut weights_gradient.as_mut_ref(),
+        );
     }
 }
