@@ -33,47 +33,18 @@ impl ConvolutionDescriptor {
             .collect();
 
         let generic_convolution_desc = API::create_convolution_descriptor()?;
-        match data_type {
-            DataType::Float => {
-                let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                API::set_convolution_descriptor(
-                    generic_convolution_desc,
-                    d_type,
-                    cudnnConvolutionMode_t::CUDNN_CONVOLUTION,
-                    array_length,
-                    pad.as_ptr(),
-                    filter_stride.as_ptr(),
-                    upscale.as_ptr(),
-                )?;
-                Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
-            }
-            DataType::Double => {
-                let d_type = cudnnDataType_t::CUDNN_DATA_DOUBLE;
-                API::set_convolution_descriptor(
-                    generic_convolution_desc,
-                    d_type,
-                    cudnnConvolutionMode_t::CUDNN_CONVOLUTION,
-                    array_length,
-                    pad.as_ptr(),
-                    filter_stride.as_ptr(),
-                    upscale.as_ptr(),
-                )?;
-                Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
-            }
-            DataType::Half => {
-                let d_type = cudnnDataType_t::CUDNN_DATA_FLOAT;
-                API::set_convolution_descriptor(
-                    generic_convolution_desc,
-                    d_type,
-                    cudnnConvolutionMode_t::CUDNN_CONVOLUTION,
-                    array_length,
-                    pad.as_ptr(),
-                    filter_stride.as_ptr(),
-                    upscale.as_ptr(),
-                )?;
-                Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
-            }
-        }
+        let data_type = API::cudnn_data_type(data_type);
+
+        API::set_convolution_descriptor(
+            generic_convolution_desc,
+            data_type,
+            cudnnConvolutionMode_t::CUDNN_CONVOLUTION,
+            array_length,
+            pad.as_ptr(),
+            filter_stride.as_ptr(),
+            upscale.as_ptr(),
+        )?;
+        Ok(ConvolutionDescriptor::from_c(generic_convolution_desc))
     }
 
     /// Initializes a new CUDA cuDNN ConvolutionDescriptor from its C type.

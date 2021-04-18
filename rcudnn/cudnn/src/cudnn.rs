@@ -198,11 +198,7 @@ impl Cudnn {
         data_type: DataType,
         math_type: cudnnMathType_t,
     ) -> Result<RnnConfig, Error> {
-        let data_type = match data_type {
-            DataType::Float => cudnnDataType_t::CUDNN_DATA_FLOAT,
-            DataType::Double => cudnnDataType_t::CUDNN_DATA_DOUBLE,
-            DataType::Half => cudnnDataType_t::CUDNN_DATA_HALF,
-        };
+        let data_type = API::cudnn_data_type(data_type);
 
         API::set_rnn_matrix_math_type(*rnn_desc.id_c(), math_type)?;
 
