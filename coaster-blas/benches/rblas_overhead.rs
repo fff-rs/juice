@@ -1,13 +1,11 @@
 #![feature(test)]
 
-extern crate coaster as co;
-extern crate coaster_blas as co_blas;
-extern crate rand;
-extern crate rust_blas as rblas;
-extern crate test;
+use coaster as co;
+use coaster_blas as co_blas;
+use rust_blas as rblas;
 
-use crate::co::prelude::*;
-use crate::co_blas::plugin::*;
+use co::prelude::*;
+use co_blas::plugin::*;
 use test::Bencher;
 
 use rand::distributions::Standard;
