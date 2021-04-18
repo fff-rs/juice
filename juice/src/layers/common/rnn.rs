@@ -362,7 +362,7 @@ mod tests {
 
     fn sample_input_64() -> Vec<f32> {
         vec![
-            // Default Input Type - Batch of 5 Elements, 5 Time Parts, Width 1, Height 1.
+            // Default Input Type - Batch of 8 Elements, 8 Time Parts, Width 1, Height 1.
             0.5f32;64
         ]
     }
@@ -440,9 +440,10 @@ mod tests {
     #[cfg(feature = "cuda")]
     fn rnn_forward_pass() {
         let backend: Backend<Cuda> = cuda_backend();
+        const NUM_LAYERS: usize = 7;
         let cfg = RnnConfig {
             hidden_size: 11,
-            num_layers: 7,
+            num_layers: NUM_LAYERS,
             dropout_probability: 0.0,
             dropout_seed: 1337,
             rnn_type: RnnNetworkMode::LSTM,
@@ -450,24 +451,24 @@ mod tests {
             direction_mode: DirectionMode::UniDirectional,
         };
 
-        let batch_size = 5;
-        let sequence_length = 3;
+        const BATCH_SIZE: usize = 5;
+        const SEQUENCE_LENGTH: usize = 3;
         let native_backend = native_backend();
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
-        let input_shape = vec![batch_size, sequence_length, 1, 1];
+        let input_shape = vec![BATCH_SIZE, SEQUENCE_LENGTH, 1, 1];
 
         let mut input_data = SharedTensor::<f32>::new(&input_shape);
 
-        input_data.resize(&[batch_size, sequence_length, 1, 1]).unwrap();
+        input_data.resize(&[BATCH_SIZE, SEQUENCE_LENGTH, 1, 1]).unwrap();
 
         input_data
             .write_only(native_backend.device())
             .unwrap()
             .as_mut_slice()
-            .copy_from_slice(&sample_input_64());
+            .copy_from_slice(&[0.5; NUM_LAYERS]);
 
-        let output_shape = vec![batch_size, cfg.hidden_size, cfg.num_layers];
+        let output_shape = vec![BATCH_SIZE, cfg.hidden_size, NUM_LAYERS];
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
 
         let config = backend
@@ -475,21 +476,21 @@ mod tests {
                 &input_data,
                 None,
                 None,
-                sequence_length as i32,
+                SEQUENCE_LENGTH as i32,
                 RnnNetworkMode::LSTM,
                 RnnInputMode::LinearInput,
                 DirectionMode::UniDirectional,
                 RnnAlgorithm::Standard,
                 cfg.hidden_size as i32,
-                cfg.num_layers as i32,
-                batch_size as i32,
+                NUM_LAYERS as i32,
+                BATCH_SIZE as i32,
             )
             .unwrap();
 
         let filter_dimensions = <Backend<Cuda> as conn::Rnn<f32>>::generate_rnn_weight_description(
             &backend,
             &config,
-            batch_size as i32,
+            BATCH_SIZE as i32,
             cfg.hidden_size as i32,
         )
         .unwrap();
@@ -520,10 +521,7 @@ mod tests {
         match backend.rnn_forward(
             &input_data,
             &mut output_data,
-            match layer.rnn_config {
-                Some(ref config) => &Rc::from(&config),
-                None => panic!(""),
-            },
+            layer.rnn_config.as_ref().expect("layer has rnn config"),
             &weights_data[0],
             &mut workspace_forward,
         ) {
