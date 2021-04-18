@@ -8,6 +8,55 @@ use crate::{Error, API};
 
 // Workspace
 impl API {
+
+    /// This function computes the work and reserve space buffer sizes based on the RNN network geometry stored in rnnDesc, designated usage (inference or training) defined by the fMode argument, and the current RNN data dimensions (maxSeqLength, batchSize) retrieved from xDesc. When RNN data dimensions change, the cudnnGetRNNTempSpaceSizes() must be called again because RNN temporary buffer sizes are not monotonic.
+    #[allow(clippy::too_many_arguments)]
+    pub fn get_rnn_temp_space_size(
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        mode: cudnnForwardMode_t,
+        mut x_desc: Vec<cudnnTensorDescriptor_t>
+    ) -> Result<(usize, usize), Error>
+    {
+        let mut work_space_size: ::libc::size_t = 0;
+        let mut reserved_space_size: ::libc::size_t = 0;
+        unsafe {
+            API::ffi_get_rnn_temp_space_size(
+                handle,
+                rnn_desc,
+                mode,
+                x_desc.as_mut_slice().as_mut_ptr() as *mut cudnnRNNDataStruct,
+                &mut work_space_size,
+                &mut reserved_space_size,
+            )
+        }?;
+        Ok((work_space_size, reserved_space_size))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    unsafe fn ffi_get_rnn_temp_space_size(
+        handle: cudnnHandle_t,
+        rnn_desc: cudnnRNNDescriptor_t,
+        mode: cudnnForwardMode_t,
+        x_desc: *mut cudnnRNNDataStruct,
+        work_space_size: *mut ::libc::size_t,
+        reserved_space_size: *mut ::libc::size_t) -> Result<(), Error>
+    {
+        let status = cudnnGetRNNTempSpaceSizes(
+            handle,
+            rnn_desc,
+            mode,
+            x_desc,
+            work_space_size,
+            reserved_space_size);
+        match status {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("An invalid input argument was detected.")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("An incompatible or unsupported combination of input arguments was detected.")),
+            status => Err(Error::Unknown("Unable to obtain space sized for cuDNN rnn forward.", status as u64)),
+        }
+    }
+
     /// Returns the workspace size in byte, which are needed for the given rnnal algorithm.
     ///
     /// # Arguments
