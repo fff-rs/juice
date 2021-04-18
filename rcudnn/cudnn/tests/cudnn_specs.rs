@@ -188,9 +188,9 @@ mod cudnn_spec {
         let input_mode = rcudnn::cudnnRNNInputMode_t::CUDNN_LINEAR_INPUT;
         let sequence_length = 7;
         let hidden_size = 5;
-        let num_layers = 3;
-        let batch_size = 2;
-        let input_size = 11;
+        let num_layers = 1;
+        let batch_size = 11;
+        let input_size = 13;
         let data_type = DataType::Float;
 
         let mut x_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
@@ -201,8 +201,10 @@ mod cudnn_spec {
         {
             let dim_x = vec![batch_size, input_size, 1];
             let stride_x = vec![dim_x[2] * dim_x[1], dim_x[2], 1];
+
             let dim_y = vec![batch_size, hidden_size * bidirectional, 1];
             let stride_y = vec![dim_y[2] * dim_y[1], dim_y[2], 1];
+
             for _ in 0..sequence_length {
                 x_desc.push(TensorDescriptor::new(&dim_x, &stride_x, data_type).unwrap());
                 dx_desc.push(TensorDescriptor::new(&dim_x, &stride_x, data_type).unwrap());
@@ -216,8 +218,6 @@ mod cudnn_spec {
         let dim_output = vec![num_layers, batch_size, hidden_size];
         let dim_hidden_cell = vec![num_layers * bidirectional, batch_size, hidden_size];
 
-        let _stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
-        let _stride_output = vec![dim_output[2] * dim_output[1], dim_output[2], 1];
         let stride_hidden_cell = vec![
             dim_hidden_cell[2] * dim_hidden_cell[1],
             dim_hidden_cell[2],
