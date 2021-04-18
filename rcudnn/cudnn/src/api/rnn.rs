@@ -8,16 +8,14 @@ use crate::{Error, API};
 
 // Workspace
 impl API {
-
     /// This function computes the work and reserve space buffer sizes based on the RNN network geometry stored in rnnDesc, designated usage (inference or training) defined by the fMode argument, and the current RNN data dimensions (maxSeqLength, batchSize) retrieved from xDesc. When RNN data dimensions change, the cudnnGetRNNTempSpaceSizes() must be called again because RNN temporary buffer sizes are not monotonic.
     #[allow(clippy::too_many_arguments)]
     pub fn get_rnn_temp_space_size(
         handle: cudnnHandle_t,
         rnn_desc: cudnnRNNDescriptor_t,
         mode: cudnnForwardMode_t,
-        x_desc: cudnnRNNDataDescriptor_t
-    ) -> Result<(usize, usize), Error>
-    {
+        x_desc: cudnnRNNDataDescriptor_t,
+    ) -> Result<(usize, usize), Error> {
         let mut work_space_size: ::libc::size_t = 0;
         let mut reserved_space_size: ::libc::size_t = 0;
         unsafe {
@@ -40,20 +38,28 @@ impl API {
         mode: cudnnForwardMode_t,
         x_desc: cudnnRNNDataDescriptor_t,
         work_space_size: *mut ::libc::size_t,
-        reserved_space_size: *mut ::libc::size_t) -> Result<(), Error>
-    {
+        reserved_space_size: *mut ::libc::size_t,
+    ) -> Result<(), Error> {
         let status = cudnnGetRNNTempSpaceSizes(
             handle,
             rnn_desc,
             mode,
             x_desc,
             work_space_size,
-            reserved_space_size);
+            reserved_space_size,
+        );
         match status {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("An invalid input argument was detected.")),
-            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("An incompatible or unsupported combination of input arguments was detected.")),
-            status => Err(Error::Unknown("Unable to obtain space sized for cuDNN rnn forward.", status as u64)),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => {
+                Err(Error::BadParam("An invalid input argument was detected."))
+            }
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported(
+                "An incompatible or unsupported combination of input arguments was detected.",
+            )),
+            status => Err(Error::Unknown(
+                "Unable to obtain space sized for cuDNN rnn forward.",
+                status as u64,
+            )),
         }
     }
 
@@ -199,9 +205,9 @@ impl API {
         let mut rnn_data_descriptor: cudnnRNNDataDescriptor_t = ::std::ptr::null_mut();
         match cudnnCreateRNNDataDescriptor(&mut rnn_data_descriptor) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_data_descriptor),
-             status => Err(Error::Unknown(
+            status => Err(Error::Unknown(
                 "Unable to create RNN Data Descriptor",
-                 status as i32 as u64,
+                status as i32 as u64,
             )),
         }
     }
@@ -216,18 +222,21 @@ impl API {
         sequence_length_array: &[i32],
         padding: *mut ::libc::c_void,
     ) -> Result<cudnnRNNDataDescriptor_t, Error> {
-        unsafe { API::ffi_set_rnn_data_descriptor(
-            rnn_data_descriptor,
-        data_type,
-        layout,
-        max_sequence_length,
-        batch_size,
-        vector_size,
-        sequence_length_array,
-        ::std::ptr::null_mut() as *mut ::libc::c_void,
-        ) }
+        unsafe {
+            API::ffi_set_rnn_data_descriptor(
+                rnn_data_descriptor,
+                data_type,
+                layout,
+                max_sequence_length,
+                batch_size,
+                vector_size,
+                sequence_length_array,
+                ::std::ptr::null_mut() as *mut ::libc::c_void,
+            )
+        }
     }
-    unsafe fn ffi_set_rnn_data_descriptor(rnn_data_descriptor: cudnnRNNDataDescriptor_t,
+    unsafe fn ffi_set_rnn_data_descriptor(
+        rnn_data_descriptor: cudnnRNNDataDescriptor_t,
         data_type: cudnnDataType_t,
         layout: cudnnRNNDataLayout_t,
         max_sequence_length: i32,
@@ -236,7 +245,8 @@ impl API {
         sequence_length_array: &[i32],
         padding: *mut ::libc::c_void,
     ) -> Result<cudnnRNNDataDescriptor_t, Error> {
-        match cudnnSetRNNDataDescriptor(rnn_data_descriptor,
+        match cudnnSetRNNDataDescriptor(
+            rnn_data_descriptor,
             data_type,
             layout,
             max_sequence_length,
@@ -244,20 +254,25 @@ impl API {
             vector_size,
             sequence_length_array.as_ptr(),
             padding,
-
         ) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(rnn_data_descriptor),
-            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("dataType is not one of CUDNN_DATA_HALF, CUDNN_DATA_FLOAT or CUDNN_DATA_DOUBLE")),
-            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed("The allocation of internal array storage has failed.")),
-            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(r#"One of these have occurred:
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported(
+                "dataType is not one of CUDNN_DATA_HALF, CUDNN_DATA_FLOAT or CUDNN_DATA_DOUBLE",
+            )),
+            cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED => Err(Error::AllocFailed(
+                "The allocation of internal array storage has failed.",
+            )),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam(
+                r#"One of these have occurred:
  * rnn_data_desc is `null`.
  * Any one of `max_sequence_length`, `batch_size` or `sequence_length_array` is less than or equal to zero.
  * An element of `sequence_length_array` is less than zero or greater than `max_sequence_length`.
  * `layout` is not one of `CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_UNPACKED`, `CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_PACKED` or `CUDNN_RNN_DATA_LAYOUT_BATCH_MAJOR_UNPACKED`.
-"#)),
-             status => Err(Error::Unknown(
+"#,
+            )),
+            status => Err(Error::Unknown(
                 "Unable to set RNN Data Descriptor",
-                 status as i32 as u64,
+                status as i32 as u64,
             )),
         }
     }
