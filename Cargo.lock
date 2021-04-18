@@ -1860,7 +1860,9 @@ name = "rcudnn"
 version = "1.7.0"
 dependencies = [
  "coaster",
+ "env_logger 0.8.3",
  "libc",
+ "log",
  "num 0.1.42",
  "rcudnn-sys",
  "thiserror",

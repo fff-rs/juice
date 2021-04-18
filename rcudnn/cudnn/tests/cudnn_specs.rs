@@ -163,6 +163,8 @@ mod cudnn_spec {
 
     #[test]
     fn it_computes_rnn_forward_backward_data() {
+        let _ = env_logger::builder().filter_level(log::LevelFilter::Trace).is_test(true).try_init();
+        log::trace!("RNN API test");
         use rcudnn::utils::DataTypeInfo;
         use rcudnn::RnnDescriptor;
 
