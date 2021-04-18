@@ -851,23 +851,24 @@ where
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
         // MiniBatch, LayerSize, 1
-        let dim_input = vec![batch_size, input_size, 1];
-        let stride_input = vec![dim_input[2] * dim_input[1], dim_input[2], 1];
+        let dim_x = vec![batch_size, input_size, 1];
+        let stride_x = vec![dim_x[2] * dim_x[1], dim_x[2], 1];
 
-        let x_desc_single_iterator =
-            TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap();
+        // dummy desc to get the param size
+        let x_desc =
+            TensorDescriptor::new(&dim_x, &stride_x, data_type).unwrap();
 
         let weight_size: usize = exec2!(API::get_rnn_params_size(
             *cudnn_framework.id_c(),
             *rnn_config.rnn_desc().id_c(),
             // Input. A fully packed tensor descriptor describing the input to one recurrent iteration.
             // Appears to be a single descriptor, not an array of tensor descriptors.
-            *x_desc_single_iterator.id_c(),
+            *x_desc.id_c(),
             data_type,
         ) => "Unable to get CudNN Rnn Params Size.")?;
 
         // TODO: Update for different sizing.
-        let dim_w: Vec<usize> = vec![weight_size / 4, 1, 1];
+        let dim_w: Vec<usize> = vec![weight_size / <T as DataTypeInfo>::size(), 1, 1];
         Ok(dim_w)
     }
 
