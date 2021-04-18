@@ -1,10 +1,10 @@
 #![feature(test)]
 
-use coaster as co;
 use co::backend::{Backend, BackendConfig};
 use co::device::IDevice;
 use co::framework::IFramework;
 use co::tensor::SharedTensor;
+use coaster as co;
 use test::Bencher;
 
 #[cfg(feature = "cuda")]

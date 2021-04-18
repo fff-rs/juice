@@ -1,14 +1,14 @@
 //! Provides NN for a CUDA backend.
 #![allow(missing_docs)]
 
-use coaster as co;
+pub use crate::cudnn::utils::{DataType, DataTypeInfo};
+use crate::cudnn::*;
+use crate::plugin::*;
 use co::plugin::numeric_helpers::Float;
 use co::plugin::Error as PluginError;
 use co::prelude::*;
 use co::Error;
-pub use crate::cudnn::utils::{DataType, DataTypeInfo};
-use crate::cudnn::*;
-use crate::plugin::*;
+use coaster as co;
 
 #[macro_use]
 pub mod helper;

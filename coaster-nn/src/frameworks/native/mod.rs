@@ -9,15 +9,15 @@ use std::fmt::Debug;
 use std::ops::*;
 
 #[cfg(feature = "native")]
-use rand::{Rng, SeedableRng, distributions::Distribution};
+use rand::{distributions::Distribution, Rng, SeedableRng};
 
+use crate::plugin::*;
 use coaster as co;
 use co::plugin::numeric_helpers::Bounded;
 use co::plugin::numeric_helpers::Float;
 use co::plugin::Error as PluginError;
 use co::prelude::*;
 use co::Error;
-use crate::plugin::*;
 
 #[macro_use]
 pub mod helper;
@@ -964,7 +964,7 @@ where
         output.clone_from_slice(input);
 
         let seed: [u8; 8] = config.seed.to_le_bytes();
-        let mut extrapolated_seed = [0u8;32];
+        let mut extrapolated_seed = [0u8; 32];
         extrapolated_seed[0..8].copy_from_slice(&seed);
         extrapolated_seed[12..20].copy_from_slice(&seed);
         extrapolated_seed[24..32].copy_from_slice(&seed);
