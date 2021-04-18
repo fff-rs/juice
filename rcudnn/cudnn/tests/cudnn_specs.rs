@@ -1,8 +1,8 @@
 use coaster as co;
 use rcudnn as cudnn;
 
-use rcudnn_sys as ffi;
 use crate::ffi::*;
+use rcudnn_sys as ffi;
 
 #[cfg(test)]
 #[link(name = "cudart")]
@@ -19,7 +19,8 @@ mod cudnn_spec {
     use crate::cudnn::utils::DropoutConfig;
     use crate::cudnn::utils::RnnConfig;
     use crate::cudnn::{
-        ActivationDescriptor, ConvolutionDescriptor, Cudnn, FilterDescriptor, TensorDescriptor, API, tensor_vec_id_c,
+        tensor_vec_id_c, ActivationDescriptor, ConvolutionDescriptor, Cudnn, FilterDescriptor,
+        TensorDescriptor, API,
     };
 
     #[test]
@@ -155,15 +156,16 @@ mod cudnn_spec {
             *dest_data.id_c(),
             *reserve.id_c(),
             reserve.size(),
-        ).expect("dropout_forward works. qed");
+        )
+        .expect("dropout_forward works. qed");
     }
-
-
-
 
     #[test]
     fn it_computes_rnn_forward_backward_data() {
-        let _ = env_logger::builder().filter_level(log::LevelFilter::Trace).is_test(true).try_init();
+        let _ = env_logger::builder()
+            .filter_level(log::LevelFilter::Trace)
+            .is_test(true)
+            .try_init();
         log::trace!("RNN API test");
         use rcudnn::utils::DataTypeInfo;
         use rcudnn::RnnDescriptor;
@@ -175,7 +177,8 @@ mod cudnn_spec {
 
         let forward_mode = rcudnn::cudnnForwardMode_t::CUDNN_FWD_MODE_TRAINING;
         let direction_mode = rcudnn::cudnnDirectionMode_t::CUDNN_UNIDIRECTIONAL;
-        let bidirectional = if direction_mode == rcudnn::cudnnDirectionMode_t::CUDNN_UNIDIRECTIONAL {
+        let bidirectional = if direction_mode == rcudnn::cudnnDirectionMode_t::CUDNN_UNIDIRECTIONAL
+        {
             1
         } else {
             2 // bidirection needs twice as much memory
@@ -194,7 +197,6 @@ mod cudnn_spec {
         let mut y_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dx_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
         let mut dy_desc: Vec<TensorDescriptor> = Vec::with_capacity(sequence_length as usize);
-
 
         // Treating the input split by batch then input like in a typical NCHW cell.
         let dim_input = vec![batch_size, input_size, 1];
@@ -220,8 +222,8 @@ mod cudnn_spec {
             network_mode,
             algorithm,
             data_type,
-        ).unwrap();
-
+        )
+        .unwrap();
 
         for _ in 0..sequence_length {
             x_desc.push(TensorDescriptor::new(&dim_input, &stride_input, data_type).unwrap());
@@ -230,21 +232,26 @@ mod cudnn_spec {
             dy_desc.push(TensorDescriptor::new(&dim_output, &stride_output, data_type).unwrap());
         }
 
-        let weights_size = API::get_rnn_params_size(*cudnn.id_c(),
+        let weights_size = API::get_rnn_params_size(
+            *cudnn.id_c(),
             rnn_desc,
             *x_desc[0].id_c(),
-            data_type).unwrap() as i32;
+            data_type,
+        )
+        .unwrap() as i32;
         let filter_dims = vec![weights_size / std::mem::size_of::<f32>() as i32, 1_i32, 1];
         let w_desc = FilterDescriptor::new(&filter_dims, data_type).unwrap();
         let w = CudaDeviceMemory::new(weights_size as usize).unwrap();
         let dw_desc = FilterDescriptor::new(&filter_dims, data_type).unwrap();
         let dw = CudaDeviceMemory::new(weights_size as usize).unwrap();
 
-        let size_x_dx = (sequence_length * input_size * batch_size) as usize * std::mem::size_of::<f32>();
-        let size_y_dy = (sequence_length * hidden_size * batch_size * bidirectional) as usize * std::mem::size_of::<f32>();
+        let size_x_dx =
+            (sequence_length * input_size * batch_size) as usize * std::mem::size_of::<f32>();
+        let size_y_dy = (sequence_length * hidden_size * batch_size * bidirectional) as usize
+            * std::mem::size_of::<f32>();
 
-        let size_the_rest = (num_layers * hidden_size * batch_size * bidirectional) as usize * std::mem::size_of::<f32>();
-
+        let size_the_rest = (num_layers * hidden_size * batch_size * bidirectional) as usize
+            * std::mem::size_of::<f32>();
 
         let x = CudaDeviceMemory::new(size_x_dx).unwrap();
         let y = CudaDeviceMemory::new(size_y_dy).unwrap();
@@ -252,28 +259,36 @@ mod cudnn_spec {
         let dx = CudaDeviceMemory::new(size_x_dx).unwrap();
         let dy = CudaDeviceMemory::new(size_y_dy).unwrap();
 
-        let hx_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let hx_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let hx = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-        let hy_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let hy_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let hy = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-        let cx_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let cx_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let cx = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-        let cy_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let cy_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let cy = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-        let dhx_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let dhx_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let dhx = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-        let dhy_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let dhy_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let dhy = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-        let dcx_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let dcx_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let dcx = CudaDeviceMemory::new(size_the_rest).unwrap();
 
-        let dcy_desc = TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
+        let dcy_desc =
+            TensorDescriptor::new(&dim_hidden_cell, &stride_hidden_cell, data_type).unwrap();
         let dcy = CudaDeviceMemory::new(size_the_rest).unwrap();
 
         let workspace_size: usize = API::get_rnn_workspace_size(
@@ -281,21 +296,22 @@ mod cudnn_spec {
             rnn_desc,
             sequence_length,
             tensor_vec_id_c(&x_desc),
-        ).unwrap();
+        )
+        .unwrap();
 
         let reserved_size: usize = API::get_rnn_training_reserve_size(
             *cudnn.id_c(),
             rnn_desc,
             sequence_length,
             tensor_vec_id_c(&x_desc),
-        ).unwrap();
+        )
+        .unwrap();
 
         // assert_eq!(workspace_size, rnn.workspace_size());
         // assert_eq!(reserved_size, rnn.training_reserve_size());
 
         let workspace = CudaDeviceMemory::new(workspace_size).unwrap();
         let reserved = CudaDeviceMemory::new(reserved_size).unwrap();
-
 
         API::rnn_forward_training(
             *cudnn.id_c(),
@@ -319,10 +335,11 @@ mod cudnn_spec {
             workspace_size,
             *reserved.id_c(),
             reserved_size,
-        ).expect("API::rnn_forward_training works");
+        )
+        .expect("API::rnn_forward_training works");
 
-
-        API::rnn_backward_data(*cudnn.id_c(),
+        API::rnn_backward_data(
+            *cudnn.id_c(),
             rnn_desc,
             sequence_length,
             y_desc[0].id_c(),
@@ -348,10 +365,12 @@ mod cudnn_spec {
             *workspace.id_c(),
             workspace_size,
             *reserved.id_c(),
-            reserved_size).unwrap();
+            reserved_size,
+        )
+        .unwrap();
 
-
-        API::rnn_backward_weights(*cudnn.id_c(),
+        API::rnn_backward_weights(
+            *cudnn.id_c(),
             rnn_desc,
             sequence_length,
             x_desc[0].id_c(),
@@ -365,8 +384,9 @@ mod cudnn_spec {
             *dw_desc.id_c(),
             *dw.id_c(),
             *reserved.id_c(),
-            reserved_size
-        ).unwrap();
+            reserved_size,
+        )
+        .unwrap();
         // cudnn.rnn_forward(rnn_config,
         //     src_desc,
         //     src,
