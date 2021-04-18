@@ -1073,10 +1073,6 @@
 <span id="1070">1070</span>
 <span id="1071">1071</span>
 <span id="1072">1072</span>
-<span id="1073">1073</span>
-<span id="1074">1074</span>
-<span id="1075">1075</span>
-<span id="1076">1076</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Describes the high-level CUDA cuDNN instance.</span>
 <span class="doccomment">//!</span>
@@ -1278,11 +1274,7 @@
         <span class="ident">data_type</span>: <span class="ident">DataType</span>,
         <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RnnConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">data_type</span> {
-            <span class="ident">DataType</span>::<span class="ident">Float</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_FLOAT</span>,
-            <span class="ident">DataType</span>::<span class="ident">Double</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_DOUBLE</span>,
-            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>,
-        };
+        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">cudnn_data_type</span>(<span class="ident">data_type</span>);
 
         <span class="ident">API</span>::<span class="ident">set_rnn_matrix_math_type</span>(<span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(), <span class="ident">math_type</span>)<span class="question-mark">?</span>;
 

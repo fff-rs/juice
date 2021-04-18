@@ -289,18 +289,64 @@
 <span id="286">286</span>
 <span id="287">287</span>
 <span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster</span> <span class="kw">as</span> <span class="ident">co</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster_nn</span> <span class="kw">as</span> <span class="ident">conn</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">env_logger</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">juice</span>;
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_must_use</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
+<span class="kw">use</span> <span class="ident">coaster</span> <span class="kw">as</span> <span class="ident">co</span>;
+<span class="kw">use</span> <span class="ident">coaster_nn</span> <span class="kw">as</span> <span class="ident">conn</span>;
+
+<span class="kw">use</span> <span class="ident">fs_err</span>::<span class="ident">File</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
 
-<span class="kw">use</span> <span class="ident">csv</span>::<span class="ident">Reader</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Deserialize</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">co</span>::<span class="ident">frameworks</span>::<span class="ident">cuda</span>::<span class="ident">get_cuda_backend</span>;
@@ -311,64 +357,74 @@
 <span class="kw">use</span> <span class="ident">juice</span>::<span class="ident">solver</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">juice</span>::<span class="ident">util</span>::<span class="kw-2">*</span>;
 
-<span class="kw">const</span> <span class="ident">MAIN_USAGE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;
-Usage:  mackey-glass-example train [--file=&lt;path&gt;] [--batchSize=&lt;batch&gt;] [--learningRate=&lt;lr&gt;] [--momentum=&lt;float&gt;]
-        mackey-glass-example test [--file=&lt;path&gt;]
+<span class="kw">mod</span> <span class="ident">args</span>;
 
-Options:
-    --file=&lt;path&gt;        Filepath for saving trained network.
-    --batchSize=&lt;batch&gt;  Network Batch Size.
-    --learningRate=&lt;lr&gt;  Learning Rate.
-    --momentum=&lt;float&gt;   Momentum.
-    -h, --help           Show this screen.
-&quot;</span>;
+<span class="kw">use</span> <span class="ident">args</span>::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">struct</span> <span class="ident">Args</span> {
-    <span class="ident">cmd_train</span>: <span class="ident">bool</span>,
-    <span class="ident">cmd_test</span>: <span class="ident">bool</span>,
-    <span class="ident">flag_file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
-    <span class="ident">flag_batchSize</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
-    <span class="ident">flag_learningRate</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-    <span class="ident">flag_momentum</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">TRAIN_ROWS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">35192</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">TEST_ROWS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8798</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">DATA_COLUMNS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;
+
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Record</span> {
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">rename</span> <span class="op">=</span> <span class="string">&quot;Target&quot;</span>)]</span>
+    <span class="ident">target</span>: <span class="ident">f32</span>,
+    <span class="ident">b1</span>: <span class="ident">f32</span>,
+    <span class="ident">b2</span>: <span class="ident">f32</span>,
+    <span class="ident">b3</span>: <span class="ident">f32</span>,
+    <span class="ident">b4</span>: <span class="ident">f32</span>,
+    <span class="ident">b5</span>: <span class="ident">f32</span>,
+    <span class="ident">b6</span>: <span class="ident">f32</span>,
+    <span class="ident">b7</span>: <span class="ident">f32</span>,
+    <span class="ident">b8</span>: <span class="ident">f32</span>,
+    <span class="ident">b9</span>: <span class="ident">f32</span>,
+    <span class="ident">b10</span>: <span class="ident">f32</span>,
 }
 
-<span class="kw">enum</span> <span class="ident">DataMode</span> {
-    <span class="ident">Train</span>,
-    <span class="ident">Test</span>,
-}
+<span class="kw">impl</span> <span class="ident">Record</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">target</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">f32</span> {
+        <span class="self">self</span>.<span class="ident">target</span>
+    }
 
-<span class="kw">impl</span> <span class="ident">DataMode</span> {
-    <span class="kw">fn</span> <span class="ident">as_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">DataMode</span>::<span class="ident">Train</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;assets/norm_mackeyglass_train.csv&quot;</span>,
-            <span class="ident">DataMode</span>::<span class="ident">Test</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;assets/norm_mackeyglass_test.csv&quot;</span>,
-        }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> {
+        <span class="comment">// only the b&#39;s</span>
+        <span class="macro">vec</span><span class="macro">!</span>[
+            <span class="self">self</span>.<span class="ident">b1</span>,
+            <span class="self">self</span>.<span class="ident">b2</span>,
+            <span class="self">self</span>.<span class="ident">b3</span>,
+            <span class="self">self</span>.<span class="ident">b4</span>,
+            <span class="self">self</span>.<span class="ident">b5</span>,
+            <span class="self">self</span>.<span class="ident">b6</span>,
+            <span class="self">self</span>.<span class="ident">b7</span>,
+            <span class="self">self</span>.<span class="ident">b8</span>,
+            <span class="self">self</span>.<span class="ident">b9</span>,
+            <span class="self">self</span>.<span class="ident">b10</span>
+        ]
     }
 }
 
-<span class="kw">const</span> <span class="ident">TRAIN_ROWS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">35192</span>;
-<span class="kw">const</span> <span class="ident">TEST_ROWS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8798</span>;
-<span class="kw">const</span> <span class="ident">DATA_COLUMNS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;
-
 <span class="comment">// Provide an Iterator over the input data</span>
-<span class="kw">fn</span> <span class="ident">data_generator</span>(<span class="ident">data</span>: <span class="ident">DataMode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">f32</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">rdr</span> <span class="op">=</span> <span class="ident">Reader</span>::<span class="ident">from_reader</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">data</span>.<span class="ident">as_path</span>()).<span class="ident">unwrap</span>());
-    <span class="ident">rdr</span>.<span class="ident">into_deserialize</span>().<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">row</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">row</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">let</span> <span class="ident">row_vec</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">value</span>);
-            <span class="kw">let</span> <span class="ident">label</span> <span class="op">=</span> <span class="ident">row_vec</span>[<span class="number">0</span>];
-            <span class="kw">let</span> <span class="ident">columns</span> <span class="op">=</span> <span class="ident">row_vec</span>[<span class="number">1</span>..<span class="op">=</span><span class="ident">DATA_COLUMNS</span>].<span class="ident">to_vec</span>();
-            (<span class="ident">label</span>, <span class="ident">columns</span>)
-        }
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;file seems to be empty&quot;</span>);
-            <span class="macro">panic</span><span class="macro">!</span>();
-        }
-    })
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">data_generator</span>(<span class="ident">data</span>: <span class="ident">DataMode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">f32</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">data</span>.<span class="ident">as_path</span>()).<span class="ident">expect</span>(<span class="string">&quot;File opens as read. qed&quot;</span>);
+    <span class="kw">let</span> <span class="ident">rdr</span> <span class="op">=</span> <span class="ident">csv</span>::<span class="ident">ReaderBuilder</span>::<span class="ident">new</span>()
+        .<span class="ident">delimiter</span>(<span class="string">b&#39;,&#39;</span>)
+        .<span class="ident">trim</span>(<span class="ident">csv</span>::<span class="ident">Trim</span>::<span class="ident">All</span>)
+        .<span class="ident">from_reader</span>(<span class="ident">file</span>);
+
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">rdr</span>.<span class="ident">has_headers</span>());
+
+    <span class="ident">rdr</span>.<span class="ident">into_deserialize</span>()
+        .<span class="ident">enumerate</span>()
+        .<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span>(<span class="ident">idx</span>, <span class="ident">row</span>) : (<span class="kw">_</span>, <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Record</span>, <span class="kw">_</span><span class="op">&gt;</span>)<span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">record</span>: <span class="ident">Record</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">row</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">record</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">record</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span>
+                <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;All rows (including row {} (base-0)) in assets are valid. qed -&gt; {:?}&quot;</span>, <span class="ident">idx</span>, <span class="ident">err</span>),
+            };
+            (<span class="ident">record</span>.<span class="ident">target</span>(), <span class="ident">record</span>.<span class="ident">bs</span>())
+        })
 }
 
 <span class="kw">fn</span> <span class="ident">create_network</span>(<span class="ident">batch_size</span>: <span class="ident">usize</span>, <span class="ident">columns</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
@@ -394,7 +450,7 @@ Options:
         <span class="string">&quot;LSTMInitial&quot;</span>,
         <span class="ident">RnnConfig</span> {
             <span class="ident">hidden_size</span>: <span class="number">5</span>,
-            <span class="ident">num_layers</span>: <span class="number">1</span>,
+            <span class="ident">num_layers</span>: <span class="number">2</span>,
             <span class="ident">dropout_seed</span>: <span class="number">123</span>,
             <span class="ident">dropout_probability</span>: <span class="number">0.5</span>,
             <span class="ident">rnn_type</span>: <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span>,
@@ -407,10 +463,9 @@ Options:
     <span class="ident">net_cfg</span>
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
 <span class="kw">fn</span> <span class="ident">add_solver</span>(
-    <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>,
     <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>,
     <span class="ident">batch_size</span>: <span class="ident">usize</span>,
     <span class="ident">learning_rate</span>: <span class="ident">f32</span>,
     <span class="ident">momentum</span>: <span class="ident">f32</span>,
@@ -440,24 +495,17 @@ Options:
     <span class="ident">Solver</span>::<span class="ident">from_config</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">solver_cfg</span>)
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="kw">fn</span> <span class="ident">train</span>(
-    <span class="ident">batch_size</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">learning_rate</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-    <span class="ident">momentum</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>,
-    <span class="ident">file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Train, and optionally, save the resulting network state/weights</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">train</span>(
+    <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">batch_size</span>: <span class="ident">usize</span>,
+    <span class="ident">learning_rate</span>: <span class="ident">f32</span>,
+    <span class="ident">momentum</span>: <span class="ident">f32</span>,
+    <span class="ident">file</span>: <span class="kw-2">&amp;</span><span class="ident">PathBuf</span>,
 ) {
-    <span class="comment">// Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.</span>
-    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_cuda_backend</span>());
-
-    <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="ident">batch_size</span>.<span class="ident">unwrap_or</span>(<span class="number">10</span>);
-    <span class="kw">let</span> <span class="ident">learning_rate</span> <span class="op">=</span> <span class="ident">learning_rate</span>.<span class="ident">unwrap_or</span>(<span class="number">0.1f32</span>);
-    <span class="kw">let</span> <span class="ident">momentum</span> <span class="op">=</span> <span class="ident">momentum</span>.<span class="ident">unwrap_or</span>(<span class="number">0.00f32</span>);
-
     <span class="comment">// Initialise a Sequential Layer</span>
     <span class="kw">let</span> <span class="ident">net_cfg</span> <span class="op">=</span> <span class="ident">create_network</span>(<span class="ident">batch_size</span>, <span class="ident">DATA_COLUMNS</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solver</span> <span class="op">=</span> <span class="ident">add_solver</span>(<span class="ident">net_cfg</span>, <span class="ident">backend</span>, <span class="ident">batch_size</span>, <span class="ident">learning_rate</span>, <span class="ident">momentum</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solver</span> <span class="op">=</span> <span class="ident">add_solver</span>(<span class="ident">backend</span>, <span class="ident">net_cfg</span>,  <span class="ident">batch_size</span>, <span class="ident">learning_rate</span>, <span class="ident">momentum</span>);
 
     <span class="comment">// Define Input &amp; Labels</span>
     <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>, <span class="ident">DATA_COLUMNS</span>]);
@@ -473,6 +521,7 @@ Options:
     <span class="ident">regression_evaluator</span>.<span class="ident">set_capacity</span>(<span class="prelude-val">Some</span>(<span class="number">2000</span>));
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data_rows</span> <span class="op">=</span> <span class="ident">data_generator</span>(<span class="ident">DataMode</span>::<span class="ident">Train</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">total</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..(<span class="ident">TRAIN_ROWS</span> <span class="op">/</span> <span class="ident">batch_size</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> (<span class="ident">batch_n</span>, (<span class="ident">label_val</span>, <span class="ident">input</span>)) <span class="kw">in</span> <span class="ident">data_rows</span>.<span class="ident">by_ref</span>().<span class="ident">take</span>(<span class="ident">batch_size</span>).<span class="ident">enumerate</span>() {
@@ -482,6 +531,13 @@ Options:
             <span class="ident">write_batch_sample</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">label_tensor</span>, <span class="kw-2">&amp;</span>[<span class="ident">label_val</span>], <span class="ident">batch_n</span>);
             <span class="ident">targets</span>.<span class="ident">push</span>(<span class="ident">label_val</span>);
         }
+        <span class="kw">if</span> <span class="ident">targets</span>.<span class="ident">is_empty</span>() {
+            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Inconsistency detected - batch was empty&quot;</span>);
+            <span class="kw">break</span>;
+        }
+
+        <span class="ident">total</span> <span class="op">+</span><span class="op">=</span> <span class="ident">targets</span>.<span class="ident">len</span>();
+
         <span class="comment">// Train the network</span>
         <span class="kw">let</span> <span class="ident">inferred_out</span> <span class="op">=</span> <span class="ident">solver</span>.<span class="ident">train_minibatch</span>(<span class="ident">input_lock</span>.<span class="ident">clone</span>(), <span class="ident">label_lock</span>.<span class="ident">clone</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inferred</span> <span class="op">=</span> <span class="ident">inferred_out</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
@@ -493,24 +549,19 @@ Options:
         );
     }
 
-    <span class="comment">// Write the network to a file</span>
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">f</span>) <span class="op">=</span> <span class="ident">file</span> {
-        <span class="comment">//let path = Path::new(&amp;f);</span>
-        <span class="ident">solver</span>.<span class="ident">mut_network</span>().<span class="ident">save</span>(<span class="ident">f</span>).<span class="ident">unwrap</span>();
+
+    <span class="kw">if</span> <span class="ident">total</span> <span class="op">&gt;</span> <span class="number">0</span> {
+        <span class="ident">solver</span>.<span class="ident">mut_network</span>().<span class="ident">save</span>(<span class="ident">file</span>).<span class="ident">expect</span>(<span class="string">&quot;Saving network to file works. qed&quot;</span>);
+    } <span class="kw">else</span> {
+        <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;No data was used for training&quot;</span>);
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="kw">fn</span> <span class="ident">test</span>(<span class="ident">batch_size</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="comment">// Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.</span>
-    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_cuda_backend</span>());
 
-    <span class="comment">// Load in the Network, and some test data</span>
-    <span class="kw">let</span> <span class="ident">batch_size</span> <span class="op">=</span> <span class="ident">batch_size</span>.<span class="ident">unwrap_or</span>(<span class="number">10</span>);
-
+<span class="doccomment">/// Test a the validation subset of data items against the trained network state.</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">test</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">batch_size</span>: <span class="ident">usize</span>, <span class="ident">file</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="comment">// Load in a pre-trained network</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">network</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Layer</span>::<span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">load</span>(<span class="ident">backend</span>, <span class="ident">file</span>.<span class="ident">unwrap</span>())<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">network</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Layer</span>::<span class="op">&lt;</span><span class="ident">Backend</span><span class="op">&lt;</span><span class="ident">Cuda</span><span class="op">&gt;</span><span class="op">&gt;</span>::<span class="ident">load</span>(<span class="ident">backend</span>, <span class="ident">file</span>)<span class="question-mark">?</span>;
 
     <span class="comment">// Define Input &amp; Labels</span>
     <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>, <span class="ident">DATA_COLUMNS</span>]);
@@ -548,35 +599,76 @@ Options:
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">test</span>))]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_must_use</span>)]</span>
 <span class="kw">fn</span> <span class="ident">main</span>() {
-    <span class="ident">env_logger</span>::<span class="ident">init</span>();
+    <span class="ident">env_logger</span>::<span class="ident">builder</span>().<span class="ident">filter_level</span>(<span class="ident">log</span>::<span class="ident">LevelFilter</span>::<span class="ident">Info</span>).<span class="ident">init</span>();
     <span class="comment">// Parse Arguments</span>
     <span class="kw">let</span> <span class="ident">args</span>: <span class="ident">Args</span> <span class="op">=</span> <span class="ident">docopt</span>::<span class="ident">Docopt</span>::<span class="ident">new</span>(<span class="ident">MAIN_USAGE</span>)
         .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span>.<span class="ident">deserialize</span>())
         .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">exit</span>());
 
-    <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_train</span> {
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-        <span class="ident">train</span>(
-            <span class="ident">args</span>.<span class="ident">flag_batchSize</span>,
-            <span class="ident">args</span>.<span class="ident">flag_learningRate</span>,
-            <span class="ident">args</span>.<span class="ident">flag_momentum</span>,
-            <span class="ident">args</span>.<span class="ident">flag_file</span>,
-        );
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-        <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Juice currently only supports RNNs via CUDA &amp; CUDNN. If you&#39;d like to check progress \
-                on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
-                or the 2020 road map https://github.com/spearow/juice/issues/30&quot;</span>)
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_test</span> {
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-        <span class="ident">test</span>(<span class="ident">args</span>.<span class="ident">flag_batchSize</span>, <span class="ident">args</span>.<span class="ident">flag_file</span>);
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-        <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Juice currently only supports RNNs via CUDA &amp; CUDNN. If you&#39;d like to check progress \
-                    on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
-                    or the 2020 road map https://github.com/spearow/juice/issues/30&quot;</span>)
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
+    {
+
+        <span class="comment">// Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.</span>
+        <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_cuda_backend</span>());
+
+        <span class="kw">match</span> <span class="ident">args</span>.<span class="ident">data_mode</span>() {
+            <span class="ident">DataMode</span>::<span class="ident">Train</span> <span class="op">=</span><span class="op">&gt;</span>
+                <span class="ident">train</span>(
+                    <span class="ident">backend</span>,
+                    <span class="ident">args</span>.<span class="ident">flag_batch_size</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_batch_size</span>()),
+                    <span class="ident">args</span>.<span class="ident">flag_learning_rate</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_learning_rate</span>()),
+                    <span class="ident">args</span>.<span class="ident">flag_momentum</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_momentum</span>()),
+                    <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">arg_networkfile</span>,
+                ),
+            <span class="ident">DataMode</span>::<span class="ident">Test</span> <span class="op">=</span><span class="op">&gt;</span>
+                <span class="ident">test</span>(
+                    <span class="ident">backend</span>,
+                    <span class="ident">args</span>.<span class="ident">flag_batch_size</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_batch_size</span>()),
+                    <span class="kw-2">&amp;</span><span class="ident">args</span>.<span class="ident">arg_networkfile</span>).<span class="ident">unwrap</span>(),
+        }
     }
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
+    <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Juice currently only supports RNNs via CUDA &amp; CUDNN. If you&#39;d like to check progress \
+                on native support, please look at the tracking issue https://github.com/spearow/juice/issues/41 \
+                or the 2021/2022 road map https://github.com/spearow/juice/issues/30&quot;</span>)
+}
+
+
+<span class="attribute">#[<span class="ident">test</span>]</span>
+<span class="kw">fn</span> <span class="ident">docopt_works</span>() {
+    <span class="kw">let</span> <span class="ident">check</span> <span class="op">=</span> <span class="op">|</span><span class="ident">args</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>], <span class="ident">expected</span>: <span class="ident">Args</span><span class="op">|</span> {
+        <span class="kw">let</span> <span class="ident">docopt</span> <span class="op">=</span> <span class="ident">docopt</span>::<span class="ident">Docopt</span>::<span class="ident">new</span>(<span class="ident">MAIN_USAGE</span>).<span class="ident">expect</span>(<span class="string">&quot;Docopt spec if valid. qed&quot;</span>);
+        <span class="kw">let</span> <span class="ident">args</span>: <span class="ident">Args</span> <span class="op">=</span> <span class="ident">docopt</span>.<span class="ident">argv</span>(<span class="ident">args</span>).<span class="ident">deserialize</span>().<span class="ident">expect</span>(<span class="string">&quot;Must deserialize. qed&quot;</span>);
+
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">args</span>, <span class="ident">expected</span>, <span class="string">&quot;Expectations of {:?} stay unmet.&quot;</span>, <span class="ident">args</span>);
+    };
+
+    <span class="ident">check</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;mackey-glass-example&quot;</span>, <span class="string">&quot;train&quot;</span>, <span class="string">&quot;--learning-rate=0.4&quot;</span>, <span class="string">&quot;--batch-size=11&quot;</span>, <span class="string">&quot;--momentum=0.17&quot;</span>, <span class="string">&quot;ahoi.capnp&quot;</span>], <span class="ident">Args</span> {
+        <span class="ident">cmd_train</span>: <span class="bool-val">true</span>,
+        <span class="ident">cmd_test</span>: <span class="bool-val">false</span>,
+        <span class="ident">flag_batch_size</span>: <span class="prelude-val">Some</span>(<span class="number">11</span>),
+        <span class="ident">flag_learning_rate</span>: <span class="prelude-val">Some</span>(<span class="number">0.4_f32</span>),
+        <span class="ident">flag_momentum</span>: <span class="prelude-val">Some</span>(<span class="number">0.17_f32</span>),
+        <span class="ident">arg_networkfile</span>: <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="string">&quot;ahoi.capnp&quot;</span>),
+    });
+
+    <span class="ident">check</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;mackey-glass-example&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="string">&quot;ahoi.capnp&quot;</span>], <span class="ident">Args</span> {
+        <span class="ident">cmd_train</span>: <span class="bool-val">false</span>,
+        <span class="ident">cmd_test</span>: <span class="bool-val">true</span>,
+        <span class="ident">flag_batch_size</span>: <span class="prelude-val">None</span>,
+        <span class="ident">flag_learning_rate</span>: <span class="prelude-val">None</span>,
+        <span class="ident">flag_momentum</span>: <span class="prelude-val">None</span>,
+        <span class="ident">arg_networkfile</span>: <span class="ident">PathBuf</span>::<span class="ident">from</span>(<span class="string">&quot;ahoi.capnp&quot;</span>),
+    });
+}
+
+
+
+<span class="attribute">#[<span class="ident">test</span>]</span>
+<span class="kw">fn</span> <span class="ident">test_data_is_ok</span>() {
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">data_generator</span>(<span class="ident">DataMode</span>::<span class="ident">Train</span>).<span class="ident">count</span>(), <span class="ident">TRAIN_ROWS</span>);
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">data_generator</span>(<span class="ident">DataMode</span>::<span class="ident">Test</span>).<span class="ident">count</span>(), <span class="ident">TEST_ROWS</span>);
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="example_rnn_regression"></div>

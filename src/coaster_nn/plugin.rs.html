@@ -805,16 +805,12 @@
 <span id="802">802</span>
 <span id="803">803</span>
 <span id="804">804</span>
-<span id="805">805</span>
-<span id="806">806</span>
-<span id="807">807</span>
-<span id="808">808</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the INn Plugin trait for Coaster implementation.</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">tensor</span>::<span class="ident">SharedTensor</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Formatter</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="doccomment">/// Different algorithms to compute the convolution forward algorithm.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConvForwardAlgo</span> {
     <span class="doccomment">/// Attempt to automatically find the best algorithm of all the other available ones.</span>
@@ -857,7 +853,7 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="doccomment">/// Different algorithms to compute the gradient with respect to the filter.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConvBackwardFilterAlgo</span> {
     <span class="doccomment">/// Attempt to automatically find the best algorithm of all the other available ones.</span>
@@ -898,7 +894,7 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="doccomment">/// Different algorithms to compute the gradient with respect to the filter.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConvBackwardDataAlgo</span> {
     <span class="doccomment">/// Attempt to automatically find the best algorithm of all the other available ones.</span>
@@ -1187,7 +1183,7 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">error</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="doccomment">/// Network Type for RNN Networks [cudnnRNNMOde_t][1]</span>
 <span class="doccomment">/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNMode_t</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RnnNetworkMode</span> {
@@ -1203,13 +1199,12 @@
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RnnNetworkMode</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">RnnNetworkMode</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;RelU&quot;</span>,
             <span class="ident">RnnNetworkMode</span>::<span class="ident">Tanh</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Tanh&quot;</span>,
             <span class="ident">RnnNetworkMode</span>::<span class="ident">LSTM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;LSTM&quot;</span>,
             <span class="ident">RnnNetworkMode</span>::<span class="ident">GRU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;GRU&quot;</span>,
-        }
-        .<span class="ident">to_owned</span>();
+        };
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
 }
@@ -1227,7 +1222,7 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="doccomment">/// Input Modes for RNN [cudnnRNNInputMode_t][1]</span>
 <span class="doccomment">/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNInputMode_t</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">RnnInputMode</span> {
@@ -1242,11 +1237,10 @@
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RnnInputMode</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">RnnInputMode</span>::<span class="ident">LinearInput</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;LinearInput&quot;</span>,
             <span class="ident">RnnInputMode</span>::<span class="ident">SkipInput</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;SkipInput&quot;</span>,
-        }
-        .<span class="ident">to_owned</span>();
+        };
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
 }
@@ -1262,7 +1256,7 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="doccomment">/// Direction Mode for RNN [cudnnDirectionMode_t][1]</span>
 <span class="doccomment">/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnDirectionMode_t</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DirectionMode</span> {
@@ -1274,11 +1268,10 @@
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">DirectionMode</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">DirectionMode</span>::<span class="ident">UniDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;UniDirectional&quot;</span>,
             <span class="ident">DirectionMode</span>::<span class="ident">BiDirectional</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;BiDirectional&quot;</span>,
-        }
-        .<span class="ident">to_owned</span>();
+        };
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
 }
@@ -1294,7 +1287,7 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="doccomment">/// Algorithm for RNN [cudnnRNNAlgo_t][1]</span>
 <span class="doccomment">/// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNAlgo_t</span>
 <span class="doccomment">///</span>
@@ -1313,13 +1306,12 @@
 
 <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">RnnAlgorithm</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">RnnAlgorithm</span>::<span class="ident">Standard</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;Standard&quot;</span>,
             <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistStatic</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;PersistStatic&quot;</span>,
             <span class="ident">RnnAlgorithm</span>::<span class="ident">PersistDynamic</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;PersistDynamic&quot;</span>,
             <span class="ident">RnnAlgorithm</span>::<span class="ident">Count</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
-        }
-        .<span class="ident">to_owned</span>();
+        };
         <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">result</span>)
     }
 }

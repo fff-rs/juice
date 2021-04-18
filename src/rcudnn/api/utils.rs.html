@@ -132,7 +132,7 @@
 
 <span class="kw">impl</span> <span class="ident">API</span> {
     <span class="doccomment">/// Convert to CUDNN Data Type</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudnn_data_type</span>(<span class="ident">data_type</span>: <span class="ident">DataType</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span> {
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">cudnn_data_type</span>(<span class="ident">data_type</span>: <span class="ident">DataType</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span> {
         <span class="kw">match</span> <span class="ident">data_type</span> {
             <span class="ident">DataType</span>::<span class="ident">Float</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_FLOAT</span>,
             <span class="ident">DataType</span>::<span class="ident">Double</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_DOUBLE</span>,

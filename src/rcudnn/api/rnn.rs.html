@@ -862,6 +862,123 @@
 <span id="859">859</span>
 <span id="860">860</span>
 <span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Provides the RNN functionality from the CUDA cuDNN API.</span>
 <span class="doccomment">//!</span>
@@ -873,6 +990,61 @@
 
 <span class="comment">// Workspace</span>
 <span class="kw">impl</span> <span class="ident">API</span> {
+    <span class="doccomment">/// This function computes the work and reserve space buffer sizes based on the RNN network geometry stored in rnnDesc, designated usage (inference or training) defined by the fMode argument, and the current RNN data dimensions (maxSeqLength, batchSize) retrieved from xDesc. When RNN data dimensions change, the cudnnGetRNNTempSpaceSizes() must be called again because RNN temporary buffer sizes are not monotonic.</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_rnn_temp_space_sizes</span>(
+        <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
+        <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
+        <span class="ident">mode</span>: <span class="ident">cudnnForwardMode_t</span>,
+        <span class="ident">x_desc</span>: <span class="ident">cudnnRNNDataDescriptor_t</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">work_space_size</span>: ::<span class="ident">libc</span>::<span class="ident">size_t</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reserved_space_size</span>: ::<span class="ident">libc</span>::<span class="ident">size_t</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">unsafe</span> {
+            <span class="ident">API</span>::<span class="ident">ffi_get_rnn_temp_space_sizes</span>(
+                <span class="ident">handle</span>,
+                <span class="ident">rnn_desc</span>,
+                <span class="ident">mode</span>,
+                <span class="ident">x_desc</span>,
+                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">work_space_size</span>,
+                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reserved_space_size</span>,
+            )
+        }<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>((<span class="ident">work_space_size</span>, <span class="ident">reserved_space_size</span>))
+    }
+
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_get_rnn_temp_space_sizes</span>(
+        <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
+        <span class="ident">rnn_desc</span>: <span class="ident">cudnnRNNDescriptor_t</span>,
+        <span class="ident">mode</span>: <span class="ident">cudnnForwardMode_t</span>,
+        <span class="ident">x_desc</span>: <span class="ident">cudnnRNNDataDescriptor_t</span>,
+        <span class="ident">work_space_size</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">size_t</span>,
+        <span class="ident">reserved_space_size</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">size_t</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">status</span> <span class="op">=</span> <span class="ident">cudnnGetRNNTempSpaceSizes</span>(
+            <span class="ident">handle</span>,
+            <span class="ident">rnn_desc</span>,
+            <span class="ident">mode</span>,
+            <span class="ident">x_desc</span>,
+            <span class="ident">work_space_size</span>,
+            <span class="ident">reserved_space_size</span>,
+        );
+        <span class="kw">match</span> <span class="ident">status</span> {
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;An invalid input argument was detected.&quot;</span>))
+            }
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(
+                <span class="string">&quot;An incompatible or unsupported combination of input arguments was detected.&quot;</span>,
+            )),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to obtain space sized for cuDNN rnn forward.&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
+        }
+    }
+
     <span class="doccomment">/// Returns the workspace size in byte, which are needed for the given rnnal algorithm.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Arguments</span>
@@ -911,7 +1083,7 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The data type used in `src_desc` is not supported for RNN.&quot;</span>)),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Forward Workspace size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Forward Workspace size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
@@ -946,7 +1118,7 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: One of the parameters `handle`, `x_desc`, `rnn_desc` is NULL. The tensors in `x_desc` are not of the same data type. The batch size of the tensors `x_desc` are not decreasing or staying constant.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The data type used in `src_desc` is not supported for RNN.&quot;</span>)),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Training Reserve size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Training Reserve size.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
@@ -980,7 +1152,7 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size</span>),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;One of the following; rnnDesc is invalid, x_desc is invalid, x_desc isn&#39;t fully packed, dataType &amp; tensor Description type don&#39;t match&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;The data type used in `rnn_desc` is not supported for RNN.&quot;</span>)),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Params Size&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to get CUDA cuDNN RNN Params Size&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
@@ -1016,7 +1188,72 @@
         <span class="kw">match</span> <span class="ident">cudnnCreateRNNDataDescriptor</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rnn_data_descriptor</span>) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">rnn_data_descriptor</span>),
             <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
-                <span class="string">&quot;Unable to create Data Descriptor&quot;</span>,
+                <span class="string">&quot;Unable to create RNN Data Descriptor&quot;</span>,
+                <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
+            )),
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_rnn_data_descriptor</span>(
+        <span class="ident">rnn_data_descriptor</span>: <span class="ident">cudnnRNNDataDescriptor_t</span>,
+        <span class="ident">data_type</span>: <span class="ident">cudnnDataType_t</span>,
+        <span class="ident">layout</span>: <span class="ident">cudnnRNNDataLayout_t</span>,
+        <span class="ident">max_sequence_length</span>: <span class="ident">i32</span>,
+        <span class="ident">batch_size</span>: <span class="ident">i32</span>,
+        <span class="ident">vector_size</span>: <span class="ident">i32</span>,
+        <span class="ident">sequence_length_array</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>],
+        <span class="ident">_padding</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cudnnRNNDataDescriptor_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">unsafe</span> {
+            <span class="ident">API</span>::<span class="ident">ffi_set_rnn_data_descriptor</span>(
+                <span class="ident">rnn_data_descriptor</span>,
+                <span class="ident">data_type</span>,
+                <span class="ident">layout</span>,
+                <span class="ident">max_sequence_length</span>,
+                <span class="ident">batch_size</span>,
+                <span class="ident">vector_size</span>,
+                <span class="ident">sequence_length_array</span>,
+                ::<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+            )
+        }
+    }
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_set_rnn_data_descriptor</span>(
+        <span class="ident">rnn_data_descriptor</span>: <span class="ident">cudnnRNNDataDescriptor_t</span>,
+        <span class="ident">data_type</span>: <span class="ident">cudnnDataType_t</span>,
+        <span class="ident">layout</span>: <span class="ident">cudnnRNNDataLayout_t</span>,
+        <span class="ident">max_sequence_length</span>: <span class="ident">i32</span>,
+        <span class="ident">batch_size</span>: <span class="ident">i32</span>,
+        <span class="ident">vector_size</span>: <span class="ident">i32</span>,
+        <span class="ident">sequence_length_array</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>],
+        <span class="ident">padding</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cudnnRNNDataDescriptor_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="ident">cudnnSetRNNDataDescriptor</span>(
+            <span class="ident">rnn_data_descriptor</span>,
+            <span class="ident">data_type</span>,
+            <span class="ident">layout</span>,
+            <span class="ident">max_sequence_length</span>,
+            <span class="ident">batch_size</span>,
+            <span class="ident">vector_size</span>,
+            <span class="ident">sequence_length_array</span>.<span class="ident">as_ptr</span>(),
+            <span class="ident">padding</span>,
+        ) {
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">rnn_data_descriptor</span>),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(
+                <span class="string">&quot;dataType is not one of CUDNN_DATA_HALF, CUDNN_DATA_FLOAT or CUDNN_DATA_DOUBLE&quot;</span>,
+            )),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(
+                <span class="string">&quot;The allocation of internal array storage has failed.&quot;</span>,
+            )),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(
+                <span class="string">r#&quot;One of these have occurred:
+ * rnn_data_desc is `null`.
+ * Any one of `max_sequence_length`, `batch_size` or `sequence_length_array` is less than or equal to zero.
+ * An element of `sequence_length_array` is less than zero or greater than `max_sequence_length`.
+ * `layout` is not one of `CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_UNPACKED`, `CUDNN_RNN_DATA_LAYOUT_SEQ_MAJOR_PACKED` or `CUDNN_RNN_DATA_LAYOUT_BATCH_MAJOR_UNPACKED`.
+&quot;#</span>,
+            )),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+                <span class="string">&quot;Unable to set RNN Data Descriptor&quot;</span>,
                 <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
@@ -1052,12 +1289,6 @@
         <span class="ident">algorithm</span>: <span class="ident">cudnnRNNAlgo_t</span>,
         <span class="ident">data_type</span>: <span class="ident">DataType</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">data_type</span> {
-            <span class="ident">DataType</span>::<span class="ident">Float</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_FLOAT</span>,
-            <span class="ident">DataType</span>::<span class="ident">Double</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_DOUBLE</span>,
-            <span class="ident">DataType</span>::<span class="ident">Half</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">cudnnDataType_t</span>::<span class="ident">CUDNN_DATA_HALF</span>,
-        };
-
         <span class="kw">unsafe</span> {
             <span class="ident">API</span>::<span class="ident">ffi_set_rnn_descriptor</span>(
                 <span class="ident">handle</span>,
@@ -1069,7 +1300,7 @@
                 <span class="ident">direction</span>,
                 <span class="ident">mode</span>,
                 <span class="ident">algorithm</span>,
-                <span class="ident">data_type</span>,
+                <span class="ident">API</span>::<span class="ident">cudnn_data_type</span>(<span class="ident">data_type</span>),
             )
         }
     }
@@ -1158,7 +1389,7 @@
         ) {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;cudnnSetRnnPaddingMode - Bad Param - Either RNN Desc is Null or paddingMode has an invalid enum (Unlikely due to Bindgen. Likely RNN Desc is somehow NULL&quot;</span>)),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN RNN Padding Mode.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to set CUDA cuDNN RNN Padding Mode.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
@@ -1218,9 +1449,9 @@
         <span class="ident">cy_desc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
         <span class="ident">cy</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
         <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">work_space_size_in_bytes</span>: <span class="ident">usize</span>,
-        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_space_size_in_bytes</span>: <span class="ident">usize</span>,
+        <span class="ident">workspace_size_in_bytes</span>: <span class="ident">usize</span>,
+        <span class="ident">reserve</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">reserve_size_in_bytes</span>: <span class="ident">usize</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
             <span class="ident">API</span>::<span class="ident">ffi_rnn_forward_training</span>(
@@ -1242,9 +1473,9 @@
                 <span class="ident">cy_desc</span>,
                 <span class="ident">cy</span>,
                 <span class="ident">workspace</span>,
-                <span class="ident">work_space_size_in_bytes</span>,
-                <span class="ident">reserve_space</span>,
-                <span class="ident">reserve_space_size_in_bytes</span>,
+                <span class="ident">workspace_size_in_bytes</span>,
+                <span class="ident">reserve</span>,
+                <span class="ident">reserve_size_in_bytes</span>,
             )
         }
     }
@@ -1297,12 +1528,15 @@
         );
         <span class="kw">match</span> <span class="ident">status</span> {
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions was met: rnnDesc is invalid, hx_desc, w_desc, hy_desc, cy_desc, or one of the x_desc or y_desc is invalid. The descriptors for x_desc, cx_desc, _hx_desc, w_desc, y_desc, hy_desc, cy_desc have incorrect strides/diemnsions. Workspace size is too small. Reserve space size is too small.&quot;</span>)),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions was met: rnnDesc is invalid, hx_desc, w_desc, hy_desc, cy_desc, or one of the x_desc or y_desc is invalid. The descriptors for x_desc, cx_desc, _hx_desc, w_desc, y_desc, hy_desc, cy_desc have incorrect strides/dimensions. Workspace size is too small. Reserve space size is too small.&quot;</span>)),
+            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">r#&quot;At least one of the following conditions are met:
+ * `src_desc` or `dest_desc` have negative tensor striding.
+ * `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5.
+ * The chosen `algo` does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;#</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;The function failed to launch on the GPU.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_INVALID_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidValue</span>(<span class="string">&quot;cudnnSetPersistentRNNPlan() was not called prior to the current function when CUDNN_RNN_ALGO_PERSIST_DYNAMIC was selected in the RNN descriptor.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The function was unable to allocate memory.&quot;</span>)),
-            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnn forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+             <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnn forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">u64</span>)),
         }
     }
 
@@ -1432,7 +1666,7 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(<span class="string">&quot;At least one of the following conditions are met: At least one of the following is NULL: `handle`, `src_desc`, `rnn_desc`, `conv_desc`, `dest_desc`, `src_data`, `alpha`, `beta`. `src_desc` and `dest_desc` have a non-matching number of dimensions. `src_desc` and `rnn_desc` have a non-matching number of dimensions. `src_desc` has fewer than three number of dimensions. `src_desc`s number of dimensions is not equal to `conv_desc`s `array_length` + 2. `src_desc` and `rnn_desc` have a non-matching number of input feature maps per image. `src_desc`, `rnn_desc` and `dest_desc` have a non-matching data type. For some spatial dimension, `rnn_desc` has a spatial size that is larger than the input spatial size (including zero-padding size).&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `dest_desc` have negative tensor striding. `src_desc`, `rnn_desc` or `dest_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal forward.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
@@ -1609,7 +1843,7 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met:  `diff_desc` or `grad_desc` have negative tensor striding. `diff_desc`, `rnn_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_MAPPING_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">MappingError</span>(<span class="string">&quot;An error occurs during the texture binding of the rnn data or the input differential tensor data.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward data.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward data.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
@@ -1719,7 +1953,7 @@
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(<span class="string">&quot;At least one of the following conditions are met: `src_desc` or `diff_desc` have negative tensor striding. `src_desc`, `diff_desc` or `grad_desc` has a number of dimensions that is not 4 or 5. The chosen algo does not support the parameters provided; see the reference for exhaustive list of parameter support for each algo&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_MAPPING_ERROR</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">MappingError</span>(<span class="string">&quot;An error occurs during the texture binding of the rnn data.&quot;</span>)),
             <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(<span class="string">&quot;Execution failed to launch on GPU.&quot;</span>)),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward rnn.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to compute CUDA cuDNN rnnal backward rnn.&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
