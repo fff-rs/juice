@@ -61,18 +61,48 @@ where
         <T as Zero>::zero(),
         <T as One>::one(),
     );
-    let _dw = SharedTensor::<T>::new(&filter_dimensions);
+    let mut dw = SharedTensor::<T>::new(&filter_dimensions);
 
     let workspace_size = rnn_config.workspace_size();
     assert_ne!(workspace_size, 0);
     let mut workspace = SharedTensor::<u8>::new(&[1, 1, workspace_size]);
 
+
     backend
         .rnn_forward(&src, &mut output, &rnn_config, &w, &mut workspace)
-        .unwrap();
+        .expect("Forward RNN works");
 
-    // conf.rnn_backward_weights(src, output, filter, rnn_config, workspace).unwrap();
-    // conf.rnn_backward_data(src, src_gradient, output, output_gradient, rnn_config, weight, workspace).unwrap();
+    backend
+        .rnn_backward_weights(
+            &src,
+            &output,
+            &mut dw,
+            &rnn_config,
+            &mut workspace
+        )
+        .expect("Backward Weights RNN works");
+
+            // usually computated by a weight function or the following layer
+    let output_gradient = uniformly_random_tensor::<T, F>(
+        &backend,
+        &output.desc(),
+        <T as Zero>::zero(),
+        <T as One>::one(),
+    );
+
+    let mut src_gradient = SharedTensor::new(src.desc());
+
+    backend
+        .rnn_backward_data(
+            &src,
+            &mut src_gradient,
+            &output,
+            &output_gradient,
+            &rnn_config,
+            &w,
+            &mut workspace
+        )
+        .expect("Backward Data RNN works");
 }
 
 mod cuda {
