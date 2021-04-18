@@ -438,7 +438,7 @@ mod tests {
 
     #[test]
     #[cfg(feature = "cuda")]
-    fn rnn_forward_pass() {
+    fn rnn_roundtrip_pass() {
         let backend: Backend<Cuda> = cuda_backend();
         const NUM_LAYERS: usize = 7;
         let cfg = RnnConfig {
@@ -530,5 +530,6 @@ mod tests {
                 &mut workspace_forward,
             )
             .expect("RNN Forward completes successfully");
+
     }
 }
