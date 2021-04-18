@@ -3,7 +3,7 @@ name = "coaster"
 description = "high-performance computation on any hardware"
 version = "0.1.1"
 authors = [
-    "Bernhard Schsuter <bernhard@ahoi.io>",
+    "Bernhard Schuster <bernhard@ahoi.io>",
     "Lissa Hyacinth <lissahyacinth@gmail.com>",
     "Michael Hirn",
     "Maximilian Goisser",
