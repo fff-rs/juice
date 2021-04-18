@@ -33,8 +33,10 @@ run:
     cargo t -p juice rnn_roundtrip_pass -- --nocapture
     cd juice-examples/mackey-glass-rnn-regression
 
-    cargo run -p example-rnn-regression -- train --batch-size=4 --learning-rate=0.1 --momentum=0.2 netstate.capnp
-    cargo run -p example-rnn-regression -- test netstate.capnp
+    # FIXME batch-size should not have to match
+    # https://github.com/spearow/juice/issues/140
+    cargo run -p example-rnn-regression -- train --batch-size=23 --learning-rate=0.1 --momentum=0.2 netstate.capnp
+    cargo run -p example-rnn-regression -- test --batch-size=23 netstate.capnp
 
     # for D in $DIRX; do
     #   echo ">>>>> $D"
