@@ -518,7 +518,7 @@ mod tests {
         layer.resize_shared_workspace(Rc::from(cuda_backend()), None);
 
         layer.compute_output(
-            &cuda_backend(),
+            &backend,
             &weights_data.iter().collect::<Vec<_>>(),
             &[&input_data],
             &mut [&mut output_data],
@@ -529,7 +529,7 @@ mod tests {
         filler.fill(&mut output_gradients);
 
         layer.compute_input_gradient(
-            &cuda_backend(),
+            &backend,
             &weights_data.iter().collect::<Vec<_>>(),
             &[&output_data],
             &[&output_gradients],
@@ -538,7 +538,7 @@ mod tests {
         );
 
         layer.compute_parameters_gradient(
-            &cuda_backend(),
+            &backend,
             &[&output_data],
             &[&output_gradients],
             &[&input_data],
