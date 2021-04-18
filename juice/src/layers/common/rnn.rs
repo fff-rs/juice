@@ -456,17 +456,18 @@ mod tests {
         let native_backend = native_backend();
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
-        let input_shape = vec![BATCH_SIZE, SEQUENCE_LENGTH, 1, 1];
+        let input_shape = vec![BATCH_SIZE, SEQUENCE_LENGTH, 4, 1];
 
         let mut input_data = SharedTensor::<f32>::new(&input_shape);
 
-        input_data.resize(&[BATCH_SIZE, SEQUENCE_LENGTH, 1, 1]).unwrap();
+        input_data.resize(&input_shape).unwrap();
 
+        let data = std::iter::repeat(0.5_f32).take(BATCH_SIZE * SEQUENCE_LENGTH * 4).collect::<Vec<f32>>();
         input_data
             .write_only(native_backend.device())
             .unwrap()
             .as_mut_slice()
-            .copy_from_slice(&[0.5; NUM_LAYERS]);
+            .copy_from_slice(&data);
 
         let output_shape = vec![BATCH_SIZE, cfg.hidden_size, NUM_LAYERS];
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
@@ -518,15 +519,12 @@ mod tests {
             .write()
             .expect("Workspace write works. qed");
 
-        match backend.rnn_forward(
+        backend.rnn_forward(
             &input_data,
             &mut output_data,
             layer.rnn_config.as_ref().expect("layer has rnn config"),
             &weights_data[0],
             &mut workspace_forward,
-        ) {
-            Ok(_) => {}
-            Err(e) => panic!("Couldn't complete RNN Forward"),
-        };
+        ).expect("RNN Forward completes successfully");
     }
 }
