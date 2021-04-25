@@ -108,5 +108,5 @@ struct NegativeLogLikelihoodConfig {
 }
 
 struct ReshapeConfig {
-  shape @0 :List(UInt64);
+  shape @0 :List(Int64);
 }

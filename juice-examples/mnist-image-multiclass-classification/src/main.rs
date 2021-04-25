@@ -140,7 +140,7 @@ fn add_conv_net(
 ) -> SequentialConfig {
     net_cfg.add_layer(LayerConfig::new(
         "reshape",
-        ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
+        ReshapeConfig::of_shape(&[batch_size as isize, 1, pixel_dim as isize, pixel_dim as isize]),
     ));
     net_cfg.add_layer(LayerConfig::new(
         "conv",
@@ -192,7 +192,7 @@ fn add_mlp(
 ) -> SequentialConfig {
     net_cfg.add_layer(LayerConfig::new(
         "reshape",
-        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
+        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size as isize, pixel_count as isize])),
     ));
     net_cfg.add_layer(LayerConfig::new(
         "linear1",

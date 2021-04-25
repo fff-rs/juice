@@ -104,7 +104,7 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
     // Reshape the input into NCHW Format
     net_cfg.add_layer(LayerConfig::new(
         "reshape",
-        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, DATA_COLUMNS, 1, 1])),
+        LayerType::Reshape(ReshapeConfig::of_shape(&[-1, DATA_COLUMNS as isize, 1, 1])),
     ));
 
     net_cfg.add_layer(LayerConfig::new(
@@ -168,7 +168,6 @@ pub(crate) fn train(
     // Initialise a Sequential Layer
     let net_cfg = create_network(batch_size, DATA_COLUMNS);
     let mut solver = add_solver(backend, net_cfg,  batch_size, learning_rate, momentum);
-
     // Define Input & Labels
     let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
     let input_lock = Arc::new(RwLock::new(input));
@@ -224,7 +223,8 @@ pub(crate) fn train(
 pub(crate) fn test(backend: Rc<Backend<Cuda>>, batch_size: usize, file: &Path) -> Result<(), Box<dyn std::error::Error>> {
     // Load in a pre-trained network
     let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file)?;
-
+    dbg!(&network);
+    panic!("End");
     // Define Input & Labels
     let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
     let input_lock = Arc::new(RwLock::new(input));
@@ -262,7 +262,7 @@ pub(crate) fn test(backend: Rc<Backend<Cuda>>, batch_size: usize, file: &Path) -
 }
 
 fn main() {
-    env_logger::builder().filter_level(log::LevelFilter::Info).init();
+    env_logger::builder().filter_level(log::LevelFilter::Trace).init();
     // Parse Arguments
     let args: Args = docopt::Docopt::new(MAIN_USAGE)
         .and_then(|d| d.deserialize())

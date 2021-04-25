@@ -954,6 +954,7 @@ dependencies = [
 name = "juice"
 version = "0.2.5"
 dependencies = [
+ "anyhow",
  "capnp",
  "capnpc",
  "coaster",
