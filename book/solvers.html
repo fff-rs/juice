@@ -76,8 +76,8 @@ Neural Networks but is not limited to this kind of learning.</p>
 is common to use a Stochastic Gradient Descent based approach
 like Adagrad, whereas for a classical regression the solving might be
 done via a maximum likelihood estimation.</p>
-<p>Similar to <code>Layer</code>s, we can construct a <a href="https://github.com/spearow/juice/blob/master/src/solver/mod.rs"><code>Solver</code> (<em>/src/solver/mod.rs</em>)</a>
-from a <a href="https://github.com/spearow/juice/blob/master/src/solver/mod.rs"><code>SolverConfig</code> (<em>/src/solver/mod.rs</em>)</a>.
+<p>Similar to <code>Layer</code>s, we can construct a <a href="https://github.com/spearow/juice/blob/master/juice/src/solver/mod.rs"><code>Solver</code> (<em>/src/solver/mod.rs</em>)</a>
+from a <a href="https://github.com/spearow/juice/blob/master/juice/src/solver/mod.rs"><code>SolverConfig</code> (<em>/src/solver/mod.rs</em>)</a>.
 When passing this <code>SolverConfig</code> (e.g. an Adagrad <code>SolverConfig</code>) to the
 <code>Solver::from_config</code> method, a <code>Solver</code> with the behavior
 of the config is returned.</p>

@@ -83,7 +83,7 @@ output layer.</p>
 an input and produce an output. This is required in order to successfully stack
 layers on top of each other to build a network. Other than that, a
 layer in Juice can implement any behaviour.</p>
-<p>Layers are constructed via the <a href="https://github.com/spearow/juice/blob/master/src/layer.rs"><code>LayerConfig</code>
+<p>Layers are constructed via the <a href="https://github.com/spearow/juice/blob/master/juice/src/layer.rs"><code>LayerConfig</code>
 (/src/layer.rs)</a>, which makes creating even complex networks easy
 and manageable.</p>
 <pre><pre class="playpen"><code class="language-rust"># #![allow(unused_variables)]
@@ -92,7 +92,7 @@ and manageable.</p>
 let linear_1: LayerConfig = LayerConfig::new(&quot;linear1&quot;, LinearConfig { output_size: 500 })
 
 #}</code></pre></pre>
-<p>A <code>LayerConfig</code> can be turned into an initialized, fully operable <a href="https://github.com/spearow/juice/blob/master/src/layer.rs"><code>Layer</code>
+<p>A <code>LayerConfig</code> can be turned into an initialized, fully operable <a href="https://github.com/spearow/juice/blob/master/juice/src/layer.rs"><code>Layer</code>
 (/src/layer.rs)</a> with its <code>from_config</code> method.</p>
 <pre><pre class="playpen"><code class="language-rust"># #![allow(unused_variables)]
 #fn main() {
@@ -104,9 +104,9 @@ let linear_network_with_one_layer: Layer = Layer::from_config(backend, &amp;line
 <p>Hurray! We just constructed a <a href="./deep-learning-glossary.html#Network">network</a>
 with one layer. (In the following chapter we will learn how to create more
 powerful networks).</p>
-<p>The <code>from_config</code> method initializes a <code>Layer</code>, which wraps the specific implementation (a struct that has  <a href="https://github.com/spearow/juice/blob/master/src/layer.rs"><code>ILayer</code>(/src/layer.rs)</a> implemented) in a worker field.
+<p>The <code>from_config</code> method initializes a <code>Layer</code>, which wraps the specific implementation (a struct that has  <a href="https://github.com/spearow/juice/blob/master/juice/src/layer.rs"><code>ILayer</code>(/src/layer.rs)</a> implemented) in a worker field.
 In the tiny example above, the worker field of the <code>linear_network_with_one_layer</code>
-is a <a href="https://github.com/spearow/juice/blob/master/src/layers/common/linear.rs"><code>Linear</code> (/src/layers/common/linear.rs)</a> because we constructed
+is a <a href="https://github.com/spearow/juice/blob/master/juice/src/layers/common/linear.rs"><code>Linear</code> (/src/layers/common/linear.rs)</a> because we constructed
 the <code>linear_network_with_one_layer</code> from a <code>LinearConfig</code>. The worker field
 introduces the specific behaviour of the layer.</p>
 <p>In the following chapters we explore more about how we can construct
@@ -134,18 +134,18 @@ nonlinear <a href="https://en.wikipedia.org/wiki/Activation_function">Activation
 and are a fundamental piece in neural networks.</p>
 <p>Examples of activation layers are <code>Sigmoid</code>, <code>TanH</code> or <code>ReLU</code>. All available
 activation layers can be found at
-<a href="https://github.com/spearow/juice/tree/master/src/layers/activation">src/layers/activation</a>.</p>
+<a href="https://github.com/spearow/juice/tree/master/juice/src/layers/activation">src/layers/activation</a>.</p>
 <a class="header" href="./layers.html#loss-layers" id="loss-layers"><h4>Loss Layers</h4></a>
 <p>Loss layers compare an output to a target value and assign a cost to minimize.
 Loss layers are often the last layer in a network.</p>
 <p>Examples of loss layers are <code>Hinge Loss</code>, <code>Softmax Loss</code> or <code>Negative Log Likelihood</code>. All available loss layers can be found at
-<a href="https://github.com/spearow/juice/tree/master/src/layers/loss">src/layers/loss</a>.</p>
+<a href="https://github.com/spearow/juice/tree/master/juice/src/layers/loss">src/layers/loss</a>.</p>
 <a class="header" href="./layers.html#common-layers" id="common-layers"><h4>Common Layers</h4></a>
 <p>Common layers can differ in their connectivity and behavior. They are typically
 anything that is not an activation or loss layer.</p>
 <p>Examples of common layers are <code>fully-connected</code>, <code>convolutional</code>, <code>pooling</code>, <code>LSTM</code>,
 etc. All available common layers can be found at
-<a href="https://github.com/spearow/juice/tree/master/src/layers/common">src/layers/common</a>.</p>
+<a href="https://github.com/spearow/juice/tree/master/juice/src/layers/common">src/layers/common</a>.</p>
 <a class="header" href="./layers.html#utility-layers" id="utility-layers"><h4>Utility Layers</h4></a>
 <p>Utility layers introduce all kind of helpful functionality, which might not be
 directly related to machine learning and neural nets. These could be operations
@@ -154,7 +154,7 @@ behavior or data access. Utility Layers follow the general behavior of a layer
 like the other types.</p>
 <p>Examples of Utility layers are <code>Reshape</code>, <code>Flatten</code> or <code>Normalization</code>. All
 available utility layers can be found at
-<a href="https://github.com/spearow/juice/tree/master/src/layers/utility">src/layers/utility</a>.</p>
+<a href="https://github.com/spearow/juice/tree/master/juice/src/layers/utility">src/layers/utility</a>.</p>
 <a class="header" href="./layers.html#container-layers" id="container-layers"><h4>Container Layers</h4></a>
 <p>Container layers take <code>LayerConfig</code>s and connect them on initialization, which
 creates a &quot;network&quot;. But as container layers are layers themselves, one can stack multiple
@@ -162,7 +162,7 @@ container layers on top of another and compose even bigger container layers.
 Container layers differ in how they connect the layers that it receives.</p>
 <p>Examples of container layers are <code>Sequential</code>. All available container layers
 can be found at
-<a href="https://github.com/spearow/juice/tree/master/src/layers/container">src/layers/container</a>.</p>
+<a href="https://github.com/spearow/juice/tree/master/juice/src/layers/container">src/layers/container</a>.</p>
 <a class="header" href="./layers.html#why-layers" id="why-layers"><h3>Why Layers?</h3></a>
 <p>The benefit of using a layer-based design approach is that it allows for a very expressive
 setup that can represent, as far as we know, any machine learning algorithm.
