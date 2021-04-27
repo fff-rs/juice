@@ -171,12 +171,10 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
         if let Some(old_workspace) = workspace.clone() {
             let old_workspace_size = old_workspace.read().unwrap().capacity();
             if old_workspace_size >= required_size {
-                return Some(old_workspace)
+                return Some(old_workspace);
             }
         }
-        self.workspace = Some(
-            Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size])))
-        );
+        self.workspace = Some(Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size]))));
         self.workspace.clone()
     }
 }
@@ -347,7 +345,7 @@ mod tests {
     #[cfg(feature = "cuda")]
     use crate::co::frameworks::cuda::get_cuda_backend as cuda_backend;
     use crate::co::*;
-    use crate::layer::{ILayer, ComputeInputGradient, ComputeOutput, ComputeParametersGradient};
+    use crate::layer::{ComputeInputGradient, ComputeOutput, ComputeParametersGradient, ILayer};
     use crate::util::native_backend;
     use crate::weight::FillerType;
 
@@ -432,7 +430,10 @@ mod tests {
     #[test]
     #[cfg(feature = "cuda")]
     fn rnn_roundtrip_pass() {
-        let _ = env_logger::builder().is_test(true).filter_level(log::LevelFilter::Trace).try_init();
+        let _ = env_logger::builder()
+            .is_test(true)
+            .filter_level(log::LevelFilter::Trace)
+            .try_init();
 
         let backend: Backend<Cuda> = cuda_backend();
         const SEQUENCE_LENGTH: usize = 7;
@@ -454,12 +455,7 @@ mod tests {
         let native_backend = native_backend();
         let mut layer = Rnn::<Backend<Cuda>>::from_config(&cfg);
 
-        let input_shape = vec![
-            BATCH_SIZE,
-            INPUT_SIZE,
-            1,
-            1,
-        ];
+        let input_shape = vec![BATCH_SIZE, INPUT_SIZE, 1, 1];
 
         let mut input_data = SharedTensor::<f32>::new(&input_shape);
         let mut input_gradients = SharedTensor::<f32>::new(&input_shape);
@@ -473,11 +469,7 @@ mod tests {
             .as_mut_slice()
             .copy_from_slice(&data);
 
-        let output_shape = vec![
-            BATCH_SIZE,
-            HIDDEN_SIZE,
-            1,
-        ];
+        let output_shape = vec![BATCH_SIZE, HIDDEN_SIZE, 1];
 
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
 
@@ -541,7 +533,7 @@ mod tests {
             &[&output_data],
             &[&output_gradients],
             &[&input_data],
-            &mut[&mut input_gradients],
+            &mut [&mut input_gradients],
         );
 
         layer.compute_parameters_gradient(

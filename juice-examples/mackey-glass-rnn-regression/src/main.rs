@@ -27,7 +27,6 @@ pub(crate) const TRAIN_ROWS: usize = 35192;
 pub(crate) const TEST_ROWS: usize = 8798;
 pub(crate) const DATA_COLUMNS: usize = 10;
 
-
 #[derive(Debug, Deserialize)]
 struct Record {
     #[serde(rename = "Target")]
@@ -49,20 +48,11 @@ impl Record {
         self.target
     }
 
-
     pub(crate) fn bs(&self) -> Vec<f32> {
         // only the b's
         vec![
-            self.b1,
-            self.b2,
-            self.b3,
-            self.b4,
-            self.b5,
-            self.b6,
-            self.b7,
-            self.b8,
-            self.b9,
-            self.b10
+            self.b1, self.b2, self.b3, self.b4, self.b5, self.b6, self.b7, self.b8, self.b9,
+            self.b10,
         ]
     }
 }
@@ -79,11 +69,13 @@ pub(crate) fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f
 
     rdr.into_deserialize()
         .enumerate()
-        .map(move |(idx, row) : (_, Result<Record, _>)| {
+        .map(move |(idx, row): (_, Result<Record, _>)| {
             let record: Record = match row {
                 Ok(record) => record,
-                Err(err) =>
-                panic!("All rows (including row {} (base-0)) in assets are valid. qed -> {:?}", idx, err),
+                Err(err) => panic!(
+                    "All rows (including row {} (base-0)) in assets are valid. qed -> {:?}",
+                    idx, err
+                ),
             };
             (record.target(), record.bs())
         })
@@ -167,7 +159,7 @@ pub(crate) fn train(
 ) {
     // Initialise a Sequential Layer
     let net_cfg = create_network(batch_size, DATA_COLUMNS);
-    let mut solver = add_solver(backend, net_cfg,  batch_size, learning_rate, momentum);
+    let mut solver = add_solver(backend, net_cfg, batch_size, learning_rate, momentum);
 
     // Define Input & Labels
     let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
@@ -211,17 +203,22 @@ pub(crate) fn train(
         );
     }
 
-
     if total > 0 {
-        solver.mut_network().save(file).expect("Saving network to file works. qed");
+        solver
+            .mut_network()
+            .save(file)
+            .expect("Saving network to file works. qed");
     } else {
         panic!("No data was used for training");
     }
 }
 
-
 /// Test a the validation subset of data items against the trained network state.
-pub(crate) fn test(backend: Rc<Backend<Cuda>>, batch_size: usize, file: &Path) -> Result<(), Box<dyn std::error::Error>> {
+pub(crate) fn test(
+    backend: Rc<Backend<Cuda>>,
+    batch_size: usize,
+    file: &Path,
+) -> Result<(), Box<dyn std::error::Error>> {
     // Load in a pre-trained network
     let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file)?;
 
@@ -262,7 +259,9 @@ pub(crate) fn test(backend: Rc<Backend<Cuda>>, batch_size: usize, file: &Path) -
 }
 
 fn main() {
-    env_logger::builder().filter_level(log::LevelFilter::Info).init();
+    env_logger::builder()
+        .filter_level(log::LevelFilter::Info)
+        .init();
     // Parse Arguments
     let args: Args = docopt::Docopt::new(MAIN_USAGE)
         .and_then(|d| d.deserialize())
@@ -270,24 +269,23 @@ fn main() {
 
     #[cfg(all(feature = "cuda"))]
     {
-
         // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
         let backend = Rc::new(get_cuda_backend());
 
         match args.data_mode() {
-            DataMode::Train =>
-                train(
-                    backend,
-                    args.flag_batch_size.unwrap_or(default_batch_size()),
-                    args.flag_learning_rate.unwrap_or(default_learning_rate()),
-                    args.flag_momentum.unwrap_or(default_momentum()),
-                    &args.arg_networkfile,
-                ),
-            DataMode::Test =>
-                test(
-                    backend,
-                    args.flag_batch_size.unwrap_or(default_batch_size()),
-                    &args.arg_networkfile).unwrap(),
+            DataMode::Train => train(
+                backend,
+                args.flag_batch_size.unwrap_or(default_batch_size()),
+                args.flag_learning_rate.unwrap_or(default_learning_rate()),
+                args.flag_momentum.unwrap_or(default_momentum()),
+                &args.arg_networkfile,
+            ),
+            DataMode::Test => test(
+                backend,
+                args.flag_batch_size.unwrap_or(default_batch_size()),
+                &args.arg_networkfile,
+            )
+            .unwrap(),
         }
     }
     #[cfg(not(feature = "cuda"))]
@@ -296,36 +294,49 @@ fn main() {
                 or the 2021/2022 road map https://github.com/spearow/juice/issues/30")
 }
 
-
 #[test]
 fn docopt_works() {
     let check = |args: &[&'static str], expected: Args| {
         let docopt = docopt::Docopt::new(MAIN_USAGE).expect("Docopt spec if valid. qed");
-        let args: Args = docopt.argv(args).deserialize().expect("Must deserialize. qed");
+        let args: Args = docopt
+            .argv(args)
+            .deserialize()
+            .expect("Must deserialize. qed");
 
         assert_eq!(args, expected, "Expectations of {:?} stay unmet.", args);
     };
 
-    check(&["mackey-glass-example", "train", "--learning-rate=0.4", "--batch-size=11", "--momentum=0.17", "ahoi.capnp"], Args {
-        cmd_train: true,
-        cmd_test: false,
-        flag_batch_size: Some(11),
-        flag_learning_rate: Some(0.4_f32),
-        flag_momentum: Some(0.17_f32),
-        arg_networkfile: PathBuf::from("ahoi.capnp"),
-    });
+    check(
+        &[
+            "mackey-glass-example",
+            "train",
+            "--learning-rate=0.4",
+            "--batch-size=11",
+            "--momentum=0.17",
+            "ahoi.capnp",
+        ],
+        Args {
+            cmd_train: true,
+            cmd_test: false,
+            flag_batch_size: Some(11),
+            flag_learning_rate: Some(0.4_f32),
+            flag_momentum: Some(0.17_f32),
+            arg_networkfile: PathBuf::from("ahoi.capnp"),
+        },
+    );
 
-    check(&["mackey-glass-example", "test", "ahoi.capnp"], Args {
-        cmd_train: false,
-        cmd_test: true,
-        flag_batch_size: None,
-        flag_learning_rate: None,
-        flag_momentum: None,
-        arg_networkfile: PathBuf::from("ahoi.capnp"),
-    });
+    check(
+        &["mackey-glass-example", "test", "ahoi.capnp"],
+        Args {
+            cmd_train: false,
+            cmd_test: true,
+            flag_batch_size: None,
+            flag_learning_rate: None,
+            flag_momentum: None,
+            arg_networkfile: PathBuf::from("ahoi.capnp"),
+        },
+    );
 }
-
-
 
 #[test]
 fn test_data_is_ok() {
