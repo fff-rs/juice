@@ -19,7 +19,7 @@ use coaster as co;
 use co::plugin::numeric_helpers::{cast, NumCast};
 use co::prelude::*;
 
-pub use num::{Zero, One};
+pub use num::{One, Zero};
 
 pub trait Epsilon {
     fn epsilon() -> Self;
@@ -36,7 +36,6 @@ impl Epsilon for f64 {
         std::f64::EPSILON
     }
 }
-
 
 #[cfg(feature = "native")]
 fn get_native_backend() -> Backend<Native> {

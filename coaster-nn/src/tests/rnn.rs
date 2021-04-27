@@ -14,7 +14,10 @@ where
     T: Float + Epsilon + One + Zero + rand::distributions::uniform::SampleUniform + fmt::Debug,
     Backend<F>: Rnn<T> + IBackend,
 {
-    let _ = env_logger::builder().is_test(true).filter_level(log::LevelFilter::Trace).try_init();
+    let _ = env_logger::builder()
+        .is_test(true)
+        .filter_level(log::LevelFilter::Trace)
+        .try_init();
 
     let direction_mode = DirectionMode::UniDirectional;
     let network_mode = RnnNetworkMode::LSTM;
@@ -54,11 +57,7 @@ where
         .unwrap();
 
     let filter_dimensions = backend
-        .generate_rnn_weight_description(
-            &rnn_config,
-            BATCH_SIZE as i32,
-            INPUT_SIZE as i32
-        )
+        .generate_rnn_weight_description(&rnn_config, BATCH_SIZE as i32, INPUT_SIZE as i32)
         .unwrap();
 
     let w = uniformly_random_tensor::<T, F>(
@@ -73,22 +72,15 @@ where
     assert_ne!(workspace_size, 0);
     let mut workspace = SharedTensor::<u8>::new(&[1, 1, workspace_size]);
 
-
     backend
         .rnn_forward(&src, &mut output, &rnn_config, &w, &mut workspace)
         .expect("Forward RNN works");
 
     backend
-        .rnn_backward_weights(
-            &src,
-            &output,
-            &mut dw,
-            &rnn_config,
-            &mut workspace
-        )
+        .rnn_backward_weights(&src, &output, &mut dw, &rnn_config, &mut workspace)
         .expect("Backward Weights RNN works");
 
-            // usually computated by a weight function or the following layer
+    // usually computated by a weight function or the following layer
     let output_gradient = uniformly_random_tensor::<T, F>(
         &backend,
         &output.desc(),
@@ -106,7 +98,7 @@ where
             &output_gradient,
             &rnn_config,
             &w,
-            &mut workspace
+            &mut workspace,
         )
         .expect("Backward Data RNN works");
 }

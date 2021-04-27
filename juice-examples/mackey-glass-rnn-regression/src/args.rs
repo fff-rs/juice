@@ -1,6 +1,5 @@
-
-use std::path::PathBuf;
 use serde::Deserialize;
+use std::path::PathBuf;
 
 pub const MAIN_USAGE: &str = "
 Demonstrate RNN caps of juice with the cuda backend.
@@ -32,10 +31,10 @@ impl Args {
     pub(crate) fn data_mode(&self) -> DataMode {
         assert_ne!(self.cmd_train, self.cmd_test);
         if self.cmd_train {
-            return DataMode::Train
+            return DataMode::Train;
         }
         if self.cmd_test {
-            return DataMode::Test
+            return DataMode::Test;
         }
         unreachable!("nope");
     }
@@ -57,18 +56,18 @@ impl std::cmp::PartialEq for Args {
     fn eq(&self, other: &Self) -> bool {
         match (self.flag_learning_rate, other.flag_learning_rate) {
             (Some(lhs), Some(rhs)) if (rhs - lhs).abs() < 1e6 => {}
-            (None, None) => {},
+            (None, None) => {}
             _ => return false,
         }
         match (self.flag_momentum, other.flag_momentum) {
             (Some(lhs), Some(rhs)) if (rhs - lhs).abs() < 1e6 => {}
-            (None, None) => {},
+            (None, None) => {}
             _ => return false,
         }
-        self.cmd_test == other.cmd_test &&
-        self.cmd_train == other.cmd_train &&
-        self.arg_networkfile == other.arg_networkfile &&
-        self.flag_batch_size == other.flag_batch_size
+        self.cmd_test == other.cmd_test
+            && self.cmd_train == other.cmd_train
+            && self.arg_networkfile == other.arg_networkfile
+            && self.flag_batch_size == other.flag_batch_size
     }
 }
 
