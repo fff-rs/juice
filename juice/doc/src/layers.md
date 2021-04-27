@@ -3,15 +3,15 @@
 ### What is a Layer?
 
 [Layers](./deep-learning-glossary.html#Layer) are the only building
-blocks in Juice. As we will see later on, everything is a layer. Even when 
-we construct [networks](./deep-learning-glossary.html#Network), we are still just 
+blocks in Juice. As we will see later on, everything is a layer. Even when
+we construct [networks](./deep-learning-glossary.html#Network), we are still just
 working with layers composed of smaller layers. This makes the API clean and expressive.
 
-A layer is like a function: given an input it computes an output. 
-It could be some mathematical expression, like Sigmoid, ReLU, or a non-mathematical instruction, 
+A layer is like a function: given an input it computes an output.
+It could be some mathematical expression, like Sigmoid, ReLU, or a non-mathematical instruction,
 like querying data from a database, logging data, or anything in between.
 In Juice, layers describe not only the interior 'hidden layers' but also the input and
-output layer. 
+output layer.
 
 Layers in Juice are only slightly opinionated, they need to take
 an input and produce an output. This is required in order to successfully stack
@@ -38,7 +38,7 @@ let linear_network_with_one_layer: Layer = Layer::from_config(backend, &linear_1
 
 Hurray! We just constructed a [network](./deep-learning-glossary.html#Network)
 with one layer. (In the following chapter we will learn how to create more
-powerful networks). 
+powerful networks).
 
 The `from_config` method initializes a `Layer`, which wraps the specific implementation (a struct that has  [`ILayer`(/src/layer.rs)][ilayer] implemented) in a worker field.
 In the tiny example above, the worker field of the `linear_network_with_one_layer`
@@ -49,10 +49,10 @@ introduces the specific behaviour of the layer.
 In the following chapters we explore more about how we can construct
 real-world networks, the layer lifecycle and how we can add new layers to the Juice framework.
 
-[layer-config]: https://github.com/spearow/juice/blob/master/src/layer.rs
-[layer]: https://github.com/spearow/juice/blob/master/src/layer.rs
-[ilayer]: https://github.com/spearow/juice/blob/master/src/layer.rs
-[linear-layer]: https://github.com/spearow/juice/blob/master/src/layers/common/linear.rs
+[layer-config]: https://github.com/spearow/juice/blob/master/juice/src/layer.rs
+[layer]: https://github.com/spearow/juice/blob/master/juice/src/layer.rs
+[ilayer]: https://github.com/spearow/juice/blob/master/juice/src/layer.rs
+[linear-layer]: https://github.com/spearow/juice/blob/master/juice/src/layers/common/linear.rs
 
 ### What can Layers do?
 
@@ -81,7 +81,7 @@ and are a fundamental piece in neural networks.
 
 Examples of activation layers are `Sigmoid`, `TanH` or `ReLU`. All available
 activation layers can be found at
-[src/layers/activation](https://github.com/spearow/juice/tree/master/src/layers/activation).
+[src/layers/activation](https://github.com/spearow/juice/tree/master/juice/src/layers/activation).
 
 #### Loss Layers
 
@@ -90,7 +90,7 @@ Loss layers are often the last layer in a network.
 
 Examples of loss layers are `Hinge Loss`, `Softmax Loss` or `Negative Log
 Likelihood`. All available loss layers can be found at
-[src/layers/loss](https://github.com/spearow/juice/tree/master/src/layers/loss).
+[src/layers/loss](https://github.com/spearow/juice/tree/master/juice/src/layers/loss).
 
 #### Common Layers
 
@@ -99,7 +99,7 @@ anything that is not an activation or loss layer.
 
 Examples of common layers are `fully-connected`, `convolutional`, `pooling`, `LSTM`,
 etc. All available common layers can be found at
-[src/layers/common](https://github.com/spearow/juice/tree/master/src/layers/common).
+[src/layers/common](https://github.com/spearow/juice/tree/master/juice/src/layers/common).
 
 #### Utility Layers
 
@@ -111,7 +111,7 @@ like the other types.
 
 Examples of Utility layers are `Reshape`, `Flatten` or `Normalization`. All
 available utility layers can be found at
-[src/layers/utility](https://github.com/spearow/juice/tree/master/src/layers/utility).
+[src/layers/utility](https://github.com/spearow/juice/tree/master/juice/src/layers/utility).
 
 #### Container Layers
 
@@ -122,7 +122,7 @@ Container layers differ in how they connect the layers that it receives.
 
 Examples of container layers are `Sequential`. All available container layers
 can be found at
-[src/layers/container](https://github.com/spearow/juice/tree/master/src/layers/container).
+[src/layers/container](https://github.com/spearow/juice/tree/master/juice/src/layers/container).
 
 ### Why Layers?
 
