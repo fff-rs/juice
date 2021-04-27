@@ -12,7 +12,7 @@ you can build classical machine as well as deep learning and other fancy machine
 intelligence applications.
 
 Juice was inspired by the brilliant people behind TensorFlow, Torch, Caffe,
-[Rust](rust) and numerous research papers and brings modularity, performance and
+[Rust][rust] and numerous research papers and brings modularity, performance and
 portability to deep learning.
 
 <br/>
@@ -64,7 +64,7 @@ Learn more at chapter [4. Backend](./backend.html) or at the
 ## Contributing
 
 Want to contribute? Awesome!
-[We have instructions to help you get started](https://github.com/spearow/juice/blob/master/CONTRIBUTING.md).
+[We have instructions to help you get started](https://github.com/spearow/juice/blob/master/juice/CONTRIBUTING.md).
 
 Juice has a near real-time collaboration culture, which happens at the [Github
 repository](https://github.com/spearow/juice) and on the
@@ -82,9 +82,6 @@ just want a more low-level overview.
 
 Juice is free for anyone for whatever purpose.
 Juice is licensed under either
-[Apache License v2.0](https://github.com/spearow/juice/blob/master/LICENSE-APACHE) or,
-[MIT license](https://github.com/spearow/juice/blob/master/LICENSE-MIT).
+[Apache License v2.0](https://github.com/spearow/juice/blob/master/juice/LICENSE-APACHE) or,
+[MIT license](https://github.com/spearow/juice/blob/master/juice/LICENSE-MIT).
 Whatever strikes your fancy.
-
-
-

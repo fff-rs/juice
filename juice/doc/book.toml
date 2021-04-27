@@ -24,3 +24,11 @@ boost-hierarchy = 2
 boost-paragraph = 1
 expand = true
 heading-split-level = 2
+
+[output.linkcheck]
+follow-web-links = true
+cache-timeout = 43200
+warning-policy = "warn"
+
+[output.linkcheck.http-headers]
+'crates\.io' = ["Accept: text/html"]
