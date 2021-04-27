@@ -2,6 +2,7 @@
 //! for non-numeric data types such as: `Strings`, `Images` and `Audio`.
 #![allow(dead_code)]
 #![deny(
+    unused_crate_dependencies,
     clippy::missing_docs,
     clippy::missing_debug_implementations,
     clippy::missing_copy_implementations,

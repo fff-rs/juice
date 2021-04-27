@@ -92,6 +92,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 #![deny(
+    unused_crate_dependencies,
     clippy::missing_docs,
     clippy::missing_debug_implementations,
     clippy::missing_copy_implementations,

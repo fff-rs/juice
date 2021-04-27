@@ -1,6 +1,6 @@
 # Juice
 
-This is the workspace project for 
+This is the workspace project for
 
  * [juice](https://github.com/spearow/juice/blob/master/juice/README.md) - machine learning frameworks for hackers
  * [coaster](https://github.com/spearow/juice/blob/master/coaster/README.md) - underlying math abstraction
@@ -37,7 +37,7 @@ cargo build --release
 
 #### Cap'n'Proto
 
-[cpanp is a data interchange format](https://capnproto.org/) that is used to store and load networks with weights for [Juice](https://github.com/spearow/juice/juice).
+[capnproto is a data interchange format](https://capnproto.org/) that is used to store and load networks with weights for [Juice](https://github.com/spearow/juice/juice).
 
 `capnproto` and `capnproto-libs` plus their development packages are the ones needed from your package manager.
 
@@ -74,7 +74,7 @@ Blas is a linear algebra used by the `native` backend.
 
 By default an attempt is made to resolve the library via `pkg-config`.
 
-Overriding via 
+Overriding via
 
 ```zsh
 # examplary paths, unlikely to work for your local setup!
@@ -85,4 +85,3 @@ export BLAS_INCLUDE_DIR=/opt/blas/include/
 is also supported.
 
 Linkage for the blas library variant is determined by setting `BLAS_STATIC` to `1` or unsetting `BLAS_STATIC`.
-

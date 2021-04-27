@@ -34,7 +34,6 @@ capnpc = "0.14"
 
 [dev-dependencies]
 env_logger = "0.8"
-serial_test = "0.5"
 
 [features]
 default = ["native", "cuda"]
