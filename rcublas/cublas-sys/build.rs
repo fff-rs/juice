@@ -72,7 +72,7 @@ fn main() {
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
-            ",
+",
             )
             .ctypes_prefix("::libc")
             .size_t_is_usize(true)
@@ -81,9 +81,9 @@ fn main() {
             .header("wrapper.h")
             .rustified_non_exhaustive_enum("cublas[A-Za-z]+_t")
             .rustified_non_exhaustive_enum("cuda.*")
-            .whitelist_function("cu.*")
-            .whitelist_var("CUBLAS.*")
-            .whitelist_type("[Cc][Uu].*")
+            .allowlist_function("cu.*")
+            .allowlist_var("CUBLAS.*")
+            .allowlist_type("[Cc][Uu].*")
             .default_alias_style(bindgen::AliasVariation::TypeAlias)
             .parse_callbacks(Box::new(bindgen::CargoCallbacks))
             .rustfmt_bindings(true)

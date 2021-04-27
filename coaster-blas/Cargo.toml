@@ -19,18 +19,16 @@ edition = "2018"
 
 [dependencies]
 coaster = { version = "0.1", path = "../coaster", default-features = false }
-lazy_static = "1"
 log = "0.4"
 # native
 rust-blas = { version = "^0.1", path = "../rust-blas", optional = true }
 # cuda
 rcublas = { version = "0.5", path = "../rcublas/cublas", optional = true }
-spin = { version = "0.5", optional = true }
 
 [dev-dependencies]
 
 [features]
 default = ["native", "cuda"]
 native = ["coaster/native", "rust-blas"]
-cuda = ["coaster/cuda", "rcublas", "spin"]
+cuda = ["coaster/cuda", "rcublas"]
 opencl = ["coaster/opencl"]

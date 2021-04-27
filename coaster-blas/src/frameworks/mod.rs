@@ -6,3 +6,7 @@ pub mod cuda;
 pub mod native;
 #[cfg(feature = "opencl")]
 pub mod opencl;
+
+
+#[cfg(not(feature="cuda"))]
+use log as _;
