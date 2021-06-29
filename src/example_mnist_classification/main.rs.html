@@ -1,7 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice-examples/mnist-image-multiclass-classification/src/main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice-examples/mnist-image-multiclass-classification/src/main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../example_mnist_classification/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../example_mnist_classification/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -336,19 +336,19 @@
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">mnist</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">co</span>::<span class="ident">frameworks</span>::<span class="ident">cuda</span>::<span class="ident">get_cuda_backend</span>;
+<span class="kw">use</span> <span class="ident">co::frameworks::cuda::get_cuda_backend</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-<span class="kw">use</span> <span class="ident">co</span>::<span class="ident">frameworks</span>::<span class="ident">native</span>::<span class="ident">get_native_backend</span>;
-<span class="kw">use</span> <span class="ident">co</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">juice</span>::<span class="ident">layer</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">juice</span>::<span class="ident">layers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">juice</span>::<span class="ident">solver</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">juice</span>::<span class="ident">util</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">co::frameworks::native::get_native_backend</span>;
+<span class="kw">use</span> <span class="ident">co::prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">juice::layer</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">juice::layers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">juice::solver</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">juice::util</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">juice_utils</span>::{<span class="ident">download_datasets</span>, <span class="ident">unzip_datasets</span>};
 <span class="kw">use</span> <span class="ident">mnist</span>::{<span class="ident">Mnist</span>, <span class="ident">MnistBuilder</span>};
-<span class="kw">use</span> <span class="ident">serde</span>::<span class="ident">Deserialize</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
+<span class="kw">use</span> <span class="ident">serde::Deserialize</span>;
+<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+<span class="kw">use</span> <span class="ident">std::sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
 
 <span class="kw">const</span> <span class="ident">MAIN_USAGE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;
 Juice Examples
@@ -389,9 +389,9 @@ Options:
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">test</span>))]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_must_use</span>)]</span>
 <span class="kw">fn</span> <span class="ident">main</span>() {
-    <span class="ident">env_logger</span>::<span class="ident">init</span>();
+    <span class="ident">env_logger::init</span>();
     <span class="comment">// Parse Arguments</span>
-    <span class="kw">let</span> <span class="ident">args</span>: <span class="ident">Args</span> <span class="op">=</span> <span class="ident">docopt</span>::<span class="ident">Docopt</span>::<span class="ident">new</span>(<span class="ident">MAIN_USAGE</span>)
+    <span class="kw">let</span> <span class="ident">args</span>: <span class="ident">Args</span> <span class="op">=</span> <span class="ident">docopt::Docopt::new</span>(<span class="ident">MAIN_USAGE</span>)
         .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span>.<span class="ident">deserialize</span>())
         .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">exit</span>());
 
@@ -428,17 +428,17 @@ Options:
                     <span class="string">&quot;http://fashion-mnist.s3-website.eu-central-1.amazonaws.com&quot;</span>,
                 )
                 .<span class="ident">unwrap</span>();
-                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Fashion MNIST dataset downloaded&quot;</span>.<span class="ident">to_string</span>());
+                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Fashion MNIST dataset downloaded&quot;</span>.<span class="ident">to_string</span>());
 
                 <span class="ident">unzip_datasets</span>(<span class="kw-2">&amp;</span><span class="ident">datasets</span>, <span class="kw-2">&amp;</span><span class="string">&quot;./assets/mnist-fashion/&quot;</span>).<span class="ident">unwrap</span>();
-                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Fashion MNIST dataset decompressed&quot;</span>.<span class="ident">to_string</span>());
+                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Fashion MNIST dataset decompressed&quot;</span>.<span class="ident">to_string</span>());
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Failed to download MNIST dataset!&quot;</span>.<span class="ident">to_string</span>()),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Failed to download MNIST dataset!&quot;</span>.<span class="ident">to_string</span>()),
         }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_mnist</span> {
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
         <span class="ident">run_mnist</span>(
-            <span class="ident">MnistType</span>::<span class="ident">Numbers</span>,
+            <span class="ident">MnistType::Numbers</span>,
             <span class="ident">args</span>.<span class="ident">arg_model_name</span>,
             <span class="ident">args</span>.<span class="ident">arg_batch_size</span>,
             <span class="ident">args</span>.<span class="ident">arg_learning_rate</span>,
@@ -446,14 +446,14 @@ Options:
         );
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
         {
-            <span class="macro">println</span><span class="macro">!</span>(
+            <span class="macro">println!</span>(
                     <span class="string">&quot;Right now, you really need cuda! Not all features are available for all backends and as such, this one -as of now - only works with cuda.&quot;</span>
                 );
-            <span class="macro">panic</span><span class="macro">!</span>()
+            <span class="macro">panic!</span>()
         }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_fashion</span> {
         <span class="ident">run_mnist</span>(
-            <span class="ident">MnistType</span>::<span class="ident">Fashion</span>,
+            <span class="ident">MnistType::Fashion</span>,
             <span class="ident">args</span>.<span class="ident">arg_model_name</span>,
             <span class="ident">args</span>.<span class="ident">arg_batch_size</span>,
             <span class="ident">args</span>.<span class="ident">arg_learning_rate</span>,
@@ -468,34 +468,34 @@ Options:
     <span class="ident">batch_size</span>: <span class="ident">usize</span>,
     <span class="ident">pixel_dim</span>: <span class="ident">usize</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;reshape&quot;</span>,
-        <span class="ident">ReshapeConfig</span>::<span class="ident">of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>, <span class="ident">pixel_dim</span>, <span class="ident">pixel_dim</span>]),
+        <span class="ident">ReshapeConfig::of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>, <span class="ident">pixel_dim</span>, <span class="ident">pixel_dim</span>]),
     ));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;conv&quot;</span>,
         <span class="ident">ConvolutionConfig</span> {
             <span class="ident">num_output</span>: <span class="number">20</span>,
-            <span class="ident">filter_shape</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">5</span>],
-            <span class="ident">padding</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>],
-            <span class="ident">stride</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1</span>],
+            <span class="ident">filter_shape</span>: <span class="macro">vec!</span>[<span class="number">5</span>],
+            <span class="ident">padding</span>: <span class="macro">vec!</span>[<span class="number">0</span>],
+            <span class="ident">stride</span>: <span class="macro">vec!</span>[<span class="number">1</span>],
         },
     ));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;pooling&quot;</span>,
         <span class="ident">PoolingConfig</span> {
-            <span class="ident">mode</span>: <span class="ident">PoolingMode</span>::<span class="ident">Max</span>,
-            <span class="ident">filter_shape</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">2</span>],
-            <span class="ident">padding</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>],
-            <span class="ident">stride</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">2</span>],
+            <span class="ident">mode</span>: <span class="ident">PoolingMode::Max</span>,
+            <span class="ident">filter_shape</span>: <span class="macro">vec!</span>[<span class="number">2</span>],
+            <span class="ident">padding</span>: <span class="macro">vec!</span>[<span class="number">0</span>],
+            <span class="ident">stride</span>: <span class="macro">vec!</span>[<span class="number">2</span>],
         },
     ));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;linear1&quot;</span>,
         <span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">500</span> },
     ));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(<span class="string">&quot;sigmoid&quot;</span>, <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span>));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(<span class="string">&quot;sigmoid&quot;</span>, <span class="ident">LayerType::Sigmoid</span>));
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;linear2&quot;</span>,
         <span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">10</span> },
     ));
@@ -508,11 +508,11 @@ Options:
     <span class="ident">_batch_size</span>: <span class="ident">usize</span>,
     <span class="ident">_pixel_dim</span>: <span class="ident">usize</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
-    <span class="macro">println</span><span class="macro">!</span>(
+    <span class="macro">println!</span>(
         <span class="string">&quot;Currently Juice does not have a native pooling function to use with Conv Nets - you can either try
         the CUDA implementation, or use a different type of layer&quot;</span>
     );
-    <span class="macro">panic</span><span class="macro">!</span>()
+    <span class="macro">panic!</span>()
 }
 
 <span class="kw">fn</span> <span class="ident">add_mlp</span>(
@@ -520,26 +520,26 @@ Options:
     <span class="ident">batch_size</span>: <span class="ident">usize</span>,
     <span class="ident">pixel_count</span>: <span class="ident">usize</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;reshape&quot;</span>,
-        <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="ident">ReshapeConfig</span>::<span class="ident">of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">pixel_count</span>])),
+        <span class="ident">LayerType::Reshape</span>(<span class="ident">ReshapeConfig::of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">pixel_count</span>])),
     ));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;linear1&quot;</span>,
-        <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">1568</span> }),
+        <span class="ident">LayerType::Linear</span>(<span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">1568</span> }),
     ));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(<span class="string">&quot;sigmoid&quot;</span>, <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span>));
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(<span class="string">&quot;sigmoid&quot;</span>, <span class="ident">LayerType::Sigmoid</span>));
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;linear2&quot;</span>,
-        <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">10</span> }),
+        <span class="ident">LayerType::Linear</span>(<span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">10</span> }),
     ));
     <span class="ident">net_cfg</span>
 }
 
 <span class="kw">fn</span> <span class="ident">add_linear_net</span>(<span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;linear&quot;</span>,
-        <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">10</span> }),
+        <span class="ident">LayerType::Linear</span>(<span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">10</span> }),
     ));
     <span class="ident">net_cfg</span>
 }
@@ -557,13 +557,13 @@ Options:
     <span class="kw">let</span> <span class="ident">pixel_dim</span> <span class="op">=</span> <span class="number">28</span>;
 
     <span class="kw">let</span> <span class="ident">asset_path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">mnist_type</span> {
-        <span class="ident">MnistType</span>::<span class="ident">Fashion</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist-fashion&quot;</span>,
-        <span class="ident">MnistType</span>::<span class="ident">Numbers</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist&quot;</span>,
+        <span class="ident">MnistType::Fashion</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist-fashion&quot;</span>,
+        <span class="ident">MnistType::Numbers</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist&quot;</span>,
     };
 
     <span class="kw">let</span> <span class="ident">Mnist</span> {
         <span class="ident">trn_img</span>, <span class="ident">trn_lbl</span>, ..
-    } <span class="op">=</span> <span class="ident">MnistBuilder</span>::<span class="ident">new</span>()
+    } <span class="op">=</span> <span class="ident">MnistBuilder::new</span>()
         .<span class="ident">base_path</span>(<span class="ident">asset_path</span>)
         .<span class="ident">label_format_digit</span>()
         .<span class="ident">training_set_length</span>(<span class="ident">example_count</span>)
@@ -579,7 +579,7 @@ Options:
     <span class="kw">let</span> <span class="ident">learning_rate</span> <span class="op">=</span> <span class="ident">learning_rate</span>.<span class="ident">unwrap_or</span>(<span class="number">0.001f32</span>);
     <span class="kw">let</span> <span class="ident">momentum</span> <span class="op">=</span> <span class="ident">momentum</span>.<span class="ident">unwrap_or</span>(<span class="number">0f32</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">net_cfg</span> <span class="op">=</span> <span class="ident">SequentialConfig</span>::<span class="ident">default</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">net_cfg</span> <span class="op">=</span> <span class="ident">SequentialConfig::default</span>();
     <span class="ident">net_cfg</span>.<span class="ident">add_input</span>(<span class="string">&quot;data&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">pixel_dim</span>, <span class="ident">pixel_dim</span>]);
     <span class="ident">net_cfg</span>.<span class="ident">force_backward</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
@@ -587,49 +587,49 @@ Options:
         <span class="string">&quot;conv&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">add_conv_net</span>(<span class="ident">net_cfg</span>, <span class="ident">batch_size</span>, <span class="ident">pixel_dim</span>),
         <span class="string">&quot;mlp&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">add_mlp</span>(<span class="ident">net_cfg</span>, <span class="ident">batch_size</span>, <span class="ident">pixel_count</span>),
         <span class="string">&quot;linear&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">add_linear_net</span>(<span class="ident">net_cfg</span>),
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Unknown model. Try one of [linear, mlp, conv]&quot;</span>),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unknown model. Try one of [linear, mlp, conv]&quot;</span>),
     };
 
-    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig</span>::<span class="ident">new</span>(<span class="string">&quot;log_softmax&quot;</span>, <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span>));
+    <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(<span class="string">&quot;log_softmax&quot;</span>, <span class="ident">LayerType::LogSoftmax</span>));
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">classifier_cfg</span> <span class="op">=</span> <span class="ident">SequentialConfig</span>::<span class="ident">default</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">classifier_cfg</span> <span class="op">=</span> <span class="ident">SequentialConfig::default</span>();
     <span class="ident">classifier_cfg</span>.<span class="ident">add_input</span>(<span class="string">&quot;network_out&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">10</span>]);
     <span class="ident">classifier_cfg</span>.<span class="ident">add_input</span>(<span class="string">&quot;label&quot;</span>, <span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>]);
     <span class="comment">// set up nll loss</span>
     <span class="kw">let</span> <span class="ident">nll_layer_cfg</span> <span class="op">=</span> <span class="ident">NegativeLogLikelihoodConfig</span> { <span class="ident">num_classes</span>: <span class="number">10</span> };
-    <span class="kw">let</span> <span class="ident">nll_cfg</span> <span class="op">=</span> <span class="ident">LayerConfig</span>::<span class="ident">new</span>(<span class="string">&quot;nll&quot;</span>, <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">nll_layer_cfg</span>));
+    <span class="kw">let</span> <span class="ident">nll_cfg</span> <span class="op">=</span> <span class="ident">LayerConfig::new</span>(<span class="string">&quot;nll&quot;</span>, <span class="ident">LayerType::NegativeLogLikelihood</span>(<span class="ident">nll_layer_cfg</span>));
     <span class="ident">classifier_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">nll_cfg</span>);
 
     <span class="comment">// set up backends</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_cuda_backend</span>());
+    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">get_cuda_backend</span>());
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
-    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">get_native_backend</span>());
+    <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">Rc::new</span>(<span class="ident">get_native_backend</span>());
 
     <span class="comment">// set up solver</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solver_cfg</span> <span class="op">=</span> <span class="ident">SolverConfig</span> {
         <span class="ident">minibatch_size</span>: <span class="ident">batch_size</span>,
         <span class="ident">base_lr</span>: <span class="ident">learning_rate</span>,
         <span class="ident">momentum</span>,
-        ..<span class="ident">SolverConfig</span>::<span class="ident">default</span>()
+        ..<span class="ident">SolverConfig::default</span>()
     };
-    <span class="ident">solver_cfg</span>.<span class="ident">network</span> <span class="op">=</span> <span class="ident">LayerConfig</span>::<span class="ident">new</span>(<span class="string">&quot;network&quot;</span>, <span class="ident">net_cfg</span>);
-    <span class="ident">solver_cfg</span>.<span class="ident">objective</span> <span class="op">=</span> <span class="ident">LayerConfig</span>::<span class="ident">new</span>(<span class="string">&quot;classifier&quot;</span>, <span class="ident">classifier_cfg</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solver</span> <span class="op">=</span> <span class="ident">Solver</span>::<span class="ident">from_config</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">solver_cfg</span>);
+    <span class="ident">solver_cfg</span>.<span class="ident">network</span> <span class="op">=</span> <span class="ident">LayerConfig::new</span>(<span class="string">&quot;network&quot;</span>, <span class="ident">net_cfg</span>);
+    <span class="ident">solver_cfg</span>.<span class="ident">objective</span> <span class="op">=</span> <span class="ident">LayerConfig::new</span>(<span class="string">&quot;classifier&quot;</span>, <span class="ident">classifier_cfg</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">solver</span> <span class="op">=</span> <span class="ident">Solver::from_config</span>(<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;</span><span class="ident">solver_cfg</span>);
 
     <span class="comment">// set up confusion matrix</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">classification_evaluator</span> <span class="op">=</span> ::<span class="ident">juice</span>::<span class="ident">solver</span>::<span class="ident">ConfusionMatrix</span>::<span class="ident">new</span>(<span class="number">10</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">classification_evaluator</span> <span class="op">=</span> <span class="ident">::juice::solver::ConfusionMatrix::new</span>(<span class="number">10</span>);
     <span class="ident">classification_evaluator</span>.<span class="ident">set_capacity</span>(<span class="prelude-val">Some</span>(<span class="number">1000</span>));
 
-    <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">pixel_dim</span>, <span class="ident">pixel_dim</span>]);
-    <span class="kw">let</span> <span class="ident">inp_lock</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">input</span>));
+    <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">pixel_dim</span>, <span class="ident">pixel_dim</span>]);
+    <span class="kw">let</span> <span class="ident">inp_lock</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">input</span>));
 
-    <span class="kw">let</span> <span class="ident">label</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>]);
-    <span class="kw">let</span> <span class="ident">label_lock</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">label</span>));
+    <span class="kw">let</span> <span class="ident">label</span> <span class="op">=</span> <span class="ident">SharedTensor</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>]);
+    <span class="kw">let</span> <span class="ident">label_lock</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">label</span>));
 
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..(<span class="ident">example_count</span> <span class="op">/</span> <span class="ident">batch_size</span> <span class="kw">as</span> <span class="ident">u32</span>) {
         <span class="comment">// write input</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
         <span class="kw">for</span> (<span class="ident">batch_n</span>, (<span class="ident">label_val</span>, <span class="kw-2">ref</span> <span class="ident">input</span>)) <span class="kw">in</span>
             <span class="ident">decoded_images</span>.<span class="ident">by_ref</span>().<span class="ident">take</span>(<span class="ident">batch_size</span>).<span class="ident">enumerate</span>()
@@ -647,7 +647,7 @@ Options:
         <span class="kw">let</span> <span class="ident">predictions</span> <span class="op">=</span> <span class="ident">classification_evaluator</span>.<span class="ident">get_predictions</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">infered</span>);
 
         <span class="ident">classification_evaluator</span>.<span class="ident">add_samples</span>(<span class="kw-2">&amp;</span><span class="ident">predictions</span>, <span class="kw-2">&amp;</span><span class="ident">targets</span>);
-        <span class="macro">println</span><span class="macro">!</span>(
+        <span class="macro">println!</span>(
             <span class="string">&quot;Last sample: {} | Accuracy {}&quot;</span>,
             <span class="ident">classification_evaluator</span>.<span class="ident">samples</span>().<span class="ident">iter</span>().<span class="ident">last</span>().<span class="ident">unwrap</span>(),
             <span class="ident">classification_evaluator</span>.<span class="ident">accuracy</span>()
@@ -655,5 +655,5 @@ Options:
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="example_mnist_classification"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="example_mnist_classification" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

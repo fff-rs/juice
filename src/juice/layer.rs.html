@@ -1,7 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice/src/layer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>layer.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice/src/layer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>layer.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../juice/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../juice/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1706,23 +1706,23 @@
 <span class="doccomment">//! See [Layers][layers]</span>
 <span class="doccomment">//! [layers]: ../layers/index.html</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">File</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">BufReader</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">Path</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
+<span class="kw">use</span> <span class="ident">std::cmp</span>;
+<span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
+<span class="kw">use</span> <span class="ident">std::fmt</span>;
+<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<span class="kw">use</span> <span class="ident">std::io</span>::{<span class="self">self</span>, <span class="ident">BufReader</span>};
+<span class="kw">use</span> <span class="ident">std::path::Path</span>;
+<span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
+<span class="kw">use</span> <span class="ident">std::sync</span>::{<span class="ident">Arc</span>, <span class="ident">RwLock</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">capnp_util</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">co</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">layer</span> <span class="kw">as</span> <span class="ident">capnp_layer</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">layer_config</span> <span class="kw">as</span> <span class="ident">capnp_layer_config</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">juice_capnp</span>::<span class="ident">layer_config</span>::<span class="ident">layer_type</span> <span class="kw">as</span> <span class="ident">capnp_layer_type</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">layers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">util</span>::{<span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">WeightConfig</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::capnp_util</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co::prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::juice_capnp::layer</span> <span class="kw">as</span> <span class="ident">capnp_layer</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::juice_capnp::layer_config</span> <span class="kw">as</span> <span class="ident">capnp_layer_config</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::juice_capnp::layer_config::layer_type</span> <span class="kw">as</span> <span class="ident">capnp_layer_type</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::layers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::util</span>::{<span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>};
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::weight::WeightConfig</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// The generic Layer</span>
@@ -1834,16 +1834,16 @@
         <span class="comment">// specified fewer than the required number (as specified by</span>
         <span class="comment">// exact_num_top_blobs() or min_output_blobs()), allocate them here.</span>
         <span class="kw">let</span> <span class="ident">auto_output_blobs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">auto_output_blobs</span>();
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Layer {} - auto_output_blobs: {}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">auto_output_blobs</span>);
+        <span class="macro">debug!</span>(<span class="string">&quot;Layer {} - auto_output_blobs: {}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">auto_output_blobs</span>);
         <span class="kw">let</span> <span class="ident">min_output_blobs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">min_output_blobs</span>();
         <span class="kw">let</span> <span class="ident">exact_num_output_blobs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">exact_num_output_blobs</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>);
         <span class="kw">if</span> <span class="ident">auto_output_blobs</span> {
-            <span class="kw">let</span> <span class="ident">needed_num_outputs</span> <span class="op">=</span> <span class="ident">cmp</span>::<span class="ident">max</span>(<span class="ident">min_output_blobs</span>, <span class="ident">exact_num_output_blobs</span>);
+            <span class="kw">let</span> <span class="ident">needed_num_outputs</span> <span class="op">=</span> <span class="ident">cmp::max</span>(<span class="ident">min_output_blobs</span>, <span class="ident">exact_num_output_blobs</span>);
             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..(<span class="ident">needed_num_outputs</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">output_blobs_data</span>.<span class="ident">len</span>()) {
                 <span class="comment">// Add &quot;anonymous&quot; output blobs -- do not add to registry</span>
                 <span class="comment">// as we don&#39;t want these blobs to be usable as input</span>
                 <span class="comment">// to other layers.</span>
-                <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Adding anonymous output blob for layer {}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>);
+                <span class="macro">info!</span>(<span class="string">&quot;Adding anonymous output blob for layer {}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>);
                 <span class="self">self</span>.<span class="ident">create_anonymous_output</span>();
             }
         }
@@ -1852,7 +1852,7 @@
         <span class="self">self</span>.<span class="ident">reshape</span>();
         <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">resize_shared_workspace</span>(<span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>(), <span class="prelude-val">None</span>);
         <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">output_blobs_data</span> {
-            <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Layer {} - output shape: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">t</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">desc</span>());
+            <span class="macro">debug!</span>(<span class="string">&quot;Layer {} - output shape: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">t</span>.<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">desc</span>());
         }
     }
 
@@ -1878,25 +1878,25 @@
             .<span class="ident">unwrap</span>();
 
         <span class="kw">if</span> <span class="op">!</span><span class="ident">available_blobs</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">blob_name</span>) {
-            <span class="macro">error</span><span class="macro">!</span>(
+            <span class="macro">error!</span>(
                 <span class="string">&quot;Unknown input blob {} (layer &#39;{}&#39;, input_id: {})&quot;</span>,
                 <span class="ident">blob_name</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">input_id</span>
             );
         }
-        <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Input {:&lt;15} -&gt; Layer {:&gt;15}&quot;</span>, <span class="ident">blob_name</span>, <span class="self">self</span>.<span class="ident">name</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;Input {:&lt;15} -&gt; Layer {:&gt;15}&quot;</span>, <span class="ident">blob_name</span>, <span class="self">self</span>.<span class="ident">name</span>);
 
         <span class="self">self</span>.<span class="ident">input_blob_names</span>.<span class="ident">push</span>(<span class="ident">blob_name</span>.<span class="ident">to_owned</span>());
         <span class="self">self</span>.<span class="ident">input_blobs_data</span>.<span class="ident">push</span>(
             <span class="ident">available_blobs</span>
                 .<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">blob_name</span>)
-                .<span class="ident">expect</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Unknown blob name {}&quot;</span>, <span class="ident">blob_name</span>))
+                .<span class="ident">expect</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Unknown blob name {}&quot;</span>, <span class="ident">blob_name</span>))
                 .<span class="number">0</span>
                 .<span class="ident">clone</span>(),
         );
         <span class="self">self</span>.<span class="ident">input_blobs_gradient</span>.<span class="ident">push</span>(
             <span class="ident">available_blobs</span>
                 .<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">blob_name</span>)
-                .<span class="ident">expect</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Unknown blob name {}&quot;</span>, <span class="ident">blob_name</span>))
+                .<span class="ident">expect</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Unknown blob name {}&quot;</span>, <span class="ident">blob_name</span>))
                 .<span class="number">1</span>
                 .<span class="ident">clone</span>(),
         );
@@ -1932,23 +1932,23 @@
         <span class="kw">let</span> <span class="ident">blob_gradient</span>: <span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
         <span class="kw">if</span> <span class="ident">layer_config</span>.<span class="ident">input</span>(<span class="ident">output_id</span>).<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="kw-2">*</span><span class="ident">layer_config</span>.<span class="ident">input</span>(<span class="ident">output_id</span>).<span class="ident">unwrap</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">blob_name</span> {
-            <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Layer {:&lt;15} -&gt; Output {:&gt;15} (in-place)&quot;</span>, <span class="ident">layer_config</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
+            <span class="macro">info!</span>(<span class="string">&quot;Layer {:&lt;15} -&gt; Output {:&gt;15} (in-place)&quot;</span>, <span class="ident">layer_config</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
             <span class="ident">blob_data</span> <span class="op">=</span> <span class="ident">registry</span>[<span class="kw-2">&amp;</span><span class="ident">blob_name</span>].<span class="number">0</span>.<span class="ident">clone</span>();
             <span class="ident">blob_gradient</span> <span class="op">=</span> <span class="ident">registry</span>[<span class="kw-2">&amp;</span><span class="ident">blob_name</span>].<span class="number">1</span>.<span class="ident">clone</span>();
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">registry</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">blob_name</span>) {
             <span class="comment">// If we are not doing in-place computation but have duplicated blobs, raise an</span>
             <span class="comment">// error.</span>
-            <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Top blob {} produced by multiple sources.&quot;</span>, <span class="ident">blob_name</span>);
+            <span class="macro">error!</span>(<span class="string">&quot;Top blob {} produced by multiple sources.&quot;</span>, <span class="ident">blob_name</span>);
             <span class="kw">return</span>;
         } <span class="kw">else</span> {
             {
-                <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Layer {:&lt;15} -&gt; Output {:&gt;15}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
-                <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Output {} = {}&quot;</span>, <span class="ident">output_id</span>, <span class="ident">blob_name</span>);
+                <span class="macro">info!</span>(<span class="string">&quot;Layer {:&lt;15} -&gt; Output {:&gt;15}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
+                <span class="macro">info!</span>(<span class="string">&quot;Output {} = {}&quot;</span>, <span class="ident">output_id</span>, <span class="ident">blob_name</span>);
             }
 
-            <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
-            <span class="ident">blob_data</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
-            <span class="ident">blob_gradient</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>])));
+            <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B::F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
+            <span class="ident">blob_data</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
+            <span class="ident">blob_gradient</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>])));
             <span class="comment">// [1,1,1] for CUDA</span>
         }
         <span class="self">self</span>.<span class="ident">output_blob_names</span>.<span class="ident">push</span>(<span class="ident">blob_name</span>.<span class="ident">clone</span>());
@@ -1970,11 +1970,11 @@
     <span class="kw">fn</span> <span class="ident">create_anonymous_output</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">let</span> <span class="ident">blob_name</span> <span class="op">=</span> <span class="string">&quot;(automatic)&quot;</span>.<span class="ident">to_owned</span>();
 
-        <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;{} -&gt; {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;{} -&gt; {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">blob_name</span>);
 
-        <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B</span>::<span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">output_data</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
-        <span class="kw">let</span> <span class="ident">output_gradient</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
+        <span class="kw">let</span> <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">IBackend</span><span class="op">&lt;</span><span class="ident">F</span> <span class="op">=</span> <span class="ident">B::F</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>();
+        <span class="kw">let</span> <span class="ident">output_data</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
+        <span class="kw">let</span> <span class="ident">output_gradient</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]))); <span class="comment">// [1,1,1] for CUDA</span>
         <span class="self">self</span>.<span class="ident">output_blobs_data</span>.<span class="ident">push</span>(<span class="ident">output_data</span>);
         <span class="self">self</span>.<span class="ident">output_blobs_gradient</span>.<span class="ident">push</span>(<span class="ident">output_gradient</span>);
     }
@@ -1995,7 +1995,7 @@
         <span class="ident">weight_id</span>: <span class="ident">usize</span>,
     ) {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">auto_weight_blobs</span>() {
-            <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Layer {} - appending weight&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>.<span class="ident">name</span>);
+            <span class="macro">info!</span>(<span class="string">&quot;Layer {} - appending weight&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>.<span class="ident">name</span>);
             <span class="kw">let</span> <span class="ident">weights_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">weights_data</span>.<span class="ident">len</span>();
             <span class="kw">let</span> <span class="ident">weight_name</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">weights_len</span> <span class="op">&gt;</span> <span class="ident">weight_id</span> {
                 <span class="ident">layer_config</span>.<span class="ident">param</span>(<span class="ident">weight_id</span>).<span class="ident">unwrap</span>().<span class="ident">name</span>.<span class="ident">clone</span>()
@@ -2007,24 +2007,24 @@
             <span class="kw">let</span> <span class="ident">display_name</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">weight_name</span>.<span class="ident">is_empty</span>() {
                 <span class="ident">weight_name</span>.<span class="ident">clone</span>()
             } <span class="kw">else</span> {
-                <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}-{}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">weight_id</span>)
+                <span class="macro">format!</span>(<span class="string">&quot;{}-{}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">weight_id</span>)
             };
             <span class="self">self</span>.<span class="ident">weights_display_names</span>.<span class="ident">push</span>(<span class="ident">display_name</span>.<span class="ident">clone</span>());
             <span class="comment">// create name for registry</span>
-            <span class="kw">let</span> <span class="ident">registry_name</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;SHARED_WEIGHT_{}&quot;</span>, <span class="ident">display_name</span>);
+            <span class="kw">let</span> <span class="ident">registry_name</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;SHARED_WEIGHT_{}&quot;</span>, <span class="ident">display_name</span>);
 
             <span class="comment">// add to tracking vectors</span>
             <span class="kw">let</span> <span class="ident">net_weight_id</span> <span class="op">=</span> <span class="ident">weights_len</span>;
             <span class="kw">let</span> <span class="ident">output_data</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">output_blobs_data</span>[<span class="ident">weight_id</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>();
-            <span class="macro">debug</span><span class="macro">!</span>(
+            <span class="macro">debug!</span>(
                 <span class="string">&quot;Layer {} - creating weight and gradient of size {:?}&quot;</span>,
                 <span class="kw-2">&amp;</span><span class="ident">layer_config</span>.<span class="ident">name</span>,
                 <span class="ident">output_data</span>.<span class="ident">desc</span>()
             );
-            <span class="kw">let</span> <span class="ident">weight_data</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
-            <span class="kw">let</span> <span class="ident">weight_bias</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
-            <span class="kw">let</span> <span class="ident">weight_gradient</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
-            <span class="kw">let</span> <span class="ident">weight_bias_gradient</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">SharedTensor</span>::<span class="ident">new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
+            <span class="kw">let</span> <span class="ident">weight_data</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
+            <span class="kw">let</span> <span class="ident">weight_bias</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
+            <span class="kw">let</span> <span class="ident">weight_gradient</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
+            <span class="kw">let</span> <span class="ident">weight_bias_gradient</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">RwLock::new</span>(<span class="ident">SharedTensor::new</span>(<span class="ident">output_data</span>.<span class="ident">desc</span>())));
             <span class="self">self</span>.<span class="ident">weights_data</span>.<span class="ident">push</span>(<span class="ident">weight_data</span>.<span class="ident">clone</span>());
             <span class="comment">// Add Bias</span>
             <span class="self">self</span>.<span class="ident">weights_data</span>.<span class="ident">push</span>(<span class="ident">weight_bias</span>.<span class="ident">clone</span>());
@@ -2032,7 +2032,7 @@
             <span class="comment">// Add Bias</span>
             <span class="self">self</span>.<span class="ident">weights_gradient</span>.<span class="ident">push</span>(<span class="ident">weight_bias_gradient</span>.<span class="ident">clone</span>());
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight_config</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">WeightConfig</span>::<span class="ident">default</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight_config</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">WeightConfig::default</span>();
             <span class="kw">if</span> <span class="ident">layer_config</span>.<span class="ident">params_len</span>() <span class="op">&gt;</span> <span class="ident">weight_id</span> {
                 <span class="ident">weight_config</span> <span class="op">=</span> <span class="ident">layer_config</span>.<span class="ident">param</span>(<span class="ident">weight_id</span>).<span class="ident">unwrap</span>();
             }
@@ -2062,13 +2062,13 @@
 
                 <span class="kw">let</span> (<span class="ident">shared_weight_data</span>, <span class="ident">shared_weight_gradient</span>, <span class="ident">shared_lr</span>, <span class="ident">shared_decay_mult</span>) <span class="op">=</span>
                     <span class="ident">registry</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">registry_name</span>).<span class="ident">unwrap</span>().<span class="ident">clone</span>();
-                <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Sharing weight blob &#39;{}&#39;&quot;</span>, <span class="ident">weight_name</span>.<span class="ident">clone</span>());
+                <span class="macro">info!</span>(<span class="string">&quot;Sharing weight blob &#39;{}&#39;&quot;</span>, <span class="ident">weight_name</span>.<span class="ident">clone</span>());
 
                 <span class="comment">// can only share parameters if both have same lr_mult</span>
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">lr_mult</span>) <span class="op">=</span> <span class="ident">weight_config</span>.<span class="ident">lr_mult</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">owner_lr_mult</span>) <span class="op">=</span> <span class="ident">shared_lr</span> {
                         <span class="kw">if</span> <span class="op">!</span><span class="ident">lr_mult</span>.<span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="ident">owner_lr_mult</span>) {
-                            <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Shared param &#39;{}&#39; has mismatched lr_mult.&quot;</span>, <span class="ident">weight_name</span>.<span class="ident">clone</span>());
+                            <span class="macro">error!</span>(<span class="string">&quot;Shared param &#39;{}&#39; has mismatched lr_mult.&quot;</span>, <span class="ident">weight_name</span>.<span class="ident">clone</span>());
                         }
                     } <span class="kw">else</span> {
                         <span class="comment">// this is the first shared instance that has a lr_mult value so we take that</span>
@@ -2088,7 +2088,7 @@
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">decay_mult</span>) <span class="op">=</span> <span class="ident">weight_config</span>.<span class="ident">decay_mult</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">owner_decay_mult</span>) <span class="op">=</span> <span class="ident">shared_decay_mult</span> {
                         <span class="kw">if</span> <span class="op">!</span><span class="ident">decay_mult</span>.<span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="ident">owner_decay_mult</span>) {
-                            <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Shared param &#39;{}&#39; has mismatched decay_mult.&quot;</span>, <span class="ident">weight_name</span>.<span class="ident">clone</span>());
+                            <span class="macro">error!</span>(<span class="string">&quot;Shared param &#39;{}&#39; has mismatched decay_mult.&quot;</span>, <span class="ident">weight_name</span>.<span class="ident">clone</span>());
                         }
                     } <span class="kw">else</span> {
                         <span class="comment">// this is the first shared instance that has a decay_mult value so we take that</span>
@@ -2124,8 +2124,8 @@
             <span class="bool-val">true</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="self">self</span>.<span class="ident">worker</span>.<span class="ident">reshape</span>(
                     <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>(),
-                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro">vec</span><span class="macro">!</span>[],
-                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro">vec</span><span class="macro">!</span>[],
+                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro">vec!</span>[],
+                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="macro">vec!</span>[],
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">weights_data</span>,
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">weights_gradient</span>,
                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">output_blobs_data</span>,
@@ -2176,7 +2176,7 @@
             <span class="self">self</span>.<span class="ident">needs_backward</span> <span class="op">=</span> <span class="bool-val">false</span>;
         }
         {
-            <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;{} needs backward computation: {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="self">self</span>.<span class="ident">needs_backward</span>);
+            <span class="macro">info!</span>(<span class="string">&quot;{} needs backward computation: {}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="self">self</span>.<span class="ident">needs_backward</span>);
         }
 
         <span class="kw">for</span> (<span class="ident">input_id</span>, <span class="ident">input_name</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">input_blob_names</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
@@ -2233,14 +2233,14 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// See [ILayer.forward](./trait.ILayer.html#method.forward)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">forward</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">inputs</span>: <span class="kw-2">&amp;</span>[<span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;LAYER: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>);
+        <span class="macro">debug!</span>(<span class="string">&quot;LAYER: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>);
         <span class="kw">for</span> (<span class="ident">input_i</span>, <span class="ident">input</span>) <span class="kw">in</span> <span class="ident">inputs</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
             <span class="kw">let</span> <span class="ident">reshaped_shape</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input_blobs_data</span>[<span class="ident">input_i</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">desc</span>().<span class="ident">clone</span>();
             <span class="self">self</span>.<span class="ident">input_blobs_data</span>[<span class="ident">input_i</span>] <span class="op">=</span> <span class="ident">input</span>.<span class="ident">clone</span>();
             <span class="comment">// reshape input tensor to the reshaped shape</span>
             <span class="kw">let</span> <span class="ident">old_shape</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input_blobs_data</span>[<span class="ident">input_i</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>().<span class="ident">desc</span>().<span class="ident">clone</span>();
             <span class="kw">if</span> <span class="ident">old_shape</span>.<span class="ident">size</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">reshaped_shape</span>.<span class="ident">size</span>() {
-                <span class="macro">panic</span><span class="macro">!</span>(
+                <span class="macro">panic!</span>(
                     <span class="string">&quot;Input Shape Mismatch\nExpected {:?}\nActual {:?}&quot;</span>,
                     <span class="ident">reshaped_shape</span>, <span class="ident">old_shape</span>
                 );
@@ -2252,7 +2252,7 @@
                 .<span class="ident">unwrap</span>();
         }
 
-        <span class="kw">let</span> <span class="ident">forward_time</span> <span class="op">=</span> <span class="macro">timeit_loops</span><span class="macro">!</span>(<span class="number">1</span>, {
+        <span class="kw">let</span> <span class="ident">forward_time</span> <span class="op">=</span> <span class="macro">timeit_loops!</span>(<span class="number">1</span>, {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_using_in_place</span>() {
                 <span class="self">self</span>.<span class="ident">worker</span>
                     .<span class="ident">forward</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">backend</span>, <span class="kw-2">&amp;</span>[], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">weights_data</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">output_blobs_data</span>);
@@ -2265,7 +2265,7 @@
                 );
             }
         });
-        <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;{:&lt;15} - Forward time: {:.5} ms&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="ident">forward_time</span> <span class="op">/</span> <span class="number">0.001</span>);
+        <span class="macro">debug!</span>(<span class="string">&quot;{:&lt;15} - Forward time: {:.5} ms&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>, <span class="ident">forward_time</span> <span class="op">/</span> <span class="number">0.001</span>);
         <span class="self">self</span>.<span class="ident">output_blobs_data</span>.<span class="ident">clone</span>()
     }
 
@@ -2278,7 +2278,7 @@
             <span class="self">self</span>.<span class="ident">backward_parameters</span>();
             <span class="ident">input_gradients</span>
         } <span class="kw">else</span> {
-            <span class="macro">vec</span><span class="macro">!</span>[]
+            <span class="macro">vec!</span>[]
         }
     }
 
@@ -2344,9 +2344,9 @@
     <span class="doccomment">/// The update value is computed in previous steps according to the [learning rate policy][3]</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [3]: ../solver/enum.LRPolicy.html</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_weights</span><span class="op">&lt;</span><span class="ident">SolverB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">SolverB</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_weights</span><span class="op">&lt;</span><span class="ident">SolverB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="kw">crate</span><span class="ident">::util::SolverOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">SolverB</span>) {
         <span class="comment">// PERF: allocate this scalar once</span>
-        <span class="kw">let</span> <span class="ident">shared_a</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">util</span>::<span class="ident">native_scalar</span>(<span class="op">-</span><span class="number">1f32</span>);
+        <span class="kw">let</span> <span class="ident">shared_a</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::util::native_scalar</span>(<span class="op">-</span><span class="number">1f32</span>);
         <span class="kw">for</span> (<span class="ident">weight_gradient</span>, <span class="ident">weight_data</span>) <span class="kw">in</span> <span class="self">self</span>
             .<span class="ident">learnable_weights_gradients</span>()
             .<span class="ident">iter</span>()
@@ -2372,7 +2372,7 @@
     <span class="doccomment">/// [2]: ../solver/struct.Solver.html</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_weights_gradients</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">for</span> <span class="ident">weight_gradient</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">learnable_weights_gradients</span>().<span class="ident">iter</span>() {
-            <span class="kw">let</span> <span class="ident">filler</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">weight</span>::<span class="ident">FillerType</span>::<span class="ident">Constant</span> { <span class="ident">value</span>: <span class="number">0f32</span> };
+            <span class="kw">let</span> <span class="ident">filler</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::weight::FillerType::Constant</span> { <span class="ident">value</span>: <span class="number">0f32</span> };
             <span class="ident">filler</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">weight_gradient</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>());
         }
     }
@@ -2413,16 +2413,16 @@
     <span class="doccomment">/// #    }</span>
     <span class="doccomment">/// # }</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">save</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">save</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_ref</span>();
-        <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">create</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">File::create</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">message</span> <span class="op">=</span> ::<span class="ident">capnp</span>::<span class="ident">message</span>::<span class="ident">Builder</span>::<span class="ident">new_default</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">::capnp::message::Builder::new_default</span>();
         {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">message</span>.<span class="ident">init_root</span>::<span class="op">&lt;</span><span class="ident">capnp_layer</span>::<span class="ident">Builder</span><span class="op">&gt;</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">message</span>.<span class="ident">init_root</span>::<span class="op">&lt;</span><span class="ident">capnp_layer::Builder</span><span class="op">&gt;</span>();
             <span class="self">self</span>.<span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">layer</span>);
         }
-        ::<span class="ident">capnp</span>::<span class="ident">serialize_packed</span>::<span class="ident">write_message</span>(<span class="ident">out</span>, <span class="kw-2">&amp;</span><span class="ident">message</span>).<span class="ident">unwrap</span>();
+        <span class="ident">::capnp::serialize_packed::write_message</span>(<span class="ident">out</span>, <span class="kw-2">&amp;</span><span class="ident">message</span>).<span class="ident">unwrap</span>();
 
         <span class="prelude-val">Ok</span>(())
     }
@@ -2467,18 +2467,18 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span><span class="op">&lt;</span><span class="ident">LB</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>, <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(
         <span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">LB</span><span class="op">&gt;</span>,
         <span class="ident">path</span>: <span class="ident">P</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">LB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">io::Result</span><span class="op">&lt;</span><span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">LB</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_ref</span>();
-        <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">open</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">file</span>);
+        <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File::open</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader::new</span>(<span class="ident">file</span>);
 
         <span class="kw">let</span> <span class="ident">message_reader</span> <span class="op">=</span>
-            ::<span class="ident">capnp</span>::<span class="ident">serialize_packed</span>::<span class="ident">read_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span>, ::<span class="ident">capnp</span>::<span class="ident">message</span>::<span class="ident">ReaderOptions</span>::<span class="ident">new</span>()).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">read_layer</span> <span class="op">=</span> <span class="ident">message_reader</span>.<span class="ident">get_root</span>::<span class="op">&lt;</span><span class="ident">capnp_layer</span>::<span class="ident">Reader</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
+            <span class="ident">::capnp::serialize_packed::read_message</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span>, <span class="ident">::capnp::message::ReaderOptions::new</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">read_layer</span> <span class="op">=</span> <span class="ident">message_reader</span>.<span class="ident">get_root</span>::<span class="op">&lt;</span><span class="ident">capnp_layer::Reader</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
 
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">read_layer</span>.<span class="ident">get_name</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>();
-        <span class="kw">let</span> <span class="ident">layer_config</span> <span class="op">=</span> <span class="ident">LayerConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_layer</span>.<span class="ident">get_config</span>().<span class="ident">unwrap</span>());
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">Layer</span>::<span class="ident">from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>);
+        <span class="kw">let</span> <span class="ident">layer_config</span> <span class="op">=</span> <span class="ident">LayerConfig::read_capnp</span>(<span class="ident">read_layer</span>.<span class="ident">get_config</span>().<span class="ident">unwrap</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">Layer::from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>);
         <span class="ident">layer</span>.<span class="ident">name</span> <span class="op">=</span> <span class="ident">name</span>;
 
         <span class="kw">let</span> <span class="ident">read_weights</span> <span class="op">=</span> <span class="ident">read_layer</span>.<span class="ident">get_weights_data</span>().<span class="ident">unwrap</span>();
@@ -2486,7 +2486,7 @@
         <span class="kw">let</span> <span class="ident">names</span> <span class="op">=</span> <span class="ident">layer</span>.<span class="ident">learnable_weights_names</span>();
         <span class="kw">let</span> <span class="ident">weights_data</span> <span class="op">=</span> <span class="ident">layer</span>.<span class="ident">learnable_weights_data</span>();
 
-        <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span><span class="ident">::default</span>().<span class="ident">unwrap</span>();
         <span class="kw">for</span> (<span class="ident">i</span>, (<span class="ident">name</span>, <span class="ident">weight</span>)) <span class="kw">in</span> <span class="ident">names</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">weights_data</span>).<span class="ident">enumerate</span>() {
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">read_weights</span>.<span class="ident">len</span>() {
                 <span class="kw">let</span> <span class="ident">capnp_weight</span> <span class="op">=</span> <span class="ident">read_weights</span>.<span class="ident">get</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>);
@@ -2497,7 +2497,7 @@
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight_lock</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
 
                 <span class="kw">let</span> <span class="ident">capnp_tensor</span> <span class="op">=</span> <span class="ident">capnp_weight</span>.<span class="ident">get_tensor</span>().<span class="ident">unwrap</span>();
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shape</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">shape</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
                 <span class="kw">let</span> <span class="ident">capnp_shape</span> <span class="op">=</span> <span class="ident">capnp_tensor</span>.<span class="ident">get_shape</span>().<span class="ident">unwrap</span>();
                 <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">capnp_shape</span>.<span class="ident">len</span>() {
                     <span class="ident">shape</span>.<span class="ident">push</span>(<span class="ident">capnp_shape</span>.<span class="ident">get</span>(<span class="ident">k</span>) <span class="kw">as</span> <span class="ident">usize</span>)
@@ -2611,17 +2611,17 @@
 <span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span><span class="op">&gt;</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {}
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">B</span>: <span class="ident">IBackend</span><span class="op">&gt;</span> <span class="ident">CapnpWrite</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Builder</span> <span class="op">=</span> <span class="ident">capnp_layer</span>::<span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Builder</span> <span class="op">=</span> <span class="ident">capnp_layer::Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Write the Layer into a capnp message.</span>
-    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>::<span class="ident">Builder</span>) {
+    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="ident">::Builder</span>) {
         <span class="ident">builder</span>.<span class="ident">set_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>);
         {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer_config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_config</span>();
             <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">layer_config</span>);
         }
         {
-            <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span>::<span class="ident">default</span>().<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">native_backend</span> <span class="op">=</span> <span class="ident">Backend</span>::<span class="op">&lt;</span><span class="ident">Native</span><span class="op">&gt;</span><span class="ident">::default</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weights</span> <span class="op">=</span> <span class="ident">builder</span>
                 .<span class="ident">reborrow</span>()
                 .<span class="ident">init_weights_data</span>(<span class="self">self</span>.<span class="ident">learnable_weights_names</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>);
@@ -2653,40 +2653,40 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="kw">crate</span>::<span class="ident">coblas</span>::<span class="ident">plugin</span>::<span class="ident">Copy</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span> <span class="op">+</span> <span class="ident">LayerOps</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="kw">crate</span><span class="ident">::coblas::plugin::Copy</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Creates a new Layer from a [LayerConfig][1].</span>
     <span class="doccomment">/// [1]: ./struct.LayerConfig.html</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cl</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="op">&lt;</span><span class="ident">LayerConfig</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">cl</span>);
+        <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="op">&lt;</span><span class="ident">LayerConfig</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">cl</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">Layer</span> {
             <span class="ident">name</span>: <span class="ident">cfg</span>.<span class="ident">name</span>.<span class="ident">clone</span>(),
 
             <span class="ident">needs_backward</span>: <span class="bool-val">true</span>,
 
-            <span class="ident">weights_data</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">weights_gradient</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">learnable_weights</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">weight_propagate_down</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">weights_lr</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">weights_weight_decay</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">weights_display_names</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">weights_data</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">weights_gradient</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">learnable_weights</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">weight_propagate_down</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">weights_lr</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">weights_weight_decay</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">weights_display_names</span>: <span class="ident">Vec::new</span>(),
 
-            <span class="ident">input_blobs_data</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">input_blobs_gradient</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">input_blob_names</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">input_need_backwards</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">input_blobs_data</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">input_blobs_gradient</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">input_blob_names</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">input_need_backwards</span>: <span class="ident">Vec::new</span>(),
 
-            <span class="ident">output_blobs_data</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">output_blobs_gradient</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">output_blob_names</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">loss</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1f32</span>, <span class="number">1f32</span>, <span class="number">1f32</span>],
+            <span class="ident">output_blobs_data</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">output_blobs_gradient</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">output_blob_names</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">loss</span>: <span class="macro">vec!</span>[<span class="number">1f32</span>, <span class="number">1f32</span>, <span class="number">1f32</span>],
 
-            <span class="ident">blob_names</span>: <span class="ident">HashMap</span>::<span class="ident">new</span>(),
+            <span class="ident">blob_names</span>: <span class="ident">HashMap::new</span>(),
 
             <span class="ident">backend</span>: <span class="ident">backend</span>.<span class="ident">clone</span>(),
 
-            <span class="ident">worker</span>: <span class="ident">Layer</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>::<span class="ident">worker_from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">cfg</span>),
+            <span class="ident">worker</span>: <span class="ident">Layer</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::worker_from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">cfg</span>),
             <span class="ident">config</span>: <span class="ident">cfg</span>,
         };
         <span class="ident">layer</span>.<span class="ident">expose_inputs</span>();
@@ -2701,22 +2701,22 @@
     <span class="doccomment">/// [3]: ../layers/index.html</span>
     <span class="kw">fn</span> <span class="ident">worker_from_config</span>(<span class="ident">backend</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">LayerConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">config</span>.<span class="ident">layer_type</span>.<span class="ident">clone</span>() {
-            <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Convolution</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Rnn</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Linear</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">LogSoftmax</span>::<span class="ident">default</span>()),
-            <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Pooling</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sequential</span>::<span class="ident">from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Softmax</span>::<span class="ident">default</span>()),
-            <span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">ReLU</span>),
-            <span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TanH</span>),
-            <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Sigmoid</span>),
-            <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">NegativeLogLikelihood</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>))
+            <span class="ident">LayerType::Convolution</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Convolution::from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType::Rnn</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Rnn::from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType::Linear</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Linear::from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType::LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">LogSoftmax::default</span>()),
+            <span class="ident">LayerType::Pooling</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Pooling::from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType::Sequential</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Sequential::from_config</span>(<span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType::Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Softmax::default</span>()),
+            <span class="ident">LayerType::ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">ReLU</span>),
+            <span class="ident">LayerType::TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">TanH</span>),
+            <span class="ident">LayerType::Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Sigmoid</span>),
+            <span class="ident">LayerType::NegativeLogLikelihood</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">Box::new</span>(<span class="ident">NegativeLogLikelihood::from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>))
             }
-            <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">MeanSquaredError</span>),
-            <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Reshape</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
-            <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">Dropout</span>::<span class="ident">from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType::MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">MeanSquaredError</span>),
+            <span class="ident">LayerType::Reshape</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Reshape::from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
+            <span class="ident">LayerType::Dropout</span>(<span class="ident">layer_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Box::new</span>(<span class="ident">Dropout::from_config</span>(<span class="kw-2">&amp;</span><span class="ident">layer_config</span>)),
         }
     }
 }
@@ -3066,9 +3066,9 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;({})&quot;</span>, <span class="string">&quot;ILayer&quot;</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">IBackend</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="kw">dyn</span> <span class="ident">ILayer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;({})&quot;</span>, <span class="string">&quot;ILayer&quot;</span>)
     }
 }
 
@@ -3138,65 +3138,65 @@
     <span class="doccomment">/// Returns wether the LayerType supports in-place operations.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">supports_in_place</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
-            <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::Linear</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::Sequential</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType::TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType::Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType::NegativeLogLikelihood</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::Reshape</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">LayerType::Convolution</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::Rnn</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::Pooling</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
+            <span class="ident">LayerType::Dropout</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">false</span>,
         }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpWrite</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LayerType</span> {
-    <span class="kw">type</span> <span class="ident">Builder</span> <span class="op">=</span> <span class="ident">capnp_layer_type</span>::<span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Builder</span> <span class="op">=</span> <span class="ident">capnp_layer_type::Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Write the LayerType into a capnp message.</span>
-    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>::<span class="ident">Builder</span>) {
+    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="ident">::Builder</span>) {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Linear</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_linear</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_log_softmax</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::LogSoftmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_log_softmax</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Sequential</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_sequential</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_softmax</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_relu</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_tanh</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_sigmoid</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Softmax</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_softmax</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::ReLU</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_relu</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::TanH</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_tanh</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Sigmoid</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_sigmoid</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::NegativeLogLikelihood</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_negative_log_likelihood</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_mean_squared_error</span>(()),
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::MeanSquaredError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">builder</span>.<span class="ident">set_mean_squared_error</span>(()),
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Reshape</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_reshape</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Convolution</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_convolution</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Rnn</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_rnn</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Pooling</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_pooling</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
-            <span class="kw-2">&amp;</span><span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw-2">&amp;</span><span class="ident">LayerType::Dropout</span>(<span class="kw-2">ref</span> <span class="ident">cfg</span>) <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_dropout</span>();
                 <span class="ident">cfg</span>.<span class="ident">write_capnp</span>(<span class="ident">config</span>);
             }
@@ -3205,47 +3205,47 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpRead</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LayerType</span> {
-    <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_layer_type</span>::<span class="ident">Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_layer_type::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span><span class="ident">::Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">match</span> <span class="ident">reader</span>.<span class="ident">which</span>().<span class="ident">unwrap</span>() {
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Linear</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">LinearConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">Linear</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::Linear</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">LinearConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::Linear</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">LogSoftmax</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">LogSoftmax</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Sequential</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">SequentialConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">Sequential</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::LogSoftmax</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType::LogSoftmax</span>,
+            <span class="ident">capnp_layer_type::Which::Sequential</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">SequentialConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::Sequential</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Softmax</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">Softmax</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Relu</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">ReLU</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Tanh</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">TanH</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Sigmoid</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">Sigmoid</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">NegativeLogLikelihoodConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">NegativeLogLikelihood</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::Softmax</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType::Softmax</span>,
+            <span class="ident">capnp_layer_type::Which::Relu</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType::ReLU</span>,
+            <span class="ident">capnp_layer_type::Which::Tanh</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType::TanH</span>,
+            <span class="ident">capnp_layer_type::Which::Sigmoid</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType::Sigmoid</span>,
+            <span class="ident">capnp_layer_type::Which::NegativeLogLikelihood</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">NegativeLogLikelihoodConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::NegativeLogLikelihood</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">MeanSquaredError</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType</span>::<span class="ident">MeanSquaredError</span>,
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Reshape</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ReshapeConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">Reshape</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::MeanSquaredError</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">LayerType::MeanSquaredError</span>,
+            <span class="ident">capnp_layer_type::Which::Reshape</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ReshapeConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::Reshape</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Pooling</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">PoolingConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">Pooling</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::Pooling</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">PoolingConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::Pooling</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Convolution</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ConvolutionConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">Convolution</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::Convolution</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">ConvolutionConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::Convolution</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Rnn</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">RnnConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">Rnn</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::Rnn</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">RnnConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::Rnn</span>(<span class="ident">config</span>)
             }
-            <span class="ident">capnp_layer_type</span>::<span class="ident">Which</span>::<span class="ident">Dropout</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">DropoutConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
-                <span class="ident">LayerType</span>::<span class="ident">Dropout</span>(<span class="ident">config</span>)
+            <span class="ident">capnp_layer_type::Which::Dropout</span>(<span class="ident">read_config</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">DropoutConfig::read_capnp</span>(<span class="ident">read_config</span>.<span class="ident">unwrap</span>());
+                <span class="ident">LayerType::Dropout</span>(<span class="ident">config</span>)
             }
         }
     }
@@ -3258,11 +3258,11 @@
             <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">to_owned</span>(),
             <span class="ident">layer_type</span>: <span class="ident">layer_type</span>.<span class="ident">into</span>(),
 
-            <span class="ident">outputs</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">inputs</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">outputs</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">inputs</span>: <span class="ident">Vec::new</span>(),
 
-            <span class="ident">params</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
-            <span class="ident">propagate_down</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">params</span>: <span class="ident">Vec::new</span>(),
+            <span class="ident">propagate_down</span>: <span class="ident">Vec::new</span>(),
         }
     }
 
@@ -3323,10 +3323,10 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpWrite</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LayerConfig</span> {
-    <span class="kw">type</span> <span class="ident">Builder</span> <span class="op">=</span> <span class="ident">capnp_layer_config</span>::<span class="ident">Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Builder</span> <span class="op">=</span> <span class="ident">capnp_layer_config::Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Write the LayerConfig into a capnp message.</span>
-    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>::<span class="ident">Builder</span>) {
+    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="ident">::Builder</span>) {
         <span class="ident">builder</span>.<span class="ident">set_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>);
         {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">layer_type</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_layer_type</span>();
@@ -3361,31 +3361,31 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpRead</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LayerConfig</span> {
-    <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_layer_config</span>::<span class="ident">Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_layer_config::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span>::<span class="ident">Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span><span class="ident">::Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_name</span>().<span class="ident">unwrap</span>().<span class="ident">to_owned</span>();
-        <span class="kw">let</span> <span class="ident">layer_type</span> <span class="op">=</span> <span class="ident">LayerType</span>::<span class="ident">read_capnp</span>(<span class="ident">reader</span>.<span class="ident">get_layer_type</span>());
+        <span class="kw">let</span> <span class="ident">layer_type</span> <span class="op">=</span> <span class="ident">LayerType::read_capnp</span>(<span class="ident">reader</span>.<span class="ident">get_layer_type</span>());
 
         <span class="kw">let</span> <span class="ident">read_outputs</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_outputs</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">outputs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">outputs</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">read_outputs</span>.<span class="ident">len</span>() {
             <span class="ident">outputs</span>.<span class="ident">push</span>(<span class="ident">read_outputs</span>.<span class="ident">get</span>(<span class="ident">i</span>).<span class="ident">unwrap</span>().<span class="ident">to_owned</span>())
         }
         <span class="kw">let</span> <span class="ident">read_inputs</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_inputs</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inputs</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inputs</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">read_inputs</span>.<span class="ident">len</span>() {
             <span class="ident">inputs</span>.<span class="ident">push</span>(<span class="ident">read_inputs</span>.<span class="ident">get</span>(<span class="ident">i</span>).<span class="ident">unwrap</span>().<span class="ident">to_owned</span>())
         }
 
         <span class="kw">let</span> <span class="ident">read_params</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_params</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">read_params</span>.<span class="ident">len</span>() {
-            <span class="ident">params</span>.<span class="ident">push</span>(<span class="ident">WeightConfig</span>::<span class="ident">read_capnp</span>(<span class="ident">read_params</span>.<span class="ident">get</span>(<span class="ident">i</span>)))
+            <span class="ident">params</span>.<span class="ident">push</span>(<span class="ident">WeightConfig::read_capnp</span>(<span class="ident">read_params</span>.<span class="ident">get</span>(<span class="ident">i</span>)))
         }
 
         <span class="kw">let</span> <span class="ident">read_propagate_down</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_propagate_down</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">propagate_down</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">propagate_down</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">read_propagate_down</span>.<span class="ident">len</span>() {
             <span class="ident">propagate_down</span>.<span class="ident">push</span>(<span class="ident">read_propagate_down</span>.<span class="ident">get</span>(<span class="ident">i</span>))
         }
@@ -3401,5 +3401,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="juice"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="juice" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

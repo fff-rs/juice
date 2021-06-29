@@ -1,7 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rcudnn/cudnn/src/cudnn.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>cudnn.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rcudnn/cudnn/src/cudnn.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>cudnn.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../rcudnn/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rcudnn/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1080,17 +1080,17 @@
 <span class="doccomment">//! by initilizing a new `Cudnn` instance. This initilizes the cuDNN resources,</span>
 <span class="doccomment">//! stores the handle and manages future calls.</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">utils</span>::{
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::utils</span>::{
     <span class="ident">ActivationConfig</span>, <span class="ident">ConvolutionConfig</span>, <span class="ident">DataTypeInfo</span>, <span class="ident">DropoutConfig</span>, <span class="ident">NormalizationConfig</span>,
     <span class="ident">PoolingConfig</span>, <span class="ident">RnnConfig</span>, <span class="ident">ScalParams</span>,
 };
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">cuda</span>::<span class="ident">CudaDeviceMemory</span>;
-<span class="kw">use</span> <span class="ident">num</span>::<span class="ident">traits</span>::<span class="ident">Float</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">transmute_copy</span>;
-<span class="kw">use</span> <span class="ident">tensor_descriptor</span>::<span class="ident">tensor_vec_id_c</span>;
-<span class="kw">use</span> <span class="ident">utils</span>::<span class="ident">DataType</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::cuda::CudaDeviceMemory</span>;
+<span class="kw">use</span> <span class="ident">num::traits::Float</span>;
+<span class="kw">use</span> <span class="ident">std::mem::transmute_copy</span>;
+<span class="kw">use</span> <span class="ident">tensor_descriptor::tensor_vec_id_c</span>;
+<span class="kw">use</span> <span class="ident">utils::DataType</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="doccomment">/// Provides a the high-level interface to CUDA&#39;s cuDNN.</span>
@@ -1098,12 +1098,12 @@
     <span class="ident">id</span>: <span class="ident">cudnnHandle_t</span>,
 }
 
-<span class="kw">unsafe</span> <span class="kw">impl</span> ::<span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">Cudnn</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">::std::marker::Sync</span> <span class="kw">for</span> <span class="ident">Cudnn</span> {}
 
 <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Cudnn</span> {
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_must_use</span>)]</span>
     <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="ident">API</span>::<span class="ident">destroy</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>());
+        <span class="ident">API::destroy</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>());
     }
 }
 
@@ -1112,7 +1112,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Make sure your current CUDA device is cuDNN enabled.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Cudnn</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">Cudnn</span>::<span class="ident">from_c</span>(<span class="ident">API</span>::<span class="ident">init</span>()<span class="question-mark">?</span>))
+        <span class="prelude-val">Ok</span>(<span class="ident">Cudnn::from_c</span>(<span class="ident">API::init</span>()<span class="question-mark">?</span>))
     }
 
     <span class="doccomment">/// Initializes a new CUDA cuDNN Context from its C type.</span>
@@ -1127,7 +1127,7 @@
 
     <span class="doccomment">/// Returns the version of the CUDA cuDNN library.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">version</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="ident">API</span>::<span class="ident">get_version</span>()
+        <span class="ident">API::get_version</span>()
     }
 
     <span class="doccomment">/// Initializes the parameters and configurations for running CUDA cuDNN convolution operations.</span>
@@ -1141,7 +1141,7 @@
         <span class="ident">filter_desc</span>: <span class="ident">FilterDescriptor</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ConvolutionConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">algos_fwd</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_forward_algorithm</span>(
+        <span class="kw">let</span> <span class="ident">algos_fwd</span> <span class="op">=</span> <span class="ident">API::find_convolution_forward_algorithm</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">conv_desc</span>.<span class="ident">id_c</span>(),
@@ -1149,7 +1149,7 @@
             <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">workspace_size_fwd</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_convolution_forward_workspace_size</span>(
+        <span class="kw">let</span> <span class="ident">workspace_size_fwd</span> <span class="op">=</span> <span class="ident">API::get_convolution_forward_workspace_size</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="ident">algos_fwd</span>[<span class="number">0</span>].<span class="ident">algo</span>,
             <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
@@ -1158,14 +1158,14 @@
             <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">algos_filter_bwd</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_backward_filter_algorithm</span>(
+        <span class="kw">let</span> <span class="ident">algos_filter_bwd</span> <span class="op">=</span> <span class="ident">API::find_convolution_backward_filter_algorithm</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">conv_desc</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>(),
         )<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">workspace_filter_size_bwd</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_convolution_backward_filter_workspace_size</span>(
+        <span class="kw">let</span> <span class="ident">workspace_filter_size_bwd</span> <span class="op">=</span> <span class="ident">API::get_convolution_backward_filter_workspace_size</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="ident">algos_filter_bwd</span>[<span class="number">0</span>].<span class="ident">algo</span>,
             <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
@@ -1174,14 +1174,14 @@
             <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">algos_data_bwd</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">find_convolution_backward_data_algorithm</span>(
+        <span class="kw">let</span> <span class="ident">algos_data_bwd</span> <span class="op">=</span> <span class="ident">API::find_convolution_backward_data_algorithm</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">conv_desc</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>(),
         )<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">workspace_data_size_bwd</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_convolution_backward_data_workspace_size</span>(
+        <span class="kw">let</span> <span class="ident">workspace_data_size_bwd</span> <span class="op">=</span> <span class="ident">API::get_convolution_backward_data_workspace_size</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="ident">algos_data_bwd</span>[<span class="number">0</span>].<span class="ident">algo</span>,
             <span class="kw-2">*</span><span class="ident">filter_desc</span>.<span class="ident">id_c</span>(),
@@ -1190,7 +1190,7 @@
             <span class="kw-2">*</span><span class="ident">dest_desc</span>.<span class="ident">id_c</span>(),
         )<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">ConvolutionConfig</span>::<span class="ident">new</span>(
+        <span class="prelude-val">Ok</span>(<span class="ident">ConvolutionConfig::new</span>(
             <span class="ident">algos_fwd</span>[<span class="number">0</span>].<span class="ident">algo</span>,
             <span class="ident">workspace_size_fwd</span>,
             <span class="ident">algos_filter_bwd</span>[<span class="number">0</span>].<span class="ident">algo</span>,
@@ -1210,8 +1210,8 @@
         <span class="ident">lrn_beta</span>: <span class="ident">f64</span>,
         <span class="ident">lrn_k</span>: <span class="ident">f64</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">NormalizationConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">norm_desc</span> <span class="op">=</span> <span class="ident">NormalizationDescriptor</span>::<span class="ident">new</span>(<span class="ident">lrn_n</span>, <span class="ident">lrn_alpha</span>, <span class="ident">lrn_beta</span>, <span class="ident">lrn_k</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">NormalizationConfig</span>::<span class="ident">new</span>(<span class="ident">norm_desc</span>))
+        <span class="kw">let</span> <span class="ident">norm_desc</span> <span class="op">=</span> <span class="ident">NormalizationDescriptor::new</span>(<span class="ident">lrn_n</span>, <span class="ident">lrn_alpha</span>, <span class="ident">lrn_beta</span>, <span class="ident">lrn_k</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">NormalizationConfig::new</span>(<span class="ident">norm_desc</span>))
     }
 
     <span class="doccomment">/// Initializes the parameters and configurations for running CUDA cuDNN Pooling operations.</span>
@@ -1222,43 +1222,43 @@
         <span class="ident">stride</span>: <span class="kw-2">&amp;</span>[<span class="ident">i32</span>],
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PoolingConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="comment">// TODO make the mode an input parameter</span>
-        <span class="kw">let</span> <span class="ident">avg</span> <span class="op">=</span> <span class="ident">PoolingDescriptor</span>::<span class="ident">new</span>(
-            <span class="ident">cudnnPoolingMode_t</span>::<span class="ident">CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING</span>,
+        <span class="kw">let</span> <span class="ident">avg</span> <span class="op">=</span> <span class="ident">PoolingDescriptor::new</span>(
+            <span class="ident">cudnnPoolingMode_t::CUDNN_POOLING_AVERAGE_COUNT_INCLUDE_PADDING</span>,
             <span class="ident">window</span>,
             <span class="ident">padding</span>,
             <span class="ident">stride</span>,
         )<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">max</span> <span class="op">=</span> <span class="ident">PoolingDescriptor</span>::<span class="ident">new</span>(
-            <span class="ident">cudnnPoolingMode_t</span>::<span class="ident">CUDNN_POOLING_MAX</span>,
+        <span class="kw">let</span> <span class="ident">max</span> <span class="op">=</span> <span class="ident">PoolingDescriptor::new</span>(
+            <span class="ident">cudnnPoolingMode_t::CUDNN_POOLING_MAX</span>,
             <span class="ident">window</span>,
             <span class="ident">padding</span>,
             <span class="ident">stride</span>,
         )<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">PoolingConfig</span>::<span class="ident">new</span>(<span class="ident">avg</span>, <span class="ident">max</span>))
+        <span class="prelude-val">Ok</span>(<span class="ident">PoolingConfig::new</span>(<span class="ident">avg</span>, <span class="ident">max</span>))
     }
 
     <span class="doccomment">/// Initializes the parameters and configurations for running CUDA cuDNN Activation operations.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_activation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ActivationConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="comment">// TODO make the activation function mode an input parameter (enum, so for clipped relu)</span>
-        <span class="kw">let</span> <span class="ident">sigmoid</span> <span class="op">=</span> <span class="ident">ActivationDescriptor</span>::<span class="ident">new</span>(<span class="ident">cudnnActivationMode_t</span>::<span class="ident">CUDNN_ACTIVATION_SIGMOID</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">relu</span> <span class="op">=</span> <span class="ident">ActivationDescriptor</span>::<span class="ident">new</span>(<span class="ident">cudnnActivationMode_t</span>::<span class="ident">CUDNN_ACTIVATION_RELU</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">sigmoid</span> <span class="op">=</span> <span class="ident">ActivationDescriptor::new</span>(<span class="ident">cudnnActivationMode_t::CUDNN_ACTIVATION_SIGMOID</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">relu</span> <span class="op">=</span> <span class="ident">ActivationDescriptor::new</span>(<span class="ident">cudnnActivationMode_t::CUDNN_ACTIVATION_RELU</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">clipped_relu</span> <span class="op">=</span>
-            <span class="ident">ActivationDescriptor</span>::<span class="ident">new</span>(<span class="ident">cudnnActivationMode_t</span>::<span class="ident">CUDNN_ACTIVATION_CLIPPED_RELU</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">tanh</span> <span class="op">=</span> <span class="ident">ActivationDescriptor</span>::<span class="ident">new</span>(<span class="ident">cudnnActivationMode_t</span>::<span class="ident">CUDNN_ACTIVATION_TANH</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">ActivationConfig</span>::<span class="ident">new</span>(<span class="ident">sigmoid</span>, <span class="ident">relu</span>, <span class="ident">clipped_relu</span>, <span class="ident">tanh</span>))
+            <span class="ident">ActivationDescriptor::new</span>(<span class="ident">cudnnActivationMode_t::CUDNN_ACTIVATION_CLIPPED_RELU</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">tanh</span> <span class="op">=</span> <span class="ident">ActivationDescriptor::new</span>(<span class="ident">cudnnActivationMode_t::CUDNN_ACTIVATION_TANH</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">ActivationConfig::new</span>(<span class="ident">sigmoid</span>, <span class="ident">relu</span>, <span class="ident">clipped_relu</span>, <span class="ident">tanh</span>))
     }
 
     <span class="doccomment">/// Initializes the parameters and configurations for running CUDA cuDNN dropout operation.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_dropout</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">probability</span>: <span class="ident">f32</span>, <span class="ident">seed</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DropoutConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">reserve_required</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">dropout_get_states_size</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>())<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">reserve</span> <span class="op">=</span> <span class="ident">CudaDeviceMemory</span>::<span class="ident">new</span>(<span class="ident">reserve_required</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">reserve_required</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API::dropout_get_states_size</span>(<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>())<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">reserve</span> <span class="op">=</span> <span class="ident">CudaDeviceMemory::new</span>(<span class="ident">reserve_required</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">dropout</span> <span class="op">=</span>
-            <span class="ident">DropoutDescriptor</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">probability</span>, <span class="ident">seed</span>, <span class="kw-2">*</span><span class="ident">reserve</span>.<span class="ident">id_c</span>(), <span class="ident">reserve</span>.<span class="ident">size</span>())<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">DropoutConfig</span>::<span class="ident">new</span>(<span class="ident">dropout</span>, <span class="ident">reserve</span>))
+            <span class="ident">DropoutDescriptor::new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">probability</span>, <span class="ident">seed</span>, <span class="kw-2">*</span><span class="ident">reserve</span>.<span class="ident">id_c</span>(), <span class="ident">reserve</span>.<span class="ident">size</span>())<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">DropoutConfig::new</span>(<span class="ident">dropout</span>, <span class="ident">reserve</span>))
     }
 
     <span class="doccomment">/// Initialize RNN</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">init_rnn</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">x_desc</span>: <span class="kw-2">&amp;</span>[<span class="ident">TensorDescriptor</span>],
@@ -1274,27 +1274,27 @@
         <span class="ident">data_type</span>: <span class="ident">DataType</span>,
         <span class="ident">math_type</span>: <span class="ident">cudnnMathType_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RnnConfig</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">cudnn_data_type</span>(<span class="ident">data_type</span>);
+        <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="ident">API::cudnn_data_type</span>(<span class="ident">data_type</span>);
 
-        <span class="ident">API</span>::<span class="ident">set_rnn_matrix_math_type</span>(<span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(), <span class="ident">math_type</span>)<span class="question-mark">?</span>;
+        <span class="ident">API::set_rnn_matrix_math_type</span>(<span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(), <span class="ident">math_type</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">workspace_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_rnn_workspace_size</span>(
+        <span class="kw">let</span> <span class="ident">workspace_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API::get_rnn_workspace_size</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">seq_length</span>,
             <span class="ident">tensor_vec_id_c</span>(<span class="ident">x_desc</span>),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">training_reserve_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API</span>::<span class="ident">get_rnn_training_reserve_size</span>(
+        <span class="kw">let</span> <span class="ident">training_reserve_size</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">API::get_rnn_training_reserve_size</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">rnn_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">seq_length</span>,
             <span class="ident">tensor_vec_id_c</span>(<span class="ident">x_desc</span>),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">training_reserve</span>: <span class="ident">CudaDeviceMemory</span> <span class="op">=</span> <span class="ident">CudaDeviceMemory</span>::<span class="ident">new</span>(<span class="ident">training_reserve_size</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">training_reserve</span>: <span class="ident">CudaDeviceMemory</span> <span class="op">=</span> <span class="ident">CudaDeviceMemory::new</span>(<span class="ident">training_reserve_size</span>)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">RnnConfig</span>::<span class="ident">new</span>(
+        <span class="prelude-val">Ok</span>(<span class="ident">RnnConfig::new</span>(
             <span class="ident">rnn_desc</span>,
             <span class="ident">hidden_size</span>,
             <span class="ident">num_layers</span>,
@@ -1312,33 +1312,33 @@
     }
 
     <span class="doccomment">/// Train &amp; Return Results for RNN</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rnn_forward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="ident">RnnConfig</span>,
         <span class="ident">src_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span>,
-        <span class="ident">src</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">output_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span>,
-        <span class="ident">output</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">output</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">hidden_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
         <span class="comment">// Planning to initially pass NULLs to this</span>
-        <span class="ident">hidden</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">hidden</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">cell_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
         <span class="comment">// Planning to initially pass NULLs to this</span>
-        <span class="ident">cell</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">cell</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">weight_desc</span>: <span class="kw-2">&amp;</span><span class="ident">FilterDescriptor</span>,
-        <span class="ident">weight</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">weight</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">hidden_output_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">hidden_output</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">hidden_output</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">cell_output_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">cell_output</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">cell_output</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">rnn_forward_training</span>(
+        <span class="ident">API::rnn_forward_training</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span>(<span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>()),
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">sequence_length</span>(),
@@ -1364,39 +1364,39 @@
     }
 
     <span class="doccomment">/// Train &amp; Return Results for RNN</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rnn_backward_data</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="ident">RnnConfig</span>,
         <span class="ident">output_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span>,
-        <span class="ident">output</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">output</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">output_gradient_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span>,
-        <span class="ident">output_gradient</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">output_gradient</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">hidden_gradient_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">hidden_gradient</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">hidden_gradient</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">cell_gradient_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">cell_gradient</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">cell_gradient</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">weight_desc</span>: <span class="kw-2">&amp;</span><span class="ident">FilterDescriptor</span>,
-        <span class="ident">weight</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">weight</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">hidden_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
         <span class="comment">// Planning to initially pass NULLs to this</span>
-        <span class="ident">hidden</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">hidden</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">cell_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
         <span class="comment">// Planning to initially pass NULLs to this</span>
-        <span class="ident">cell</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">cell</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">input_gradient_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span>,
-        <span class="ident">input_gradient</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">input_gradient</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">input_hidden_gradient_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">input_hidden_gradient</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">input_hidden_gradient</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">input_cell_gradient_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">input_cell_gradient</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">input_cell_gradient</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">rnn_backward_data</span>(
+        <span class="ident">API::rnn_backward_data</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span>(<span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>()),
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">sequence_length</span>(),
@@ -1428,26 +1428,26 @@
     }
 
     <span class="doccomment">/// Train &amp; Return Results for RNN</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rnn_backward_weights</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="ident">RnnConfig</span>,
         <span class="ident">src_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span>,
-        <span class="ident">src</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">hidden_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
         <span class="comment">// Planning to initially pass NULLs to this</span>
-        <span class="ident">hidden</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">hidden</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">output_desc</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TensorDescriptor</span><span class="op">&gt;</span>,
-        <span class="ident">output</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">output</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">weight_desc</span>: <span class="ident">FilterDescriptor</span>,
-        <span class="ident">weight</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">weight</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">reserve_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">rnn_backward_weights</span>(
+        <span class="ident">API::rnn_backward_weights</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span>(<span class="ident">rnn_config</span>.<span class="ident">rnn_desc</span>().<span class="ident">id_c</span>()),
             <span class="kw-2">*</span><span class="ident">rnn_config</span>.<span class="ident">sequence_length</span>(),
@@ -1473,15 +1473,15 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">activation_conf</span>: <span class="kw-2">&amp;</span><span class="ident">ActivationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">activation_forward</span>(
+        <span class="ident">API::activation_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">activation_conf</span>.<span class="ident">activation_sigmoid_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -1496,24 +1496,24 @@
     <span class="doccomment">/// Computes the backward Sigmoid Activation function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sigmoid_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">activation_conf</span>: <span class="kw-2">&amp;</span><span class="ident">ActivationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">activation_backward</span>(
+        <span class="ident">API::activation_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">activation_conf</span>.<span class="ident">activation_sigmoid_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -1536,15 +1536,15 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">activation_conf</span>: <span class="kw-2">&amp;</span><span class="ident">ActivationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">activation_forward</span>(
+        <span class="ident">API::activation_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">activation_conf</span>.<span class="ident">activation_relu_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -1559,24 +1559,24 @@
     <span class="doccomment">/// Computes the backward Rectified Linear Activation function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relu_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">activation_conf</span>: <span class="kw-2">&amp;</span><span class="ident">ActivationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">activation_backward</span>(
+        <span class="ident">API::activation_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">activation_conf</span>.<span class="ident">activation_relu_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -1599,15 +1599,15 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">activation_conf</span>: <span class="kw-2">&amp;</span><span class="ident">ActivationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">activation_forward</span>(
+        <span class="ident">API::activation_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">activation_conf</span>.<span class="ident">activation_tanh_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -1622,24 +1622,24 @@
     <span class="doccomment">/// Computes the backward Hyperbolic Tangent Activation function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tanh_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">activation_conf</span>: <span class="kw-2">&amp;</span><span class="ident">ActivationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">activation_backward</span>(
+        <span class="ident">API::activation_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">activation_conf</span>.<span class="ident">activation_tanh_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -1658,22 +1658,22 @@
     <span class="doccomment">/// Computes the forward Convolution function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolution_forward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">conv_config</span>: <span class="kw-2">&amp;</span><span class="ident">ConvolutionConfig</span>,
-        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">filter_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">filter_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">convolution_forward</span>(
+        <span class="ident">API::convolution_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">conv_config</span>.<span class="ident">forward_algo</span>(),
             <span class="kw-2">*</span><span class="ident">conv_config</span>.<span class="ident">conv_desc</span>().<span class="ident">id_c</span>(),
@@ -1696,15 +1696,15 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolution_backward_bias</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">dest_grad_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_grad_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_grad_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">bias_grad_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">bias_grad_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">bias_grad_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">convolution_backward_bias</span>(
+        <span class="ident">API::convolution_backward_bias</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
             <span class="kw-2">*</span><span class="ident">dest_grad_desc</span>.<span class="ident">id_c</span>(),
@@ -1718,22 +1718,22 @@
     <span class="doccomment">/// Computes the backward Convolution function w.r.t the filter.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `filter_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolution_backward_filter</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">conv_config</span>: <span class="kw-2">&amp;</span><span class="ident">ConvolutionConfig</span>,
-        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_grad_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_grad_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">filter_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_grad_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">filter_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">convolution_backward_filter</span>(
+        <span class="ident">API::convolution_backward_filter</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">conv_config</span>.<span class="ident">backward_filter_algo</span>(),
             <span class="kw-2">*</span><span class="ident">conv_config</span>.<span class="ident">conv_desc</span>().<span class="ident">id_c</span>(),
@@ -1753,22 +1753,22 @@
     <span class="doccomment">/// Computes the backward Convolution function w.r.t the data.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `src_grad_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolution_backward_data</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">conv_config</span>: <span class="kw-2">&amp;</span><span class="ident">ConvolutionConfig</span>,
-        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">filter_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">workspace</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">filter_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_grad_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_grad_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_grad_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_grad_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_grad_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_grad_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">convolution_backward_data</span>(
+        <span class="ident">API::convolution_backward_data</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">conv_config</span>.<span class="ident">backward_data_algo</span>(),
             <span class="kw-2">*</span><span class="ident">conv_config</span>.<span class="ident">conv_desc</span>().<span class="ident">id_c</span>(),
@@ -1791,18 +1791,18 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">softmax_forward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">softmax_forward</span>(
+        <span class="ident">API::softmax_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
-            <span class="ident">cudnnSoftmaxAlgorithm_t</span>::<span class="ident">CUDNN_SOFTMAX_FAST</span>,
-            <span class="ident">cudnnSoftmaxMode_t</span>::<span class="ident">CUDNN_SOFTMAX_MODE_INSTANCE</span>,
+            <span class="ident">cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST</span>,
+            <span class="ident">cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE</span>,
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">src_data</span>,
@@ -1815,24 +1815,24 @@
     <span class="doccomment">/// Computes the backward softmax function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">softmax_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">softmax_backward</span>(
+        <span class="ident">API::softmax_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
-            <span class="ident">cudnnSoftmaxAlgorithm_t</span>::<span class="ident">CUDNN_SOFTMAX_FAST</span>,
-            <span class="ident">cudnnSoftmaxMode_t</span>::<span class="ident">CUDNN_SOFTMAX_MODE_INSTANCE</span>,
+            <span class="ident">cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_FAST</span>,
+            <span class="ident">cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE</span>,
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">src_data</span>,
@@ -1850,18 +1850,18 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">log_softmax_forward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">softmax_forward</span>(
+        <span class="ident">API::softmax_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
-            <span class="ident">cudnnSoftmaxAlgorithm_t</span>::<span class="ident">CUDNN_SOFTMAX_LOG</span>,
-            <span class="ident">cudnnSoftmaxMode_t</span>::<span class="ident">CUDNN_SOFTMAX_MODE_INSTANCE</span>,
+            <span class="ident">cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG</span>,
+            <span class="ident">cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE</span>,
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">src_data</span>,
@@ -1874,24 +1874,24 @@
     <span class="doccomment">/// Computes the backward logarithmic softmax function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">log_softmax_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">softmax_backward</span>(
+        <span class="ident">API::softmax_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
-            <span class="ident">cudnnSoftmaxAlgorithm_t</span>::<span class="ident">CUDNN_SOFTMAX_LOG</span>,
-            <span class="ident">cudnnSoftmaxMode_t</span>::<span class="ident">CUDNN_SOFTMAX_MODE_INSTANCE</span>,
+            <span class="ident">cudnnSoftmaxAlgorithm_t::CUDNN_SOFTMAX_LOG</span>,
+            <span class="ident">cudnnSoftmaxMode_t::CUDNN_SOFTMAX_MODE_INSTANCE</span>,
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">src_data</span>,
@@ -1910,18 +1910,18 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">normalization_conf</span>: <span class="kw-2">&amp;</span><span class="ident">NormalizationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">lrn_cross_channel_forward</span>(
+        <span class="ident">API::lrn_cross_channel_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">normalization_conf</span>.<span class="ident">lrn_desc</span>().<span class="ident">id_c</span>(),
-            <span class="ident">cudnnLRNMode_t</span>::<span class="ident">CUDNN_LRN_CROSS_CHANNEL_DIM1</span>,
+            <span class="ident">cudnnLRNMode_t::CUDNN_LRN_CROSS_CHANNEL_DIM1</span>,
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">src_data</span>,
@@ -1934,27 +1934,27 @@
     <span class="doccomment">/// Computes the backward local response normalization function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lrn_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">normalization_conf</span>: <span class="kw-2">&amp;</span><span class="ident">NormalizationConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">lrn_cross_channel_backward</span>(
+        <span class="ident">API::lrn_cross_channel_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">normalization_conf</span>.<span class="ident">lrn_desc</span>().<span class="ident">id_c</span>(),
-            <span class="ident">cudnnLRNMode_t</span>::<span class="ident">CUDNN_LRN_CROSS_CHANNEL_DIM1</span>,
+            <span class="ident">cudnnLRNMode_t::CUDNN_LRN_CROSS_CHANNEL_DIM1</span>,
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
             <span class="ident">src_data</span>,
@@ -1975,15 +1975,15 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">pooling_conf</span>: <span class="kw-2">&amp;</span><span class="ident">PoolingConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">pooling_forward</span>(
+        <span class="ident">API::pooling_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">pooling_conf</span>.<span class="ident">pooling_avg_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -1998,24 +1998,24 @@
     <span class="doccomment">/// Computes the backward average pooling function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pooling_avg_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">pooling_conf</span>: <span class="kw-2">&amp;</span><span class="ident">PoolingConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">pooling_backward</span>(
+        <span class="ident">API::pooling_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">pooling_conf</span>.<span class="ident">pooling_avg_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -2038,15 +2038,15 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">pooling_conf</span>: <span class="kw-2">&amp;</span><span class="ident">PoolingConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">pooling_forward</span>(
+        <span class="ident">API::pooling_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">pooling_conf</span>.<span class="ident">pooling_max_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -2061,24 +2061,24 @@
     <span class="doccomment">/// Computes the backward max pooling function.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Writes the result of the computation to `dest_diff_data`.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pooling_max_backward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">pooling_conf</span>: <span class="kw-2">&amp;</span><span class="ident">PoolingConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">src_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_diff_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_diff_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_diff_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">scale</span>: <span class="ident">ScalParams</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">pooling_backward</span>(
+        <span class="ident">API::pooling_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">pooling_conf</span>.<span class="ident">pooling_max_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw">unsafe</span> { <span class="ident">transmute_copy</span>(<span class="op">&amp;&amp;</span><span class="ident">scale</span>.<span class="ident">a</span>) },
@@ -2101,14 +2101,14 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">dropout_conf</span>: <span class="kw-2">&amp;</span><span class="ident">DropoutConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">dropout_forward</span>(
+        <span class="ident">API::dropout_forward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">dropout_conf</span>.<span class="ident">dropout_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
@@ -2127,14 +2127,14 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">dropout_conf</span>: <span class="kw-2">&amp;</span><span class="ident">DropoutConfig</span>,
         <span class="ident">src_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">src_data</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dest_desc</span>: <span class="kw-2">&amp;</span><span class="ident">TensorDescriptor</span>,
-        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dest_data</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Float</span> <span class="op">+</span> <span class="ident">DataTypeInfo</span>,
     {
-        <span class="ident">API</span>::<span class="ident">dropout_backward</span>(
+        <span class="ident">API::dropout_backward</span>(
             <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">dropout_conf</span>.<span class="ident">dropout_desc</span>().<span class="ident">id_c</span>(),
             <span class="kw-2">*</span><span class="ident">src_desc</span>.<span class="ident">id_c</span>(),
@@ -2147,5 +2147,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rcudnn"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rcudnn" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

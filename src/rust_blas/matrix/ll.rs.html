@@ -1,7 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rust-blas/src/matrix/ll.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ll.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rust-blas/src/matrix/ll.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ll.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rust_blas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rust_blas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -514,15 +514,15 @@
 <span class="doccomment">//! Bindings for matrix functions.</span>
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_s</span> {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
-    <span class="kw">use</span> <span class="ident">libc</span>::<span class="ident">c_float</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
+    <span class="kw">use</span> <span class="ident">libc::c_float</span>;
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_sgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_ssymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_ssyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_ssyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_strmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_strsm</span> <span class="kw">as</span> <span class="ident">strsm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_sgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ssymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ssyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ssyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_strmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_strsm</span> <span class="kw">as</span> <span class="ident">strsm</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sgemm</span>(
@@ -616,15 +616,15 @@
 }
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_d</span> {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
-    <span class="kw">use</span> <span class="ident">libc</span>::<span class="ident">c_double</span>;
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
+    <span class="kw">use</span> <span class="ident">libc::c_double</span>;
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_dgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_dsymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_dsyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_dsyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_dtrmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_dtrsm</span> <span class="kw">as</span> <span class="ident">strsm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dsymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dsyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dsyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dtrmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dtrsm</span> <span class="kw">as</span> <span class="ident">strsm</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dgemm</span>(
@@ -718,18 +718,18 @@
 }
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_c</span> {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
     <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_float</span>, <span class="ident">c_void</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_cgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_chemm</span> <span class="kw">as</span> <span class="ident">hemm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_cher2k</span> <span class="kw">as</span> <span class="ident">her2k</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_cherk</span> <span class="kw">as</span> <span class="ident">herk</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_csymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_csyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_csyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_ctrmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_ctrsm</span> <span class="kw">as</span> <span class="ident">trsm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_cgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_chemm</span> <span class="kw">as</span> <span class="ident">hemm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_cher2k</span> <span class="kw">as</span> <span class="ident">her2k</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_cherk</span> <span class="kw">as</span> <span class="ident">herk</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_csymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_csyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_csyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ctrmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ctrsm</span> <span class="kw">as</span> <span class="ident">trsm</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_cgemm</span>(
@@ -866,18 +866,18 @@
 }
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_z</span> {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
+    <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::attribute</span>::{<span class="ident">Diagonal</span>, <span class="ident">Order</span>, <span class="ident">Side</span>, <span class="ident">Symmetry</span>, <span class="ident">Transpose</span>};
     <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_double</span>, <span class="ident">c_void</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_zgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_zhemm</span> <span class="kw">as</span> <span class="ident">hemm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_zher2k</span> <span class="kw">as</span> <span class="ident">her2k</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_zherk</span> <span class="kw">as</span> <span class="ident">herk</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_zsymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_zsyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_zsyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_ztrmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cblas_ztrsm</span> <span class="kw">as</span> <span class="ident">trsm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zgemm</span> <span class="kw">as</span> <span class="ident">gemm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zhemm</span> <span class="kw">as</span> <span class="ident">hemm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zher2k</span> <span class="kw">as</span> <span class="ident">her2k</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zherk</span> <span class="kw">as</span> <span class="ident">herk</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zsymm</span> <span class="kw">as</span> <span class="ident">symm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zsyr2k</span> <span class="kw">as</span> <span class="ident">syr2k</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zsyrk</span> <span class="kw">as</span> <span class="ident">syrk</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ztrmm</span> <span class="kw">as</span> <span class="ident">trmm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ztrsm</span> <span class="kw">as</span> <span class="ident">trsm</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zgemm</span>(
@@ -1013,5 +1013,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rust_blas"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rust_blas" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>

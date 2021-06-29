@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["coaster","coaster_blas","coaster_nn","example_mnist_classification","example_rnn_regression","greenglas","juice","juice_utils","rcublas","rcublas_sys","rcudnn","rcudnn_sys","rust_blas"];

@@ -1,7 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rcudnn/cudnn/src/api/dropout.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dropout.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rcudnn/cudnn/src/api/dropout.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dropout.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings"></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../rcudnn/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rcudnn/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -258,7 +258,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Includes the convolution and filter functionality.</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ffi</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::ffi</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Error</span>, <span class="ident">API</span>};
 
 <span class="kw">impl</span> <span class="ident">API</span> {
@@ -268,21 +268,21 @@
 
     <span class="doccomment">/// Create a generic CUDA cuDNN DropoutDescriptor</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_dropout_descriptor</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cudnnDropoutDescriptor_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_create_dropout_descriptor</span>() }
+        <span class="kw">unsafe</span> { <span class="ident">API::ffi_create_dropout_descriptor</span>() }
     }
     <span class="doccomment">/// Destroys a CUDA cuDNN Dropout Descriptor.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Should be called when freeing a CUDA::Descriptor to not trash up the CUDA device.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">destroy_dropout_descriptor</span>(<span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_destroy_dropout_descriptor</span>(<span class="ident">dropout_desc</span>) }
+        <span class="kw">unsafe</span> { <span class="ident">API::ffi_destroy_dropout_descriptor</span>(<span class="ident">dropout_desc</span>) }
     }
     <span class="doccomment">/// Get the states size (GPU memory).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dropout_get_states_size</span>(<span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_dropout_get_states_size</span>(<span class="ident">handle</span>) }
+        <span class="kw">unsafe</span> { <span class="ident">API::ffi_dropout_get_states_size</span>(<span class="ident">handle</span>) }
     }
     <span class="doccomment">/// Get the reserve space size.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dropout_get_reserve_space_size</span>(<span class="ident">xdesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">unsafe</span> { <span class="ident">API</span>::<span class="ident">ffi_dropout_get_reserve_space_size</span>(<span class="ident">xdesc</span>) }
+        <span class="kw">unsafe</span> { <span class="ident">API::ffi_dropout_get_reserve_space_size</span>(<span class="ident">xdesc</span>) }
     }
 
     <span class="doccomment">/// Initializes a generic CUDA cuDNN Activation Descriptor with specific properties.</span>
@@ -290,12 +290,12 @@
         <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>,
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">dropout</span>: <span class="ident">f32</span>,
-        <span class="ident">states</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">states</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">state_size_in_bytes</span>: <span class="ident">usize</span>,
-        <span class="ident">seed</span>: ::<span class="ident">libc</span>::<span class="ident">c_ulonglong</span>,
+        <span class="ident">seed</span>: <span class="ident">::libc::c_ulonglong</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
-            <span class="ident">API</span>::<span class="ident">ffi_set_dropout_descriptor</span>(
+            <span class="ident">API::ffi_set_dropout_descriptor</span>(
                 <span class="ident">dropout_desc</span>,
                 <span class="ident">handle</span>,
                 <span class="ident">dropout</span>,
@@ -307,19 +307,19 @@
     }
 
     <span class="doccomment">/// Computes the dropout forward function.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dropout_forward</span>(
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>,
         <span class="ident">xdesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">ydesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">reserve_space_size_in_bytes</span>: <span class="ident">usize</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
-            <span class="ident">API</span>::<span class="ident">ffi_dropout_forward</span>(
+            <span class="ident">API::ffi_dropout_forward</span>(
                 <span class="ident">handle</span>,
                 <span class="ident">dropout_desc</span>,
                 <span class="ident">xdesc</span>,
@@ -333,19 +333,19 @@
     }
 
     <span class="doccomment">/// Computes the dropout backward function.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dropout_backward</span>(
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>,
         <span class="ident">dydesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">dy</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dy</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dxdesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">dx</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dx</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">reserve_space_size_in_bytes</span>: <span class="ident">usize</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">unsafe</span> {
-            <span class="ident">API</span>::<span class="ident">ffi_dropout_backward</span>(
+            <span class="ident">API::ffi_dropout_backward</span>(
                 <span class="ident">handle</span>,
                 <span class="ident">dropout_desc</span>,
                 <span class="ident">dydesc</span>,
@@ -359,13 +359,13 @@
     }
 
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_create_dropout_descriptor</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">cudnnDropoutDescriptor_t</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span> <span class="op">=</span> ::<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span> <span class="op">=</span> <span class="ident">::std::ptr::null_mut</span>();
         <span class="kw">match</span> <span class="ident">cudnnCreateDropoutDescriptor</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">dropout_desc</span>) {
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">dropout_desc</span>),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">AllocFailed</span>(<span class="string">&quot;The resources could not be allocated&quot;</span>))
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">dropout_desc</span>),
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_ALLOC_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="prelude-val">Err</span>(<span class="ident">Error::AllocFailed</span>(<span class="string">&quot;The resources could not be allocated&quot;</span>))
             }
-            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Unknown</span>(
                 <span class="string">&quot;Unable create generic CUDA cuDNN Dropout Descriptor&quot;</span>,
                 <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
@@ -375,8 +375,8 @@
         <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnDestroyDropoutDescriptor</span>(<span class="ident">dropout_desc</span>) {
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Unknown</span>(
                 <span class="string">&quot;Unable to destroy CUDA cuDNN Dropout Descriptor&quot;</span>,
                 <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
@@ -385,8 +385,8 @@
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_dropout_get_states_size</span>(<span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size_in_bytes</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">match</span> <span class="ident">cudnnDropoutGetStatesSize</span>(<span class="ident">handle</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">size_in_bytes</span>) {
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size_in_bytes</span>),
-            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size_in_bytes</span>),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Unknown</span>(
                 <span class="string">&quot;Unable to get CUDA cuDNN Dropout Descriptor states size&quot;</span>,
                 <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
@@ -397,8 +397,8 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size_in_bytes</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">match</span> <span class="ident">cudnnDropoutGetReserveSpaceSize</span>(<span class="ident">xdesc</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">size_in_bytes</span>) {
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size_in_bytes</span>),
-            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">size_in_bytes</span>),
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Unknown</span>(
                 <span class="string">&quot;Unable to get CUDA cuDNN Dropout Descriptor reserved space size&quot;</span>,
                 <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
@@ -408,9 +408,9 @@
         <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>,
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">dropout</span>: <span class="ident">f32</span>,
-        <span class="ident">states</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">states</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">state_size_in_bytes</span>: <span class="ident">usize</span>,
-        <span class="ident">seed</span>: ::<span class="ident">libc</span>::<span class="ident">c_ulonglong</span>,
+        <span class="ident">seed</span>: <span class="ident">::libc::c_ulonglong</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnSetDropoutDescriptor</span>(
             <span class="ident">dropout_desc</span>,
@@ -420,29 +420,29 @@
             <span class="ident">state_size_in_bytes</span>,
             <span class="ident">seed</span>,
         ) {
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_INVALID_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">InvalidValue</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_INVALID_VALUE</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::InvalidValue</span>(
                 <span class="string">&quot;sizeInBytes is less than the value returned by cudnnDropoutGetStatesSize .&quot;</span>,
             )),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::ExecutionFailed</span>(
                 <span class="string">&quot;The function failed to launch on the GPU&quot;</span>,
             )),
-            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(
+            <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Unknown</span>(
                 <span class="string">&quot;Unable to set CUDA cuDNN Dropout Descriptor&quot;</span>,
                 <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>,
             )),
         }
     }
 
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_dropout_forward</span>(
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>,
         <span class="ident">xdesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">ydesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">reserve_space_size_in_bytes</span>: <span class="ident">usize</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnDropoutForward</span>(
@@ -455,30 +455,30 @@
             <span class="ident">reserve_space</span>,
             <span class="ident">reserve_space_size_in_bytes</span>,
         ) {
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::NotSupported</span>(
                 <span class="string">&quot;The function does not support the provided configuration.&quot;</span>,
             )),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::BadParam</span>(
                 <span class="string">&quot;At least one of the following conditions are met: The number of elements of input tensor and output tensors differ, or the datatype of the input tensor and output tensors differs, or the strides of the input tensor and output tensors differ and in-place operation is used (i.e., x and y pointers are equal), or the provided reserveSpaceSizeInBytes is less then the value returned by cudnnDropoutGetReserveSpaceSize, or cudnnSetdropoutDescriptor has not been called on dropoutDesc with the non-NULL states argument&quot;</span>,
             )),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::ExecutionFailed</span>(
                 <span class="string">&quot;The function failed to launch on the GPU.&quot;</span>,
             )),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to calculate CUDA cuDNN Dropout forward&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Unknown</span>(<span class="string">&quot;Unable to calculate CUDA cuDNN Dropout forward&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
 
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">too_many_arguments</span>)]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
     <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">ffi_dropout_backward</span>(
         <span class="ident">handle</span>: <span class="ident">cudnnHandle_t</span>,
         <span class="ident">dropout_desc</span>: <span class="ident">cudnnDropoutDescriptor_t</span>,
         <span class="ident">dydesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">dy</span>: <span class="kw-2">*</span><span class="kw">const</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dy</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">dxdesc</span>: <span class="ident">cudnnTensorDescriptor_t</span>,
-        <span class="ident">dx</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
-        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> ::<span class="ident">libc</span>::<span class="ident">c_void</span>,
+        <span class="ident">dx</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+        <span class="ident">reserve_space</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
         <span class="ident">reserve_space_size_in_bytes</span>: <span class="ident">usize</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">cudnnDropoutBackward</span>(
@@ -491,21 +491,21 @@
             <span class="ident">reserve_space</span>,
             <span class="ident">reserve_space_size_in_bytes</span>,
         ) {
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">NotSupported</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_SUCCESS</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(()),
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::NotSupported</span>(
                 <span class="string">&quot;The function does not support the provided configuration.&quot;</span>,
             )),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">BadParam</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_BAD_PARAM</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::BadParam</span>(
                 <span class="string">&quot;At least one of the following conditions are met: The number of elements of input tensor and output tensors differ, or the datatype of the input tensor and output tensors differs, or the strides of the input tensor and output tensors differ and in-place operation is used (i.e., x and y pointers are equal), or the provided reserveSpaceSizeInBytes is less then the value returned by cudnnDropoutGetReserveSpaceSize, or cudnnSetdropoutDescriptor has not been called on dropoutDesc with the non-NULL states argument&quot;</span>,
             )),
-            <span class="ident">cudnnStatus_t</span>::<span class="ident">CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">ExecutionFailed</span>(
+            <span class="ident">cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::ExecutionFailed</span>(
                 <span class="string">&quot;The function failed to launch on the GPU.&quot;</span>,
             )),
-           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">Unknown</span>(<span class="string">&quot;Unable to calculate CUDA cuDNN Dropout backward&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
+           <span class="ident">status</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Unknown</span>(<span class="string">&quot;Unable to calculate CUDA cuDNN Dropout backward&quot;</span>, <span class="ident">status</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="kw">as</span> <span class="ident">u64</span>)),
 
         }
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rcudnn"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rcudnn" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>
