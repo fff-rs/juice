@@ -8,6 +8,3 @@ pub mod native;
 #[cfg(feature = "cuda")]
 #[macro_use]
 pub mod cuda;
-
-#[cfg(not(feature = "cuda"))]
-use thiserror as _;
