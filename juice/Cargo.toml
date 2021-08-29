@@ -33,7 +33,7 @@ timeit = "0.1"
 capnpc = "0.14"
 
 [dev-dependencies]
-env_logger = "0.8"
+env_logger = "0.9"
 
 [features]
 default = ["native", "cuda"]

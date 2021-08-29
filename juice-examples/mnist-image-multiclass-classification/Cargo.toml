@@ -27,7 +27,7 @@ flate2 = "1"
 mnist = "0.4.0"
 
 log = "0.4"
-env_logger = "0.8"
+env_logger = "0.9"
 timeit = "0.1.2"
 
 docopt = "1"
