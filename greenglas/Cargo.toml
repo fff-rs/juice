@@ -3,7 +3,7 @@ name = "greenglas"
 description = "Data Preprocessing library for Machine Learning"
 authors = ["Bernhard Schuster <bernhard@ahoi.io>",
            "Michael Hirn"]
-version = "0.2.0"
+version = "0.3.0"
 repository = "https://github.com/spearow/greenglas"
 homepage = "https://spearow.io/projects/greenglas"
 documentation = "https://spearow.github.com/greenglas"

@@ -7,10 +7,10 @@ edition = "2018"
 publish = false
 
 [dependencies]
-greenglas = { path = "../../greenglas" }
-juice = { path = "../../juice", default-features = false }
-coaster = { path = "../../coaster", default-features = false }
-coaster-nn = { path = "../../coaster-nn", default-features = false }
+greenglas = { path = "../../greenglas" , version = "0.3.0"}
+juice = { path = "../../juice", default-features = false , version = "0.3.0"}
+coaster = { path = "../../coaster", default-features = false , version = "0.2.0"}
+coaster-nn = { path = "../../coaster-nn", default-features = false , version = "0.5.0"}
 
 csv = "1.1"
 serde = { version = "1", features = ["derive"] }
