@@ -20,7 +20,11 @@ use std::rc::Rc;
 #[derive(Debug)]
 /// Solver that optimizes a [Layer][1] with a given objective.
 /// [1]: ../layer/index.html
-pub struct Solver<SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32>> {
+pub struct Solver<SolverB, B>
+where
+    SolverB: IBackend + SolverOps<f32>,
+    B: IBackend + LayerOps<f32>,
+{
     net: Layer<B>,
     objective: Layer<SolverB>,
     /// The implementation of the Solver
@@ -34,7 +38,11 @@ pub struct Solver<SolverB: IBackend + SolverOps<f32>, B: IBackend + LayerOps<f32
     solver_backend: PhantomData<SolverB>,
 }
 
-impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + 'static> Solver<SolverB, B> {
+impl<SolverB, B> Solver<SolverB, B>
+where
+    SolverB: IBackend + SolverOps<f32> + 'static,
+    B: IBackend + LayerOps<f32> + 'static,
+{
     /// Create Solver from [SolverConfig][1]
     /// [1]: ./struct.SolverConfig.html
     ///
@@ -56,7 +64,11 @@ impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> +
     }
 }
 
-impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> + 'static> Solver<SolverB, B> {
+impl<SolverB, B> Solver<SolverB, B>
+where
+    SolverB: IBackend + SolverOps<f32> + 'static,
+    B: IBackend + LayerOps<f32> + 'static,
+{
     fn init(&mut self, backend: Rc<B>) {
         info!("Initializing solver from configuration");
 
@@ -112,7 +124,11 @@ impl<SolverB: IBackend + SolverOps<f32> + 'static, B: IBackend + LayerOps<f32> +
 ///
 /// See [Solvers][1]
 /// [1]: ../solvers/index.html
-pub trait ISolver<SolverB, B: IBackend + LayerOps<f32>> {
+pub trait ISolver<SolverB, B>
+where
+    B: IBackend + LayerOps<f32>,
+    SolverB: IBackend + SolverOps<f32>,
+{
     /// Initialize the solver, setting up any network related data.
     fn init(&mut self, net: &Layer<B>) {}
 
