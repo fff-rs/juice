@@ -1,7 +1,7 @@
 [package]
 name = "coaster-blas"
 description = "Coaster library for full BLAS support"
-version = "0.3.0"
+version = "0.4.0"
 authors = [
     "Bernhard Schuster <bernhard@ahoi.io>",
     "Lissa Hyacinth <lissahyacinth@gmail.com>",
@@ -18,12 +18,12 @@ license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [dependencies]
-coaster = { version = "0.1", path = "../coaster", default-features = false }
+coaster = { version = "0.2.0", path = "../coaster", default-features = false }
 log = "0.4"
 # native
-rust-blas = { version = "^0.1", path = "../rust-blas", optional = true }
+rust-blas = { version = "0.2.0", path = "../rust-blas", optional = true }
 # cuda
-rcublas = { version = "0.5", path = "../rcublas/cublas", optional = true }
+rcublas = { version = "0.6.0", path = "../rcublas/cublas", optional = true }
 
 [dev-dependencies]
 

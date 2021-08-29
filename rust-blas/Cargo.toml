@@ -1,6 +1,6 @@
 [package]
 name = "rust-blas"
-version = "0.1.3"
+version = "0.2.0"
 authors = [
 	"Paul Kassianik <pkassianik@gmail.com>",
 	"Lissa Hyacinth <lissahyacinth@gmail.com>",
