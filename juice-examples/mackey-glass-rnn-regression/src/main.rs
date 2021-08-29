@@ -117,13 +117,16 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
     net_cfg
 }
 
-fn add_solver(
-    backend: Rc<Backend<Cuda>>,
+fn add_solver<Framework: IFramework + 'static>(
+    backend: Rc<Backend<Framework>>,
     net_cfg: SequentialConfig,
     batch_size: usize,
     learning_rate: f32,
     momentum: f32,
-) -> Solver<Backend<Cuda>, Backend<Cuda>> {
+) -> Solver<Backend<Framework>, Backend<Framework>>
+where
+    Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
+{
     // Define an Objective Function
     let mut regressor_cfg = SequentialConfig::default();
 
@@ -150,16 +153,18 @@ fn add_solver(
 }
 
 /// Train, and optionally, save the resulting network state/weights
-pub(crate) fn train(
-    backend: Rc<Backend<Cuda>>,
+pub(crate) fn train<Framework: IFramework + 'static>(
+    backend: Rc<Backend<Framework>>,
     batch_size: usize,
     learning_rate: f32,
     momentum: f32,
     file: &PathBuf,
-) {
+) where
+    Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
+{
     // Initialise a Sequential Layer
     let net_cfg = create_network(batch_size, DATA_COLUMNS);
-    let mut solver = add_solver(backend, net_cfg, batch_size, learning_rate, momentum);
+    let mut solver = add_solver::<Framework>(backend, net_cfg, batch_size, learning_rate, momentum);
 
     // Define Input & Labels
     let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
@@ -214,13 +219,16 @@ pub(crate) fn train(
 }
 
 /// Test a the validation subset of data items against the trained network state.
-pub(crate) fn test(
-    backend: Rc<Backend<Cuda>>,
+pub(crate) fn test<Framework: IFramework + 'static>(
+    backend: Rc<Backend<Framework>>,
     batch_size: usize,
     file: &Path,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>>
+where
+    Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
+{
     // Load in a pre-trained network
-    let mut network: Layer<Backend<Cuda>> = Layer::<Backend<Cuda>>::load(backend, file)?;
+    let mut network: Layer<Backend<Framework>> = Layer::<Backend<Framework>>::load(backend, file)?;
 
     // Define Input & Labels
     let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
