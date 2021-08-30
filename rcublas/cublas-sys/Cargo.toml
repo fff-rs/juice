@@ -22,5 +22,5 @@ pkg-config = "0.3"
 bindgen = { version = "0.58", optional = true }
 
 [features]
-default = ["generate"]
+default = []
 generate = ["bindgen"]
