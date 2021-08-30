@@ -1,7 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rcudnn/cudnn-sys/src/generated.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>generated.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rcudnn_sys/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
-                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">    1</span>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rcudnn_sys/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">    1</span>
 <span id="2">    2</span>
 <span id="3">    3</span>
 <span id="4">    4</span>
@@ -21386,7 +21385,213 @@
 <span id="21383">21383</span>
 <span id="21384">21384</span>
 <span id="21385">21385</span>
-</pre><div class="example-wrap"><pre class="rust ">
+<span id="21386">21386</span>
+<span id="21387">21387</span>
+<span id="21388">21388</span>
+<span id="21389">21389</span>
+<span id="21390">21390</span>
+<span id="21391">21391</span>
+<span id="21392">21392</span>
+<span id="21393">21393</span>
+<span id="21394">21394</span>
+<span id="21395">21395</span>
+<span id="21396">21396</span>
+<span id="21397">21397</span>
+<span id="21398">21398</span>
+<span id="21399">21399</span>
+<span id="21400">21400</span>
+<span id="21401">21401</span>
+<span id="21402">21402</span>
+<span id="21403">21403</span>
+<span id="21404">21404</span>
+<span id="21405">21405</span>
+<span id="21406">21406</span>
+<span id="21407">21407</span>
+<span id="21408">21408</span>
+<span id="21409">21409</span>
+<span id="21410">21410</span>
+<span id="21411">21411</span>
+<span id="21412">21412</span>
+<span id="21413">21413</span>
+<span id="21414">21414</span>
+<span id="21415">21415</span>
+<span id="21416">21416</span>
+<span id="21417">21417</span>
+<span id="21418">21418</span>
+<span id="21419">21419</span>
+<span id="21420">21420</span>
+<span id="21421">21421</span>
+<span id="21422">21422</span>
+<span id="21423">21423</span>
+<span id="21424">21424</span>
+<span id="21425">21425</span>
+<span id="21426">21426</span>
+<span id="21427">21427</span>
+<span id="21428">21428</span>
+<span id="21429">21429</span>
+<span id="21430">21430</span>
+<span id="21431">21431</span>
+<span id="21432">21432</span>
+<span id="21433">21433</span>
+<span id="21434">21434</span>
+<span id="21435">21435</span>
+<span id="21436">21436</span>
+<span id="21437">21437</span>
+<span id="21438">21438</span>
+<span id="21439">21439</span>
+<span id="21440">21440</span>
+<span id="21441">21441</span>
+<span id="21442">21442</span>
+<span id="21443">21443</span>
+<span id="21444">21444</span>
+<span id="21445">21445</span>
+<span id="21446">21446</span>
+<span id="21447">21447</span>
+<span id="21448">21448</span>
+<span id="21449">21449</span>
+<span id="21450">21450</span>
+<span id="21451">21451</span>
+<span id="21452">21452</span>
+<span id="21453">21453</span>
+<span id="21454">21454</span>
+<span id="21455">21455</span>
+<span id="21456">21456</span>
+<span id="21457">21457</span>
+<span id="21458">21458</span>
+<span id="21459">21459</span>
+<span id="21460">21460</span>
+<span id="21461">21461</span>
+<span id="21462">21462</span>
+<span id="21463">21463</span>
+<span id="21464">21464</span>
+<span id="21465">21465</span>
+<span id="21466">21466</span>
+<span id="21467">21467</span>
+<span id="21468">21468</span>
+<span id="21469">21469</span>
+<span id="21470">21470</span>
+<span id="21471">21471</span>
+<span id="21472">21472</span>
+<span id="21473">21473</span>
+<span id="21474">21474</span>
+<span id="21475">21475</span>
+<span id="21476">21476</span>
+<span id="21477">21477</span>
+<span id="21478">21478</span>
+<span id="21479">21479</span>
+<span id="21480">21480</span>
+<span id="21481">21481</span>
+<span id="21482">21482</span>
+<span id="21483">21483</span>
+<span id="21484">21484</span>
+<span id="21485">21485</span>
+<span id="21486">21486</span>
+<span id="21487">21487</span>
+<span id="21488">21488</span>
+<span id="21489">21489</span>
+<span id="21490">21490</span>
+<span id="21491">21491</span>
+<span id="21492">21492</span>
+<span id="21493">21493</span>
+<span id="21494">21494</span>
+<span id="21495">21495</span>
+<span id="21496">21496</span>
+<span id="21497">21497</span>
+<span id="21498">21498</span>
+<span id="21499">21499</span>
+<span id="21500">21500</span>
+<span id="21501">21501</span>
+<span id="21502">21502</span>
+<span id="21503">21503</span>
+<span id="21504">21504</span>
+<span id="21505">21505</span>
+<span id="21506">21506</span>
+<span id="21507">21507</span>
+<span id="21508">21508</span>
+<span id="21509">21509</span>
+<span id="21510">21510</span>
+<span id="21511">21511</span>
+<span id="21512">21512</span>
+<span id="21513">21513</span>
+<span id="21514">21514</span>
+<span id="21515">21515</span>
+<span id="21516">21516</span>
+<span id="21517">21517</span>
+<span id="21518">21518</span>
+<span id="21519">21519</span>
+<span id="21520">21520</span>
+<span id="21521">21521</span>
+<span id="21522">21522</span>
+<span id="21523">21523</span>
+<span id="21524">21524</span>
+<span id="21525">21525</span>
+<span id="21526">21526</span>
+<span id="21527">21527</span>
+<span id="21528">21528</span>
+<span id="21529">21529</span>
+<span id="21530">21530</span>
+<span id="21531">21531</span>
+<span id="21532">21532</span>
+<span id="21533">21533</span>
+<span id="21534">21534</span>
+<span id="21535">21535</span>
+<span id="21536">21536</span>
+<span id="21537">21537</span>
+<span id="21538">21538</span>
+<span id="21539">21539</span>
+<span id="21540">21540</span>
+<span id="21541">21541</span>
+<span id="21542">21542</span>
+<span id="21543">21543</span>
+<span id="21544">21544</span>
+<span id="21545">21545</span>
+<span id="21546">21546</span>
+<span id="21547">21547</span>
+<span id="21548">21548</span>
+<span id="21549">21549</span>
+<span id="21550">21550</span>
+<span id="21551">21551</span>
+<span id="21552">21552</span>
+<span id="21553">21553</span>
+<span id="21554">21554</span>
+<span id="21555">21555</span>
+<span id="21556">21556</span>
+<span id="21557">21557</span>
+<span id="21558">21558</span>
+<span id="21559">21559</span>
+<span id="21560">21560</span>
+<span id="21561">21561</span>
+<span id="21562">21562</span>
+<span id="21563">21563</span>
+<span id="21564">21564</span>
+<span id="21565">21565</span>
+<span id="21566">21566</span>
+<span id="21567">21567</span>
+<span id="21568">21568</span>
+<span id="21569">21569</span>
+<span id="21570">21570</span>
+<span id="21571">21571</span>
+<span id="21572">21572</span>
+<span id="21573">21573</span>
+<span id="21574">21574</span>
+<span id="21575">21575</span>
+<span id="21576">21576</span>
+<span id="21577">21577</span>
+<span id="21578">21578</span>
+<span id="21579">21579</span>
+<span id="21580">21580</span>
+<span id="21581">21581</span>
+<span id="21582">21582</span>
+<span id="21583">21583</span>
+<span id="21584">21584</span>
+<span id="21585">21585</span>
+<span id="21586">21586</span>
+<span id="21587">21587</span>
+<span id="21588">21588</span>
+<span id="21589">21589</span>
+<span id="21590">21590</span>
+<span id="21591">21591</span>
+</pre><pre class="rust">
 <span class="comment">/* automatically generated by rust-bindgen */</span>
 
 
@@ -21399,11 +21604,11 @@
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_MAJOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_MINOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_PATCHLEVEL</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_VERSION</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8200</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_PATCHLEVEL</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_VERSION</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8202</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_INFER_MAJOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_INFER_MINOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_INFER_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_INFER_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_DIM_MAX</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_LRN_MIN_N</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">1</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_LRN_MAX_N</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">16</span>;
@@ -21412,10 +21617,10 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_BN_MIN_EPSILON</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">0.0</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_TRAIN_MAJOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_TRAIN_MINOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_TRAIN_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_OPS_TRAIN_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_INFER_MAJOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_INFER_MINOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_INFER_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_INFER_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_RNN_PADDED_IO_DISABLED</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_RNN_PADDED_IO_ENABLED</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">1</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_SEQDATA_DIM_COUNT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">4</span>;
@@ -21426,13 +21631,13 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ATTN_WKIND_COUNT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_TRAIN_MAJOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_TRAIN_MINOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_TRAIN_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_ADV_TRAIN_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_INFER_MAJOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_INFER_MINOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_INFER_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_INFER_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_TRAIN_MAJOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_TRAIN_MINOR</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_TRAIN_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CUDNN_CNN_TRAIN_PATCH</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u32</span>)]</span>
 <span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
 <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;                                                                              *&quot;</span>]</span>
@@ -21696,7 +21901,8 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; CUDA driver.&quot;</span>]</span>
     <span class="ident">cudaErrorNoDevice</span> <span class="op">=</span> <span class="number">100</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This indicates that the device ordinal supplied by the user does not&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; correspond to a valid CUDA device.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; correspond to a valid CUDA device or that the action requested is&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; invalid for the specified device.&quot;</span>]</span>
     <span class="ident">cudaErrorInvalidDevice</span> <span class="op">=</span> <span class="number">101</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This indicates that the device doesn&#39;t have a valid Grid License.&quot;</span>]</span>
     <span class="ident">cudaErrorDeviceNotLicensed</span> <span class="op">=</span> <span class="number">102</span>,
@@ -21773,6 +21979,8 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; PTX. The runtime may fall back to compiling PTX if an application does not contain&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; a suitable binary for the current device.&quot;</span>]</span>
     <span class="ident">cudaErrorJitCompilationDisabled</span> <span class="op">=</span> <span class="number">223</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This indicates that the provided execution affinity is not supported by the device.&quot;</span>]</span>
+    <span class="ident">cudaErrorUnsupportedExecAffinity</span> <span class="op">=</span> <span class="number">224</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This indicates that the device kernel source is invalid.&quot;</span>]</span>
     <span class="ident">cudaErrorInvalidSource</span> <span class="op">=</span> <span class="number">300</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This indicates that the file specified was not found.&quot;</span>]</span>
@@ -21922,6 +22130,17 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; that only supported hardware is visible during initialization via the CUDA_VISIBLE_DEVICES&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; environment variable.&quot;</span>]</span>
     <span class="ident">cudaErrorCompatNotSupportedOnDevice</span> <span class="op">=</span> <span class="number">804</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This error indicates that the MPS client failed to connect to the MPS control daemon or the MPS server.&quot;</span>]</span>
+    <span class="ident">cudaErrorMpsConnectionFailed</span> <span class="op">=</span> <span class="number">805</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This error indicates that the remote procedural call between the MPS server and the MPS client failed.&quot;</span>]</span>
+    <span class="ident">cudaErrorMpsRpcFailure</span> <span class="op">=</span> <span class="number">806</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This error indicates that the MPS server is not ready to accept new MPS client requests.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This error can be returned when the MPS server is in the process of recovering from a fatal failure.&quot;</span>]</span>
+    <span class="ident">cudaErrorMpsServerNotReady</span> <span class="op">=</span> <span class="number">807</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This error indicates that the hardware resources required to create MPS client have been exhausted.&quot;</span>]</span>
+    <span class="ident">cudaErrorMpsMaxClientsReached</span> <span class="op">=</span> <span class="number">808</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; This error indicates the the hardware resources required to device connections have been exhausted.&quot;</span>]</span>
+    <span class="ident">cudaErrorMpsMaxConnectionsReached</span> <span class="op">=</span> <span class="number">809</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; The operation is not permitted when the stream is capturing.&quot;</span>]</span>
     <span class="ident">cudaErrorStreamCaptureUnsupported</span> <span class="op">=</span> <span class="number">900</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; The current capture sequence on the stream has been invalidated due to&quot;</span>]</span>
@@ -21975,7 +22194,6 @@
     <span class="ident">cudaChannelFormatKindFloat</span> <span class="op">=</span> <span class="number">2</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; No channel format&quot;</span>]</span>
     <span class="ident">cudaChannelFormatKindNone</span> <span class="op">=</span> <span class="number">3</span>,
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Unsigned 8-bit integers, planar 4:2:0 YUV format&quot;</span>]</span>
     <span class="ident">cudaChannelFormatKindNV12</span> <span class="op">=</span> <span class="number">4</span>,
 }
 <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; CUDA Channel format descriptor&quot;</span>]</span>
@@ -24297,7 +24515,7 @@
     <span class="ident">cudaDevAttrReserved94</span> <span class="op">=</span> <span class="number">94</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Device supports launching cooperative kernels via ::cudaLaunchCooperativeKernel&quot;</span>]</span>
     <span class="ident">cudaDevAttrCooperativeLaunch</span> <span class="op">=</span> <span class="number">95</span>,
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Device can participate in cooperative kernels launched via ::cudaLaunchCooperativeKernelMultiDevice&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Deprecated, cudaLaunchCooperativeKernelMultiDevice is deprecated.&quot;</span>]</span>
     <span class="ident">cudaDevAttrCooperativeMultiDeviceLaunch</span> <span class="op">=</span> <span class="number">96</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; The maximum optin shared memory per block. This value may vary by chip. See ::cudaFuncSetAttribute&quot;</span>]</span>
     <span class="ident">cudaDevAttrMaxSharedMemoryPerBlockOptin</span> <span class="op">=</span> <span class="number">97</span>,
@@ -24333,6 +24551,7 @@
     <span class="ident">cudaDevAttrGPUDirectRDMAWritesOrdering</span> <span class="op">=</span> <span class="number">118</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Handle types supported with mempool based IPC&quot;</span>]</span>
     <span class="ident">cudaDevAttrMemoryPoolSupportedHandleTypes</span> <span class="op">=</span> <span class="number">119</span>,
+    <span class="ident">cudaDevAttrMax</span> <span class="op">=</span> <span class="number">120</span>,
 }
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u32</span>)]</span>
 <span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
@@ -24625,6 +24844,111 @@
             <span class="macro">stringify!</span>(<span class="ident">reserved</span>)
         )
     );
+}
+<span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Memory allocation node parameters&quot;</span>]</span>
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">cudaMemAllocNodeParams</span> {
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; in: array of memory access descriptors. Used to describe peer GPU access&quot;</span>]</span>
+    <span class="kw">pub</span> <span class="ident">poolProps</span>: <span class="ident">cudaMemPoolProps</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; in: number of memory access descriptors.  Must not exceed the number of GPUs.&quot;</span>]</span>
+    <span class="kw">pub</span> <span class="ident">accessDescs</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">cudaMemAccessDesc</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; in: Number of `accessDescs`s&quot;</span>]</span>
+    <span class="kw">pub</span> <span class="ident">accessDescCount</span>: <span class="ident">usize</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; in: size in bytes of the requested allocation&quot;</span>]</span>
+    <span class="kw">pub</span> <span class="ident">bytesize</span>: <span class="ident">usize</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; out: address of the allocation returned by CUDA&quot;</span>]</span>
+    <span class="kw">pub</span> <span class="ident">dptr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+}
+<span class="attribute">#[<span class="ident">test</span>]</span>
+<span class="kw">fn</span> <span class="ident">bindgen_test_layout_cudaMemAllocNodeParams</span>() {
+    <span class="macro">assert_eq!</span>(
+        <span class="ident">::std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">cudaMemAllocNodeParams</span><span class="op">&gt;</span>(),
+        <span class="number">120usize</span>,
+        <span class="macro">concat!</span>(<span class="string">&quot;Size of: &quot;</span>, <span class="macro">stringify!</span>(<span class="ident">cudaMemAllocNodeParams</span>))
+    );
+    <span class="macro">assert_eq!</span>(
+        <span class="ident">::std::mem::align_of</span>::<span class="op">&lt;</span><span class="ident">cudaMemAllocNodeParams</span><span class="op">&gt;</span>(),
+        <span class="number">8usize</span>,
+        <span class="macro">concat!</span>(<span class="string">&quot;Alignment of &quot;</span>, <span class="macro">stringify!</span>(<span class="ident">cudaMemAllocNodeParams</span>))
+    );
+    <span class="macro">assert_eq!</span>(
+        <span class="kw">unsafe</span> {
+            <span class="kw-2">&amp;</span>(<span class="kw-2">*</span>(<span class="ident">::std::ptr::null</span>::<span class="op">&lt;</span><span class="ident">cudaMemAllocNodeParams</span><span class="op">&gt;</span>())).<span class="ident">poolProps</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">usize</span>
+        },
+        <span class="number">0usize</span>,
+        <span class="macro">concat!</span>(
+            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">cudaMemAllocNodeParams</span>),
+            <span class="string">&quot;::&quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">poolProps</span>)
+        )
+    );
+    <span class="macro">assert_eq!</span>(
+        <span class="kw">unsafe</span> {
+            <span class="kw-2">&amp;</span>(<span class="kw-2">*</span>(<span class="ident">::std::ptr::null</span>::<span class="op">&lt;</span><span class="ident">cudaMemAllocNodeParams</span><span class="op">&gt;</span>())).<span class="ident">accessDescs</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">usize</span>
+        },
+        <span class="number">88usize</span>,
+        <span class="macro">concat!</span>(
+            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">cudaMemAllocNodeParams</span>),
+            <span class="string">&quot;::&quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">accessDescs</span>)
+        )
+    );
+    <span class="macro">assert_eq!</span>(
+        <span class="kw">unsafe</span> {
+            <span class="kw-2">&amp;</span>(<span class="kw-2">*</span>(<span class="ident">::std::ptr::null</span>::<span class="op">&lt;</span><span class="ident">cudaMemAllocNodeParams</span><span class="op">&gt;</span>())).<span class="ident">accessDescCount</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">usize</span>
+        },
+        <span class="number">96usize</span>,
+        <span class="macro">concat!</span>(
+            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">cudaMemAllocNodeParams</span>),
+            <span class="string">&quot;::&quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">accessDescCount</span>)
+        )
+    );
+    <span class="macro">assert_eq!</span>(
+        <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span>(<span class="kw-2">*</span>(<span class="ident">::std::ptr::null</span>::<span class="op">&lt;</span><span class="ident">cudaMemAllocNodeParams</span><span class="op">&gt;</span>())).<span class="ident">bytesize</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">usize</span> },
+        <span class="number">104usize</span>,
+        <span class="macro">concat!</span>(
+            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">cudaMemAllocNodeParams</span>),
+            <span class="string">&quot;::&quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">bytesize</span>)
+        )
+    );
+    <span class="macro">assert_eq!</span>(
+        <span class="kw">unsafe</span> { <span class="kw-2">&amp;</span>(<span class="kw-2">*</span>(<span class="ident">::std::ptr::null</span>::<span class="op">&lt;</span><span class="ident">cudaMemAllocNodeParams</span><span class="op">&gt;</span>())).<span class="ident">dptr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span> <span class="kw">as</span> <span class="ident">usize</span> },
+        <span class="number">112usize</span>,
+        <span class="macro">concat!</span>(
+            <span class="string">&quot;Offset of field: &quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">cudaMemAllocNodeParams</span>),
+            <span class="string">&quot;::&quot;</span>,
+            <span class="macro">stringify!</span>(<span class="ident">dptr</span>)
+        )
+    );
+}
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u32</span>)]</span>
+<span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
+<span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Graph memory attributes&quot;</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">cudaGraphMemAttributeType</span> {
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; (value type = cuuint64_t)&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Amount of memory, in bytes, currently associated with graphs.&quot;</span>]</span>
+    <span class="ident">cudaGraphMemAttrUsedMemCurrent</span> <span class="op">=</span> <span class="number">1</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; (value type = cuuint64_t)&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; High watermark of memory, in bytes, associated with graphs since the&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; last time it was reset.  High watermark can only be reset to zero.&quot;</span>]</span>
+    <span class="ident">cudaGraphMemAttrUsedMemHigh</span> <span class="op">=</span> <span class="number">2</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; (value type = cuuint64_t)&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Amount of memory, in bytes, currently allocated for use by&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; the CUDA graphs asynchronous allocator.&quot;</span>]</span>
+    <span class="ident">cudaGraphMemAttrReservedMemCurrent</span> <span class="op">=</span> <span class="number">3</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; (value type = cuuint64_t)&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; High watermark of memory, in bytes, currently allocated for use by&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; the CUDA graphs asynchronous allocator.&quot;</span>]</span>
+    <span class="ident">cudaGraphMemAttrReservedMemHigh</span> <span class="op">=</span> <span class="number">4</span>,
 }
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u32</span>)]</span>
 <span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
@@ -27423,7 +27747,15 @@
     <span class="ident">cudaGraphNodeTypeWaitEvent</span> <span class="op">=</span> <span class="number">6</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; External event record node&quot;</span>]</span>
     <span class="ident">cudaGraphNodeTypeEventRecord</span> <span class="op">=</span> <span class="number">7</span>,
-    <span class="ident">cudaGraphNodeTypeCount</span> <span class="op">=</span> <span class="number">8</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; External semaphore signal node&quot;</span>]</span>
+    <span class="ident">cudaGraphNodeTypeExtSemaphoreSignal</span> <span class="op">=</span> <span class="number">8</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; External semaphore wait node&quot;</span>]</span>
+    <span class="ident">cudaGraphNodeTypeExtSemaphoreWait</span> <span class="op">=</span> <span class="number">9</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Memory allocation node&quot;</span>]</span>
+    <span class="ident">cudaGraphNodeTypeMemAlloc</span> <span class="op">=</span> <span class="number">10</span>,
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Memory free node&quot;</span>]</span>
+    <span class="ident">cudaGraphNodeTypeMemFree</span> <span class="op">=</span> <span class="number">11</span>,
+    <span class="ident">cudaGraphNodeTypeCount</span> <span class="op">=</span> <span class="number">12</span>,
 }
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">C</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
@@ -27491,6 +27823,14 @@
     <span class="ident">cudaGraphDebugDotFlagsKernelNodeAttributes</span> <span class="op">=</span> <span class="number">512</span>,
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Adds cudaKernelNodeAttrID values to output&quot;</span>]</span>
     <span class="ident">cudaGraphDebugDotFlagsHandles</span> <span class="op">=</span> <span class="number">1024</span>,
+}
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u32</span>)]</span>
+<span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
+<span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Flags for instantiating a graph&quot;</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">cudaGraphInstantiateFlags</span> {
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&lt; Automatically free memory allocated in a graph before relaunching.&quot;</span>]</span>
+    <span class="ident">cudaGraphInstantiateFlagAutoFreeOnLaunch</span> <span class="op">=</span> <span class="number">1</span>,
 }
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u32</span>)]</span>
 <span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
@@ -29726,17 +30066,12 @@
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\brief Sets flags to be used for device executions&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Records \\p flags as the flags to use when initializing the current&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; device.  If no device has been made current to the calling thread,&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; then \\p flags will be applied to the initialization of any device&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; initialized by the calling host thread, unless that device has had&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; its initialization flags set explicitly by this or any host thread.&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; If the current device has been set and that device has already been&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; initialized then this call will fail with the error&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaErrorSetOnActiveProcess.  In this case it is necessary&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; to reset \\p device using ::cudaDeviceReset() before the device&#39;s&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; initialization flags may be set.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Records \\p flags as the flags for the current device. If the current device&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; has been set and that device has already been initialized, the previous flags&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; are overwritten. If the current device has not been initialized, it is&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; initialized with the provided flags. If no device has been made current to&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; the calling thread, a default device is selected and initialized with the&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; provided flags.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; The two LSBs of the \\p flags parameter can be used to control how the CPU&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; thread interacts with the OS scheduler when waiting for results from the&quot;</span>]</span>
@@ -29773,14 +30108,15 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; - ::cudaDeviceLmemResizeToMax: Instruct CUDA to not reduce local memory&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; after resizing local memory for a kernel. This can prevent thrashing by&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; local memory allocations when launching many kernels with high local&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; memory usage at the cost of potentially increased memory usage.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; memory usage at the cost of potentially increased memory usage. &lt;br&gt;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\ref deprecated \&quot;Deprecated:\&quot; This flag is deprecated and the behavior enabled&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; by this flag is now the default and cannot be disabled.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param flags - Parameters for device operation&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\return&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaSuccess,&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaErrorInvalidValue,&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaErrorSetOnActiveProcess&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\notefnerr&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\note_init_rt&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\note_callback&quot;</span>]</span>
@@ -29794,14 +30130,12 @@
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\brief Gets the flags for the current device&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Returns in \\p flags the flags for the current device.  If there is a&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; current device for the calling thread, and the device has been initialized&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; or flags have been set on that device specifically, the flags for the&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; device are returned.  If there is no current device, but flags have been&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; set for the thread with ::cudaSetDeviceFlags, the thread flags are returned.&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Finally, if there is no current device and no thread flags, the flags for&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; the first device are returned, which may be the default flags.  Compare&quot;</span>]</span>
-    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; to the behavior of ::cudaSetDeviceFlags.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Returns in \\p flags the flags for the current device. If there is a current&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; device for the calling thread, the flags for the device are returned. If&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; there is no current device, the flags for the first device are returned,&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; which may be the default flags.  Compare to the behavior of&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaSetDeviceFlags.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Typically, the flags returned should match the behavior that will be seen&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; if the calling thread uses a device after this call, without any change to&quot;</span>]</span>
@@ -34922,6 +35256,9 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\note Basic stream ordering allows future work submitted into the same stream to use the allocation.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       Stream query, stream synchronize, and CUDA events can be used to guarantee that the allocation&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       operation completes before work submitted in a separate stream runs.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\note During stream capture, this function results in the creation of an allocation node.  In this case,&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       the allocation is owned by the graph instead of the memory pool. The memory pool&#39;s properties&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       are used to set the node&#39;s creation parameters.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param[out] devPtr  - Returned device pointer&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param[in] size     - Number of bytes to allocate&quot;</span>]</span>
@@ -34953,6 +35290,9 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; The allocation must not be accessed after stream execution reaches the free.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; After this API returns, accessing the memory from any subsequent work launched on the GPU&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; or querying its pointer attributes results in undefined behavior.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\note During stream capture, this function results in the creation of a free node and&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       must therefore be passed the address of a graph allocation.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param dptr - memory to free&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param hStream - The stream establishing the stream ordering promise&quot;</span>]</span>
@@ -35165,6 +35505,10 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;    -  Basic stream ordering allows future work submitted into the same stream to use the allocation.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       Stream query, stream synchronize, and CUDA events can be used to guarantee that the allocation&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       operation completes before work submitted in a separate stream runs.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\note During stream capture, this function results in the creation of an allocation node.  In this case,&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       the allocation is owned by the graph instead of the memory pool. The memory pool&#39;s properties&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;       are used to set the node&#39;s creation parameters.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param[out] ptr     - Returned device pointer&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param[in] bytesize - Number of bytes to allocate&quot;</span>]</span>
@@ -37187,6 +37531,8 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; at the root of the graph. \\p pDependencies may not have any duplicate entries.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; A handle to the new node will be returned in \\p pGraphNode.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; If \\p hGraph contains allocation or free nodes, this call will return an error.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; The node executes an embedded child graph. The child graph is cloned in this call.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param pGraphNode     - Returns newly created node&quot;</span>]</span>
@@ -37227,6 +37573,9 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Gets a handle to the embedded graph in a child graph node. This call&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; does not clone the graph. Changes to the graph will be reflected in&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; the node, and the node retains ownership of the graph.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Allocation and free nodes cannot be added to the returned graph.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Attempting to do so will return an error.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param node   - Node to get the embedded graph for&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param pGraph - Location to store a handle to the graph&quot;</span>]</span>
@@ -37368,6 +37717,53 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaGraphExternalSemaphoresWaitNodeSetParams</span>(
         <span class="ident">hNode</span>: <span class="ident">cudaGraphNode_t</span>,
         <span class="ident">nodeParams</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">cudaExternalSemaphoreWaitNodeParams</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaGraphAddMemAllocNode</span>(
+        <span class="ident">pGraphNode</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cudaGraphNode_t</span>,
+        <span class="ident">graph</span>: <span class="ident">cudaGraph_t</span>,
+        <span class="ident">pDependencies</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">cudaGraphNode_t</span>,
+        <span class="ident">numDependencies</span>: <span class="ident">usize</span>,
+        <span class="ident">nodeParams</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cudaMemAllocNodeParams</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaGraphMemAllocNodeGetParams</span>(
+        <span class="ident">node</span>: <span class="ident">cudaGraphNode_t</span>,
+        <span class="ident">params_out</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cudaMemAllocNodeParams</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaGraphAddMemFreeNode</span>(
+        <span class="ident">pGraphNode</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cudaGraphNode_t</span>,
+        <span class="ident">graph</span>: <span class="ident">cudaGraph_t</span>,
+        <span class="ident">pDependencies</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">cudaGraphNode_t</span>,
+        <span class="ident">numDependencies</span>: <span class="ident">usize</span>,
+        <span class="ident">dptr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaGraphMemFreeNodeGetParams</span>(
+        <span class="ident">node</span>: <span class="ident">cudaGraphNode_t</span>,
+        <span class="ident">dptr_out</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaDeviceGraphMemTrim</span>(<span class="ident">device</span>: <span class="ident">::libc::c_int</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaDeviceGetGraphMemAttribute</span>(
+        <span class="ident">device</span>: <span class="ident">::libc::c_int</span>,
+        <span class="ident">attr</span>: <span class="ident">cudaGraphMemAttributeType</span>,
+        <span class="ident">value</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaDeviceSetGraphMemAttribute</span>(
+        <span class="ident">device</span>: <span class="ident">::libc::c_int</span>,
+        <span class="ident">attr</span>: <span class="ident">cudaGraphMemAttributeType</span>,
+        <span class="ident">value</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_void</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
 }
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
@@ -37712,6 +38108,9 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Removes \\p node from its graph. This operation also severs any dependencies of other nodes&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; on \\p node and vice versa.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Dependencies cannot be removed from graphs which contain allocation or free nodes.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; Any attempt to do so will return an error.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param node  - Node to remove&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\return&quot;</span>]</span>
@@ -37762,6 +38161,7 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\note_callback&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\sa&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaGraphInstantiateWithFlags,&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaGraphCreate,&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaGraphUpload,&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; ::cudaGraphLaunch,&quot;</span>]</span>
@@ -37772,6 +38172,13 @@
         <span class="ident">pErrorNode</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cudaGraphNode_t</span>,
         <span class="ident">pLogBuffer</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">::libc::c_char</span>,
         <span class="ident">bufferSize</span>: <span class="ident">usize</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
+}
+<span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cudaGraphInstantiateWithFlags</span>(
+        <span class="ident">pGraphExec</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">cudaGraphExec_t</span>,
+        <span class="ident">graph</span>: <span class="ident">cudaGraph_t</span>,
+        <span class="ident">flags</span>: <span class="ident">::libc::c_ulonglong</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudaError_t</span>;
 }
 <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
@@ -38120,6 +38527,10 @@
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; at a time. Each launch is ordered behind both any previous work in \\p stream&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; and any previous launches of \\p graphExec. To execute a graph concurrently, it must be&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; instantiated multiple times into multiple executable graphs.&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; If any allocations created by \\p graphExec remain unfreed (from a previous launch) and&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\p graphExec was not instantiated with ::cudaGraphInstantiateFlagAutoFreeOnLaunch,&quot;</span>]</span>
+    <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; the launch will fail with ::cudaErrorInvalidValue.&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param graphExec - Executable graph to launch&quot;</span>]</span>
     <span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot; \\param stream    - Stream in which to launch the graph&quot;</span>]</span>
@@ -42773,5 +43184,4 @@
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">cudnnStatus_t</span>;
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rcudnn_sys" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rcudnn_sys" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>
