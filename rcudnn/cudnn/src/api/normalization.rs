@@ -277,4 +277,34 @@ impl API {
 
         }
     }
+
+    #[allow(clippy::clippy::too_many_arguments)]
+    unsafe fn ffi_batch_normalization_forward_training(
+        handle: cudnnHandle_t,
+        mode: cudnnBatchNormMode_t,
+        alpha: *const ::libc::c_void,
+        beta: *const ::libc::c_void,
+        x_desc: cudnnTensorDescriptor_t,
+        x: *const ::libc::c_void,
+        y_desc: cudnnTensorDescriptor_t,
+        y: *mut ::libc::c_void,
+        bn_scale_bias_mean_var_desc: cudnnTensorDescriptor_t,
+        bn_scale: *const ::libc::c_void,
+        bn_bias: *const ::libc::c_void,
+        exponential_average_factor: f64,
+        result_running_mean: *mut ::libc::c_void,
+        result_running_variance: *mut ::libc::c_void,
+        epsilon: f64,
+        result_save_mean: *mut ::libc::c_void,
+        result_save_inv_variance: *mut ::libc::c_void,
+    ) -> Result<(), Error> {
+        match cudnnBatchNormalizationForwardTraining(handle, mode, alpha, beta, x_desc, x, y_desc, y, bn_scale_bias_mean_var_desc, bn_scale, bn_bias, exponential_average_factor, result_running_mean, result_running_variance, epsilon, result_save_mean, result_save_inv_variance) {
+            cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(()),
+            cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("At least one of the following conditions are met: One of the pointers `alpha`, `beta`, `x`, `y`, `bnScale`, `bnBias` is NULL. The number of `xDesc` or `yDesc` tensor descriptor dimensions is not within the range of [4,5] (only 4D and 5D tensors are supported). `bnScaleBiasMeanVarDesc` dimensions are not `1xCx1x1` for 4D and `1xCx1x1x1` for 5D for spatial, and are not `1xCxHxW` for 4D and `1xCxDxHxW` for 5D for per-activation mode. Exactly one of `resultSaveMean`, `resultSaveInvVariance` pointers are NULL. Exactly one of `resultRunningMean`, `resultRunningInvVariance` pointers are NULL. `epsilon` value is less than `CUDNN_BN_MIN_EPSILON`. Dimensions or data types mismatch for `xDesc`, `yDesc`.")),
+            cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("`mode` is invalid or dimensions of input and output tensor differ or `data_type` or strides of the tensors differ.")),
+            cudnnStatus_t::CUDNN_STATUS_EXECUTION_FAILED => Err(Error::ExecutionFailed("Execution failed to launch on GPU.")),
+           status => Err(Error::Unknown("Unable to compute batch normalization forward training.", status as i32 as u64)),
+
+        }
+    }
 }
