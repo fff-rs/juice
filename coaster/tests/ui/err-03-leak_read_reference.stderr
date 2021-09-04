@@ -1,0 +1,20 @@
+warning: unused variable: `mem`
+ --> $DIR/err-03-leak_read_reference.rs:7:9
+  |
+7 |     let mem = {
+  |         ^^^ help: if this is intentional, prefix it with an underscore: `_mem`
+  |
+  = note: `#[warn(unused_variables)]` on by default
+
+error[E0716]: temporary value dropped while borrowed
+  --> $DIR/err-03-leak_read_reference.rs:8:22
+   |
+7  |     let mem = {
+   |         --- borrow later stored here
+8  |         let x = &mut SharedTensor::<f32>::new(&10);
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ creates a temporary which is freed while still in use
+...
+13 |     };
+   |     - temporary value is freed at the end of this statement
+   |
+   = note: consider using a `let` binding to create a longer lived value
