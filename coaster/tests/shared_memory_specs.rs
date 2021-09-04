@@ -2,9 +2,10 @@ use coaster as co;
 
 #[cfg(test)]
 mod shared_memory_spec {
-    use super::co::frameworks::native::flatbox::FlatBox;
     use super::co::prelude::*;
     use super::co::tensor::Error;
+    #[cfg(features = "cuda")]
+    use super::co::frameworks::native::flatbox::FlatBox;
 
     #[cfg(features = "cuda")]
     fn write_to_memory<T: Copy>(mem: &mut FlatBox, data: &[T]) {

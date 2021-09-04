@@ -1,0 +1,10 @@
+error[E0502]: cannot borrow `*x` as immutable because it is also borrowed as mutable
+  --> $DIR/err-05-read_write_borrows.rs:9:14
+   |
+8  |     let m1 = x.write_only(&dev).unwrap();
+   |              - mutable borrow occurs here
+9  |     let m2 = x.read(&dev).unwrap();
+   |              ^ immutable borrow occurs here
+...
+13 |     let _foo = m1;
+   |                -- mutable borrow later used here

@@ -1,0 +1,12 @@
+error[E0716]: temporary value dropped while borrowed
+  --> $DIR/err-04-leak_write_reference.rs:8:22
+   |
+8  |         let x = &mut SharedTensor::<f32>::new(&10);
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ creates a temporary which is freed while still in use
+...
+11 |         m
+   |         - borrow later used here
+12 |     };
+   |     - temporary value is freed at the end of this statement
+   |
+   = note: consider using a `let` binding to create a longer lived value
