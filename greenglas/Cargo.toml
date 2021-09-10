@@ -13,7 +13,7 @@ license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [dependencies]
-coaster = { version = "0.1", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+coaster = { path = "../coaster", version = "0.2", default-features = false, features = ["native"] } # native feature to read/write data into tensors
 
 # can't upgrade beyond due to:
 # ISSUE: https://github.com/image-rs/image/issues/1468

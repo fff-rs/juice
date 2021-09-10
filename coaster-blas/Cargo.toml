@@ -18,7 +18,7 @@ license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [dependencies]
-coaster = { version = "0.2.0", path = "../coaster", default-features = false }
+coaster = { version = "0.2", path = "../coaster", default-features = false }
 log = "0.4"
 # native
 rust-blas = { version = "0.2.0", path = "../rust-blas", optional = true }

@@ -48,9 +48,9 @@ A typical example (including coaster) would look like this:
 
 ```toml
 [dependencies]
-juice = { version = "0.2", default-features = false }
+juice = { version = "0.3", default-features = false }
 # the native coaster feature is neccesary to read/write tensors
-coaster = { version = "0.1", default-features = false, features = ["native"] }
+coaster = { version = "0.2", default-features = false, features = ["native"] }
 
 [features]
 default = ["native"]
