@@ -2,12 +2,12 @@
 
 This is the workspace project for
 
- * [juice](https://github.com/spearow/juice/blob/master/juice/README.md) - machine learning frameworks for hackers
- * [coaster](https://github.com/spearow/juice/blob/master/coaster/README.md) - underlying math abstraction
- * [coaster-nn](https://github.com/spearow/juice/blob/master/coaster-nn/README.md)
- * [coaster-blas](https://github.com/spearow/juice/blob/master/coaster-blas/README.md)
- * [greenglas](https://github.com/spearow/juice/blob/master/greenglas/README.md) - a data preprocessing framework
- * [juice-examples](https://github.com/spearow/juice/blob/master/juice-examples/README.md) - mnist demo
+* [juice](https://github.com/spearow/juice/blob/master/juice/README.md) - machine learning frameworks for hackers
+* [coaster](https://github.com/spearow/juice/blob/master/coaster/README.md) - underlying math abstraction
+* [coaster-nn](https://github.com/spearow/juice/blob/master/coaster-nn/README.md)
+* [coaster-blas](https://github.com/spearow/juice/blob/master/coaster-blas/README.md)
+* [greenglas](https://github.com/spearow/juice/blob/master/greenglas/README.md) - a data preprocessing framework
+* [juice-examples](https://github.com/spearow/juice/blob/master/juice-examples/README.md) - mnist demo
 
  Please conduct the individual README.md files for more information.
 
@@ -20,6 +20,7 @@ CLI for running [juice](https://github.com/spearow/juice) examples. More example
 **DISCLAIMER: Currently both CUDA and cuDNN are required for the examples to build.**
 
 Compile and call the build.
+
 ```bash
 # install rust, if you need to
 curl -sSf https://static.rust-lang.org/rustup.sh | sh
@@ -64,7 +65,6 @@ Note that you need a capable nvidia device in order to _run_ the cuda backend.
 #### OpenCL
 
 You need the apropriate loader and device libraries. Since the `OpenCL` backend is still WIP, this will be detailed at a later point of time.
-
 
 #### BLAS
 
