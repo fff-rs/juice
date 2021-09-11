@@ -1,4 +1,3 @@
-extern crate coaster;
 use coaster::prelude::*;
 
 fn main() {
@@ -10,4 +9,3 @@ fn main() {
     let m2 = x.read(&dev).unwrap();
     //~^ ERROR cannot borrow `*x` as immutable because it is also borrowed as mutable
 }
-

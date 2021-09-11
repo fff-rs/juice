@@ -1,4 +1,3 @@
-extern crate coaster;
 use coaster::prelude::*;
 
 fn main() {
@@ -10,4 +9,3 @@ fn main() {
     x.drop_device(&dev);
     //~^ ERROR error: cannot borrow `*x` as mutable more than once at a time
 }
-
