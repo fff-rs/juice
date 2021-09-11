@@ -45,8 +45,8 @@ For additional information see the [Rust API Documentation][documentation].
 
 Or start by running the **Juice examples**.
 
-We are providing a [Juice examples repository][juice-examples], where we and
-others publish executable machine learning models build with Juice. It features
+We are providing a set of [Juice examples][juice-examples], where we and
+others publish executable machine learning models built with Juice. It features
 a CLI for easy usage and has a detailed guide in the [project
 README.md][juice-examples].
 
@@ -82,7 +82,7 @@ can selectively enable them like this in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-juice = { version = "0.2.3", default-features = false }
+juice = { version = "0.3", default-features = false }
 
 [features]
 default = ["native"] # include only the ones you want to use, in this case "native"
