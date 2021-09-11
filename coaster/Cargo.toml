@@ -28,7 +28,7 @@ rcudnn = { version = "1.7", path = "../rcudnn/cudnn", optional = true }
 rcublas = { version = "0.6.0", path = "../rcublas/cublas", optional = true }
 
 [dev-dependencies]
-# coaster-nn = { version = "0.4", default-features = false }
+coaster-nn = { path = "../coaster-nn", default-features = false }
 compiletest_rs = "0.7"
 
 [features]
