@@ -192,7 +192,6 @@ version = "0.1.1"
 dependencies = [
  "bitflags",
  "byteorder",
- "coaster-nn",
  "compiletest_rs",
  "enum_primitive",
  "lazy_static",
