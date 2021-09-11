@@ -220,6 +220,7 @@ version = "0.2.0"
 dependencies = [
  "bitflags 1.3.2",
  "byteorder 1.4.3",
+ "coaster-nn",
  "compiletest_rs",
  "enum_primitive",
  "lazy_static 1.4.0",
@@ -245,8 +246,10 @@ name = "coaster-nn"
 version = "0.5.0"
 dependencies = [
  "coaster 0.2.0",
+ "env_logger 0.9.0",
  "libc",
  "log",
+ "num 0.4.0",
  "rand 0.8.4",
  "rand_chacha",
  "rcudnn",
@@ -934,6 +937,7 @@ dependencies = [
  "coaster 0.2.0",
  "coaster-blas",
  "coaster-nn",
+ "env_logger 0.9.0",
  "log",
  "num 0.4.0",
  "rand 0.8.4",
@@ -1487,6 +1491,8 @@ dependencies = [
 name = "rcublas"
 version = "0.6.0"
 dependencies = [
+ "coaster 0.2.0",
+ "env_logger 0.9.0",
  "lazy_static 1.4.0",
  "libc",
  "log",
@@ -1507,7 +1513,10 @@ dependencies = [
 name = "rcudnn"
 version = "1.8.0"
 dependencies = [
+ "coaster 0.2.0",
+ "env_logger 0.9.0",
  "libc",
+ "log",
  "num 0.4.0",
  "rcudnn-sys",
  "thiserror",
