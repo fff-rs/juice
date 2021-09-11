@@ -107,3 +107,7 @@ mod cuda {
     use super::*;
     test_cuda!(test_rnn, rnn_f32, rnn_f64);
 }
+
+mod native {
+    use env_logger as _;
+}
