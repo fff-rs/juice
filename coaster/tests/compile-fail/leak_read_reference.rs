@@ -1,4 +1,3 @@
-extern crate coaster;
 use coaster::prelude::*;
 
 fn main() {
@@ -13,4 +12,3 @@ fn main() {
         m
     };
 }
-

@@ -1,4 +1,3 @@
-extern crate coaster;
 use coaster::prelude::*;
 
 fn main() {
@@ -10,4 +9,3 @@ fn main() {
     let m2 = x.write_only(&dev).unwrap();
     //~^ ERROR error: cannot borrow `*x` as mutable more than once at a time
 }
-
