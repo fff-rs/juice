@@ -104,6 +104,9 @@
     clippy::complexity
 )]
 
+#[cfg(test)]
+use env_logger as _;
+
 #[macro_use]
 extern crate timeit;
 #[macro_use]
