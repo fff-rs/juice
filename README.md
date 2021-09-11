@@ -57,7 +57,7 @@ export CUBLAS_LIB_DIR=/opt/cuda/targets/x86_64-linux/lib/
 
 depending on __your local__ installation setup.
 
-The currently supported cuda version is `cuda-10` (details in #114 and #115 )
+The currently supported cuda version is `cuda-11` (details in #114 and #115 )
 
 Note that you need a capable nvidia device in order to _run_ the cuda backend.
 
