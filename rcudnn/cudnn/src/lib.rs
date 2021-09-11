@@ -59,7 +59,6 @@
 //! [juice]: https://github.com/spearow/juice
 #![allow(dead_code)]
 #![deny(
-    unused_crate_dependencies,
     clippy::missing_docs,
     clippy::missing_debug_implementations,
     clippy::missing_copy_implementations,
