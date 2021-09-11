@@ -86,11 +86,9 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
-<span id="89">89</span>
 </pre><pre class="rust">
-
-<span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
 <span class="kw">use</span> <span class="ident">serde::Deserialize</span>;
+<span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAIN_USAGE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;
 Demonstrate RNN caps of juice with the cuda backend.
@@ -122,10 +120,10 @@ Options:
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">data_mode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DataMode</span> {
         <span class="macro">assert_ne!</span>(<span class="self">self</span>.<span class="ident">cmd_train</span>, <span class="self">self</span>.<span class="ident">cmd_test</span>);
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cmd_train</span> {
-            <span class="kw">return</span> <span class="ident">DataMode::Train</span>
+            <span class="kw">return</span> <span class="ident">DataMode::Train</span>;
         }
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cmd_test</span> {
-            <span class="kw">return</span> <span class="ident">DataMode::Test</span>
+            <span class="kw">return</span> <span class="ident">DataMode::Test</span>;
         }
         <span class="macro">unreachable!</span>(<span class="string">&quot;nope&quot;</span>);
     }
@@ -147,18 +145,18 @@ Options:
     <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> (<span class="self">self</span>.<span class="ident">flag_learning_rate</span>, <span class="ident">other</span>.<span class="ident">flag_learning_rate</span>) {
             (<span class="prelude-val">Some</span>(<span class="ident">lhs</span>), <span class="prelude-val">Some</span>(<span class="ident">rhs</span>)) <span class="kw">if</span> (<span class="ident">rhs</span> <span class="op">-</span> <span class="ident">lhs</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="number">1e6</span> <span class="op">=</span><span class="op">&gt;</span> {}
-            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> {},
+            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> {}
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="bool-val">false</span>,
         }
         <span class="kw">match</span> (<span class="self">self</span>.<span class="ident">flag_momentum</span>, <span class="ident">other</span>.<span class="ident">flag_momentum</span>) {
             (<span class="prelude-val">Some</span>(<span class="ident">lhs</span>), <span class="prelude-val">Some</span>(<span class="ident">rhs</span>)) <span class="kw">if</span> (<span class="ident">rhs</span> <span class="op">-</span> <span class="ident">lhs</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="number">1e6</span> <span class="op">=</span><span class="op">&gt;</span> {}
-            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> {},
+            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="op">=</span><span class="op">&gt;</span> {}
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="bool-val">false</span>,
         }
-        <span class="self">self</span>.<span class="ident">cmd_test</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">cmd_test</span> <span class="op">&amp;&amp;</span>
-        <span class="self">self</span>.<span class="ident">cmd_train</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">cmd_train</span> <span class="op">&amp;&amp;</span>
-        <span class="self">self</span>.<span class="ident">arg_networkfile</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">arg_networkfile</span> <span class="op">&amp;&amp;</span>
-        <span class="self">self</span>.<span class="ident">flag_batch_size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">flag_batch_size</span>
+        <span class="self">self</span>.<span class="ident">cmd_test</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">cmd_test</span>
+            <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">cmd_train</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">cmd_train</span>
+            <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">arg_networkfile</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">arg_networkfile</span>
+            <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">flag_batch_size</span> <span class="op">=</span><span class="op">=</span> <span class="ident">other</span>.<span class="ident">flag_batch_size</span>
     }
 }
 
