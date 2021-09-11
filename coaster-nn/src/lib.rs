@@ -123,6 +123,8 @@ use rcudnn as cudnn;
 
 pub(crate) use coaster as co;
 
+use log as _;
+
 pub mod frameworks;
 mod plugin;
 
