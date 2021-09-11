@@ -19,7 +19,7 @@ libc = "0.2"
 
 [build-dependencies]
 pkg-config = "0.3"
-bindgen = { version = "0.58", optional = true }
+bindgen = { version = "^0.59.1", optional = true }
 
 [features]
 default = []
