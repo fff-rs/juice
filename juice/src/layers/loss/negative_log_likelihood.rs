@@ -81,10 +81,12 @@ impl<B: IBackend> ComputeOutput<f32, B> for NegativeLogLikelihood {
         let native_labels = labels.read(native.device()).unwrap().as_slice::<f32>();
         let native_probabilities = probabilities.read(native.device()).unwrap().as_slice::<f32>();
 
-        let mut writable_loss = Vec::<f32>::new();
+        let mut writable_loss = Vec::<f32>::with_capacity(native_labels.len());
+        let mut offset = 0;
         for &label_value in native_labels {
-            let probability_value = native_probabilities[label_value as usize];
+            let probability_value = native_probabilities[offset + label_value as usize];
             writable_loss.push(-probability_value);
+            offset += batch_size;
         }
 
         let mut loss = writable_loss.iter().fold(0f32, |sum, &val| sum + val);
