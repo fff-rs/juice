@@ -21,13 +21,17 @@ For more information,
 
 If you're using Cargo, just add coaster-BLAS to your Cargo.toml:
 
-    [dependencies]
-    coaster = "0.4"
-    coaster-blas = "0.2"
+```toml
+[dependencies]
+coaster = "0.2"
+coaster-blas = "0.2"
+```
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
-    $ cargo add coaster-blas
+```sh
+$ cargo add coaster-blas
+```
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
 

@@ -61,6 +61,7 @@ cuda    = ["juice/cuda", "coaster/cuda"]
 ```
 
 Building your project would then look like this:
+
 ```sh
 # having both native and CUDA backends
 # `native` is provided by default, and `cuda` explicitly specified by `--features cuda`

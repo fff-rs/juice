@@ -51,13 +51,17 @@ Kudos to [ehiggs][ehiggs], for implementing the initial native Rust operations.
 
 If you're using Cargo, just add coaster-NN to your Cargo.toml:
 
-    [dependencies]
-    coaster = "0.2.0"
-    coaster-nn = "0.4.0"
+```toml
+[dependencies]
+coaster = "0.2.0"
+coaster-nn = "0.4.0"
+```
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
-    $ cargo add coaster-nn
+```sh
+$ cargo add coaster-nn
+```
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
 

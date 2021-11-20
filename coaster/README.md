@@ -52,12 +52,16 @@ For more information,
 
 If you're using Cargo, just add coaster to your Cargo.toml:
 
+```toml
     [dependencies]
-    coaster = "0.2.0"
+    coaster = "0.2"
+```
 
 If you're using [Cargo Edit][cargo-edit], you can call:
 
+```sh
     $ cargo add coaster
+```
 
 [cargo-edit]: https://github.com/killercup/cargo-edit
 
