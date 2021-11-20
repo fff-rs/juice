@@ -25,7 +25,7 @@ num = "0.4"
 lazy_static = "1"
 thiserror = "1.0"
 rcudnn = { version = "1.7", path = "../rcudnn/cudnn", optional = true }
-rcublas = { version = "0.6.0", path = "../rcublas/cublas", optional = true }
+rcublas = { version = "0.6", path = "../rcublas/cublas", optional = true }
 
 [dev-dependencies]
 coaster-nn = { path = "../coaster-nn", default-features = false }
