@@ -21,11 +21,9 @@ edition = "2018"
 coaster = { version = "0.2", path = "../coaster", default-features = false }
 log = "0.4"
 # native
-rust-blas = { version = "0.2.0", path = "../rust-blas", optional = true }
+rust-blas = { version = "0.2", path = "../rust-blas", optional = true }
 # cuda
-rcublas = { version = "0.6.0", path = "../rcublas/cublas", optional = true }
-
-[dev-dependencies]
+rcublas = { version = "0.6", path = "../rcublas/cublas", optional = true }
 
 [features]
 default = ["native", "cuda"]

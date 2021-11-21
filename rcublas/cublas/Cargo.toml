@@ -8,7 +8,7 @@ authors = [
 	"Lissa Hyacinth <lissahyacinth@gmail.com>",
 	"Maximilian Goisser",
 ]
-homepage = "https://github.com/spearow/juice/tree/masster/rcublas"
+homepage = "https://github.com/spearow/juice/tree/master/rcublas"
 repository = "https://github.com/spearow/juice"
 readme = "../README.md"
 keywords = ["cublas", "cuda", "nvidia", "blas"]
