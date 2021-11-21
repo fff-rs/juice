@@ -86,9 +86,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "bitvec"
-version = "0.19.5"
+version = "0.19.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8942c8d352ae1838c9dda0b0ca2ab657696ef2232a20147cf1b30ae1a9cb4321"
+checksum = "55f93d0ef3363c364d5976646a38f04cf67cfe1d4c8d160cdea02cab2c116b33"
 dependencies = [
  "funty",
  "radium",
@@ -200,7 +200,6 @@ version = "0.2.0"
 dependencies = [
  "bitflags",
  "byteorder",
- "coaster-nn",
  "enum_primitive",
  "lazy_static",
  "libc",
@@ -208,7 +207,6 @@ dependencies = [
  "rcublas",
  "rcudnn",
  "thiserror",
- "trybuild",
 ]
 
 [[package]]
@@ -226,10 +224,8 @@ name = "coaster-nn"
 version = "0.5.0"
 dependencies = [
  "coaster",
- "env_logger 0.9.0",
  "libc",
  "log",
- "num",
  "rand",
  "rand_chacha",
  "rcudnn",
@@ -847,7 +843,6 @@ dependencies = [
  "coaster",
  "coaster-blas",
  "coaster-nn",
- "env_logger 0.9.0",
  "log",
  "num",
  "rand",
@@ -878,9 +873,9 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
 name = "libc"
-version = "0.2.107"
+version = "0.2.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbe5e23404da5b4f555ef85ebed98fb4083e55a00c317800bc2a50ede9f3d219"
+checksum = "8521a1b57e76b1ec69af7599e75e38e7b7fad6610f037db8c79b127201b5d119"
 
 [[package]]
 name = "libloading"
@@ -971,9 +966,9 @@ dependencies = [
 
 [[package]]
 name = "mnist"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fd2e5236a5f13d41d4f6eba34f535d037cb9fc4b244896886a7ebe0764142a5"
+checksum = "2126097226757059ceb317a872fb9e3b289e67af0ba2681b1e1cf389b763c260"
 dependencies = [
  "byteorder",
 ]
@@ -1327,7 +1322,6 @@ dependencies = [
 name = "rcublas"
 version = "0.6.0"
 dependencies = [
- "env_logger 0.9.0",
  "lazy_static",
  "libc",
  "log",
@@ -1348,10 +1342,7 @@ dependencies = [
 name = "rcudnn"
 version = "1.8.0"
 dependencies = [
- "coaster",
- "env_logger 0.9.0",
  "libc",
- "log",
  "num",
  "rcudnn-sys",
  "thiserror",
@@ -1812,15 +1803,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "toml"
-version = "0.5.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a31142970826733df8241ef35dc040ef98c679ab14d7c3e54d827099b3acecaa"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "tower-service"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1851,20 +1833,6 @@ name = "try-lock"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
-
-[[package]]
-name = "trybuild"
-version = "1.0.52"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "150e726dc059e6fbd4fce3288f5bb3cf70128cf63b0dde23b938a3cad810fb23"
-dependencies = [
- "glob",
- "lazy_static",
- "serde",
- "serde_json",
- "termcolor",
- "toml",
-]
 
 [[package]]
 name = "unicode-bidi"
