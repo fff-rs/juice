@@ -11,9 +11,6 @@ mod cudnn_spec {
 
     use rcudnn::{cudnnRNNDescriptor_t, cudnnRNNPaddingMode_t, cudnnTensorDescriptor_t};
 
-    use crate::co::framework::IFramework;
-
-    use crate::co::frameworks::Cuda;
     use crate::cudnn::cuda::CudaDeviceMemory;
     use crate::cudnn::utils::DataType;
     use crate::cudnn::utils::DropoutConfig;
@@ -22,19 +19,6 @@ mod cudnn_spec {
         tensor_vec_id_c, ActivationDescriptor, ConvolutionDescriptor, Cudnn, FilterDescriptor,
         TensorDescriptor, API,
     };
-
-    #[test]
-    fn it_initializes_correctly() {
-        let cuda = Cuda::new();
-        println!("{:?}", cuda.hardwares());
-        match Cudnn::new() {
-            Ok(_) => assert!(true),
-            Err(err) => {
-                println!("{:?}", err);
-                assert!(false);
-            }
-        }
-    }
 
     #[test]
     fn it_returns_version() {
