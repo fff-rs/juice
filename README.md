@@ -85,3 +85,9 @@ export BLAS_INCLUDE_DIR=/opt/blas/include/
 is also supported.
 
 Linkage for the blas library variant is determined by setting `BLAS_STATIC` to `1` or unsetting `BLAS_STATIC`.
+
+##### ArchLinux users
+
+ArchLinux `openblas` package doesn't include LAPACK symbols (see [FS#66092](https://bugs.archlinux.org/task/66092)), so if you try to use it, you'll get multiple `cblas_*` unresolved symbols.
+
+Replace `openblas` with AUR's `openblas-lapack` package to fix.
