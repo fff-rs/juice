@@ -12,19 +12,19 @@ use rblas::matrix::Matrix;
 
 macro_rules! read {
     ($x:ident, $t:ident, $slf:ident) => {
-        $x.read($slf.device())?.as_slice::<$t>();
+        $x.read($slf.device())?.as_slice::<$t>()
     };
 }
 
 macro_rules! read_write {
     ($x:ident, $t: ident, $slf:ident) => {
-        $x.read_write($slf.device())?.as_mut_slice::<$t>();
+        $x.read_write($slf.device())?.as_mut_slice::<$t>()
     };
 }
 
 macro_rules! write_only {
     ($x:ident, $t: ident, $slf:ident) => {
-        $x.write_only($slf.device())?.as_mut_slice::<$t>();
+        $x.write_only($slf.device())?.as_mut_slice::<$t>()
     };
 }
 
