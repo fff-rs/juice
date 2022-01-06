@@ -338,19 +338,19 @@
 
 <span class="macro">macro_rules!</span> <span class="ident">read</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
-        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>();
+        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>()
     };
 }
 
 <span class="macro">macro_rules!</span> <span class="ident">read_write</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
-        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read_write</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>();
+        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">read_write</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>()
     };
 }
 
 <span class="macro">macro_rules!</span> <span class="ident">write_only</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>: <span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>:<span class="ident">ident</span>) <span class="op">=</span><span class="op">&gt;</span> {
-        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">write_only</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>();
+        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>.<span class="ident">write_only</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">slf</span>.<span class="ident">device</span>())<span class="question-mark">?</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>()
     };
 }
 
