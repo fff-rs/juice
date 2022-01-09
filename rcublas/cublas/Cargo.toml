@@ -22,4 +22,5 @@ log = "0.4"
 thiserror = "1.0"
 
 [dev-dependencies]
+coaster = { path = "../../coaster", features = ["cuda"] }
 env_logger = "0.9"
