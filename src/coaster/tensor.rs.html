@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `coaster&#x2F;src&#x2F;tensor.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>tensor.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../coaster/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `coaster&#x2F;src&#x2F;tensor.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>tensor.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../coaster/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -564,8 +565,7 @@
 <span id="564">564</span>
 <span id="565">565</span>
 <span id="566">566</span>
-</pre><pre class="rust">
-<span class="doccomment">//! Provides the functionality for memory management across devices.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Provides the functionality for memory management across devices.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! A Tensor is a potentially multi-dimensional matrix containing information about the actual data and its structure.</span>
 <span class="doccomment">//! A Coaster Tensor tracks the memory copies of the numeric data of an Tensor across the devices of the Backend</span>
@@ -614,8 +614,8 @@
 <span class="doccomment">//! # }</span>
 <span class="doccomment">//! ```</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::device::Error</span> <span class="kw">as</span> <span class="ident">DeviceError</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::device</span>::{<span class="ident">IDevice</span>, <span class="ident">MemorySync</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::device::Error</span> <span class="kw">as</span> <span class="ident">DeviceError</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::device</span>::{<span class="ident">IDevice</span>, <span class="ident">MemorySync</span>};
 
 <span class="kw">use</span> <span class="ident">std::any::Any</span>;
 <span class="kw">use</span> <span class="ident">std::cell</span>::{<span class="ident">Cell</span>, <span class="ident">RefCell</span>};
@@ -668,21 +668,21 @@
     <span class="doccomment">/// Returns the rank of the Tensor.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The rank of the Tensor is the number of its dimensions.</span>
-    <span class="kw">fn</span> <span class="ident">rank</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span>;
+    <span class="kw">fn</span> <span class="ident">rank</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span>;
 
     <span class="doccomment">/// Returns the summed up length of all dimensions of the Tensor.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// A Tensor of rank 2 with the following dimesion specification [5, 5] would have a size of 25.</span>
-    <span class="kw">fn</span> <span class="ident">size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span>;
+    <span class="kw">fn</span> <span class="ident">size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span>;
 
     <span class="doccomment">/// Returns the dimensions of the Tensor.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// To return the length of one dimensions of the Tensor, you would call</span>
     <span class="doccomment">/// tensor_desc.dims()[0] // e.g. 64</span>
-    <span class="kw">fn</span> <span class="ident">dims</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">dims</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Returns the dimensions of the Tensor as Vec&lt;i32&gt;.</span>
-    <span class="kw">fn</span> <span class="ident">dims_i32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">dims_i32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Returns the default stride for an Rust allocated Tensor.</span>
     <span class="doccomment">///</span>
@@ -690,16 +690,16 @@
     <span class="doccomment">/// A rank 3 Tensor with dimensions [a, b, c] has a default stride of [b * c, c, 1]</span>
     <span class="doccomment">/// A rank 4 Tensor with dimensions [a, b, c, d] has a default stride of [b * c * d, c * d, d, 1]</span>
     <span class="doccomment">/// and so on.</span>
-    <span class="kw">fn</span> <span class="ident">default_stride</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">default_stride</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">strides</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">rank</span>());
         <span class="kw">let</span> <span class="ident">dim_length</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dims</span>().<span class="ident">len</span>();
         <span class="kw">match</span> <span class="ident">dim_length</span> {
-            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">strides</span>,
-            <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="number">0</span> =&gt; <span class="ident">strides</span>,
+            <span class="number">1</span> =&gt; {
                 <span class="ident">strides</span>.<span class="ident">push</span>(<span class="number">1</span>);
                 <span class="ident">strides</span>
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">_</span> =&gt; {
                 <span class="kw">let</span> <span class="ident">imp_dims</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">dims</span>()[<span class="number">1</span>..<span class="ident">dim_length</span>];
                 <span class="kw">for</span> (<span class="ident">i</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">imp_dims</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                     <span class="ident">strides</span>.<span class="ident">push</span>(<span class="ident">imp_dims</span>[<span class="ident">i</span>..<span class="ident">imp_dims</span>.<span class="ident">len</span>()].<span class="ident">iter</span>().<span class="ident">product</span>())
@@ -711,7 +711,7 @@
     }
 
     <span class="doccomment">/// Returns the default stride for a Rust allocated Tensor as i32.</span>
-    <span class="kw">fn</span> <span class="ident">default_stride_i32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">default_stride_i32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">default_stride</span>().<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span> <span class="kw">as</span> <span class="ident">i32</span>).<span class="ident">collect</span>()
     }
 }
@@ -722,86 +722,86 @@
 <span class="doccomment">/// e.g. (2, 4) -&gt; [2,4] or () -&gt; [] or 2 -&gt; [2]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IntoTensorDesc</span> {
     <span class="doccomment">/// Converts the implemented type into a TensorDesc.</span>
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span>;
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> () {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="ident">Vec::with_capacity</span>(<span class="number">1</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> <span class="ident">usize</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="kw-2">*</span><span class="self">self</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> <span class="ident">u32</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="kw-2">*</span><span class="self">self</span> <span class="kw">as</span> <span class="ident">usize</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> <span class="ident">isize</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="kw-2">*</span><span class="self">self</span> <span class="kw">as</span> <span class="ident">usize</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> <span class="ident">i32</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="kw-2">*</span><span class="self">self</span> <span class="kw">as</span> <span class="ident">usize</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="self">self</span>.<span class="ident">clone</span>()
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">usize</span>] {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="ident">From::from</span>(<span class="self">self</span>.<span class="ident">to_owned</span>())
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> (<span class="ident">usize</span>, <span class="ident">usize</span>) {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> (<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>) {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="self">self</span>.<span class="number">2</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> (<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>) {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="self">self</span>.<span class="number">2</span>, <span class="self">self</span>.<span class="number">3</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> (<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>) {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="self">self</span>.<span class="number">2</span>, <span class="self">self</span>.<span class="number">3</span>, <span class="self">self</span>.<span class="number">4</span>]
     }
 }
 
 <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> (<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">usize</span>) {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
         <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="self">self</span>.<span class="number">2</span>, <span class="self">self</span>.<span class="number">3</span>, <span class="self">self</span>.<span class="number">4</span>, <span class="self">self</span>.<span class="number">5</span>]
     }
 }
 
 <span class="macro">macro_rules!</span> <span class="ident">impl_array_into_tensor_desc</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">N</span>:<span class="ident">expr</span>)<span class="op">+</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">N</span>:<span class="ident">expr</span>)<span class="op">+</span>) =&gt; {
         $(
             <span class="kw">impl</span> <span class="ident">IntoTensorDesc</span> <span class="kw">for</span> [<span class="ident">usize</span>; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">N</span>] {
-                <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TensorDesc</span> {
+                <span class="kw">fn</span> <span class="ident">into</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TensorDesc</span> {
                     <span class="kw">let</span> <span class="ident">slice</span>: <span class="kw-2">&amp;</span>[<span class="kw">_</span>] <span class="op">=</span> <span class="self">self</span>;
                     <span class="ident">From::from</span>(<span class="ident">slice</span>)
                 }
@@ -812,28 +812,28 @@
 <span class="macro">impl_array_into_tensor_desc!</span>(<span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span>);
 
 <span class="kw">impl</span> <span class="ident">ITensorDesc</span> <span class="kw">for</span> <span class="ident">TensorDesc</span> {
-    <span class="kw">fn</span> <span class="ident">rank</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">rank</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">len</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">rank</span>() {
-            <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">1</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">product</span>(),
+            <span class="number">0</span> =&gt; <span class="number">1</span>,
+            <span class="kw">_</span> =&gt; <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">product</span>(),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">dims</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">dims</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="self">self</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">dims_i32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">dims_i32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span> <span class="kw">as</span> <span class="ident">i32</span>).<span class="ident">collect</span>()
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">::std::fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">::std::fmt::Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">::std::fmt::Formatter</span>) -&gt; <span class="ident">::std::fmt::Result</span> {
         <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;SharedTensor desc={:?}&quot;</span>, <span class="self">self</span>.<span class="ident">desc</span>)
     }
 }
@@ -841,7 +841,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create new Tensor by allocating [Memory][1] on a Device.</span>
     <span class="doccomment">/// [1]: ../memory/index.html</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IntoTensorDesc</span><span class="op">&gt;</span>(<span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IntoTensorDesc</span><span class="op">&gt;</span>(<span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">SharedTensor</span> {
             <span class="ident">desc</span>: <span class="ident">desc</span>.<span class="ident">into</span>(),
             <span class="ident">locations</span>: <span class="ident">RefCell::new</span>(<span class="ident">Vec::new</span>()),
@@ -854,9 +854,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// Will return an Error if size of new shape is not equal to the old shape.</span>
     <span class="doccomment">/// If you want to change the shape to one of a different size, use `resize`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reshape</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IntoTensorDesc</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reshape</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IntoTensorDesc</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">new_desc</span>: <span class="ident">TensorDesc</span> <span class="op">=</span> <span class="ident">desc</span>.<span class="ident">into</span>();
-        <span class="kw">if</span> <span class="ident">new_desc</span>.<span class="ident">size</span>() <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">desc</span>().<span class="ident">size</span>() {
+        <span class="kw">if</span> <span class="ident">new_desc</span>.<span class="ident">size</span>() <span class="op">==</span> <span class="self">self</span>.<span class="ident">desc</span>().<span class="ident">size</span>() {
             <span class="self">self</span>.<span class="ident">desc</span> <span class="op">=</span> <span class="ident">new_desc</span>;
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
@@ -872,18 +872,18 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// &#39;reshape&#39; is preffered over this method if the size of the old and new shape</span>
     <span class="doccomment">/// are identical because it will not reallocate memory.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resize</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IntoTensorDesc</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resize</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IntoTensorDesc</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">desc</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow_mut</span>().<span class="ident">clear</span>();
         <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">set</span>(<span class="number">0</span>);
         <span class="self">self</span>.<span class="ident">desc</span> <span class="op">=</span> <span class="ident">desc</span>.<span class="ident">into</span>();
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">get_location_index</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_location_index</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">loc</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow</span>().<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
             <span class="kw">match</span> <span class="ident">loc</span>.<span class="ident">device</span>.<span class="ident">deref</span>().<span class="ident">downcast_ref</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>() {
-                <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">d</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">d</span> <span class="op">=</span><span class="op">=</span> <span class="ident">device</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>),
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {}
+                <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">d</span>) <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">d</span> <span class="op">==</span> <span class="ident">device</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>),
+                <span class="kw">_</span> =&gt; {}
             }
         }
         <span class="prelude-val">None</span>
@@ -891,16 +891,16 @@
 
     <span class="doccomment">/// Looks up `device` in self.locations and returns its index. If lookup</span>
     <span class="doccomment">/// fails then new location is created and its index is returned.</span>
-    <span class="kw">fn</span> <span class="ident">get_or_create_location_index</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_or_create_location_index</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_location_index</span>(<span class="ident">device</span>) {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">i</span>);
         }
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow</span>().<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">BIT_MAP_SIZE</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow</span>().<span class="ident">len</span>() <span class="op">==</span> <span class="ident">BIT_MAP_SIZE</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::CapacityExceeded</span>);
         }
 
-        <span class="kw">let</span> <span class="ident">bytes_n</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::mem_size</span>(<span class="self">self</span>.<span class="ident">desc</span>().<span class="ident">size</span>());
+        <span class="kw">let</span> <span class="ident">bytes_n</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mem_size</span>(<span class="self">self</span>.<span class="ident">desc</span>().<span class="ident">size</span>());
 
         <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow_mut</span>().<span class="ident">push</span>(<span class="ident">TensorLocation</span> {
             <span class="ident">device</span>: <span class="ident">Box::new</span>(<span class="ident">device</span>.<span class="ident">clone</span>()),
@@ -917,7 +917,7 @@
     <span class="comment">// Actually I think that there would be only transfers between</span>
     <span class="comment">// `Native` &lt;-&gt; `Cuda` and `Native` &lt;-&gt; `OpenCL` in foreseeable future,</span>
     <span class="comment">// so it&#39;s best to not overengineer here.</span>
-    <span class="kw">fn</span> <span class="ident">sync_if_needed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">dst_i</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">sync_if_needed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">dst_i</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>() <span class="op">&amp;</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">dst_i</span>) <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }
@@ -932,10 +932,10 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">locs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow_mut</span>();
         <span class="kw">let</span> (<span class="ident">src_loc</span>, <span class="ident">dst_loc</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">src_i</span> <span class="op">&lt;</span> <span class="ident">dst_i</span> {
             <span class="kw">let</span> (<span class="ident">left</span>, <span class="ident">right</span>) <span class="op">=</span> <span class="ident">locs</span>.<span class="ident">split_at_mut</span>(<span class="ident">dst_i</span>);
-            (<span class="kw-2">&amp;</span><span class="ident">left</span>[<span class="ident">src_i</span>], <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">right</span>[<span class="number">0</span>])
+            (<span class="kw-2">&amp;</span><span class="ident">left</span>[<span class="ident">src_i</span>], <span class="kw-2">&amp;mut</span> <span class="ident">right</span>[<span class="number">0</span>])
         } <span class="kw">else</span> {
             <span class="kw">let</span> (<span class="ident">left</span>, <span class="ident">right</span>) <span class="op">=</span> <span class="ident">locs</span>.<span class="ident">split_at_mut</span>(<span class="ident">src_i</span>);
-            (<span class="kw-2">&amp;</span><span class="ident">right</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">left</span>[<span class="ident">dst_i</span>])
+            (<span class="kw-2">&amp;</span><span class="ident">right</span>[<span class="number">0</span>], <span class="kw-2">&amp;mut</span> <span class="ident">left</span>[<span class="ident">dst_i</span>])
         };
 
         <span class="comment">// Backends may define transfers asymmetrically. E. g. CUDA may know how</span>
@@ -947,8 +947,8 @@
             <span class="ident">dst_loc</span>.<span class="ident">device</span>.<span class="ident">deref</span>(),
             <span class="ident">dst_loc</span>.<span class="ident">mem</span>.<span class="ident">as_mut</span>(),
         ) {
-            <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-            <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
+            <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) =&gt; {}
+            <span class="ident">x</span> =&gt; <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
         }
 
         <span class="kw">match</span> <span class="ident">dst_loc</span>.<span class="ident">mem_transfer</span>.<span class="ident">sync_in</span>(
@@ -956,15 +956,15 @@
             <span class="ident">src_loc</span>.<span class="ident">device</span>.<span class="ident">deref</span>(),
             <span class="ident">src_loc</span>.<span class="ident">mem</span>.<span class="ident">deref</span>(),
         ) {
-            <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-            <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
+            <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) =&gt; {}
+            <span class="ident">x</span> =&gt; <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
         }
 
         <span class="comment">// If there is no direct path, we take the detour via native</span>
         <span class="comment">// and do an indirect transfer.</span>
         <span class="kw">if</span> <span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;native&quot;</span>) {
-            <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::framework::IFramework</span>;
-            <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::frameworks::native::Native</span>;
+            <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::framework::IFramework</span>;
+            <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::frameworks::native::Native</span>;
             <span class="kw">let</span> <span class="ident">native_framework</span> <span class="op">=</span> <span class="ident">Native::new</span>();
             <span class="kw">let</span> <span class="ident">native_device</span> <span class="op">=</span> <span class="ident">native_framework</span>
                 .<span class="ident">new_device</span>(<span class="ident">native_framework</span>.<span class="ident">hardwares</span>())
@@ -973,17 +973,17 @@
             <span class="kw">match</span> <span class="ident">src_loc</span>.<span class="ident">mem_transfer</span>.<span class="ident">sync_out</span>(
                 <span class="ident">src_loc</span>.<span class="ident">mem</span>.<span class="ident">deref</span>(),
                 <span class="kw-2">&amp;</span><span class="ident">native_device</span>,
-                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">native_mem</span>,
+                <span class="kw-2">&amp;mut</span> <span class="ident">native_mem</span>,
             ) {
-                <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
+                <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) =&gt; {}
+                <span class="ident">x</span> =&gt; <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
             }
             <span class="kw">match</span> <span class="ident">dst_loc</span>
                 .<span class="ident">mem_transfer</span>
                 .<span class="ident">sync_in</span>(<span class="ident">dst_loc</span>.<span class="ident">mem</span>.<span class="ident">as_mut</span>(), <span class="kw-2">&amp;</span><span class="ident">native_device</span>, <span class="kw-2">&amp;</span><span class="ident">native_mem</span>)
             {
-                <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) <span class="op">=</span><span class="op">&gt;</span> {}
-                <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
+                <span class="prelude-val">Err</span>(<span class="ident">DeviceError::NoMemorySyncRoute</span>) =&gt; {}
+                <span class="ident">x</span> =&gt; <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>()),
             }
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
@@ -1002,8 +1002,8 @@
 
     <span class="doccomment">/// Get memory for reading on the specified `device`.</span>
     <span class="doccomment">/// Can fail if memory allocation fails, or if tensor wasn&#39;t initialized yet.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">D::M</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">D::M</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>() <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::UninitializedMemory</span>);
         }
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_or_create_location_index</span>(<span class="ident">device</span>)<span class="question-mark">?</span>;
@@ -1022,8 +1022,8 @@
 
     <span class="doccomment">/// Get memory for reading and writing on the specified `device`.</span>
     <span class="doccomment">/// Can fail if memory allocation fails, or if tensor wasn&#39;t initialized yet.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_write</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">D::M</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_write</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">D::M</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>() <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::UninitializedMemory</span>);
         }
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_or_create_location_index</span>(<span class="ident">device</span>)<span class="question-mark">?</span>;
@@ -1031,7 +1031,7 @@
         <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">set</span>(<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">i</span>);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">locs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow_mut</span>();
-        <span class="kw">let</span> <span class="ident">mem</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">D::M</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">locs</span>[<span class="ident">i</span>]
+        <span class="kw">let</span> <span class="ident">mem</span>: <span class="kw-2">&amp;mut</span> <span class="ident">D::M</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">locs</span>[<span class="ident">i</span>]
             .<span class="ident">mem</span>
             .<span class="ident">as_mut</span>()
             .<span class="ident">downcast_mut</span>()
@@ -1047,12 +1047,12 @@
     <span class="doccomment">/// uninitialized data later. If caller has failed to overwrite memory,</span>
     <span class="doccomment">/// for some reason, it must call `invalidate()` to return vector to</span>
     <span class="doccomment">/// uninitialized state.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_only</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">D::M</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_only</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">D::M</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_or_create_location_index</span>(<span class="ident">device</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">set</span>(<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">i</span>);
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">locs</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow_mut</span>();
-        <span class="kw">let</span> <span class="ident">mem</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">D::M</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">locs</span>[<span class="ident">i</span>]
+        <span class="kw">let</span> <span class="ident">mem</span>: <span class="kw-2">&amp;mut</span> <span class="ident">D::M</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">locs</span>[<span class="ident">i</span>]
             .<span class="ident">mem</span>
             .<span class="ident">as_mut</span>()
             .<span class="ident">downcast_mut</span>()
@@ -1064,9 +1064,9 @@
     <span class="comment">// FIXME: synchronize memory elsewhere if possible?</span>
     <span class="doccomment">/// Drops memory allocation on the specified device. Returns error if</span>
     <span class="doccomment">/// no memory has been allocated on this device.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">drop</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">drop</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">get_location_index</span>(<span class="ident">device</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">i</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">i</span>) =&gt; {
                 <span class="self">self</span>.<span class="ident">locations</span>.<span class="ident">borrow_mut</span>().<span class="ident">remove</span>(<span class="ident">i</span>);
 
                 <span class="kw">let</span> <span class="ident">up_to_date</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>();
@@ -1076,7 +1076,7 @@
                 <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">set</span>(<span class="ident">lower</span> <span class="op">|</span> <span class="ident">upper</span>);
                 <span class="prelude-val">Ok</span>(())
             }
-            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::InvalidRemove</span>(
+            <span class="prelude-val">None</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::InvalidRemove</span>(
                 <span class="string">&quot;Memory isn&#39;t allocated on this device&quot;</span>,
             )),
         }
@@ -1084,8 +1084,8 @@
     <span class="comment">// force synchronize initialized memory to a device</span>
     <span class="doccomment">/// Allocates an already filled memory block on a device.</span>
     <span class="doccomment">/// This is a special needs function for performance concerns and should be avoided where possible.</span>
-    <span class="kw">fn</span> <span class="ident">sync</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>() <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">fn</span> <span class="ident">sync</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">IDevice</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">device</span>: <span class="kw-2">&amp;</span><span class="ident">D</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">up_to_date</span>.<span class="ident">get</span>() <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::UninitializedMemory</span>);
         }
         <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_or_create_location_index</span>(<span class="ident">device</span>)<span class="question-mark">?</span>;
@@ -1097,17 +1097,17 @@
     <span class="comment">// TODO move = sync + drop</span>
 
     <span class="doccomment">/// Returns the number of elements for which the Tensor has been allocated.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">capacity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">capacity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">desc</span>.<span class="ident">size</span>()
     }
 
     <span class="doccomment">/// Returns the descriptor of the Tensor.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">desc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">TensorDesc</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">desc</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">TensorDesc</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">desc</span>
     }
 
     <span class="doccomment">/// Returns the allocated Memory size in bytes.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mem_size</span>(<span class="ident">capacity</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mem_size</span>(<span class="ident">capacity</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
         <span class="ident">mem::size_of</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">*</span> <span class="ident">capacity</span>
     }
 }
@@ -1131,7 +1131,6 @@
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Attempt to read uninitialized memory&quot;</span>)]</span>
     <span class="ident">UninitializedMemory</span>,
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="coaster" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

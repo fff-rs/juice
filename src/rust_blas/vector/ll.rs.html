@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rust-blas&#x2F;src&#x2F;vector&#x2F;ll.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ll.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rust_blas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rust-blas&#x2F;src&#x2F;vector&#x2F;ll.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>ll.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rust_blas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -258,8 +259,7 @@
 <span id="258">258</span>
 <span id="259">259</span>
 <span id="260">260</span>
-</pre><pre class="rust">
-<span class="comment">// Copyright 2014 Michael Yang. All rights reserved.</span>
+</pre><pre class="rust"><code><span class="comment">// Copyright 2014 Michael Yang. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a MIT-style</span>
 <span class="comment">// license that can be found in the LICENSE file.</span>
 
@@ -268,76 +268,76 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_s</span> {
     <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_float</span>, <span class="ident">c_void</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_sasum</span> <span class="kw">as</span> <span class="ident">asum</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_saxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_scasum</span> <span class="kw">as</span> <span class="ident">casum</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_scnrm2</span> <span class="kw">as</span> <span class="ident">cnrm2</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_scopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_sdot</span> <span class="kw">as</span> <span class="ident">dot</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_sdsdot</span> <span class="kw">as</span> <span class="ident">dsdot</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_snrm2</span> <span class="kw">as</span> <span class="ident">nrm2</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_srot</span> <span class="kw">as</span> <span class="ident">rot</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_srotg</span> <span class="kw">as</span> <span class="ident">rotg</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_srotm</span> <span class="kw">as</span> <span class="ident">rotm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_srotmg</span> <span class="kw">as</span> <span class="ident">rotmg</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_sscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_sswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_sasum</span> <span class="kw">as</span> <span class="ident">asum</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_saxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_scasum</span> <span class="kw">as</span> <span class="ident">casum</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_scnrm2</span> <span class="kw">as</span> <span class="ident">cnrm2</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_scopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_sdot</span> <span class="kw">as</span> <span class="ident">dot</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_sdsdot</span> <span class="kw">as</span> <span class="ident">dsdot</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_snrm2</span> <span class="kw">as</span> <span class="ident">nrm2</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_srot</span> <span class="kw">as</span> <span class="ident">rot</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_srotg</span> <span class="kw">as</span> <span class="ident">rotg</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_srotm</span> <span class="kw">as</span> <span class="ident">rotm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_srotmg</span> <span class="kw">as</span> <span class="ident">rotmg</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_sscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_sswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_scopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_scopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_saxpy</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
             <span class="ident">alpha</span>: <span class="ident">c_float</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
         );
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_float</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_float</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sdsdot</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
             <span class="ident">alpha</span>: <span class="ident">c_float</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_float</span>;
+        ) -&gt; <span class="ident">c_float</span>;
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sdot</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_float</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_float</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_scasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_float</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_snrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_float</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_scnrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_float</span>;
+        ) -&gt; <span class="ident">c_float</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_sasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_float</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_scasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_float</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_snrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_float</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_scnrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_float</span>;
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_srot</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
+            <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
             <span class="ident">c</span>: <span class="ident">c_float</span>,
             <span class="ident">s</span>: <span class="ident">c_float</span>,
         );
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_srotm</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
+            <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-            <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">p</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
         );
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_srotg</span>(<span class="ident">a</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>, <span class="ident">b</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>, <span class="ident">c</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>, <span class="ident">s</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_srotg</span>(<span class="ident">a</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>, <span class="ident">b</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>, <span class="ident">c</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>, <span class="ident">s</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_srotmg</span>(
-            <span class="ident">d1</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
-            <span class="ident">d2</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
-            <span class="ident">b1</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
+            <span class="ident">d1</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
+            <span class="ident">d2</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
+            <span class="ident">b1</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
             <span class="ident">b2</span>: <span class="ident">c_float</span>,
-            <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_float</span>,
+            <span class="ident">p</span>: <span class="kw-2">*mut</span> <span class="ident">c_float</span>,
         );
     }
 }
@@ -345,75 +345,75 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_d</span> {
     <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_double</span>, <span class="ident">c_float</span>, <span class="ident">c_void</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dasum</span> <span class="kw">as</span> <span class="ident">asum</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_daxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dcopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ddot</span> <span class="kw">as</span> <span class="ident">dot</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dnrm2</span> <span class="kw">as</span> <span class="ident">nrm2</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_drot</span> <span class="kw">as</span> <span class="ident">rot</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_drotg</span> <span class="kw">as</span> <span class="ident">rotg</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_drotm</span> <span class="kw">as</span> <span class="ident">rotm</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_drotmg</span> <span class="kw">as</span> <span class="ident">rotmg</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dsdot</span> <span class="kw">as</span> <span class="ident">dsdot</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dzasum</span> <span class="kw">as</span> <span class="ident">zasum</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_dznrm2</span> <span class="kw">as</span> <span class="ident">znrm2</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dasum</span> <span class="kw">as</span> <span class="ident">asum</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_daxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dcopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_ddot</span> <span class="kw">as</span> <span class="ident">dot</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dnrm2</span> <span class="kw">as</span> <span class="ident">nrm2</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_drot</span> <span class="kw">as</span> <span class="ident">rot</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_drotg</span> <span class="kw">as</span> <span class="ident">rotg</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_drotm</span> <span class="kw">as</span> <span class="ident">rotm</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_drotmg</span> <span class="kw">as</span> <span class="ident">rotmg</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dsdot</span> <span class="kw">as</span> <span class="ident">dsdot</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dzasum</span> <span class="kw">as</span> <span class="ident">zasum</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_dznrm2</span> <span class="kw">as</span> <span class="ident">znrm2</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dcopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dcopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_daxpy</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
             <span class="ident">alpha</span>: <span class="ident">c_double</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
         );
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_double</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_double</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dsdot</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_double</span>;
+        ) -&gt; <span class="ident">c_double</span>;
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_ddot</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-        ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_double</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_double</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dzasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_double</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dnrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_double</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dznrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">c_double</span>;
+        ) -&gt; <span class="ident">c_double</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_double</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dzasum</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_double</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dnrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_double</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_dznrm2</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">c_double</span>;
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_drot</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
+            <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
             <span class="ident">c</span>: <span class="ident">c_double</span>,
             <span class="ident">s</span>: <span class="ident">c_double</span>,
         );
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_drotm</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
+            <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-            <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>,
+            <span class="ident">p</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>,
         );
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_drotg</span>(<span class="ident">a</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>, <span class="ident">b</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>, <span class="ident">c</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>, <span class="ident">s</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_drotg</span>(<span class="ident">a</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>, <span class="ident">b</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>, <span class="ident">c</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>, <span class="ident">s</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_drotmg</span>(
-            <span class="ident">d1</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
-            <span class="ident">d2</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
-            <span class="ident">b1</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
+            <span class="ident">d1</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
+            <span class="ident">d2</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
+            <span class="ident">b1</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
             <span class="ident">b2</span>: <span class="ident">c_double</span>,
-            <span class="ident">p</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_double</span>,
+            <span class="ident">p</span>: <span class="kw-2">*mut</span> <span class="ident">c_double</span>,
         );
     }
 }
@@ -421,42 +421,42 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_c</span> {
     <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_float</span>, <span class="ident">c_void</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_caxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_ccopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_cdotc_sub</span> <span class="kw">as</span> <span class="ident">dotc_sub</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_cdotu_sub</span> <span class="kw">as</span> <span class="ident">dotu_sub</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_cscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_csscal</span> <span class="kw">as</span> <span class="ident">sscal</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_cswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_caxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_ccopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_cdotc_sub</span> <span class="kw">as</span> <span class="ident">dotc_sub</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_cdotu_sub</span> <span class="kw">as</span> <span class="ident">dotu_sub</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_cscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_csscal</span> <span class="kw">as</span> <span class="ident">sscal</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_cswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_ccopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_ccopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_caxpy</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">alpha</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">alpha</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
         );
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_cscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_csscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_float</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_cswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_cscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_csscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_float</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_cswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_cdotu_sub</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-            <span class="ident">dotu</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+            <span class="ident">dotu</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
         );
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_cdotc_sub</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-            <span class="ident">dotc</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+            <span class="ident">dotc</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
         );
     }
 }
@@ -464,42 +464,42 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_z</span> {
     <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_double</span>, <span class="ident">c_void</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zaxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zcopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zdotc_sub</span> <span class="kw">as</span> <span class="ident">dotc_sub</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zdotu_sub</span> <span class="kw">as</span> <span class="ident">dotu_sub</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zdscal</span> <span class="kw">as</span> <span class="ident">dscal</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_zswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_zaxpy</span> <span class="kw">as</span> <span class="ident">axpy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_zcopy</span> <span class="kw">as</span> <span class="ident">copy</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_zdotc_sub</span> <span class="kw">as</span> <span class="ident">dotc_sub</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_zdotu_sub</span> <span class="kw">as</span> <span class="ident">dotu_sub</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_zdscal</span> <span class="kw">as</span> <span class="ident">dscal</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_zscal</span> <span class="kw">as</span> <span class="ident">scal</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_zswap</span> <span class="kw">as</span> <span class="ident">swap</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zcopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zcopy</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zaxpy</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">alpha</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">alpha</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+            <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
         );
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zdscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_double</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zdscal</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">alpha</span>: <span class="ident">c_double</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>);
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zswap</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>, <span class="ident">y</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>, <span class="ident">inc_y</span>: <span class="ident">u32</span>);
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zdotu_sub</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-            <span class="ident">dotu</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+            <span class="ident">dotu</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
         );
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_zdotc_sub</span>(
             <span class="ident">n</span>: <span class="ident">u32</span>,
-            <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_x</span>: <span class="ident">u32</span>,
-            <span class="ident">y</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>,
+            <span class="ident">y</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>,
             <span class="ident">inc_y</span>: <span class="ident">u32</span>,
-            <span class="ident">dotc</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">c_void</span>,
+            <span class="ident">dotc</span>: <span class="kw-2">*mut</span> <span class="ident">c_void</span>,
         );
     }
 }
@@ -507,19 +507,18 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cblas_i</span> {
     <span class="kw">use</span> <span class="ident">libc</span>::{<span class="ident">c_double</span>, <span class="ident">c_float</span>, <span class="ident">c_void</span>, <span class="ident">size_t</span>};
 
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_icamax</span> <span class="kw">as</span> <span class="ident">camax</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_idamax</span> <span class="kw">as</span> <span class="ident">damax</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_isamax</span> <span class="kw">as</span> <span class="ident">samax</span>;
-    <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::cblas_izamax</span> <span class="kw">as</span> <span class="ident">zamax</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_icamax</span> <span class="kw">as</span> <span class="ident">camax</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_idamax</span> <span class="kw">as</span> <span class="ident">damax</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_isamax</span> <span class="kw">as</span> <span class="ident">samax</span>;
+    <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cblas_izamax</span> <span class="kw">as</span> <span class="ident">zamax</span>;
 
     <span class="kw">extern</span> <span class="string">&quot;C&quot;</span> {
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_isamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">size_t</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_idamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">size_t</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_icamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">size_t</span>;
-        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_izamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">size_t</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_isamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_float</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">size_t</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_idamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_double</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">size_t</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_icamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">size_t</span>;
+        <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cblas_izamax</span>(<span class="ident">n</span>: <span class="ident">u32</span>, <span class="ident">x</span>: <span class="kw-2">*const</span> <span class="ident">c_void</span>, <span class="ident">inc_x</span>: <span class="ident">u32</span>) -&gt; <span class="ident">size_t</span>;
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rust_blas" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

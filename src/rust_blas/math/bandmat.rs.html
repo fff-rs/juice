@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rust-blas&#x2F;src&#x2F;math&#x2F;bandmat.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>bandmat.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rust_blas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rust-blas&#x2F;src&#x2F;math&#x2F;bandmat.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>bandmat.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../rust_blas/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -508,14 +509,13 @@
 <span id="508">508</span>
 <span id="509">509</span>
 <span id="510">510</span>
-</pre><pre class="rust">
-<span class="comment">// Copyright 2015 Michael Yang. All rights reserved.</span>
+</pre><pre class="rust"><code><span class="comment">// Copyright 2015 Michael Yang. All rights reserved.</span>
 <span class="comment">// Use of this source code is governed by a MIT-style</span>
 <span class="comment">// license that can be found in the LICENSE file.</span>
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::math::Mat</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::matrix::BandMatrix</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::vector::ops::Copy</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::Matrix</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::math::Mat</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::matrix::BandMatrix</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::vector::ops::Copy</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Matrix</span>;
 <span class="kw">use</span> <span class="ident">num::traits::NumCast</span>;
 <span class="kw">use</span> <span class="ident">std::cmp</span>::{<span class="ident">max</span>, <span class="ident">min</span>};
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
@@ -539,7 +539,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">usize</span>, <span class="ident">sub</span>: <span class="ident">u32</span>, <span class="ident">sup</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">usize</span>, <span class="ident">sub</span>: <span class="ident">u32</span>, <span class="ident">sup</span>: <span class="ident">u32</span>) -&gt; <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">*</span> <span class="ident">m</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">len</span>);
         <span class="kw">unsafe</span> {
@@ -555,34 +555,34 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rows</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rows</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">rows</span>
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">cols</span>
     }
     <span class="doccomment">/// Set Rows Manually</span>
     <span class="doccomment">/// # Safety</span>
     <span class="doccomment">/// No guarantees are made about rows x columns being equivalent to data length after this</span>
     <span class="doccomment">/// operation</span>
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_rows</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_rows</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) {
         <span class="self">self</span>.<span class="ident">rows</span> <span class="op">=</span> <span class="ident">n</span>;
     }
     <span class="doccomment">/// Set Columns Manually</span>
     <span class="doccomment">/// # Safety</span>
     <span class="doccomment">/// No guarantees are made about rows x columns being equivalent to data length after this</span>
     <span class="doccomment">/// operation</span>
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_cols</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_cols</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) {
         <span class="self">self</span>.<span class="ident">cols</span> <span class="op">=</span> <span class="ident">n</span>;
     }
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_sub_diagonals</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_sub_diagonals</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) {
         <span class="self">self</span>.<span class="ident">sub_diagonals</span> <span class="op">=</span> <span class="ident">n</span>;
     }
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_sup_diagonals</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">set_sup_diagonals</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) {
         <span class="self">self</span>.<span class="ident">sup_diagonals</span> <span class="op">=</span> <span class="ident">n</span>;
     }
 
-    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">T</span>) {
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">val</span>: <span class="ident">T</span>) {
         <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">val</span>);
     }
 }
@@ -637,7 +637,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`BandMat`]: struct.BandMat.html</span>
     <span class="doccomment">/// [`Mat`]: ../mat/struct.Mat.html</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_matrix</span>(<span class="ident">mat</span>: <span class="ident">Mat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">sub_diagonals</span>: <span class="ident">u32</span>, <span class="ident">sup_diagonals</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_matrix</span>(<span class="ident">mat</span>: <span class="ident">Mat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">sub_diagonals</span>: <span class="ident">u32</span>, <span class="ident">sup_diagonals</span>: <span class="ident">u32</span>) -&gt; <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mat</span> <span class="op">=</span> <span class="ident">ManuallyDrop::new</span>(<span class="ident">mat</span>);
 
         <span class="kw">let</span> <span class="ident">cols</span> <span class="op">=</span> <span class="ident">mat</span>.<span class="ident">cols</span>();
@@ -671,7 +671,7 @@
 
             <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> (<span class="ident">r</span> <span class="op">*</span> <span class="ident">lda</span>) <span class="op">+</span> <span class="ident">bandmat_offset</span>;
             <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>;
-            (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>).<span class="ident">copy_within</span>(<span class="ident">s</span>..<span class="ident">e</span>, <span class="ident">i</span>);
+            (<span class="kw-2">&amp;mut</span> <span class="ident">v</span>).<span class="ident">copy_within</span>(<span class="ident">s</span>..<span class="ident">e</span>, <span class="ident">i</span>);
         }
 
         <span class="ident">BandMat</span> {
@@ -700,7 +700,7 @@
     <span class="doccomment">/// [`BandMat`]: struct.BandMat.html</span>
     <span class="doccomment">/// [`Mat`]: ../mat/struct.Mat.html</span>
     <span class="doccomment">/// [`from_matrix`]: #method.from_matrix</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_matrix</span>(<span class="ident">bandmat</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Mat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_matrix</span>(<span class="ident">bandmat</span>: <span class="self">Self</span>) -&gt; <span class="ident">Mat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bandmat</span> <span class="op">=</span> <span class="ident">ManuallyDrop::new</span>(<span class="ident">bandmat</span>);
 
         <span class="kw">let</span> <span class="ident">ku</span> <span class="op">=</span> <span class="ident">bandmat</span>.<span class="ident">sup_diagonals</span>() <span class="kw">as</span> <span class="ident">usize</span>;
@@ -761,7 +761,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fill</span>(<span class="ident">value</span>: <span class="ident">T</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fill</span>(<span class="ident">value</span>: <span class="ident">T</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">usize</span>) -&gt; <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="ident">BandMat</span> {
             <span class="ident">rows</span>: <span class="ident">n</span>,
             <span class="ident">cols</span>: <span class="ident">m</span>,
@@ -775,7 +775,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">T</span>];
 
-    <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
+    <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
         <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> (<span class="ident">index</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">cols</span>) <span class="kw">as</span> <span class="ident">isize</span>;
 
         <span class="kw">unsafe</span> {
@@ -786,18 +786,18 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">fmt::Display</span><span class="op">&gt;</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="self">self</span>.<span class="ident">rows</span> {
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="self">self</span>.<span class="ident">cols</span> {
                 <span class="kw">match</span> <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>[<span class="ident">i</span>][<span class="ident">j</span>]) {
-                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> (),
-                    <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">x</span>,
+                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; (),
+                    <span class="ident">x</span> =&gt; <span class="kw">return</span> <span class="ident">x</span>,
                 }
             }
 
             <span class="kw">match</span> <span class="macro">writeln!</span>(<span class="ident">f</span>) {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> (),
-                <span class="ident">x</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="ident">x</span>,
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; (),
+                <span class="ident">x</span> =&gt; <span class="kw">return</span> <span class="ident">x</span>,
             }
         }
 
@@ -806,39 +806,39 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Matrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">lead_dim</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">fn</span> <span class="ident">lead_dim</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">sub_diagonals</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">sup_diagonals</span> <span class="op">+</span> <span class="number">1</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">rows</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">fn</span> <span class="ident">rows</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="kw">let</span> <span class="ident">n</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">NumCast::from</span>(<span class="self">self</span>.<span class="ident">rows</span>);
         <span class="ident">n</span>.<span class="ident">unwrap</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">cols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">fn</span> <span class="ident">cols</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="kw">let</span> <span class="ident">n</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">NumCast::from</span>(<span class="self">self</span>.<span class="ident">cols</span>);
         <span class="ident">n</span>.<span class="ident">unwrap</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">T</span> {
+    <span class="kw">fn</span> <span class="ident">as_ptr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*const</span> <span class="ident">T</span> {
         <span class="self">self</span>.<span class="ident">data</span>[..].<span class="ident">as_ptr</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">as_mut_ptr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span> {
-        (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">data</span>[..]).<span class="ident">as_mut_ptr</span>()
+    <span class="kw">fn</span> <span class="ident">as_mut_ptr</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">*mut</span> <span class="ident">T</span> {
+        (<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">data</span>[..]).<span class="ident">as_mut_ptr</span>()
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">BandMatrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">sub_diagonals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">fn</span> <span class="ident">sub_diagonals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">sub_diagonals</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">sup_diagonals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u32</span> {
+    <span class="kw">fn</span> <span class="ident">sup_diagonals</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="self">self</span>.<span class="ident">sup_diagonals</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">as_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Matrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">as_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Matrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="self">self</span>
     }
 }
@@ -847,7 +847,7 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Copy</span>,
 {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">BandMatrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">BandMatrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">BandMat</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">rows</span>() <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">cols</span>() <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">*</span> <span class="ident">m</span>;
@@ -866,7 +866,7 @@
             <span class="ident">result</span>.<span class="ident">data</span>.<span class="ident">set_len</span>(<span class="ident">len</span>);
         }
 
-        <span class="ident">Copy::copy_mat</span>(<span class="ident">a</span>.<span class="ident">as_matrix</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>);
+        <span class="ident">Copy::copy_mat</span>(<span class="ident">a</span>.<span class="ident">as_matrix</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">result</span>);
         <span class="ident">result</span>
     }
 }
@@ -875,7 +875,7 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">fn</span> <span class="ident">write_to_memory</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="ident">dest</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> () {
+    <span class="kw">fn</span> <span class="ident">write_to_memory</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="ident">dest</span>: <span class="kw-2">*mut</span> <span class="ident">T</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; () {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v1</span>;
         <span class="kw">unsafe</span> {
             <span class="ident">v1</span> <span class="op">=</span> <span class="ident">Vec::from_raw_parts</span>(<span class="ident">dest</span>, <span class="ident">source</span>.<span class="ident">len</span>(), <span class="ident">source</span>.<span class="ident">capacity</span>());
@@ -884,7 +884,7 @@
         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">ManuallyDrop::new</span>(<span class="ident">v1</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">retrieve_memory</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">Matrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">l</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">retrieve_memory</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="ident">t</span>: <span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">Matrix</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">l</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
 
         <span class="kw">unsafe</span> {
@@ -909,7 +909,7 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">band_m</span> <span class="op">=</span> <span class="ident">BandMat::from_matrix</span>(<span class="ident">m</span>, <span class="number">1</span>, <span class="number">1</span>);
 
-        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">band_m</span>, <span class="ident">length</span>);
+        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;mut</span> <span class="ident">band_m</span>, <span class="ident">length</span>);
 
         <span class="comment">// Check random values in position to make sure that they&#39;re correct, since it&#39;s hard to</span>
         <span class="comment">// actualy predict the real vector values</span>
@@ -934,7 +934,7 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">band_m</span> <span class="op">=</span> <span class="ident">BandMat::from_matrix</span>(<span class="ident">m</span>, <span class="number">2</span>, <span class="number">1</span>);
 
-        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">band_m</span>, <span class="ident">length</span>);
+        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;mut</span> <span class="ident">band_m</span>, <span class="ident">length</span>);
 
         <span class="macro">assert_eq!</span>(<span class="ident">result_vec</span>[<span class="number">2</span>], <span class="number">0.5</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">result_vec</span>[<span class="number">5</span>], <span class="number">2.0</span>);
@@ -972,7 +972,7 @@
         <span class="kw">let</span> <span class="ident">band_m</span> <span class="op">=</span> <span class="ident">BandMat::from_matrix</span>(<span class="ident">m</span>, <span class="number">1</span>, <span class="number">1</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">BandMat::to_matrix</span>(<span class="ident">band_m</span>);
 
-        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">m</span>, <span class="ident">length</span>);
+        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;mut</span> <span class="ident">m</span>, <span class="ident">length</span>);
 
         <span class="macro">assert_eq!</span>(<span class="ident">result_vec</span>, <span class="ident">original</span>);
     }
@@ -993,7 +993,7 @@
         <span class="kw">let</span> <span class="ident">band_m</span> <span class="op">=</span> <span class="ident">BandMat::from_matrix</span>(<span class="ident">m</span>, <span class="number">2</span>, <span class="number">1</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">BandMat::to_matrix</span>(<span class="ident">band_m</span>);
 
-        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">m</span>, <span class="ident">length</span>);
+        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;mut</span> <span class="ident">m</span>, <span class="ident">length</span>);
 
         <span class="macro">assert_eq!</span>(<span class="ident">result_vec</span>, <span class="ident">original</span>);
     }
@@ -1014,12 +1014,11 @@
         <span class="kw">let</span> <span class="ident">band_m</span> <span class="op">=</span> <span class="ident">BandMat::from_matrix</span>(<span class="ident">m</span>, <span class="number">2</span>, <span class="number">1</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">BandMat::to_matrix</span>(<span class="ident">band_m</span>);
 
-        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">m</span>, <span class="ident">length</span>);
+        <span class="kw">let</span> <span class="ident">result_vec</span> <span class="op">=</span> <span class="ident">retrieve_memory</span>(<span class="kw-2">&amp;mut</span> <span class="ident">m</span>, <span class="ident">length</span>);
 
         <span class="macro">assert_eq!</span>(<span class="ident">result_vec</span>, <span class="ident">original</span>);
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="rust_blas" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
 </body></html>

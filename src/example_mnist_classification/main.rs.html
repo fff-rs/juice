@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice-examples&#x2F;mnist-image-multiclass-classification&#x2F;src&#x2F;main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../example_mnist_classification/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice-examples&#x2F;mnist-image-multiclass-classification&#x2F;src&#x2F;main.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>main.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../example_mnist_classification/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -324,8 +325,7 @@
 <span id="324">324</span>
 <span id="325">325</span>
 <span id="326">326</span>
-</pre><pre class="rust">
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster</span> <span class="kw">as</span> <span class="ident">co</span>;
+</pre><pre class="rust"><code><span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster</span> <span class="kw">as</span> <span class="ident">co</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">coaster_nn</span> <span class="kw">as</span> <span class="ident">conn</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">env_logger</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">juice</span>;
@@ -394,7 +394,7 @@ Options:
 
     <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_load_dataset</span> {
         <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">args</span>.<span class="ident">arg_dataset_name</span>.<span class="ident">unwrap</span>() {
-            <span class="string">&quot;mnist&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="string">&quot;mnist&quot;</span> =&gt; {
                 <span class="kw">let</span> <span class="ident">datasets</span> <span class="op">=</span> [
                     <span class="string">&quot;train-images-idx3-ubyte.gz&quot;</span>,
                     <span class="string">&quot;train-labels-idx1-ubyte.gz&quot;</span>,
@@ -411,7 +411,7 @@ Options:
                 <span class="ident">unzip_datasets</span>(<span class="kw-2">&amp;</span><span class="ident">datasets</span>, <span class="kw-2">&amp;</span><span class="string">&quot;./assets/mnist/&quot;</span>).<span class="ident">unwrap</span>();
             }
 
-            <span class="string">&quot;fashion&quot;</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="string">&quot;fashion&quot;</span> =&gt; {
                 <span class="kw">let</span> <span class="ident">datasets</span> <span class="op">=</span> [
                     <span class="string">&quot;train-images-idx3-ubyte.gz&quot;</span>,
                     <span class="string">&quot;train-labels-idx1-ubyte.gz&quot;</span>,
@@ -430,7 +430,7 @@ Options:
                 <span class="ident">unzip_datasets</span>(<span class="kw-2">&amp;</span><span class="ident">datasets</span>, <span class="kw-2">&amp;</span><span class="string">&quot;./assets/mnist-fashion/&quot;</span>).<span class="ident">unwrap</span>();
                 <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Fashion MNIST dataset decompressed&quot;</span>.<span class="ident">to_string</span>());
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Failed to download MNIST dataset!&quot;</span>.<span class="ident">to_string</span>()),
+            <span class="kw">_</span> =&gt; <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="string">&quot;Failed to download MNIST dataset!&quot;</span>.<span class="ident">to_string</span>()),
         }
     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">cmd_mnist</span> {
         <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cuda&quot;</span>))]</span>
@@ -464,7 +464,7 @@ Options:
     <span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>,
     <span class="ident">batch_size</span>: <span class="ident">usize</span>,
     <span class="ident">pixel_dim</span>: <span class="ident">usize</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
+) -&gt; <span class="ident">SequentialConfig</span> {
     <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;reshape&quot;</span>,
         <span class="ident">ReshapeConfig::of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="number">1</span>, <span class="ident">pixel_dim</span>, <span class="ident">pixel_dim</span>]),
@@ -504,7 +504,7 @@ Options:
     <span class="ident">_net_cfg</span>: <span class="ident">SequentialConfig</span>,
     <span class="ident">_batch_size</span>: <span class="ident">usize</span>,
     <span class="ident">_pixel_dim</span>: <span class="ident">usize</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
+) -&gt; <span class="ident">SequentialConfig</span> {
     <span class="macro">println!</span>(
         <span class="string">&quot;Currently Juice does not have a native pooling function to use with Conv Nets - you can either try
         the CUDA implementation, or use a different type of layer&quot;</span>
@@ -516,7 +516,7 @@ Options:
     <span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>,
     <span class="ident">batch_size</span>: <span class="ident">usize</span>,
     <span class="ident">pixel_count</span>: <span class="ident">usize</span>,
-) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
+) -&gt; <span class="ident">SequentialConfig</span> {
     <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;reshape&quot;</span>,
         <span class="ident">LayerType::Reshape</span>(<span class="ident">ReshapeConfig::of_shape</span>(<span class="kw-2">&amp;</span>[<span class="ident">batch_size</span>, <span class="ident">pixel_count</span>])),
@@ -533,7 +533,7 @@ Options:
     <span class="ident">net_cfg</span>
 }
 
-<span class="kw">fn</span> <span class="ident">add_linear_net</span>(<span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SequentialConfig</span> {
+<span class="kw">fn</span> <span class="ident">add_linear_net</span>(<span class="kw-2">mut</span> <span class="ident">net_cfg</span>: <span class="ident">SequentialConfig</span>) -&gt; <span class="ident">SequentialConfig</span> {
     <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(
         <span class="string">&quot;linear&quot;</span>,
         <span class="ident">LayerType::Linear</span>(<span class="ident">LinearConfig</span> { <span class="ident">output_size</span>: <span class="number">10</span> }),
@@ -554,8 +554,8 @@ Options:
     <span class="kw">let</span> <span class="ident">pixel_dim</span> <span class="op">=</span> <span class="number">28</span>;
 
     <span class="kw">let</span> <span class="ident">asset_path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">mnist_type</span> {
-        <span class="ident">MnistType::Fashion</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist-fashion&quot;</span>,
-        <span class="ident">MnistType::Numbers</span> <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;./assets/mnist&quot;</span>,
+        <span class="ident">MnistType::Fashion</span> =&gt; <span class="string">&quot;./assets/mnist-fashion&quot;</span>,
+        <span class="ident">MnistType::Numbers</span> =&gt; <span class="string">&quot;./assets/mnist&quot;</span>,
     };
 
     <span class="kw">let</span> <span class="ident">Mnist</span> {
@@ -581,10 +581,10 @@ Options:
     <span class="ident">net_cfg</span>.<span class="ident">force_backward</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
     <span class="ident">net_cfg</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">model_name</span>.<span class="ident">unwrap_or</span>(<span class="string">&quot;none&quot;</span>.<span class="ident">to_owned</span>()) {
-        <span class="string">&quot;conv&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">add_conv_net</span>(<span class="ident">net_cfg</span>, <span class="ident">batch_size</span>, <span class="ident">pixel_dim</span>),
-        <span class="string">&quot;mlp&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">add_mlp</span>(<span class="ident">net_cfg</span>, <span class="ident">batch_size</span>, <span class="ident">pixel_count</span>),
-        <span class="string">&quot;linear&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">add_linear_net</span>(<span class="ident">net_cfg</span>),
-        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;Unknown model. Try one of [linear, mlp, conv]&quot;</span>),
+        <span class="string">&quot;conv&quot;</span> =&gt; <span class="ident">add_conv_net</span>(<span class="ident">net_cfg</span>, <span class="ident">batch_size</span>, <span class="ident">pixel_dim</span>),
+        <span class="string">&quot;mlp&quot;</span> =&gt; <span class="ident">add_mlp</span>(<span class="ident">net_cfg</span>, <span class="ident">batch_size</span>, <span class="ident">pixel_count</span>),
+        <span class="string">&quot;linear&quot;</span> =&gt; <span class="ident">add_linear_net</span>(<span class="ident">net_cfg</span>),
+        <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unknown model. Try one of [linear, mlp, conv]&quot;</span>),
     };
 
     <span class="ident">net_cfg</span>.<span class="ident">add_layer</span>(<span class="ident">LayerConfig::new</span>(<span class="string">&quot;log_softmax&quot;</span>, <span class="ident">LayerType::LogSoftmax</span>));
@@ -633,15 +633,15 @@ Options:
         {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input_tensor</span> <span class="op">=</span> <span class="ident">inp_lock</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">label_tensor</span> <span class="op">=</span> <span class="ident">label_lock</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
-            <span class="ident">write_batch_sample</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">input_tensor</span>, <span class="kw-2">&amp;</span><span class="ident">input</span>, <span class="ident">batch_n</span>);
-            <span class="ident">write_batch_sample</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">label_tensor</span>, <span class="kw-2">&amp;</span>[<span class="ident">label_val</span>], <span class="ident">batch_n</span>);
+            <span class="ident">write_batch_sample</span>(<span class="kw-2">&amp;mut</span> <span class="ident">input_tensor</span>, <span class="kw-2">&amp;</span><span class="ident">input</span>, <span class="ident">batch_n</span>);
+            <span class="ident">write_batch_sample</span>(<span class="kw-2">&amp;mut</span> <span class="ident">label_tensor</span>, <span class="kw-2">&amp;</span>[<span class="ident">label_val</span>], <span class="ident">batch_n</span>);
             <span class="ident">targets</span>.<span class="ident">push</span>(<span class="ident">label_val</span> <span class="kw">as</span> <span class="ident">usize</span>);
         }
         <span class="comment">// train the network!</span>
         <span class="kw">let</span> <span class="ident">infered_out</span> <span class="op">=</span> <span class="ident">solver</span>.<span class="ident">train_minibatch</span>(<span class="ident">inp_lock</span>.<span class="ident">clone</span>(), <span class="ident">label_lock</span>.<span class="ident">clone</span>());
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">infered</span> <span class="op">=</span> <span class="ident">infered_out</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">predictions</span> <span class="op">=</span> <span class="ident">classification_evaluator</span>.<span class="ident">get_predictions</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">infered</span>);
+        <span class="kw">let</span> <span class="ident">predictions</span> <span class="op">=</span> <span class="ident">classification_evaluator</span>.<span class="ident">get_predictions</span>(<span class="kw-2">&amp;mut</span> <span class="ident">infered</span>);
 
         <span class="ident">classification_evaluator</span>.<span class="ident">add_samples</span>(<span class="kw-2">&amp;</span><span class="ident">predictions</span>, <span class="kw-2">&amp;</span><span class="ident">targets</span>);
         <span class="macro">println!</span>(
@@ -651,7 +651,6 @@ Options:
         );
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="example_mnist_classification" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

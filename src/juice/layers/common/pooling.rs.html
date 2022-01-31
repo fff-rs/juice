@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice&#x2F;src&#x2F;layers&#x2F;common&#x2F;pooling.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pooling.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../juice/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `juice&#x2F;src&#x2F;layers&#x2F;common&#x2F;pooling.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pooling.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../juice/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -273,8 +274,7 @@
 <span id="273">273</span>
 <span id="274">274</span>
 <span id="275">275</span>
-</pre><pre class="rust">
-<span class="doccomment">//! Applies pooling to the input.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Applies pooling to the input.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! This layers looks at adjacent values of the input and then computes a</span>
 <span class="doccomment">//! simple pooling operation over them (e.g. taking their maximum or average value).</span>
@@ -287,14 +287,14 @@
 <span class="doccomment">//! The layer expects the input to be in either 4D NCHW (2 spatial dimensions)</span>
 <span class="doccomment">//! or 5D NCDHW (3 spatial dimensions) format.</span>
 
-<span class="kw">use</span> <span class="kw">super</span><span class="ident">::FilterLayer</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::capnp_util</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::co</span>::{<span class="ident">IBackend</span>, <span class="ident">SharedTensor</span>};
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::conn</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::juice_capnp::pooling_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::juice_capnp::PoolingMode</span> <span class="kw">as</span> <span class="ident">CapnpPoolingMode</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::layer</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::util</span>::{<span class="ident">cast_vec_usize_to_i32</span>, <span class="ident">ArcLock</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::FilterLayer</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::capnp_util</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co</span>::{<span class="ident">IBackend</span>, <span class="ident">SharedTensor</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::conn</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::juice_capnp::pooling_config</span> <span class="kw">as</span> <span class="ident">capnp_config</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::juice_capnp::PoolingMode</span> <span class="kw">as</span> <span class="ident">CapnpPoolingMode</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::layer</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util</span>::{<span class="ident">cast_vec_usize_to_i32</span>, <span class="ident">ArcLock</span>};
 <span class="kw">use</span> <span class="ident">std::rc::Rc</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
@@ -311,7 +311,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">B</span>: <span class="ident">conn::Pooling</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Pooling</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">B</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a Pooling layer from a PoolingConfig.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">PoolingConfig</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Pooling</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">B</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_config</span>(<span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">PoolingConfig</span>) -&gt; <span class="ident">Pooling</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">B</span><span class="op">&gt;</span> {
         <span class="ident">Pooling</span> {
             <span class="ident">mode</span>: <span class="ident">config</span>.<span class="ident">mode</span>,
 
@@ -326,15 +326,15 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">B</span>: <span class="ident">conn::Pooling</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">FilterLayer</span> <span class="kw">for</span> <span class="ident">Pooling</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">B</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Calculates the number of spatial dimensions for the pooling operation.</span>
-    <span class="kw">fn</span> <span class="ident">num_spatial_dims</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">num_spatial_dims</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) -&gt; <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="ident">input_shape</span>.<span class="ident">len</span>() {
-            <span class="number">4</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">2</span>,
-            <span class="number">5</span> <span class="op">=</span><span class="op">&gt;</span> <span class="number">3</span>,
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic!</span>(<span class="string">&quot;A pooling layer currently only supports 4D or 5D input.&quot;</span>),
+            <span class="number">4</span> =&gt; <span class="number">2</span>,
+            <span class="number">5</span> =&gt; <span class="number">3</span>,
+            <span class="kw">_</span> =&gt; <span class="macro">panic!</span>(<span class="string">&quot;A pooling layer currently only supports 4D or 5D input.&quot;</span>),
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">calculate_output_shape</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">calculate_output_shape</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input_shape</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">num_spatial_dims</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">num_spatial_dims</span>(<span class="ident">input_shape</span>);
         <span class="kw">let</span> <span class="ident">filter</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">spatial_filter_dims</span>(<span class="ident">num_spatial_dims</span>);
         <span class="kw">let</span> <span class="ident">padding</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">padding_dims</span>(<span class="ident">num_spatial_dims</span>);
@@ -343,22 +343,22 @@
         <span class="kw">for</span> <span class="ident">dim</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">input_shape</span>[<span class="number">0</span>..<span class="number">2</span>].<span class="ident">to_vec</span>() {
             <span class="ident">output_shape</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">dim</span>);
         }
-        <span class="kw">for</span> <span class="ident">spatial_dim</span> <span class="kw">in</span> <span class="self">Self</span><span class="ident">::calculate_spatial_output_dims</span>(<span class="kw-2">&amp;</span><span class="ident">input_shape</span>[<span class="number">2</span>..], <span class="kw-2">&amp;</span><span class="ident">filter</span>, <span class="kw-2">&amp;</span><span class="ident">padding</span>, <span class="kw-2">&amp;</span><span class="ident">stride</span>) {
+        <span class="kw">for</span> <span class="ident">spatial_dim</span> <span class="kw">in</span> <span class="ident"><span class="self">Self</span>::calculate_spatial_output_dims</span>(<span class="kw-2">&amp;</span><span class="ident">input_shape</span>[<span class="number">2</span>..], <span class="kw-2">&amp;</span><span class="ident">filter</span>, <span class="kw-2">&amp;</span><span class="ident">padding</span>, <span class="kw-2">&amp;</span><span class="ident">stride</span>) {
             <span class="ident">output_shape</span>.<span class="ident">push</span>(<span class="ident">spatial_dim</span>);
         }
 
         <span class="ident">output_shape</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">filter_shape</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">usize</span>] {
+    <span class="kw">fn</span> <span class="ident">filter_shape</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">usize</span>] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">filter_shape</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">stride</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">usize</span>] {
+    <span class="kw">fn</span> <span class="ident">stride</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">usize</span>] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">stride</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">padding</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">usize</span>] {
+    <span class="kw">fn</span> <span class="ident">padding</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">usize</span>] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">padding</span>
     }
 }
@@ -367,14 +367,14 @@
     <span class="macro">impl_ilayer_common!</span>();
 
     <span class="kw">fn</span> <span class="ident">reshape</span>(
-        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
         <span class="ident">backend</span>: <span class="ident">::std::rc::Rc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-        <span class="ident">input_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">input_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">weights_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">output_gradient</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">input_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">input_gradient</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">weights_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">weights_gradient</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">output_gradient</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ArcLock</span><span class="op">&lt;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     ) {
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">input_data</span>.<span class="ident">len</span>() {
             <span class="kw">let</span> <span class="ident">inp</span> <span class="op">=</span> <span class="ident">input_data</span>[<span class="number">0</span>].<span class="ident">read</span>().<span class="ident">unwrap</span>();
@@ -400,12 +400,12 @@
         <span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="ident">B</span>,
         <span class="ident">weights</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
         <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-        <span class="ident">output_data</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">output_data</span>: <span class="kw-2">&amp;mut</span> [<span class="kw-2">&amp;mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
     ) {
         <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pooling_configs</span>[<span class="number">0</span>];
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">mode</span> {
-            <span class="ident">PoolingMode::Max</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">backend</span>.<span class="ident">pooling_max</span>(<span class="ident">input_data</span>[<span class="number">0</span>], <span class="ident">output_data</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">config</span>).<span class="ident">unwrap</span>(),
-            <span class="ident">PoolingMode::Average</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">backend</span>.<span class="ident">pooling_avg</span>(<span class="ident">input_data</span>[<span class="number">0</span>], <span class="ident">output_data</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">config</span>).<span class="ident">unwrap</span>(),
+            <span class="ident">PoolingMode::Max</span> =&gt; <span class="ident">backend</span>.<span class="ident">pooling_max</span>(<span class="ident">input_data</span>[<span class="number">0</span>], <span class="ident">output_data</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">config</span>).<span class="ident">unwrap</span>(),
+            <span class="ident">PoolingMode::Average</span> =&gt; <span class="ident">backend</span>.<span class="ident">pooling_avg</span>(<span class="ident">input_data</span>[<span class="number">0</span>], <span class="ident">output_data</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">config</span>).<span class="ident">unwrap</span>(),
         }
     }
 }
@@ -418,11 +418,11 @@
         <span class="ident">output_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
         <span class="ident">output_gradients</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
         <span class="ident">input_data</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
-        <span class="ident">input_gradients</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
+        <span class="ident">input_gradients</span>: <span class="kw-2">&amp;mut</span> [<span class="kw-2">&amp;mut</span> <span class="ident">SharedTensor</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>],
     ) {
         <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pooling_configs</span>[<span class="number">0</span>];
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">mode</span> {
-            <span class="ident">PoolingMode::Max</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">backend</span>
+            <span class="ident">PoolingMode::Max</span> =&gt; <span class="ident">backend</span>
                 .<span class="ident">pooling_max_grad</span>(
                     <span class="ident">output_data</span>[<span class="number">0</span>],
                     <span class="ident">output_gradients</span>[<span class="number">0</span>],
@@ -431,7 +431,7 @@
                     <span class="ident">config</span>,
                 )
                 .<span class="ident">unwrap</span>(),
-            <span class="ident">PoolingMode::Average</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">backend</span>
+            <span class="ident">PoolingMode::Average</span> =&gt; <span class="ident">backend</span>
                 .<span class="ident">pooling_avg_grad</span>(
                     <span class="ident">output_data</span>[<span class="number">0</span>],
                     <span class="ident">output_gradients</span>[<span class="number">0</span>],
@@ -460,7 +460,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">LayerType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PoolingConfig</span> {
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LayerType</span> {
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="self">self</span>) -&gt; <span class="ident">LayerType</span> {
         <span class="ident">LayerType::Pooling</span>(<span class="self">self</span>)
     }
 }
@@ -469,7 +469,7 @@
     <span class="kw">type</span> <span class="ident">Builder</span> <span class="op">=</span> <span class="ident">capnp_config::Builder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Write the PoolingConfig into a capnp message.</span>
-    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="ident">::Builder</span>) {
+    <span class="kw">fn</span> <span class="ident">write_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">builder</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::Builder</span>) {
         <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">set_mode</span>(<span class="self">self</span>.<span class="ident">mode</span>.<span class="ident">to_capnp</span>());
         {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">filter_shape</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">reborrow</span>().<span class="ident">init_filter_shape</span>(<span class="self">self</span>.<span class="ident">filter_shape</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>);
@@ -495,7 +495,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">CapnpRead</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PoolingConfig</span> {
     <span class="kw">type</span> <span class="ident">Reader</span> <span class="op">=</span> <span class="ident">capnp_config::Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="self">Self</span><span class="ident">::Reader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">read_capnp</span>(<span class="ident">reader</span>: <span class="ident"><span class="self">Self</span>::Reader</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="ident">PoolingMode::from_capnp</span>(<span class="ident">reader</span>.<span class="ident">get_mode</span>().<span class="ident">unwrap</span>());
 
         <span class="kw">let</span> <span class="ident">read_filter_shape</span> <span class="op">=</span> <span class="ident">reader</span>.<span class="ident">get_filter_shape</span>().<span class="ident">unwrap</span>();
@@ -534,22 +534,21 @@
 
 <span class="kw">impl</span> <span class="ident">PoolingMode</span> {
     <span class="doccomment">/// Return the corresponding Cap&#39;n Proto value.</span>
-    <span class="kw">fn</span> <span class="ident">to_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CapnpPoolingMode</span> {
+    <span class="kw">fn</span> <span class="ident">to_capnp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">CapnpPoolingMode</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident">PoolingMode::Max</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CapnpPoolingMode::Max</span>,
-            <span class="ident">PoolingMode::Average</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">CapnpPoolingMode::Average</span>,
+            <span class="ident">PoolingMode::Max</span> =&gt; <span class="ident">CapnpPoolingMode::Max</span>,
+            <span class="ident">PoolingMode::Average</span> =&gt; <span class="ident">CapnpPoolingMode::Average</span>,
         }
     }
 
     <span class="doccomment">/// Return the enum value for a Cap&#39;n Proto value.</span>
-    <span class="kw">fn</span> <span class="ident">from_capnp</span>(<span class="ident">value</span>: <span class="ident">CapnpPoolingMode</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_capnp</span>(<span class="ident">value</span>: <span class="ident">CapnpPoolingMode</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">match</span> <span class="ident">value</span> {
-            <span class="ident">CapnpPoolingMode::Max</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">PoolingMode::Max</span>,
-            <span class="ident">CapnpPoolingMode::Average</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">PoolingMode::Average</span>,
+            <span class="ident">CapnpPoolingMode::Max</span> =&gt; <span class="ident">PoolingMode::Max</span>,
+            <span class="ident">CapnpPoolingMode::Average</span> =&gt; <span class="ident">PoolingMode::Average</span>,
         }
     }
 }
-</pre></div>
+</code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="juice" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script>
 </body></html>
