@@ -6,79 +6,119 @@
 pub mod confusion_matrix;
 pub mod regression_evaluator;
 
+use std::cell::RefCell;
+use std::cell::RefMut;
+use std::collections::HashMap;
+use std::marker::PhantomData;
+use std::rc::Rc;
+
 pub use self::confusion_matrix::ConfusionMatrix;
 pub use self::regression_evaluator::{RegressionEvaluator, RegressionLoss};
 use crate::co::prelude::*;
-use crate::layer::*;
-use crate::layers::SequentialConfig;
+use crate::net::*;
 use crate::solvers::*;
-use std::marker::PhantomData;
 
 use crate::util::{ArcLock, LayerOps, SolverOps};
-use std::rc::Rc;
 
 #[derive(Debug)]
 /// Solver that optimizes a [Layer][1] with a given objective.
 /// [1]: ../layer/index.html
-pub struct Solver<SolverB, B>
+pub struct Solver<B>
 where
-    SolverB: IBackend + SolverOps<f32>,
     B: IBackend + LayerOps<f32>,
 {
-    net: Layer<B>,
-    objective: Layer<SolverB>,
+    context: Context<B>,
+
+    net: Box<dyn Layer<B>>,
+    objective: Box<dyn Layer<B>>,
     /// The implementation of the Solver
-    pub worker: Box<dyn ISolver<SolverB, B>>,
+    pub worker: Box<dyn ISolver<B, B>>,
 
     config: SolverConfig,
 
     /// The current iteration / number of times weights have been updated
     iter: usize,
-
-    solver_backend: PhantomData<SolverB>,
 }
 
-impl<SolverB, B> Solver<SolverB, B>
+impl<B> Solver<B>
 where
-    SolverB: IBackend + SolverOps<f32> + 'static,
-    B: IBackend + LayerOps<f32> + 'static,
+    B: IBackend + LayerOps<f32> + SolverOps<f32> + 'static,
 {
     /// Create Solver from [SolverConfig][1]
     /// [1]: ./struct.SolverConfig.html
     ///
     /// This is the **preferred method** to create a Solver for training a neural network.
-    pub fn from_config(net_backend: Rc<B>, obj_backend: Rc<SolverB>, config: &SolverConfig) -> Solver<SolverB, B> {
-        let network = Layer::from_config(net_backend, &config.network);
-        let mut worker = config.solver.with_config(obj_backend.clone(), &config);
-        worker.init(&network);
+    pub fn from_config(
+        backend: Rc<B>,
+        config: &SolverConfig,
+        input_shapes: &[TensorDesc],
+        label_shape: &TensorDesc,
+    ) -> Solver<B> {
+        let context = Context::new(backend.clone(), config.minibatch_size);
+        let mut network = layer_from_config(
+            Descriptor::top(
+                "net",
+                input_shapes
+                    .iter()
+                    .enumerate()
+                    .map(|(i, shape)| Inout::new_with_path(shape.clone(), &format!("net_in_{}", i)))
+                    .collect(),
+            ),
+            &*backend,
+            &config.network,
+        );
+        assert_eq!(network.descriptor().outputs().len(), 1); // Net must have only one output.
+
+        let mut objective = layer_from_config(
+            Descriptor::top(
+                "loss",
+                vec![
+                    network.descriptor().output(0).clone(),
+                    Inout::new_with_path(label_shape.clone(), "labels"),
+                ],
+            ),
+            &*backend,
+            &config.objective,
+        );
+
+        let weight_shapes: Vec<TensorDesc> = network
+            .descriptor()
+            .params()
+            .iter()
+            .map(|w| w.params.borrow().data.desc().clone())
+            .collect();
+        let mut worker = config.solver.with_config(backend.clone(), &config);
+        worker.init(&weight_shapes);
+
+        // Loss layer cannot have params (no one will train them!).
+        assert!(objective.descriptor().params().is_empty());
 
         Solver {
+            context: context,
             worker: worker,
             net: network,
-            objective: Layer::from_config(obj_backend, &config.objective),
+            objective: objective,
             iter: 0,
-
             config: config.clone(),
-            solver_backend: PhantomData::<SolverB>,
         }
     }
 }
 
-impl<SolverB, B> Solver<SolverB, B>
+impl<B> Solver<B>
 where
-    SolverB: IBackend + SolverOps<f32> + 'static,
-    B: IBackend + LayerOps<f32> + 'static,
+    B: IBackend + LayerOps<f32> + SolverOps<f32> + 'static,
 {
-    fn init(&mut self, backend: Rc<B>) {
+    fn init(&mut self, backend: Rc<B>, input_shapes: &[TensorDesc]) {
         info!("Initializing solver from configuration");
 
-        let mut config = self.config.clone();
-        self.init_net(backend, &mut config);
+        let config = self.config.clone();
+        self.init_net(backend, &config, input_shapes);
     }
 
     /// Initialize the training net
-    fn init_net(&mut self, backend: Rc<B>, param: &mut SolverConfig) {
-        self.net = Layer::from_config(backend, &param.network);
+    fn init_net(&mut self, backend: Rc<B>, param: &SolverConfig, input_shapes: &[TensorDesc]) {
+        unimplemented!();
+        //self.net = layer_from_config(&*backend, &param.network, input_shapes);
     }
 
     /// Train the network with one minibatch
@@ -86,38 +126,79 @@ where
         &mut self,
         mb_data: ArcLock<SharedTensor<f32>>,
         mb_target: ArcLock<SharedTensor<f32>>,
-    ) -> ArcLock<SharedTensor<f32>> {
-        // forward through network and classifier
-        let network_out = self.net.forward(&[mb_data])[0].clone();
-        let _ = self.objective.forward(&[network_out.clone(), mb_target]);
+    ) -> SharedTensor<f32> {
+        // Copy intput data into the network context.
+        let mut data = self.context.acquire_data(self.net.descriptor().input(0));
+        self.context
+            .backend()
+            .copy(&mb_data.read().unwrap(), &mut data.borrow_mut());
+        let mut labels = self
+            .context
+            .acquire_data(self.objective.descriptor().input(1));
+        self.context
+            .backend()
+            .copy(&mb_target.read().unwrap(), &mut labels.borrow_mut());
 
-        // forward through network and classifier
-        let classifier_gradient = self.objective.backward(&[]);
-        self.net.backward(&classifier_gradient[0..1]);
+        // Compute network output and the loss.
+        self.net.compute_output(&mut self.context);
+        self.objective.compute_output(&mut self.context);
 
-        self.worker.compute_update(&self.config, &mut self.net, self.iter);
-        self.net.update_weights(self.worker.backend());
+        // Compute params gradients by doing a backpropagation on the network.
+        self.objective.compute_gradients(&mut self.context);
+        self.net.compute_gradients(&mut self.context);
+
+        // Let the solver worker adjust the params gradients before applying them to params.
+        let params: Vec<LearnableParamsLink> =
+            self.net.descriptor().params().iter().cloned().collect();
+        let mut params_gradients: Vec<(Rc<RefCell<SharedTensor<f32>>>, f32)> = params
+            .iter()
+            .map(|p| {
+                (
+                    self.context.get_params_gradient(p),
+                    p.params.borrow().learning_rate,
+                )
+            })
+            .collect();
+        self.worker
+            .compute_update(&self.config, &params_gradients, self.iter);
+
+        // Finally apply the weight change.
+        let shared_a = crate::util::native_scalar(-1f32);
+        for i in 0..self.net.descriptor().params().len() {
+            let gradient = &params_gradients[i].0.borrow();
+            let mut params = &mut self.net.descriptor_mut().param(i).params.borrow_mut().data;
+            self.context
+                .backend()
+                .axpy(&shared_a, gradient, params)
+                .unwrap();
+        }
+
         self.iter += 1;
 
+        let out_buffer = self.context.get_data(self.net.descriptor().output(0));
+        let mut network_out = SharedTensor::<f32>::new(out_buffer.borrow().desc());
+        self.context
+            .backend()
+            .copy(&out_buffer.borrow(), &mut network_out);
         network_out
     }
 
-    /// Returns the network trained by the solver.
-    ///
-    /// This is the recommended method to get a usable trained network.
-    pub fn network(&self) -> &Layer<B> {
-        &self.net
-    }
+    // /// Returns the network trained by the solver.
+    // ///
+    // /// This is the recommended method to get a usable trained network.
+    // pub fn network(&self) -> &Layer<B> {
+    //     &self.net
+    // }
 
-    /// Returns the network trained by the solver.
-    ///
-    /// This is the recommended method to get a trained network,
-    /// if you want to alter the network. Keep in mind that altering the network
-    /// might render the solver unusable and continuing training the network with it will yield
-    /// unexpected results.
-    pub fn mut_network(&mut self) -> &mut Layer<B> {
-        &mut self.net
-    }
+    // /// Returns the network trained by the solver.
+    // ///
+    // /// This is the recommended method to get a trained network,
+    // /// if you want to alter the network. Keep in mind that altering the network
+    // /// might render the solver unusable and continuing training the network with it will yield
+    // /// unexpected results.
+    // pub fn mut_network(&mut self) -> &mut Layer<B> {
+    //     &mut self.net
+    // }
 }
 
 /// Implementation of a specific Solver.
@@ -130,7 +211,7 @@ where
     SolverB: IBackend + SolverOps<f32>,
 {
     /// Initialize the solver, setting up any network related data.
-    fn init(&mut self, net: &Layer<B>) {}
+    fn init(&mut self, weight_shapes: &[TensorDesc]) {}
 
     /// Update the weights of the net with part of the gradient.
     ///
@@ -143,7 +224,12 @@ where
     /// Used by [step][2] to optimize the network.
     ///
     /// [2]: ./struct.Solver.html#method.step
-    fn compute_update(&mut self, param: &SolverConfig, network: &mut Layer<B>, iter: usize);
+    fn compute_update(
+        &mut self,
+        param: &SolverConfig,
+        weight_gradients: &[(Rc<RefCell<SharedTensor<f32>>>, f32)],
+        iter: usize,
+    );
 
     /// Returns the backend used by the solver.
     fn backend(&self) -> &SolverB;
@@ -240,8 +326,8 @@ impl Default for SolverConfig {
     fn default() -> SolverConfig {
         SolverConfig {
             name: "".to_owned(),
-            network: LayerConfig::new("default", SequentialConfig::default()),
-            objective: LayerConfig::new("default", SequentialConfig::default()),
+            network: LayerConfig::default(),
+            objective: LayerConfig::default(),
             solver: SolverKind::SGD(SGDKind::Momentum),
 
             minibatch_size: 1,
@@ -354,7 +440,10 @@ pub enum SolverKind {
 
 impl SolverKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>(
+    pub fn with_config<
+        B: IBackend + SolverOps<f32> + 'static,
+        NetB: IBackend + LayerOps<f32> + 'static,
+    >(
         &self,
         backend: Rc<B>,
         config: &SolverConfig,
@@ -375,7 +464,10 @@ pub enum SGDKind {
 
 impl SGDKind {
     /// Create a Solver of the specified kind with the supplied SolverConfig.
-    pub fn with_config<B: IBackend + SolverOps<f32> + 'static, NetB: IBackend + LayerOps<f32> + 'static>(
+    pub fn with_config<
+        B: IBackend + SolverOps<f32> + 'static,
+        NetB: IBackend + LayerOps<f32> + 'static,
+    >(
         &self,
         backend: Rc<B>,
         config: &SolverConfig,
