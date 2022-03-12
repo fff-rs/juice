@@ -1,3 +1,13 @@
+//! SGD with momentum.
+//! Computes the update Vᵢ from params gradient ∇ᵢ as:
+//!   Vᵢ = (1-β)Vᵢ₋₁ + β∇ᵢ,
+//!   V₀ = 0,
+//! where:
+//!   β is the momentum parameter (typically set to 0.1).
+//! 
+//! (Note that the update Vᵢ is then additionally scaled by Trainer using global and param-specific
+//! learning rates.)
+
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -13,12 +23,6 @@ pub struct SgdWithMomentumConfig {
     pub momentum: f32,
 }
 
-// SGD with momentum.
-// Computes the update Vᵢ from params gradient ∇ᵢ as:
-//   Vᵢ=(1-β)Vᵢ₋₁ + β∇ᵢ,
-//   V₀ = 0,
-// where:
-//   β is the momentum parameter (typically set to 0.1).
 pub struct SgdWithMomentum {
     history: HashMap<usize, SharedTensor<f32>>,
     // Precomputed tensor constants.

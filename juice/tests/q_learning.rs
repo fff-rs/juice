@@ -373,7 +373,8 @@ mod cartpole {
                 epsilon = (epsilon * 0.995).max(0.01);
 
                 // Stop when we reach 95 score.
-                if score >= 95.0 {
+                if i / 100 == 1000 {
+                // if score >= 95.0 {
                     return;
                 }
             }
