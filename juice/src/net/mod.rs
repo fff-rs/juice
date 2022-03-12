@@ -7,7 +7,7 @@
 //!    well as connections between them is static, i.e. it cannot change in runtime. The shape
 //!    of data 'units' in inputs/outputs is also fixed, but the batch size (batch comprises
 //!    several data 'units') is not. Layer inputs/outputs as well as their connections is
-//!    captured in a `Descriptor`, which also contains information about learnable params. 
+//!    captured in a `Descriptor`, which also contains information about learnable params.
 //! 2. Dynamic state representing (partial) data flow through the network. When doing the forward
 //!    pass through the net (converting inputs to outputs), all the intermediate state (data
 //!    buffers passed between layers) is saved in a `Context`, which allows reuse of this data
@@ -17,6 +17,7 @@
 //!    for different use cases (for example simultaneous learning with batches and using the net
 //!    for producing outputs by setting batch size to 1).
 
+mod activation;
 mod common;
 mod config;
 mod container;
@@ -24,34 +25,10 @@ mod context;
 mod descriptor;
 mod layer;
 mod loss;
+mod network;
 
-use crate::co::{IBackend};
-use crate::util::LayerOps;
-
-pub use common::*;
 pub use config::*;
-pub use container::*;
 pub use context::*;
 pub use descriptor::*;
 pub use layer::*;
-pub use loss::*;
-
-// Create layer from a config.
-// Takes a partially filled Descriptor, which should have a valid path and fully populated inputs
-// (including data_path).
-pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
-    descriptor: Descriptor,
-    backend: &B,
-    config: &LayerConfig,
-) -> Box<dyn Layer<B>> {
-    match config {
-        LayerConfig::Sequential(sequential_config) => {
-            Box::new(Sequential::new(descriptor, backend, sequential_config))
-        }
-        LayerConfig::Linear(linear_config) => Box::new(Linear::new(descriptor, linear_config)),
-        LayerConfig::LogSoftmax => Box::new(LogSoftmax::new(descriptor)),
-        LayerConfig::NegativeLogLikelihood(nll_config) => {
-            Box::new(NegativeLogLikelihood::new(descriptor, nll_config))
-        }
-    }
-}
+pub use network::*;

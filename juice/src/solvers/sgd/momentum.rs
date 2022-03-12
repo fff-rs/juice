@@ -14,7 +14,7 @@
 //! It also makes solving more stable.
 
 use crate::co::prelude::*;
-use crate::net::LearnableParams;
+
 use crate::solver::*;
 use crate::solvers::SGDSolver;
 use crate::util::*;

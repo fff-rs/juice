@@ -15,7 +15,7 @@ pub struct NegativeLogLikelihood {
 }
 
 impl NegativeLogLikelihood {
-    pub fn new(mut descriptor: Descriptor, config: &NegativeLogLikelihoodConfig) -> Self {
+    pub fn new(descriptor: Descriptor, config: &NegativeLogLikelihoodConfig) -> Self {
         assert_eq!(
             descriptor.inputs().len(),
             2,
@@ -39,43 +39,15 @@ impl NegativeLogLikelihood {
 }
 
 impl<B: IBackend> Layer<B> for NegativeLogLikelihood {
-    fn compute_output(&self, context: &mut Context<B>) {
+    fn compute_output(&self, backend: &B, context: &mut Context) {
         // No output computation since loss layer doesn't have outputs.
         // It's main purpose is to start the backpropagation process by
         // computing the loss gradient with respect to net final output
         // in compute_gradients().
-
-        // let probabilities = context.get_data(self.descriptor.input(0));
-        // let labels = context.get_data(self.descriptor.input(1));
-
-        // let native = native_backend();
-        // let labels_data = labels.borrow();
-        // let native_labels = labels_data.read(native.device()).unwrap().as_slice::<f32>();
-        // let probabilities_data = probabilities.borrow();
-        // let native_probabilities = probabilities_data
-        //     .read(native.device())
-        //     .unwrap()
-        //     .as_slice::<f32>();
-
-        // let mut writable_loss = Vec::<f32>::new();
-        // for &label_value in native_labels {
-        //     let probability_value = native_probabilities[label_value as usize];
-        //     writable_loss.push(-probability_value);
-        // }
-
-        // let mut loss = writable_loss.iter().fold(0f32, |sum, &val| sum + val);
-        // loss = loss / (context.batch_size() as f32);
-        // writable_loss = vec![loss];
-
-        // let mut output = context.acquire_data(self.descriptor.output(0));
-        // crate::util::write_to_memory(
-        //     output.borrow_mut().write_only(native.device()).unwrap(),
-        //     &writable_loss,
-        // );
     }
 
-    fn compute_gradients(&self, context: &mut Context<B>) {
-        let mut probabilities_gradient = context.acquire_data_gradient(self.descriptor.input(0));
+    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+        let probabilities_gradient = context.acquire_data_gradient(self.descriptor.input(0));
         let labels = context.get_data(self.descriptor.input(1));
 
         let native = native_backend();

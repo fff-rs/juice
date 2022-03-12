@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+
 use std::rc::Rc;
 
 use crate::co::{SharedTensor, TensorDesc};
@@ -40,10 +40,7 @@ pub struct LearnableParams {
 
 /// A pointer to an instance of LearnableParams. Among other things is used to find associated
 /// gradient buffer in the `Context`.
-#[derive(Debug, Clone)]
-pub struct LearnableParamsLink {
-    pub params: Rc<RefCell<LearnableParams>>,
-}
+pub type LearnableParamsLink = Rc::<RefCell::<LearnableParams>>;
 
 /// Descriptor of a layer, containing information about layer name,
 /// inputs, outputs and params. Inputs and outputs are created using a waterfall model:
@@ -170,20 +167,18 @@ impl Descriptor {
         name: &str,
         data: SharedTensor<f32>,
         learning_rate: f32,
-    ) -> Rc<RefCell<LearnableParams>> {
+    ) -> LearnableParamsLink {
         let params = LearnableParams {
             data: data,
             learning_rate: learning_rate,
             path: format!("{}.{}", self.path, name),
         };
         let params_rc = Rc::new(RefCell::new(params));
-        self.params.push(LearnableParamsLink {
-            params: params_rc.clone(),
-        });
+        self.params.push(params_rc.clone());
         params_rc
     }
 
-    pub fn add_params(&mut self, params: Rc<RefCell<LearnableParams>>) {
-        self.params.push(LearnableParamsLink { params: params });
+    pub fn add_params_copy(&mut self, params: &LearnableParamsLink) {
+        self.params.push(params.clone());
     }
 }

@@ -59,6 +59,7 @@ macro_rules! impl_isolver_sgd {
                     weight_gradients.iter().enumerate()
                 {
                     SGDSolver::<SolverB, NetB>::normalize(self, config, &mut weights_data.borrow_mut());
+
                     // SGDSolver::<SolverB, NetB>::regularize(self, config, weight_gradient, net.weights_weight_decay()[weight_id]);
                     SGDSolver::<SolverB, NetB>::compute_update_value(
                         self,

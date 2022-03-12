@@ -28,15 +28,21 @@ macro_rules! gemm_impl(($($t: ident), +) => (
         impl Gemm for $t {
             fn gemm(alpha: &$t, at: Transpose, a: &dyn Matrix<$t>, bt: Transpose, b: &dyn Matrix<$t>, beta: &$t, c: &mut dyn Matrix<$t>) {
                 unsafe {
-                    let (m, k)  = match at {
+                    let (ar, ac)  = match at {
                         Transpose::NoTrans => (a.rows(), a.cols()),
                         _ => (a.cols(), a.rows()),
                     };
-
-                    let n = match bt {
-                        Transpose::NoTrans => b.cols(),
-                        _ => b.rows(),
+                    let (br, bc)  = match bt {
+                        Transpose::NoTrans => (b.rows(), b.cols()),
+                        _ => (b.cols(), b.rows()),
                     };
+
+                    let (m, k)  = (ar, ac);
+                    let n = bc;
+
+                    if br != k || c.rows() != m || c.cols() != n {
+                        panic!("Wrong GEMM dimensions: [{},{}]x[{},{}] -> [{},{}]", ar, ac, br, bc, c.rows(), c.cols());
+                    }
 
                     prefix!($t, gemm)(a.order(),
                         at, bt,

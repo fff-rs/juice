@@ -7,9 +7,7 @@ pub mod confusion_matrix;
 pub mod regression_evaluator;
 
 use std::cell::RefCell;
-use std::cell::RefMut;
-use std::collections::HashMap;
-use std::marker::PhantomData;
+
 use std::rc::Rc;
 
 pub use self::confusion_matrix::ConfusionMatrix;
@@ -27,7 +25,8 @@ pub struct Solver<B>
 where
     B: IBackend + LayerOps<f32>,
 {
-    context: Context<B>,
+    backend: Rc<B>,
+    context: Context,
 
     net: Box<dyn Layer<B>>,
     objective: Box<dyn Layer<B>>,
@@ -54,8 +53,8 @@ where
         input_shapes: &[TensorDesc],
         label_shape: &TensorDesc,
     ) -> Solver<B> {
-        let context = Context::new(backend.clone(), config.minibatch_size);
-        let mut network = layer_from_config(
+        let context = Context::new(config.minibatch_size);
+        let network = layer_from_config(
             Descriptor::top(
                 "net",
                 input_shapes
@@ -64,12 +63,11 @@ where
                     .map(|(i, shape)| Inout::new_with_path(shape.clone(), &format!("net_in_{}", i)))
                     .collect(),
             ),
-            &*backend,
             &config.network,
         );
         assert_eq!(network.descriptor().outputs().len(), 1); // Net must have only one output.
 
-        let mut objective = layer_from_config(
+        let objective = layer_from_config(
             Descriptor::top(
                 "loss",
                 vec![
@@ -77,7 +75,6 @@ where
                     Inout::new_with_path(label_shape.clone(), "labels"),
                 ],
             ),
-            &*backend,
             &config.objective,
         );
 
@@ -85,7 +82,7 @@ where
             .descriptor()
             .params()
             .iter()
-            .map(|w| w.params.borrow().data.desc().clone())
+            .map(|w| w.borrow().data.desc().clone())
             .collect();
         let mut worker = config.solver.with_config(backend.clone(), &config);
         worker.init(&weight_shapes);
@@ -94,6 +91,7 @@ where
         assert!(objective.descriptor().params().is_empty());
 
         Solver {
+            backend: backend,
             context: context,
             worker: worker,
             net: network,
@@ -128,34 +126,35 @@ where
         mb_target: ArcLock<SharedTensor<f32>>,
     ) -> SharedTensor<f32> {
         // Copy intput data into the network context.
-        let mut data = self.context.acquire_data(self.net.descriptor().input(0));
-        self.context
-            .backend()
+        let data = self.context.acquire_data(self.net.descriptor().input(0));
+        self.backend
             .copy(&mb_data.read().unwrap(), &mut data.borrow_mut());
-        let mut labels = self
+        let labels = self
             .context
             .acquire_data(self.objective.descriptor().input(1));
-        self.context
-            .backend()
+        self.backend
             .copy(&mb_target.read().unwrap(), &mut labels.borrow_mut());
 
         // Compute network output and the loss.
-        self.net.compute_output(&mut self.context);
-        self.objective.compute_output(&mut self.context);
+        self.net.compute_output(&*self.backend, &mut self.context);
+        self.objective
+            .compute_output(&*self.backend, &mut self.context);
 
         // Compute params gradients by doing a backpropagation on the network.
-        self.objective.compute_gradients(&mut self.context);
-        self.net.compute_gradients(&mut self.context);
+        self.objective
+            .compute_gradients(&*self.backend, &mut self.context);
+        self.net
+            .compute_gradients(&*self.backend, &mut self.context);
 
         // Let the solver worker adjust the params gradients before applying them to params.
         let params: Vec<LearnableParamsLink> =
             self.net.descriptor().params().iter().cloned().collect();
-        let mut params_gradients: Vec<(Rc<RefCell<SharedTensor<f32>>>, f32)> = params
+        let params_gradients: Vec<(Rc<RefCell<SharedTensor<f32>>>, f32)> = params
             .iter()
             .map(|p| {
                 (
                     self.context.get_params_gradient(p),
-                    p.params.borrow().learning_rate,
+                    p.borrow().learning_rate,
                 )
             })
             .collect();
@@ -166,20 +165,15 @@ where
         let shared_a = crate::util::native_scalar(-1f32);
         for i in 0..self.net.descriptor().params().len() {
             let gradient = &params_gradients[i].0.borrow();
-            let mut params = &mut self.net.descriptor_mut().param(i).params.borrow_mut().data;
-            self.context
-                .backend()
-                .axpy(&shared_a, gradient, params)
-                .unwrap();
+            let params = &mut self.net.descriptor_mut().param(i).borrow_mut().data;
+            self.backend.axpy(&shared_a, gradient, params).unwrap();
         }
 
         self.iter += 1;
 
         let out_buffer = self.context.get_data(self.net.descriptor().output(0));
         let mut network_out = SharedTensor::<f32>::new(out_buffer.borrow().desc());
-        self.context
-            .backend()
-            .copy(&out_buffer.borrow(), &mut network_out);
+        self.backend.copy(&out_buffer.borrow(), &mut network_out);
         network_out
     }
 

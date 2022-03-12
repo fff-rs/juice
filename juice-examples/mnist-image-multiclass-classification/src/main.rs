@@ -205,11 +205,11 @@ fn add_mlp(
     net_cfg
 }
 */
-fn add_linear_net(net_cfg: &mut SequentialConfig) {
-    net_cfg.add_layer(
+fn add_linear_net(net_cfg: SequentialConfig) -> SequentialConfig{
+    net_cfg.with_layer(
         "linear",
         LayerConfig::Linear(LinearConfig { output_size: 10 }),
-    );
+    )
 }
 
 fn run_mnist(
@@ -252,11 +252,11 @@ fn run_mnist(
     match &*model_name.unwrap_or("none".to_owned()) {
         // "conv" => add_conv_net(net_cfg, batch_size, pixel_dim),
         // "mlp" => add_mlp(net_cfg, batch_size, pixel_count),
-        "linear" => add_linear_net(&mut net_cfg),
+        "linear" => net_cfg = add_linear_net(net_cfg),
         _ => panic!("Unknown model. Try one of [linear, mlp, conv]"),
     };
 
-    net_cfg.add_layer("log_softmax", LayerConfig::LogSoftmax);
+    net_cfg = net_cfg.with_layer("log_softmax", LayerConfig::LogSoftmax);
 
     // set up nll loss
     let classifier_cfg =

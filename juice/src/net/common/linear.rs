@@ -25,6 +25,14 @@ pub struct Linear {
     zero: SharedTensor<f32>,
 }
 
+impl LinearConfig {
+    pub fn new(output_size: usize) -> Self {
+        LinearConfig {
+            output_size: output_size,
+        }
+    }
+}
+
 impl Linear {
     pub fn new(mut descriptor: Descriptor, config: &LinearConfig) -> Self {
         assert_eq!(descriptor.inputs().len(), 1); // Should be only one input.
@@ -35,21 +43,16 @@ impl Linear {
         // Create weight matrix.
         let mut weight = SharedTensor::<f32>::new(&[config.output_size, input_size]);
         FillerType::fill_glorot(&mut weight, input_size, config.output_size);
-        let mut bias = SharedTensor::<f32>::new(&[config.output_size]);
-        FillerType::fill_glorot(&mut weight, input_size, config.output_size);
 
         // Create bias. Bias is typically intialized with a constant, and a suitable initialisation
         // is stated in https://cs231n.github.io/neural-networks-2/#init for non-LSTM types.
-        let mut bias = SharedTensor::<f32>::new(&[config.output_size]);
+        let mut bias = SharedTensor::<f32>::new(&[1, config.output_size]);
         let seed = rand::random::<f32>();
         let bias_init_value = seed * (2.0 / seed).sqrt();
         FillerType::fill_constant(&mut bias, bias_init_value);
 
         let weight_param = descriptor.create_params("weights", weight, 1.0);
         let bias_param = descriptor.create_params("bias", bias, 1.0);
-
-        descriptor.add_params(weight_param.clone());
-        descriptor.add_params(bias_param.clone());
 
         Linear {
             descriptor: descriptor,
@@ -62,15 +65,14 @@ impl Linear {
 }
 
 impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
-    fn compute_output(&self, context: &mut Context<B>) {
+    fn compute_output(&self, backend: &B, context: &mut Context) {
         let input = context.get_data(self.descriptor.input(0));
-        let mut output = context.acquire_data(self.descriptor.output(0));
+        let output = context.acquire_data(self.descriptor.output(0));
 
         let mut ones_tensor = SharedTensor::<f32>::new(&[context.batch_size(), 1]);
         FillerType::fill_constant(&mut ones_tensor, 1f32);
 
-        context
-            .backend()
+        backend
             .gemm(
                 &self.one,
                 Transpose::NoTrans,
@@ -82,8 +84,7 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
             )
             .unwrap();
 
-        context
-            .backend()
+        backend
             .gemm(
                 &self.one,
                 Transpose::NoTrans,
@@ -96,21 +97,17 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
             .unwrap();
     }
 
-    fn compute_gradients(&self, context: &mut Context<B>) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) {
         let input = context.get_data(self.descriptor.input(0));
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
 
-        let mut input_gradient = context.acquire_data_gradient(self.descriptor.input(0));
-        let mut weights_gradient = context.acquire_params_gradient(self.descriptor.param(0));
-        let mut bias_gradient = context.acquire_params_gradient(self.descriptor.param(1));
-
-        let mut ones_tensor = SharedTensor::<f32>::new(&[context.batch_size(), 1]);
-        FillerType::fill_constant(&mut ones_tensor, 1f32);
+        let input_gradient = context.acquire_data_gradient(self.descriptor.input(0));
+        let weights_gradient = context.acquire_params_gradient(self.descriptor.param(0));
+        let bias_gradient = context.acquire_params_gradient(self.descriptor.param(1));
 
         // Network error gradient with respect to input data.
         // dE/dx = dE/dy * df/dx = dE/dy * w.
-        context
-            .backend()
+        backend
             .gemm(
                 &self.one,
                 Transpose::NoTrans,
@@ -124,8 +121,7 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
 
         // Network error gradient with respect to weights.
         // dE/dw = dE/dy * df/dw = dE/dy * x.
-        context
-            .backend()
+        backend
             .gemm(
                 &self.one,
                 Transpose::Trans,
@@ -138,18 +134,9 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
             .unwrap();
 
         // Network error gradient with respect to bias.
-        // dE/dw = dE/dy * df/db = dE/dy * [1].
-        context
-            .backend()
-            .gemm(
-                &self.one,
-                Transpose::Trans,
-                &output_gradient.borrow(),
-                Transpose::NoTrans,
-                &ones_tensor,
-                &self.zero,
-                &mut bias_gradient.borrow_mut(),
-            )
+        // dE/dw = dE/dy * df/db = dE/dy * [1] = dE/dy.
+        backend
+            .copy(&output_gradient.borrow(), &mut bias_gradient.borrow_mut())
             .unwrap();
     }
 

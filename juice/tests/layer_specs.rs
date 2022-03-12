@@ -1,7 +1,7 @@
 extern crate coaster as co;
 extern crate juice;
 
-#[cfg(test)]
+#[cfg(all(test, whatever))]
 mod layer_spec {
     use crate::co::prelude::*;
     use juice::layer::*;

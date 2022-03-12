@@ -38,7 +38,7 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
 use crate::co::IBackend;
-use crate::net::{layer_from_config, Context, Descriptor, Inout, Layer, LayerConfig};
+use crate::net::{layer_from_config, Context, Descriptor, Layer, LayerConfig};
 use crate::util::LayerOps;
 
 #[derive(Debug, Clone, Default)]
@@ -70,38 +70,39 @@ pub struct Sequential<B: IBackend> {
 }
 
 impl SequentialChildConfig {
-    pub fn map_input(&mut self, name: &str) -> &mut Self {
+    pub fn map_input(mut self, name: &str) -> Self {
         self.inputs.push(name.to_string());
         self
     }
-    pub fn map_output(&mut self, name: &str) -> &mut Self {
+    pub fn map_output(mut self, name: &str) -> Self {
         self.outputs.push(name.to_string());
         self
     }
 }
 
 impl SequentialConfig {
-    pub fn add_layer(
-        &mut self,
-        name: &str,
-        child_config: LayerConfig,
-    ) -> &mut SequentialChildConfig {
+    pub fn new() -> Self {
+        SequentialConfig::default()
+    }
+
+    pub fn with_layer(mut self, name: &str, child_config: LayerConfig) -> Self {
         self.layers.push(SequentialChildConfig {
             name: name.to_string(),
             config: child_config,
             inputs: Vec::new(),
             outputs: Vec::new(),
         });
-        self.layers.last_mut().unwrap()
+        self
     }
 
-    pub fn add_input(&mut self, name: &str) {
+    pub fn with_input(mut self, name: &str) -> Self {
         self.inputs.push(name.to_string());
+        self
     }
 }
 
 impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
-    pub fn new(mut descriptor: Descriptor, backend: &B, config: &SequentialConfig) -> Self {
+    pub fn new(mut descriptor: Descriptor, config: &SequentialConfig) -> Self {
         // Create internal layers one by one and connect them.
         // For the purpose of connecting layers, all inputs and outputs have names,
         // which are either explicitly given in the config, or have implicit form of
@@ -154,12 +155,11 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
 
             let mut child_layer = layer_from_config(
                 descriptor.sub(&child_config.name, child_inputs),
-                backend,
                 &child_config.config,
             );
 
             // Create data buffer paths for child outpus and save the outputs for subsequent layers.
-            let mut child_descriptor = child_layer.descriptor_mut();
+            let child_descriptor = child_layer.descriptor_mut();
             // Config cannot have more outputs that layer actually has.
             assert!(child_config.outputs.len() <= child_descriptor.outputs().len());
             prev_layer_output_names = Vec::with_capacity(child_descriptor.outputs().len());
@@ -179,10 +179,8 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
 
             // Copy layer learnable params links into Sequential descriptor.
             for params in child_layer.descriptor().params() {
-                descriptor.add_params(params.params.clone());
+                descriptor.add_params_copy(params);
             }
-
-            println!("Created {:?}", child_layer.descriptor());
 
             children.push(child_layer);
         }
@@ -200,8 +198,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
             }
         } else {
             for output in children.last().unwrap().descriptor().outputs() {
-                descriptor
-                    .add_output_copy(output)
+                descriptor.add_output_copy(output)
             }
         }
 
@@ -212,16 +209,16 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> Layer<B> for Sequential<B> {
-    fn compute_output(&self, context: &mut Context<B>) {
+impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> for Sequential<B> {
+    fn compute_output(&self, backend: &B, context: &mut Context) {
         for child in self.children.iter() {
-            child.compute_output(context);
+            child.compute_output(backend, context);
         }
     }
 
-    fn compute_gradients(&self, context: &mut Context<B>) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) {
         for child in self.children.iter().rev() {
-            child.compute_gradients(context);
+            child.compute_gradients(backend, context);
         }
     }
 
