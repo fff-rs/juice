@@ -1,4 +1,4 @@
-//! Provides the interface for running parallel computations on one ore many devices.
+//! Provides the interface for running parallel computations on one or many devices.
 //!
 //! This is the abstraction over which you are interacting with your devices. You can create a
 //! backend for computation by first choosing a specific [Framework][frameworks] such as OpenCL and

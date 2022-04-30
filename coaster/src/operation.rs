@@ -2,7 +2,7 @@
 //!
 //! An Operation describes the execution of a [library][library] provided functionality for a
 //! specific [framework][frameworks]. An Operation can easily be executed in parallel on multi-core
-//! devices. An Operation is a very similar to a usual function and defines usually one or many
+//! devices. An Operation is very similar to a usual function and defines usually one or many
 //! arguments over which the operation then will happen.
 //!
 //! You are usually not interacting with an operation directly. To execute an operation you would
