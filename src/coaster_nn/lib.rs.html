@@ -138,7 +138,7 @@
 <span class="doccomment">//! ## Overview</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! This Coaster Plugin extends Coaster&#39;s Backend with NN related methods/operations. This allows</span>
-<span class="doccomment">//! you to run, these operations (and therefore your application) on your local machine as well as on servers,</span>
+<span class="doccomment">//! you to run these operations (and therefore your application) on your local machine as well as on servers,</span>
 <span class="doccomment">//! mobiles or any other machine (as if they were written for common CPU execution), while</span>
 <span class="doccomment">//! receiving the significant performance increases (usually one-to-two orders of magnitutde), by</span>
 <span class="doccomment">//! executing the operations on special purpose hardware such as GPUs - if they are available. Usage examples</span>
@@ -146,7 +146,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The architecture of a Plugin is quite easy. It defines one Plugin Trait, in this case the `NN`</span>
 <span class="doccomment">//! trait, which implements basic functionality for initialization and multiple Plugin Operation Traits which define the</span>
-<span class="doccomment">//! methods which are going to be available on the Backed, as the Plugin Trait as well as the Plugin Operations Traits</span>
+<span class="doccomment">//! methods which are going to be available on the Backend, as the Plugin Trait as well as the Plugin Operations Traits</span>
 <span class="doccomment">//! are implemented for the Coaster Backends (CUDA, OpenCL, Native). The operations take as arguments one or many</span>
 <span class="doccomment">//! SharedTensors, holding the data over which the operation should happen, and none or one Operation Configuration.</span>
 <span class="doccomment">//!</span>
@@ -189,7 +189,7 @@
 <span class="doccomment">//!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.</span>
 <span class="doccomment">//!     backend.sigmoid(&amp;mut x, &amp;mut result).unwrap();</span>
 <span class="doccomment">//!     // See the result.</span>
-<span class="doccomment">//!     println!(&quot;{:?}&quot;, result.read(&amp;cpu).unwrap().as_slice::&lt;f64&gt;());</span>
+<span class="doccomment">//!     println!(&quot;{:?}&quot;, result.read(&amp;cpu).unwrap().as_slice::&lt;f32&gt;());</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//! # }</span>
 <span class="doccomment">//! # #[cfg(not(feature = &quot;cuda&quot;))]</span>
@@ -206,7 +206,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Provided Operations</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! This Plugins provides the following operations. If not denoted otherwise, this means forward and backward</span>
+<span class="doccomment">//! This Plugins provides the following operations. If not denoted otherwise, this means forward and backward.</span>
 <span class="doccomment">//! A `-` means not yet implemented.</span>
 <span class="doccomment">//!</span>
 

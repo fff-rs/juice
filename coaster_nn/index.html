@@ -4,14 +4,14 @@ operations such as convolutions, pooling, ReLU, etc. A full list of operations p
 can be found at the <a href="#operations">provided Operations section</a>.</p>
 <h3 id="overview" class="section-header"><a href="#overview">Overview</a></h3>
 <p>This Coaster Plugin extends Coaster’s Backend with NN related methods/operations. This allows
-you to run, these operations (and therefore your application) on your local machine as well as on servers,
+you to run these operations (and therefore your application) on your local machine as well as on servers,
 mobiles or any other machine (as if they were written for common CPU execution), while
 receiving the significant performance increases (usually one-to-two orders of magnitutde), by
 executing the operations on special purpose hardware such as GPUs - if they are available. Usage examples
 can be found in the next section.</p>
 <p>The architecture of a Plugin is quite easy. It defines one Plugin Trait, in this case the <code>NN</code>
 trait, which implements basic functionality for initialization and multiple Plugin Operation Traits which define the
-methods which are going to be available on the Backed, as the Plugin Trait as well as the Plugin Operations Traits
+methods which are going to be available on the Backend, as the Plugin Trait as well as the Plugin Operations Traits
 are implemented for the Coaster Backends (CUDA, OpenCL, Native). The operations take as arguments one or many
 SharedTensors, holding the data over which the operation should happen, and none or one Operation Configuration.</p>
 <h3 id="usage" class="section-header"><a href="#usage">Usage</a></h3>
@@ -48,10 +48,10 @@ sigmoid function for each value:</p>
     <span class="comment">// Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.</span>
     <span class="ident">backend</span>.<span class="ident">sigmoid</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">result</span>).<span class="ident">unwrap</span>();
     <span class="comment">// See the result.</span>
-    <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">result</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="ident">cpu</span>).<span class="ident">unwrap</span>().<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>());
+    <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">result</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="ident">cpu</span>).<span class="ident">unwrap</span>().<span class="ident">as_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>());
 }</code></pre></div>
 <h3 id="provided-operations" class="section-header"><a href="#provided-operations">Provided Operations</a></h3>
-<p>This Plugins provides the following operations. If not denoted otherwise, this means forward and backward
+<p>This Plugins provides the following operations. If not denoted otherwise, this means forward and backward.
 A <code>-</code> means not yet implemented.</p>
 <div><table><thead><tr><th>Operation</th><th>CUDA</th><th>OpenCL</th><th>Native</th></tr></thead><tbody>
 <tr><td>Sigmoid</td><td>cuDNN v5 or later</td><td>-</td><td>Rust</td></tr>
