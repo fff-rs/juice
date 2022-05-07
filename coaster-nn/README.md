@@ -2,7 +2,7 @@
 
 coaster-NN provides Neural Network related algorithms for [coaster][coaster].
 Run NN operations on servers, desktops or mobiles, GPUs, FPGAs or CPUS, without
-carrying about OpenCL or CUDA support on the machine.
+caring about OpenCL or CUDA support on the machine.
 
 It powers [Juice][juice].
 

@@ -2,7 +2,7 @@
 
 coaster-BLAS provides full BLAS support for [Coaster][coaster],
 so you can use Basic Linear Algebra Subprograms on servers, desktops or mobiles,
-GPUs, FPGAs or CPUS, without carrying about OpenCL or CUDA support on the
+GPUs, FPGAs or CPUS, without caring about OpenCL or CUDA support on the
 machine.
 
 It powers [Juice][juice].

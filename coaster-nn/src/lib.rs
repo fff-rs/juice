@@ -5,7 +5,7 @@
 //! ## Overview
 //!
 //! This Coaster Plugin extends Coaster's Backend with NN related methods/operations. This allows
-//! you to run, these operations (and therefore your application) on your local machine as well as on servers,
+//! you to run these operations (and therefore your application) on your local machine as well as on servers,
 //! mobiles or any other machine (as if they were written for common CPU execution), while
 //! receiving the significant performance increases (usually one-to-two orders of magnitutde), by
 //! executing the operations on special purpose hardware such as GPUs - if they are available. Usage examples
@@ -13,7 +13,7 @@
 //!
 //! The architecture of a Plugin is quite easy. It defines one Plugin Trait, in this case the `NN`
 //! trait, which implements basic functionality for initialization and multiple Plugin Operation Traits which define the
-//! methods which are going to be available on the Backed, as the Plugin Trait as well as the Plugin Operations Traits
+//! methods which are going to be available on the Backend, as the Plugin Trait as well as the Plugin Operations Traits
 //! are implemented for the Coaster Backends (CUDA, OpenCL, Native). The operations take as arguments one or many
 //! SharedTensors, holding the data over which the operation should happen, and none or one Operation Configuration.
 //!
@@ -56,7 +56,7 @@
 //!     // Run the sigmoid operation, provided by the NN Plugin, on your CUDA enabled GPU.
 //!     backend.sigmoid(&mut x, &mut result).unwrap();
 //!     // See the result.
-//!     println!("{:?}", result.read(&cpu).unwrap().as_slice::<f64>());
+//!     println!("{:?}", result.read(&cpu).unwrap().as_slice::<f32>());
 //! }
 //! # }
 //! # #[cfg(not(feature = "cuda"))]
@@ -73,7 +73,7 @@
 //!
 //! ## Provided Operations
 //!
-//! This Plugins provides the following operations. If not denoted otherwise, this means forward and backward
+//! This Plugins provides the following operations. If not denoted otherwise, this means forward and backward.
 //! A `-` means not yet implemented.
 //!
 
