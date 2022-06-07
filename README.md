@@ -9,7 +9,7 @@ This is the workspace project for
 * [greenglas](https://github.com/spearow/juice/blob/master/greenglas/README.md) - a data preprocessing framework
 * [juice-examples](https://github.com/spearow/juice/blob/master/juice-examples/README.md) - mnist demo
 
- Please conduct the individual README.md files for more information.
+ Please consult the individual README.md files for more information.
 
 ## [Juice](https://github.com/spearow/juice) Examples
 
