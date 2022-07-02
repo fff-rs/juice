@@ -57,7 +57,7 @@ impl<B: IBackend + Axpby<f32> + Copy<f32>> Optimizer<B> for SgdWithMomentum {
         for (key, change) in weight_changes {
             let mut change_ref = change.borrow_mut();
 
-            let mut history = self.history.entry(*key).or_insert_with(|| {
+            let history = self.history.entry(*key).or_insert_with(|| {
                 let mut tensor = SharedTensor::new(change_ref.desc());
                 FillerType::fill_constant(&mut tensor, 0.0);
                 tensor

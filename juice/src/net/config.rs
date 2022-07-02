@@ -1,18 +1,13 @@
-use crate::net::activation::*;
-use crate::net::common::*;
-use crate::net::container::*;
-use crate::net::loss::*;
-
 // Reexport layer configs.
 pub use crate::net::{
-    common::LinearConfig, container::FanoutConfig, container::SequentialConfig,
+    common::LinearConfig, container::SequentialConfig, container::FanoutConfig,
     loss::NegativeLogLikelihoodConfig,
 };
 
 #[derive(Debug, Clone)]
 pub enum LayerConfig {
-    Sequential(SequentialConfig),
     Fanout(FanoutConfig),
+    Sequential(SequentialConfig),
     Linear(LinearConfig),
     LogSoftmax,
     Relu,

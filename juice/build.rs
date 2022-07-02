@@ -4,4 +4,10 @@ fn main() {
         .file("capnp/juice.capnp")
         .run()
         .expect("capnpc schema compiler command must succeed");
+
+    capnpc::CompilerCommand::new()
+        .src_prefix("capnp")
+        .file("capnp/net.capnp")
+        .run()
+        .expect("capnpc schema compiler command must succeed");
 }

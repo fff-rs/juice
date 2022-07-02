@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::iter;
 use std::rc::Rc;
 
-use crate::co::{IBackend, SharedTensor, TensorDesc};
+use crate::co::{SharedTensor, TensorDesc};
 use co::frameworks::native::get_native_backend;
 use crate::net::{Inout, LearnableParamsLink};
 

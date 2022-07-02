@@ -1,7 +1,7 @@
 use crate::co::{IBackend, ITensorDesc};
 use crate::coblas::plugin::*;
 use crate::net::{Context, Descriptor, Layer};
-use crate::util::{format_tensor, native_backend, native_scalar, Axpby};
+use crate::util::{native_backend, Axpby};
 
 #[derive(Debug)]
 // Layer implementing the Mean Squared Error loss function.
@@ -56,7 +56,7 @@ impl<B: IBackend + Axpby<f32> + Copy<f32>> Layer<B> for MeanSquaredError {
         let labels_data = labels_ref.read(native.device()).unwrap().as_slice::<f32>();
 
         let mut input_gradient_ref = input_gradient.borrow_mut();
-        let mut input_gradient_data = input_gradient_ref
+        let input_gradient_data = input_gradient_ref
             .write_only(native.device())
             .unwrap()
             .as_mut_slice::<f32>();

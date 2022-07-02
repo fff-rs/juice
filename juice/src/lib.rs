@@ -132,3 +132,6 @@ pub mod util;
 mod juice_capnp {
     include!(concat!(env!("OUT_DIR"), "/juice_capnp.rs"));
 }
+mod net_capnp {
+    include!(concat!(env!("OUT_DIR"), "/net_capnp.rs"));
+}

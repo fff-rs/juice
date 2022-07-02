@@ -4,7 +4,6 @@ use std::rc::Rc;
 
 use crate::co::prelude::*;
 use crate::net::*;
-use crate::solver::{ISolver, SolverConfig};
 use crate::train::{optimizer_from_config, Optimizer, OptimizerConfig, SgdWithMomentumConfig};
 use crate::util::{format_tensor, SolverOps};
 
@@ -93,10 +92,14 @@ impl<B: IBackend + SolverOps<f32> + 'static> Trainer<B> {
         // Copy inputs.
         let context_inputs = context.acquire_data(net.top().descriptor().input(0));
         assert_eq!(context_inputs.borrow().desc().size(), inputs.desc().size());
-        backend.copy(&inputs, &mut context_inputs.borrow_mut());
+        backend
+            .copy(&inputs, &mut context_inputs.borrow_mut())
+            .unwrap();
         // Copy labels.
         let context_labels = context.acquire_data(self.objective.descriptor().input(1));
-        backend.copy(&labels, &mut context_labels.borrow_mut());
+        backend
+            .copy(&labels, &mut context_labels.borrow_mut())
+            .unwrap();
 
         // Compute network output and the loss.
         net.top().compute_output(backend, &mut context);

@@ -20,7 +20,6 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use crate::coblas::plugin::Copy;
 use crate::train::Optimizer;
 use crate::util::native_backend;
 use crate::weight::FillerType;
@@ -85,12 +84,12 @@ impl<B: IBackend> Optimizer<B> for Adam {
         for (key, change) in weight_changes {
             let mut change_ref = change.borrow_mut();
 
-            let mut first_moment = self.first_moments.entry(*key).or_insert_with(|| {
+            let first_moment = self.first_moments.entry(*key).or_insert_with(|| {
                 let mut tensor = SharedTensor::new(change_ref.desc());
                 FillerType::fill_constant(&mut tensor, 0.0);
                 tensor
             });
-            let mut second_moment = self.second_moments.entry(*key).or_insert_with(|| {
+            let second_moment = self.second_moments.entry(*key).or_insert_with(|| {
                 let mut tensor = SharedTensor::new(change_ref.desc());
                 FillerType::fill_constant(&mut tensor, 0.0);
                 tensor

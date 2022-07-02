@@ -128,12 +128,14 @@ where
         // Copy intput data into the network context.
         let data = self.context.acquire_data(self.net.descriptor().input(0));
         self.backend
-            .copy(&mb_data.read().unwrap(), &mut data.borrow_mut());
+            .copy(&mb_data.read().unwrap(), &mut data.borrow_mut())
+            .unwrap();
         let labels = self
             .context
             .acquire_data(self.objective.descriptor().input(1));
         self.backend
-            .copy(&mb_target.read().unwrap(), &mut labels.borrow_mut());
+            .copy(&mb_target.read().unwrap(), &mut labels.borrow_mut())
+            .unwrap();
 
         // Compute network output and the loss.
         self.net.compute_output(&*self.backend, &mut self.context);
@@ -173,7 +175,9 @@ where
 
         let out_buffer = self.context.get_data(self.net.descriptor().output(0));
         let mut network_out = SharedTensor::<f32>::new(out_buffer.borrow().desc());
-        self.backend.copy(&out_buffer.borrow(), &mut network_out);
+        self.backend
+            .copy(&out_buffer.borrow(), &mut network_out)
+            .unwrap();
         network_out
     }
 
