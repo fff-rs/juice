@@ -29,7 +29,7 @@ pub struct Inout {
 
 /// A single blob of params that can be learned during network training.
 /// Params are "owned" by the layers, but layers must expose them via LearnableParamsLink in
-/// the Descriptor so they can changed during learning. Container layers must expose all nested
+/// the Descriptor so they can be changed during learning. Container layers must expose all nested
 /// layers params.
 #[derive(Debug)]
 pub struct LearnableParams {
