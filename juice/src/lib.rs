@@ -119,6 +119,7 @@ extern crate num;
 extern crate rand;
 pub mod layer;
 pub mod layers;
+pub mod net;
 pub mod solver;
 pub mod solvers;
 pub mod weight;
