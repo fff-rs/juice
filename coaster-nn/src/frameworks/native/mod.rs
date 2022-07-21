@@ -4,6 +4,7 @@
 #![allow(unused_variables)]
 #![allow(unreachable_code)]
 
+use std::any::Any;
 use std::cmp::PartialOrd;
 use std::fmt::Debug;
 use std::ops::*;
@@ -83,7 +84,6 @@ impl<T> NN<T> for Backend<Native>
 where
     T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy,
 {
-    type CC = helper::ConvolutionConfig;
     type CLRN = helper::NormalizationConfig;
     type CPOOL = helper::PoolingConfig;
     // type CACTI = helper::ActivationConfig;
@@ -97,9 +97,13 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig where
     T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
 }
-impl<'a, T> ConvolutionConfig<T> for helper::ConvolutionConfig where
-    T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
+impl<'a, T> ConvolutionConfig<T> for helper::ConvolutionConfig
+where
+    T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy,
 {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
 }
 impl<'a, T> RnnConfig<T> for helper::RnnConfig where
     T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
@@ -141,7 +145,7 @@ where
         algo_bwd_data: ConvBackwardDataAlgo,
         stride: &[i32],
         zero_padding: &[i32],
-    ) -> Result<Self::CC, Error> {
+    ) -> Result<Box<dyn ConvolutionConfig<T>>, Error> {
         // TODO: check dimensions of config
         match algo_fwd {
             ConvForwardAlgo::Auto | ConvForwardAlgo::ImplicitGEMM => {}
@@ -162,11 +166,11 @@ where
             }
         }
 
-        Ok(helper::ConvolutionConfig {
+        Ok(Box::new(helper::ConvolutionConfig {
             filter_shape: filter.desc().clone(),
             stride: stride.to_vec(),
             padding: zero_padding.to_vec(),
-        })
+        }))
     }
 
     fn convolution(
@@ -175,8 +179,13 @@ where
         x: &SharedTensor<T>,
         result: &mut SharedTensor<T>,
         _workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        config: &dyn ConvolutionConfig<T>,
     ) -> Result<(), Error> {
+        let native_config = config
+            .as_any()
+            .downcast_ref::<helper::ConvolutionConfig>()
+            .unwrap();
+
         let dev = self.device();
 
         let input_dim = x.desc();
@@ -401,8 +410,8 @@ where
                 filter,
                 &filter_stride[..],
                 &filter_dim[..],
-                &config.padding[..],
-                &config.stride[..],
+                &native_config.padding[..],
+                &native_config.stride[..],
                 output,
                 &output_stride[1..],
                 &output_dim[1..],
@@ -419,7 +428,7 @@ where
         dest_diff: &SharedTensor<T>,
         filter_diff: &mut SharedTensor<T>,
         workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        config: &dyn ConvolutionConfig<T>,
     ) -> Result<(), Error> {
         unimplemented!()
     }
@@ -430,7 +439,7 @@ where
         x_diff: &SharedTensor<T>,
         result_diff: &mut SharedTensor<T>,
         workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        config: &dyn ConvolutionConfig<T>,
     ) -> Result<(), Error> {
         unimplemented!()
     }

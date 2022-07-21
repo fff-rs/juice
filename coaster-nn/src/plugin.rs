@@ -1,4 +1,6 @@
 //! Provides the INn Plugin trait for Coaster implementation.
+use std::any::Any;
+use std::fmt;
 use crate::co::tensor::SharedTensor;
 use std::fmt::Formatter;
 
@@ -136,15 +138,20 @@ impl ConvBackwardDataAlgo {
 /// Needs to be implemented for Operation specific configurations.
 pub trait NNOperationConfig<F> {}
 
-/// Provides Convolution Config functionality.
+/// An opaque interface for the Convolution Config. Implementations are
+/// expected to use concrete types and downcast incoming references to them.
 ///
 /// Needs to be implemented for Operation specific configurations.
-pub trait ConvolutionConfig<F> {
+pub trait ConvolutionConfig<F> : fmt::Debug {
     /// Returns the largest workspace size in bytes needed
     /// for any of the convolution operations.
     fn workspace_size(&self) -> usize {
         0
     }
+
+    /// Returns an Any reference to the concrete type so that the plugin implementation
+    /// can downcast to its native concrete type.
+    fn as_any(&self) -> &dyn Any;
 }
 
 /// Provides Rnn Config functionality.
@@ -160,8 +167,6 @@ pub trait RnnConfig<F> {
 
 /// Provides the functionality for a backend to support Neural Network related operations.
 pub trait NN<F> {
-    /// The Convolution Operation Config representation for this Plugin.
-    type CC: NNOperationConfig<F> + ConvolutionConfig<F>;
     /// The LRN Operation Config representation for this Plugin.
     type CLRN: NNOperationConfig<F>;
     /// The Pooling Operation Config representation for this Plugin.
@@ -558,7 +563,7 @@ pub trait Convolution<F>: NN<F> {
         algo_bwd_data: ConvBackwardDataAlgo,
         stride: &[i32],
         zero_padding: &[i32],
-    ) -> Result<Self::CC, crate::co::error::Error>;
+    ) -> Result<Box<dyn ConvolutionConfig<F>>, crate::co::error::Error>;
 
     /// Computes a [CNN convolution][convolution] over the input Tensor `x`.
     /// [convolution]: https://en.wikipedia.org/wiki/Convolutional_neural_network
@@ -570,7 +575,7 @@ pub trait Convolution<F>: NN<F> {
         x: &SharedTensor<F>,
         result: &mut SharedTensor<F>,
         workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        config: &dyn ConvolutionConfig<F>,
     ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] with respect to the filter.
@@ -583,7 +588,7 @@ pub trait Convolution<F>: NN<F> {
         dest_diff: &SharedTensor<F>,
         filter_diff: &mut SharedTensor<F>,
         workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        config: &dyn ConvolutionConfig<F>,
     ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] over the input
@@ -597,7 +602,7 @@ pub trait Convolution<F>: NN<F> {
         x_diff: &SharedTensor<F>,
         result_diff: &mut SharedTensor<F>,
         workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        config: &dyn ConvolutionConfig<F>,
     ) -> Result<(), crate::co::error::Error>;
 
     // /// Computes the backward Convolution function w.r.t the bias.

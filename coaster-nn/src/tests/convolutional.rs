@@ -88,7 +88,9 @@ where
 
         let mut ws = SharedTensor::<u8>::new(&[conf.workspace_size()]);
 
-        assert!(backend.convolution(&f, &x, &mut r, &mut ws, &conf).is_ok());
+        assert!(backend
+            .convolution(&f, &x, &mut r, &mut ws, conf.as_ref())
+            .is_ok());
         assert!(r.read(backend.device()).is_ok());
 
         // this only works because our data is all ones, if padding is non zero, this can not be applied
@@ -191,7 +193,7 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(
     let mut ws = SharedTensor::<u8>::new(&[conf_a.workspace_size()]);
 
     backend_a
-        .convolution(&f, &x, &mut result_a, &mut ws, &conf_a)
+        .convolution(&f, &x, &mut result_a, &mut ws, conf_a.as_ref())
         .unwrap();
 
     let conf_b = backend_b
@@ -210,7 +212,7 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(
     let mut ws = SharedTensor::<u8>::new(&[conf_b.workspace_size()]);
 
     backend_b
-        .convolution(&f, &x, &mut result_b, &mut ws, &conf_b)
+        .convolution(&f, &x, &mut result_b, &mut ws, conf_b.as_ref())
         .unwrap();
 
     tensor_assert_eq_tensor(&result_a, &result_b, 3.0);

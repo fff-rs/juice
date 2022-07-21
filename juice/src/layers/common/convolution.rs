@@ -12,6 +12,7 @@
 //!
 //! [cs231n_convnets]: https://cs231n.github.io/convolutional-networks
 
+use std::marker::PhantomData;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
@@ -35,7 +36,9 @@ pub struct Convolution<B: conn::Convolution<f32>> {
     padding: Vec<usize>,
 
     workspace: Option<ArcLock<SharedTensor<u8>>>,
-    convolution_config: Option<Rc<B::CC>>,
+    convolution_config: Option<Rc<dyn conn::ConvolutionConfig<f32>>>,
+
+    phantom_data: PhantomData<B>,
 }
 
 impl<B: conn::Convolution<f32>> Convolution<B> {
@@ -50,6 +53,8 @@ impl<B: conn::Convolution<f32>> Convolution<B> {
 
             workspace: None,
             convolution_config: None,
+
+            phantom_data: PhantomData,
         }
     }
 
@@ -171,7 +176,7 @@ impl<B: IBackend + conn::Convolution<f32>> ILayer<B> for Convolution<B> {
 
             weights_gradient[0].write().unwrap().resize(filter.desc()).unwrap();
             weights_gradient[1].write().unwrap().resize(filter.desc()).unwrap();
-            self.convolution_config = Some(Rc::new(config));
+            self.convolution_config = Some(config.into());
         }
     }
 
@@ -207,7 +212,7 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeOutput<f32, B> for Convolution
         output_data: &mut [&mut SharedTensor<f32>],
     ) {
         let filter_data = weights[0];
-        let conv_config = self.convolution_config.as_ref().unwrap();
+        let conv_config = self.convolution_config.as_ref().unwrap().as_ref();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         backend
             .convolution(filter_data, input_data[0], output_data[0], &mut workspace, conv_config)
@@ -226,7 +231,7 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeInputGradient<f32, B> for Conv
         input_gradients: &mut [&mut SharedTensor<f32>],
     ) {
         let filter_data = weights_data[0];
-        let conv_config = self.convolution_config.as_ref().unwrap();
+        let conv_config = self.convolution_config.as_ref().unwrap().as_ref();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         // compute gradient w.r.t. input
         backend
@@ -252,7 +257,7 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeParametersGradient<f32, B> for
     ) {
         // TODO: compute gradient w.r.t to bias
         let filter_gradient = &mut parameters_gradients[0];
-        let conv_config = self.convolution_config.as_ref().unwrap();
+        let conv_config = self.convolution_config.as_ref().unwrap().as_ref();
         let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
         // compute gradient w.r.t. filter
         backend

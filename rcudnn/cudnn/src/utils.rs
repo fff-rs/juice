@@ -50,6 +50,7 @@ impl DataTypeInfo for f64 {
 /// `algo` and `workspace` and `workspace_size_in_bytes`.
 ///
 /// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_convolution()`.
+#[derive(Debug)]
 pub struct ConvolutionConfig {
     forward_algo: cudnnConvolutionFwdAlgo_t,
     backward_filter_algo: cudnnConvolutionBwdFilterAlgo_t,
