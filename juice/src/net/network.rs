@@ -7,16 +7,16 @@ use crate::util::LayerOps;
 
 // A trainable network. Essentially a convenience wrapper around the top-level layer
 // which is typically a container layer.
-pub struct Network<B: IBackend + LayerOps<f32>> {
+pub struct Network {
     // Configuration of the top layer.
     config: LayerConfig,
     // Top layer.
-    top: Box<dyn Layer<B>>,
+    top: Box<dyn Layer>,
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
+impl Network {
     /// Creates network from a config with the given input shapes.
-    pub fn from_config(config: LayerConfig, input_shapes: &[TensorDesc]) -> Network<B> {
+    pub fn from_config(config: LayerConfig, input_shapes: &[TensorDesc]) -> Network {
         let inputs = input_shapes
             .iter()
             .enumerate()
@@ -30,16 +30,16 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         let top = layer_from_config(descriptor, &config);
 
         Network {
-            config: config,
-            top: top,
+            config,
+            top,
         }
     }
 
-    pub fn top(&self) -> &dyn Layer<B> {
+    pub fn top(&self) -> &dyn Layer {
         self.top.as_ref()
     }
 
-    pub fn top_mut(&mut self) -> &mut dyn Layer<B> {
+    pub fn top_mut(&mut self) -> &mut dyn Layer {
         self.top.as_mut()
     }
 
@@ -80,8 +80,8 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
     }
 }
 
-impl<B: IBackend + LayerOps<f32> + 'static> Clone for Network<B> {
-    fn clone(&self) -> Network<B> {
+impl Clone for Network {
+    fn clone(&self) -> Network {
         let input_shapes: Vec<TensorDesc> = self
             .top
             .descriptor()

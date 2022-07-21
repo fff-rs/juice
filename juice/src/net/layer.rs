@@ -26,17 +26,17 @@ use crate::util::LayerOps;
 ///
 /// It is assumed that weight shapes do not depend on batch size N (as weights are created once and
 /// cannot change shape during learning).
-pub trait Layer<B: IBackend>: Debug {
+pub trait Layer: Debug {
     // Computes output given the input(s) and stores them in the Context.
     // Invoked during forward pass. Inputs must be already computed and present on the Context
     // (will panic otherwise).
-    fn compute_output(&self, backend: &B, context: &mut Context);
+    fn compute_output(&self, backend: &dyn LayerBackend, context: &mut Context);
 
     // Computes the input and weight gradients and stores them in the Context.
     // Invoked during backward pass. Inputs, outputs and output gradients must be already computed
     // and present on the Context. (An output gradient is computed as the input gradient by the
     // downstream layer which uses this output as input.)
-    fn compute_gradients(&self, backend: &B, context: &mut Context);
+    fn compute_gradients(&self, backend: &dyn LayerBackend, context: &mut Context);
 
     // Returns the immutable Descriptor ref.
     fn descriptor(&self) -> &Descriptor;
@@ -46,12 +46,16 @@ pub trait Layer<B: IBackend>: Debug {
     fn descriptor_mut(&mut self) -> &mut Descriptor;
 }
 
+/// A trait "alias" for backends which have LayerOps<> functions.
+pub trait LayerBackend : IBackend + LayerOps<f32> + 'static {}
+impl <T: IBackend + LayerOps<f32> + 'static> LayerBackend for T {}
+
 /// Creates a layer from a config.
 /// Takes a partially filled Descriptor, which should have a valid path and inputs.
-pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
+pub fn layer_from_config(
     descriptor: Descriptor,
     config: &LayerConfig,
-) -> Box<dyn Layer<B>> {
+) -> Box<dyn Layer> {
     match config {
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
     }

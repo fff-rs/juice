@@ -1,6 +1,6 @@
 use crate::co::IBackend;
 use crate::conn;
-use crate::net::{Context, Descriptor, Layer};
+use crate::net::{Context, Descriptor, Layer, LayerBackend};
 
 #[derive(Debug, Clone)]
 pub struct Relu {
@@ -19,8 +19,8 @@ impl Relu {
     }
 }
 
-impl<B: IBackend + conn::Relu<f32>> Layer<B> for Relu {
-    fn compute_output(&self, backend: &B, context: &mut Context) {
+impl Layer for Relu {
+    fn compute_output(&self, backend: &dyn LayerBackend, context: &mut Context) {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
         backend
@@ -28,7 +28,7 @@ impl<B: IBackend + conn::Relu<f32>> Layer<B> for Relu {
             .unwrap();
     }
 
-    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+    fn compute_gradients(&self, backend: &dyn LayerBackend, context: &mut Context) {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.get_data(self.descriptor.output(0));
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
