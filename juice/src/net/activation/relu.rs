@@ -13,9 +13,7 @@ impl Relu {
 
         descriptor.add_output(descriptor.input(0).unit_shape().clone());
 
-        Relu {
-            descriptor: descriptor,
-        }
+        Relu { descriptor: descriptor }
     }
 }
 
@@ -23,9 +21,7 @@ impl<B: IBackend + conn::Relu<f32>> Layer<B> for Relu {
     fn compute_output(&self, backend: &B, context: &mut Context) {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
-        backend
-            .relu(&input.borrow(), &mut output.borrow_mut())
-            .unwrap();
+        backend.relu(&input.borrow(), &mut output.borrow_mut()).unwrap();
     }
 
     fn compute_gradients(&self, backend: &B, context: &mut Context) {

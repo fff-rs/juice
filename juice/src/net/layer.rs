@@ -1,8 +1,9 @@
 use std::fmt::Debug;
 
-use crate::co::{IBackend};
-use crate::net::{Context, Descriptor, LayerConfig};
+use crate::co::IBackend;
 use crate::net::activation::*;
+use crate::net::container::Sequential;
+use crate::net::{Context, Descriptor, LayerConfig};
 use crate::util::LayerOps;
 
 /// A generalized layer in a network, performing certain function on inputs producing outputs.
@@ -17,8 +18,8 @@ use crate::util::LayerOps;
 /// Layer can have arbitrary number of inputs, outputs and weights, which are all described in the
 /// `Descriptor`. Inputs and outputs declare the shapes of the 'units' of data, which then can
 /// be batched according to `Context` settings. The actual shapes of the inputs and outputs are
-/// always of the form [N, {unit_shape}] where N is the batch size. 
-/// 
+/// always of the form [N, {unit_shape}] where N is the batch size.
+///
 /// Number and unit shapes of the inputs are defined by the upstream logic. Number and unit shapes
 /// of the outputs are determined by the layer depending on input unit shapes and layer settings.
 /// When creating a layer, parent logic passes a partially filled `Descriptor`, containing inputs
@@ -53,6 +54,7 @@ pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
     config: &LayerConfig,
 ) -> Box<dyn Layer<B>> {
     match config {
+        LayerConfig::Sequential(cfg) => Box::new(Sequential::new(descriptor, cfg)),
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
     }
 }
