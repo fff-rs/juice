@@ -106,6 +106,7 @@ macro_rules! iblas_copy_for_cuda {
             x: &SharedTensor<$t>,
             y: &mut SharedTensor<$t>,
         ) -> Result<(), ::coaster::error::Error> {
+            assert_eq!(x.desc().size(), y.desc().size());
             let n = x.desc().size() as i32;
             let x_mem = read!(x, self);
             let y_mem = write_only!(y, self);
@@ -250,18 +251,11 @@ macro_rules! iblas_gemm_for_cuda {
             beta: &SharedTensor<$t>,
             c: &mut SharedTensor<$t>,
         ) -> Result<(), ::coaster::error::Error> {
-            let c_desc = c.desc().clone();
-            let alpha_mem = read!(alpha, self);
-            let beta_mem = read!(beta, self);
-            let a_mem = read!(a, self);
-            let b_mem = read!(b, self);
-            let c_mem = write_only!(c, self);
-
             let a_0 = a.desc()[0] as i32;
             let a_1 = a.desc().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
             let b_0 = b.desc()[0] as i32;
             let b_1 = b.desc().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
-            let c_1 = c_desc.iter().skip(1).fold(1, |prod, i| prod * i) as i32;
+            let c_1 = c.desc().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
             let n = match bt {
                 Transpose::NoTrans => b_1,
                 _ => b_0,
@@ -274,7 +268,18 @@ macro_rules! iblas_gemm_for_cuda {
             let ldb = b_1;
             let ldc = c_1;
 
+            // Sanity checks.
+            assert_eq!((m * k) as usize, a.desc().size());
+            assert_eq!((n * k) as usize, b.desc().size());
+            assert_eq!((m * n) as usize, c.desc().size());
+            
             let ctx: &cublas::Context = self.framework().cublas();
+
+            let alpha_mem = read!(alpha, self);
+            let beta_mem = read!(beta, self);
+            let a_mem = read!(a, self);
+            let b_mem = read!(b, self);
+            let c_mem = write_only!(c, self);
 
             exec!(
                 gemm,

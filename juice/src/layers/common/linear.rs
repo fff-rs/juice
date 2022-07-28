@@ -35,6 +35,7 @@ pub struct Linear {
 
     one: SharedTensor<f32>,
     zero: SharedTensor<f32>,
+    ones_row: SharedTensor<f32>,
 }
 
 impl Linear {
@@ -42,12 +43,14 @@ impl Linear {
     pub fn from_config(config: &LinearConfig) -> Linear {
         let one = native_scalar(1f32);
         let zero = native_scalar(0f32);
+        let ones_row = SharedTensor::new(&vec![1]);
 
         Linear {
             output_size: config.output_size,
 
             one,
             zero,
+            ones_row,
         }
     }
 
@@ -83,6 +86,7 @@ impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
         output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
     ) {
         let input = input_data[0].read().unwrap();
+        let batch_size = input.desc()[0];
         // reshape top
         let output_shape = self.calculate_output_shape(input.desc());
         output_data[0].write().unwrap().resize(&output_shape).unwrap();
@@ -116,6 +120,10 @@ impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
         if let Some(weight) = weights_gradient.get(1) {
             weight.write().unwrap().resize(&(1, self.output_size)).unwrap();
         }
+
+        // Reshape the column of 1s which is used to compute bias gradient.
+        self.ones_row.resize(&vec![1, batch_size]).unwrap();
+        FillerType::fill_constant(&mut self.ones_row, 1.0);
     }
 
     fn exact_num_output_blobs(&self) -> Option<usize> {
@@ -215,10 +223,21 @@ impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
             .unwrap();
 
         // gradient w.r.t bias
-        // Technically, the gradient of vector b of length n to itself is the I_n identity matrix,
-        // so instead we'll just copy the output_gradient[0] vector into
+        // The gradient of vector b of length n to itself is the I_n identity matrix,
+        // so multiply output_gradient[0] by a 1-column.
+        // Note that we instead multiply a one-row by output_gradient[0], since doing it
+        // in the opposite order causes gemm() implementation to miscalculate dimensions.
+        // TODO: Fix this.
         backend
-            .copy(&output_gradients[0], &mut parameters_gradients[1])
+            .gemm(
+                &self.one,
+                Transpose::NoTrans,
+                &self.ones_row,
+                Transpose::NoTrans,
+                output_gradients[0],
+                &self.zero,
+                parameters_gradients[1],
+            )
             .unwrap();
     }
 }
