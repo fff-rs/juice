@@ -43,7 +43,8 @@ impl Linear {
     pub fn from_config(config: &LinearConfig) -> Linear {
         let one = native_scalar(1f32);
         let zero = native_scalar(0f32);
-        let ones_row = SharedTensor::new(&vec![1]);
+        let mut ones_row = SharedTensor::new(&vec![1]);
+        FillerType::fill_constant(&mut ones_row, 1.0);
 
         Linear {
             output_size: config.output_size,
@@ -225,9 +226,7 @@ impl<B: IBackend + LayerOps<f32>> ComputeParametersGradient<f32, B> for Linear {
         // gradient w.r.t bias
         // The gradient of vector b of length n to itself is the I_n identity matrix,
         // so multiply output_gradient[0] by a 1-column.
-        // Note that we instead multiply a one-row by output_gradient[0], since doing it
-        // in the opposite order causes gemm() implementation to miscalculate dimensions.
-        // TODO: Fix this.
+        // Since parameters_gradients[1] is a row-vector, transpose the whole operation.
         backend
             .gemm(
                 &self.one,

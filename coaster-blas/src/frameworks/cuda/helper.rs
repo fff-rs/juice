@@ -251,28 +251,45 @@ macro_rules! iblas_gemm_for_cuda {
             beta: &SharedTensor<$t>,
             c: &mut SharedTensor<$t>,
         ) -> Result<(), ::coaster::error::Error> {
+            use Transpose as T;
+
+            // Determine the dimensions of all the matrices.
+            // We always treat the first dimension as the number of rows and all
+            // the subsequent dimensions combined as the "columns".
             let a_0 = a.desc()[0] as i32;
             let a_1 = a.desc().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
             let b_0 = b.desc()[0] as i32;
             let b_1 = b.desc().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
+            let c_0 = c.desc()[0] as i32;
             let c_1 = c.desc().iter().skip(1).fold(1, |prod, i| prod * i) as i32;
-            let n = match bt {
-                Transpose::NoTrans => b_1,
-                _ => b_0,
+
+            let (m, n, k) = match (at, bt) {
+                (T::NoTrans, T::NoTrans) => {
+                    assert_eq!(a_1, b_0);
+                    (a_0, b_1, a_1)
+                }
+                (T::NoTrans, T::Trans | T::ConjTrans) => {
+                    assert_eq!(a_1, b_1);
+                    (a_0, b_0, a_1)
+                }
+                (T::Trans | T::ConjTrans, T::NoTrans) => {
+                    assert_eq!(a_0, b_0);
+                    (a_1, b_1, a_0)
+                }
+                (T::Trans | T::ConjTrans, T::Trans | T::ConjTrans) => {
+                    assert_eq!(a_0, b_1);
+                    (a_1, b_0, a_0)
+                }
             };
-            let (m, k) = match at {
-                Transpose::NoTrans => (a_0, a_1),
-                _ => (a_1, a_0),
-            };
+
+            // Verify that C dimensions match.
+            assert_eq!(c_0, m);
+            assert_eq!(c_1, n);
+
             let lda = a_1;
             let ldb = b_1;
             let ldc = c_1;
 
-            // Sanity checks.
-            assert_eq!((m * k) as usize, a.desc().size());
-            assert_eq!((n * k) as usize, b.desc().size());
-            assert_eq!((m * n) as usize, c.desc().size());
-            
             let ctx: &cublas::Context = self.framework().cublas();
 
             let alpha_mem = read!(alpha, self);
@@ -281,6 +298,9 @@ macro_rules! iblas_gemm_for_cuda {
             let b_mem = read!(b, self);
             let c_mem = write_only!(c, self);
 
+            // cuBLAS uses column-major matrix format, while SharedTensor is row-major.
+            // To compute AxB = C, we instead compute BᵀxAᵀ = Cᵀ and treat the transposed
+            // column-major matrix as a normal (non-transposed) row-major one.
             exec!(
                 gemm,
                 (*ctx).gemm(
@@ -290,7 +310,7 @@ macro_rules! iblas_gemm_for_cuda {
                     m,
                     k,
                     trans!(alpha_mem, $t),
-                    trans!(b_mem, $t), // matrix a and b are switched to make it work with row-major memory layout.
+                    trans!(b_mem, $t),
                     ldb,
                     trans!(a_mem, $t),
                     lda,
