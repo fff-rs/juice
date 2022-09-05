@@ -14,3 +14,9 @@ impl Default for LayerConfig {
         LayerConfig::Sequential(SequentialConfig::new())
     }
 }
+
+impl From<SequentialConfig> for LayerConfig {
+    fn from(c: SequentialConfig) -> Self {
+        LayerConfig::Sequential(c)
+    }
+}

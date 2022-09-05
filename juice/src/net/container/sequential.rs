@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
 use crate::co::IBackend;
-use crate::net::{layer_from_config, Context, Descriptor, Inout, Layer, LayerConfig};
+use crate::net::{layer_from_config, Context, Descriptor, Inout, Layer, LayerConfig, LayerFromConfigError};
 use crate::util::LayerOps;
 
 // Config for a single child layer.
@@ -28,6 +28,11 @@ pub struct SequentialConfig {
     outputs: Vec<String>,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct SequentialBadInputOutputError {
+    pub name: String,
+}
+
 // A container layer that composes nested layers in a sequence.
 //
 // In the most simple case, all nested layers are executed one by one, with outputs of one layer
@@ -36,7 +41,7 @@ pub struct SequentialConfig {
 //
 // ```
 // let mut cfg = SequentialConfig::new();
-// cfg.add_layer("linear", LayerConfig::Linear(LinearConfig{ output_size: 10}));
+// cfg.add_layer("linear", LinearConfig{ output_size: 10});
 // cfg.add_layer("softmax", LayerConfig::Softmax);
 // ```
 //
@@ -47,11 +52,11 @@ pub struct SequentialConfig {
 // let mut cfg = SequentialConfig::new();
 // cfg.map_input("in");
 // cfg
-//   .add_layer("linear1", LayerConfig::Linear(LinearConfig{ output_size: 10}))
+//   .add_layer("linear1", LinearConfig{ output_size: 10})
 //   .map_input("in")
 //   .map_output("linear1_out");
 // cfg
-//   .add_layer("linear2", LayerConfig::Linear(LinearConfig{ output_size: 10}))
+//   .add_layer("linear2", LinearConfig{ output_size: 10})
 //   .map_input("in")
 //   .map_output("linear2_out");
 // cfg
@@ -87,10 +92,10 @@ impl SequentialConfig {
         SequentialConfig::default()
     }
 
-    pub fn add_layer(&mut self, name: &str, child_config: LayerConfig) -> &mut SequentialChildConfig {
+    pub fn add_layer(&mut self, name: &str, child_config: impl Into<LayerConfig>) -> &mut SequentialChildConfig {
         self.layers.push(SequentialChildConfig {
             name: name.to_string(),
-            config: child_config,
+            config: child_config.into(),
             inputs: Vec::new(),
             outputs: Vec::new(),
         });
@@ -108,7 +113,7 @@ impl SequentialConfig {
 }
 
 impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
-    pub fn new(mut descriptor: Descriptor, config: &SequentialConfig) -> Self {
+    pub fn new(mut descriptor: Descriptor, config: &SequentialConfig) -> Result<Self, LayerFromConfigError> {
         // Create internal layers one by one and connect them.
         // For the purpose of connecting layers, all inputs and outputs have names,
         // which are either explicitly given in the config, or have implicit form of
@@ -151,20 +156,19 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
                 prev_layer_output_names
             };
 
-            let child_inputs = child_input_names
+            let child_inputs: Result<Vec<Inout>, SequentialBadInputOutputError> = child_input_names
                 .iter()
-                .map(|name| {
-                    Inout::new_with_junction(
-                        internal_junctions
-                            .get(name)
-                            .unwrap_or_else(|| panic!("Unknown input/output name {}", name))
-                            .clone(),
-                    )
+                .map(|name| -> Result<Inout, _> {
+                    let junction = internal_junctions
+                        .get(name)
+                        .cloned()
+                        .ok_or_else(|| SequentialBadInputOutputError { name: name.to_owned() })?;
+                    Ok(Inout::new_with_junction(junction))
                 })
                 .collect();
 
             let mut child_layer =
-                layer_from_config(descriptor.sub(&child_config.name, child_inputs), &child_config.config);
+                layer_from_config(descriptor.sub(&child_config.name, child_inputs?), &child_config.config)?;
 
             // Create data buffer paths for child outputs and save the outputs for next layers.
             let child_descriptor = child_layer.descriptor_mut();
@@ -201,10 +205,13 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
         // (or inputs if there are no child layers).
         if !config.outputs.is_empty() {
             for output_name in config.outputs.iter() {
-                let junction = internal_junctions
-                    .get(output_name)
-                    .unwrap_or_else(|| panic!("Can't find output {}", output_name))
-                    .clone();
+                let junction =
+                    internal_junctions
+                        .get(output_name)
+                        .cloned()
+                        .ok_or_else(|| SequentialBadInputOutputError {
+                            name: output_name.to_owned(),
+                        })?;
                 descriptor.add_output_with_junction(junction);
             }
         } else if !children.is_empty() {
@@ -218,7 +225,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
             }
         }
 
-        Sequential { descriptor, children }
+        Ok(Sequential { descriptor, children })
     }
 }
 
@@ -252,8 +259,8 @@ impl<B: IBackend> Debug for Sequential<B> {
 
 #[cfg(test)]
 mod tests {
-    use crate::net::container::SequentialConfig;
-    use crate::net::{LayerConfig, Network};
+    use crate::net::container::{SequentialBadInputOutputError, SequentialConfig};
+    use crate::net::{LayerConfig, LayerFromConfigError, Network};
     use crate::util::{native_backend, write_batch_sample};
     use co::{Backend, Native, SharedTensor};
 
@@ -272,7 +279,7 @@ mod tests {
         let backend = native_backend();
 
         let cfg = SequentialConfig::new();
-        let net = Network::from_config(LayerConfig::Sequential(cfg), &[vec![1]]);
+        let net = Network::from_config(cfg, &[vec![1]]).unwrap();
 
         assert_eq!(transform(&net, &backend, -1.0), -1.0);
     }
@@ -284,7 +291,7 @@ mod tests {
 
         let mut cfg = SequentialConfig::new();
         cfg.add_layer("relu", LayerConfig::Relu);
-        let net = Network::from_config(LayerConfig::Sequential(cfg), &[vec![1]]);
+        let net = Network::from_config(cfg, &[vec![1]]).unwrap();
 
         assert_eq!(transform(&net, &backend, -1.0), 0.0);
     }
@@ -303,15 +310,53 @@ mod tests {
             .map_output("out1");
 
         // Empty Sequential that reads from "in" and writes to "out2".
-        cfg.add_layer("relu2", LayerConfig::Sequential(SequentialConfig::new()))
+        cfg.add_layer("relu2", SequentialConfig::new())
             .map_input("in")
             .map_output("out2");
 
         // Take output of the Sequential layer.
         cfg.map_output("out2");
 
-        let net = Network::from_config(LayerConfig::Sequential(cfg), &[vec![1]]);
+        let net = Network::from_config(cfg, &[vec![1]]).unwrap();
 
         assert_eq!(transform(&net, &backend, -1.0), -1.0);
+    }
+
+    #[test]
+    fn bad_intermediate_input_name() {
+        let backend = native_backend();
+
+        let mut cfg = SequentialConfig::new();
+        cfg.add_layer("relu", LayerConfig::Relu).map_output("out");
+        cfg.add_layer("relu2", LayerConfig::Relu).map_input("out2");
+
+        let result: Result<Network<Backend<Native>>, _> = Network::from_config(cfg, &[vec![1]]);
+        assert!(result.is_err());
+
+        assert_eq!(
+            result.err().unwrap(),
+            LayerFromConfigError::Sequential(SequentialBadInputOutputError {
+                name: "out2".to_owned()
+            })
+        );
+    }
+
+    #[test]
+    fn bad_output_name() {
+        let backend = native_backend();
+
+        let mut cfg = SequentialConfig::new();
+        cfg.add_layer("relu", LayerConfig::Relu).map_output("out");
+        cfg.map_output("out2");
+
+        let result: Result<Network<Backend<Native>>, _> = Network::from_config(cfg, &[vec![1]]);
+        assert!(result.is_err());
+
+        assert_eq!(
+            result.err().unwrap(),
+            LayerFromConfigError::Sequential(SequentialBadInputOutputError {
+                name: "out2".to_owned()
+            })
+        );
     }
 }

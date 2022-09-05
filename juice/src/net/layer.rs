@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use crate::co::IBackend;
 use crate::net::activation::*;
-use crate::net::container::Sequential;
+use crate::net::container::{Sequential, SequentialBadInputOutputError};
 use crate::net::{Context, Descriptor, LayerConfig};
 use crate::util::LayerOps;
 
@@ -47,14 +47,25 @@ pub trait Layer<B: IBackend>: Debug {
     fn descriptor_mut(&mut self) -> &mut Descriptor;
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum LayerFromConfigError {
+    Sequential(SequentialBadInputOutputError),
+}
+
 /// Creates a layer from a config.
 /// Takes a partially filled Descriptor, which should have a valid path and inputs.
 pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
     descriptor: Descriptor,
     config: &LayerConfig,
-) -> Box<dyn Layer<B>> {
-    match config {
-        LayerConfig::Sequential(cfg) => Box::new(Sequential::new(descriptor, cfg)),
+) -> Result<Box<dyn Layer<B>>, LayerFromConfigError> {
+    Ok(match config {
+        LayerConfig::Sequential(cfg) => Box::new(Sequential::new(descriptor, cfg)?),
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
+    })
+}
+
+impl From<SequentialBadInputOutputError> for LayerFromConfigError {
+    fn from(e: SequentialBadInputOutputError) -> Self {
+        LayerFromConfigError::Sequential(e)
     }
 }
