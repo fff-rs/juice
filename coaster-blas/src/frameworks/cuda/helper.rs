@@ -251,7 +251,7 @@ macro_rules! iblas_gemm_for_cuda {
             beta: &SharedTensor<$t>,
             c: &mut SharedTensor<$t>,
         ) -> Result<(), ::coaster::error::Error> {
-            use Transpose::{NoTrans, ConjTrans, Trans};
+            use Transpose as T;
 
             // Determine the dimensions of all the matrices.
             // We always treat the first dimension as the number of rows and all
