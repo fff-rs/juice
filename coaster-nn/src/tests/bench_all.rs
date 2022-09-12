@@ -1,164 +1,187 @@
-#![cfg(feature = "unstable")]
-extern crate test;
+#![allow(unused_crate_dependencies, dead_code, warnings)]
+
+use paste::paste;
+
+use std::mem::transmute;
+
+use crate::co::SharedTensor;
+use crate::plugin::*;
+use crate::tests::*;
+use crate::*;
+use criterion::Criterion;
+use rand::distributions::OpenClosed01;
+
+macro_rules! bench_pooling {
+    ($b:ident, $t:ident, $f:ident, $n:literal) => {
+        paste! {
+        fn [< $f _ $n _ $b:lower _ $t:lower>](_: &mut Criterion) {
+            println!("TODO FIXME");
+        }
+
+        fn [< $f _grad_ $n _ $b:lower _ $t:lower>](_: &mut Criterion) {
+
+            println!("TODO FIXME");
+        }}
+    };
+}
 
 macro_rules! bench_activation {
-    ($backend_getter:ident, $t:ident, $f:ident, $f_grad:ident,
-     $bench_name:ident, $bench_grad_name:ident, $n:expr) => {
-        #[bench]
-        pub fn $bench_name(b: &mut Bencher) {
-            let backend = ::tests::$backend_getter();
-
-            let x = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
+    ($b:ident, $t:ident, $f:ident, $n:literal) => {
+        paste! {
+        pub fn [< $f _ $n _ $b:lower _ $t:lower>] (criterion: &mut ::criterion::Criterion) {
+            let backend = Backend::<$b>::default().unwrap();
+            let x = uniformly_random_tensor(&backend, &[$n], -2.0, 2.0);
             let mut r = SharedTensor::<$t>::new(&[$n]);
 
             for _ in 0..3 {
                 // warmup
-                backend.$f(&x, &mut r).unwrap();
+                backend. $f (&x, &mut r).unwrap();
                 backend.synchronize().unwrap();
             }
 
-            b.iter(|| {
-                backend.$f(&x, &mut r).unwrap();
-                backend.synchronize().unwrap();
+            criterion.bench_function(stringify!($f), |b| {
+                b.iter(|| {
+                    backend. $f (&x, &mut r).unwrap();
+                    backend.synchronize().unwrap();
+                })
             });
         }
 
-        #[bench]
-        pub fn $bench_grad_name(b: &mut Bencher) {
-            let backend = ::tests::$backend_getter();
+        pub fn [< $f _grad_ $n _ $b:lower _ $t:lower>] (criterion: &mut ::criterion::Criterion) {
+            let backend = Backend::<$b>::default().unwrap();
 
             let mut x = SharedTensor::<$t>::new(&[$n]);
-            let dx = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
-            let r = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
+            let dx = uniformly_random_tensor(&backend, &[$n], -2.0, 2.0);
+            let r = uniformly_random_tensor(&backend, &[$n], -2.0, 2.0);
             let mut dr = SharedTensor::<$t>::new(&[$n]);
 
-            backend.$f(&r, &mut x).unwrap();
+            backend. $f (&r, &mut x).unwrap();
 
             for _ in 0..3 {
                 // warmup
-                backend.$f_grad(&x, &dx, &r, &mut dr).unwrap();
+                backend.[<$f _grad>] (&x, &dx, &r, &mut dr).unwrap();
                 backend.synchronize().unwrap();
             }
 
-            b.iter(|| {
-                backend.$f_grad(&x, &dx, &r, &mut dr).unwrap();
-                backend.synchronize().unwrap();
+            criterion.bench_function(stringify!($f_grad), |b| {
+                b.iter(|| {
+                    backend.[< $f _grad >] (&x, &dx, &r, &mut dr).unwrap();
+                    backend.synchronize().unwrap();
+                })
             });
-        }
+        }}
     };
 }
 
 // softmax differs from activations only in arg count for grad function...
 macro_rules! bench_softmax {
-    ($backend_getter:ident, $t:ident, $f:ident, $f_grad:ident,
-     $bench_name:ident, $bench_grad_name:ident, $n:expr) => {
-        #[bench]
-        pub fn $bench_name(b: &mut Bencher) {
-            let backend = ::tests::$backend_getter();
+    ($b:ident, $t:ident, $f:ident,
+     $n:literal) => {
+        use super::*;
+        use crate::plugin::*;
 
-            let x = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
+        paste!{
+        pub fn [< $f _ $n _ $b:lower _ $t:lower>](criterion: &mut ::criterion::Criterion) {
+            let backend = Backend::<$b>::default().unwrap();
+
+            let x = uniformly_random_tensor(&backend, &[$n], -2.0, 2.0);
             let mut r = SharedTensor::<$t>::new(&[$n]);
 
             for _ in 0..3 {
                 // warmup
-                backend.$f(&x, &mut r).unwrap();
+                backend. $f (&x, &mut r).unwrap();
                 backend.synchronize().unwrap();
             }
 
-            b.iter(|| {
-                backend.$f(&x, &mut r).unwrap();
-                backend.synchronize().unwrap();
+            criterion.bench_function(stringify!($bench_name), |b| {
+                b.iter(|| {
+                    backend.$f(&x, &mut r).unwrap();
+                    backend.synchronize().unwrap();
+                })
             });
         }
 
-        #[bench]
-        pub fn $bench_grad_name(b: &mut Bencher) {
-            let backend = ::tests::$backend_getter();
+        pub fn [< $f _grad_ $n _ $b:lower _ $t:lower>] (criterion: &mut ::criterion::Criterion) {
+            let backend = Backend::<$b>::default().unwrap();
 
             let mut x = SharedTensor::<$t>::new(&[$n]);
-            let dx = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
-            let r = ::tests::uniformly_random_tensor(&[$n], -2.0, 2.0);
+            let dx = uniformly_random_tensor(&backend, &[$n], -2.0, 2.0);
+            let r = uniformly_random_tensor(&backend, &[$n], -2.0, 2.0);
             let mut dr = SharedTensor::<$t>::new(&[$n]);
 
-            backend.$f(&r, &mut x).unwrap();
+            backend. $f (&r, &mut x).unwrap();
 
             for _ in 0..3 {
                 // warmup
-                backend.$f_grad(&x, &dx, &mut dr).unwrap();
+                backend. [<$f _grad>] (&x, &dx, &mut dr).unwrap();
                 backend.synchronize().unwrap();
             }
 
-            b.iter(|| {
-                backend.$f_grad(&x, &dx, &mut dr).unwrap();
-                backend.synchronize().unwrap();
+            criterion.bench_function(stringify!([< $f _grad _ $n _ $b:lower _ $t:lower >]), |b| {
+                b.iter(|| {
+                    backend. [<$f _grad>] (&x, &dx, &mut dr).unwrap();
+                    backend.synchronize().unwrap();
+                })
             });
         }
+    }
     };
 }
 
-macro_rules! define_benches { ($b:ident, $t:ident) => {
-    use super::test::Bencher;
-    use co::prelude::*;
-    use plugin::{Relu, Sigmoid, Tanh, Softmax, LogSoftmax};
+macro_rules! add_bench_group {
+    ($b:ident, $t:ident, $f:ident, $k:ident, [$($n:literal),+], $criterion:expr) => {
 
-    bench_activation!($b, $t, relu, relu_grad, relu_100, relu_grad_100, 100);
-    bench_activation!($b, $t, relu, relu_grad, relu_1k, relu_grad_1k, 1000);
-    bench_activation!($b, $t, relu, relu_grad, relu_10k, relu_grad_10k, 10_000);
-    bench_activation!($b, $t, relu, relu_grad, relu_100k, relu_grad_100k, 100_000);
-    bench_activation!($b, $t, relu, relu_grad, relu_1m, relu_grad_1m, 1000_000);
-    bench_activation!($b, $t, relu, relu_grad, relu_10m, relu_grad_10m, 10_000_000);
+        paste!{
+            $(
+                $k !($b,$t,$f,$n);
+            )+
+            $({
+                let fx = [< $f _ $n _ $b:lower _ $t:lower>];
+                fx($criterion);
 
-    bench_activation!($b, $t, sigmoid, sigmoid_grad, sigmoid_100, sigmoid_grad_100, 100);
-    bench_activation!($b, $t, sigmoid, sigmoid_grad, sigmoid_1k, sigmoid_grad_1k, 1000);
-    bench_activation!($b, $t, sigmoid, sigmoid_grad, sigmoid_10k, sigmoid_grad_10k, 10_000);
-    bench_activation!($b, $t, sigmoid, sigmoid_grad, sigmoid_100k, sigmoid_grad_100k, 100_000);
-    bench_activation!($b, $t, sigmoid, sigmoid_grad, sigmoid_1m, sigmoid_grad_1m, 1000_000);
-    bench_activation!($b, $t, sigmoid, sigmoid_grad, sigmoid_10m, sigmoid_grad_10m, 10_000_000);
-
-    bench_activation!($b, $t, tanh, tanh_grad, tanh_100, tanh_grad_100, 100);
-    bench_activation!($b, $t, tanh, tanh_grad, tanh_1k, tanh_grad_1k, 1000);
-    bench_activation!($b, $t, tanh, tanh_grad, tanh_10k, tanh_grad_10k, 10_000);
-    bench_activation!($b, $t, tanh, tanh_grad, tanh_100k, tanh_grad_100k, 100_000);
-    bench_activation!($b, $t, tanh, tanh_grad, tanh_1m, tanh_grad_1m, 1000_000);
-    bench_activation!($b, $t, tanh, tanh_grad, tanh_10m, tanh_grad_10m, 10_000_000);
-
-    bench_softmax!($b, $t, softmax, softmax_grad, softmax_10, softmax_grad_10, 10);
-    bench_softmax!($b, $t, softmax, softmax_grad, softmax_100, softmax_grad_100, 100);
-    bench_softmax!($b, $t, softmax, softmax_grad, softmax_1k, softmax_grad_1k, 1000);
-    bench_softmax!($b, $t, softmax, softmax_grad, softmax_10k, softmax_grad_10k, 10_000);
-
-    bench_softmax!($b, $t, log_softmax, log_softmax_grad,
-                   log_softmax_10, log_softmax_grad_10, 10);
-    bench_softmax!($b, $t, log_softmax, log_softmax_grad,
-                   log_softmax_100, log_softmax_grad_100, 100);
-    bench_softmax!($b, $t, log_softmax, log_softmax_grad,
-                   log_softmax_1k, log_softmax_grad_1k, 1000);
-    bench_softmax!($b, $t, log_softmax, log_softmax_grad,
-                   log_softmax_10k, log_softmax_grad_10k, 10_000);
-
-    bench_pooling!($b, $t, pooling_avg, pooling_avg_10, pooling_avg_grad_10, 10)
-    bench_pooling!($b, $t, pooling_avg, pooling_avg_100, pooling_avg_grad_100, 100)
-    bench_pooling!($b, $t, pooling_avg, pooling_avg_1k, pooling_avg_grad_1k, 1000)
-    bench_pooling!($b, $t, pooling_avg, pooling_avg_10k, pooling_avg_grad_10k, 10_000)
-
-    bench_pooling!($b, $t, pooling_max, pooling_max_10, pooling_max_grad_10, 10)
-    bench_pooling!($b, $t, pooling_max, pooling_max_100, pooling_max_grad_100, 100)
-    bench_pooling!($b, $t, pooling_max, pooling_max_1k, pooling_max_grad_1k, 1000)
-    bench_pooling!($b, $t, pooling_max, pooling_max_10k, pooling_max_grad_10k, 10_000)
-}}
-
-mod native_f32 {
-    define_benches!(get_native_backend, f32);
+                let fx_grad = [< $f _grad_ $n _ $b:lower _ $t:lower >];
+                fx_grad($criterion);
+            })+
+        }
+    }
 }
-mod native_f64 {
-    define_benches!(get_native_backend, f64);
+
+use super::*;
+use co::prelude::*;
+use plugin::{LogSoftmax, Relu, Sigmoid, Softmax, Tanh};
+
+macro_rules! define_benches {
+    ($b:ident, $t:ident) => {
+        paste!{
+            fn [<group_ $b:lower _ $t:lower>]() {
+                let mut criterion = ::criterion::Criterion::default()
+                .configure_from_args();
+                add_bench_group!($b, $t, relu, bench_activation, [100,1000,10_000,100_000,1_000_000, 10_000_000], &mut criterion);
+                add_bench_group!($b, $t, sigmoid, bench_activation, [100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000], &mut criterion);
+                add_bench_group!($b, $t, tanh, bench_activation, [100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000], &mut criterion);
+                add_bench_group!($b, $t, softmax, bench_softmax, [10, 100, 1_000], &mut criterion);
+                add_bench_group!($b, $t, log_softmax, bench_softmax,[10, 100, 1_000, 10_000], &mut criterion);
+                add_bench_group!($b, $t, pooling_avg, bench_pooling, [10, 100, 1_000, 10_000], &mut criterion);
+                add_bench_group!($b, $t, pooling_max, bench_pooling, [10, 100, 1_000, 10_000], &mut criterion);
+            }
+        }
+    }
 }
+
+define_benches!(Native, f32);
+define_benches!(Native, f64);
 
 #[cfg(feature = "cuda")]
-mod cuda_f32 {
-    define_benches!(get_cuda_backend, f32);
-}
+define_benches!(Cuda, f32);
 #[cfg(feature = "cuda")]
-mod cuda_f64 {
-    define_benches!(get_cuda_backend, f64);
+define_benches!(Cuda, f64);
+
+fn main() {
+    group_cuda_f32();
+    group_cuda_f64();
+    group_native_f32();
+    group_native_f64();
+    ::criterion::Criterion::default()
+        .configure_from_args()
+        .final_summary();
 }

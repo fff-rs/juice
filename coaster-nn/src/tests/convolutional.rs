@@ -3,11 +3,11 @@ use std::fmt;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 
+use super::{filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, Epsilon};
 use crate::plugin::{
     ConvBackwardDataAlgo, ConvBackwardFilterAlgo, ConvForwardAlgo, Convolution, ConvolutionConfig,
     LRN,
 };
-use crate::tests::{filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, Epsilon};
 
 pub fn test_lrn<T, F: IFramework>(backend: Backend<F>)
 where

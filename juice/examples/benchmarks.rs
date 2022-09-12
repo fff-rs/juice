@@ -9,7 +9,7 @@ use crate::co::prelude::*;
 use std::env;
 
 use std::rc::Rc;
-use std::sync::{RwLock, Arc};
+use std::sync::{Arc, RwLock};
 
 fn main() {
     env_logger::init();

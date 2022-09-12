@@ -3,8 +3,8 @@ use std::fmt;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 
+use super::{filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, Epsilon};
 use crate::plugin::{LogSoftmax, Softmax};
-use crate::tests::{filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, Epsilon};
 
 const DIMS: [usize; 3] = [4, 1, 3];
 

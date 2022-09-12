@@ -3,10 +3,10 @@ use std::fmt;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 
-use crate::plugin::Pooling;
-use crate::tests::{
+use super::{
     filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, uniformly_random_tensor, Epsilon,
 };
+use crate::plugin::Pooling;
 
 pub fn test_pooling_max<T, F: IFramework>(backend: Backend<F>)
 where

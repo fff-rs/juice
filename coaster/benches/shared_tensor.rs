@@ -1,11 +1,9 @@
-#![feature(test)]
-
 use co::backend::{Backend, BackendConfig};
 use co::device::IDevice;
 use co::framework::IFramework;
 use co::tensor::SharedTensor;
 use coaster as co;
-use test::Bencher;
+use criterion::{criterion_group, criterion_main, Criterion};
 
 #[cfg(feature = "cuda")]
 use co::frameworks::Cuda;
@@ -34,7 +32,7 @@ fn opencl_backend() -> Backend<OpenCL> {
 use co::frameworks::cuda::get_cuda_backend as cuda_backend;
 
 fn sync_back_and_forth<F1, F2>(
-    b: &mut Bencher,
+    b: &mut Criterion,
     backend1: Backend<F1>,
     backend2: Backend<F2>,
     mem_size: usize,
@@ -51,15 +49,22 @@ fn sync_back_and_forth<F1, F2>(
     mem.read_write(dev1).unwrap();
     mem.read_write(dev2).unwrap();
 
-    b.bytes = mem_size as u64 * 2; // we do two transfers per iteration
-    b.iter(|| {
-        mem.read_write(dev1).unwrap();
-        mem.read_write(dev2).unwrap();
-    });
+    use criterion::BenchmarkId;
+    let input = mem_size as u64 * 2; // we do two transfers per iteration;
+    b.bench_with_input(
+        BenchmarkId::new("sync_back_and_forth", input),
+        &input,
+        |b, _i| {
+            b.iter(|| {
+                mem.read_write(dev1).unwrap();
+                mem.read_write(dev2).unwrap();
+            })
+        },
+    );
 }
 
 fn unidirectional_sync<F1, F2>(
-    b: &mut Bencher,
+    b: &mut Criterion,
     src_backend: Backend<F1>,
     dst_backend: Backend<F2>,
     mem_size: usize,
@@ -75,11 +80,18 @@ fn unidirectional_sync<F1, F2>(
     mem.write_only(src_dev).unwrap();
     mem.read(dst_dev).unwrap();
 
-    b.bytes = mem_size as u64;
-    b.iter(|| {
-        mem.write_only(src_dev).unwrap();
-        mem.read(dst_dev).unwrap();
-    });
+    use criterion::BenchmarkId;
+    let input = mem_size as u64;
+    b.bench_with_input(
+        BenchmarkId::new("unidirectional", input),
+        &input,
+        |b, _i| {
+            b.iter(|| {
+                mem.write_only(src_dev).unwrap();
+                mem.read(dst_dev).unwrap();
+            })
+        },
+    );
 }
 
 #[cfg(feature = "native")]
@@ -88,66 +100,72 @@ mod opencl_and_native {
     use super::{native_backend, opencl_backend, sync_back_and_forth, unidirectional_sync};
     use co::device::IDevice;
     use co::frameworks::opencl;
-    use test::Bencher;
+    use criterion::criterion_group;
+    use criterion::Criterion;
 
     #[inline(never)]
-    fn bench_256_alloc_1mb_opencl_profile(b: &mut Bencher, device: &opencl::Context, size: usize) {
-        b.iter(|| {
-            for _ in 0..256 {
-                device.alloc_memory(size).unwrap();
-            }
+    fn bench_256_alloc_1mb_opencl_profile(
+        b: &mut Criterion,
+        device: &opencl::Context,
+        size: usize,
+    ) {
+        b.bench_function("alloc 1mb opencl", |b| {
+            b.iter(|| {
+                for _ in 0..256 {
+                    device.alloc_memory(size).unwrap();
+                }
+            })
         });
     }
 
-    #[bench]
-    fn bench_256_alloc_1mb_opencl(b: &mut Bencher) {
+    ::criterion::criterion_group!(
+        coaster,
+        bench_256_alloc_1mb_opencl,
+        bench_sync_1kb_native_opencl_back_and_forth,
+        bench_sync_1kb_native_to_opencl,
+        bench_sync_1mb_native_opencl_back_and_forth,
+        bench_sync_1mb_native_to_opencl,
+    );
+
+    fn bench_256_alloc_1mb_opencl(b: &mut Criterion) {
         let opencl_backend = opencl_backend();
         let cl_device = opencl_backend.device();
         bench_256_alloc_1mb_opencl_profile(b, cl_device, 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_1kb_native_opencl_back_and_forth(b: &mut Bencher) {
+    fn bench_sync_1kb_native_opencl_back_and_forth(b: &mut Criterion) {
         sync_back_and_forth(b, opencl_backend(), native_backend(), 1024);
     }
 
-    #[bench]
-    fn bench_sync_1kb_native_to_opencl(b: &mut Bencher) {
+    fn bench_sync_1kb_native_to_opencl(b: &mut Criterion) {
         unidirectional_sync(b, native_backend(), opencl_backend(), 1024);
     }
 
-    #[bench]
-    fn bench_sync_1kb_opencl_to_native(b: &mut Bencher) {
+    fn bench_sync_1kb_opencl_to_native(b: &mut Criterion) {
         unidirectional_sync(b, opencl_backend(), native_backend(), 1024);
     }
 
-    #[bench]
-    fn bench_sync_1mb_native_opencl_back_and_forth(b: &mut Bencher) {
+    fn bench_sync_1mb_native_opencl_back_and_forth(b: &mut Criterion) {
         sync_back_and_forth(b, opencl_backend(), native_backend(), 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_1mb_native_to_opencl(b: &mut Bencher) {
+    fn bench_sync_1mb_native_to_opencl(b: &mut Criterion) {
         unidirectional_sync(b, native_backend(), opencl_backend(), 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_1mb_opencl_to_native(b: &mut Bencher) {
+    fn bench_sync_1mb_opencl_to_native(b: &mut Criterion) {
         unidirectional_sync(b, opencl_backend(), native_backend(), 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_128mb_native_opencl_back_and_forth(b: &mut Bencher) {
+    fn bench_sync_128mb_native_opencl_back_and_forth(b: &mut Criterion) {
         sync_back_and_forth(b, opencl_backend(), native_backend(), 128 * 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_128mb_native_to_opencl(b: &mut Bencher) {
+    fn bench_sync_128mb_native_to_opencl(b: &mut Criterion) {
         unidirectional_sync(b, native_backend(), opencl_backend(), 128 * 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_128mb_opencl_to_native(b: &mut Bencher) {
+    fn bench_sync_128mb_opencl_to_native(b: &mut Criterion) {
         unidirectional_sync(b, opencl_backend(), native_backend(), 128 * 1_048_576);
     }
 }
@@ -156,57 +174,47 @@ mod opencl_and_native {
 #[cfg(feature = "cuda")]
 mod cuda_and_native {
     use super::{cuda_backend, native_backend, sync_back_and_forth, unidirectional_sync};
-    use test::Bencher;
+    use ::criterion::Criterion;
 
-    #[bench]
-    fn bench_sync_1kb_native_cuda_back_and_forth(b: &mut Bencher) {
+    fn bench_sync_1kb_native_cuda_back_and_forth(b: &mut Criterion) {
         sync_back_and_forth(b, cuda_backend(), native_backend(), 1024);
     }
 
-    #[bench]
-    fn bench_sync_1kb_native_to_cuda(b: &mut Bencher) {
+    fn bench_sync_1kb_native_to_cuda(b: &mut Criterion) {
         unidirectional_sync(b, native_backend(), cuda_backend(), 1024);
     }
 
-    #[bench]
-    fn bench_sync_1kb_cuda_to_native(b: &mut Bencher) {
+    fn bench_sync_1kb_cuda_to_native(b: &mut Criterion) {
         unidirectional_sync(b, cuda_backend(), native_backend(), 1024);
     }
 
-    #[bench]
-    fn bench_sync_1mb_native_cuda_back_and_forth(b: &mut Bencher) {
+    fn bench_sync_1mb_native_cuda_back_and_forth(b: &mut Criterion) {
         sync_back_and_forth(b, cuda_backend(), native_backend(), 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_1mb_native_to_cuda(b: &mut Bencher) {
+    fn bench_sync_1mb_native_to_cuda(b: &mut Criterion) {
         unidirectional_sync(b, native_backend(), cuda_backend(), 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_1mb_cuda_to_native(b: &mut Bencher) {
+    fn bench_sync_1mb_cuda_to_native(b: &mut Criterion) {
         unidirectional_sync(b, cuda_backend(), native_backend(), 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_128mb_native_cuda_back_and_forth(b: &mut Bencher) {
+    fn bench_sync_128mb_native_cuda_back_and_forth(b: &mut Criterion) {
         sync_back_and_forth(b, cuda_backend(), native_backend(), 128 * 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_128mb_native_to_cuda(b: &mut Bencher) {
+    fn bench_sync_128mb_native_to_cuda(b: &mut Criterion) {
         unidirectional_sync(b, native_backend(), cuda_backend(), 128 * 1_048_576);
     }
 
-    #[bench]
-    fn bench_sync_128mb_cuda_to_native(b: &mut Bencher) {
+    pub fn bench_sync_128mb_cuda_to_native(b: &mut Criterion) {
         unidirectional_sync(b, cuda_backend(), native_backend(), 128 * 1_048_576);
     }
 }
 
-#[bench]
 #[cfg(feature = "cuda")]
-fn bench_shared_tensor_access_time_first(b: &mut Bencher) {
+fn bench_shared_tensor_access_time_first(b: &mut Criterion) {
     let cuda_backend = cuda_backend();
     let cu_device = cuda_backend.device();
     let native_backend = native_backend();
@@ -217,12 +225,13 @@ fn bench_shared_tensor_access_time_first(b: &mut Bencher) {
     x.write_only(cu_device).unwrap();
     x.read(nt_device).unwrap();
 
-    b.iter(|| x.read(nt_device).unwrap())
+    b.bench_function("access_first_time", |b| {
+        b.iter(|| x.read(nt_device).unwrap())
+    });
 }
 
-#[bench]
 #[cfg(feature = "cuda")]
-fn bench_shared_tensor_access_time_second(b: &mut Bencher) {
+fn bench_shared_tensor_access_time_second(b: &mut Criterion) {
     let cuda_backend = cuda_backend();
     let cu_device = cuda_backend.device();
     let native_backend = native_backend();
@@ -232,5 +241,19 @@ fn bench_shared_tensor_access_time_second(b: &mut Bencher) {
     x.write_only(cu_device).unwrap();
     x.write_only(nt_device).unwrap();
 
-    b.iter(|| x.read(nt_device).unwrap())
+    b.bench_function("access_first_time", |b| {
+        b.iter(|| x.read(nt_device).unwrap())
+    });
 }
+
+::criterion::criterion_group!(
+    cuda_and_native,
+    cuda_and_native::bench_sync_128mb_cuda_to_native
+);
+::criterion::criterion_group!(
+    cuda,
+    bench_shared_tensor_access_time_second,
+    bench_shared_tensor_access_time_first
+);
+
+::criterion::criterion_main!(cuda, cuda_and_native);

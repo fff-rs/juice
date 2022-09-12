@@ -1,6 +1,5 @@
-#![feature(test)]
+use criterion::criterion_main;
 
-extern crate test;
 #[macro_use]
 extern crate timeit;
 extern crate coaster as co;
@@ -12,8 +11,8 @@ mod benches {
     use juice::layers::*;
     use std::rc::Rc;
 
+    use ::criterion::Criterion;
     use std::sync::{Arc, RwLock};
-    use test::Bencher;
 
     fn native_backend() -> Rc<Backend<Native>> {
         Rc::new(Backend::<Native>::default().unwrap())
@@ -30,7 +29,7 @@ mod benches {
 
     #[inline(never)]
     #[allow(unused_variables)]
-    fn bench_profile<F: FnMut() -> ()>(b: &mut Bencher, mut bench_func: F, times: usize) {
+    fn bench_profile<F: FnMut() -> ()>(b: &mut ::criterion::Criterion, mut bench_func: F, times: usize) {
         timeit_loops!(times, {
             bench_func();
         });
@@ -38,7 +37,7 @@ mod benches {
 
     // #[inline(never)]
     // fn sync_back_and_forth(
-    //     b: &mut Bencher,
+    //     b: &mut ::criterion::Criterion,
     //     n: usize,
     //     nt_device: &DeviceType,
     //     cl_device: &DeviceType,
@@ -64,10 +63,9 @@ mod benches {
     //     });
     // }
 
-    #[bench]
     #[ignore]
     #[cfg(feature = "cuda")]
-    fn bench_mnsit_forward_1(_b: &mut Bencher) {
+    fn bench_mnsit_forward_1(_b: &mut ::criterion::Criterion) {
         let mut cfg = SequentialConfig::default();
         // set up input
         cfg.add_input("in", &[1, 30, 30]);
@@ -89,7 +87,7 @@ mod benches {
         // loss_cfg.add_input("label");
         // cfg.add_layer(loss_cfg);
 
-        let backend = cuda_backend();
+        let backend = Rc::new(cuda_backend());
         let mut network = Layer::from_config(
             backend.clone(),
             &LayerConfig::new("network", LayerType::Sequential(cfg)),
@@ -114,10 +112,9 @@ mod benches {
         // });
     }
 
-    #[bench]
     // #[ignore]
     #[cfg(feature = "cuda")]
-    fn alexnet_forward(b: &mut Bencher) {
+    pub fn alexnet_forward(b: &mut ::criterion::Criterion) {
         let mut cfg = SequentialConfig::default();
         // Layer: data
         cfg.add_input("data", &[128, 3, 224, 224]);
@@ -253,7 +250,7 @@ mod benches {
         fc3_cfg.add_output("fc3_out");
         cfg.add_layer(fc3_cfg);
 
-        let backend = cuda_backend();
+        let backend = Rc::new(cuda_backend());
         // let native_backend = native_backend();
         let mut network = Layer::from_config(
             backend.clone(),
@@ -274,8 +271,7 @@ mod benches {
         }
     }
 
-    #[bench]
-    fn small_alexnet_forward(b: &mut Bencher) {
+    pub fn small_alexnet_forward(b: &mut ::criterion::Criterion) {
         // let _ = env_logger::init();
         let mut cfg = SequentialConfig::default();
         // Layer: data
@@ -412,7 +408,7 @@ mod benches {
         fc3_cfg.add_output("fc3_out");
         cfg.add_layer(fc3_cfg);
 
-        let backend = cuda_backend();
+        let backend = Rc::new(cuda_backend());
         // let native_backend = native_backend();
         let mut network = Layer::from_config(
             backend.clone(),
@@ -431,3 +427,6 @@ mod benches {
         }
     }
 }
+
+::criterion::criterion_group!(network, benches::alexnet_forward, benches::small_alexnet_forward);
+::criterion::criterion_main!(network);

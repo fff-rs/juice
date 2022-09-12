@@ -25,6 +25,10 @@ rust-blas = { version = "0.2", path = "../rust-blas", optional = true }
 # cuda
 rcublas = { version = "0.6", path = "../rcublas/cublas", optional = true }
 
+[dev-dependencies]
+rand = "0.8"
+criterion = "0.4"
+
 [features]
 default = ["native", "cuda"]
 native = ["coaster/native", "rust-blas"]

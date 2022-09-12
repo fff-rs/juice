@@ -3,8 +3,8 @@ use std::fmt;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 
+use super::{filled_tensor, tensor_assert_eq_tensor, tensor_assert_ne_tensor, Epsilon};
 use crate::plugin::Dropout;
-use crate::tests::{filled_tensor, tensor_assert_eq_tensor, tensor_assert_ne_tensor, Epsilon};
 
 pub fn test_dropout<T, F: IFramework>(backend: Backend<F>)
 where

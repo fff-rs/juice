@@ -1,12 +1,10 @@
-#![feature(test)]
-
 use coaster as co;
 use coaster_blas as co_blas;
 use rust_blas as rblas;
 
 use co::prelude::*;
 use co_blas::plugin::*;
-use test::Bencher;
+use criterion::{criterion_group, criterion_main, Criterion};
 
 use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
@@ -15,19 +13,20 @@ fn backend() -> Backend<Native> {
     Backend::<Native>::default().unwrap()
 }
 
-fn bench_dot_rblas(b: &mut Bencher, n: usize) {
-    let rng = thread_rng();
+fn bench_dot_rblas(b: &mut Criterion, n: usize) {
+    let rng = &mut thread_rng();
     let slice_a: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
     let slice_b: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
-
-    b.iter(|| {
-        let res = rblas::Dot::dot(slice_a.as_slice(), slice_b.as_slice());
-        test::black_box(res);
+    b.bench_function("bench dot rblas", |b| {
+        b.iter(|| {
+            let res = rblas::Dot::dot(slice_a.as_slice(), slice_b.as_slice());
+            ::criterion::black_box(res);
+        })
     });
 }
 
-fn bench_dot_coaster(b: &mut Bencher, n: usize) {
-    let rng = thread_rng();
+fn bench_dot_coaster(b: &mut Criterion, n: usize) {
+    let rng = &mut thread_rng();
     let slice_a: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
     let slice_b: Vec<f32> = rng.sample_iter(Standard).take(n).collect();
 
@@ -46,56 +45,63 @@ fn bench_dot_coaster(b: &mut Bencher, n: usize) {
         .as_mut_slice()
         .clone_from_slice(slice_b.as_slice());
     let _ = backend.dot(shared_a, shared_b, shared_res);
-
-    b.iter(|| backend.dot(shared_a, shared_b, shared_res).unwrap());
+    b.bench_function("bench dot coaster", |b| {
+        b.iter(|| backend.dot(shared_a, shared_b, shared_res).unwrap())
+    });
 }
 
-#[bench]
-fn bench_dot_100_rblas(b: &mut Bencher) {
+fn bench_dot_100_rblas(b: &mut Criterion) {
     bench_dot_rblas(b, 100);
 }
 
-#[bench]
-fn bench_dot_100_coaster(b: &mut Bencher) {
+fn bench_dot_100_coaster(b: &mut Criterion) {
     bench_dot_coaster(b, 100);
 }
 
-#[bench]
-fn bench_dot_1000_rblas(b: &mut Bencher) {
+fn bench_dot_1000_rblas(b: &mut Criterion) {
     bench_dot_rblas(b, 1000);
 }
 
-#[bench]
-fn bench_dot_1000_coaster(b: &mut Bencher) {
+fn bench_dot_1000_coaster(b: &mut Criterion) {
     bench_dot_coaster(b, 1000);
 }
 
-#[bench]
-fn bench_dot_2000_rblas(b: &mut Bencher) {
+fn bench_dot_2000_rblas(b: &mut Criterion) {
     bench_dot_rblas(b, 2000);
 }
 
-#[bench]
-fn bench_dot_2000_coaster(b: &mut Bencher) {
+fn bench_dot_2000_coaster(b: &mut Criterion) {
     bench_dot_coaster(b, 2000);
 }
 
-#[bench]
-fn bench_dot_10000_rblas(b: &mut Bencher) {
+fn bench_dot_10000_rblas(b: &mut Criterion) {
     bench_dot_rblas(b, 10000);
 }
 
-#[bench]
-fn bench_dot_10000_coaster(b: &mut Bencher) {
+fn bench_dot_10000_coaster(b: &mut Criterion) {
     bench_dot_coaster(b, 10000);
 }
 
-#[bench]
-fn bench_dot_20000_rblas(b: &mut Bencher) {
+fn bench_dot_20000_rblas(b: &mut Criterion) {
     bench_dot_rblas(b, 20000);
 }
 
-#[bench]
-fn bench_dot_20000_coaster(b: &mut Bencher) {
+fn bench_dot_20000_coaster(b: &mut Criterion) {
     bench_dot_coaster(b, 20000);
 }
+
+criterion_group!(
+    coaster_nn,
+    bench_dot_100_rblas,
+    bench_dot_100_coaster,
+    bench_dot_1000_rblas,
+    bench_dot_1000_coaster,
+    bench_dot_2000_rblas,
+    bench_dot_2000_coaster,
+    bench_dot_10000_rblas,
+    bench_dot_10000_coaster,
+    bench_dot_20000_rblas,
+    bench_dot_20000_coaster,
+);
+
+criterion_main!(coaster_nn);

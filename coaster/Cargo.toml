@@ -30,6 +30,7 @@ rcublas = { version = "0.6", path = "../rcublas/cublas", optional = true }
 [dev-dependencies]
 coaster-nn = { path = "../coaster-nn", default-features = false }
 trybuild = "1.0"
+criterion = "0.4"
 
 [features]
 default = ["native"]
