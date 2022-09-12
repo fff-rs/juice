@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Flatten","Flattening Utility Layer"]]});
+window.SIDEBAR_ITEMS = {"struct":[["Flatten","Flattening Utility Layer"]]};

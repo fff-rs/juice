@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["TransformerError","The Transformer Errors"]],"trait":[["Transformer","The Transformer Trait"]]});
+window.SIDEBAR_ITEMS = {"enum":[["TransformerError","The Transformer Errors"]],"trait":[["Transformer","The Transformer Trait"]]};

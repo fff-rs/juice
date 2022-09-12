@@ -1,4 +1,4 @@
-var N = null;var sourcesIndex = {};
+var sourcesIndex = {};
 sourcesIndex["coaster"] = {"name":"","dirs":[{"name":"frameworks","dirs":[{"name":"cuda","dirs":[{"name":"api","dirs":[{"name":"driver","files":["context.rs","device.rs","error.rs","ffi.rs","memory.rs","mod.rs","utils.rs"]}],"files":["mod.rs"]}],"files":["context.rs","device.rs","function.rs","memory.rs","mod.rs","module.rs"]},{"name":"native","files":["binary.rs","device.rs","error.rs","flatbox.rs","function.rs","hardware.rs","mod.rs","stable_alloc.rs"]}],"files":["mod.rs"]}],"files":["backend.rs","binary.rs","device.rs","error.rs","framework.rs","hardware.rs","lib.rs","operation.rs","plugin.rs","tensor.rs"]};
 sourcesIndex["coaster_blas"] = {"name":"","dirs":[{"name":"frameworks","dirs":[{"name":"cuda","files":["helper.rs","mod.rs"]}],"files":["mod.rs","native.rs"]}],"files":["binary.rs","lib.rs","operation.rs","plugin.rs","transpose.rs"]};
 sourcesIndex["coaster_nn"] = {"name":"","dirs":[{"name":"frameworks","dirs":[{"name":"cuda","files":["helper.rs","mod.rs"]},{"name":"native","files":["helper.rs","mod.rs"]}],"files":["mod.rs"]}],"files":["lib.rs","plugin.rs"]};

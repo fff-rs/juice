@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Marker",""],["Trans",""]],"mod":[["bandmat",""],["mat",""],["matrix",""],["matrix_vector",""],["vector",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["Marker",""],["Trans",""]],"mod":[["bandmat",""],["mat",""],["matrix",""],["matrix_vector",""],["vector",""]]};

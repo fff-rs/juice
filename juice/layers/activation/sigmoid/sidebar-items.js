@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Sigmoid","Sigmoid Activation Layer"]]});
+window.SIDEBAR_ITEMS = {"struct":[["Sigmoid","Sigmoid Activation Layer"]]};

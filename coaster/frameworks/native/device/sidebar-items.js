@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Cpu","Defines the host CPU Hardware."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Cpu","Defines the host CPU Hardware."]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["ll","Bindings for matrix-vector functions."],["ops","Wrappers for matrix-vector functions."]]});
+window.SIDEBAR_ITEMS = {"mod":[["ll","Bindings for matrix-vector functions."],["ops","Wrappers for matrix-vector functions."]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ReLU","ReLU Activation Layer"]]});
+window.SIDEBAR_ITEMS = {"struct":[["ReLU","ReLU Activation Layer"]]};

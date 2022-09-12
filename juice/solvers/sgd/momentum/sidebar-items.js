@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Momentum","Stochastic Gradient Descent with Momentum."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Momentum","Stochastic Gradient Descent with Momentum."]]};

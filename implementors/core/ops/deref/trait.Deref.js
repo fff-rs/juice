@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["rust_blas"] = [{"text":"impl&lt;A&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.58.1/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"enum\" href=\"rust_blas/math/enum.Trans.html\" title=\"enum rust_blas::math::Trans\">Trans</a>&lt;A&gt;","synthetic":false,"types":["rust_blas::math::Trans"]}];
+implementors["rust_blas"] = [{"text":"impl&lt;A&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.63.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"enum\" href=\"rust_blas/math/enum.Trans.html\" title=\"enum rust_blas::math::Trans\">Trans</a>&lt;A&gt;","synthetic":false,"types":["rust_blas::math::Trans"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

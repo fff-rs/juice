@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["MAIN_USAGE",""]],"enum":[["MnistType",""]],"fn":[["add_conv_net",""],["add_linear_net",""],["add_mlp",""],["main",""],["run_mnist",""]],"struct":[["Args",""]]});
+window.SIDEBAR_ITEMS = {"constant":[["MAIN_USAGE",""]],"enum":[["MnistType",""]],"fn":[["add_conv_net",""],["add_linear_net",""],["add_mlp",""],["main",""],["run_mnist",""]],"struct":[["Args",""]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Module","Defines a Cuda Module."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Module","Defines a Cuda Module."]]};

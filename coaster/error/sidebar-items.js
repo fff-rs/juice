@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Error","Defines the set of available Coaster error types."]]});
+window.SIDEBAR_ITEMS = {"enum":[["Error","Defines the set of available Coaster error types."]]};

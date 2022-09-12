@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["FlatBox","A Box without any knowledge of its underlying type."]]});
+window.SIDEBAR_ITEMS = {"struct":[["FlatBox","A Box without any knowledge of its underlying type."]]};

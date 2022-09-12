@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Softmax","Softmax Layer"]]});
+window.SIDEBAR_ITEMS = {"struct":[["Softmax","Softmax Layer"]]};

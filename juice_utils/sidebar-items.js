@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["download_datasets",""],["unzip_datasets",""]]});
+window.SIDEBAR_ITEMS = {"fn":[["download_datasets",""],["unzip_datasets",""]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["LogSoftmax","LogSoftmax Layer"]]});
+window.SIDEBAR_ITEMS = {"struct":[["LogSoftmax","LogSoftmax Layer"]]};

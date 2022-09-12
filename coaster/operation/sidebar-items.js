@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["IOperation","Defines the functionality of an operation."]]});
+window.SIDEBAR_ITEMS = {"trait":[["IOperation","Defines the functionality of an operation."]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Linear","Linear Layer"],["LinearConfig","Specifies configuration parameters for a Linear Layer."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Linear","Linear Layer"],["LinearConfig","Specifies configuration parameters for a Linear Layer."]]};

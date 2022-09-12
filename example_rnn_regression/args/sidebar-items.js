@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["MAIN_USAGE",""]],"enum":[["DataMode",""]],"fn":[["default_batch_size",""],["default_learning_rate",""],["default_momentum",""]],"struct":[["Args",""]]});
+window.SIDEBAR_ITEMS = {"constant":[["MAIN_USAGE",""]],"enum":[["DataMode",""]],"fn":[["default_batch_size",""],["default_learning_rate",""],["default_momentum",""]],"struct":[["Args",""]]};

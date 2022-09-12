@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["helper","Provides useful macros for easier NN implementation for native."]]});
+window.SIDEBAR_ITEMS = {"mod":[["helper","Provides useful macros for easier NN implementation for native."]]};

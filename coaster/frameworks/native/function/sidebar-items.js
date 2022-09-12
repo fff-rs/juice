@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Function","Defines a host CPU operation."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Function","Defines a host CPU operation."]]};

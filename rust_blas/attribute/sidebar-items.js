@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Diagonal",""],["Order",""],["Side",""],["Symmetry",""],["Transpose",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["Diagonal",""],["Order",""],["Side",""],["Symmetry",""],["Transpose",""]]};
