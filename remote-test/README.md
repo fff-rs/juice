@@ -22,13 +22,27 @@ For those enabled, please use from a `juice` git checkout in this sub directory:
 
 ```sh
 fly -t spearow login -n juice-crashtesters --concourse-url https://ci.spearow.io # make sure you are logged in
-fly -t spearow execute -c ./test.yml --input juice=. --inputs-from crashtest/test-juice
 ```
+
+To re-use existing `juice` artifacts refernce the inputs based on a pipeline:
+
+```
+fly -t spearow execute --tag vendor:nvidia -c ./test.yml --inputs-from pipeline/task
+```
+
+or just provide something that fills the `test.yaml` input requirement `juice`:
+
+```
+fly -t spearow execute --tag vendor:nvidia -c ./test.yml --input juice=some/path/to/sth
+```
+
+or even both.
+
 
 For this to work please keep a few things in mind:
 
 * be logged in under the right team
-* upload is capped at 100MB, so get rid of the `target` directories (i.e. with `rm -r $(fd -t d -I -H '^target$')` )
+* upload is capped at 100MB, so get rid of the `target` directories (i.e. with `rm -r $(fd -t d -I -H '^target$')` ), the target caches that already
 * experimental! unavailability might occur frequently
 * do not create artifacts
 
