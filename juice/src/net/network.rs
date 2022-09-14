@@ -5,6 +5,8 @@ use crate::net::layer::Layer;
 use crate::net::{layer_from_config, Context, Descriptor, Inout, LayerConfig};
 use crate::util::LayerOps;
 
+use super::LayerFromConfigError;
+
 // A trainable network. Essentially a convenience wrapper around the top-level layer
 // which is typically a container layer.
 pub struct Network<B: IBackend + LayerOps<f32>> {
@@ -16,23 +18,24 @@ pub struct Network<B: IBackend + LayerOps<f32>> {
 
 impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
     /// Creates network from a config with the given input shapes.
-    pub fn from_config(config: LayerConfig, input_shapes: &[TensorDesc]) -> Network<B> {
+    pub fn from_config(
+        into_config: impl Into<LayerConfig>,
+        input_shapes: &[TensorDesc],
+    ) -> Result<Network<B>, LayerFromConfigError> {
         let inputs = input_shapes
             .iter()
             .enumerate()
             .map(|(i, shape)| {
-                let mut input = Inout::new(shape.clone());
-                input.set_path(&format!("net_in_{}", i));
+                let input = Inout::new(shape.clone());
+                input.junction.path.replace(format!("net_in_{}", i));
                 input
             })
             .collect();
         let descriptor = Descriptor::top("net", inputs);
-        let top = layer_from_config(descriptor, &config);
+        let config = into_config.into();
+        let top = layer_from_config(descriptor, &config)?;
 
-        Network {
-            config: config,
-            top: top,
-        }
+        Ok(Network { config, top })
     }
 
     pub fn top(&self) -> &dyn Layer<B> {
@@ -68,11 +71,11 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         let mut context = Context::new(batch_size);
 
         // Copy input data into the context.
-        let context_inputs = context.acquire_data(self.top.descriptor().input(0));
-        assert_eq!(context_inputs.borrow().desc().size(), input.desc().size());
-        backend
-            .copy(&input, &mut context_inputs.borrow_mut())
-            .unwrap();
+        {
+            let context_inputs = context.acquire_data(self.top.descriptor().input(0));
+            assert_eq!(context_inputs.borrow().desc().size(), input.desc().size());
+            backend.copy(&input, &mut context_inputs.borrow_mut()).unwrap();
+        }
 
         // Compute network output and take it out of the context as a return value.
         self.top.compute_output(backend, &mut context);
@@ -89,7 +92,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Clone for Network<B> {
             .iter()
             .map(|input| input.unit_shape().clone())
             .collect();
-        let net = Network::from_config(self.config.clone(), &input_shapes);
+        let net = Network::from_config(self.config.clone(), &input_shapes).unwrap();
 
         // Copy weights data.
         let backend = get_native_backend();
@@ -100,9 +103,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Clone for Network<B> {
         for i in 0..self.top.descriptor().params().len() {
             let from_params = self.top.descriptor().params()[i].borrow();
             let mut to_params = net.top.descriptor().params()[i].borrow_mut();
-            backend
-                .copy(&from_params.data, &mut to_params.data)
-                .unwrap();
+            backend.copy(&from_params.data, &mut to_params.data).unwrap();
             to_params.learning_rate = from_params.learning_rate;
         }
 
