@@ -44,7 +44,7 @@ pub struct LearnableParams {
 
 /// A pointer to an instance of LearnableParams. Among other things is used to find associated
 /// gradient buffer in the `Context`.
-pub type LearnableParamsLink = Rc::<RefCell::<LearnableParams>>;
+pub type LearnableParamsLink = Rc<RefCell<LearnableParams>>;
 
 /// Descriptor of a layer, containing information about layer path, inputs, outputs and params.
 /// Inputs and outputs are created using a waterfall model:
@@ -69,16 +69,22 @@ impl Inout {
     pub fn new(unit_shape: TensorDesc) -> Self {
         Inout {
             junction: Rc::new(Junction {
-                unit_shape: unit_shape,
+                unit_shape,
                 path: RefCell::new("".to_owned()),
             }),
         }
     }
 
-    pub fn set_path(&mut self, path: &str) {
-        self.junction.path.replace(path.to_owned());
+    pub fn new_with_junction(junction: Rc<Junction>) -> Self {
+        Inout { junction }
     }
 
+    // "Connects" this Inout to Inout `to` by making it point to the same Junction.
+    pub fn connect(&mut self, to: &Inout) {
+        self.junction = to.junction.clone();
+    }
+
+    // Unit shape of this Inout.
     pub fn unit_shape(&self) -> &TensorDesc {
         &self.junction.unit_shape
     }
@@ -89,7 +95,7 @@ impl Descriptor {
     pub fn top(name: &str, inputs: Vec<Inout>) -> Self {
         Descriptor {
             path: name.to_owned(),
-            inputs: inputs,
+            inputs,
             outputs: Vec::new(),
             params: Vec::new(),
         }
@@ -101,7 +107,7 @@ impl Descriptor {
     pub fn sub(&self, name: &str, inputs: Vec<Inout>) -> Self {
         Descriptor {
             path: format!("{}.{}", self.path, name),
-            inputs: inputs,
+            inputs,
             outputs: Vec::new(),
             params: Vec::new(),
         }
@@ -134,23 +140,23 @@ impl Descriptor {
     pub fn params(&self) -> &[LearnableParamsLink] {
         &self.params
     }
-    
+
     pub fn add_output(&mut self, unit_shape: TensorDesc) -> &mut Inout {
         self.outputs.push(Inout::new(unit_shape));
         self.outputs.last_mut().unwrap()
     }
 
+    pub fn add_output_with_junction(&mut self, junction: Rc<Junction>) -> &mut Inout {
+        self.outputs.push(Inout::new_with_junction(junction));
+        self.outputs.last_mut().unwrap()
+    }
+
     // Creates a LearnableParams instances, stores it in the Descriptor and returns a
     // link to it (LearnableParamsLink).
-    pub fn create_params(
-        &mut self,
-        name: &str,
-        data: SharedTensor<f32>,
-        learning_rate: f32,
-    ) -> LearnableParamsLink {
+    pub fn create_params(&mut self, name: &str, data: SharedTensor<f32>, learning_rate: f32) -> LearnableParamsLink {
         let params = LearnableParams {
-            data: data,
-            learning_rate: learning_rate,
+            data,
+            learning_rate,
             path: format!("{}.{}", self.path, name),
         };
         let params_rc = Rc::new(RefCell::new(params));

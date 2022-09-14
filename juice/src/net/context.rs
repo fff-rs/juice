@@ -17,7 +17,7 @@ pub struct Context {
     // Data at junctions.
     data: HashMap<usize, Rc<RefCell<SharedTensor<f32>>>>,
 
-    // Loss function gradients with respect to data at junctions. 
+    // Loss function gradients with respect to data at junctions.
     data_gradient: HashMap<usize, Rc<RefCell<SharedTensor<f32>>>>,
 
     // Loss function gradients with respect to learnable params.
@@ -63,12 +63,7 @@ impl Context {
     // Same as `get_data_gradient()` but creates the buffer on the fly if it doesn't exist.
     // Typically used by layers to get buffers to store outputs of the requested computation.
     pub fn acquire_data_gradient(&mut self, inout: &Inout) -> Rc<RefCell<SharedTensor<f32>>> {
-        Self::acquire_inout_buffer(
-            &mut self.data_gradient,
-            inout,
-            self.batch_size,
-            "data gradient",
-        )
+        Self::acquire_inout_buffer(&mut self.data_gradient, inout, self.batch_size, "data gradient")
     }
 
     // Takes the tensor out of the context. Panics if no such tensor.
@@ -78,10 +73,7 @@ impl Context {
 
     // Returns params gradient buffer for the given learnable params link.
     // Panics if this data buffer doesn't exist.
-    pub fn get_params_gradient(
-        &mut self,
-        params: &LearnableParamsLink,
-    ) -> Rc<RefCell<SharedTensor<f32>>> {
+    pub fn get_params_gradient(&mut self, params: &LearnableParamsLink) -> Rc<RefCell<SharedTensor<f32>>> {
         let key = Rc::as_ptr(&params) as usize;
         match self.param_gradient.get(&key) {
             Some(data) => data.clone(),
@@ -90,10 +82,7 @@ impl Context {
     }
 
     // Same as `get_params_gradient()` but creates the buffer on the fly if it doesn't exist.
-    pub fn acquire_params_gradient(
-        &mut self,
-        params: &LearnableParamsLink,
-    ) -> Rc<RefCell<SharedTensor<f32>>> {
+    pub fn acquire_params_gradient(&mut self, params: &LearnableParamsLink) -> Rc<RefCell<SharedTensor<f32>>> {
         let key = Rc::as_ptr(&params) as usize;
         match self.param_gradient.get(&key) {
             Some(data) => return data.clone(),
@@ -107,10 +96,7 @@ impl Context {
         buffer_rc
     }
 
-    fn has_inout_buffer(
-        storage: &HashMap<usize, Rc<RefCell<SharedTensor<f32>>>>,
-        inout: &Inout,
-    ) -> bool {
+    fn has_inout_buffer(storage: &HashMap<usize, Rc<RefCell<SharedTensor<f32>>>>, inout: &Inout) -> bool {
         let key = Rc::as_ptr(&inout.junction) as usize;
         storage.get(&key).is_some()
     }

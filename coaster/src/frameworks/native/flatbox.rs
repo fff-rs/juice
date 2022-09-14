@@ -43,7 +43,7 @@ impl FlatBox {
 impl Drop for FlatBox {
     fn drop(&mut self) {
         unsafe {
-            Box::from_raw(self.raw_box);
+            drop(Box::from_raw(self.raw_box));
         }
     }
 }
