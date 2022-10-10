@@ -1,11 +1,15 @@
-use crate::net::container::SequentialConfig;
+use super::{LinearConfig, SequentialConfig, NegativeLogLikelihoodConfig};
 
 /// A configuration of the layer.
 /// Determines the type of the layer and the (optional) layer settings.
 #[derive(Debug, Clone)]
 pub enum LayerConfig {
+    Linear(LinearConfig),
+    MeanSquaredError,
+    NegativeLogLikelihood(NegativeLogLikelihoodConfig),
     Relu,
     Sequential(SequentialConfig),
+    Sigmoid,
     // TODO: Add other layer configs.
 }
 

@@ -41,15 +41,20 @@
 //! for learning and batch size of 1 for using network to produce output for a single input.
 
 mod activation;
+mod common;
 mod config;
 mod container;
 mod context;
 mod descriptor;
 mod layer;
+mod loss;
 mod network;
 
+pub use common::*;
 pub use config::*;
+pub use container::*;
 pub use context::*;
 pub use descriptor::*;
 pub use layer::*;
 pub use network::*;
+pub use loss::*;
