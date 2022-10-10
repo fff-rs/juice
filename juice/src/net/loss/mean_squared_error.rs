@@ -67,15 +67,6 @@ impl<B: IBackend + Axpby<f32> + Copy<f32>> Layer<B> for MeanSquaredError {
                 false => 2.0 * (predictions_data[i] - labels_data[i]),
             };
         }
-
-        // // Gradient is calculated as 2 * (predictions - labels).
-        // backend.copy(&labels.borrow(), &mut input_gradient.borrow_mut());
-        // backend.axpby(
-        //     &native_scalar(2.0),
-        //     &predictions.borrow(),
-        //     &native_scalar(-2.0),
-        //     &mut input_gradient.borrow_mut(),
-        // );
     }
 
     fn descriptor(&self) -> &Descriptor {
