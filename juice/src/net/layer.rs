@@ -85,6 +85,9 @@ pub mod testing {
         util::{native_backend, write_batch_sample},
     };
 
+    // For floating-point comparisons.
+    const EPS: f32 = 0.00001;
+
     #[derive(Debug)]
     pub struct LayerOutput {
         pub output: SharedTensor<f32>,
@@ -125,7 +128,7 @@ pub mod testing {
         for i in 0..expected_rows {
             let mut equal = true;
             for j in 0..expected_cols {
-                if (slice[i * expected_cols + j] - expected.as_ref()[i].as_ref()[j]).abs() > 0.00001 {
+                if (slice[i * expected_cols + j] - expected.as_ref()[i].as_ref()[j]).abs() > EPS {
                     equal = false;
                     break;
                 }
@@ -141,11 +144,10 @@ pub mod testing {
         }
     }
 
-    // Convenience function for layer unit tests. Example usage:
-    //   test_layer_compute(
-    //       LayerConfig::Relu,
-    //       &[[1.0, -2.0]], &[[-3.0, 4.0]],
-    //       &[[1.0, 0.0]], &[[0.0, 4.0]]);
+    // Returns network output for a given input which can be given as a 2d array.
+    // Used in unit testing. Example:
+    //    let result = get_net_output(&net, &[[1.0, -2.0],
+    //                                        [-3.0, 4.0]]);
     pub fn get_net_output<Input: AsRef<[InputRow]>, InputRow: AsRef<[f32]>>(
         net: &Network<Backend<Native>>,
         input: Input,
@@ -166,6 +168,13 @@ pub mod testing {
         }
     }
 
+    // Returns network output and input/params gradients for a given input and output gradient
+    // which can be given as a 2d array. Used in unit testing. Example:
+    //    let result = get_net_output_and_gradients(&net,
+    //                                              &[[1.0, -2.0],
+    //                                                [-3.0, 4.0]],
+    //                                              &[[0.4, 0.3],
+    //                                                [0.1, 0.2]]);
     pub fn get_net_output_and_gradients<
         Input: AsRef<[InputRow]>,
         InputRow: AsRef<[f32]>,

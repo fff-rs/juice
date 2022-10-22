@@ -25,9 +25,7 @@ impl MeanSquaredError {
         );
         // Loss layers don't have outputs.
 
-        MeanSquaredError {
-            descriptor: descriptor,
-        }
+        MeanSquaredError { descriptor }
     }
 }
 
@@ -47,10 +45,7 @@ impl<B: IBackend + Axpby<f32> + Copy<f32>> Layer<B> for MeanSquaredError {
         let native = native_backend();
 
         let predictions_ref = predictions.borrow();
-        let predictions_data = predictions_ref
-            .read(native.device())
-            .unwrap()
-            .as_slice::<f32>();
+        let predictions_data = predictions_ref.read(native.device()).unwrap().as_slice::<f32>();
 
         let labels_ref = labels.borrow();
         let labels_data = labels_ref.read(native.device()).unwrap().as_slice::<f32>();

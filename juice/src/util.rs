@@ -73,6 +73,7 @@ pub fn cast_vec_usize_to_i32(input: Vec<usize>) -> Vec<i32> {
 }
 
 // Formats tensor as a 2D matrix.
+// TODO: Consider moving to fmt::Debug implementation for SharedTensor<>.
 pub fn format_tensor(tensor: &SharedTensor<f32>) -> String {
     let native = native_backend();
 

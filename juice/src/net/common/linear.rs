@@ -27,9 +27,7 @@ pub struct Linear {
 
 impl LinearConfig {
     pub fn new(output_size: usize) -> Self {
-        LinearConfig {
-            output_size: output_size,
-        }
+        LinearConfig { output_size }
     }
 }
 
@@ -45,12 +43,10 @@ impl Linear {
         let mut weight = SharedTensor::<f32>::new(&[config.output_size, input_size]);
         FillerType::fill_glorot(&mut weight, input_size, config.output_size);
 
-        // Create bias. Bias is typically intialized with a constant, and a suitable initialisation
-        // is stated in https://cs231n.github.io/neural-networks-2/#init for non-LSTM types.
+        // Create bias and initialize with 0. (See https://cs231n.github.io/neural-networks-2/#init for
+        // some discussion on proper bias init values.)
         let mut bias = SharedTensor::<f32>::new(&[1, config.output_size]);
-        let seed = rand::random::<f32>();
-        let bias_init_value = seed * (2.0 / seed).sqrt();
-        FillerType::fill_constant(&mut bias, bias_init_value);
+        FillerType::fill_constant(&mut bias, 0.0);
 
         let weight_param = descriptor.create_params("weights", weight, 1.0);
         let bias_param = descriptor.create_params("bias", bias, 1.0);

@@ -13,9 +13,7 @@ impl Sigmoid {
 
         descriptor.add_output(descriptor.input(0).unit_shape().clone());
 
-        Sigmoid {
-            descriptor: descriptor,
-        }
+        Sigmoid { descriptor }
     }
 }
 
@@ -23,9 +21,7 @@ impl<B: IBackend + conn::Sigmoid<f32>> Layer<B> for Sigmoid {
     fn compute_output(&self, backend: &B, context: &mut Context) {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
-        backend
-            .sigmoid(&input.borrow(), &mut output.borrow_mut())
-            .unwrap();
+        backend.sigmoid(&input.borrow(), &mut output.borrow_mut()).unwrap();
     }
 
     fn compute_gradients(&self, backend: &B, context: &mut Context) {
@@ -67,6 +63,9 @@ mod tests {
     fn compute_gradients() {
         let net = Network::from_config(LayerConfig::Sigmoid, &[vec![2]]).unwrap();
         let result = get_net_output_and_gradients(&net, &[[1.0, -2.0], [-3.0, 4.0]], &[[0.4, 0.3], [0.1, 0.2]]);
-        assert_tensor_eq(&result.input_gradient, &[[0.078644775, 0.031498075], [0.004517666, 0.0035325468]]);
+        assert_tensor_eq(
+            &result.input_gradient,
+            &[[0.078644775, 0.031498075], [0.004517666, 0.0035325468]],
+        );
     }
 }
