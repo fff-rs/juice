@@ -72,6 +72,37 @@ pub fn cast_vec_usize_to_i32(input: Vec<usize>) -> Vec<i32> {
     out
 }
 
+// Formats tensor as a 2D matrix.
+// TODO: Consider moving to fmt::Debug implementation for SharedTensor<>.
+pub fn format_tensor(tensor: &SharedTensor<f32>) -> String {
+    let native = native_backend();
+
+    let mut output = String::new();
+
+    if tensor.desc().len() == 1
+        || (tensor.desc().len() == 2 && (tensor.desc()[0] == 1 || tensor.desc()[1] == 1))
+    {
+        // One-dimensional, print as a single row.
+        let native_data: &[f32] = tensor.read(native.device()).unwrap().as_slice();
+        for v in native_data {
+            output += &format!("{:.5} ", v);
+        }
+        output += "\n";
+    } else {
+        // Use first dimension a row number.
+        let rows = tensor.desc()[0];
+        let columns = tensor.desc().iter().skip(1).fold(1, |acc, d| acc * d);
+        let native_data: &[f32] = tensor.read(native.device()).unwrap().as_slice();
+        for row in 0..rows {
+            for col in 0..columns {
+                output += &format!("{:.5} ", native_data[row * columns + col]);
+            }
+            output += "\n"; 
+        }
+    }
+    output
+}
+
 /// Extends IBlas with Axpby
 pub trait Axpby<F>: Axpy<F> + Scal<F> {
     /// Performs the operation y := a*x + b*y .

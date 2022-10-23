@@ -66,9 +66,23 @@ impl Context {
         Self::acquire_inout_buffer(&mut self.data_gradient, inout, self.batch_size, "data gradient")
     }
 
-    // Takes the tensor out of the context. Panics if no such tensor.
+    // Takes the data tensor out of the context. Panics if no such tensor.
     pub fn take_data(&mut self, inout: &Inout) -> SharedTensor<f32> {
         Self::take_inout_buffer(&mut self.data, inout, "data")
+    }
+
+    // Takes the data gradient tensor out of the context. Panics if no such tensor.
+    pub fn take_data_gradient(&mut self, inout: &Inout) -> SharedTensor<f32> {
+        Self::take_inout_buffer(&mut self.data_gradient, inout, "data gradient")
+    }
+
+    // Takes the params gradient tensor out of the context. Panics if no such tensor.
+    pub fn take_params_gradient(&mut self, params: &LearnableParamsLink) -> SharedTensor<f32> {
+        let key = Rc::as_ptr(&params) as usize;
+        match self.param_gradient.remove(&key) {
+            Some(data) => Rc::try_unwrap(data).unwrap().into_inner(),
+            None => panic!("No params gradient for {:?}", params.borrow()),
+        }
     }
 
     // Returns params gradient buffer for the given learnable params link.

@@ -141,6 +141,10 @@ impl Descriptor {
         &self.params
     }
 
+    pub fn param(&self, index: usize) -> &LearnableParamsLink {
+        &self.params[index]
+    }
+
     pub fn add_output(&mut self, unit_shape: TensorDesc) -> &mut Inout {
         self.outputs.push(Inout::new(unit_shape));
         self.outputs.last_mut().unwrap()
