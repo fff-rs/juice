@@ -122,6 +122,7 @@ pub mod layers;
 pub mod net;
 pub mod solver;
 pub mod solvers;
+pub mod train;
 pub mod weight;
 
 mod capnp_util;

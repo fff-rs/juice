@@ -24,3 +24,9 @@ impl From<SequentialConfig> for LayerConfig {
         LayerConfig::Sequential(c)
     }
 }
+
+impl From<LinearConfig> for LayerConfig {
+    fn from(c: LinearConfig) -> Self {
+        LayerConfig::Linear(c)
+    }
+}
