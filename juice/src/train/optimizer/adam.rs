@@ -1,4 +1,5 @@
 //! Adam optimizer.
+//!
 //! Computes the update Vᵢ from params gradient ∇ᵢ as:
 //!   Mᵢ = β₁Mᵢ₋₁ + (1-β₁)∇ᵢ,
 //!   Sᵢ = β₂Sᵢ₋₁ + (1-β₂)∇ᵢ⊙∇ᵢ,
