@@ -1,4 +1,5 @@
 //! SGD with momentum.
+//!
 //! Computes the update Vᵢ from params gradient ∇ᵢ as:
 //!   Vᵢ = (1-β)Vᵢ₋₁ + β∇ᵢ,
 //!   V₀ = 0,
