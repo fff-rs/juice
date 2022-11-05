@@ -139,13 +139,7 @@ pub trait NNOperationConfig<F> {}
 /// Provides Convolution Config functionality.
 ///
 /// Needs to be implemented for Operation specific configurations.
-pub trait ConvolutionConfig<F> {
-    /// Returns the largest workspace size in bytes needed
-    /// for any of the convolution operations.
-    fn workspace_size(&self) -> usize {
-        0
-    }
-}
+pub trait ConvolutionContext<F> {}
 
 /// Provides Rnn Config functionality.
 ///
@@ -161,7 +155,7 @@ pub trait RnnConfig<F> {
 /// Provides the functionality for a backend to support Neural Network related operations.
 pub trait NN<F> {
     /// The Convolution Operation Config representation for this Plugin.
-    type CC: NNOperationConfig<F> + ConvolutionConfig<F>;
+    type CC: NNOperationConfig<F> + ConvolutionContext<F>;
     /// The LRN Operation Config representation for this Plugin.
     type CLRN: NNOperationConfig<F>;
     /// The Pooling Operation Config representation for this Plugin.
@@ -548,7 +542,7 @@ pub enum MathType {
 pub trait Convolution<F>: NN<F> {
     /// Creates a new ConvolutionConfig, which needs to be passed to further
     /// convolution Operations.
-    fn new_convolution_config(
+    fn new_convolution_context(
         &self,
         src: &SharedTensor<F>,
         dest: &SharedTensor<F>,
@@ -569,8 +563,7 @@ pub trait Convolution<F>: NN<F> {
         filter: &SharedTensor<F>,
         x: &SharedTensor<F>,
         result: &mut SharedTensor<F>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] with respect to the filter.
@@ -582,8 +575,7 @@ pub trait Convolution<F>: NN<F> {
         src_data: &SharedTensor<F>,
         dest_diff: &SharedTensor<F>,
         filter_diff: &mut SharedTensor<F>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), crate::co::error::Error>;
 
     /// Computes the gradient of a [CNN convolution][convolution] over the input
@@ -596,8 +588,7 @@ pub trait Convolution<F>: NN<F> {
         filter: &SharedTensor<F>,
         x_diff: &SharedTensor<F>,
         result_diff: &mut SharedTensor<F>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), crate::co::error::Error>;
 
     // /// Computes the backward Convolution function w.r.t the bias.

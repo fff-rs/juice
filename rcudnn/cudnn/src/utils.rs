@@ -6,7 +6,7 @@ use super::{
 };
 use crate::cuda::CudaDeviceMemory;
 
-use crate::ffi::*;
+use crate::{ffi::*, API};
 
 use num::traits::*;
 
@@ -50,10 +50,11 @@ impl DataTypeInfo for f64 {
 /// `algo` and `workspace` and `workspace_size_in_bytes`.
 ///
 /// You woudn't use this struct yourself, but rather obtain it through `Cudnn.init_convolution()`.
-pub struct ConvolutionConfig {
+pub struct ConvolutionContext {
     forward_algo: cudnnConvolutionFwdAlgo_t,
     backward_filter_algo: cudnnConvolutionBwdFilterAlgo_t,
     backward_data_algo: cudnnConvolutionBwdDataAlgo_t,
+    workspace: *mut ::libc::c_void,
     forward_workspace_size: usize,
     backward_filter_workspace_size: usize,
     backward_data_workspace_size: usize,
@@ -61,7 +62,7 @@ pub struct ConvolutionConfig {
     filter_desc: FilterDescriptor,
 }
 
-impl ConvolutionConfig {
+impl ConvolutionContext {
     /// Returns a new ConvolutionConfig
     #[allow(clippy::too_many_arguments)]
     pub fn new(
@@ -73,33 +74,21 @@ impl ConvolutionConfig {
         workspace_data_size_bwd: usize,
         conv_desc: ConvolutionDescriptor,
         filter_desc: FilterDescriptor,
-    ) -> ConvolutionConfig {
-        ConvolutionConfig {
+    ) -> ConvolutionContext {
+        let workspace_size =
+            workspace_data_size_bwd.max(workspace_filter_size_bwd.max(workspace_size_fwd));
+        let workspace = API::cuda_allocate_device_memory(workspace_size).unwrap();
+
+        ConvolutionContext {
             forward_algo: algo_fwd,
             forward_workspace_size: workspace_size_fwd,
             backward_filter_algo: algo_filter_bwd,
+            workspace,
             backward_filter_workspace_size: workspace_filter_size_bwd,
             backward_data_algo: algo_data_bwd,
             backward_data_workspace_size: workspace_data_size_bwd,
             conv_desc,
             filter_desc,
-        }
-    }
-
-    /// Returns the largest workspace size out of the three.
-    ///
-    /// Useful for creating a shared workspace.
-    pub fn largest_workspace_size(&self) -> usize {
-        if self.backward_data_workspace_size() >= self.backward_filter_workspace_size()
-            && self.backward_data_workspace_size() >= self.forward_workspace_size()
-        {
-            self.backward_data_workspace_size()
-        } else if self.backward_filter_workspace_size() >= self.backward_data_workspace_size()
-            && self.backward_filter_workspace_size() >= self.forward_workspace_size()
-        {
-            self.backward_filter_workspace_size()
-        } else {
-            self.forward_workspace_size()
         }
     }
 
@@ -141,6 +130,16 @@ impl ConvolutionConfig {
     /// Returns `filter_desc`.
     pub fn filter_desc(&self) -> &FilterDescriptor {
         &self.filter_desc
+    }
+
+    pub fn workspace(&mut self) -> *mut ::libc::c_void {
+        self.workspace
+    }
+}
+
+impl Drop for ConvolutionContext {
+    fn drop(&mut self) {
+        let _ = API::cuda_free_device_memory(self.workspace);
     }
 }
 
