@@ -667,7 +667,14 @@ where
     }
 }
 
-impl<T> RnnConfig<T> for crate::cudnn::utils::RnnConfig where T: Float + DataTypeInfo {}
+impl<T> RnnConfig<T> for crate::cudnn::utils::RnnConfig
+where
+    T: Float + DataTypeInfo,
+{
+    fn workspace_size(&self) -> usize {
+        self.largest_workspace_size()
+    }
+}
 
 impl RnnInputMode {
     fn as_cudnn(&self) -> Result<cudnnRNNInputMode_t, Error> {
