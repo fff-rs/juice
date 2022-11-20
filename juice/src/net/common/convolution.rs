@@ -20,12 +20,13 @@
 //! and OW and OH are horizontal and vertical dimensions after applying padding and stride.
 
 use std::cell::RefCell;
+use std::collections::HashMap;
+use std::fmt::{Debug, Formatter};
 use std::rc::Rc;
 
 use coaster::TensorDesc;
 
 use crate::co::{IBackend, ITensorDesc, SharedTensor};
-use crate::coblas::transpose::Transpose;
 use crate::net::{Context, Descriptor, Layer, LearnableParams};
 use crate::util::LayerOps;
 use crate::weight::FillerType;
@@ -42,15 +43,20 @@ pub struct ConvolutionConfig {
     pub kernel_size: usize,
 }
 
-#[derive(Debug)]
 pub struct Convolution<B: conn::Convolution<f32>> {
     descriptor: Descriptor,
+
+    config: ConvolutionConfig,
 
     // Convolution kernel.
     kernel: Rc<RefCell<LearnableParams>>,
 
-    // Backend-specific convolution context.
-    convolution_context: B::CC,
+    // Backend-specific convolution contexts. Since convolution context depends on full
+    // input tensor shape (including batch dimension), we store multiple contexts, one
+    // for each batch size ever used before.
+    // TODO: Make the ConvolutionContext internally enlarge its workspace when input size
+    // changes. This way it won't need to depend on input/output shape when constructing.
+    convolution_contexts: RefCell<HashMap<usize, B::CC>>,
 }
 
 fn get_input_dimensions(input_shape: &TensorDesc) -> (usize, usize, usize) {
@@ -62,13 +68,13 @@ fn get_output_size(input_size: usize, padding: usize, stride: usize, kernel_size
 }
 
 impl<B: conn::Convolution<f32>> Convolution<B> {
-    pub fn new(backend: &B, mut descriptor: Descriptor, config: &ConvolutionConfig) -> Self {
+    pub fn new(mut descriptor: Descriptor, config: &ConvolutionConfig) -> Self {
         assert_eq!(descriptor.inputs().len(), 1); // Should be only one input.
 
         // Get the input dimensions.
         let (input_channels, input_width, input_height) = get_input_dimensions(descriptor.input(0).unit_shape());
 
-        // Compute the size of an output feature map.
+        // Compute the size of an output feature map(s).
         let output_width = get_output_size(input_width, config.padding, config.stride, config.kernel_size);
         let output_height = get_output_size(input_height, config.padding, config.stride, config.kernel_size);
         descriptor.add_output(vec![config.feature_maps, output_width, output_height]);
@@ -76,60 +82,50 @@ impl<B: conn::Convolution<f32>> Convolution<B> {
         // Create kernel params tensor.
         let mut kernel_tensor = SharedTensor::<f32>::new(&[input_channels, config.kernel_size, config.kernel_size]);
         FillerType::fill_glorot(
-            &mut kernel_params,
+            &mut kernel_tensor,
             descriptor.input(0).unit_shape().size(),
             descriptor.output(0).unit_shape().size(),
         );
-
-        let context = backend
-            .new_convolution_context(
-                &inp,
-                &output_data,
-                &mut kernel_tensor,
-                conn::ConvForwardAlgo::Auto,
-                conn::ConvBackwardFilterAlgo::Auto,
-                conn::ConvBackwardDataAlgo::Auto,
-                &stride,
-                &padding,
-            )
-            .unwrap();
+        let kernel = descriptor.create_params("kernel", kernel_tensor, 1.0);
 
         Convolution {
             descriptor,
-            kernel: descriptor.create_params("kernel", kernel_tensor, 1.0),
+            config: config.clone(),
+            kernel,
+            convolution_contexts: RefCell::new(HashMap::new()),
         }
     }
 }
 
-impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution {
+impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution<B> {
     fn compute_output(&self, backend: &B, context: &mut Context) {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
 
-        let mut ones_tensor = SharedTensor::<f32>::new(&[context.batch_size(), 1]);
-        FillerType::fill_constant(&mut ones_tensor, 1f32);
+        // If this is the first time compute_output() is called with this batch_size, create a new
+        // convolution context for it. Store it in the context cache to reuse later.
+        let mut convolution_context_ref = self.convolution_contexts.borrow_mut();
+        let mut convolution_context = convolution_context_ref.entry(context.batch_size()).or_insert_with(|| {
+            backend
+                .new_convolution_context(
+                    &input.borrow(),
+                    &output.borrow(),
+                    &self.kernel.borrow().data,
+                    conn::ConvForwardAlgo::Auto,
+                    conn::ConvBackwardFilterAlgo::Auto,
+                    conn::ConvBackwardDataAlgo::Auto,
+                    &[self.config.stride as i32, self.config.stride as i32],
+                    &[self.config.padding as i32, self.config.padding as i32],
+                )
+                .unwrap()
+        });
 
         backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
-                &ones_tensor,
-                Transpose::NoTrans,
-                &self.bias.borrow().data,
-                &self.zero,
-                &mut output.borrow_mut(),
-            )
-            .unwrap();
-
-        backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
+            .convolution(
+                &self.kernel.borrow().data,
                 &input.borrow(),
-                Transpose::Trans,
-                &self.weight.borrow().data,
-                &self.one,
                 &mut output.borrow_mut(),
+                &mut convolution_context,
             )
             .unwrap();
     }
@@ -139,50 +135,31 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution {
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
 
         let input_gradient = context.acquire_data_gradient(self.descriptor.input(0));
-        let weights_gradient = context.acquire_params_gradient(self.descriptor.param(0));
-        let bias_gradient = context.acquire_params_gradient(self.descriptor.param(1));
+        let kernel_gradient = context.acquire_params_gradient(self.descriptor.param(0));
+
+        // At this point the convolution context must already exist in the contexts cache
+        // (should have been created in the compute_output() function),
+        // so we just take it from the cache.
+        let mut convolution_context_ref = self.convolution_contexts.borrow_mut();
+        let mut convolution_context = convolution_context_ref.get_mut(&context.batch_size()).unwrap();
 
         // Network error gradient with respect to input data.
-        // dE/dx = dE/dy * df/dx = dE/dy * w.
         backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
+            .convolution_grad_data(
+                &self.kernel.borrow().data,
                 &output_gradient.borrow(),
-                Transpose::NoTrans,
-                &self.weight.borrow().data,
-                &self.zero,
                 &mut input_gradient.borrow_mut(),
+                convolution_context,
             )
             .unwrap();
 
-        // Network error gradient with respect to weights.
-        // dE/dw = dE/dy * df/dw = dE/dy * x.
+        // Network error gradient with respect to the kernel.
         backend
-            .gemm(
-                &self.one,
-                Transpose::Trans,
-                &output_gradient.borrow(),
-                Transpose::NoTrans,
+            .convolution_grad_filter(
                 &input.borrow(),
-                &self.zero,
-                &mut weights_gradient.borrow_mut(),
-            )
-            .unwrap();
-
-        // Network error gradient with respect to bias.
-        // dE/dw = dE/dy * df/db = dE/dy * [1] = dE/dy.
-        let mut ones_row = SharedTensor::new(&vec![1, context.batch_size()]);
-        FillerType::fill_constant(&mut ones_row, 1.0);
-        backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
-                &ones_row,
-                Transpose::NoTrans,
-                &output_gradient.borrow(),
-                &self.zero,
-                &mut bias_gradient.borrow_mut(),
+                &mut output_gradient.borrow(),
+                &mut kernel_gradient.borrow_mut(),
+                &mut convolution_context,
             )
             .unwrap();
     }
@@ -196,112 +173,21 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution {
     }
 }
 
+impl<B: conn::Convolution<f32>> Debug for Convolution<B> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Convolution")
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::net::{layer::testing::*, LayerConfig, Network};
-
-    use super::ConvolutionConfig;
-
     #[test]
     fn compute() {
-        let net = Network::from_config(
-            LayerConfig::Convolution(ConvolutionConfig { output_size: 2 }),
-            &[vec![3]],
-        )
-        .unwrap();
-
-        // Set params such that layer becomes this:
-        //            |1 4|
-        // |x1 x2 x3| |2 5| + |0.1 0.2|
-        //            |3 6|
-        // Note that weights are stored transposed.
-        set_params(&net.top().descriptor().params()[0], &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-        set_params(&net.top().descriptor().params()[1], &[0.1, 0.2]);
-
-        let result = get_net_output(&net, &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]);
-
-        assert_tensor_eq(&result.output, &[[14.1, 32.2], [32.1, 77.2]]);
+        unimplemented!();
     }
 
     #[test]
     fn compute_gradients() {
-        let net = Network::from_config(
-            LayerConfig::Convolution(ConvolutionConfig { output_size: 2 }),
-            &[vec![3]],
-        )
-        .unwrap();
-
-        // Set params such that layer becomes this:
-        //            |1 4|
-        // |x1 x2 x3| |2 5| + |0.1 0.2|
-        //            |3 6|
-        // Note that weights are stored transposed.
-        set_params(&net.top().descriptor().params()[0], &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-        set_params(&net.top().descriptor().params()[1], &[0.1, 0.2]);
-
-        // Output gradient contains a single non-zero item at pos 0,0.
-        {
-            let result = get_net_output_and_gradients(
-                &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[1.0, 0.0], [0.0, 0.0]],
-            );
-            assert_tensor_eq(&result.input_gradient, &[[1.0, 2.0, 3.0], [0.0, 0.0, 0.0]]);
-            assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.01, 0.02, 0.03], [0.0, 0.0, 0.0]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[1.0, 0.0]]);
-        }
-
-        // Output gradient contains a single non-zero item at pos 0,1.
-        {
-            let result = get_net_output_and_gradients(
-                &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[0.0, 1.0], [0.0, 0.0]],
-            );
-            assert_tensor_eq(&result.input_gradient, &[[4.0, 5.0, 6.0], [0.0, 0.0, 0.0]]);
-            assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.0, 0.0, 0.0], [0.01, 0.02, 0.03]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[0.0, 1.0]]);
-        }
-
-        // Output gradient contains a single non-zero item at pos 1,0.
-        {
-            let result = get_net_output_and_gradients(
-                &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[0.0, 0.0], [1.0, 0.0]],
-            );
-            assert_tensor_eq(&result.input_gradient, &[[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]]);
-            assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.04, 0.05, 0.06], [0.0, 0.0, 0.0]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[1.0, 0.0]]);
-        }
-
-        // Output gradient contains a single non-zero item at pos 1,1.
-        {
-            let result = get_net_output_and_gradients(
-                &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[0.0, 0.0], [0.0, 1.0]],
-            );
-            assert_tensor_eq(&result.input_gradient, &[[0.0, 0.0, 0.0], [4.0, 5.0, 6.0]]);
-            assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.0, 0.0, 0.0], [0.04, 0.05, 0.06]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[0.0, 1.0]]);
-        }
-
-        // Output gradient contains all 1s.
-        {
-            let result = get_net_output_and_gradients(
-                &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[1.0, 1.0], [1.0, 1.0]],
-            );
-            assert_tensor_eq(&result.input_gradient, &[[5.0, 7.0, 9.0], [5.0, 7.0, 9.0]]);
-            assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.05, 0.07, 0.09], [0.05, 0.07, 0.09]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[2.0, 2.0]]);
-        }
+        unimplemented!();
     }
 }
