@@ -97,7 +97,7 @@ impl<'a, T> NNOperationConfig<T> for helper::ConvolutionConfig where
     T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
 }
-impl<'a, T> ConvolutionConfig<T> for helper::ConvolutionConfig where
+impl<'a, T> ConvolutionContext<T> for helper::ConvolutionConfig where
     T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy
 {
 }
@@ -131,7 +131,7 @@ impl<T> Convolution<T> for Backend<Native>
 where
     T: Add<T, Output = T> + Mul<T, Output = T> + Default + Copy,
 {
-    fn new_convolution_config(
+    fn new_convolution_context(
         &self,
         src: &SharedTensor<T>,
         dest: &SharedTensor<T>,
@@ -174,8 +174,7 @@ where
         filter: &SharedTensor<T>,
         x: &SharedTensor<T>,
         result: &mut SharedTensor<T>,
-        _workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), Error> {
         let dev = self.device();
 
@@ -401,8 +400,8 @@ where
                 filter,
                 &filter_stride[..],
                 &filter_dim[..],
-                &config.padding[..],
-                &config.stride[..],
+                &context.padding[..],
+                &context.stride[..],
                 output,
                 &output_stride[1..],
                 &output_dim[1..],
@@ -418,8 +417,7 @@ where
         src_data: &SharedTensor<T>,
         dest_diff: &SharedTensor<T>,
         filter_diff: &mut SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), Error> {
         unimplemented!()
     }
@@ -429,8 +427,7 @@ where
         filter: &SharedTensor<T>,
         x_diff: &SharedTensor<T>,
         result_diff: &mut SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), Error> {
         unimplemented!()
     }

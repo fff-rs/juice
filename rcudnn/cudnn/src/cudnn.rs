@@ -5,7 +5,7 @@
 //! stores the handle and manages future calls.
 
 use super::utils::{
-    ActivationConfig, ConvolutionConfig, DataTypeInfo, DropoutConfig, NormalizationConfig,
+    ActivationConfig, ConvolutionContext, DataTypeInfo, DropoutConfig, NormalizationConfig,
     PoolingConfig, RnnConfig, ScalParams,
 };
 use super::*;
@@ -64,7 +64,7 @@ impl Cudnn {
         conv_desc: ConvolutionDescriptor,
         filter_desc: FilterDescriptor,
         dest_desc: &TensorDescriptor,
-    ) -> Result<ConvolutionConfig, Error> {
+    ) -> Result<ConvolutionContext, Error> {
         let algos_fwd = API::find_convolution_forward_algorithm(
             *self.id_c(),
             *filter_desc.id_c(),
@@ -114,7 +114,7 @@ impl Cudnn {
             *dest_desc.id_c(),
         )?;
 
-        Ok(ConvolutionConfig::new(
+        Ok(ConvolutionContext::new(
             algos_fwd[0].algo,
             workspace_size_fwd,
             algos_filter_bwd[0].algo,
@@ -585,8 +585,7 @@ impl Cudnn {
     #[allow(clippy::too_many_arguments)]
     pub fn convolution_forward<T>(
         &self,
-        conv_config: &ConvolutionConfig,
-        workspace: *mut ::libc::c_void,
+        conv_context: &mut ConvolutionContext,
         filter_data: *const ::libc::c_void,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
@@ -599,14 +598,14 @@ impl Cudnn {
     {
         API::convolution_forward(
             *self.id_c(),
-            *conv_config.forward_algo(),
-            *conv_config.conv_desc().id_c(),
-            workspace,
-            conv_config.forward_workspace_size(),
+            *conv_context.forward_algo(),
+            *conv_context.conv_desc().id_c(),
+            conv_context.workspace(),
+            conv_context.forward_workspace_size(),
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(),
             src_data,
-            *conv_config.filter_desc().id_c(),
+            *conv_context.filter_desc().id_c(),
             filter_data,
             unsafe { transmute_copy(&&scale.b) },
             *dest_desc.id_c(),
@@ -645,8 +644,7 @@ impl Cudnn {
     #[allow(clippy::too_many_arguments)]
     pub fn convolution_backward_filter<T>(
         &self,
-        conv_config: &ConvolutionConfig,
-        workspace: *mut ::libc::c_void,
+        conv_context: &mut ConvolutionContext,
         src_desc: &TensorDescriptor,
         src_data: *const ::libc::c_void,
         dest_grad_desc: &TensorDescriptor,
@@ -659,17 +657,17 @@ impl Cudnn {
     {
         API::convolution_backward_filter(
             *self.id_c(),
-            *conv_config.backward_filter_algo(),
-            *conv_config.conv_desc().id_c(),
-            workspace,
-            conv_config.backward_filter_workspace_size(),
+            *conv_context.backward_filter_algo(),
+            *conv_context.conv_desc().id_c(),
+            conv_context.workspace(),
+            conv_context.backward_filter_workspace_size(),
             unsafe { transmute_copy(&&scale.a) },
             *src_desc.id_c(),
             src_data,
             *dest_grad_desc.id_c(),
             dest_grad_data,
             unsafe { transmute_copy(&&scale.b) },
-            *conv_config.filter_desc().id_c(),
+            *conv_context.filter_desc().id_c(),
             filter_data,
         )
     }
@@ -680,8 +678,7 @@ impl Cudnn {
     #[allow(clippy::too_many_arguments)]
     pub fn convolution_backward_data<T>(
         &self,
-        conv_config: &ConvolutionConfig,
-        workspace: *mut ::libc::c_void,
+        conv_context: &mut ConvolutionContext,
         filter_data: *const ::libc::c_void,
         dest_grad_desc: &TensorDescriptor,
         dest_grad_data: *const ::libc::c_void,
@@ -694,12 +691,12 @@ impl Cudnn {
     {
         API::convolution_backward_data(
             *self.id_c(),
-            *conv_config.backward_data_algo(),
-            *conv_config.conv_desc().id_c(),
-            workspace,
-            conv_config.backward_data_workspace_size(),
+            *conv_context.backward_data_algo(),
+            *conv_context.conv_desc().id_c(),
+            conv_context.workspace(),
+            conv_context.backward_data_workspace_size(),
             unsafe { transmute_copy(&&scale.a) },
-            *conv_config.filter_desc().id_c(),
+            *conv_context.filter_desc().id_c(),
             filter_data,
             *dest_grad_desc.id_c(),
             dest_grad_data,

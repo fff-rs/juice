@@ -3,9 +3,7 @@ use std::fmt;
 use co::prelude::*;
 use coaster as co;
 
-use crate::plugin::{
-    self, DirectionMode, RnnAlgorithm, RnnConfig, RnnInputMode, RnnNetworkMode, RnnPaddingMode,
-};
+use crate::plugin::{self, DirectionMode, RnnAlgorithm, RnnConfig, RnnInputMode, RnnNetworkMode};
 use crate::tests::{filled_tensor, uniformly_random_tensor, Epsilon, One, Zero};
 use crate::{co::plugin::numeric_helpers::Float, Rnn};
 
