@@ -4,8 +4,7 @@ use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 
 use crate::plugin::{
-    ConvBackwardDataAlgo, ConvBackwardFilterAlgo, ConvForwardAlgo, Convolution, ConvolutionConfig,
-    LRN,
+    ConvBackwardDataAlgo, ConvBackwardFilterAlgo, ConvForwardAlgo, Convolution, LRN,
 };
 use crate::tests::{filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, Epsilon};
 
@@ -73,8 +72,8 @@ where
         );
         let mut r = SharedTensor::<T>::new(&[batch, filter_count, result_height, result_width]);
 
-        let conf = backend
-            .new_convolution_config(
+        let mut context = backend
+            .new_convolution_context(
                 &x,
                 &r,
                 &f,
@@ -86,9 +85,7 @@ where
             )
             .unwrap();
 
-        let mut ws = SharedTensor::<u8>::new(&[conf.workspace_size()]);
-
-        assert!(backend.convolution(&f, &x, &mut r, &mut ws, &conf).is_ok());
+        assert!(backend.convolution(&f, &x, &mut r, &mut context).is_ok());
         assert!(r.read(backend.device()).is_ok());
 
         // this only works because our data is all ones, if padding is non zero, this can not be applied
@@ -175,8 +172,8 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(
     let mut result_b =
         SharedTensor::<f32>::new(&[batch, filter_count, result_height, result_width]);
 
-    let conf_a = backend_a
-        .new_convolution_config(
+    let mut context_a = backend_a
+        .new_convolution_context(
             &x,
             &result_a,
             &f,
@@ -188,14 +185,12 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(
         )
         .unwrap();
 
-    let mut ws = SharedTensor::<u8>::new(&[conf_a.workspace_size()]);
-
     backend_a
-        .convolution(&f, &x, &mut result_a, &mut ws, &conf_a)
+        .convolution(&f, &x, &mut result_a, &mut context_a)
         .unwrap();
 
-    let conf_b = backend_b
-        .new_convolution_config(
+    let mut context_b = backend_b
+        .new_convolution_context(
             &x,
             &result_b,
             &f,
@@ -207,10 +202,8 @@ fn cross_test_convolution<F: IFramework, G: IFramework>(
         )
         .unwrap();
 
-    let mut ws = SharedTensor::<u8>::new(&[conf_b.workspace_size()]);
-
     backend_b
-        .convolution(&f, &x, &mut result_b, &mut ws, &conf_b)
+        .convolution(&f, &x, &mut result_b, &mut context_b)
         .unwrap();
 
     tensor_assert_eq_tensor(&result_a, &result_b, 3.0);

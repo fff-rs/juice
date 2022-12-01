@@ -417,7 +417,7 @@ impl<T> NN<T> for Backend<Cuda>
 where
     T: Float + DataTypeInfo,
 {
-    type CC = utils::ConvolutionConfig;
+    type CC = utils::ConvolutionContext;
     type CLRN = utils::NormalizationConfig;
     type CPOOL = utils::PoolingConfig;
     type CDROP = utils::DropoutConfig;
@@ -428,7 +428,7 @@ where
     }
 }
 
-impl<'a, T> NNOperationConfig<T> for utils::ConvolutionConfig where T: Float + DataTypeInfo {}
+impl<'a, T> NNOperationConfig<T> for utils::ConvolutionContext where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::RnnConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::NormalizationConfig where T: Float + DataTypeInfo {}
 impl<T> NNOperationConfig<T> for utils::PoolingConfig where T: Float + DataTypeInfo {}
@@ -486,20 +486,16 @@ where
     }
 }
 
-impl<T> ConvolutionConfig<T> for crate::cudnn::utils::ConvolutionConfig
-where
-    T: Float + DataTypeInfo,
+impl<T> ConvolutionContext<T> for crate::cudnn::utils::ConvolutionContext where
+    T: Float + DataTypeInfo
 {
-    fn workspace_size(&self) -> usize {
-        self.largest_workspace_size()
-    }
 }
 
 impl<T> Convolution<T> for Backend<Cuda>
 where
     T: Float + DataTypeInfo,
 {
-    fn new_convolution_config(
+    fn new_convolution_context(
         &self,
         src: &SharedTensor<T>,
         dest: &SharedTensor<T>,
@@ -581,7 +577,7 @@ where
             workspace_size_bwd_data = 8;
         }
 
-        Ok(crate::cudnn::utils::ConvolutionConfig::new(
+        Ok(crate::cudnn::utils::ConvolutionContext::new(
             useable_algo_fwd.as_cudnn().unwrap(),
             workspace_size_fwd,
             useable_algo_bwd_filter.as_cudnn().unwrap(),
@@ -598,8 +594,7 @@ where
         filter: &SharedTensor<T>,
         x: &SharedTensor<T>,
         result: &mut SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> =
@@ -609,11 +604,9 @@ where
         let f_mem = read!(filter, self);
         let x_mem = read!(x, self);
         let r_mem = write_only!(result, self);
-        let w_mem = write_only!(workspace, self);
 
         exec2!(cudnn_framework.convolution_forward(
-            config,
-            trans_mut!(w_mem),
+            context,
             trans!(f_mem),
             &x.cudnn_tensor_desc()?, // src_desc
             trans!(x_mem),
@@ -628,8 +621,7 @@ where
         src_data: &SharedTensor<T>,
         dest_diff: &SharedTensor<T>,
         filter_diff: &mut SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> =
@@ -637,10 +629,8 @@ where
         let s_mem = read!(src_data, self);
         let dd_mem = read!(dest_diff, self);
         let df_mem = write_only!(filter_diff, self);
-        let w_mem = write_only!(workspace, self);
         exec2!(cudnn_framework.convolution_backward_filter(
-            config,
-            trans_mut!(w_mem),
+            context,
             &src_data.cudnn_tensor_desc()?,
             trans!(s_mem),
             &dest_diff.cudnn_tensor_desc()?,
@@ -655,8 +645,7 @@ where
         filter: &SharedTensor<T>,
         x_diff: &SharedTensor<T>,
         result_diff: &mut SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
-        config: &Self::CC,
+        context: &mut Self::CC,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
         let scal_params: crate::cudnn::utils::ScalParams<T> =
@@ -666,10 +655,8 @@ where
         let f_mem = read!(filter, self);
         let dx_mem = read!(x_diff, self);
         let dr_mem = write_only!(result_diff, self);
-        let w_mem = write_only!(workspace, self);
         exec2!(cudnn_framework.convolution_backward_data(
-            config,
-            trans_mut!(w_mem),
+            context,
             trans!(f_mem),
             &x_diff.cudnn_tensor_desc()?,
             trans!(dx_mem),
