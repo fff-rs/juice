@@ -1,82 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="\brief Check whether an executable graph can be updated with a graph and perform the update if possible"><meta name="keywords" content="rust, rustlang, rust-lang, cudaGraphExecUpdate"><title>cudaGraphExecUpdate in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaGraphExecUpdate` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaGraphExecUpdate"><title>cudaGraphExecUpdate in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><div class="sidebar-elems"><h2 class="location"><a href="index.html">In rcudnn</a></h2></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rcudnn/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
                                 <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaGraphExecUpdate</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#16910-16915">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaGraphExecUpdate(<br>&nbsp;&nbsp;&nbsp;&nbsp;hGraphExec: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUgraphExec_st.html" title="struct rcudnn::CUgraphExec_st">CUgraphExec_st</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;hGraph: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUgraph_st.html" title="struct rcudnn::CUgraph_st">CUgraph_st</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;hErrorNode_out: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUgraphNode_st.html" title="struct rcudnn::CUgraphNode_st">CUgraphNode_st</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;updateResult_out: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="enum" href="enum.cudaGraphExecUpdateResult.html" title="enum rcudnn::cudaGraphExecUpdateResult">cudaGraphExecUpdateResult</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>\brief Check whether an executable graph can be updated with a graph and perform the update if possible</p>
-<p>Updates the node parameters in the instantiated graph specified by \p hGraphExec with the
-node parameters in a topologically identical graph specified by \p hGraph.</p>
-<p>Limitations:</p>
-<ul>
-<li>Kernel nodes:
-<ul>
-<li>The owning context of the function cannot change.</li>
-<li>A node whose function originally did not use CUDA dynamic parallelism cannot be updated
-to a function which uses CDP</li>
-</ul>
-</li>
-<li>Memset and memcpy nodes:
-<ul>
-<li>The CUDA device(s) to which the operand(s) was allocated/mapped cannot change.</li>
-<li>The source/destination memory must be allocated from the same contexts as the original
-source/destination memory.</li>
-<li>Only 1D memsets can be changed.</li>
-</ul>
-</li>
-<li>Additional memcpy node restrictions:
-<ul>
-<li>Changing either the source or destination memory type(i.e. CU_MEMORYTYPE_DEVICE,
-CU_MEMORYTYPE_ARRAY, etc.) is not supported.</li>
-</ul>
-</li>
-</ul>
-<p>Note:  The API may add further restrictions in future releases.  The return code should always be checked.</p>
-<p>cudaGraphExecUpdate sets \p updateResult_out to cudaGraphExecUpdateErrorTopologyChanged under
-the following conditions:</p>
-<ul>
-<li>The count of nodes directly in \p hGraphExec and \p hGraph differ, in which case \p hErrorNode_out
-is NULL.</li>
-<li>A node is deleted in \p hGraph but not not its pair from \p hGraphExec, in which case \p hErrorNode_out
-is NULL.</li>
-<li>A node is deleted in \p hGraphExec but not its pair from \p hGraph, in which case \p hErrorNode_out is
-the pairless node from \p hGraph.</li>
-<li>The dependent nodes of a pair differ, in which case \p hErrorNode_out is the node from \p hGraph.</li>
-</ul>
-<p>cudaGraphExecUpdate sets \p updateResult_out to:</p>
-<ul>
-<li>cudaGraphExecUpdateError if passed an invalid value.</li>
-<li>cudaGraphExecUpdateErrorTopologyChanged if the graph topology changed</li>
-<li>cudaGraphExecUpdateErrorNodeTypeChanged if the type of a node changed, in which case
-\p hErrorNode_out is set to the node from \p hGraph.</li>
-<li>cudaGraphExecUpdateErrorFunctionChanged if the function of a kernel node changed (CUDA driver &lt; 11.2)</li>
-<li>cudaGraphExecUpdateErrorUnsupportedFunctionChange if the func field of a kernel changed in an
-unsupported way(see note above), in which case \p hErrorNode_out is set to the node from \p hGraph</li>
-<li>cudaGraphExecUpdateErrorParametersChanged if any parameters to a node changed in a way
-that is not supported, in which case \p hErrorNode_out is set to the node from \p hGraph</li>
-<li>cudaGraphExecUpdateErrorNotSupported if something about a node is unsupported, like
-the node’s type or configuration, in which case \p hErrorNode_out is set to the node from \p hGraph</li>
-</ul>
-<p>If \p updateResult_out isn’t set in one of the situations described above, the update check passes
-and cudaGraphExecUpdate updates \p hGraphExec to match the contents of \p hGraph.  If an error happens
-during the update, \p updateResult_out will be set to cudaGraphExecUpdateError; otherwise,
-\p updateResult_out is set to cudaGraphExecUpdateSuccess.</p>
-<p>cudaGraphExecUpdate returns cudaSuccess when the updated was performed successfully.  It returns
-cudaErrorGraphExecUpdateFailure if the graph update was not performed because it included
-changes which violated constraints specific to instantiated graph update.</p>
-<p>\param hGraphExec The instantiated graph to be updated
-\param hGraph The graph containing the updated parameters
-\param hErrorNode_out The node which caused the permissibility check to forbid the update, if any
-\param updateResult_out Whether the graph update was permitted.  If was forbidden, the reason why</p>
-<p>\return
-::cudaSuccess,
-::cudaErrorGraphExecUpdateFailure,
-\note_graph_thread_safety
-\notefnerr
-\note_init_rt
-\note_callback</p>
-<p>\sa
-::cudaGraphInstantiate,</p>
-</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
+    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaGraphExecUpdate</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#9695-9700">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaGraphExecUpdate(<br>&nbsp;&nbsp;&nbsp;&nbsp;hGraphExec: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUgraphExec_st.html" title="struct rcudnn::CUgraphExec_st">CUgraphExec_st</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;hGraph: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUgraph_st.html" title="struct rcudnn::CUgraph_st">CUgraph_st</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;hErrorNode_out: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUgraphNode_st.html" title="struct rcudnn::CUgraphNode_st">CUgraphNode_st</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;updateResult_out: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="enum" href="enum.cudaGraphExecUpdateResult.html" title="enum rcudnn::cudaGraphExecUpdateResult">cudaGraphExecUpdateResult</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
 </body></html>

@@ -1,62 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="\brief Prefetches memory to the specified destination device"><meta name="keywords" content="rust, rustlang, rust-lang, cudaMemPrefetchAsync"><title>cudaMemPrefetchAsync in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaMemPrefetchAsync` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaMemPrefetchAsync"><title>cudaMemPrefetchAsync in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><div class="sidebar-elems"><h2 class="location"><a href="index.html">In rcudnn</a></h2></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rcudnn/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
                                 <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaMemPrefetchAsync</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#13145-13150">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaMemPrefetchAsync(<br>&nbsp;&nbsp;&nbsp;&nbsp;devPtr: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="enum" href="https://doc.rust-lang.org/1.63.0/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;count: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;dstDevice: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.i32.html">i32</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;stream: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUstream_st.html" title="struct rcudnn::CUstream_st">CUstream_st</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>\brief Prefetches memory to the specified destination device</p>
-<p>Prefetches memory to the specified destination device.  \p devPtr is the
-base device pointer of the memory to be prefetched and \p dstDevice is the
-destination device. \p count specifies the number of bytes to copy. \p stream
-is the stream in which the operation is enqueued. The memory range must refer
-to managed memory allocated via ::cudaMallocManaged or declared via <strong>managed</strong> variables.</p>
-<p>Passing in cudaCpuDeviceId for \p dstDevice will prefetch the data to host memory. If
-\p dstDevice is a GPU, then the device attribute ::cudaDevAttrConcurrentManagedAccess
-must be non-zero. Additionally, \p stream must be associated with a device that has a
-non-zero value for the device attribute ::cudaDevAttrConcurrentManagedAccess.</p>
-<p>The start address and end address of the memory range will be rounded down and rounded up
-respectively to be aligned to CPU page size before the prefetch operation is enqueued
-in the stream.</p>
-<p>If no physical memory has been allocated for this region, then this memory region
-will be populated and mapped on the destination device. If there’s insufficient
-memory to prefetch the desired region, the Unified Memory driver may evict pages from other
-::cudaMallocManaged allocations to host memory in order to make room. Device memory
-allocated using ::cudaMalloc or ::cudaMallocArray will not be evicted.</p>
-<p>By default, any mappings to the previous location of the migrated pages are removed and
-mappings for the new location are only setup on \p dstDevice. The exact behavior however
-also depends on the settings applied to this memory range via ::cudaMemAdvise as described
-below:</p>
-<p>If ::cudaMemAdviseSetReadMostly was set on any subset of this memory range,
-then that subset will create a read-only copy of the pages on \p dstDevice.</p>
-<p>If ::cudaMemAdviseSetPreferredLocation was called on any subset of this memory
-range, then the pages will be migrated to \p dstDevice even if \p dstDevice is not the
-preferred location of any pages in the memory range.</p>
-<p>If ::cudaMemAdviseSetAccessedBy was called on any subset of this memory range,
-then mappings to those pages from all the appropriate processors are updated to
-refer to the new location if establishing such a mapping is possible. Otherwise,
-those mappings are cleared.</p>
-<p>Note that this API is not required for functionality and only serves to improve performance
-by allowing the application to migrate data to a suitable location before it is accessed.
-Memory accesses to this range are always coherent and are allowed even when the data is
-actively being migrated.</p>
-<p>Note that this function is asynchronous with respect to the host and all work
-on other devices.</p>
-<p>\param devPtr    - Pointer to be prefetched
-\param count     - Size in bytes
-\param dstDevice - Destination device to prefetch to
-\param stream    - Stream to enqueue prefetch operation</p>
-<p>\return
-::cudaSuccess,
-::cudaErrorInvalidValue,
-::cudaErrorInvalidDevice
-\notefnerr
-\note_async
-\note_null_stream
-\note_init_rt
-\note_callback</p>
-<p>\sa ::cudaMemcpy, ::cudaMemcpyPeer, ::cudaMemcpyAsync,
-::cudaMemcpy3DPeerAsync, ::cudaMemAdvise,
-::cuMemPrefetchAsync</p>
-</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
+    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaMemPrefetchAsync</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#8803-8808">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaMemPrefetchAsync(<br>&nbsp;&nbsp;&nbsp;&nbsp;devPtr: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="enum" href="https://doc.rust-lang.org/1.63.0/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;count: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;dstDevice: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.i32.html">i32</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;stream: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.CUstream_st.html" title="struct rcudnn::CUstream_st">CUstream_st</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
 </body></html>

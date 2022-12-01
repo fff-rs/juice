@@ -1,63 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="\brief Allocates page-locked memory on the host"><meta name="keywords" content="rust, rustlang, rust-lang, cudaHostAlloc"><title>cudaHostAlloc in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaHostAlloc` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaHostAlloc"><title>cudaHostAlloc in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><div class="sidebar-elems"><h2 class="location"><a href="index.html">In rcudnn</a></h2></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rcudnn/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
                                 <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaHostAlloc</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#10992-10996">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaHostAlloc(<br>&nbsp;&nbsp;&nbsp;&nbsp;pHost: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="enum" href="https://doc.rust-lang.org/1.63.0/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;size: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;flags: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.u32.html">u32</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>\brief Allocates page-locked memory on the host</p>
-<p>Allocates \p size bytes of host memory that is page-locked and accessible
-to the device. The driver tracks the virtual memory ranges allocated with
-this function and automatically accelerates calls to functions such as
-::cudaMemcpy(). Since the memory can be accessed directly by the device, it
-can be read or written with much higher bandwidth than pageable memory
-obtained with functions such as ::malloc(). Allocating excessive amounts of
-pinned memory may degrade system performance, since it reduces the amount
-of memory available to the system for paging. As a result, this function is
-best used sparingly to allocate staging areas for data exchange between host
-and device.</p>
-<p>The \p flags parameter enables different options to be specified that affect
-the allocation, as follows.</p>
-<ul>
-<li>::cudaHostAllocDefault: This flag’s value is defined to be 0 and causes
-::cudaHostAlloc() to emulate ::cudaMallocHost().</li>
-<li>::cudaHostAllocPortable: The memory returned by this call will be
-considered as pinned memory by all CUDA contexts, not just the one that
-performed the allocation.</li>
-<li>::cudaHostAllocMapped: Maps the allocation into the CUDA address space.
-The device pointer to the memory may be obtained by calling
-::cudaHostGetDevicePointer().</li>
-<li>::cudaHostAllocWriteCombined: Allocates the memory as write-combined (WC).
-WC memory can be transferred across the PCI Express bus more quickly on some
-system configurations, but cannot be read efficiently by most CPUs.  WC
-memory is a good option for buffers that will be written by the CPU and read
-by the device via mapped pinned memory or host-&gt;device transfers.</li>
-</ul>
-<p>All of these flags are orthogonal to one another: a developer may allocate
-memory that is portable, mapped and/or write-combined with no restrictions.</p>
-<p>In order for the ::cudaHostAllocMapped flag to have any effect, the CUDA context
-must support the ::cudaDeviceMapHost flag, which can be checked via
-::cudaGetDeviceFlags(). The ::cudaDeviceMapHost flag is implicitly set for
-contexts created via the runtime API.</p>
-<p>The ::cudaHostAllocMapped flag may be specified on CUDA contexts for devices
-that do not support mapped pinned memory. The failure is deferred to
-::cudaHostGetDevicePointer() because the memory may be mapped into other
-CUDA contexts via the ::cudaHostAllocPortable flag.</p>
-<p>Memory allocated by this function must be freed with ::cudaFreeHost().</p>
-<p>\param pHost - Device pointer to allocated memory
-\param size  - Requested allocation size in bytes
-\param flags - Requested properties of allocated memory</p>
-<p>\return
-::cudaSuccess,
-::cudaErrorInvalidValue,
-::cudaErrorMemoryAllocation
-\notefnerr
-\note_init_rt
-\note_callback</p>
-<p>\sa ::cudaSetDeviceFlags,
-\ref ::cudaMallocHost(void**, size_t) “cudaMallocHost (C API)”,
-::cudaFreeHost,
-::cudaGetDeviceFlags,
-::cuMemHostAlloc</p>
-</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
+    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaHostAlloc</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#8471-8475">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaHostAlloc(<br>&nbsp;&nbsp;&nbsp;&nbsp;pHost: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="enum" href="https://doc.rust-lang.org/1.63.0/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;size: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;flags: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.u32.html">u32</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
 </body></html>

@@ -1,67 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="\brief Returns attributes about a specified pointer"><meta name="keywords" content="rust, rustlang, rust-lang, cudaPointerGetAttributes"><title>cudaPointerGetAttributes in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaPointerGetAttributes` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaPointerGetAttributes"><title>cudaPointerGetAttributes in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><div class="sidebar-elems"><h2 class="location"><a href="index.html">In rcudnn</a></h2></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rcudnn/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
                                 <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaPointerGetAttributes</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#14099-14102">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaPointerGetAttributes(<br>&nbsp;&nbsp;&nbsp;&nbsp;attributes: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.cudaPointerAttributes.html" title="struct rcudnn::cudaPointerAttributes">cudaPointerAttributes</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;ptr: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="enum" href="https://doc.rust-lang.org/1.63.0/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>\brief Returns attributes about a specified pointer</p>
-<p>Returns in \p *attributes the attributes of the pointer \p ptr.
-If pointer was not allocated in, mapped by or registered with context
-supporting unified addressing ::cudaErrorInvalidValue is returned.</p>
-<p>\note In CUDA 11.0 forward passing host pointer will return ::cudaMemoryTypeUnregistered
-in ::cudaPointerAttributes::type and call will return ::cudaSuccess.</p>
-<p>The ::cudaPointerAttributes structure is defined as:
-\code
-struct cudaPointerAttributes {
-enum cudaMemoryType type;
-int device;
-void *devicePointer;
-void *hostPointer;
-}
-\endcode
-In this structure, the individual fields mean</p>
-<ul>
-<li>
-<p>\ref ::cudaPointerAttributes::type identifies type of memory. It can be
-::cudaMemoryTypeUnregistered for unregistered host memory,
-::cudaMemoryTypeHost for registered host memory, ::cudaMemoryTypeDevice for device
-memory or  ::cudaMemoryTypeManaged for managed memory.</p>
-</li>
-<li>
-<p>\ref ::cudaPointerAttributes::device “device” is the device against which
-\p ptr was allocated.  If \p ptr has memory type ::cudaMemoryTypeDevice
-then this identifies the device on which the memory referred to by \p ptr
-physically resides.  If \p ptr has memory type ::cudaMemoryTypeHost then this
-identifies the device which was current when the allocation was made
-(and if that device is deinitialized then this allocation will vanish
-with that device’s state).</p>
-</li>
-<li>
-<p>\ref ::cudaPointerAttributes::devicePointer “devicePointer” is
-the device pointer alias through which the memory referred to by \p ptr
-may be accessed on the current device.
-If the memory referred to by \p ptr cannot be accessed directly by the
-current device then this is NULL.</p>
-</li>
-<li>
-<p>\ref ::cudaPointerAttributes::hostPointer “hostPointer” is
-the host pointer alias through which the memory referred to by \p ptr
-may be accessed on the host.
-If the memory referred to by \p ptr cannot be accessed directly by the
-host then this is NULL.</p>
-</li>
-</ul>
-<p>\param attributes - Attributes for the specified pointer
-\param ptr        - Pointer to get attributes for</p>
-<p>\return
-::cudaSuccess,
-::cudaErrorInvalidDevice,
-::cudaErrorInvalidValue
-\note_init_rt
-\note_callback</p>
-<p>\sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaSetDevice,
-::cudaChooseDevice,
-::cuPointerGetAttributes</p>
-</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
+    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaPointerGetAttributes</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#8979-8982">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaPointerGetAttributes(<br>&nbsp;&nbsp;&nbsp;&nbsp;attributes: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="struct" href="struct.cudaPointerAttributes.html" title="struct rcudnn::cudaPointerAttributes">cudaPointerAttributes</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;ptr: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="enum" href="https://doc.rust-lang.org/1.63.0/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
 </body></html>

@@ -1,96 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="\brief Set resource limits"><meta name="keywords" content="rust, rustlang, rust-lang, cudaDeviceSetLimit"><title>cudaDeviceSetLimit in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaDeviceSetLimit` fn in crate `rcudnn`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaDeviceSetLimit"><title>cudaDeviceSetLimit in rcudnn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><div class="sidebar-elems"><h2 class="location"><a href="index.html">In rcudnn</a></h2></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rcudnn/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
                                 <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaDeviceSetLimit</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#6831">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaDeviceSetLimit(<br>&nbsp;&nbsp;&nbsp;&nbsp;limit: <a class="enum" href="enum.cudaLimit.html" title="enum rcudnn::cudaLimit">cudaLimit</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>\brief Set resource limits</p>
-<p>Setting \p limit to \p value is a request by the application to update
-the current limit maintained by the device.  The driver is free to
-modify the requested value to meet h/w requirements (this could be
-clamping to minimum or maximum values, rounding up to nearest element
-size, etc).  The application can use ::cudaDeviceGetLimit() to find out
-exactly what the limit has been set to.</p>
-<p>Setting each ::cudaLimit has its own specific restrictions, so each is
-discussed here.</p>
-<ul>
-<li>
-<p>::cudaLimitStackSize controls the stack size in bytes of each GPU thread.</p>
-</li>
-<li>
-<p>::cudaLimitPrintfFifoSize controls the size in bytes of the shared FIFO
-used by the ::printf() device system call. Setting
-::cudaLimitPrintfFifoSize must not be performed after launching any kernel
-that uses the ::printf() device system call - in such case
-::cudaErrorInvalidValue will be returned.</p>
-</li>
-<li>
-<p>::cudaLimitMallocHeapSize controls the size in bytes of the heap used by
-the ::malloc() and ::free() device system calls. Setting
-::cudaLimitMallocHeapSize must not be performed after launching any kernel
-that uses the ::malloc() or ::free() device system calls - in such case
-::cudaErrorInvalidValue will be returned.</p>
-</li>
-<li>
-<p>::cudaLimitDevRuntimeSyncDepth controls the maximum nesting depth of a
-grid at which a thread can safely call ::cudaDeviceSynchronize(). Setting
-this limit must be performed before any launch of a kernel that uses the
-device runtime and calls ::cudaDeviceSynchronize() above the default sync
-depth, two levels of grids. Calls to ::cudaDeviceSynchronize() will fail
-with error code ::cudaErrorSyncDepthExceeded if the limitation is
-violated. This limit can be set smaller than the default or up the maximum
-launch depth of 24. When setting this limit, keep in mind that additional
-levels of sync depth require the runtime to reserve large amounts of
-device memory which can no longer be used for user allocations. If these
-reservations of device memory fail, ::cudaDeviceSetLimit will return
-::cudaErrorMemoryAllocation, and the limit can be reset to a lower value.
-This limit is only applicable to devices of compute capability 3.5 and
-higher. Attempting to set this limit on devices of compute capability less
-than 3.5 will result in the error ::cudaErrorUnsupportedLimit being
-returned.</p>
-</li>
-<li>
-<p>::cudaLimitDevRuntimePendingLaunchCount controls the maximum number of
-outstanding device runtime launches that can be made from the current
-device. A grid is outstanding from the point of launch up until the grid
-is known to have been completed. Device runtime launches which violate
-this limitation fail and return ::cudaErrorLaunchPendingCountExceeded when
-::cudaGetLastError() is called after launch. If more pending launches than
-the default (2048 launches) are needed for a module using the device
-runtime, this limit can be increased. Keep in mind that being able to
-sustain additional pending launches will require the runtime to reserve
-larger amounts of device memory upfront which can no longer be used for
-allocations. If these reservations fail, ::cudaDeviceSetLimit will return
-::cudaErrorMemoryAllocation, and the limit can be reset to a lower value.
-This limit is only applicable to devices of compute capability 3.5 and
-higher. Attempting to set this limit on devices of compute capability less
-than 3.5 will result in the error ::cudaErrorUnsupportedLimit being
-returned.</p>
-</li>
-<li>
-<p>::cudaLimitMaxL2FetchGranularity controls the L2 cache fetch granularity.
-Values can range from 0B to 128B. This is purely a performance hint and
-it can be ignored or clamped depending on the platform.</p>
-</li>
-<li>
-<p>::cudaLimitPersistingL2CacheSize controls size in bytes available
-for persisting L2 cache. This is purely a performance hint and it
-can be ignored or clamped depending on the platform.</p>
-</li>
-</ul>
-<p>\param limit - Limit to set
-\param value - Size of limit</p>
-<p>\return
-::cudaSuccess,
-::cudaErrorUnsupportedLimit,
-::cudaErrorInvalidValue,
-::cudaErrorMemoryAllocation
-\notefnerr
-\note_init_rt
-\note_callback</p>
-<p>\sa
-::cudaDeviceGetLimit,
-::cuCtxSetLimit</p>
-</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
+    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn</a>::<wbr><a class="fn" href="#">cudaDeviceSetLimit</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#7974">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaDeviceSetLimit(<br>&nbsp;&nbsp;&nbsp;&nbsp;limit: <a class="enum" href="enum.cudaLimit.html" title="enum rcudnn::cudaLimit">cudaLimit</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a><br>) -&gt; <a class="enum" href="enum.cudaError_t.html" title="enum rcudnn::cudaError_t">cudaError</a></code></pre></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
 </body></html>

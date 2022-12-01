@@ -1,95 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="\brief Creates a kernel execution node and adds it to a graph"><meta name="keywords" content="rust, rustlang, rust-lang, cudaGraphAddKernelNode"><title>cudaGraphAddKernelNode in rcudnn_sys - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn_sys/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `cudaGraphAddKernelNode` fn in crate `rcudnn_sys`."><meta name="keywords" content="rust, rustlang, rust-lang, cudaGraphAddKernelNode"><title>cudaGraphAddKernelNode in rcudnn_sys - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="sidebar-items.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../rcudnn_sys/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
     <nav class="sidebar"><a class="sidebar-logo" href="../rcudnn_sys/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
         </a><div class="sidebar-elems"><h2 class="location"><a href="index.html">In rcudnn_sys</a></h2></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../rcudnn_sys/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
                                 <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn_sys</a>::<wbr><a class="fn" href="#">cudaGraphAddKernelNode</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#15418-15424">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaGraphAddKernelNode(<br>&nbsp;&nbsp;&nbsp;&nbsp;pGraphNode: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="type" href="type.cudaGraphNode_t.html" title="type rcudnn_sys::cudaGraphNode_t">cudaGraphNode_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;graph: <a class="type" href="type.cudaGraph_t.html" title="type rcudnn_sys::cudaGraph_t">cudaGraph_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pDependencies: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="type" href="type.cudaGraphNode_t.html" title="type rcudnn_sys::cudaGraphNode_t">cudaGraphNode_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;numDependencies: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pNodeParams: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="struct" href="struct.cudaKernelNodeParams.html" title="struct rcudnn_sys::cudaKernelNodeParams">cudaKernelNodeParams</a><br>) -&gt; <a class="enum" href="enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></code></pre></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>\brief Creates a kernel execution node and adds it to a graph</p>
-<p>Creates a new kernel execution node and adds it to \p graph with \p numDependencies
-dependencies specified via \p pDependencies and arguments specified in \p pNodeParams.
-It is possible for \p numDependencies to be 0, in which case the node will be placed
-at the root of the graph. \p pDependencies may not have any duplicate entries.
-A handle to the new node will be returned in \p pGraphNode.</p>
-<p>The cudaKernelNodeParams structure is defined as:</p>
-<p>\code
-struct cudaKernelNodeParams
-{
-void* func;
-dim3 gridDim;
-dim3 blockDim;
-unsigned int sharedMemBytes;
-void **kernelParams;
-void **extra;
-};
-\endcode</p>
-<p>When the graph is launched, the node will invoke kernel \p func on a (\p gridDim.x x
-\p gridDim.y x \p gridDim.z) grid of blocks. Each block contains
-(\p blockDim.x x \p blockDim.y x \p blockDim.z) threads.</p>
-<p>\p sharedMem sets the amount of dynamic shared memory that will be
-available to each thread block.</p>
-<p>Kernel parameters to \p func can be specified in one of two ways:</p>
-<ol>
-<li>
-<p>Kernel parameters can be specified via \p kernelParams. If the kernel has N
-parameters, then \p kernelParams needs to be an array of N pointers. Each pointer,
-from \p kernelParams[0] to \p kernelParams[N-1], points to the region of memory from which the actual
-parameter will be copied. The number of kernel parameters and their offsets and sizes do not need
-to be specified as that information is retrieved directly from the kernel’s image.</p>
-</li>
-<li>
-<p>Kernel parameters can also be packaged by the application into a single buffer that is passed in
-via \p extra. This places the burden on the application of knowing each kernel
-parameter’s size and alignment/padding within the buffer. The \p extra parameter exists
-to allow this function to take additional less commonly used arguments. \p extra specifies
-a list of names of extra settings and their corresponding values. Each extra setting name is
-immediately followed by the corresponding value. The list must be terminated with either NULL or
-CU_LAUNCH_PARAM_END.</p>
-</li>
-</ol>
-<ul>
-<li>::CU_LAUNCH_PARAM_END, which indicates the end of the \p extra
-array;</li>
-<li>::CU_LAUNCH_PARAM_BUFFER_POINTER, which specifies that the next
-value in \p extra will be a pointer to a buffer
-containing all the kernel parameters for launching kernel
-\p func;</li>
-<li>::CU_LAUNCH_PARAM_BUFFER_SIZE, which specifies that the next
-value in \p extra will be a pointer to a size_t
-containing the size of the buffer specified with
-::CU_LAUNCH_PARAM_BUFFER_POINTER;</li>
-</ul>
-<p>The error ::cudaErrorInvalidValue will be returned if kernel parameters are specified with both
-\p kernelParams and \p extra (i.e. both \p kernelParams and
-\p extra are non-NULL).</p>
-<p>The \p kernelParams or \p extra array, as well as the argument values it points to,
-are copied during this call.</p>
-<p>\note Kernels launched using graphs must not use texture and surface references. Reading or
-writing through any texture or surface reference is undefined behavior.
-This restriction does not apply to texture and surface objects.</p>
-<p>\param pGraphNode     - Returns newly created node
-\param graph          - Graph to which to add the node
-\param pDependencies    - Dependencies of the node
-\param numDependencies - Number of dependencies
-\param pNodeParams      - Parameters for the GPU execution node</p>
-<p>\return
-::cudaSuccess,
-::cudaErrorInvalidValue,
-::cudaErrorInvalidDeviceFunction
-\note_graph_thread_safety
-\notefnerr
-\note_init_rt
-\note_callback</p>
-<p>\sa
-::cudaLaunchKernel,
-::cudaGraphKernelNodeGetParams,
-::cudaGraphKernelNodeSetParams,
-::cudaGraphCreate,
-::cudaGraphDestroyNode,
-::cudaGraphAddChildGraphNode,
-::cudaGraphAddEmptyNode,
-::cudaGraphAddHostNode,
-::cudaGraphAddMemcpyNode,
-::cudaGraphAddMemsetNode</p>
-</div></details></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn_sys" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
+    <h1 class="fqn"><span class="in-band">Function <a href="index.html">rcudnn_sys</a>::<wbr><a class="fn" href="#">cudaGraphAddKernelNode</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/rcudnn_sys/generated.rs.html#9175-9181">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><div class="docblock item-decl"><pre class="rust fn"><code>pub unsafe extern &quot;C&quot; fn cudaGraphAddKernelNode(<br>&nbsp;&nbsp;&nbsp;&nbsp;pGraphNode: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*mut </a><a class="type" href="type.cudaGraphNode_t.html" title="type rcudnn_sys::cudaGraphNode_t">cudaGraphNode_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;graph: <a class="type" href="type.cudaGraph_t.html" title="type rcudnn_sys::cudaGraph_t">cudaGraph_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pDependencies: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="type" href="type.cudaGraphNode_t.html" title="type rcudnn_sys::cudaGraphNode_t">cudaGraphNode_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;numDependencies: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;pNodeParams: <a class="primitive" href="https://doc.rust-lang.org/1.63.0/std/primitive.pointer.html">*const </a><a class="struct" href="struct.cudaKernelNodeParams.html" title="struct rcudnn_sys::cudaKernelNodeParams">cudaKernelNodeParams</a><br>) -&gt; <a class="enum" href="enum.cudaError.html" title="enum rcudnn_sys::cudaError">cudaError_t</a></code></pre></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="rcudnn_sys" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
 </body></html>
