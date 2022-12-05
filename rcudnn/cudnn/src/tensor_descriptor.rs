@@ -33,22 +33,39 @@ impl TensorDescriptor {
         strides: &[i32],
         data_type: DataType,
     ) -> Result<TensorDescriptor, Error> {
-        let nb_dims = dims.len() as i32;
-        if nb_dims < 3 {
-            return Err(Error::BadParam(
-                "CUDA cuDNN only supports Tensors with 3 to 8 dimensions.",
-            ));
+        // CUDA supports tensors with 4 to 8 dimensions. If the actual tensor has less dimensions,
+        // CUDA recommends setting several first dimensions to 1.
+        let mut cuda_dims = [0; 8];
+        let mut cuda_strides = [0; 8];
+        let mut cuda_dim_count = dims.len() as i32;
+        if cuda_dim_count < 4 {
+            let stub_dim_count = 4 - cuda_dim_count;
+            cuda_dim_count = 4;
+            for i in 0..stub_dim_count {
+                cuda_dims[i as usize] = 1;
+            }
+            for i in 0..dims.len() {
+                cuda_dims[i + stub_dim_count as usize] = dims[i];
+                cuda_strides[i + stub_dim_count as usize] = strides[i];
+            }
+        } else {
+            for i in 0..dims.len() {
+                cuda_dims[i] = dims[i];
+                cuda_strides[i] = strides[i];
+            }
         }
 
-        let dims_ptr = dims.as_ptr();
-        let strides_ptr = strides.as_ptr();
+        let dims_ptr = cuda_dims.as_ptr();
+        let strides_ptr = cuda_strides.as_ptr();
         let generic_tensor_desc = API::create_tensor_descriptor()?;
         let data_type = API::cudnn_data_type(data_type);
+
+        // assert!(false, "{:?}, {}", cuda_dims, cuda_dim_count);
 
         API::set_tensor_descriptor(
             generic_tensor_desc,
             data_type,
-            nb_dims,
+            cuda_dim_count,
             dims_ptr,
             strides_ptr,
         )?;

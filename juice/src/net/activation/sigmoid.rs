@@ -50,19 +50,24 @@ impl<B: IBackend + conn::Sigmoid<f32>> Layer<B> for Sigmoid {
 
 #[cfg(test)]
 mod tests {
+    use coaster::frameworks::native::get_native_backend;
+
     use crate::net::{layer::testing::*, LayerConfig, Network};
 
     #[test]
     fn compute() {
-        let net = Network::from_config(LayerConfig::Sigmoid, &[vec![2]]).unwrap();
-        let result = get_net_output(&net, &[[1.0, -2.0], [-3.0, 4.0]]);
+        let backend = get_native_backend();
+        let net = Network::from_config(&backend, LayerConfig::Sigmoid, &[vec![2]]).unwrap();
+        let result = get_net_output(&backend, &net, &[[1.0, -2.0], [-3.0, 4.0]]);
         assert_tensor_eq(&result.output, &[[0.7310586, 0.11920292], [0.047425874, 0.98201376]]);
     }
 
     #[test]
     fn compute_gradients() {
-        let net = Network::from_config(LayerConfig::Sigmoid, &[vec![2]]).unwrap();
-        let result = get_net_output_and_gradients(&net, &[[1.0, -2.0], [-3.0, 4.0]], &[[0.4, 0.3], [0.1, 0.2]]);
+        let backend = get_native_backend();
+        let net = Network::from_config(&backend, LayerConfig::Sigmoid, &[vec![2]]).unwrap();
+        let result =
+            get_net_output_and_gradients(&backend, &net, &[[1.0, -2.0], [-3.0, 4.0]], &[[0.4, 0.3], [0.1, 0.2]]);
         assert_tensor_eq(
             &result.input_gradient,
             &[[0.078644775, 0.031498075], [0.004517666, 0.0035325468]],

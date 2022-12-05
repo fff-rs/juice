@@ -158,13 +158,21 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
 
 #[cfg(test)]
 mod tests {
+    use coaster::frameworks::native::get_native_backend;
+
     use crate::net::{layer::testing::*, LayerConfig, Network};
 
     use super::LinearConfig;
 
     #[test]
     fn compute() {
-        let net = Network::from_config(LayerConfig::Linear(LinearConfig { output_size: 2 }), &[vec![3]]).unwrap();
+        let backend = get_native_backend();
+        let net = Network::from_config(
+            &backend,
+            LayerConfig::Linear(LinearConfig { output_size: 2 }),
+            &[vec![3]],
+        )
+        .unwrap();
 
         // Set params such that layer becomes this:
         //            |1 4|
@@ -174,14 +182,20 @@ mod tests {
         set_params(&net.top().descriptor().params()[0], &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
         set_params(&net.top().descriptor().params()[1], &[0.1, 0.2]);
 
-        let result = get_net_output(&net, &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]);
+        let result = get_net_output(&backend, &net, &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]);
 
         assert_tensor_eq(&result.output, &[[14.1, 32.2], [32.1, 77.2]]);
     }
 
     #[test]
     fn compute_gradients() {
-        let net = Network::from_config(LayerConfig::Linear(LinearConfig { output_size: 2 }), &[vec![3]]).unwrap();
+        let backend = get_native_backend();
+        let net = Network::from_config(
+            &backend,
+            LayerConfig::Linear(LinearConfig { output_size: 2 }),
+            &[vec![3]],
+        )
+        .unwrap();
 
         // Set params such that layer becomes this:
         //            |1 4|
@@ -194,6 +208,7 @@ mod tests {
         // Output gradient contains a single non-zero item at pos 0,0.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
                 &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
                 &[[1.0, 0.0], [0.0, 0.0]],
@@ -207,6 +222,7 @@ mod tests {
         // Output gradient contains a single non-zero item at pos 0,1.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
                 &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
                 &[[0.0, 1.0], [0.0, 0.0]],
@@ -220,6 +236,7 @@ mod tests {
         // Output gradient contains a single non-zero item at pos 1,0.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
                 &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
                 &[[0.0, 0.0], [1.0, 0.0]],
@@ -233,6 +250,7 @@ mod tests {
         // Output gradient contains a single non-zero item at pos 1,1.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
                 &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
                 &[[0.0, 0.0], [0.0, 1.0]],
@@ -246,6 +264,7 @@ mod tests {
         // Output gradient contains all 1s.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
                 &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
                 &[[1.0, 1.0], [1.0, 1.0]],

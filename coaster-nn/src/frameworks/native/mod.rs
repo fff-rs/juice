@@ -198,9 +198,9 @@ where
         let filter_stride = filter_dim.default_stride();
 
         // sanity check
-        assert!(input_dim[0] == output_dim[0]);
-        assert!(filter_dim[0] == output_dim[1]);
-        assert!(input_dim[1] == filter_dim[1]);
+        assert_eq!(input_dim[0], output_dim[0]);
+        assert_eq!(filter_dim[0], output_dim[1]);
+        assert_eq!(input_dim[1], filter_dim[1]);
 
         // TODO: specializations for spatial input
 
@@ -988,8 +988,7 @@ where
         result_diff: &mut SharedTensor<T>,
         config: &Self::CDROP,
     ) -> Result<(), Error> {
-        // TODO check if there is anything to do here?
-        Ok(())
+        return Err(Error::Plugin(PluginError::Plugin("Unimplemented.")));
     }
 }
 

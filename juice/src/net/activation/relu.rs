@@ -50,19 +50,24 @@ impl<B: IBackend + conn::Relu<f32>> Layer<B> for Relu {
 
 #[cfg(test)]
 mod tests {
+    use coaster::frameworks::native::get_native_backend;
+
     use crate::net::{layer::testing::*, LayerConfig, Network};
 
     #[test]
     fn compute() {
-        let net = Network::from_config(LayerConfig::Relu, &[vec![2]]).unwrap();
-        let result = get_net_output(&net, &[[1.0, -2.0], [-3.0, 4.0]]);
+        let backend = get_native_backend();
+        let net = Network::from_config(&backend, LayerConfig::Relu, &[vec![2]]).unwrap();
+        let result = get_net_output(&backend, &net, &[[1.0, -2.0], [-3.0, 4.0]]);
         assert_tensor_eq(&result.output, &[[1.0, 0.0], [0.0, 4.0]]);
     }
 
     #[test]
     fn compute_gradients() {
-        let net = Network::from_config(LayerConfig::Relu, &[vec![2]]).unwrap();
-        let result = get_net_output_and_gradients(&net, &[[1.0, -2.0], [-3.0, 4.0]], &[[0.4, 0.3], [0.1, 0.2]]);
+        let backend = get_native_backend();
+        let net = Network::from_config(&backend, LayerConfig::Relu, &[vec![2]]).unwrap();
+        let result =
+            get_net_output_and_gradients(&backend, &net, &[[1.0, -2.0], [-3.0, 4.0]], &[[0.4, 0.3], [0.1, 0.2]]);
         assert_tensor_eq(&result.input_gradient, &[[0.4, 0.0], [0.0, 0.2]]);
     }
 }

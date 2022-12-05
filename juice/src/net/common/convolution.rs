@@ -60,11 +60,21 @@ pub struct Convolution<B: conn::Convolution<f32>> {
 }
 
 fn get_input_dimensions(input_shape: &TensorDesc) -> (usize, usize, usize) {
-    unimplemented!();
+    match input_shape.len() {
+        // Input is a [W, H] tensor.
+        // TODO: cuDNN always expects [batch_size, C, W, H] input shape. Workaround this?
+        2 => unimplemented!("Use [1, W, H] shape for grascale images"),
+        // Input is a [C, W, H] tensor.
+        3 => (input_shape[0], input_shape[1], input_shape[2]),
+        _ => panic!(
+            "Can't take an input shape {:?} for convolution layer, expecting either [W, H] or [C, W, H]",
+            input_shape
+        ),
+    }
 }
 
-fn get_output_size(input_size: usize, padding: usize, stride: usize, kernel_size: usize) -> usize {
-    unimplemented!();
+fn get_output_dimension(input_size: usize, padding: usize, stride: usize, kernel_size: usize) -> usize {
+    (input_size + padding * 2 - kernel_size) / stride + 1
 }
 
 impl<B: conn::Convolution<f32>> Convolution<B> {
@@ -75,12 +85,17 @@ impl<B: conn::Convolution<f32>> Convolution<B> {
         let (input_channels, input_width, input_height) = get_input_dimensions(descriptor.input(0).unit_shape());
 
         // Compute the size of an output feature map(s).
-        let output_width = get_output_size(input_width, config.padding, config.stride, config.kernel_size);
-        let output_height = get_output_size(input_height, config.padding, config.stride, config.kernel_size);
+        let output_width = get_output_dimension(input_width, config.padding, config.stride, config.kernel_size);
+        let output_height = get_output_dimension(input_height, config.padding, config.stride, config.kernel_size);
         descriptor.add_output(vec![config.feature_maps, output_width, output_height]);
 
         // Create kernel params tensor.
-        let mut kernel_tensor = SharedTensor::<f32>::new(&[input_channels, config.kernel_size, config.kernel_size]);
+        let mut kernel_tensor = SharedTensor::<f32>::new(&[
+            config.feature_maps,
+            input_channels,
+            config.kernel_size,
+            config.kernel_size,
+        ]);
         FillerType::fill_glorot(
             &mut kernel_tensor,
             descriptor.input(0).unit_shape().size(),
@@ -179,15 +194,44 @@ impl<B: conn::Convolution<f32>> Debug for Convolution<B> {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "cuda"))]
 mod tests {
-    #[test]
-    fn compute() {
-        unimplemented!();
-    }
+    use coaster::frameworks::cuda::get_cuda_backend;
+
+    use crate::net::{
+        testing::{assert_tensor_eq, get_net_output, set_params},
+        Network,
+    };
+
+    use super::ConvolutionConfig;
 
     #[test]
-    fn compute_gradients() {
-        unimplemented!();
+    fn compute() {
+        let backend = get_cuda_backend();
+
+        let net = Network::from_config(
+            &backend,
+            ConvolutionConfig {
+                feature_maps: 1,
+                padding: 0,
+                stride: 1,
+                kernel_size: 2,
+            },
+            &[vec![1, 3, 3]],
+        )
+        .unwrap();
+
+        //               | 1.0 0.2 |
+        // Set kernel to | 0.5 0.1 |.
+        set_params(&net.top().descriptor().params()[0], &[1.0, 0.5, 0.2, 0.1]);
+
+        //                                   | 1.0 2.0 3.0 |
+        // Apply convolution to input matrix | 4.0 5.0 6.0 |
+        //                                   | 7.0 8.0 9.0 |.
+        let result = get_net_output(&backend, &net, &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+
+        assert_tensor_eq(&result.output, &[[7.5, 9.3], [12.9, 14.7]]);
     }
+
+    // TODO: Unit test for compute_gradients().
 }

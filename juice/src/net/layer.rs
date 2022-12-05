@@ -57,15 +57,19 @@ pub enum LayerFromConfigError {
 /// Creates a layer from a config.
 /// Takes a partially filled Descriptor, which should have a valid path and inputs.
 pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
+    backend: &B,
     descriptor: Descriptor,
     config: &LayerConfig,
 ) -> Result<Box<dyn Layer<B>>, LayerFromConfigError> {
     Ok(match config {
+        LayerConfig::Convolution(cfg) => Box::new(Convolution::new(descriptor, cfg)),
+        LayerConfig::Dropout(cfg) => Box::new(Dropout::new(backend, descriptor, cfg)),
         LayerConfig::Linear(cfg) => Box::new(Linear::new(descriptor, cfg)),
         LayerConfig::MeanSquaredError => Box::new(MeanSquaredError::new(descriptor)),
         LayerConfig::NegativeLogLikelihood(cfg) => Box::new(NegativeLogLikelihood::new(descriptor, cfg)),
+        LayerConfig::Pooling(cfg) => Box::new(Pooling::new(backend, descriptor, cfg)),
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
-        LayerConfig::Sequential(cfg) => Box::new(Sequential::new(descriptor, cfg)?),
+        LayerConfig::Sequential(cfg) => Box::new(Sequential::new(backend, descriptor, cfg)?),
         LayerConfig::Sigmoid => Box::new(Sigmoid::new(descriptor)),
     })
 }
@@ -78,11 +82,11 @@ impl From<SequentialBadInputOutputError> for LayerFromConfigError {
 
 #[cfg(test)]
 pub mod testing {
-    use coaster::{Backend, ITensorDesc, Native, SharedTensor};
+    use coaster::{frameworks::native::get_native_backend, IBackend, ITensorDesc, SharedTensor};
 
     use crate::{
         net::{Context, LearnableParamsLink, Network},
-        util::{native_backend, write_batch_sample},
+        util::{native_backend, write_batch_sample, LayerOps},
     };
 
     // For floating-point comparisons.
@@ -148,8 +152,9 @@ pub mod testing {
     // Used in unit testing. Example:
     //    let result = get_net_output(&net, &[[1.0, -2.0],
     //                                        [-3.0, 4.0]]);
-    pub fn get_net_output<Input: AsRef<[InputRow]>, InputRow: AsRef<[f32]>>(
-        net: &Network<Backend<Native>>,
+    pub fn get_net_output<B: IBackend + LayerOps<f32> + 'static, Input: AsRef<[InputRow]>, InputRow: AsRef<[f32]>>(
+        backend: &B,
+        net: &Network<B>,
         input: Input,
     ) -> LayerOutput {
         let input_rows = input.as_ref().len();
@@ -162,9 +167,8 @@ pub mod testing {
         }
 
         // Run the input through the network.
-        let backend = native_backend();
         LayerOutput {
-            output: net.transform(&backend, &input_tensor),
+            output: net.transform(backend, &input_tensor),
         }
     }
 
@@ -176,49 +180,64 @@ pub mod testing {
     //                                              &[[0.4, 0.3],
     //                                                [0.1, 0.2]]);
     pub fn get_net_output_and_gradients<
+        B: IBackend + LayerOps<f32> + 'static,
         Input: AsRef<[InputRow]>,
         InputRow: AsRef<[f32]>,
         Output: AsRef<[OutputRow]>,
         OutputRow: AsRef<[f32]>,
     >(
-        net: &Network<Backend<Native>>,
+        backend: &B,
+        net: &Network<B>,
         input: Input,
         output_gradient: Output,
     ) -> LayerOutputAndGradients {
+        let native_backend = get_native_backend();
+
         let input_rows = input.as_ref().len();
         let input_cols = input.as_ref()[0].as_ref().len();
         let output_rows = output_gradient.as_ref().len();
         let output_cols = output_gradient.as_ref()[0].as_ref().len();
 
-        // We treat the input and output rows and the batches, so they must be equal.
-        assert_eq!(input_rows, output_rows);
-
-        let backend = native_backend();
-
-        // Check that layer output dimensions match the provided output gradient.
-        // Again, output unit shape is just [output_cols] since rows are batches.
+        // Check that layer output size match the provided output gradient.
         assert_eq!(net.top().descriptor().outputs().len(), 1);
-        assert_eq!(net.top().descriptor().output(0).unit_shape(), &[output_cols]);
+        assert_eq!(
+            net.top().descriptor().output(0).unit_shape().size(),
+            output_rows * output_cols
+        );
 
-        let mut context = Context::new(input_rows);
+        let mut context = Context::new(1);
 
         // Create input tensor on the context and fill it.
-        let input_tensor = context.acquire_data(net.top().descriptor().input(0));
-        for i in 0..input_rows {
-            write_batch_sample(&mut input_tensor.borrow_mut(), input.as_ref()[i].as_ref(), i);
+        {
+            let input_tensor_ref = context.acquire_data(net.top().descriptor().input(0));
+            let mut input_tensor = input_tensor_ref.borrow_mut();
+            let input_data = input_tensor
+                .write_only(native_backend.device())
+                .unwrap()
+                .as_mut_slice::<f32>();
+            for i in 0..input_rows {
+                for j in 0..input_cols {
+                    input_data[i * input_cols + j] = input.as_ref()[i].as_ref()[j];
+                }
+            }
         }
 
         // Compute network output.
-        net.top().compute_output(&backend, &mut context);
+        net.top().compute_output(backend, &mut context);
 
         // Create output gradient tensor on the context and fill it.
-        let output_gradient_tensor = context.acquire_data_gradient(net.top().descriptor().output(0));
-        for i in 0..output_rows {
-            write_batch_sample(
-                &mut output_gradient_tensor.borrow_mut(),
-                output_gradient.as_ref()[i].as_ref(),
-                i,
-            );
+        {
+            let output_gradient_tensor_ref = context.acquire_data_gradient(net.top().descriptor().output(0));
+            let mut output_gradient_tensor = output_gradient_tensor_ref.borrow_mut();
+            let output_gradient_data = output_gradient_tensor
+                .write_only(native_backend.device())
+                .unwrap()
+                .as_mut_slice::<f32>();
+            for i in 0..output_rows {
+                for j in 0..output_cols {
+                    output_gradient_data[i * output_cols + j] = output_gradient.as_ref()[i].as_ref()[j];
+                }
+            }
         }
 
         // Make the layer compute the input gradient.
