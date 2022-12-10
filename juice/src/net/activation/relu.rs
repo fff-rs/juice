@@ -58,16 +58,20 @@ mod tests {
     fn compute() {
         let backend = get_native_backend();
         let net = Network::from_config(&backend, LayerConfig::Relu, &[vec![2]]).unwrap();
-        let result = get_net_output(&backend, &net, &[[1.0, -2.0], [-3.0, 4.0]]);
-        assert_tensor_eq(&result.output, &[[1.0, 0.0], [0.0, 4.0]]);
+        let result = get_net_output(&backend, &net, &create_tensor_2d([[1.0, -2.0], [-3.0, 4.0]]));
+        assert_tensor_eq(&result.output, &create_tensor_2d([[1.0, 0.0], [0.0, 4.0]]));
     }
 
     #[test]
     fn compute_gradients() {
         let backend = get_native_backend();
         let net = Network::from_config(&backend, LayerConfig::Relu, &[vec![2]]).unwrap();
-        let result =
-            get_net_output_and_gradients(&backend, &net, &[[1.0, -2.0], [-3.0, 4.0]], &[[0.4, 0.3], [0.1, 0.2]]);
-        assert_tensor_eq(&result.input_gradient, &[[0.4, 0.0], [0.0, 0.2]]);
+        let result = get_net_output_and_gradients(
+            &backend,
+            &net,
+            &create_tensor_2d([[1.0, -2.0], [-3.0, 4.0]]),
+            &create_tensor_2d([[0.4, 0.3], [0.1, 0.2]]),
+        );
+        assert_tensor_eq(&result.input_gradient, &create_tensor_2d([[0.4, 0.0], [0.0, 0.2]]));
     }
 }

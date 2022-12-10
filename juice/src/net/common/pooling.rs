@@ -163,10 +163,7 @@ impl<B: conn::Pooling<f32>> Debug for Pooling<B> {
 mod tests {
     use coaster::frameworks::cuda::get_cuda_backend;
 
-    use crate::net::{
-        testing::{assert_tensor_eq, get_net_output, get_net_output_and_gradients},
-        Network,
-    };
+    use crate::net::{testing::*, Network};
 
     use super::{PoolingConfig, PoolingMode};
 
@@ -189,11 +186,15 @@ mod tests {
         //                                   | 1.0 2.0 3.0 |
         // Apply pooling to an input matrix  | 4.0 5.0 6.0 |
         //                                   | 7.0 8.0 9.0 |.
-        let result = get_net_output(&backend, &net, &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+        let result = get_net_output(
+            &backend,
+            &net,
+            &create_tensor_3d([[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]]),
+        );
 
         //                         | 5.0 6.0 |
         // Should result in matrix | 8.0 9.0 |.
-        assert_tensor_eq(&result.output, &[[5.0, 6.0], [8.0, 9.0]]);
+        assert_tensor_eq(&result.output, &create_tensor_3d([[[5.0, 6.0], [8.0, 9.0]]]));
     }
 
     #[test]
@@ -219,11 +220,13 @@ mod tests {
             let result = get_net_output_and_gradients(
                 &backend,
                 &net,
-                &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]],
-                &[[1.0, 0.0], [0.0, 0.0]],
+                &create_tensor_3d([[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]]),
+                &create_tensor_3d([[[1.0, 0.0], [0.0, 0.0]]]),
             );
-            assert_tensor_eq(&result.input_gradient, &[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]);
+            assert_tensor_eq(
+                &result.input_gradient,
+                &create_tensor_3d([[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]]),
+            );
         }
     }
-
 }

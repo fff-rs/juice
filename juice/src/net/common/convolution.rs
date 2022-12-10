@@ -198,10 +198,7 @@ impl<B: conn::Convolution<f32>> Debug for Convolution<B> {
 mod tests {
     use coaster::frameworks::cuda::get_cuda_backend;
 
-    use crate::net::{
-        testing::{assert_tensor_eq, get_net_output, set_params},
-        Network,
-    };
+    use crate::net::{testing::*, Network};
 
     use super::ConvolutionConfig;
 
@@ -228,9 +225,13 @@ mod tests {
         //                                   | 1.0 2.0 3.0 |
         // Apply convolution to input matrix | 4.0 5.0 6.0 |
         //                                   | 7.0 8.0 9.0 |.
-        let result = get_net_output(&backend, &net, &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+        let result = get_net_output(
+            &backend,
+            &net,
+            &create_tensor_3d([[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]]),
+        );
 
-        assert_tensor_eq(&result.output, &[[7.5, 9.3], [12.9, 14.7]]);
+        assert_tensor_eq(&result.output, &create_tensor_3d([[[7.5, 9.3], [12.9, 14.7]]]));
     }
 
     // TODO: Unit test for compute_gradients().

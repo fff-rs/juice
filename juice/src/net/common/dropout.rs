@@ -87,10 +87,7 @@ impl<B: conn::Dropout<f32>> Debug for Dropout<B> {
 mod tests {
     use coaster::frameworks::native::get_native_backend;
 
-    use crate::net::{
-        testing::{assert_tensor_eq, get_net_output},
-        Network,
-    };
+    use crate::net::{testing::*, Network};
 
     use super::DropoutConfig;
 
@@ -98,8 +95,8 @@ mod tests {
     fn compute() {
         let backend = get_native_backend();
         let net = Network::from_config(&backend, DropoutConfig::new(0.1, 1), &[vec![2]]).unwrap();
-        let result = get_net_output(&backend, &net, &[[1.0, 2.0], [3.0, 4.0]]);
-        assert_tensor_eq(&result.output, &[[1.0, 0.0], [3.0, 4.0]]);
+        let result = get_net_output(&backend, &net, &create_tensor_2d([[1.0, 2.0], [3.0, 4.0]]));
+        assert_tensor_eq(&result.output, &create_tensor_2d([[1.0, 0.0], [3.0, 4.0]]));
     }
 
     // TODO: dropout_grad() is not implemented for native backend. Either implement it

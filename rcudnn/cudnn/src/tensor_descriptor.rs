@@ -33,14 +33,16 @@ impl TensorDescriptor {
         strides: &[i32],
         data_type: DataType,
     ) -> Result<TensorDescriptor, Error> {
-        // CUDA supports tensors with 4 to 8 dimensions. If the actual tensor has less dimensions,
+        // CUDA supports tensors with 3 to 8 dimensions. If the actual tensor has less dimensions,
         // CUDA recommends setting several first dimensions to 1.
+        const MIN_DIMS: i32 = 3;
+
         let mut cuda_dims = [0; 8];
         let mut cuda_strides = [0; 8];
         let mut cuda_dim_count = dims.len() as i32;
-        if cuda_dim_count < 4 {
-            let stub_dim_count = 4 - cuda_dim_count;
-            cuda_dim_count = 4;
+        if cuda_dim_count < MIN_DIMS {
+            let stub_dim_count = MIN_DIMS - cuda_dim_count;
+            cuda_dim_count = MIN_DIMS;
             for i in 0..stub_dim_count {
                 cuda_dims[i as usize] = 1;
             }
