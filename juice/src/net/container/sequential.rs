@@ -260,7 +260,10 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> for Sequential<B> {
 
 impl<B: IBackend> Debug for Sequential<B> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Sequential")
+        f.debug_struct("Sequential")
+        .field("descriptor", &self.descriptor)
+        .field("children", &self.children)
+        .finish()
     }
 }
 

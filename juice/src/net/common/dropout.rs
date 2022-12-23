@@ -79,7 +79,7 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Dropout<B> {
 
 impl<B: conn::Dropout<f32>> Debug for Dropout<B> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Dropout")
+        f.debug_struct("Dropout").field("descriptor", &self.descriptor).finish()
     }
 }
 

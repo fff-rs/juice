@@ -190,7 +190,10 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution<B> {
 
 impl<B: conn::Convolution<f32>> Debug for Convolution<B> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Convolution")
+        f.debug_struct("Convolution")
+            .field("descriptor", &self.descriptor)
+            .field("kernel_shape", self.kernel.borrow().data.desc())
+            .finish()
     }
 }
 

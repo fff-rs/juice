@@ -155,7 +155,10 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Pooling<B> {
 
 impl<B: conn::Pooling<f32>> Debug for Pooling<B> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Pooling")
+        f.debug_struct("Pooling")
+            .field("descriptor", &self.descriptor)
+            .field("mode", &self.mode)
+            .finish()
     }
 }
 
