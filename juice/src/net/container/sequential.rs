@@ -113,7 +113,11 @@ impl SequentialConfig {
 }
 
 impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
-    pub fn new(mut descriptor: Descriptor, config: &SequentialConfig) -> Result<Self, LayerFromConfigError> {
+    pub fn new(
+        backend: &B,
+        mut descriptor: Descriptor,
+        config: &SequentialConfig,
+    ) -> Result<Self, LayerFromConfigError> {
         // Create internal layers one by one and connect them.
         // For the purpose of connecting layers, all inputs and outputs have names,
         // which are either explicitly given in the config, or have implicit form of
@@ -167,8 +171,11 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
                 })
                 .collect();
 
-            let mut child_layer =
-                layer_from_config(descriptor.sub(&child_config.name, child_inputs?), &child_config.config)?;
+            let mut child_layer = layer_from_config(
+                backend,
+                descriptor.sub(&child_config.name, child_inputs?),
+                &child_config.config,
+            )?;
 
             // Create data buffer paths for child outputs and save the outputs for next layers.
             let child_descriptor = child_layer.descriptor_mut();
@@ -253,7 +260,10 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> for Sequential<B> {
 
 impl<B: IBackend> Debug for Sequential<B> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Sequential")
+        f.debug_struct("Sequential")
+        .field("descriptor", &self.descriptor)
+        .field("children", &self.children)
+        .finish()
     }
 }
 
@@ -279,7 +289,7 @@ mod tests {
         let backend = native_backend();
 
         let cfg = SequentialConfig::new();
-        let net = Network::from_config(cfg, &[vec![1]]).unwrap();
+        let net = Network::from_config(&backend, cfg, &[vec![1]]).unwrap();
 
         assert_eq!(transform(&net, &backend, -1.0), -1.0);
     }
@@ -291,7 +301,7 @@ mod tests {
 
         let mut cfg = SequentialConfig::new();
         cfg.add_layer("relu", LayerConfig::Relu);
-        let net = Network::from_config(cfg, &[vec![1]]).unwrap();
+        let net = Network::from_config(&backend, cfg, &[vec![1]]).unwrap();
 
         assert_eq!(transform(&net, &backend, -1.0), 0.0);
     }
@@ -317,7 +327,7 @@ mod tests {
         // Take output of the Sequential layer.
         cfg.map_output("out2");
 
-        let net = Network::from_config(cfg, &[vec![1]]).unwrap();
+        let net = Network::from_config(&backend, cfg, &[vec![1]]).unwrap();
 
         assert_eq!(transform(&net, &backend, -1.0), -1.0);
     }
@@ -330,7 +340,7 @@ mod tests {
         cfg.add_layer("relu", LayerConfig::Relu).map_output("out");
         cfg.add_layer("relu2", LayerConfig::Relu).map_input("out2");
 
-        let result: Result<Network<Backend<Native>>, _> = Network::from_config(cfg, &[vec![1]]);
+        let result: Result<Network<Backend<Native>>, _> = Network::from_config(&backend, cfg, &[vec![1]]);
         assert!(result.is_err());
 
         assert_eq!(
@@ -349,7 +359,7 @@ mod tests {
         cfg.add_layer("relu", LayerConfig::Relu).map_output("out");
         cfg.map_output("out2");
 
-        let result: Result<Network<Backend<Native>>, _> = Network::from_config(cfg, &[vec![1]]);
+        let result: Result<Network<Backend<Native>>, _> = Network::from_config(&backend, cfg, &[vec![1]]);
         assert!(result.is_err());
 
         assert_eq!(

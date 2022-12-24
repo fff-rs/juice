@@ -174,6 +174,7 @@ impl Cudnn {
 
     /// Initializes the parameters and configurations for running CUDA cuDNN dropout operation.
     pub fn init_dropout(&self, probability: f32, seed: u64) -> Result<DropoutConfig, Error> {
+        // TODO: This is wrong. 'reserve' memory in DropoutConfig must be at least cudnnDropoutGetReserveSpaceSize().
         let reserve_required: usize = API::dropout_get_states_size(*self.id_c())?;
         let reserve = CudaDeviceMemory::new(reserve_required)?;
         let dropout =

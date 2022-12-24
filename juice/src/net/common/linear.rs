@@ -158,13 +158,21 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
 
 #[cfg(test)]
 mod tests {
+    use coaster::frameworks::native::get_native_backend;
+
     use crate::net::{layer::testing::*, LayerConfig, Network};
 
     use super::LinearConfig;
 
     #[test]
     fn compute() {
-        let net = Network::from_config(LayerConfig::Linear(LinearConfig { output_size: 2 }), &[vec![3]]).unwrap();
+        let backend = get_native_backend();
+        let net = Network::from_config(
+            &backend,
+            LayerConfig::Linear(LinearConfig { output_size: 2 }),
+            &[vec![3]],
+        )
+        .unwrap();
 
         // Set params such that layer becomes this:
         //            |1 4|
@@ -174,14 +182,20 @@ mod tests {
         set_params(&net.top().descriptor().params()[0], &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
         set_params(&net.top().descriptor().params()[1], &[0.1, 0.2]);
 
-        let result = get_net_output(&net, &[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]);
+        let result = get_net_output(&backend, &net, &create_tensor_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]));
 
-        assert_tensor_eq(&result.output, &[[14.1, 32.2], [32.1, 77.2]]);
+        assert_tensor_eq(&result.output, &create_tensor_2d([[14.1, 32.2], [32.1, 77.2]]));
     }
 
     #[test]
     fn compute_gradients() {
-        let net = Network::from_config(LayerConfig::Linear(LinearConfig { output_size: 2 }), &[vec![3]]).unwrap();
+        let backend = get_native_backend();
+        let net = Network::from_config(
+            &backend,
+            LayerConfig::Linear(LinearConfig { output_size: 2 }),
+            &[vec![3]],
+        )
+        .unwrap();
 
         // Set params such that layer becomes this:
         //            |1 4|
@@ -194,66 +208,101 @@ mod tests {
         // Output gradient contains a single non-zero item at pos 0,0.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[1.0, 0.0], [0.0, 0.0]],
+                &create_tensor_2d([[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]]),
+                &create_tensor_2d([[1.0, 0.0], [0.0, 0.0]]),
             );
-            assert_tensor_eq(&result.input_gradient, &[[1.0, 2.0, 3.0], [0.0, 0.0, 0.0]]);
+            assert_tensor_eq(
+                &result.input_gradient,
+                &create_tensor_2d([[1.0, 2.0, 3.0], [0.0, 0.0, 0.0]]),
+            );
             assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.01, 0.02, 0.03], [0.0, 0.0, 0.0]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[1.0, 0.0]]);
+            assert_tensor_eq(
+                &result.params_gradients[0],
+                &create_tensor_2d([[0.01, 0.02, 0.03], [0.0, 0.0, 0.0]]),
+            );
+            assert_tensor_eq(&result.params_gradients[1], &create_tensor_2d([[1.0, 0.0]]));
         }
 
         // Output gradient contains a single non-zero item at pos 0,1.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[0.0, 1.0], [0.0, 0.0]],
+                &create_tensor_2d([[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]]),
+                &create_tensor_2d([[0.0, 1.0], [0.0, 0.0]]),
             );
-            assert_tensor_eq(&result.input_gradient, &[[4.0, 5.0, 6.0], [0.0, 0.0, 0.0]]);
+            assert_tensor_eq(
+                &result.input_gradient,
+                &create_tensor_2d([[4.0, 5.0, 6.0], [0.0, 0.0, 0.0]]),
+            );
             assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.0, 0.0, 0.0], [0.01, 0.02, 0.03]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[0.0, 1.0]]);
+            assert_tensor_eq(
+                &result.params_gradients[0],
+                &create_tensor_2d([[0.0, 0.0, 0.0], [0.01, 0.02, 0.03]]),
+            );
+            assert_tensor_eq(&result.params_gradients[1], &create_tensor_2d([[0.0, 1.0]]));
         }
 
         // Output gradient contains a single non-zero item at pos 1,0.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[0.0, 0.0], [1.0, 0.0]],
+                &create_tensor_2d([[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]]),
+                &create_tensor_2d([[0.0, 0.0], [1.0, 0.0]]),
             );
-            assert_tensor_eq(&result.input_gradient, &[[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]]);
+            assert_tensor_eq(
+                &result.input_gradient,
+                &create_tensor_2d([[0.0, 0.0, 0.0], [1.0, 2.0, 3.0]]),
+            );
             assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.04, 0.05, 0.06], [0.0, 0.0, 0.0]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[1.0, 0.0]]);
+            assert_tensor_eq(
+                &result.params_gradients[0],
+                &create_tensor_2d([[0.04, 0.05, 0.06], [0.0, 0.0, 0.0]]),
+            );
+            assert_tensor_eq(&result.params_gradients[1], &create_tensor_2d([[1.0, 0.0]]));
         }
 
         // Output gradient contains a single non-zero item at pos 1,1.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[0.0, 0.0], [0.0, 1.0]],
+                &create_tensor_2d([[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]]),
+                &create_tensor_2d([[0.0, 0.0], [0.0, 1.0]]),
             );
-            assert_tensor_eq(&result.input_gradient, &[[0.0, 0.0, 0.0], [4.0, 5.0, 6.0]]);
+            assert_tensor_eq(
+                &result.input_gradient,
+                &create_tensor_2d([[0.0, 0.0, 0.0], [4.0, 5.0, 6.0]]),
+            );
             assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.0, 0.0, 0.0], [0.04, 0.05, 0.06]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[0.0, 1.0]]);
+            assert_tensor_eq(
+                &result.params_gradients[0],
+                &create_tensor_2d([[0.0, 0.0, 0.0], [0.04, 0.05, 0.06]]),
+            );
+            assert_tensor_eq(&result.params_gradients[1], &create_tensor_2d([[0.0, 1.0]]));
         }
 
         // Output gradient contains all 1s.
         {
             let result = get_net_output_and_gradients(
+                &backend,
                 &net,
-                &[[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]],
-                &[[1.0, 1.0], [1.0, 1.0]],
+                &create_tensor_2d([[0.01, 0.02, 0.03], [0.04, 0.05, 0.06]]),
+                &create_tensor_2d([[1.0, 1.0], [1.0, 1.0]]),
             );
-            assert_tensor_eq(&result.input_gradient, &[[5.0, 7.0, 9.0], [5.0, 7.0, 9.0]]);
+            assert_tensor_eq(
+                &result.input_gradient,
+                &create_tensor_2d([[5.0, 7.0, 9.0], [5.0, 7.0, 9.0]]),
+            );
             assert_eq!(result.params_gradients.len(), 2);
-            assert_tensor_eq(&result.params_gradients[0], &[[0.05, 0.07, 0.09], [0.05, 0.07, 0.09]]);
-            assert_tensor_eq(&result.params_gradients[1], &[[2.0, 2.0]]);
+            assert_tensor_eq(
+                &result.params_gradients[0],
+                &create_tensor_2d([[0.05, 0.07, 0.09], [0.05, 0.07, 0.09]]),
+            );
+            assert_tensor_eq(&result.params_gradients[1], &create_tensor_2d([[2.0, 2.0]]));
         }
     }
 }
