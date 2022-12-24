@@ -57,7 +57,7 @@ impl<B: IBackend + SolverOps<f32> + 'static> Trainer<B> {
                 Inout::new(label_shape.clone()),
             ],
         );
-        let objective = layer_from_config(objective_descriptor, &config.objective).unwrap();
+        let objective = layer_from_config(backend, objective_descriptor, &config.objective).unwrap();
         let optimizer = optimizer_from_config(&config.optimizer);
 
         Trainer {
@@ -218,7 +218,7 @@ mod tests {
         net_cfg.add_layer("linear2", LinearConfig::new(50));
         net_cfg.add_layer("relu2", LayerConfig::Relu);
         net_cfg.add_layer("linear3", LinearConfig::new(1));
-        let mut net = Network::from_config(net_cfg, &[vec![1]]).unwrap();
+        let mut net = Network::from_config(&backend, net_cfg, &[vec![1]]).unwrap();
 
         // Create trainer.
         let train_cfg = TrainerConfig {
@@ -244,7 +244,7 @@ mod tests {
                 initial_mse = Some(mse);
             }
 
-            // Success condition (10X improvement). 
+            // Success condition (10X improvement).
             if let Some(m) = initial_mse {
                 if mse < m * 0.1 {
                     converged = true;

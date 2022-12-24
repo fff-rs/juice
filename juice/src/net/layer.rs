@@ -57,15 +57,19 @@ pub enum LayerFromConfigError {
 /// Creates a layer from a config.
 /// Takes a partially filled Descriptor, which should have a valid path and inputs.
 pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
+    backend: &B,
     descriptor: Descriptor,
     config: &LayerConfig,
 ) -> Result<Box<dyn Layer<B>>, LayerFromConfigError> {
     Ok(match config {
+        LayerConfig::Convolution(cfg) => Box::new(Convolution::new(descriptor, cfg)),
+        LayerConfig::Dropout(cfg) => Box::new(Dropout::new(backend, descriptor, cfg)),
         LayerConfig::Linear(cfg) => Box::new(Linear::new(descriptor, cfg)),
         LayerConfig::MeanSquaredError => Box::new(MeanSquaredError::new(descriptor)),
         LayerConfig::NegativeLogLikelihood(cfg) => Box::new(NegativeLogLikelihood::new(descriptor, cfg)),
+        LayerConfig::Pooling(cfg) => Box::new(Pooling::new(backend, descriptor, cfg)),
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
-        LayerConfig::Sequential(cfg) => Box::new(Sequential::new(descriptor, cfg)?),
+        LayerConfig::Sequential(cfg) => Box::new(Sequential::new(backend, descriptor, cfg)?),
         LayerConfig::Sigmoid => Box::new(Sigmoid::new(descriptor)),
     })
 }
@@ -78,11 +82,11 @@ impl From<SequentialBadInputOutputError> for LayerFromConfigError {
 
 #[cfg(test)]
 pub mod testing {
-    use coaster::{Backend, ITensorDesc, Native, SharedTensor};
+    use coaster::{frameworks::native::get_native_backend, IBackend, ITensorDesc, SharedTensor};
 
     use crate::{
         net::{Context, LearnableParamsLink, Network},
-        util::{native_backend, write_batch_sample},
+        util::{format_tensor, native_backend, LayerOps},
     };
 
     // For floating-point comparisons.
@@ -108,117 +112,147 @@ pub mod testing {
         params_data.as_mut_slice::<f32>().copy_from_slice(values);
     }
 
-    // Checks tensor equality. Convenience function for unit tests that allows to
-    // specify expected tensor as a 2D array. Example:
-    //   assert_tensor_eq(tensor, &[[1.0, -2.0]], &[[-3.0, 4.0]]);
-    pub fn assert_tensor_eq<Expected: AsRef<[ExpectedRow]>, ExpectedRow: AsRef<[f32]>>(
-        tensor: &SharedTensor<f32>,
-        expected: Expected,
-    ) {
-        let expected_rows = expected.as_ref().len();
-        let expected_cols = expected.as_ref()[0].as_ref().len();
+    // Convenience method for creating a single-dimension tensor from f32 slices.
+    pub fn create_tensor_1d<Dim1: AsRef<[f32]>>(data: Dim1) -> SharedTensor<f32> {
+        let dim1 = data.as_ref().len();
+        let mut tensor = SharedTensor::new(&[dim1]);
+        let slice = tensor
+            .write_only(native_backend().device())
+            .unwrap()
+            .as_mut_slice::<f32>();
+        slice.copy_from_slice(data.as_ref());
+        tensor
+    }
 
-        // Make sure overall sizes match.
-        assert_eq!(expected_rows * expected_cols, tensor.desc().size());
+    // Convenience method for creating a two-dimension tensor from f32 slices.
+    pub fn create_tensor_2d<Dim2: AsRef<[Dim1]>, Dim1: AsRef<[f32]>>(data: Dim2) -> SharedTensor<f32> {
+        let dim2 = data.as_ref().len();
+        let dim1 = data.as_ref()[0].as_ref().len();
+        let mut tensor = SharedTensor::new(&[dim2, dim1]);
+        let slice = tensor
+            .write_only(native_backend().device())
+            .unwrap()
+            .as_mut_slice::<f32>();
+        for i2 in 0..dim2 {
+            slice[i2 * dim1..(i2 + 1) * dim1].copy_from_slice(data.as_ref()[i2].as_ref());
+        }
+        tensor
+    }
 
-        let backend = native_backend();
-
-        let data = tensor.read(backend.device()).unwrap();
-        let slice = data.as_slice::<f32>();
-        for i in 0..expected_rows {
-            let mut equal = true;
-            for j in 0..expected_cols {
-                if (slice[i * expected_cols + j] - expected.as_ref()[i].as_ref()[j]).abs() > EPS {
-                    equal = false;
-                    break;
-                }
-            }
-            if !equal {
-                panic!(
-                    "Row {} not equal: {:?} vs {:?}",
-                    i,
-                    &slice[i * expected_cols..(i + 1) * expected_cols],
-                    &expected.as_ref()[i].as_ref()
-                );
+    // Convenience method for creating a three-dimension tensor from f32 slices.
+    pub fn create_tensor_3d<Dim3: AsRef<[Dim2]>, Dim2: AsRef<[Dim1]>, Dim1: AsRef<[f32]>>(
+        data: Dim3,
+    ) -> SharedTensor<f32> {
+        let dim3 = data.as_ref().len();
+        let dim2 = data.as_ref()[0].as_ref().len();
+        let dim1 = data.as_ref()[0].as_ref()[0].as_ref().len();
+        let mut tensor = SharedTensor::new(&[dim3, dim2, dim1]);
+        let slice = tensor
+            .write_only(native_backend().device())
+            .unwrap()
+            .as_mut_slice::<f32>();
+        for i3 in 0..dim3 {
+            let offset = i3 * dim2 * dim1;
+            for i2 in 0..dim2 {
+                slice[offset + i2 * dim1..offset + (i2 + 1) * dim1]
+                    .copy_from_slice(data.as_ref()[i3].as_ref()[i2].as_ref());
             }
         }
+        tensor
+    }
+
+    // Checks tensor equality and prints both if they differ.
+    pub fn assert_tensor_eq(tensor: &SharedTensor<f32>, expected: &SharedTensor<f32>) {
+        assert_eq!(
+            tensor.desc().size(),
+            expected.desc().size(),
+            "Tensor overall sizes differ, expected {} got {}",
+            expected.desc().size(),
+            tensor.desc().size()
+        );
+
+        let backend = get_native_backend();
+
+        let t2_data = tensor.read(backend.device()).unwrap().as_slice::<f32>();
+        let e2_data = expected.read(backend.device()).unwrap().as_slice::<f32>();
+
+        const TOLERANCE: f32 = 1e-5;
+        let equal = t2_data
+            .iter()
+            .zip(e2_data.iter())
+            .find(|(v1, v2)| (**v1 - **v2).abs() > TOLERANCE)
+            .is_none();
+        assert!(
+            equal,
+            "Tensor \n{} doesn't match expected \n{}",
+            format_tensor(tensor),
+            format_tensor(expected)
+        );
     }
 
     // Returns network output for a given input which can be given as a 2d array.
+    // First dimension in the input tensor is assumed to be the batch size.
     // Used in unit testing. Example:
-    //    let result = get_net_output(&net, &[[1.0, -2.0],
-    //                                        [-3.0, 4.0]]);
-    pub fn get_net_output<Input: AsRef<[InputRow]>, InputRow: AsRef<[f32]>>(
-        net: &Network<Backend<Native>>,
-        input: Input,
+    //    let result = get_net_output(&net, &create_tensor_2d([[1.0, -2.0],
+    //                                                        [-3.0, 4.0]]));
+    pub fn get_net_output<B: IBackend + LayerOps<f32> + 'static>(
+        backend: &B,
+        net: &Network<B>,
+        input: &SharedTensor<f32>,
     ) -> LayerOutput {
-        let input_rows = input.as_ref().len();
-        let input_cols = input.as_ref()[0].as_ref().len();
-
-        // Create input tensor.
-        let mut input_tensor = SharedTensor::new(&[input_rows, input_cols]);
-        for i in 0..input_rows {
-            write_batch_sample(&mut input_tensor, input.as_ref()[i].as_ref(), i);
-        }
-
         // Run the input through the network.
-        let backend = native_backend();
         LayerOutput {
-            output: net.transform(&backend, &input_tensor),
+            output: net.transform(backend, input),
         }
     }
 
     // Returns network output and input/params gradients for a given input and output gradient
-    // which can be given as a 2d array. Used in unit testing. Example:
-    //    let result = get_net_output_and_gradients(&net,
-    //                                              &[[1.0, -2.0],
-    //                                                [-3.0, 4.0]],
-    //                                              &[[0.4, 0.3],
-    //                                                [0.1, 0.2]]);
-    pub fn get_net_output_and_gradients<
-        Input: AsRef<[InputRow]>,
-        InputRow: AsRef<[f32]>,
-        Output: AsRef<[OutputRow]>,
-        OutputRow: AsRef<[f32]>,
-    >(
-        net: &Network<Backend<Native>>,
-        input: Input,
-        output_gradient: Output,
+    // which can be given as a 2d array. First dimension in the input tensor is assumed to be the
+    // batch size. Used in unit testing. Example:
+    //    let result = get_net_output_and_gradients(&net, &create_tensor_2d([[1.0, -2.0],
+    //                                                                      [-3.0, 4.0]]),
+    //                                                    &create_tensor_2d([[0.4, 0.3],
+    //                                                                      [0.1, 0.2]]);
+    pub fn get_net_output_and_gradients<B: IBackend + LayerOps<f32> + 'static>(
+        backend: &B,
+        net: &Network<B>,
+        input: &SharedTensor<f32>,
+        output_gradient: &SharedTensor<f32>,
     ) -> LayerOutputAndGradients {
-        let input_rows = input.as_ref().len();
-        let input_cols = input.as_ref()[0].as_ref().len();
-        let output_rows = output_gradient.as_ref().len();
-        let output_cols = output_gradient.as_ref()[0].as_ref().len();
+        let native_backend = get_native_backend();
+        let batch_size = input.desc()[0];
 
-        // We treat the input and output rows and the batches, so they must be equal.
-        assert_eq!(input_rows, output_rows);
-
-        let backend = native_backend();
-
-        // Check that layer output dimensions match the provided output gradient.
-        // Again, output unit shape is just [output_cols] since rows are batches.
+        // Check that layer output size match the provided output gradient.
         assert_eq!(net.top().descriptor().outputs().len(), 1);
-        assert_eq!(net.top().descriptor().output(0).unit_shape(), &[output_cols]);
+        assert_eq!(
+            net.top().descriptor().output(0).unit_shape().size() * batch_size,
+            output_gradient.desc().size()
+        );
 
-        let mut context = Context::new(input_rows);
+        let mut context = Context::new(batch_size);
 
-        // Create input tensor on the context and fill it.
-        let input_tensor = context.acquire_data(net.top().descriptor().input(0));
-        for i in 0..input_rows {
-            write_batch_sample(&mut input_tensor.borrow_mut(), input.as_ref()[i].as_ref(), i);
+        // Copy input data into the context.
+        {
+            let context_inputs = context.acquire_data(net.top().descriptor().input(0));
+            assert_eq!(context_inputs.borrow().desc().size(), input.desc().size());
+            backend.copy(&input, &mut context_inputs.borrow_mut()).unwrap();
         }
 
         // Compute network output.
-        net.top().compute_output(&backend, &mut context);
+        net.top().compute_output(backend, &mut context);
 
-        // Create output gradient tensor on the context and fill it.
-        let output_gradient_tensor = context.acquire_data_gradient(net.top().descriptor().output(0));
-        for i in 0..output_rows {
-            write_batch_sample(
-                &mut output_gradient_tensor.borrow_mut(),
-                output_gradient.as_ref()[i].as_ref(),
-                i,
+        // Copy output gradient into the context.
+        {
+            let output_gradient_tensor_ref = context.acquire_data_gradient(net.top().descriptor().output(0));
+
+            let context_output_gradient = context.acquire_data_gradient(net.top().descriptor().output(0));
+            assert_eq!(
+                context_output_gradient.borrow().desc().size(),
+                output_gradient.desc().size()
             );
+            backend
+                .copy(&output_gradient, &mut context_output_gradient.borrow_mut())
+                .unwrap();
         }
 
         // Make the layer compute the input gradient.

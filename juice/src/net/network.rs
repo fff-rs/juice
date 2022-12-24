@@ -19,6 +19,7 @@ pub struct Network<B: IBackend + LayerOps<f32>> {
 impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
     /// Creates network from a config with the given input shapes.
     pub fn from_config(
+        backend: &B,
         into_config: impl Into<LayerConfig>,
         input_shapes: &[TensorDesc],
     ) -> Result<Network<B>, LayerFromConfigError> {
@@ -33,7 +34,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
             .collect();
         let descriptor = Descriptor::top("net", inputs);
         let config = into_config.into();
-        let top = layer_from_config(descriptor, &config)?;
+        let top = layer_from_config(backend, descriptor, &config)?;
 
         Ok(Network { config, top })
     }
@@ -81,10 +82,8 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         self.top.compute_output(backend, &mut context);
         context.take_data(self.top.descriptor().output(0))
     }
-}
 
-impl<B: IBackend + LayerOps<f32> + 'static> Clone for Network<B> {
-    fn clone(&self) -> Network<B> {
+    pub fn clone(&self, backend: &B) -> Network<B> {
         let input_shapes: Vec<TensorDesc> = self
             .top
             .descriptor()
@@ -92,7 +91,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Clone for Network<B> {
             .iter()
             .map(|input| input.unit_shape().clone())
             .collect();
-        let net = Network::from_config(self.config.clone(), &input_shapes).unwrap();
+        let net = Network::from_config(backend, self.config.clone(), &input_shapes).unwrap();
 
         // Copy weights data.
         let backend = get_native_backend();
