@@ -53,3 +53,9 @@ impl From<PoolingConfig> for LayerConfig {
         LayerConfig::Pooling(c)
     }
 }
+
+impl From<NegativeLogLikelihoodConfig> for LayerConfig {
+    fn from(c: NegativeLogLikelihoodConfig) -> Self {
+        LayerConfig::NegativeLogLikelihood(c)
+    }
+}

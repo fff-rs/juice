@@ -10,15 +10,12 @@ use co::frameworks::cuda::get_cuda_backend;
 #[cfg(not(feature = "cuda"))]
 use co::frameworks::native::get_native_backend;
 use co::prelude::*;
-use juice::layer::*;
-use juice::layers::*;
-use juice::solver::*;
+use juice::net::*;
+use juice::train::*;
 use juice::util::*;
 use juice_utils::{download_datasets, unzip_datasets};
 use mnist::{Mnist, MnistBuilder};
 use serde::Deserialize;
-use std::rc::Rc;
-use std::sync::{Arc, RwLock};
 
 const MAIN_USAGE: &str = "
 Juice Examples
@@ -138,37 +135,27 @@ fn add_conv_net(
     batch_size: usize,
     pixel_dim: usize,
 ) -> SequentialConfig {
-    net_cfg.add_layer(LayerConfig::new(
-        "reshape",
-        ReshapeConfig::of_shape(&[batch_size, 1, pixel_dim, pixel_dim]),
-    ));
-    net_cfg.add_layer(LayerConfig::new(
+    net_cfg.add_layer(
         "conv",
         ConvolutionConfig {
-            num_output: 20,
-            filter_shape: vec![5],
-            padding: vec![0],
-            stride: vec![1],
+            feature_maps: 20,
+            kernel_size: 5,
+            padding: 0,
+            stride: 1,
         },
-    ));
-    net_cfg.add_layer(LayerConfig::new(
+    );
+    net_cfg.add_layer(
         "pooling",
         PoolingConfig {
             mode: PoolingMode::Max,
-            filter_shape: vec![2],
-            padding: vec![0],
-            stride: vec![2],
+            window_size: 2,
+            padding: 0,
+            stride: 2,
         },
-    ));
-    net_cfg.add_layer(LayerConfig::new(
-        "linear1",
-        LinearConfig { output_size: 500 },
-    ));
-    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-    net_cfg.add_layer(LayerConfig::new(
-        "linear2",
-        LinearConfig { output_size: 10 },
-    ));
+    );
+    net_cfg.add_layer("linear1", LinearConfig { output_size: 500 });
+    net_cfg.add_layer("sigmoid", LayerConfig::Sigmoid);
+    net_cfg.add_layer("linear2", LinearConfig { output_size: 10 });
     net_cfg
 }
 
@@ -190,27 +177,14 @@ fn add_mlp(
     batch_size: usize,
     pixel_count: usize,
 ) -> SequentialConfig {
-    net_cfg.add_layer(LayerConfig::new(
-        "reshape",
-        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
-    ));
-    net_cfg.add_layer(LayerConfig::new(
-        "linear1",
-        LayerType::Linear(LinearConfig { output_size: 1568 }),
-    ));
-    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
-    net_cfg.add_layer(LayerConfig::new(
-        "linear2",
-        LayerType::Linear(LinearConfig { output_size: 10 }),
-    ));
+    net_cfg.add_layer("linear1", LinearConfig { output_size: 1568 });
+    net_cfg.add_layer("sigmoid", LayerConfig::Sigmoid);
+    net_cfg.add_layer("linear2", LinearConfig { output_size: 10 });
     net_cfg
 }
 
 fn add_linear_net(mut net_cfg: SequentialConfig) -> SequentialConfig {
-    net_cfg.add_layer(LayerConfig::new(
-        "linear",
-        LayerType::Linear(LinearConfig { output_size: 10 }),
-    ));
+    net_cfg.add_layer("linear", LinearConfig { output_size: 10 });
     net_cfg
 }
 
@@ -249,71 +223,53 @@ fn run_mnist(
     let learning_rate = learning_rate.unwrap_or(0.001f32);
     let momentum = momentum.unwrap_or(0f32);
 
-    let mut net_cfg = SequentialConfig::default();
-    net_cfg.add_input("data", &[batch_size, pixel_dim, pixel_dim]);
-    net_cfg.force_backward = true;
+    // Create the backend.
+    #[cfg(all(feature = "cuda"))]
+    let backend = get_cuda_backend();
+    #[cfg(not(feature = "cuda"))]
+    let backend = Rc::new(get_native_backend());
 
+    // Create the network configuration and the net itself.
+    let mut net_cfg = SequentialConfig::default();
     net_cfg = match &*model_name.unwrap_or("none".to_owned()) {
         "conv" => add_conv_net(net_cfg, batch_size, pixel_dim),
         "mlp" => add_mlp(net_cfg, batch_size, pixel_count),
         "linear" => add_linear_net(net_cfg),
         _ => panic!("Unknown model. Try one of [linear, mlp, conv]"),
     };
+    net_cfg.add_layer("log_softmax", LayerConfig::LogSoftmax);
+    let mut net = Network::from_config(&backend, net_cfg, &[vec![pixel_dim, pixel_dim]]).unwrap();
 
-    net_cfg.add_layer(LayerConfig::new("log_softmax", LayerType::LogSoftmax));
-
-    let mut classifier_cfg = SequentialConfig::default();
-    classifier_cfg.add_input("network_out", &[batch_size, 10]);
-    classifier_cfg.add_input("label", &[batch_size, 1]);
-    // set up nll loss
-    let nll_layer_cfg = NegativeLogLikelihoodConfig { num_classes: 10 };
-    let nll_cfg = LayerConfig::new("nll", LayerType::NegativeLogLikelihood(nll_layer_cfg));
-    classifier_cfg.add_layer(nll_cfg);
-
-    // set up backends
-    #[cfg(all(feature = "cuda"))]
-    let backend = Rc::new(get_cuda_backend());
-    #[cfg(not(feature = "cuda"))]
-    let backend = Rc::new(get_native_backend());
-
-    // set up solver
-    let mut solver_cfg = SolverConfig {
-        minibatch_size: batch_size,
-        base_lr: learning_rate,
-        momentum,
-        ..SolverConfig::default()
+    // Create the trainer.
+    let trainer_config = TrainerConfig {
+        batch_size: batch_size,
+        objective: NegativeLogLikelihoodConfig { num_classes: 10 }.into(),
+        learning_rate: learning_rate,
+        ..Default::default()
     };
-    solver_cfg.network = LayerConfig::new("network", net_cfg);
-    solver_cfg.objective = LayerConfig::new("classifier", classifier_cfg);
-    let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_cfg);
+    let mut trainer = Trainer::from_config(&backend, trainer_config, &net, &vec![batch_size, 1]);
 
-    // set up confusion matrix
+    // Set up confusion matrix.
     let mut classification_evaluator = ::juice::solver::ConfusionMatrix::new(10);
     classification_evaluator.set_capacity(Some(1000));
 
-    let input = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
-    let inp_lock = Arc::new(RwLock::new(input));
-
-    let label = SharedTensor::<f32>::new(&[batch_size, 1]);
-    let label_lock = Arc::new(RwLock::new(label));
+    let mut input = SharedTensor::<f32>::new(&[batch_size, pixel_dim, pixel_dim]);
+    let mut label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     for _ in 0..(example_count / batch_size as u32) {
         // write input
         let mut targets = Vec::new();
 
-        for (batch_n, (label_val, ref input)) in
+        for (batch_n, (label_val, ref input_bytes)) in
             decoded_images.by_ref().take(batch_size).enumerate()
         {
-            let mut input_tensor = inp_lock.write().unwrap();
-            let mut label_tensor = label_lock.write().unwrap();
-            write_batch_sample(&mut input_tensor, &input, batch_n);
-            write_batch_sample(&mut label_tensor, &[label_val], batch_n);
+            write_batch_sample(&mut input, &input_bytes, batch_n);
+            write_batch_sample(&mut label, &[label_val], batch_n);
             targets.push(label_val as usize);
         }
         // train the network!
-        let infered_out = solver.train_minibatch(inp_lock.clone(), label_lock.clone());
+        let infered = trainer.train_minibatch(&backend, &mut net, &input, &label);
 
-        let mut infered = infered_out.write().unwrap();
         let predictions = classification_evaluator.get_predictions(&mut infered);
 
         classification_evaluator.add_samples(&predictions, &targets);
