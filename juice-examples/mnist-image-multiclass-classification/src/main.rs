@@ -17,6 +17,7 @@ use juice_utils::{download_datasets, unzip_datasets};
 use mnist::{Mnist, MnistBuilder};
 use serde::Deserialize;
 
+// TODO: Add a choice for the optimizer (SGD or Adam).
 const MAIN_USAGE: &str = "
 Juice Examples
 
@@ -244,6 +245,7 @@ fn run_mnist(
     let trainer_config = TrainerConfig {
         batch_size: batch_size,
         objective: NegativeLogLikelihoodConfig { num_classes: 10 }.into(),
+        optimizer: OptimizerConfig::SgdWithMomentum(SgdWithMomentumConfig { momentum: momentum }),
         learning_rate: learning_rate,
         ..Default::default()
     };
