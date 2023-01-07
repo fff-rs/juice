@@ -9,12 +9,14 @@ pub enum LayerConfig {
     Convolution(ConvolutionConfig),
     Dropout(DropoutConfig),
     Linear(LinearConfig),
+    LogSoftmax,
     MeanSquaredError,
     NegativeLogLikelihood(NegativeLogLikelihoodConfig),
     Pooling(PoolingConfig),
     Relu,
     Sequential(SequentialConfig),
     Sigmoid,
+    Softmax,
     // TODO: Add other layer configs.
 }
 

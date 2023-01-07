@@ -133,8 +133,6 @@ fn main() {
 #[cfg(all(feature = "cuda"))]
 fn add_conv_net(
     mut net_cfg: SequentialConfig,
-    batch_size: usize,
-    pixel_dim: usize,
 ) -> SequentialConfig {
     net_cfg.add_layer(
         "conv",
@@ -163,8 +161,6 @@ fn add_conv_net(
 #[cfg(not(feature = "cuda"))]
 fn add_conv_net(
     _net_cfg: SequentialConfig,
-    _batch_size: usize,
-    _pixel_dim: usize,
 ) -> SequentialConfig {
     println!(
         "Currently Juice does not have a native pooling function to use with Conv Nets - you can either try
@@ -175,8 +171,6 @@ fn add_conv_net(
 
 fn add_mlp(
     mut net_cfg: SequentialConfig,
-    batch_size: usize,
-    pixel_count: usize,
 ) -> SequentialConfig {
     net_cfg.add_layer("linear1", LinearConfig { output_size: 1568 });
     net_cfg.add_layer("sigmoid", LayerConfig::Sigmoid);
@@ -233,8 +227,8 @@ fn run_mnist(
     // Create the network configuration and the net itself.
     let mut net_cfg = SequentialConfig::default();
     net_cfg = match &*model_name.unwrap_or("none".to_owned()) {
-        "conv" => add_conv_net(net_cfg, batch_size, pixel_dim),
-        "mlp" => add_mlp(net_cfg, batch_size, pixel_count),
+        "conv" => add_conv_net(net_cfg),
+        "mlp" => add_mlp(net_cfg),
         "linear" => add_linear_net(net_cfg),
         _ => panic!("Unknown model. Try one of [linear, mlp, conv]"),
     };
@@ -270,7 +264,7 @@ fn run_mnist(
             targets.push(label_val as usize);
         }
         // train the network!
-        let infered = trainer.train_minibatch(&backend, &mut net, &input, &label);
+        let mut infered = trainer.train_minibatch(&backend, &mut net, &input, &label);
 
         let predictions = classification_evaluator.get_predictions(&mut infered);
 

@@ -621,7 +621,10 @@ pub trait Convolution<F>: NN<F> {
 /// Provides the functionality for a Backend to support Softmax operations.
 pub trait Softmax<F>: NN<F> {
     /// Computes a [Softmax][softmax] over the input Tensor `x`.
-    /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function
+    /// [softmax]: https://en.wikipedia.org/wiki/Softmax_function.
+    /// Tensor must have more than one dimensions: N,D1,..., where first dimension N
+    /// is interpreted as the batch size. Softmax operation is applied independently
+    /// to each batch item over D1,... .
     ///
     /// Saves the result to `result`.
     fn softmax(
@@ -645,6 +648,9 @@ pub trait Softmax<F>: NN<F> {
 /// Provides the functionality for a Backend to support LogSoftmax operations.
 pub trait LogSoftmax<F>: NN<F> {
     /// Computes a logarithmic softmax over the input Tensor `x`.
+    /// Tensor must have more than one dimensions: N,D1,..., where first dimension N
+    /// is interpreted as the batch size. LogSoftmax operation is applied independently
+    /// to each batch item over D1,... .
     ///
     /// Saves the result to `result`.
     fn log_softmax(

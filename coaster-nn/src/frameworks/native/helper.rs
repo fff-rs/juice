@@ -307,17 +307,32 @@ macro_rules! impl_ops_softmax_for {
                 x: &SharedTensor<$t>,
                 result: &mut SharedTensor<$t>,
             ) -> Result<(), Error> {
+                // Input tensor must have at least 2 dimensions.
+                // First dimension is treated as a batch number.
+                assert!(
+                    x.desc().size() > 1,
+                    "Input tensor for softmax must have at least 2 dimensions, got {:?}",
+                    x.desc()
+                );
+
+                let batch_size = x.desc()[0];
+                let item_size = x.desc().iter().skip(1).fold(1, |acc, v| acc * v);
+
                 let xs = read!(x, $t, self);
                 let rs = write_only!(result, $t, self);
 
                 map1(xs, rs, |v| v.exp())?;
 
-                let mut sum: $t = 0.0; // iter_arith is not stable yet
-                for r in &*rs {
-                    sum += *r;
-                }
-                for r in rs {
-                    *r /= sum;
+                for i in 0..batch_size {
+                    let batch_item = &mut rs[i * item_size..(i + 1) * item_size];
+
+                    let mut sum: $t = 0.0; // iter_arith is not stable yet
+                    for r in &*batch_item {
+                        sum += *r;
+                    }
+                    for r in &mut *batch_item {
+                        *r /= sum;
+                    }
                 }
                 Ok(())
             }
@@ -354,20 +369,37 @@ macro_rules! impl_ops_log_softmax_for {
                 x: &SharedTensor<$t>,
                 result: &mut SharedTensor<$t>,
             ) -> Result<(), $crate::co::error::Error> {
+                // Input tensor must have at least 2 dimensions.
+                // First dimension is treated as a batch number.
+                assert!(
+                    x.desc().size() > 1,
+                    "Input tensor for softmax must have at least 2 dimensions, got {:?}",
+                    x.desc()
+                );
+
+                let batch_size = x.desc()[0];
+                let item_size = x.desc().iter().skip(1).fold(1, |acc, v| acc * v);
+
                 let xs = read!(x, $t, self);
                 let rs = write_only!(result, $t, self);
 
-                let max_x = xs
-                    .iter()
-                    .fold(::std::$t::NEG_INFINITY, |acc, &t| acc.max(t));
+                for i in 0..batch_size {
+                    let batch_item_in = &xs[i * item_size..(i + 1) * item_size];
+                    let batch_item_out = &mut rs[i * item_size..(i + 1) * item_size];
+                    let max_x = batch_item_in
+                        .iter()
+                        .fold(::std::$t::NEG_INFINITY, |acc, &t| acc.max(t));
 
-                let mut logsum: $t = 0.0;
-                for t in xs {
-                    logsum += (-(max_x - t)).exp();
+                    let mut logsum: $t = 0.0;
+                    for t in batch_item_in {
+                        logsum += (*t - max_x).exp();
+                    }
+                    logsum = max_x + logsum.ln();
+
+                    map1(batch_item_in, batch_item_out, |t| t - logsum)?;
                 }
-                logsum = max_x + logsum.ln();
 
-                map1(xs, rs, |t| t - logsum)
+                Ok(())
             }
 
             fn log_softmax_grad(
