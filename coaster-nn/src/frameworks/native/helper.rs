@@ -344,16 +344,32 @@ macro_rules! impl_ops_softmax_for {
                 x_diff: &SharedTensor<$t>,
                 result_diff: &mut SharedTensor<$t>,
             ) -> Result<(), Error> {
+                let batch_size = x.desc()[0];
+                let item_size = x.desc().iter().skip(1).fold(1, |acc, v| acc * v);
+
                 let xs = read!(x, $t, self);
                 let dxs = read!(x_diff, $t, self);
                 let drs = write_only!(result_diff, $t, self);
 
-                let mut dot: $t = 0.0;
-                for (t, dt) in xs.iter().zip(dxs.iter()) {
-                    dot += t * dt;
+                for i in 0..batch_size {
+                    let batch_item_in = &xs[i * item_size..(i + 1) * item_size];
+                    let batch_item_diff_in = &dxs[i * item_size..(i + 1) * item_size];
+                    let batch_item_out = &mut drs[i * item_size..(i + 1) * item_size];
+
+                    let mut dot: $t = 0.0;
+                    for (t, dt) in batch_item_in.iter().zip(batch_item_diff_in.iter()) {
+                        dot += t * dt;
+                    }
+
+                    map2(
+                        batch_item_in,
+                        batch_item_diff_in,
+                        batch_item_out,
+                        |t, dt| t * (dt - dot),
+                    )?;
                 }
 
-                map2(xs, dxs, drs, |t, dt| t * (dt - dot))
+                Ok(())
             }
         }
     };
@@ -408,15 +424,31 @@ macro_rules! impl_ops_log_softmax_for {
                 x_diff: &SharedTensor<$t>,
                 result_diff: &mut SharedTensor<$t>,
             ) -> Result<(), $crate::co::error::Error> {
+                let batch_size = x.desc()[0];
+                let item_size = x.desc().iter().skip(1).fold(1, |acc, v| acc * v);
+
                 let xs = read!(x, $t, self);
                 let dxs = read!(x_diff, $t, self);
                 let drs = write_only!(result_diff, $t, self);
 
-                let mut sum: $t = 0.0;
-                for &grad_val in dxs.iter() {
-                    sum += grad_val;
+                for i in 0..batch_size {
+                    let batch_item_in = &xs[i * item_size..(i + 1) * item_size];
+                    let batch_item_diff_in = &dxs[i * item_size..(i + 1) * item_size];
+                    let batch_item_out = &mut drs[i * item_size..(i + 1) * item_size];
+
+                    let mut sum: $t = 0.0;
+                    for &grad_val in batch_item_diff_in.iter() {
+                        sum += grad_val;
+                    }
+                    map2(
+                        batch_item_in,
+                        batch_item_diff_in,
+                        batch_item_out,
+                        |t, dt| dt - t.exp() * sum,
+                    )?;
                 }
-                map2(xs, dxs, drs, |t, dt| dt - t.exp() * sum)
+
+                Ok(())
             }
         }
     };

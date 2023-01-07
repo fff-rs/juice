@@ -84,7 +84,7 @@ mod tests {
         );
         assert_tensor_eq(
             &result.input_gradient,
-            &create_tensor_2d([[-0.15003, -0.01221], [-0.17273, -0.22253]]),
+            &create_tensor_2d([[0.00452, -0.00452], [-0.02350, 0.02350]]),
         );
     }
 }

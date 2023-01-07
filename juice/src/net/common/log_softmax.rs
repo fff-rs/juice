@@ -58,7 +58,10 @@ mod tests {
         let backend = get_native_backend();
         let net = Network::from_config(&backend, LayerConfig::LogSoftmax, &[vec![2]]).unwrap();
         let result = get_net_output(&backend, &net, &create_tensor_2d([[1.0, -2.0], [3.5, 4.0]]));
-        assert_tensor_eq(&result.output, &create_tensor_2d([[-0.04859, -3.04859], [-0.97408, -0.47408]]));
+        assert_tensor_eq(
+            &result.output,
+            &create_tensor_2d([[-0.04859, -3.04859], [-0.97408, -0.47408]]),
+        );
     }
 
     #[test]
@@ -71,6 +74,9 @@ mod tests {
             &create_tensor_2d([[1.0, -2.0], [-3.0, 4.0]]),
             &create_tensor_2d([[0.4, 0.3], [0.1, 0.2]]),
         );
-        assert_tensor_eq(&result.input_gradient, &create_tensor_2d([[-0.55257, 0.25257], [0.09909, -0.79909]]));
+        assert_tensor_eq(
+            &result.input_gradient,
+            &create_tensor_2d([[-0.26680, 0.26680], [0.09973, -0.09973]]),
+        );
     }
 }
