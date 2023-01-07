@@ -131,9 +131,7 @@ fn main() {
 }
 
 #[cfg(all(feature = "cuda"))]
-fn add_conv_net(
-    mut net_cfg: SequentialConfig,
-) -> SequentialConfig {
+fn add_conv_net(mut net_cfg: SequentialConfig) -> SequentialConfig {
     net_cfg.add_layer(
         "conv",
         ConvolutionConfig {
@@ -159,9 +157,7 @@ fn add_conv_net(
 }
 
 #[cfg(not(feature = "cuda"))]
-fn add_conv_net(
-    _net_cfg: SequentialConfig,
-) -> SequentialConfig {
+fn add_conv_net(_net_cfg: SequentialConfig) -> SequentialConfig {
     println!(
         "Currently Juice does not have a native pooling function to use with Conv Nets - you can either try
         the CUDA implementation, or use a different type of layer"
@@ -169,9 +165,7 @@ fn add_conv_net(
     panic!()
 }
 
-fn add_mlp(
-    mut net_cfg: SequentialConfig,
-) -> SequentialConfig {
+fn add_mlp(mut net_cfg: SequentialConfig) -> SequentialConfig {
     net_cfg.add_layer("linear1", LinearConfig { output_size: 1568 });
     net_cfg.add_layer("sigmoid", LayerConfig::Sigmoid);
     net_cfg.add_layer("linear2", LinearConfig { output_size: 10 });
@@ -216,7 +210,7 @@ fn run_mnist(
 
     let batch_size = batch_size.unwrap_or(30);
     let learning_rate = learning_rate.unwrap_or(0.001f32);
-    let momentum = momentum.unwrap_or(0f32);
+    let momentum = momentum.unwrap_or(0.1f32);
 
     // Create the backend.
     #[cfg(all(feature = "cuda"))]
@@ -233,17 +227,18 @@ fn run_mnist(
         _ => panic!("Unknown model. Try one of [linear, mlp, conv]"),
     };
     net_cfg.add_layer("log_softmax", LayerConfig::LogSoftmax);
-    let mut net = Network::from_config(&backend, net_cfg, &[vec![pixel_dim, pixel_dim]]).unwrap();
+    let mut net =
+        Network::from_config(&backend, net_cfg, &[vec![1, pixel_dim, pixel_dim]]).unwrap();
 
     // Create the trainer.
     let trainer_config = TrainerConfig {
-        batch_size: batch_size,
-        objective: NegativeLogLikelihoodConfig { num_classes: 10 }.into(),
-        optimizer: OptimizerConfig::SgdWithMomentum(SgdWithMomentumConfig { momentum: momentum }),
-        learning_rate: learning_rate,
+        batch_size,
+        objective: LayerConfig::NegativeLogLikelihood,
+        optimizer: OptimizerConfig::SgdWithMomentum(SgdWithMomentumConfig { momentum }),
+        learning_rate,
         ..Default::default()
     };
-    let mut trainer = Trainer::from_config(&backend, trainer_config, &net, &vec![batch_size, 1]);
+    let mut trainer = Trainer::from_config(&backend, trainer_config, &net, &vec![1]);
 
     // Set up confusion matrix.
     let mut classification_evaluator = ::juice::solver::ConfusionMatrix::new(10);
