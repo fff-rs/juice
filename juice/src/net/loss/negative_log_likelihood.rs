@@ -2,20 +2,13 @@ use crate::co::{IBackend, ITensorDesc};
 use crate::net::{Context, Descriptor, Layer};
 use crate::util::native_backend;
 
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct NegativeLogLikelihoodConfig {
-    /// How many different classes can be classified.
-    pub num_classes: usize,
-}
-
 #[derive(Debug)]
 pub struct NegativeLogLikelihood {
     descriptor: Descriptor,
-    num_classes: usize,
 }
 
 impl NegativeLogLikelihood {
-    pub fn new(descriptor: Descriptor, config: &NegativeLogLikelihoodConfig) -> Self {
+    pub fn new(descriptor: Descriptor) -> Self {
         assert_eq!(
             descriptor.inputs().len(),
             2,
@@ -26,15 +19,12 @@ impl NegativeLogLikelihood {
             1,
             "Labels must be of [1] shape"
         );
-        
+
         // Note that loss layers don't have outputs, since the result of loss computation is always
         // a single number which can't then be piped to other layers which expect data to have
         // shape [batch_size, ...]
 
-        NegativeLogLikelihood {
-            descriptor: descriptor,
-            num_classes: config.num_classes,
-        }
+        NegativeLogLikelihood { descriptor }
     }
 }
 
@@ -55,15 +45,17 @@ impl<B: IBackend> Layer<B> for NegativeLogLikelihood {
         let native_labels = labels_data.read(native.device()).unwrap().as_slice::<f32>();
         let mut writable_gradient = vec![0f32; probabilities_gradient.borrow().desc().size()];
 
+        let num_classes = self.descriptor.input(0).unit_shape().size();
+
         for (batch_n, &label_value) in native_labels.iter().enumerate() {
-            let index = (self.num_classes * batch_n) + label_value as usize;
+            let label_index = label_value as usize;
+            assert!(label_index < num_classes, "Wrong label {} exceeding input size {}", label_index, num_classes);
+
+            let index = (num_classes * batch_n) + label_index;
             writable_gradient[index] = -1f32;
         }
         crate::util::write_to_memory(
-            probabilities_gradient
-                .borrow_mut()
-                .write_only(native.device())
-                .unwrap(),
+            probabilities_gradient.borrow_mut().write_only(native.device()).unwrap(),
             &writable_gradient,
         );
     }

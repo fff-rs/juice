@@ -65,12 +65,14 @@ pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
         LayerConfig::Convolution(cfg) => Box::new(Convolution::new(descriptor, cfg)),
         LayerConfig::Dropout(cfg) => Box::new(Dropout::new(backend, descriptor, cfg)),
         LayerConfig::Linear(cfg) => Box::new(Linear::new(descriptor, cfg)),
+        LayerConfig::LogSoftmax => Box::new(LogSoftmax::new(descriptor)),
         LayerConfig::MeanSquaredError => Box::new(MeanSquaredError::new(descriptor)),
-        LayerConfig::NegativeLogLikelihood(cfg) => Box::new(NegativeLogLikelihood::new(descriptor, cfg)),
+        LayerConfig::NegativeLogLikelihood => Box::new(NegativeLogLikelihood::new(descriptor)),
         LayerConfig::Pooling(cfg) => Box::new(Pooling::new(backend, descriptor, cfg)),
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
         LayerConfig::Sequential(cfg) => Box::new(Sequential::new(backend, descriptor, cfg)?),
         LayerConfig::Sigmoid => Box::new(Sigmoid::new(descriptor)),
+        LayerConfig::Softmax => Box::new(Softmax::new(descriptor)),
     })
 }
 

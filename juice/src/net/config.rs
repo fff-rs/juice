@@ -1,5 +1,5 @@
 use super::{
-    ConvolutionConfig, DropoutConfig, LinearConfig, NegativeLogLikelihoodConfig, PoolingConfig, SequentialConfig,
+    ConvolutionConfig, DropoutConfig, LinearConfig, PoolingConfig, SequentialConfig,
 };
 
 /// A configuration of the layer.
@@ -9,12 +9,14 @@ pub enum LayerConfig {
     Convolution(ConvolutionConfig),
     Dropout(DropoutConfig),
     Linear(LinearConfig),
+    LogSoftmax,
     MeanSquaredError,
-    NegativeLogLikelihood(NegativeLogLikelihoodConfig),
+    NegativeLogLikelihood,
     Pooling(PoolingConfig),
     Relu,
     Sequential(SequentialConfig),
     Sigmoid,
+    Softmax,
     // TODO: Add other layer configs.
 }
 
