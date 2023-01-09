@@ -324,7 +324,7 @@ macro_rules! impl_ops_softmax_for {
                 map1(xs, rs, |v| v.exp())?;
 
                 for i in 0..batch_size {
-                    let batch_item = &mut rs[i * item_size..(i + 1) * item_size];
+                    let batch_item = &mut rs[i * item_size..][..item_size];
 
                     let mut sum: $t = 0.0; // iter_arith is not stable yet
                     for r in &*batch_item {
@@ -352,9 +352,9 @@ macro_rules! impl_ops_softmax_for {
                 let drs = write_only!(result_diff, $t, self);
 
                 for i in 0..batch_size {
-                    let batch_item_in = &xs[i * item_size..(i + 1) * item_size];
-                    let batch_item_diff_in = &dxs[i * item_size..(i + 1) * item_size];
-                    let batch_item_out = &mut drs[i * item_size..(i + 1) * item_size];
+                    let batch_item_in = &xs[i * item_size..][..item_size];
+                    let batch_item_diff_in = &dxs[i * item_size..][..item_size];
+                    let batch_item_out = &mut drs[i * item_size..][..item_size];
 
                     let mut dot: $t = 0.0;
                     for (t, dt) in batch_item_in.iter().zip(batch_item_diff_in.iter()) {
@@ -400,8 +400,8 @@ macro_rules! impl_ops_log_softmax_for {
                 let rs = write_only!(result, $t, self);
 
                 for i in 0..batch_size {
-                    let batch_item_in = &xs[i * item_size..(i + 1) * item_size];
-                    let batch_item_out = &mut rs[i * item_size..(i + 1) * item_size];
+                    let batch_item_in = &xs[i * item_size..][..item_size];
+                    let batch_item_out = &mut rs[i * item_size..][..item_size];
                     let max_x = batch_item_in
                         .iter()
                         .fold(::std::$t::NEG_INFINITY, |acc, &t| acc.max(t));
@@ -432,9 +432,9 @@ macro_rules! impl_ops_log_softmax_for {
                 let drs = write_only!(result_diff, $t, self);
 
                 for i in 0..batch_size {
-                    let batch_item_in = &xs[i * item_size..(i + 1) * item_size];
-                    let batch_item_diff_in = &dxs[i * item_size..(i + 1) * item_size];
-                    let batch_item_out = &mut drs[i * item_size..(i + 1) * item_size];
+                    let batch_item_in = &xs[i * item_size..][..item_size];
+                    let batch_item_diff_in = &dxs[i * item_size..][..item_size];
+                    let batch_item_out = &mut drs[i * item_size..][..item_size];
 
                     let mut sum: $t = 0.0;
                     for &grad_val in batch_item_diff_in.iter() {
