@@ -6,7 +6,7 @@ use crate::co::prelude::*;
 use crate::plugin::{LogSoftmax, Softmax};
 use crate::tests::{filled_tensor, tensor_assert_eq, tensor_assert_eq_tensor, Epsilon};
 
-const DIMS: [usize; 3] = [4, 1, 3];
+const DIMS: [usize; 4] = [1, 4, 1, 3];
 
 const IN: [f64; 12] = [
     -0.3768541784373798341,
