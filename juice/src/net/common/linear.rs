@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use crate::co::{IBackend, ITensorDesc, SharedTensor};
 use crate::coblas::transpose::Transpose;
-use crate::net::{Context, Descriptor, Layer, LearnableParams};
+use crate::net::{Context, Descriptor, Layer, LayerError, LearnableParams};
 use crate::util::{native_scalar, LayerOps};
 use crate::weight::FillerType;
 
@@ -62,39 +62,37 @@ impl Linear {
 }
 
 impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
-    fn compute_output(&self, backend: &B, context: &mut Context) {
+    fn compute_output(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
 
         let mut ones_tensor = SharedTensor::<f32>::new(&[context.batch_size(), 1]);
         FillerType::fill_constant(&mut ones_tensor, 1f32);
 
-        backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
-                &ones_tensor,
-                Transpose::NoTrans,
-                &self.bias.borrow().data,
-                &self.zero,
-                &mut output.borrow_mut(),
-            )
-            .unwrap();
+        backend.gemm(
+            &self.one,
+            Transpose::NoTrans,
+            &ones_tensor,
+            Transpose::NoTrans,
+            &self.bias.borrow().data,
+            &self.zero,
+            &mut output.borrow_mut(),
+        )?;
 
-        backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
-                &input.borrow(),
-                Transpose::Trans,
-                &self.weight.borrow().data,
-                &self.one,
-                &mut output.borrow_mut(),
-            )
-            .unwrap();
+        backend.gemm(
+            &self.one,
+            Transpose::NoTrans,
+            &input.borrow(),
+            Transpose::Trans,
+            &self.weight.borrow().data,
+            &self.one,
+            &mut output.borrow_mut(),
+        )?;
+
+        Ok(())
     }
 
-    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
 
@@ -104,47 +102,43 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Linear {
 
         // Network error gradient with respect to input data.
         // dE/dx = dE/dy * df/dx = dE/dy * w.
-        backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
-                &output_gradient.borrow(),
-                Transpose::NoTrans,
-                &self.weight.borrow().data,
-                &self.zero,
-                &mut input_gradient.borrow_mut(),
-            )
-            .unwrap();
+        backend.gemm(
+            &self.one,
+            Transpose::NoTrans,
+            &output_gradient.borrow(),
+            Transpose::NoTrans,
+            &self.weight.borrow().data,
+            &self.zero,
+            &mut input_gradient.borrow_mut(),
+        )?;
 
         // Network error gradient with respect to weights.
         // dE/dw = dE/dy * df/dw = dE/dy * x.
-        backend
-            .gemm(
-                &self.one,
-                Transpose::Trans,
-                &output_gradient.borrow(),
-                Transpose::NoTrans,
-                &input.borrow(),
-                &self.zero,
-                &mut weights_gradient.borrow_mut(),
-            )
-            .unwrap();
+        backend.gemm(
+            &self.one,
+            Transpose::Trans,
+            &output_gradient.borrow(),
+            Transpose::NoTrans,
+            &input.borrow(),
+            &self.zero,
+            &mut weights_gradient.borrow_mut(),
+        )?;
 
         // Network error gradient with respect to bias.
         // dE/dw = dE/dy * df/db = dE/dy * [1] = dE/dy.
         let mut ones_row = SharedTensor::new(&vec![1, context.batch_size()]);
         FillerType::fill_constant(&mut ones_row, 1.0);
-        backend
-            .gemm(
-                &self.one,
-                Transpose::NoTrans,
-                &ones_row,
-                Transpose::NoTrans,
-                &output_gradient.borrow(),
-                &self.zero,
-                &mut bias_gradient.borrow_mut(),
-            )
-            .unwrap();
+        backend.gemm(
+            &self.one,
+            Transpose::NoTrans,
+            &ones_row,
+            Transpose::NoTrans,
+            &output_gradient.borrow(),
+            &self.zero,
+            &mut bias_gradient.borrow_mut(),
+        )?;
+
+        Ok(())
     }
 
     fn descriptor(&self) -> &Descriptor {

@@ -19,7 +19,7 @@ use std::fmt::{Debug, Formatter};
 use coaster::TensorDesc;
 
 use crate::co::IBackend;
-use crate::net::{Context, Descriptor, Layer};
+use crate::net::{Context, Descriptor, Layer, LayerError};
 use crate::util::LayerOps;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -101,21 +101,20 @@ impl<B: conn::Pooling<f32>> Pooling<B> {
 }
 
 impl<B: IBackend + LayerOps<f32>> Layer<B> for Pooling<B> {
-    fn compute_output(&self, backend: &B, context: &mut Context) {
+    fn compute_output(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
 
         match self.mode {
-            PoolingMode::Max => backend
-                .pooling_max(&input.borrow(), &mut output.borrow_mut(), &self.backend_config)
-                .unwrap(),
-            PoolingMode::Average => backend
-                .pooling_avg(&input.borrow(), &mut output.borrow_mut(), &self.backend_config)
-                .unwrap(),
-        }
+            PoolingMode::Max => backend.pooling_max(&input.borrow(), &mut output.borrow_mut(), &self.backend_config),
+            PoolingMode::Average => {
+                backend.pooling_avg(&input.borrow(), &mut output.borrow_mut(), &self.backend_config)
+            }
+        }?;
+        Ok(())
     }
 
-    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.get_data(self.descriptor.output(0));
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
@@ -123,25 +122,22 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Pooling<B> {
         let input_gradient = context.acquire_data_gradient(self.descriptor.input(0));
 
         match self.mode {
-            PoolingMode::Max => backend
-                .pooling_max_grad(
-                    &output.borrow(),
-                    &output_gradient.borrow(),
-                    &input.borrow(),
-                    &mut input_gradient.borrow_mut(),
-                    &self.backend_config,
-                )
-                .unwrap(),
-            PoolingMode::Average => backend
-                .pooling_avg_grad(
-                    &output.borrow(),
-                    &output_gradient.borrow(),
-                    &input.borrow(),
-                    &mut input_gradient.borrow_mut(),
-                    &self.backend_config,
-                )
-                .unwrap(),
-        }
+            PoolingMode::Max => backend.pooling_max_grad(
+                &output.borrow(),
+                &output_gradient.borrow(),
+                &input.borrow(),
+                &mut input_gradient.borrow_mut(),
+                &self.backend_config,
+            ),
+            PoolingMode::Average => backend.pooling_avg_grad(
+                &output.borrow(),
+                &output_gradient.borrow(),
+                &input.borrow(),
+                &mut input_gradient.borrow_mut(),
+                &self.backend_config,
+            ),
+        }?;
+        Ok(())
     }
 
     fn descriptor(&self) -> &Descriptor {

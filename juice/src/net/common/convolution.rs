@@ -27,7 +27,7 @@ use std::rc::Rc;
 use coaster::TensorDesc;
 
 use crate::co::{IBackend, ITensorDesc, SharedTensor};
-use crate::net::{Context, Descriptor, Layer, LearnableParams};
+use crate::net::{Context, Descriptor, Layer, LayerError, LearnableParams};
 use crate::util::LayerOps;
 use crate::weight::FillerType;
 
@@ -113,7 +113,7 @@ impl<B: conn::Convolution<f32>> Convolution<B> {
 }
 
 impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution<B> {
-    fn compute_output(&self, backend: &B, context: &mut Context) {
+    fn compute_output(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
 
@@ -135,17 +135,16 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution<B> {
                 .unwrap()
         });
 
-        backend
-            .convolution(
-                &self.kernel.borrow().data,
-                &input.borrow(),
-                &mut output.borrow_mut(),
-                &mut convolution_context,
-            )
-            .unwrap();
+        backend.convolution(
+            &self.kernel.borrow().data,
+            &input.borrow(),
+            &mut output.borrow_mut(),
+            &mut convolution_context,
+        )?;
+        Ok(())
     }
 
-    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
 
@@ -159,24 +158,21 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Convolution<B> {
         let mut convolution_context = convolution_context_ref.get_mut(&context.batch_size()).unwrap();
 
         // Network error gradient with respect to input data.
-        backend
-            .convolution_grad_data(
-                &self.kernel.borrow().data,
-                &output_gradient.borrow(),
-                &mut input_gradient.borrow_mut(),
-                convolution_context,
-            )
-            .unwrap();
+        backend.convolution_grad_data(
+            &self.kernel.borrow().data,
+            &output_gradient.borrow(),
+            &mut input_gradient.borrow_mut(),
+            convolution_context,
+        )?;
 
         // Network error gradient with respect to the kernel.
-        backend
-            .convolution_grad_filter(
-                &input.borrow(),
-                &mut output_gradient.borrow(),
-                &mut kernel_gradient.borrow_mut(),
-                &mut convolution_context,
-            )
-            .unwrap();
+        backend.convolution_grad_filter(
+            &input.borrow(),
+            &mut output_gradient.borrow(),
+            &mut kernel_gradient.borrow_mut(),
+            &mut convolution_context,
+        )?;
+        Ok(())
     }
 
     fn descriptor(&self) -> &Descriptor {

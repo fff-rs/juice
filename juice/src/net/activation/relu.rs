@@ -1,6 +1,6 @@
 use crate::co::IBackend;
 use crate::conn;
-use crate::net::{Context, Descriptor, Layer};
+use crate::net::{Context, Descriptor, Layer, LayerError};
 
 #[derive(Debug, Clone)]
 pub struct Relu {
@@ -18,25 +18,25 @@ impl Relu {
 }
 
 impl<B: IBackend + conn::Relu<f32>> Layer<B> for Relu {
-    fn compute_output(&self, backend: &B, context: &mut Context) {
+    fn compute_output(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
-        backend.relu(&input.borrow(), &mut output.borrow_mut()).unwrap();
+        backend.relu(&input.borrow(), &mut output.borrow_mut())?;
+        Ok(())
     }
 
-    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.get_data(self.descriptor.output(0));
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
         let input_gradient = context.acquire_data_gradient(self.descriptor.input(0));
-        backend
-            .relu_grad(
-                &output.borrow(),
-                &output_gradient.borrow(),
-                &input.borrow(),
-                &mut input_gradient.borrow_mut(),
-            )
-            .unwrap();
+        backend.relu_grad(
+            &output.borrow(),
+            &output_gradient.borrow(),
+            &input.borrow(),
+            &mut input_gradient.borrow_mut(),
+        )?;
+        Ok(())
     }
 
     fn descriptor(&self) -> &Descriptor {

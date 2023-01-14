@@ -76,7 +76,7 @@ impl<B: IBackend + SolverOps<f32> + 'static> Trainer<B> {
         net: &mut Network<B>,
         inputs: &SharedTensor<f32>,
         labels: &SharedTensor<f32>,
-    ) -> SharedTensor<f32> {
+    ) -> Result<SharedTensor<f32>, LayerError> {
         trace!("Inputs:\n{}", format_tensor(inputs));
         trace!("Labels:\n{}", format_tensor(labels));
 
@@ -95,8 +95,8 @@ impl<B: IBackend + SolverOps<f32> + 'static> Trainer<B> {
         backend.copy(&labels, &mut context_labels.borrow_mut()).unwrap();
 
         // Compute network output and the loss.
-        net.top().compute_output(backend, &mut context);
-        self.objective.compute_output(backend, &mut context);
+        net.top().compute_output(backend, &mut context)?;
+        self.objective.compute_output(backend, &mut context)?;
 
         trace!(
             "Output:\n{}",
@@ -104,12 +104,12 @@ impl<B: IBackend + SolverOps<f32> + 'static> Trainer<B> {
         );
 
         // Compute params gradients by doing a backpropagation on the network.
-        self.objective.compute_gradients(backend, &mut context);
+        self.objective.compute_gradients(backend, &mut context)?;
         trace!(
             "Loss gradient:\n{}",
             format_tensor(&context.get_data_gradient(self.objective.descriptor().input(0)).borrow())
         );
-        net.top().compute_gradients(backend, &mut context);
+        net.top().compute_gradients(backend, &mut context)?;
 
         // Collect computed gradients.
         let params_gradients: HashMap<usize, Rc<RefCell<SharedTensor<f32>>>> = net
@@ -156,7 +156,7 @@ impl<B: IBackend + SolverOps<f32> + 'static> Trainer<B> {
 
         self.iter += 1;
 
-        context.take_data(net.top().descriptor().output(0))
+        Ok(context.take_data(net.top().descriptor().output(0)))
     }
 }
 
@@ -233,7 +233,7 @@ mod tests {
         let mut converged = false;
         for i in 0..10000 {
             let (inputs, labels) = create_batch_for_sin(&backend);
-            let output = trainer.train_minibatch(&backend, &mut net, &inputs, &labels);
+            let output = trainer.train_minibatch(&backend, &mut net, &inputs, &labels).unwrap();
             let mse = mse(&backend, &output, &labels);
 
             if i % 100 == 0 {

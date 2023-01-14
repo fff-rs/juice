@@ -259,7 +259,9 @@ fn run_mnist(
             targets.push(label_val as usize);
         }
         // train the network!
-        let mut infered = trainer.train_minibatch(&backend, &mut net, &input, &label);
+        let mut infered = trainer
+            .train_minibatch(&backend, &mut net, &input, &label)
+            .unwrap();
 
         let predictions = classification_evaluator.get_predictions(&mut infered);
 

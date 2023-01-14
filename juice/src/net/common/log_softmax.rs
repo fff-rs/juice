@@ -1,6 +1,6 @@
 use crate::co::IBackend;
 use crate::conn;
-use crate::net::{Context, Descriptor, Layer};
+use crate::net::{Context, Descriptor, Layer, LayerError};
 
 #[derive(Debug, Clone)]
 pub struct LogSoftmax {
@@ -18,24 +18,24 @@ impl LogSoftmax {
 }
 
 impl<B: IBackend + conn::LogSoftmax<f32>> Layer<B> for LogSoftmax {
-    fn compute_output(&self, backend: &B, context: &mut Context) {
+    fn compute_output(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.acquire_data(self.descriptor.output(0));
-        backend.log_softmax(&input.borrow(), &mut output.borrow_mut()).unwrap();
+        backend.log_softmax(&input.borrow(), &mut output.borrow_mut())?;
+        Ok(())
     }
 
-    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         let input = context.get_data(self.descriptor.input(0));
         let output = context.get_data(self.descriptor.output(0));
         let output_gradient = context.get_data_gradient(self.descriptor.output(0));
         let input_gradient = context.acquire_data_gradient(self.descriptor.input(0));
-        backend
-            .log_softmax_grad(
-                &output.borrow(),
-                &output_gradient.borrow(),
-                &mut input_gradient.borrow_mut(),
-            )
-            .unwrap();
+        backend.log_softmax_grad(
+            &output.borrow(),
+            &output_gradient.borrow(),
+            &mut input_gradient.borrow_mut(),
+        )?;
+        Ok(())
     }
 
     fn descriptor(&self) -> &Descriptor {
