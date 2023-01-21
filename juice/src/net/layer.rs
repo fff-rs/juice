@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use thiserror::Error;
+
 use crate::co::IBackend;
 use crate::net::activation::*;
 use crate::net::common::*;
@@ -8,10 +10,12 @@ use crate::net::loss::*;
 use crate::net::{Context, Descriptor, LayerConfig};
 use crate::util::LayerOps;
 
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub enum LayerError {
-    Backend(::coaster::error::Error),
-    Tensor(::coaster::tensor::Error),
+    #[error("backend error")]
+    Backend(Box<dyn std::error::Error>),
+    #[error("tensor error")]
+    Tensor(Box<dyn std::error::Error>),
 }
 
 /// A generalized layer in a network, performing certain function on inputs producing outputs.
@@ -84,13 +88,13 @@ pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
 
 impl From<::coaster::error::Error> for LayerError {
     fn from(e: ::coaster::error::Error) -> Self {
-        LayerError::Backend(e)
+        LayerError::Backend(Box::new(e))
     }
 }
 
 impl From<::coaster::tensor::Error> for LayerError {
     fn from(e: ::coaster::tensor::Error) -> Self {
-        LayerError::Tensor(e)
+        LayerError::Tensor(Box::new(e))
     }
 }
 
