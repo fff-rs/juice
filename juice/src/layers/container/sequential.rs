@@ -293,6 +293,9 @@ impl<B: IBackend + LayerOps<f32> + 'static> ILayer<B> for Sequential<B> {
         output_data: &mut [ArcLock<SharedTensor<f32>>],
     ) {
         for layer in &self.layers {
+            if layer.borrow().input_blob_names.len() < input_data.len() {
+                panic!("Layer {} expected {} inputs but got {}.", layer.borrow().name, layer.borrow().input_blob_names.len(), input_data.len());
+            }
             for (i, (input, input_name)) in input_data.iter().zip(self.input_tensor_names.iter()).enumerate() {
                 if &layer.borrow().input_blob_names[i] == input_name {
                     layer.borrow_mut().input_blobs_data[i] = input.clone();
