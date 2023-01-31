@@ -538,7 +538,7 @@ impl<B: IBackend> Layer<B> {
             let old_shape = self.input_blobs_data[input_i].read().unwrap().desc().clone();
             if old_shape.size() != reshaped_shape.size() {
                 panic!(
-                    "Input Shape Mismatch at layer {}\nLayer has input shape {:?}\nGiven input has shape {:?}",
+                    "Input Shape Mismatch at layer {}\nLayer has input shape {:?}\nInput given has shape {:?}",
                     self.name, reshaped_shape, old_shape
                 );
             }

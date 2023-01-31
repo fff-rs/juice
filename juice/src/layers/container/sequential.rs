@@ -294,7 +294,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ILayer<B> for Sequential<B> {
     ) {
         for layer in &self.layers {
             if layer.borrow().input_blob_names.len() < input_data.len() {
-                panic!("Layer {} expected {} inputs but got {}.", layer.borrow().name, layer.borrow().input_blob_names.len(), input_data.len());
+                panic!("Layer {} expected {} input(s) but got {}.", layer.borrow().name, layer.borrow().input_blob_names.len(), input_data.len());
             }
             for (i, (input, input_name)) in input_data.iter().zip(self.input_tensor_names.iter()).enumerate() {
                 if &layer.borrow().input_blob_names[i] == input_name {
