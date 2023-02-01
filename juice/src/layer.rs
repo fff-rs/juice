@@ -1369,7 +1369,7 @@ impl<B: IBackend> fmt::Debug for dyn ILayer<B> {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 /// Layer Configuration Struct
 pub struct LayerConfig {
     /// The name of the Layer
@@ -1392,7 +1392,7 @@ pub struct LayerConfig {
     pub propagate_down: Vec<bool>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 /// The Layer Types
 pub enum LayerType {
     // Common layers

@@ -6,7 +6,7 @@ use crate::juice_capnp::weight_config as capnp_config;
 use crate::util::native_backend;
 use rand::{self, prelude::*};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 /// Specifies training configuration for a weight blob.
 pub struct WeightConfig {
     /// The name of the weight blob -- useful for sharing weights among
@@ -137,7 +137,7 @@ impl<'a> CapnpRead<'a> for WeightConfig {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Enum for specifing the shared weights behaviour
 pub enum DimCheckMode {
     /// Strict requires that shapes match.
@@ -146,7 +146,7 @@ pub enum DimCheckMode {
     Permissive,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 /// Enum for specifing the type of Filler.
 pub enum FillerType {
     /// Fills the weight blob with a constant `value` (all values are the same).

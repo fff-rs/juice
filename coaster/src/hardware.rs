@@ -7,7 +7,7 @@
 //!
 //! [device]: ../device/index.html
 
-#[derive(Debug, Copy, Clone, PartialEq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Hash)]
 /// Specifies the available Hardware types.
 pub enum HardwareType {
     /// CPU devices

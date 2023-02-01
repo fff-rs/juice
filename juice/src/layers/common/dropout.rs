@@ -102,7 +102,7 @@ impl<B: IBackend + conn::Dropout<f32>> ComputeInputGradient<f32, B> for Dropout<
 
 impl<B: IBackend + conn::Dropout<f32>> ComputeParametersGradient<f32, B> for Dropout<f32, B> {}
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 /// Specifies configuration parameters for a Dropout Layer.
 pub struct DropoutConfig {
     /// The probability to clamp a value to zero

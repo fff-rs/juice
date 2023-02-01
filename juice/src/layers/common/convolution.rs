@@ -278,7 +278,7 @@ impl<B: IBackend + conn::Convolution<f32>> ComputeParametersGradient<f32, B> for
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 /// Specifies configuration parameters for a Convolution Layer.
 pub struct ConvolutionConfig {
     /// The number of output feature maps

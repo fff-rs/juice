@@ -170,7 +170,7 @@ impl<B: IBackend + conn::Pooling<f32>> ComputeInputGradient<f32, B> for Pooling<
 
 impl<B: IBackend + conn::Pooling<f32>> ComputeParametersGradient<f32, B> for Pooling<f32, B> {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 /// Specifies configuration parameters for a Pooling Layer.
 pub struct PoolingConfig {
     /// The PoolingMode to use
@@ -247,7 +247,7 @@ impl<'a> CapnpRead<'a> for PoolingConfig {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// The different modes of pooling that can be calculated.
 pub enum PoolingMode {
     /// The maximum value inside the pooling window will be used as result.

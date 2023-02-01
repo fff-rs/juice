@@ -270,7 +270,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 /// Specifies configuration parameters for a RNN Layer.
 /// TODO: Update to RnnConfig in CUDA Layer
 pub struct RnnConfig {

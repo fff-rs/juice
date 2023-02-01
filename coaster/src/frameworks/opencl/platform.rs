@@ -2,7 +2,7 @@
 
 use super::api::types as cl;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 /// Defines a OpenCL Platform.
 pub struct Platform {
     id: isize,

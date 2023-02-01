@@ -1,7 +1,7 @@
 //! Provides Rust Errors for OpenCL's status.
 
 #[allow(missing_docs)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 /// OpenCL device errors
 pub enum Error {
     #[error("{0}")]
