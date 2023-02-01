@@ -140,15 +140,15 @@ where
     regressor_cfg.add_layer(mse_layer_cfg);
 
     // Setup an Optimiser
-    let mut solver_cfg = SolverConfig {
+    let solver_cfg = SolverConfig {
         minibatch_size: batch_size,
         base_lr: learning_rate,
         momentum,
+        objective: LayerConfig::new("regressor", regressor_cfg),
+        network: LayerConfig::new("network", net_cfg),
         ..SolverConfig::default()
     };
 
-    solver_cfg.network = LayerConfig::new("network", net_cfg);
-    solver_cfg.objective = LayerConfig::new("regressor", regressor_cfg);
     Solver::from_config(backend.clone(), backend, &solver_cfg)
 }
 
