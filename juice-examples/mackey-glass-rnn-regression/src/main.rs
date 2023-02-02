@@ -3,7 +3,7 @@
 use coaster as co;
 use coaster_nn as conn;
 
-use fs_err::File;
+use fs_err::{File, OpenOptions};
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
@@ -209,6 +209,7 @@ pub(crate) fn train<Framework: IFramework + 'static>(
     }
 
     if total > 0 {
+        let mut file = OpenOptions::new().create(true).truncate(false).write(true).open(file).unwrap();
         solver
             .mut_network()
             .save(file)
@@ -227,6 +228,7 @@ pub(crate) fn test<Framework: IFramework + 'static>(
 where
     Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
 {
+    let file = File::open(file)?;
     // Load in a pre-trained network
     let mut network: Layer<Backend<Framework>> = Layer::<Backend<Framework>>::load(backend, file)?;
 

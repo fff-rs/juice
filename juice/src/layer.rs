@@ -6,9 +6,7 @@
 use std::cmp;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
-use std::fs::File;
-use std::io::{self, BufReader};
-use std::path::Path;
+use std::io::{self, BufReader, BufWriter};
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
@@ -88,6 +86,18 @@ pub struct Layer<B: IBackend> {
     ///
     /// Does not contain anonymous blobs.
     pub blob_names: HashMap<String, (ArcLock<SharedTensor<f32>>, ArcLock<SharedTensor<f32>>)>,
+}
+
+impl<B: IBackend> PartialEq for Layer<B> {
+    fn eq(&self, other: &Self) -> bool {
+        use std::ops::Deref;
+        self.loss == other.loss && 
+        self.config == other.config &&
+        self.name == other.name &&
+        self.weights_data.iter().zip(other.weights_data.iter()).find(|(a,b)| {
+            a.read().unwrap().deref() != b.read().unwrap().deref() 
+        }).is_none()
+    }
 }
 
 impl<B: IBackend> Layer<B> {
@@ -710,16 +720,15 @@ impl<B: IBackend> Layer<B> {
     /// #    }
     /// # }
     /// ```
-    pub fn save<P: AsRef<Path>>(&mut self, path: P) -> io::Result<()> {
-        let path = path.as_ref();
-        let ref mut out = File::create(path)?;
+    pub fn save<W: std::io::Write>(&mut self, dest: W) -> io::Result<()> {
+        let writer = BufWriter::new(dest);
 
         let mut message = ::capnp::message::Builder::new_default();
         {
             let mut layer = message.init_root::<capnp_layer::Builder>();
             self.write_capnp(&mut layer);
         }
-        ::capnp::serialize_packed::write_message(out, &message).unwrap();
+        ::capnp::serialize_packed::write_message(writer, &message).unwrap();
 
         Ok(())
     }
@@ -761,13 +770,11 @@ impl<B: IBackend> Layer<B> {
     /// #    }
     /// # }
     /// ```
-    pub fn load<LB: IBackend + LayerOps<f32> + 'static, P: AsRef<Path>>(
+    pub fn load<LB: IBackend + LayerOps<f32> + 'static, R: std::io::Read>(
         backend: Rc<LB>,
-        path: P,
+        source: R,
     ) -> io::Result<Layer<LB>> {
-        let path = path.as_ref();
-        let ref mut file = File::open(path)?;
-        let mut reader = BufReader::new(file);
+        let mut reader = BufReader::new(source);
 
         let message_reader =
             ::capnp::serialize_packed::read_message(&mut reader, ::capnp::message::ReaderOptions::new()).unwrap();

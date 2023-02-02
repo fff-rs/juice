@@ -46,6 +46,8 @@ mod layer_spec {
 
     #[cfg(feature = "native")]
     mod native {
+        use std::fs::OpenOptions;
+
         use super::native_backend;
         use crate::co::prelude::*;
         use juice::layer::*;
@@ -92,11 +94,11 @@ mod layer_spec {
         fn save_and_load_layer() {
             let cfg = simple_network();
             let mut original_layer = Layer::from_config(native_backend(), &cfg);
-            let mut tmpfile = std::env::temp_dir();
-            tmpfile.push("tmpnet");
 
-            original_layer.save(&tmpfile).unwrap();
-            let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), &tmpfile).unwrap();
+            let mut tmpfile = Vec::new();
+            original_layer.save(&mut tmpfile).unwrap();
+
+            let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), &mut &tmpfile).unwrap();
 
             assert_eq!(original_layer.input_blob_names(), loaded_layer.input_blob_names());
 
