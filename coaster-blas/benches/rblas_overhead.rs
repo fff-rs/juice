@@ -1,3 +1,4 @@
+#![cfg(feature = "nightly")]
 #![feature(test)]
 
 use coaster as co;
@@ -6,7 +7,7 @@ use rust_blas as rblas;
 
 use co::prelude::*;
 use co_blas::plugin::*;
-use test::Bencher;
+use test::bench::Bencher;
 
 use rand::distributions::Standard;
 use rand::{thread_rng, Rng};
