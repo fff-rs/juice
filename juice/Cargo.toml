@@ -34,9 +34,14 @@ capnpc = "0.14"
 
 [dev-dependencies]
 env_logger = "0.9"
+criterion = "0.3"
 
 [features]
 default = ["native", "cuda"]
 native = ["coaster-blas/native", "coaster-nn/native"]
 cuda = ["coaster/cuda", "coaster-blas/cuda", "coaster-nn/cuda"]
 opencl = ["coaster/opencl", "coaster-blas/opencl", "coaster-nn/opencl"]
+
+[[bench]]
+name = "network_benches"
+harness = false
