@@ -20,7 +20,7 @@ pub fn bench_mnsit_forward_1(c: &mut Criterion) {
         FillerType::fill_constant(&mut input.borrow_mut(), 0.0);
 
         b.iter(|| {
-            net.top().compute_output(&backend, &mut context);
+            net.top().compute_output(&backend, &mut context).unwrap();
         })
     });
 }
@@ -125,7 +125,7 @@ pub fn alexnet_forward(c: &mut Criterion) {
         FillerType::fill_constant(&mut input.borrow_mut(), 0.0);
 
         b.iter(|| {
-            net.top().compute_output(&backend, &mut context);
+            net.top().compute_output(&backend, &mut context).unwrap();
         })
     });
 }
@@ -230,7 +230,7 @@ pub fn small_alexnet_forward(c: &mut Criterion) {
         FillerType::fill_constant(&mut input.borrow_mut(), 0.0);
 
         b.iter(|| {
-            net.top().compute_output(&backend, &mut context);
+            net.top().compute_output(&backend, &mut context).unwrap();
         })
     });
 
