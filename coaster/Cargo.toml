@@ -37,3 +37,4 @@ native = []
 cuda = ["rcudnn", "rcublas"]
 opencl = []
 unstable_alloc = [] # faster but unstable memory allocation on native machines
+nightly = []

@@ -1,3 +1,4 @@
+#![cfg(feature = "nightly")]
 #![feature(test)]
 
 use co::backend::{Backend, BackendConfig};
