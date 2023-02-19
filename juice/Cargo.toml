@@ -34,6 +34,7 @@ capnpc = "0.14"
 
 [dev-dependencies]
 env_logger = "0.9"
+criterion = "0.3"
 
 [features]
 default = ["native", "cuda"]
@@ -42,3 +43,7 @@ cuda = ["coaster/cuda", "coaster-blas/cuda", "coaster-nn/cuda"]
 opencl = ["coaster/opencl", "coaster-blas/opencl", "coaster-nn/opencl"]
 # When enabled, all weights are initialized in a deterministic way.
 deterministic = []
+
+[[bench]]
+name = "network_benches"
+harness = false
