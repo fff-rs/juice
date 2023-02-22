@@ -1703,6 +1703,16 @@
 <span id="1697">1697</span>
 <span id="1698">1698</span>
 <span id="1699">1699</span>
+<span id="1700">1700</span>
+<span id="1701">1701</span>
+<span id="1702">1702</span>
+<span id="1703">1703</span>
+<span id="1704">1704</span>
+<span id="1705">1705</span>
+<span id="1706">1706</span>
+<span id="1707">1707</span>
+<span id="1708">1708</span>
+<span id="1709">1709</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Provides the generics and interfaces for the specific Layers.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! See [Layers][layers]</span>
@@ -2011,7 +2021,15 @@
             } <span class="kw">else</span> {
                 <span class="macro">format!</span>(<span class="string">&quot;{}-{}&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">weight_id</span>)
             };
+            
+            <span class="kw">let</span> <span class="ident">display_name_bias</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">weight_name</span>.<span class="ident">is_empty</span>() {
+                <span class="macro">format!</span>(<span class="string">&quot;{weight_name}-bias&quot;</span>)
+            } <span class="kw">else</span> {
+                <span class="macro">format!</span>(<span class="string">&quot;{}-{}-bias&quot;</span>, <span class="self">self</span>.<span class="ident">name</span>, <span class="ident">weight_id</span>)
+            };
+
             <span class="self">self</span>.<span class="ident">weights_display_names</span>.<span class="ident">push</span>(<span class="ident">display_name</span>.<span class="ident">clone</span>());
+            <span class="self">self</span>.<span class="ident">weights_display_names</span>.<span class="ident">push</span>(<span class="ident">display_name_bias</span>.<span class="ident">clone</span>());
             <span class="comment">// create name for registry</span>
             <span class="kw">let</span> <span class="ident">registry_name</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;SHARED_WEIGHT_{}&quot;</span>, <span class="ident">display_name</span>);
 
@@ -2629,6 +2647,8 @@
                 .<span class="ident">init_weights_data</span>(<span class="self">self</span>.<span class="ident">learnable_weights_names</span>().<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>);
             <span class="kw">let</span> <span class="ident">names</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">learnable_weights_names</span>();
             <span class="kw">let</span> <span class="ident">weights_data</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">learnable_weights_data</span>();
+
+            <span class="macro">assert_eq!</span>(<span class="ident">names</span>.<span class="ident">len</span>(), <span class="ident">weights_data</span>.<span class="ident">len</span>(), <span class="string">&quot;All layers must be named&quot;</span>);
 
             <span class="kw">for</span> (<span class="ident">i</span>, (<span class="ident">name</span>, <span class="ident">weight</span>)) <span class="kw">in</span> <span class="ident">names</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">weights_data</span>).<span class="ident">enumerate</span>() {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">capnp_weight</span> <span class="op">=</span> <span class="ident">weights</span>.<span class="ident">reborrow</span>().<span class="ident">get</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>);
