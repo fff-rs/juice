@@ -306,7 +306,15 @@ impl<B: IBackend> Layer<B> {
             } else {
                 format!("{}-{}", self.name, weight_id)
             };
+            
+            let display_name_bias = if !weight_name.is_empty() {
+                format!("{weight_name}-bias")
+            } else {
+                format!("{}-{}-bias", self.name, weight_id)
+            };
+
             self.weights_display_names.push(display_name.clone());
+            self.weights_display_names.push(display_name_bias.clone());
             // create name for registry
             let registry_name = format!("SHARED_WEIGHT_{}", display_name);
 
@@ -936,6 +944,8 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
                 .init_weights_data(self.learnable_weights_names().len() as u32);
             let names = self.learnable_weights_names();
             let weights_data = self.learnable_weights_data();
+
+            assert_eq!(names.len(), weights_data.len(), "All layers must be named");
 
             for (i, (name, weight)) in names.iter().zip(weights_data).enumerate() {
                 let mut capnp_weight = weights.reborrow().get(i as u32);
