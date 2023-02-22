@@ -933,7 +933,7 @@ impl<'a, B: IBackend> CapnpWrite<'a> for Layer<B> {
             let names = self.learnable_weights_names();
             let weights_data = self.learnable_weights_data();
 
-            assert_eq!(names.len(), weights_data.len(), "Not all layers are named");
+            assert_eq!(names.len(), weights_data.len(), "All layers must be named");
 
             for (i, (name, weight)) in names.iter().zip(weights_data).enumerate() {
                 let mut capnp_weight = weights.reborrow().get(i as u32);
