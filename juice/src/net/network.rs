@@ -5,7 +5,7 @@ use crate::net::layer::Layer;
 use crate::net::{layer_from_config, Context, Descriptor, Inout, LayerConfig};
 use crate::util::LayerOps;
 
-use super::LayerFromConfigError;
+use super::{LayerError, LayerFromConfigError};
 
 // A trainable network. Essentially a convenience wrapper around the top-level layer
 // which is typically a container layer.
@@ -54,7 +54,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
     /// (latter case for batch processing).
     /// Returns a tensor of shape which is either [<top output shape>] or [N, <top output shape>],
     /// depending on the input shape.
-    pub fn transform(&self, backend: &B, input: &SharedTensor<f32>) -> SharedTensor<f32> {
+    pub fn transform(&self, backend: &B, input: &SharedTensor<f32>) -> Result<SharedTensor<f32>, LayerError> {
         assert_eq!(self.top.descriptor().inputs().len(), 1);
         assert_eq!(self.top.descriptor().outputs().len(), 1);
 
@@ -79,8 +79,8 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         }
 
         // Compute network output and take it out of the context as a return value.
-        self.top.compute_output(backend, &mut context);
-        context.take_data(self.top.descriptor().output(0))
+        self.top.compute_output(backend, &mut context)?;
+        Ok(context.take_data(self.top.descriptor().output(0)))
     }
 
     pub fn clone(&self, backend: &B) -> Network<B> {
