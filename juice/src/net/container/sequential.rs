@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 
 use crate::co::IBackend;
-use crate::net::{layer_from_config, Context, Descriptor, Inout, Layer, LayerConfig, LayerFromConfigError};
+use crate::net::{layer_from_config, Context, Descriptor, Inout, Layer, LayerConfig, LayerError, LayerFromConfigError};
 use crate::util::LayerOps;
 
 // Config for a single child layer.
@@ -237,16 +237,18 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
 }
 
 impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> for Sequential<B> {
-    fn compute_output(&self, backend: &B, context: &mut Context) {
+    fn compute_output(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         for child in self.children.iter() {
-            child.compute_output(backend, context);
+            child.compute_output(backend, context)?;
         }
+        Ok(())
     }
 
-    fn compute_gradients(&self, backend: &B, context: &mut Context) {
+    fn compute_gradients(&self, backend: &B, context: &mut Context) -> Result<(), LayerError> {
         for child in self.children.iter().rev() {
-            child.compute_gradients(backend, context);
+            child.compute_gradients(backend, context)?;
         }
+        Ok(())
     }
 
     fn descriptor(&self) -> &Descriptor {
@@ -261,9 +263,9 @@ impl<B: IBackend + LayerOps<f32> + 'static> Layer<B> for Sequential<B> {
 impl<B: IBackend> Debug for Sequential<B> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Sequential")
-        .field("descriptor", &self.descriptor)
-        .field("children", &self.children)
-        .finish()
+            .field("descriptor", &self.descriptor)
+            .field("children", &self.children)
+            .finish()
     }
 }
 
@@ -279,7 +281,7 @@ mod tests {
         let mut input = SharedTensor::new(&[1]);
         write_batch_sample(&mut input, &[value], 0);
 
-        let output = net.transform(backend, &input);
+        let output = net.transform(backend, &input).unwrap();
         output.read(backend.device()).unwrap().as_slice::<f32>()[0]
     }
 

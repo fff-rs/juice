@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use thiserror::Error;
+
 use crate::co::IBackend;
 use crate::net::activation::*;
 use crate::net::common::*;
@@ -7,6 +9,14 @@ use crate::net::container::*;
 use crate::net::loss::*;
 use crate::net::{Context, Descriptor, LayerConfig};
 use crate::util::LayerOps;
+
+#[derive(Error, Debug)]
+pub enum LayerError {
+    #[error("backend error")]
+    Backend(Box<dyn std::error::Error>),
+    #[error("tensor error")]
+    Tensor(Box<dyn std::error::Error>),
+}
 
 /// A generalized layer in a network, performing certain function on inputs producing outputs.
 /// Layers be can combined in an acyclic graph forming a network that can compute output from
@@ -33,13 +43,13 @@ pub trait Layer<B: IBackend>: Debug {
     // Computes output given the input(s) and stores them in the Context.
     // Invoked during forward pass. Inputs must be already computed and present on the Context
     // (will panic otherwise).
-    fn compute_output(&self, backend: &B, context: &mut Context);
+    fn compute_output(&self, backend: &B, context: &mut Context) -> Result<(), LayerError>;
 
     // Computes the input and weight gradients and stores them in the Context.
     // Invoked during backward pass. Inputs, outputs and output gradients must be already computed
     // and present on the Context. (An output gradient is computed as the input gradient by the
     // downstream layer which uses this output as input.)
-    fn compute_gradients(&self, backend: &B, context: &mut Context);
+    fn compute_gradients(&self, backend: &B, context: &mut Context) -> Result<(), LayerError>;
 
     // Returns the immutable Descriptor ref.
     fn descriptor(&self) -> &Descriptor;
@@ -74,6 +84,18 @@ pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
         LayerConfig::Sigmoid => Box::new(Sigmoid::new(descriptor)),
         LayerConfig::Softmax => Box::new(Softmax::new(descriptor)),
     })
+}
+
+impl From<::coaster::error::Error> for LayerError {
+    fn from(e: ::coaster::error::Error) -> Self {
+        LayerError::Backend(Box::new(e))
+    }
+}
+
+impl From<::coaster::tensor::Error> for LayerError {
+    fn from(e: ::coaster::tensor::Error) -> Self {
+        LayerError::Tensor(Box::new(e))
+    }
 }
 
 impl From<SequentialBadInputOutputError> for LayerFromConfigError {
@@ -204,7 +226,7 @@ pub mod testing {
     ) -> LayerOutput {
         // Run the input through the network.
         LayerOutput {
-            output: net.transform(backend, input),
+            output: net.transform(backend, input).unwrap(),
         }
     }
 
@@ -241,7 +263,7 @@ pub mod testing {
         }
 
         // Compute network output.
-        net.top().compute_output(backend, &mut context);
+        net.top().compute_output(backend, &mut context).unwrap();
 
         // Copy output gradient into the context.
         {
@@ -258,7 +280,7 @@ pub mod testing {
         }
 
         // Make the layer compute the input gradient.
-        net.top().compute_gradients(&backend, &mut context);
+        net.top().compute_gradients(&backend, &mut context).unwrap();
 
         // Extract the data from the context and return it.
         LayerOutputAndGradients {
