@@ -117,7 +117,6 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
 
         let config = backend
             .new_rnn_config(
-                &input,
                 Some(self.dropout_probability),
                 Some(self.dropout_seed),
                 sequence_length as i32,
@@ -130,6 +129,7 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
                 // https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNAlgo_t
                 // Lists the differences and how we can pick between Algorithms automatically
                 RnnAlgorithm::Standard,
+                input.desc()[1] as i32,
                 hidden_size as i32,
                 self.num_layers as i32,
                 batch_size as i32,
@@ -409,21 +409,21 @@ mod tests {
         let output_data = SharedTensor::<f32>::new(output_shape);
 
         layer.rnn_config = Some(Rc::from(
-            backend
-                .new_rnn_config(
-                    &input_data,
-                    None,
-                    None,
-                    sequence_length as i32,
-                    RnnNetworkMode::LSTM,
-                    RnnInputMode::LinearInput,
-                    DirectionMode::UniDirectional,
-                    RnnAlgorithm::Standard,
-                    hidden_size as i32,
-                    num_layers as i32,
-                    input_shape[0] as i32,
-                )
-                .unwrap(),
+            <Backend<Cuda> as conn::Rnn<f32>>::new_rnn_config(
+                &backend,
+                None,
+                None,
+                sequence_length as i32,
+                RnnNetworkMode::LSTM,
+                RnnInputMode::LinearInput,
+                DirectionMode::UniDirectional,
+                RnnAlgorithm::Standard,
+                sequence_length as i32,
+                hidden_size as i32,
+                num_layers as i32,
+                batch_size as i32,
+            )
+            .unwrap(),
         ));
     }
 
@@ -473,21 +473,21 @@ mod tests {
 
         let mut output_data = SharedTensor::<f32>::new(&output_shape);
 
-        let config = backend
-            .new_rnn_config(
-                &input_data,
-                None,
-                None,
-                SEQUENCE_LENGTH as i32,
-                RnnNetworkMode::LSTM,
-                RnnInputMode::LinearInput,
-                DirectionMode::UniDirectional,
-                RnnAlgorithm::Standard,
-                HIDDEN_SIZE as i32,
-                NUM_LAYERS as i32,
-                BATCH_SIZE as i32,
-            )
-            .unwrap();
+        let config = <Backend<Cuda> as conn::Rnn<f32>>::new_rnn_config(
+            &backend,
+            None,
+            None,
+            SEQUENCE_LENGTH as i32,
+            RnnNetworkMode::LSTM,
+            RnnInputMode::LinearInput,
+            DirectionMode::UniDirectional,
+            RnnAlgorithm::Standard,
+            INPUT_SIZE as i32,
+            HIDDEN_SIZE as i32,
+            NUM_LAYERS as i32,
+            BATCH_SIZE as i32,
+        )
+        .unwrap();
 
         let filter_dimensions = <Backend<Cuda> as conn::Rnn<f32>>::generate_rnn_weight_description(
             &backend,
