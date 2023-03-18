@@ -860,7 +860,6 @@ where
 
     fn new_rnn_config(
         &self,
-        src: &SharedTensor<T>,
         dropout_probability: Option<f32>,
         dropout_seed: Option<u64>,
         sequence_length: i32,
@@ -868,6 +867,7 @@ where
         input_mode: RnnInputMode,
         direction_mode: DirectionMode,
         algorithm: RnnAlgorithm,
+        input_size: i32,
         hidden_size: i32,
         num_layers: i32,
         batch_size: i32,
@@ -877,7 +877,6 @@ where
         let network_mode = network_mode.as_cudnn()?;
         let algorithm = algorithm.as_cudnn()?;
 
-        let src_description = src.desc();
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
         let drop_desc = exec2!(cudnn_framework.init_dropout(
@@ -889,7 +888,7 @@ where
 
         let x_desc = rnn_sequence_descriptors(
             sequence_length,
-            src_description[1] as i32,
+            input_size,
             hidden_size,
             batch_size,
             num_layers,

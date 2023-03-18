@@ -311,7 +311,6 @@ pub trait Rnn<F>: NN<F> {
     /// Create a RnnConfig
     fn new_rnn_config(
         &self,
-        src: &SharedTensor<F>,
         dropout_probability: Option<f32>,
         dropout_seed: Option<u64>,
         sequence_length: i32,
@@ -319,6 +318,7 @@ pub trait Rnn<F>: NN<F> {
         input_mode: RnnInputMode,
         direction_mode: DirectionMode,
         algorithm: RnnAlgorithm,
+        input_size: i32,
         hidden_size: i32,
         num_layers: i32,
         batch_size: i32,
