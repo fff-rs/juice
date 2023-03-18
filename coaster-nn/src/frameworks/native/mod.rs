@@ -868,7 +868,6 @@ where
 {
     fn new_rnn_config(
         &self,
-        src: &SharedTensor<T>,
         dropout_probability: Option<f32>,
         dropout_seed: Option<u64>,
         sequence_length: i32,
@@ -876,6 +875,7 @@ where
         input_mode: RnnInputMode,
         direction_mode: DirectionMode,
         algorithm: RnnAlgorithm,
+        input_size: i32,
         hidden_size: i32,
         num_layers: i32,
         batch_size: i32,

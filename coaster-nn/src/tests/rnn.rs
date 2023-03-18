@@ -40,7 +40,6 @@ where
 
     let rnn_config = backend
         .new_rnn_config(
-            &src,
             dropout_probability,
             dropout_seed,
             SEQUENCE_LENGTH as i32,
@@ -48,6 +47,7 @@ where
             input_mode,
             direction_mode,
             algorithm,
+            INPUT_SIZE as i32,
             HIDDEN_SIZE as i32,
             NUM_LAYERS as i32,
             BATCH_SIZE as i32,
