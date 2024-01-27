@@ -39,13 +39,14 @@ Rustflags must be set to link natively to `cuda.lib` and `cudnn.h` in the patter
 A generated version of Mackey-Glass is packaged with Juice, and packaged in a way suitable for RNN networks.
 
 ```bash
+cd juice-examples/mackey-glass-rnn-regression
 # Train a RNN Network (*nix)
-./target/release/example-rnn-regression train --file=SavedRNNNetwork.juice --learningRate=0.01 --batchSize=40
+../../target/release/example-rnn-regression train --learning-rate=0.01 --batch-size=40 SavedRNNNetwork.juice 
 # Train a RNN Network (Windows)
-.\target\release\example-rnn-regression.exe train --file=SavedRNNNetwork.juice --learningRate=0.01 --batchSize=40
+..\..\target\release\example-rnn-regression.exe train --learning-rate=0.01 --batch-size=40 SavedRNNNetwork.juice 
 
 # Test the RNN Network (*nix)
-../target/release/example-rnn-regression test --file=SavedRNNNetwork.juice
+../../target/release/example-rnn-regression test --batch-size=40  SavedRNNNetwork.juice
 # Test the RNN Network (Windows)
-cd ../target/release/ && example-rnn-regression.exe test --file=SavedRNNNetwork.juice
+..\..\target\release\example-rnn-regression.exe test --batch-size=40 SavedRNNNetwork.juice
 ```
