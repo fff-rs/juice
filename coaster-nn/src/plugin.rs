@@ -335,7 +335,6 @@ pub trait Rnn<F>: NN<F> {
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
-        batch_size: i32,
         input_size: i32,
     ) -> Result<Vec<usize>, crate::co::error::Error>;
 

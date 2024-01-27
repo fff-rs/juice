@@ -844,14 +844,17 @@ where
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
-        batch_size: i32,
         input_size: i32,
     ) -> Result<Vec<usize>, Error> {
         let cudnn_framework = self.framework().cudnn();
         let data_type = <T as DataTypeInfo>::cudnn_data_type();
 
-        // MiniBatch, LayerSize, 1
-        let dim_x = vec![batch_size, input_size, 1];
+        // According to cuDNN API reference and examples, xDesc should have a
+        // least 3 dimensions with batch_size being the first. However, weights
+        // size does not depend on batch size and we'd like to avoid having to
+        // specify batch size in advance (as it can change during execution).
+        // So we use batch_size = 1 as it appers to work well.
+        let dim_x = vec![1, input_size, 1];
         let stride_x = vec![dim_x[2] * dim_x[1], dim_x[2], 1];
 
         // dummy desc to get the param size
