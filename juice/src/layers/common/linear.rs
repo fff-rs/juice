@@ -19,6 +19,8 @@
 //! In the context of convolutional neural networks this layer is also
 //! called a "fully-connected layer" if it is used at the end of the network.
 
+use rand::distributions::Distribution;
+
 use crate::capnp_util::*;
 use crate::co::backend::IBackend;
 use crate::co::tensor::SharedTensor;
@@ -27,6 +29,7 @@ use crate::juice_capnp::linear_config as capnp_config;
 use crate::layer::*;
 use crate::util::{native_scalar, ArcLock, LayerOps};
 use crate::weight::FillerType;
+use rand::{self, prelude::*};
 
 #[derive(Debug)]
 /// Linear Layer
@@ -112,7 +115,13 @@ impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
             weight.write().unwrap().resize(&(1, self.output_size)).unwrap();
             // Weight Initialisation for bias is typically a constant, and a suitable initialisation
             // is stated in https://cs231n.github.io/neural-networks-2/#init for non-LSTM types.
-            let initialisation_constant = rand::random::<f32>();
+
+            #[cfg(feature = "deterministic")]
+            let mut rng = rand::rngs::StdRng::seed_from_u64(2301); // Arbitrary seed.
+            #[cfg(not(feature = "deterministic"))]
+            let mut rng = thread_rng();
+
+            let initialisation_constant: f32 = rand::distributions::Standard {}.sample(&mut rng);
             let filler = FillerType::Constant {
                 value: initialisation_constant * (2.0 / initialisation_constant).sqrt(),
             };
