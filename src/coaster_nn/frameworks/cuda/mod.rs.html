@@ -1722,6 +1722,9 @@
 <span id="1716">1716</span>
 <span id="1717">1717</span>
 <span id="1718">1718</span>
+<span id="1719">1719</span>
+<span id="1720">1720</span>
+<span id="1721">1721</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Provides NN for a CUDA backend.</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 
@@ -2568,14 +2571,17 @@
     <span class="kw">fn</span> <span class="ident">generate_rnn_weight_description</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CRNN</span>,
-        <span class="ident">batch_size</span>: <span class="ident">i32</span>,
         <span class="ident">input_size</span>: <span class="ident">i32</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cudnn_framework</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">framework</span>().<span class="ident">cudnn</span>();
         <span class="kw">let</span> <span class="ident">data_type</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">DataTypeInfo</span><span class="op">&gt;</span><span class="ident">::cudnn_data_type</span>();
 
-        <span class="comment">// MiniBatch, LayerSize, 1</span>
-        <span class="kw">let</span> <span class="ident">dim_x</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">batch_size</span>, <span class="ident">input_size</span>, <span class="number">1</span>];
+        <span class="comment">// According to cuDNN API reference and examples, xDesc should have a</span>
+        <span class="comment">// least 3 dimensions with batch_size being the first. However, weights</span>
+        <span class="comment">// size does not depend on batch size and we&#39;d like to avoid having to</span>
+        <span class="comment">// specify batch size in advance (as it can change during execution).</span>
+        <span class="comment">// So we use batch_size = 1 as it appers to work well.</span>
+        <span class="kw">let</span> <span class="ident">dim_x</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>, <span class="ident">input_size</span>, <span class="number">1</span>];
         <span class="kw">let</span> <span class="ident">stride_x</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">dim_x</span>[<span class="number">2</span>] <span class="op">*</span> <span class="ident">dim_x</span>[<span class="number">1</span>], <span class="ident">dim_x</span>[<span class="number">2</span>], <span class="number">1</span>];
 
         <span class="comment">// dummy desc to get the param size</span>

@@ -807,7 +807,6 @@
 <span id="801">801</span>
 <span id="802">802</span>
 <span id="803">803</span>
-<span id="804">804</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Provides the INn Plugin trait for Coaster implementation.</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co::tensor::SharedTensor</span>;
 <span class="kw">use</span> <span class="ident">std::fmt::Formatter</span>;
@@ -1145,7 +1144,6 @@
     <span class="kw">fn</span> <span class="ident">generate_rnn_weight_description</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CRNN</span>,
-        <span class="ident">batch_size</span>: <span class="ident">i32</span>,
         <span class="ident">input_size</span>: <span class="ident">i32</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident"><span class="kw">crate</span>::co::error::Error</span><span class="op">&gt;</span>;
 

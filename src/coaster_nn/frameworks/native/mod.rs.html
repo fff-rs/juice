@@ -1024,7 +1024,6 @@
 <span id="1018">1018</span>
 <span id="1019">1019</span>
 <span id="1020">1020</span>
-<span id="1021">1021</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Provides NN for a Native backend.</span>
 
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
@@ -1917,7 +1916,6 @@
     <span class="kw">fn</span> <span class="ident">generate_rnn_weight_description</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">rnn_config</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::CRNN</span>,
-        <span class="ident">batch_size</span>: <span class="ident">i32</span>,
         <span class="ident">input_size</span>: <span class="ident">i32</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="comment">// This will end up being the tensor descriptor for the weights associated with the RNN pass</span>

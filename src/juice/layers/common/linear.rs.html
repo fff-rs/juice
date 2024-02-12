@@ -451,6 +451,15 @@
 <span id="445">445</span>
 <span id="446">446</span>
 <span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Applies a linear transformation to the input data `y = a * x + b`</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! The variables are:</span>
@@ -472,6 +481,8 @@
 <span class="doccomment">//! In the context of convolutional neural networks this layer is also</span>
 <span class="doccomment">//! called a &quot;fully-connected layer&quot; if it is used at the end of the network.</span>
 
+<span class="kw">use</span> <span class="ident">rand::distributions::Distribution</span>;
+
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::capnp_util</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co::backend::IBackend</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::co::tensor::SharedTensor</span>;
@@ -480,6 +491,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::layer</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util</span>::{<span class="ident">native_scalar</span>, <span class="ident">ArcLock</span>, <span class="ident">LayerOps</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::weight::FillerType</span>;
+<span class="kw">use</span> <span class="ident">rand</span>::{<span class="self">self</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="doccomment">/// Linear Layer</span>
@@ -565,7 +577,13 @@
             <span class="ident">weight</span>.<span class="ident">write</span>().<span class="ident">unwrap</span>().<span class="ident">resize</span>(<span class="kw-2">&amp;</span>(<span class="number">1</span>, <span class="self">self</span>.<span class="ident">output_size</span>)).<span class="ident">unwrap</span>();
             <span class="comment">// Weight Initialisation for bias is typically a constant, and a suitable initialisation</span>
             <span class="comment">// is stated in https://cs231n.github.io/neural-networks-2/#init for non-LSTM types.</span>
-            <span class="kw">let</span> <span class="ident">initialisation_constant</span> <span class="op">=</span> <span class="ident">rand::random</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>();
+
+            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;deterministic&quot;</span>)]</span>
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand::rngs::StdRng::seed_from_u64</span>(<span class="number">2301</span>); <span class="comment">// Arbitrary seed.</span>
+            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;deterministic&quot;</span>))]</span>
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">thread_rng</span>();
+
+            <span class="kw">let</span> <span class="ident">initialisation_constant</span>: <span class="ident">f32</span> <span class="op">=</span> <span class="ident">rand::distributions::Standard</span> {}.<span class="ident">sample</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>);
             <span class="kw">let</span> <span class="ident">filler</span> <span class="op">=</span> <span class="ident">FillerType::Constant</span> {
                 <span class="ident">value</span>: <span class="ident">initialisation_constant</span> <span class="op">*</span> (<span class="number">2.0</span> <span class="op">/</span> <span class="ident">initialisation_constant</span>).<span class="ident">sqrt</span>(),
             };

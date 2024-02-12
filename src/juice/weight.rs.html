@@ -213,6 +213,10 @@
 <span id="207">207</span>
 <span id="208">208</span>
 <span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Provides configuration of weights and their initialization.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::capnp_util</span>::<span class="kw-2">*</span>;
@@ -415,7 +419,11 @@
         <span class="kw">let</span> <span class="ident">native_weight</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">write_only</span>(<span class="ident">native</span>.<span class="ident">device</span>()).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">init_range</span> <span class="op">=</span> (<span class="number">6.0f32</span> <span class="op">/</span> (<span class="ident">num_inputs</span> <span class="kw">as</span> <span class="ident">f32</span> <span class="op">+</span> <span class="ident">num_outputs</span> <span class="kw">as</span> <span class="ident">f32</span>)).<span class="ident">sqrt</span>();
 
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;deterministic&quot;</span>)]</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand::rngs::StdRng::seed_from_u64</span>(<span class="number">2301</span>);  <span class="comment">// Arbitrary seed.</span>
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;deterministic&quot;</span>))]</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">thread_rng</span>();
+
         <span class="kw">let</span> <span class="ident">between</span> <span class="op">=</span> <span class="ident">rand::distributions::Uniform::from</span>(<span class="op">-</span><span class="ident">init_range</span>..<span class="op">=</span><span class="ident">init_range</span>);
         <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">native_weight</span>.<span class="ident">as_mut_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>() {
             <span class="kw-2">*</span><span class="ident">e</span> <span class="op">=</span> <span class="ident">between</span>.<span class="ident">sample</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>);
