@@ -887,7 +887,6 @@ where
     fn generate_rnn_weight_description(
         &self,
         rnn_config: &Self::CRNN,
-        batch_size: i32,
         input_size: i32,
     ) -> Result<Vec<usize>, Error> {
         // This will end up being the tensor descriptor for the weights associated with the RNN pass

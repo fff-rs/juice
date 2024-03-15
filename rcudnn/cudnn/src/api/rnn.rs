@@ -166,7 +166,7 @@ impl API {
     ) -> Result<::libc::size_t, Error> {
         let mut size: ::libc::size_t = 0;
         let size_ptr: *mut ::libc::size_t = &mut size;
-        match cudnnGetRNNParamsSize(handle, rnn_desc,x_desc, size_ptr, data_type) {
+        match cudnnGetRNNParamsSize(handle, rnn_desc, x_desc, size_ptr, data_type) {
             cudnnStatus_t::CUDNN_STATUS_SUCCESS => Ok(size),
             cudnnStatus_t::CUDNN_STATUS_BAD_PARAM => Err(Error::BadParam("One of the following; rnnDesc is invalid, x_desc is invalid, x_desc isn't fully packed, dataType & tensor Description type don't match")),
             cudnnStatus_t::CUDNN_STATUS_NOT_SUPPORTED => Err(Error::NotSupported("The data type used in `rnn_desc` is not supported for RNN.")),

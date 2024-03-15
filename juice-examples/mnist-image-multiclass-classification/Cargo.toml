@@ -18,7 +18,7 @@ juice-utils = {path = "../juice-utils"}
 
 csv = "1"
 hyper = "0.14"
-hyper-rustls = "0.22"
+hyper-rustls = "0.23"
 futures = "0.3"
 futures-util = "0.3"
 

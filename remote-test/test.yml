@@ -1,10 +1,12 @@
 platform: linux
 
-# image_resource:
-#   type: registry-image
-#   source:
-#     repository: quay.io/spearow/machine-learning-container-fedora-cuda
+image_resource:
+   type: registry-image
+   source:
+      repository: quay.io/spearow/machine-learning-container-fedora-cuda
 #     tag: latest
+#     repository: docker.io/nvidia/cuda
+#     tag: 11.7.1-devel-centos7
 
 inputs:
 - name: juice

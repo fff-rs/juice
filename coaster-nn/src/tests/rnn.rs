@@ -55,7 +55,7 @@ where
         .unwrap();
 
     let filter_dimensions = backend
-        .generate_rnn_weight_description(&rnn_config, BATCH_SIZE as i32, INPUT_SIZE as i32)
+        .generate_rnn_weight_description(&rnn_config, INPUT_SIZE as i32)
         .unwrap();
 
     let w = uniformly_random_tensor::<T, F>(

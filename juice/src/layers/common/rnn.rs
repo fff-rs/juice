@@ -137,7 +137,7 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
             .unwrap();
 
         let filter_dimensions: TensorDesc = backend
-            .generate_rnn_weight_description(&config, batch_size as i32, input_size as i32)
+            .generate_rnn_weight_description(&config, input_size as i32)
             .unwrap();
 
         // weights
@@ -492,7 +492,6 @@ mod tests {
         let filter_dimensions = <Backend<Cuda> as conn::Rnn<f32>>::generate_rnn_weight_description(
             &backend,
             &config,
-            BATCH_SIZE as i32,
             INPUT_SIZE as i32,
         )
         .unwrap();

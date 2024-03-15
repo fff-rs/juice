@@ -200,7 +200,11 @@ impl FillerType {
         let native_weight = weight.write_only(native.device()).unwrap();
         let init_range = (6.0f32 / (num_inputs as f32 + num_outputs as f32)).sqrt();
 
+        #[cfg(feature = "deterministic")]
+        let mut rng = rand::rngs::StdRng::seed_from_u64(2301);  // Arbitrary seed.
+        #[cfg(not(feature = "deterministic"))]
         let mut rng = thread_rng();
+
         let between = rand::distributions::Uniform::from(-init_range..=init_range);
         for e in native_weight.as_mut_slice::<f32>() {
             *e = between.sample(&mut rng);
