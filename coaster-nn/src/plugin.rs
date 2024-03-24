@@ -144,13 +144,8 @@ pub trait ConvolutionContext<F> {}
 /// Provides Rnn Config functionality.
 ///
 /// Needs to be implemented for Operation specific configurations.
-pub trait RnnConfig<F> {
-    /// Workspace Size - Overwritten by each plugin method except native, which doesn't require
-    /// a workspace size.
-    fn workspace_size(&self) -> usize {
-        0
-    }
-}
+/// TODO: Rename to RnnContext since it contains mutable data.
+pub trait RnnConfig<F> {}
 
 /// Provides the functionality for a backend to support Neural Network related operations.
 pub trait NN<F> {
@@ -321,7 +316,6 @@ pub trait Rnn<F>: NN<F> {
         input_size: i32,
         hidden_size: i32,
         num_layers: i32,
-        batch_size: i32,
         // RC being RNNConfig
     ) -> Result<Self::CRNN, crate::co::error::Error>;
 
@@ -340,9 +334,8 @@ pub trait Rnn<F>: NN<F> {
         &self,
         src: &SharedTensor<F>,
         output: &mut SharedTensor<F>,
-        rnn_config: &Self::CRNN,
+        rnn_config: &mut Self::CRNN,
         weight: &SharedTensor<F>,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), crate::co::error::Error>;
 
     /// Calculates RNN Gradients for Input/Hidden/Cell
@@ -354,7 +347,6 @@ pub trait Rnn<F>: NN<F> {
         output_gradient: &SharedTensor<F>,
         rnn_config: &Self::CRNN,
         weight: &SharedTensor<F>,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), crate::co::error::Error>;
 
     /// Calculates RNN Gradients for Weights
@@ -364,7 +356,6 @@ pub trait Rnn<F>: NN<F> {
         output: &SharedTensor<F>,
         filter: &mut SharedTensor<F>,
         rnn_config: &Self::CRNN,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), crate::co::error::Error>;
 }
 

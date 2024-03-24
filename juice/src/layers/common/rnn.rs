@@ -36,15 +36,14 @@
 //! |---              |
 //! | NVIDIA GeForce GTX 1070 |
 
+use std::cell::RefCell;
 use std::rc::Rc;
-use std::sync::{Arc, RwLock};
 
 use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
 
 use crate::capnp_util::*;
 use crate::co::prelude::*;
 use crate::conn;
-use crate::conn::RnnConfig as connRnnConfig;
 use crate::juice_capnp::rnn_config as capnp_config;
 use crate::layer::*;
 use crate::util::{native_backend, ArcLock};
@@ -60,8 +59,7 @@ pub struct Rnn<B: conn::Rnn<f32>> {
     rnn_type: RnnNetworkMode,
     input_mode: RnnInputMode,
     direction_mode: DirectionMode,
-    workspace: Option<ArcLock<SharedTensor<u8>>>,
-    rnn_config: Option<Rc<B::CRNN>>,
+    rnn_config: Option<RefCell<B::CRNN>>,
 }
 
 impl<B: conn::Rnn<f32>> Rnn<B> {
@@ -75,7 +73,6 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
             rnn_type: config.rnn_type,
             input_mode: config.input_mode,
             direction_mode: config.direction_mode,
-            workspace: None,
             rnn_config: None,
         }
     }
@@ -132,7 +129,6 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
                 input.desc()[1] as i32,
                 hidden_size as i32,
                 self.num_layers as i32,
-                batch_size as i32,
             )
             .unwrap();
 
@@ -158,24 +154,7 @@ impl<B: IBackend + conn::Rnn<f32>> ILayer<B> for Rnn<B> {
         weights_gradient[0].write().unwrap().resize(&filter_dimensions).unwrap();
         weights_gradient[1].write().unwrap().resize(&filter_dimensions).unwrap();
 
-        self.rnn_config = Some(Rc::new(config));
-    }
-
-    fn resize_shared_workspace(
-        &mut self,
-        backend: Rc<B>,
-        workspace: Option<ArcLock<SharedTensor<u8>>>,
-    ) -> Option<ArcLock<SharedTensor<u8>>> {
-        let required_size = self.rnn_config.as_ref().unwrap().workspace_size();
-
-        if let Some(old_workspace) = workspace.clone() {
-            let old_workspace_size = old_workspace.read().unwrap().capacity();
-            if old_workspace_size >= required_size {
-                return Some(old_workspace);
-            }
-        }
-        self.workspace = Some(Arc::new(RwLock::new(SharedTensor::<u8>::new(&[required_size]))));
-        self.workspace.clone()
+        self.rnn_config = Some(RefCell::new(config));
     }
 }
 
@@ -191,10 +170,9 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeOutput<f32, B> for Rnn<B> {
         let batch_size = input_shape[0];
         let input_size = input_shape[1];
         let sequence_length = input_shape[2];
-        let rnn_config = self.rnn_config.as_ref().unwrap();
-        let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
+        let mut rnn_config = self.rnn_config.as_ref().unwrap().borrow_mut();
         backend
-            .rnn_forward(&input_data[0], output_data[0], rnn_config, weights[0], &mut workspace)
+            .rnn_forward(&input_data[0], output_data[0], &mut rnn_config, weights[0])
             .unwrap();
     }
 }
@@ -209,8 +187,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
         input_data: &[&SharedTensor<f32>],
         input_gradients: &mut [&mut SharedTensor<f32>],
     ) {
-        let rnn_config = self.rnn_config.as_ref().unwrap();
-        let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
+        let mut rnn_config = self.rnn_config.as_ref().unwrap().borrow_mut();
 
         let src = input_data[0];
         let input_shape = src.desc();
@@ -226,9 +203,8 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeInputGradient<f32, B> for Rnn<B> {
                 input_gradients[0],
                 &output_data[0],
                 output_gradients[0],
-                rnn_config,
+                &mut rnn_config,
                 weights_data[0],
-                &mut workspace,
             )
             .unwrap();
     }
@@ -243,8 +219,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
         input_data: &[&SharedTensor<f32>],
         parameters_gradients: &mut [&mut SharedTensor<f32>],
     ) {
-        let rnn_config = self.rnn_config.as_ref().unwrap();
-        let mut workspace = self.workspace.as_ref().unwrap().write().unwrap();
+        let mut rnn_config = self.rnn_config.as_ref().unwrap().borrow_mut();
 
         // weights
         backend
@@ -252,8 +227,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
                 &input_data[0],
                 &output_data[0],
                 &mut parameters_gradients[0],
-                rnn_config,
-                &mut workspace,
+                &mut rnn_config,
             )
             .unwrap();
 
@@ -263,8 +237,7 @@ impl<B: IBackend + conn::Rnn<f32>> ComputeParametersGradient<f32, B> for Rnn<B> 
                 &input_data[0],
                 &output_data[0],
                 &mut parameters_gradients[1],
-                rnn_config,
-                &mut workspace,
+                &mut rnn_config,
             )
             .unwrap();
     }
@@ -421,7 +394,6 @@ mod tests {
                 sequence_length as i32,
                 hidden_size as i32,
                 num_layers as i32,
-                batch_size as i32,
             )
             .unwrap(),
         ));
@@ -485,7 +457,6 @@ mod tests {
             INPUT_SIZE as i32,
             HIDDEN_SIZE as i32,
             NUM_LAYERS as i32,
-            BATCH_SIZE as i32,
         )
         .unwrap();
 

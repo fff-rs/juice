@@ -667,14 +667,7 @@ where
     }
 }
 
-impl<T> RnnConfig<T> for crate::cudnn::utils::RnnConfig
-where
-    T: Float + DataTypeInfo,
-{
-    fn workspace_size(&self) -> usize {
-        self.largest_workspace_size()
-    }
-}
+impl<T> RnnConfig<T> for crate::cudnn::utils::RnnConfig where T: Float + DataTypeInfo {}
 
 impl RnnInputMode {
     fn as_cudnn(&self) -> Result<cudnnRNNInputMode_t, Error> {
@@ -849,7 +842,7 @@ where
 
         let weight_size: usize = exec2!(API::get_rnn_params_size(
             *cudnn_framework.id_c(),
-            *rnn_config.rnn_desc().id_c(),
+            *rnn_config.rnn_desc.id_c(),
             // Input. A fully packed tensor descriptor describing the input to one recurrent iteration.
             // Appears to be a single descriptor, not an array of tensor descriptors.
             *x_desc.id_c(),
@@ -873,8 +866,12 @@ where
         input_size: i32,
         hidden_size: i32,
         num_layers: i32,
-        batch_size: i32,
     ) -> Result<Self::CRNN, Error> {
+        // Use batch size of 1 to initialize workspace. It will be resized in
+        // rnn_forward() call if batch size increases (and thus requires
+        // larger workspace).
+        const INIT_BATCH_SIZE: i32 = 1;
+
         let cudnn_framework = self.framework().cudnn();
         let input_mode = input_mode.as_cudnn()?;
         let network_mode = network_mode.as_cudnn()?;
@@ -893,7 +890,7 @@ where
             sequence_length,
             input_size,
             hidden_size,
-            batch_size,
+            INIT_BATCH_SIZE,
             num_layers,
             direction_mode,
             data_type,
@@ -936,9 +933,8 @@ where
         &self,
         src: &SharedTensor<T>,
         output: &mut SharedTensor<T>,
-        rnn_config: &Self::CRNN,
+        rnn_config: &mut Self::CRNN,
         weight: &SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
 
@@ -948,7 +944,7 @@ where
 
         let src_dimensions = src.desc();
         let sequence_descriptors = rnn_sequence_descriptors(
-            *rnn_config.sequence_length(),
+            rnn_config.sequence_length,
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
@@ -958,12 +954,13 @@ where
         )?;
 
         let weight_desc = weight.cudnn_filter_desc()?;
-        let reserve = rnn_config.training_reserve();
+
+        // Resize workspace if necessary.
+        exec2!(cudnn_framework.maybe_resize_rnn(rnn_config, &sequence_descriptors.x_desc) => "Unable to resize RNN buffers")?;
 
         let src_mem = read!(src, self);
         let weight_mem = weight.read(self.device()).unwrap();
         let output_mem = output.write_only(self.device()).unwrap();
-        let workspace_mem = workspace.write_only(self.device()).unwrap();
 
         exec2!(cudnn_framework.rnn_forward::<f32>(
             rnn_config,
@@ -981,8 +978,8 @@ where
             std::ptr::null_mut(),
             &sequence_descriptors.cy_desc,
             std::ptr::null_mut(),
-            trans_mut!(workspace_mem),
-            *reserve.id_c(),
+            *rnn_config.workspace.id_c(),
+            *rnn_config.training_reserve.id_c(),
         )  => "Unable to perform RNN Forward")
     }
 
@@ -994,12 +991,11 @@ where
         output_gradient: &SharedTensor<T>,
         rnn_config: &Self::CRNN,
         weight: &SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
-            *rnn_config.sequence_length(),
+            rnn_config.sequence_length,
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
@@ -1014,8 +1010,6 @@ where
         let weight_mem = read!(weight, self);
         let output_mem = read!(output, self);
         let output_gradient_mem = read!(output_gradient, self);
-        let workspace_mem = write_only!(workspace, self);
-        let reserve_space = rnn_config.training_reserve();
         exec2!(cudnn_framework.rnn_backward_data::<f32>(
             rnn_config,
             sequence_descriptors.y_desc,
@@ -1041,8 +1035,8 @@ where
             std::ptr::null_mut(),
             &sequence_descriptors.dcx_desc,
             std::ptr::null_mut(),
-            trans_mut!(workspace_mem),
-            *reserve_space.id_c(),
+            *rnn_config.workspace.id_c(),
+            *rnn_config.training_reserve.id_c(),
         ) => "Unable to execute CUDA cuDNN RNN Backward Data")
     }
 
@@ -1052,12 +1046,11 @@ where
         output: &SharedTensor<T>,
         filter: &mut SharedTensor<T>,
         rnn_config: &Self::CRNN,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         let cudnn_framework = self.framework().cudnn();
         let src_dimensions = src.desc().clone();
         let sequence_descriptors = rnn_sequence_descriptors(
-            *rnn_config.sequence_length(),
+            rnn_config.sequence_length,
             src_dimensions[1] as i32,
             rnn_config.hidden_size,
             src_dimensions[0] as i32,
@@ -1068,9 +1061,7 @@ where
         let filter_desc = filter.cudnn_filter_desc()?;
         let src_mem = read!(src, self);
         let output_mem = read!(output, self);
-        let workspace_mem = write_only!(workspace, self);
         let filter_mem = write_only!(filter, self);
-        let reserve_space = rnn_config.training_reserve();
         exec2!(cudnn_framework.rnn_backward_weights::<f32>(
             rnn_config,
             sequence_descriptors.x_desc,
@@ -1081,8 +1072,8 @@ where
             trans!(output_mem),
             filter_desc,
             trans_mut!(filter_mem),
-            trans_mut!(workspace_mem),
-            *reserve_space.id_c(),
+            *rnn_config.workspace.id_c(),
+            *rnn_config.training_reserve.id_c(),
         )  => "Unable to execute CUDA cuDNN RNN Backward Data")
     }
 }

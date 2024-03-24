@@ -300,86 +300,23 @@ impl DropoutConfig {
 /// [1]: arxiv.org/pdf/1503.04069.pdf
 /// [2]: jmlr.org/proceedings/papers/v37/jozefowicz15.pdf
 pub struct RnnConfig {
-    rnn_desc: RnnDescriptor,
+    pub rnn_desc: RnnDescriptor,
     /// Size of Hidden Layer
     pub hidden_size: ::libc::c_int,
     /// Number of Hidden Layers
     pub num_layers: ::libc::c_int,
     /// Length of Sequence
     pub sequence_length: ::libc::c_int,
-    dropout_desc: cudnnDropoutDescriptor_t,
-    input_mode: cudnnRNNInputMode_t,
-    direction_mode: cudnnDirectionMode_t,
-    rnn_mode: cudnnRNNMode_t,
-    algo: cudnnRNNAlgo_t,
-    data_type: cudnnDataType_t,
-    workspace_size: usize,
-    training_reserve_size: usize,
-    training_reserve: CudaDeviceMemory,
-}
-
-impl RnnConfig {
-    /// Initialise a RNN Config
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        rnn_desc: RnnDescriptor,
-        hidden_size: i32,
-        num_layers: i32,
-        sequence_length: i32,
-        dropout_desc: cudnnDropoutDescriptor_t,
-        input_mode: cudnnRNNInputMode_t,
-        direction_mode: cudnnDirectionMode_t,
-        rnn_mode: cudnnRNNMode_t,
-        // Requires v6
-        algo: cudnnRNNAlgo_t,
-        data_type: cudnnDataType_t,
-        workspace_size: usize,
-        training_reserve_size: usize,
-        training_reserve: CudaDeviceMemory,
-    ) -> RnnConfig {
-        RnnConfig {
-            rnn_desc,
-            hidden_size,
-            num_layers,
-            sequence_length,
-            dropout_desc,
-            input_mode,
-            direction_mode,
-            rnn_mode,
-            algo,
-            data_type,
-            workspace_size,
-            training_reserve_size,
-            training_reserve,
-        }
-    }
-
-    /// Workspace Size required for RNN Operations
-    pub fn rnn_workspace_size(&self) -> usize {
-        self.workspace_size
-    }
-    /// Largest Workspace Size for RNN
-    pub fn largest_workspace_size(&self) -> usize {
-        self.rnn_workspace_size()
-    }
-    /// Training Reserve Size for RNN
-    pub fn training_reserve_size(&self) -> usize {
-        self.training_reserve_size
-    }
-    /// Training Reserve Space on GPU for RNN
-    pub fn training_reserve(&self) -> &CudaDeviceMemory {
-        &self.training_reserve
-    }
-
-    /// Accessor function for Rnn Descriptor
-    pub fn rnn_desc(&self) -> &RnnDescriptor {
-        &self.rnn_desc
-    }
-
-    /// Accessor function for Sequence Length
-    pub fn sequence_length(&self) -> &i32 {
-        &self.sequence_length
-    }
+    pub dropout_desc: cudnnDropoutDescriptor_t,
+    pub input_mode: cudnnRNNInputMode_t,
+    pub direction_mode: cudnnDirectionMode_t,
+    pub rnn_mode: cudnnRNNMode_t,
+    pub algorithm: cudnnRNNAlgo_t,
+    pub data_type: cudnnDataType_t,
+    pub workspace_size: usize,
+    pub workspace: CudaDeviceMemory,
+    pub training_reserve_size: usize,
+    pub training_reserve: CudaDeviceMemory,
 }
 
 #[allow(missing_debug_implementations, missing_copy_implementations)]

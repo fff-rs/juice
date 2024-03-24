@@ -1,5 +1,5 @@
 use super::{
-    ConvolutionConfig, DropoutConfig, LinearConfig, PoolingConfig, SequentialConfig,
+    ConvolutionConfig, DropoutConfig, LinearConfig, PoolingConfig, RnnConfig, SequentialConfig
 };
 
 /// A configuration of the layer.
@@ -14,6 +14,7 @@ pub enum LayerConfig {
     NegativeLogLikelihood,
     Pooling(PoolingConfig),
     Relu,
+    Rnn(RnnConfig),
     Sequential(SequentialConfig),
     Sigmoid,
     Softmax,
@@ -53,5 +54,11 @@ impl From<DropoutConfig> for LayerConfig {
 impl From<PoolingConfig> for LayerConfig {
     fn from(c: PoolingConfig) -> Self {
         LayerConfig::Pooling(c)
+    }
+}
+
+impl From<RnnConfig> for LayerConfig {
+    fn from(c: RnnConfig) -> Self {
+        LayerConfig::Rnn(c)
     }
 }

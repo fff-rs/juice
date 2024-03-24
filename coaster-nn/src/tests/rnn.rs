@@ -66,16 +66,12 @@ where
     );
     let mut dw = SharedTensor::<T>::new(&filter_dimensions);
 
-    let workspace_size = rnn_config.workspace_size();
-    assert_ne!(workspace_size, 0);
-    let mut workspace = SharedTensor::<u8>::new(&[1, 1, workspace_size]);
-
     backend
-        .rnn_forward(&src, &mut output, &rnn_config, &w, &mut workspace)
+        .rnn_forward(&src, &mut output, &rnn_config, &w)
         .expect("Forward RNN works");
 
     backend
-        .rnn_backward_weights(&src, &output, &mut dw, &rnn_config, &mut workspace)
+        .rnn_backward_weights(&src, &output, &mut dw, &rnn_config)
         .expect("Backward Weights RNN works");
 
     // usually computated by a weight function or the following layer
@@ -96,7 +92,6 @@ where
             &output_gradient,
             &rnn_config,
             &w,
-            &mut workspace,
         )
         .expect("Backward Data RNN works");
 }

@@ -1,19 +1,47 @@
+use std::collections::{HashMap, HashSet};
+
+use serde::{Deserialize, Serialize};
+
 use crate::co::frameworks::native::get_native_backend;
 use crate::co::{IBackend, ITensorDesc, SharedTensor, TensorDesc};
 use crate::coblas::plugin::Copy;
 use crate::net::layer::Layer;
 use crate::net::{layer_from_config, Context, Descriptor, Inout, LayerConfig};
-use crate::util::LayerOps;
+use crate::util::{native_backend, LayerOps};
 
 use super::{LayerError, LayerFromConfigError};
 
-// A trainable network. Essentially a convenience wrapper around the top-level layer
-// which is typically a container layer.
+/// A trainable network. Essentially a convenience wrapper around the top-level layer
+/// which is typically a container layer.
 pub struct Network<B: IBackend + LayerOps<f32>> {
     // Configuration of the top layer.
     config: LayerConfig,
     // Top layer.
     top: Box<dyn Layer<B>>,
+}
+
+/// Representation of all weights in the model that can be serialized and deserialized.
+#[derive(Serialize, Deserialize)]
+pub struct WeightsData {
+    /// Maps weights path in the network (`LearnableParams.path`) to weights tensor data.
+    pub weights_data: HashMap<String, Vec<f32>>,
+}
+
+/// Errors that can happen during network creation.
+#[derive(Debug, Clone)]
+pub enum NetworkFromConfigError {
+    /// Creating layer from config failed.
+    Layer(LayerFromConfigError),
+    /// Didn't find the weights for a given network path in the externally supplied weights data.
+    MissingWeights { path: String },
+    /// Externally supplied weights contain data not used in the network.
+    UnusedWeights { paths: Vec<String> },
+    /// Externally supplied weights for a given path has incorrect size.
+    WeightsSizeMismatch {
+        path: String,
+        expected: usize,
+        actual: usize,
+    },
 }
 
 impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
@@ -22,7 +50,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         backend: &B,
         into_config: impl Into<LayerConfig>,
         input_shapes: &[TensorDesc],
-    ) -> Result<Network<B>, LayerFromConfigError> {
+    ) -> Result<Network<B>, NetworkFromConfigError> {
         let inputs = input_shapes
             .iter()
             .enumerate()
@@ -37,6 +65,44 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         let top = layer_from_config(backend, descriptor, &config)?;
 
         Ok(Network { config, top })
+    }
+
+    pub fn from_config_and_weights(
+        backend: &B,
+        into_config: impl Into<LayerConfig>,
+        input_shapes: &[TensorDesc],
+        weights: &WeightsData,
+    ) -> Result<Network<B>, NetworkFromConfigError> {
+        let net = Network::from_config(backend, into_config, input_shapes)?;
+
+        // Set weights in the network from the provided data.
+        let native_backend = native_backend();
+        let mut unused_weights: HashSet<String> = weights.weights_data.keys().cloned().collect();
+        for i in 0..net.top.descriptor().params().len() {
+            let mut to_params = net.top.descriptor().params()[i].borrow_mut();
+            match weights.weights_data.get(&to_params.path) {
+                Some(d) => {
+                    let params_data = to_params.data.write_only(native_backend.device()).unwrap();
+                    params_data.as_mut_slice::<f32>().copy_from_slice(d);
+
+                    unused_weights.remove(&to_params.path);
+                }
+                None => {
+                    return Err(NetworkFromConfigError::MissingWeights {
+                        path: to_params.path.clone(),
+                    })
+                }
+            }
+        }
+
+        // Check if all weights were used.
+        if !unused_weights.is_empty() {
+            return Err(NetworkFromConfigError::UnusedWeights {
+                paths: unused_weights.into_iter().collect(),
+            });
+        }
+
+        Ok(net)
     }
 
     pub fn top(&self) -> &dyn Layer<B> {
@@ -83,6 +149,26 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         Ok(context.take_data(self.top.descriptor().output(0)))
     }
 
+    /// Copies weights data into a serializable format.
+    pub fn copy_weights_data(&self) -> WeightsData {
+        let native_backend = native_backend();
+        WeightsData {
+            weights_data: self
+                .top
+                .descriptor()
+                .params()
+                .iter()
+                .map(|pr| {
+                    let p = pr.borrow();
+                    (
+                        p.path.clone(),
+                        p.data.read(native_backend.device()).unwrap().as_slice().to_vec(),
+                    )
+                })
+                .collect(),
+        }
+    }
+
     pub fn clone(&self, backend: &B) -> Network<B> {
         let input_shapes: Vec<TensorDesc> = self
             .top
@@ -107,5 +193,11 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         }
 
         net
+    }
+}
+
+impl From<LayerFromConfigError> for NetworkFromConfigError {
+    fn from(e: LayerFromConfigError) -> Self {
+        NetworkFromConfigError::Layer(e)
     }
 }

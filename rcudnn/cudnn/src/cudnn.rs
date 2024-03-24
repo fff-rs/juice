@@ -190,11 +190,11 @@ impl Cudnn {
         rnn_desc: RnnDescriptor,
         hidden_size: i32,
         num_layers: i32,
-        seq_length: i32,
-        dropout_memory: cudnnDropoutDescriptor_t,
+        sequence_length: i32,
+        dropout_desc: cudnnDropoutDescriptor_t,
         input_mode: cudnnRNNInputMode_t,
         direction_mode: cudnnDirectionMode_t,
-        network_mode: cudnnRNNMode_t,
+        rnn_mode: cudnnRNNMode_t,
         algorithm: cudnnRNNAlgo_t,
         data_type: DataType,
         math_type: cudnnMathType_t,
@@ -206,34 +206,69 @@ impl Cudnn {
         let workspace_size: usize = API::get_rnn_workspace_size(
             *self.id_c(),
             *rnn_desc.id_c(),
-            seq_length,
+            sequence_length,
             tensor_vec_id_c(x_desc),
         )?;
+
+        let workspace: CudaDeviceMemory = CudaDeviceMemory::new(workspace_size)?;
 
         let training_reserve_size: usize = API::get_rnn_training_reserve_size(
             *self.id_c(),
             *rnn_desc.id_c(),
-            seq_length,
+            sequence_length,
             tensor_vec_id_c(x_desc),
         )?;
 
         let training_reserve: CudaDeviceMemory = CudaDeviceMemory::new(training_reserve_size)?;
 
-        Ok(RnnConfig::new(
+        Ok(RnnConfig {
             rnn_desc,
             hidden_size,
             num_layers,
-            seq_length,
-            dropout_memory,
+            sequence_length,
+            dropout_desc,
             input_mode,
             direction_mode,
-            network_mode,
+            rnn_mode,
             algorithm,
             data_type,
             workspace_size,
+            workspace,
             training_reserve_size,
             training_reserve,
-        ))
+        })
+    }
+
+    /// Resizes internal buffers if necessary to accomodate given input dimensions.
+    #[allow(clippy::too_many_arguments)]
+    pub fn maybe_resize_rnn(
+        &self,
+        config: &mut RnnConfig,
+        x_desc: &Vec<TensorDescriptor>,
+    ) -> Result<(), Error> {
+        let required_workspace_size: usize = API::get_rnn_workspace_size(
+            *self.id_c(),
+            *config.rnn_desc.id_c(),
+            config.sequence_length,
+            tensor_vec_id_c(x_desc),
+        )?;
+        if required_workspace_size > config.workspace_size {
+            config.workspace = CudaDeviceMemory::new(required_workspace_size)?;
+            config.workspace_size = required_workspace_size;
+        }
+
+        let required_reserve_size: usize = API::get_rnn_training_reserve_size(
+            *self.id_c(),
+            *config.rnn_desc.id_c(),
+            config.sequence_length,
+            tensor_vec_id_c(x_desc),
+        )?;
+        if required_reserve_size > config.training_reserve_size {
+            config.training_reserve = CudaDeviceMemory::new(required_reserve_size)?;
+            config.training_reserve_size = required_reserve_size;
+        }
+
+        Ok(())
     }
 
     /// Train & Return Results for RNN
@@ -241,8 +276,8 @@ impl Cudnn {
     pub fn rnn_forward<T>(
         &self,
         rnn_config: &RnnConfig,
-        src_desc: Vec<TensorDescriptor>,
-        src: *const ::libc::c_void,
+        x_desc: Vec<TensorDescriptor>,
+        x: *const ::libc::c_void,
         output_desc: Vec<TensorDescriptor>,
         output: *mut ::libc::c_void,
         hidden_desc: &TensorDescriptor,
@@ -265,10 +300,10 @@ impl Cudnn {
     {
         API::rnn_forward_training(
             *self.id_c(),
-            *(rnn_config.rnn_desc().id_c()),
-            *rnn_config.sequence_length(),
-            tensor_vec_id_c(&src_desc),
-            src,
+            *(rnn_config.rnn_desc.id_c()),
+            rnn_config.sequence_length,
+            tensor_vec_id_c(&x_desc),
+            x,
             *hidden_desc.id_c(),
             hidden,
             *cell_desc.id_c(),
@@ -282,9 +317,9 @@ impl Cudnn {
             *cell_output_desc.id_c(),
             cell_output,
             workspace,
-            rnn_config.rnn_workspace_size(),
+            rnn_config.workspace_size,
             reserve_data,
-            rnn_config.training_reserve_size(),
+            rnn_config.training_reserve_size,
         )
     }
 
@@ -323,8 +358,8 @@ impl Cudnn {
     {
         API::rnn_backward_data(
             *self.id_c(),
-            *(rnn_config.rnn_desc().id_c()),
-            *rnn_config.sequence_length(),
+            *(rnn_config.rnn_desc.id_c()),
+            rnn_config.sequence_length,
             tensor_vec_id_c(&output_desc).as_slice().as_ptr(),
             output,
             tensor_vec_id_c(&output_gradient_desc).as_slice().as_ptr(),
@@ -346,9 +381,9 @@ impl Cudnn {
             *input_cell_gradient_desc.id_c(),
             input_cell_gradient,
             workspace,
-            rnn_config.rnn_workspace_size(),
+            rnn_config.workspace_size,
             reserve_data,
-            rnn_config.training_reserve_size(),
+            rnn_config.training_reserve_size,
         )
     }
 
@@ -374,8 +409,8 @@ impl Cudnn {
     {
         API::rnn_backward_weights(
             *self.id_c(),
-            *(rnn_config.rnn_desc().id_c()),
-            *rnn_config.sequence_length(),
+            *(rnn_config.rnn_desc.id_c()),
+            rnn_config.sequence_length,
             tensor_vec_id_c(&src_desc).as_slice().as_ptr(),
             src,
             *hidden_desc.id_c(),
@@ -383,11 +418,11 @@ impl Cudnn {
             tensor_vec_id_c(&output_desc).as_slice().as_ptr(),
             output,
             workspace,
-            rnn_config.rnn_workspace_size(),
+            rnn_config.workspace_size,
             *weight_desc.id_c(),
             weight,
             reserve_data,
-            rnn_config.training_reserve_size(),
+            rnn_config.training_reserve_size,
         )
     }
 
