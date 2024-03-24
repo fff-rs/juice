@@ -4,19 +4,18 @@ use coaster as co;
 use coaster_nn as conn;
 
 use fs_err::File;
-use std::rc::Rc;
-use std::sync::{Arc, RwLock};
+use juice::net::{LayerConfig, LinearConfig, Network, RnnConfig, SequentialConfig, WeightsData};
+use juice::solver::RegressionLoss;
+use juice::train::{OptimizerConfig, SgdWithMomentumConfig, Trainer, TrainerConfig};
 
 use serde::Deserialize;
+use std::io::{BufReader, Write};
 use std::path::{Path, PathBuf};
 
 #[cfg(all(feature = "cuda"))]
 use co::frameworks::cuda::get_cuda_backend;
 use co::prelude::*;
 use conn::{DirectionMode, RnnInputMode, RnnNetworkMode};
-use juice::layer::*;
-use juice::layers::*;
-use juice::solver::*;
 use juice::util::*;
 
 mod args;
@@ -81,26 +80,15 @@ pub(crate) fn data_generator(data: DataMode) -> impl Iterator<Item = (f32, Vec<f
         })
 }
 
-fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
+fn create_network() -> SequentialConfig {
     // Create a simple Network
     // * LSTM Layer
     // * Single Neuron
     // * Sigmoid Activation Function
 
     let mut net_cfg = SequentialConfig::default();
-    // The input is a 3D Tensor with Batch Size, Rows, Columns. Columns are already ordered
-    // and it is expected that the RNN move across them using this order.
-    net_cfg.add_input("data_input", &[batch_size, 1_usize, columns]);
-    net_cfg.force_backward = true;
 
-    // Reshape the input into NCHW Format
-    net_cfg.add_layer(LayerConfig::new(
-        "reshape",
-        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, DATA_COLUMNS, 1, 1])),
-    ));
-
-    net_cfg.add_layer(LayerConfig::new(
-        // Layer name is only used internally - can be changed to anything
+    net_cfg.add_layer(
         "LSTMInitial",
         RnnConfig {
             hidden_size: 5,
@@ -111,50 +99,16 @@ fn create_network(batch_size: usize, columns: usize) -> SequentialConfig {
             input_mode: RnnInputMode::LinearInput,
             direction_mode: DirectionMode::UniDirectional,
         },
-    ));
-    net_cfg.add_layer(LayerConfig::new("linear1", LinearConfig { output_size: 1 }));
-    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+    );
+
+    net_cfg.add_layer("linear1", LinearConfig { output_size: 1 });
+    net_cfg.add_layer("sigmoid", LayerConfig::Sigmoid);
     net_cfg
-}
-
-fn add_solver<Framework: IFramework + 'static>(
-    backend: Rc<Backend<Framework>>,
-    net_cfg: SequentialConfig,
-    batch_size: usize,
-    learning_rate: f32,
-    momentum: f32,
-) -> Solver<Backend<Framework>, Backend<Framework>>
-where
-    Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
-{
-    // Define an Objective Function
-    let mut regressor_cfg = SequentialConfig::default();
-
-    // Bit confusing, but the output is seen as the same as the input?
-    regressor_cfg.add_input("data_output", &[batch_size, 1]);
-    regressor_cfg.add_input("label", &[batch_size, 1]);
-
-    // Add a Layer expressing Mean Squared Error (MSE) Loss. This will be used with the solver to
-    // train the model.
-    let mse_layer_cfg = LayerConfig::new("mse", LayerType::MeanSquaredError);
-    regressor_cfg.add_layer(mse_layer_cfg);
-
-    // Setup an Optimiser
-    let mut solver_cfg = SolverConfig {
-        minibatch_size: batch_size,
-        base_lr: learning_rate,
-        momentum,
-        ..SolverConfig::default()
-    };
-
-    solver_cfg.network = LayerConfig::new("network", net_cfg);
-    solver_cfg.objective = LayerConfig::new("regressor", regressor_cfg);
-    Solver::from_config(backend.clone(), backend, &solver_cfg)
 }
 
 /// Train, and optionally, save the resulting network state/weights
 pub(crate) fn train<Framework: IFramework + 'static>(
-    backend: Rc<Backend<Framework>>,
+    backend: &Backend<Framework>,
     batch_size: usize,
     learning_rate: f32,
     momentum: f32,
@@ -162,16 +116,23 @@ pub(crate) fn train<Framework: IFramework + 'static>(
 ) where
     Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
 {
-    // Initialise a Sequential Layer
-    let net_cfg = create_network(batch_size, DATA_COLUMNS);
-    let mut solver = add_solver::<Framework>(backend, net_cfg, batch_size, learning_rate, momentum);
+    // Create the network.
+    let net_cfg = create_network();
+    let mut net = Network::from_config(backend, net_cfg, &[vec![1, DATA_COLUMNS]]).unwrap();
 
-    // Define Input & Labels
-    let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
-    let input_lock = Arc::new(RwLock::new(input));
+    // Create the trainer with MSE objective function.
+    let trainer_config = TrainerConfig {
+        batch_size,
+        objective: LayerConfig::MeanSquaredError,
+        optimizer: OptimizerConfig::SgdWithMomentum(SgdWithMomentumConfig { momentum }),
+        learning_rate,
+        ..Default::default()
+    };
+    let mut trainer = Trainer::from_config(backend, trainer_config, &net, &vec![1]);
 
-    let label = SharedTensor::<f32>::new(&[batch_size, 1]);
-    let label_lock = Arc::new(RwLock::new(label));
+    // Define inputs & labels.
+    let mut input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
+    let mut label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     // Define Evaluation Method - Using Mean Squared Error
     let mut regression_evaluator =
@@ -183,11 +144,9 @@ pub(crate) fn train<Framework: IFramework + 'static>(
     let mut total = 0;
     for _ in 0..(TRAIN_ROWS / batch_size) {
         let mut targets = Vec::new();
-        for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
-            let mut input_tensor = input_lock.write().unwrap();
-            let mut label_tensor = label_lock.write().unwrap();
-            write_batch_sample(&mut input_tensor, &input, batch_n);
-            write_batch_sample(&mut label_tensor, &[label_val], batch_n);
+        for (batch_n, (label_val, input_vals)) in data_rows.by_ref().take(batch_size).enumerate() {
+            write_batch_sample(&mut input, &input_vals, batch_n);
+            write_batch_sample(&mut label, &[label_val], batch_n);
             targets.push(label_val);
         }
         if targets.is_empty() {
@@ -197,9 +156,10 @@ pub(crate) fn train<Framework: IFramework + 'static>(
 
         total += targets.len();
 
-        // Train the network
-        let inferred_out = solver.train_minibatch(input_lock.clone(), label_lock.clone());
-        let mut inferred = inferred_out.write().unwrap();
+        // Train the network.
+        let mut inferred = trainer
+            .train_minibatch(&backend, &mut net, &input, &label)
+            .unwrap();
         let predictions = regression_evaluator.get_predictions(&mut inferred);
         regression_evaluator.add_samples(&predictions, &targets);
         println!(
@@ -209,10 +169,11 @@ pub(crate) fn train<Framework: IFramework + 'static>(
     }
 
     if total > 0 {
-        solver
-            .mut_network()
-            .save(file)
-            .expect("Saving network to file works. qed");
+        let weights = net.copy_weights_data();
+        File::create(file)
+            .unwrap()
+            .write_all(&serde_json::to_vec(&weights).unwrap())
+            .unwrap();
     } else {
         panic!("No data was used for training");
     }
@@ -220,22 +181,25 @@ pub(crate) fn train<Framework: IFramework + 'static>(
 
 /// Test a the validation subset of data items against the trained network state.
 pub(crate) fn test<Framework: IFramework + 'static>(
-    backend: Rc<Backend<Framework>>,
+    backend: &Backend<Framework>,
     batch_size: usize,
-    file: &Path,
+    file_path: &Path,
 ) -> Result<(), Box<dyn std::error::Error>>
 where
     Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
 {
     // Load in a pre-trained network
-    let mut network: Layer<Backend<Framework>> = Layer::<Backend<Framework>>::load(backend, file)?;
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(file);
+    let weights: WeightsData = serde_json::from_reader(reader)?;
+    let net_cfg = create_network();
+    let net =
+        Network::from_config_and_weights(backend, net_cfg, &[vec![1, DATA_COLUMNS]], &weights)
+            .unwrap();
 
     // Define Input & Labels
-    let input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
-    let input_lock = Arc::new(RwLock::new(input));
-
-    let label = SharedTensor::<f32>::new(&[batch_size, 1]);
-    let label_lock = Arc::new(RwLock::new(label));
+    let mut input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
+    let mut label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     // Define Evaluation Method - Using Mean Squared Error
     let mut regression_evaluator =
@@ -247,15 +211,13 @@ where
 
     for _ in 0..(TEST_ROWS / batch_size) {
         let mut targets = Vec::new();
-        for (batch_n, (label_val, input)) in data_rows.by_ref().take(batch_size).enumerate() {
-            let mut input_tensor = input_lock.write().unwrap();
-            let mut label_tensor = label_lock.write().unwrap();
-            write_batch_sample(&mut input_tensor, &input, batch_n);
-            write_batch_sample(&mut label_tensor, &[label_val], batch_n);
+        for (batch_n, (label_val, input_vals)) in data_rows.by_ref().take(batch_size).enumerate() {
+            write_batch_sample(&mut input, &input_vals, batch_n);
+            write_batch_sample(&mut label, &[label_val], batch_n);
             targets.push(label_val);
         }
-        let results_vec = network.forward(&[input_lock.clone()]);
-        let mut results = results_vec.get(0).unwrap().write().unwrap();
+
+        let mut results = net.transform(backend, &input)?;
         let predictions = regression_evaluator.get_predictions(&mut results);
         regression_evaluator.add_samples(&predictions, &targets);
         println!(
@@ -278,18 +240,18 @@ fn main() {
     #[cfg(all(feature = "cuda"))]
     {
         // Initialise a CUDA Backend, and the CUDNN and CUBLAS libraries.
-        let backend = Rc::new(get_cuda_backend());
+        let backend = get_cuda_backend();
 
         match args.data_mode() {
             DataMode::Train => train(
-                backend,
+                &backend,
                 args.flag_batch_size.unwrap_or(default_batch_size()),
                 args.flag_learning_rate.unwrap_or(default_learning_rate()),
                 args.flag_momentum.unwrap_or(default_momentum()),
                 &args.arg_networkfile,
             ),
             DataMode::Test => test(
-                backend,
+                &backend,
                 args.flag_batch_size.unwrap_or(default_batch_size()),
                 &args.arg_networkfile,
             )

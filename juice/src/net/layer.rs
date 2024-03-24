@@ -80,6 +80,7 @@ pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
         LayerConfig::NegativeLogLikelihood => Box::new(NegativeLogLikelihood::new(descriptor)),
         LayerConfig::Pooling(cfg) => Box::new(Pooling::new(backend, descriptor, cfg)),
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
+        LayerConfig::Rnn(cfg) => Box::new(Rnn::new(backend, descriptor, cfg)),
         LayerConfig::Sequential(cfg) => Box::new(Sequential::new(backend, descriptor, cfg)?),
         LayerConfig::Sigmoid => Box::new(Sigmoid::new(descriptor)),
         LayerConfig::Softmax => Box::new(Softmax::new(descriptor)),

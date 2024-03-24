@@ -878,7 +878,6 @@ where
         input_size: i32,
         hidden_size: i32,
         num_layers: i32,
-        batch_size: i32,
     ) -> Result<Self::CRNN, Error> {
         // TODO: Implement Config to hold parameters regarding the RNN
         unimplemented!()
@@ -897,9 +896,8 @@ where
         &self,
         src: &SharedTensor<T>,
         output: &mut SharedTensor<T>,
-        rnn_config: &Self::CRNN,
+        rnn_config: &mut Self::CRNN,
         weight: &SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         // TODO: Implement RNN Forward Pass
         unimplemented!()
@@ -913,7 +911,6 @@ where
         output_gradient: &SharedTensor<T>,
         rnn_config: &Self::CRNN,
         weight: &SharedTensor<T>,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         // TODO: Implement Backward Pass for RNN for the Input
         unimplemented!()
@@ -925,7 +922,6 @@ where
         output: &SharedTensor<T>,
         filter: &mut SharedTensor<T>,
         rnn_config: &Self::CRNN,
-        workspace: &mut SharedTensor<u8>,
     ) -> Result<(), Error> {
         // TODO: Implement Backward Pass with respect to Weights
         unimplemented!()
