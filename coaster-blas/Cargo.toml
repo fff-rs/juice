@@ -3,11 +3,11 @@ name = "coaster-blas"
 description = "Coaster library for full BLAS support"
 version = "0.4.0"
 authors = [
-    "Bernhard Schuster <bernhard@ahoi.io>",
-    "Lissa Hyacinth <lissahyacinth@gmail.com>",
-    "Paul Kassianik <pkassianik@gmail.com>",
-    "Michael Hirn",
-    "Maximilian Goisser",
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "Paul Kassianik <pkassianik@gmail.com>",
+  "Michael Hirn",
+  "Maximilian Goisser",
 ]
 repository = "https://github.com/spearow/coaster-blas"
 homepage = "https://spearow.io/projects/coaster-blas"

@@ -2,12 +2,15 @@
 name = "juice-utils"
 description = "Utilities for running Juice Examples"
 version = "0.0.1"
-authors = ["Lissa Hyacinth <lissahyacinth@gmail.com>", "Bernhard Schuster <bernhard@spearow.io>"]
+authors = [
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "Bernhard Schuster <bernhard@spearow.io>",
+]
 edition = "2018"
 publish = false
 
 [dependencies]
-reqwest= { version = "0.11", features = ["blocking", "rustls-tls"]}
+reqwest = { version = "0.11", features = ["blocking", "rustls-tls"] }
 flate2 = "1"
 fs-err = "2"
 log = "0.4"

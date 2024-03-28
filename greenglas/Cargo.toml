@@ -1,19 +1,26 @@
 [package]
 name = "greenglas"
 description = "Data Preprocessing library for Machine Learning"
-authors = ["Bernhard Schuster <bernhard@ahoi.io>",
-           "Michael Hirn"]
+authors = ["Bernhard Schuster <bernhard@ahoi.io>", "Michael Hirn"]
 version = "0.3.0"
 repository = "https://github.com/spearow/greenglas"
 homepage = "https://spearow.io/projects/greenglas"
 documentation = "https://spearow.github.com/greenglas"
 readme = "README.md"
-keywords = ["preprocessing", "data-preprocessing", "transformation", "encoding", "machine-learning"]
+keywords = [
+  "preprocessing",
+  "data-preprocessing",
+  "transformation",
+  "encoding",
+  "machine-learning",
+]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [dependencies]
-coaster = { path = "../coaster", version = "0.2", default-features = false, features = ["native"] } # native feature to read/write data into tensors
+coaster = { path = "../coaster", version = "0.2", default-features = false, features = [
+  "native",
+] } # native feature to read/write data into tensors
 
 # can't upgrade beyond due to:
 # ISSUE: https://github.com/image-rs/image/issues/1468

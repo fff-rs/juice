@@ -7,16 +7,16 @@ edition = "2018"
 publish = false
 
 [dependencies]
-greenglas = { path = "../../greenglas" , version = "0.3.0"}
-juice = { path = "../../juice", default-features = false , version = "0.3.0"}
-coaster = { path = "../../coaster", default-features = false , version = "0.2.0"}
-coaster-nn = { path = "../../coaster-nn", default-features = false , version = "0.5.0"}
+greenglas = { path = "../../greenglas", version = "0.3.0" }
+juice = { path = "../../juice", default-features = false, version = "0.3.0" }
+coaster = { path = "../../coaster", default-features = false, version = "0.2.0" }
+coaster-nn = { path = "../../coaster-nn", default-features = false, version = "0.5.0" }
 
 csv = "1.1"
 serde = { version = "1", features = ["derive"] }
 env_logger = "0.9"
 log = "0.4"
-docopt= "1.1"
+docopt = "1.1"
 fs-err = "2"
 
 [features]

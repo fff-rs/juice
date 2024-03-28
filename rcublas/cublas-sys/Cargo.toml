@@ -3,10 +3,7 @@ name = "rcublas-sys"
 description = "FFI bindings to cuBLAS"
 version = "0.5.0"
 edition = "2018"
-authors = [
-    "Bernhard Schuster <bernhard@ahoi.io>",
-    "Maximilian Goisser"
-]
+authors = ["Bernhard Schuster <bernhard@ahoi.io>", "Maximilian Goisser"]
 repository = "https://github.com/spearow/juice"
 homepage = "https://github.com/spearow/juice/tree/master/rcublas/cublas-sys"
 keywords = ["cublas", "cuda", "nvidia", "sys"]

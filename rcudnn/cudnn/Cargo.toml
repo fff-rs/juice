@@ -4,10 +4,10 @@ description = "safe Rust wrapper for CUDA's cuDNN"
 version = "1.8.0"
 edition = "2018"
 authors = [
-    "Bernhard Schuster <bernhard@ahoi.io>",
-    "Lissa Hyacinth <lissahyacinth@gmail.com>",
-    "MichaelHirn",
-    "Maximilian Goisser",
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "MichaelHirn",
+  "Maximilian Goisser",
 ]
 repository = "https://github.com/spearow/juice"
 homepage = "https://github.com/spearow/juice/tree/master/rcudnn"
@@ -22,6 +22,9 @@ num = "0.4"
 thiserror = "1.0"
 
 [dev-dependencies]
-coaster = { default-features = false, features = ["native", "cuda"], path = "../../coaster" , version = "0.2.0"}
+coaster = { default-features = false, features = [
+  "native",
+  "cuda",
+], path = "../../coaster", version = "0.2.0" }
 env_logger = "0.9"
 log = "0.4"
