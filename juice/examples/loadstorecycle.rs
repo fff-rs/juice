@@ -1,24 +1,23 @@
-use std::{io::BufReader, fs::File};
+use std::{fs::File, io::BufReader};
 
 use juice::util::native_backend;
-use juice::{layer::*, solver::*, layers::*, capnp_util};
+use juice::{capnp_util, layer::*, layers::*, solver::*};
 // use juice::layer::{LayerType, LayerConfig, Layer};
-use juice::capnp_util::{CapnpRead, CapnpWrite};
 use coaster::prelude::*;
-use juice::util::{SolverOps, LayerOps};
-use std::rc::Rc;
-use num::NumCast;
+use juice::capnp_util::{CapnpRead, CapnpWrite};
+use juice::util::{LayerOps, SolverOps};
 use num::cast;
+use num::NumCast;
+use rand::distributions::Distribution;
+use std::rc::Rc;
 use std::sync::Arc;
 use std::sync::RwLock;
-use rand::distributions::Distribution;
 
 fn get_native_backend() -> Backend<Native> {
     Backend::<Native>::default().unwrap()
 }
 
 fn sillynet() -> SequentialConfig {
-    
     let mut cfg = SequentialConfig::default();
     cfg.add_input("data", &[1, 2, 3, 2]);
 
@@ -27,7 +26,6 @@ fn sillynet() -> SequentialConfig {
     cfg.add_layer(LayerConfig::new("fc3", LinearConfig { output_size: 1 }));
     cfg
 }
-
 
 fn add_solver<Framework: IFramework + 'static>(
     backend: Rc<Backend<Framework>>,
@@ -64,16 +62,10 @@ where
     Solver::from_config(backend.clone(), backend, &solver_cfg)
 }
 
-
 // Currently unused. It was supposed to be used for random tests with inlined
 // verification or cross tests (Native <-> Cuda), but they aren't implemented
 // yet.
-pub fn uniformly_random_tensor<T, F>(
-    _backend: &Backend<F>,
-    dims: &[usize],
-    low: T,
-    high: T,
-) -> SharedTensor<T>
+pub fn uniformly_random_tensor<T, F>(_backend: &Backend<F>, dims: &[usize], low: T, high: T) -> SharedTensor<T>
 where
     T: Copy + PartialEq + PartialOrd + rand::distributions::uniform::SampleUniform,
     F: IFramework,
@@ -104,7 +96,6 @@ where
     }
     xs
 }
-
 
 pub fn write_to_tensor<T, F>(_backend: &Backend<F>, xs: &mut SharedTensor<T>, data: &[f64])
 where
@@ -142,38 +133,43 @@ where
     x
 }
 
-
 fn main() {
-    env_logger::builder().default_format().filter_level(log::LevelFilter::Trace).try_init().unwrap();
-    
+    let _ = env_logger::builder()
+        .default_format()
+        .filter_level(log::LevelFilter::Trace)
+        .try_init();
+
+    eprintln!("XXXXXXXXXXXXXX");
     let cfg = sillynet();
-    
+
     let backend = Rc::new(native_backend());
     let mut solver = add_solver::<Native>(backend.clone(), cfg, 1, 1., 1.);
-    
-    let mut input_lock = Arc::new(RwLock::new(uniformly_random_tensor(&backend, &[1,2,3,2], 0.0f32, 256.0f32)));
-    let mut label_lock = Arc::new(RwLock::new(filled_tensor(&backend, &[1,1], &[1.])));
+
+    let mut input_lock = Arc::new(RwLock::new(uniformly_random_tensor(
+        &backend,
+        &[1, 2, 3, 2],
+        0.0f32,
+        256.0f32,
+    )));
+    let mut label_lock = Arc::new(RwLock::new(filled_tensor(&backend, &[1, 1], &[1.])));
 
     log::info!("Start training 1 trivial minibatch...");
     solver.train_minibatch(input_lock, label_lock);
-    
+
     log::info!("Training complete;");
     let mut buf = Vec::<u8>::new();
 
     // save
     log::info!("Saving..");
-    solver
-    .mut_network()
-    .save(&mut buf).unwrap();
+    solver.mut_network().save(&mut buf).unwrap();
     log::info!("Saved;");
-    
+
     log::info!("Loading..");
     // load the same
     let reincarnation = Layer::<Backend<Native>>::load(backend, &mut buf.as_slice()).unwrap();
     log::info!("Loaded;");
     log::info!("Cmp..");
     assert_eq!(solver.mut_network(), &reincarnation);
-    
 }
 
 // fn foo() {
@@ -184,7 +180,7 @@ fn main() {
 //         let mut builder = capnp::message::TypedBuilder::<juice::juice_capnp::sequential_config::Owned>::new_default();
 //         let facade = &mut builder.get_root().unwrap();
 //         cfg.write_capnp(facade);
-    
+
 //         capnp::serialize::write_message(&mut f, builder.borrow_inner()).unwrap();
 //     }
 //     let reincarnation = {
@@ -199,7 +195,7 @@ fn main() {
 //             }).unwrap().unwrap();
 //         <SequentialConfig as CapnpRead>::read_capnp(reader.get_root().unwrap())
 //     };
-    
+
 //     assert_eq!(dbg!(cfg), dbg!(reincarnation));
-    
+
 // }
