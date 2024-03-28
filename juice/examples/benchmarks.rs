@@ -8,9 +8,9 @@ extern crate juice;
 use crate::co::prelude::*;
 use std::env;
 
+use std::rc::Rc;
 #[cfg(all(feature = "cuda", not(feature = "native")))]
 use std::sync::{Arc, RwLock};
-use std::rc::Rc;
 
 fn main() {
     env_logger::init();
@@ -117,7 +117,6 @@ fn bench_alexnet() {
         "Try running with `cargo run --release --no-default-features --features cuda --example benchmarks alexnet`."
     );
 }
-
 
 #[cfg(all(feature = "cuda", not(feature = "native")))]
 fn bench_alexnet() {

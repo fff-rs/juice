@@ -209,7 +209,12 @@ pub(crate) fn train<Framework: IFramework + 'static>(
     }
 
     if total > 0 {
-        let mut file = OpenOptions::new().create(true).truncate(false).write(true).open(file).unwrap();
+        let mut file = OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(file)
+            .unwrap();
         solver
             .mut_network()
             .save(file)

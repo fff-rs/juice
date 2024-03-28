@@ -91,12 +91,15 @@ pub struct Layer<B: IBackend> {
 impl<B: IBackend> PartialEq for Layer<B> {
     fn eq(&self, other: &Self) -> bool {
         use std::ops::Deref;
-        self.loss == other.loss && 
-        self.config == other.config &&
-        self.name == other.name &&
-        self.weights_data.iter().zip(other.weights_data.iter()).find(|(a,b)| {
-            a.read().unwrap().deref() != b.read().unwrap().deref() 
-        }).is_none()
+        self.loss == other.loss
+            && self.config == other.config
+            && self.name == other.name
+            && self
+                .weights_data
+                .iter()
+                .zip(other.weights_data.iter())
+                .find(|(a, b)| a.read().unwrap().deref() != b.read().unwrap().deref())
+                .is_none()
     }
 }
 

@@ -98,7 +98,7 @@ mod layer_spec {
             let mut tmpfile = Vec::new();
             original_layer.save(&mut tmpfile).unwrap();
 
-            let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), &mut &tmpfile).unwrap();
+            let loaded_layer = Layer::<Backend<Native>>::load(native_backend(), &mut tmpfile.as_slice()).unwrap();
 
             assert_eq!(original_layer.input_blob_names(), loaded_layer.input_blob_names());
 
