@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::iter::FromIterator;
 
 use serde::{Deserialize, Serialize};
 
@@ -28,20 +29,22 @@ pub struct WeightsData {
 }
 
 /// Errors that can happen during network creation.
-#[derive(Debug, Clone)]
+#[derive(Debug, thiserror::Error)]
 pub enum NetworkFromConfigError {
-    /// Creating layer from config failed.
-    Layer(LayerFromConfigError),
-    /// Didn't find the weights for a given network path in the externally supplied weights data.
-    MissingWeights { path: String },
-    /// Externally supplied weights contain data not used in the network.
-    UnusedWeights { paths: Vec<String> },
-    /// Externally supplied weights for a given path has incorrect size.
+    #[error("Layer creation failed: {0}")]
+    Layer(#[from] LayerFromConfigError),
+    #[error("Provided weights don't have data for param {0}")]
+    MissingWeights(String),
+    #[error("Provided weights contain params not in the network: {0:?}. Are they from a different network?")]
+    UnusedWeights(Vec<String>),
+    #[error("Provided weights have wrong size for {path}; expected {expected}, got {actual}")]
     WeightsSizeMismatch {
         path: String,
         expected: usize,
         actual: usize,
     },
+    #[error("Tensor operation error: {0}")]
+    Tensor(#[from] co::tensor::Error),
 }
 
 impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
@@ -67,6 +70,9 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         Ok(Network { config, top })
     }
 
+    /// Creates network from a config and weights. Weights must comes from a network
+    /// created with the same config and input shapes (typically acquired via
+    /// copy_weights_data() and maybe serialized to a file).
     pub fn from_config_and_weights(
         backend: &B,
         into_config: impl Into<LayerConfig>,
@@ -77,29 +83,23 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
 
         // Set weights in the network from the provided data.
         let native_backend = native_backend();
-        let mut unused_weights: HashSet<String> = weights.weights_data.keys().cloned().collect();
+        let mut unused_weights = HashSet::<String>::from_iter(weights.weights_data.keys().cloned());
         for i in 0..net.top.descriptor().params().len() {
             let mut to_params = net.top.descriptor().params()[i].borrow_mut();
             match weights.weights_data.get(&to_params.path) {
                 Some(d) => {
-                    let params_data = to_params.data.write_only(native_backend.device()).unwrap();
+                    let params_data = to_params.data.write_only(native_backend.device())?;
                     params_data.as_mut_slice::<f32>().copy_from_slice(d);
 
                     unused_weights.remove(&to_params.path);
                 }
-                None => {
-                    return Err(NetworkFromConfigError::MissingWeights {
-                        path: to_params.path.clone(),
-                    })
-                }
+                None => return Err(NetworkFromConfigError::MissingWeights(to_params.path.clone())),
             }
         }
 
         // Check if all weights were used.
         if !unused_weights.is_empty() {
-            return Err(NetworkFromConfigError::UnusedWeights {
-                paths: unused_weights.into_iter().collect(),
-            });
+            return Err(NetworkFromConfigError::UnusedWeights(Vec::from_iter(unused_weights)));
         }
 
         Ok(net)
@@ -193,11 +193,5 @@ impl<B: IBackend + LayerOps<f32> + 'static> Network<B> {
         }
 
         net
-    }
-}
-
-impl From<LayerFromConfigError> for NetworkFromConfigError {
-    fn from(e: LayerFromConfigError) -> Self {
-        NetworkFromConfigError::Layer(e)
     }
 }

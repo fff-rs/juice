@@ -59,9 +59,14 @@ pub trait Layer<B: IBackend>: Debug {
     fn descriptor_mut(&mut self) -> &mut Descriptor;
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, thiserror::Error)]
 pub enum LayerFromConfigError {
-    Sequential(SequentialBadInputOutputError),
+    #[error("Backend error: {0}")]
+    Backend(#[from] crate::co::error::Error),
+    #[error("No such output {0} in the sequential config")]
+    NoSuchInternalOutput(String),
+    #[error("Wrong layer inputs: {0}")]
+    WrongInputs(String),
 }
 
 /// Creates a layer from a config.
@@ -80,7 +85,7 @@ pub fn layer_from_config<B: IBackend + LayerOps<f32> + 'static>(
         LayerConfig::NegativeLogLikelihood => Box::new(NegativeLogLikelihood::new(descriptor)),
         LayerConfig::Pooling(cfg) => Box::new(Pooling::new(backend, descriptor, cfg)),
         LayerConfig::Relu => Box::new(Relu::new(descriptor)),
-        LayerConfig::Rnn(cfg) => Box::new(Rnn::new(backend, descriptor, cfg)),
+        LayerConfig::Rnn(cfg) => Box::new(Rnn::new(backend, descriptor, cfg)?),
         LayerConfig::Sequential(cfg) => Box::new(Sequential::new(backend, descriptor, cfg)?),
         LayerConfig::Sigmoid => Box::new(Sigmoid::new(descriptor)),
         LayerConfig::Softmax => Box::new(Softmax::new(descriptor)),
@@ -96,12 +101,6 @@ impl From<::coaster::error::Error> for LayerError {
 impl From<::coaster::tensor::Error> for LayerError {
     fn from(e: ::coaster::tensor::Error) -> Self {
         LayerError::Tensor(Box::new(e))
-    }
-}
-
-impl From<SequentialBadInputOutputError> for LayerFromConfigError {
-    fn from(e: SequentialBadInputOutputError) -> Self {
-        LayerFromConfigError::Sequential(e)
     }
 }
 

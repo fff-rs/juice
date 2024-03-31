@@ -28,11 +28,6 @@ pub struct SequentialConfig {
     outputs: Vec<String>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct SequentialBadInputOutputError {
-    pub name: String,
-}
-
 // A container layer that composes nested layers in a sequence.
 //
 // In the most simple case, all nested layers are executed one by one, with outputs of one layer
@@ -160,13 +155,13 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
                 prev_layer_output_names
             };
 
-            let child_inputs: Result<Vec<Inout>, SequentialBadInputOutputError> = child_input_names
+            let child_inputs: Result<Vec<Inout>, LayerFromConfigError> = child_input_names
                 .iter()
                 .map(|name| -> Result<Inout, _> {
                     let junction = internal_junctions
                         .get(name)
                         .cloned()
-                        .ok_or_else(|| SequentialBadInputOutputError { name: name.to_owned() })?;
+                        .ok_or_else(|| LayerFromConfigError::NoSuchInternalOutput(name.to_owned()))?;
                     Ok(Inout::new_with_junction(junction))
                 })
                 .collect();
@@ -212,13 +207,10 @@ impl<B: IBackend + LayerOps<f32> + 'static> Sequential<B> {
         // (or inputs if there are no child layers).
         if !config.outputs.is_empty() {
             for output_name in config.outputs.iter() {
-                let junction =
-                    internal_junctions
-                        .get(output_name)
-                        .cloned()
-                        .ok_or_else(|| SequentialBadInputOutputError {
-                            name: output_name.to_owned(),
-                        })?;
+                let junction = internal_junctions
+                    .get(output_name)
+                    .cloned()
+                    .ok_or_else(|| LayerFromConfigError::NoSuchInternalOutput(output_name.to_owned()))?;
                 descriptor.add_output_with_junction(junction);
             }
         } else if !children.is_empty() {
@@ -271,7 +263,7 @@ impl<B: IBackend> Debug for Sequential<B> {
 
 #[cfg(test)]
 mod tests {
-    use crate::net::container::{SequentialBadInputOutputError, SequentialConfig};
+    use crate::net::container::SequentialConfig;
     use crate::net::{LayerConfig, LayerFromConfigError, Network};
     use crate::util::{native_backend, write_batch_sample};
     use co::{Backend, Native, SharedTensor};
@@ -347,9 +339,7 @@ mod tests {
 
         assert_eq!(
             result.err().unwrap(),
-            LayerFromConfigError::Sequential(SequentialBadInputOutputError {
-                name: "out2".to_owned()
-            })
+            LayerFromConfigError::NoSuchInternalOutput("out2".to_owned())
         );
     }
 
@@ -366,9 +356,7 @@ mod tests {
 
         assert_eq!(
             result.err().unwrap(),
-            LayerFromConfigError::Sequential(SequentialBadInputOutputError {
-                name: "out2".to_owned()
-            })
+            LayerFromConfigError::NoSuchInternalOutput("out2".to_owned())
         );
     }
 }

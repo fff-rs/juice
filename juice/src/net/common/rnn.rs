@@ -3,7 +3,7 @@ use std::fmt::{Debug, Formatter};
 use std::rc::Rc;
 
 use crate::co::{IBackend, ITensorDesc};
-use crate::net::{Context, Descriptor, Layer, LayerError, LearnableParams};
+use crate::net::{Context, Descriptor, Layer, LayerError, LayerFromConfigError, LearnableParams};
 use crate::util::LayerOps;
 use crate::weight::FillerType;
 use coaster::SharedTensor;
@@ -39,42 +39,45 @@ pub struct Rnn<B: conn::Rnn<f32>> {
 }
 
 impl<B: conn::Rnn<f32>> Rnn<B> {
-    pub fn new(backend: &B, mut descriptor: Descriptor, config: &RnnConfig) -> Self {
-        assert_eq!(descriptor.inputs().len(), 1); // Should be only one input.
+    pub fn new(backend: &B, mut descriptor: Descriptor, config: &RnnConfig) -> Result<Self, LayerFromConfigError> {
+        if descriptor.inputs().len() != 1 {
+            return Err(LayerFromConfigError::WrongInputs(format!(
+                "Expected 1 input, got {}",
+                descriptor.inputs().len()
+            )));
+        }
 
         let input_shape = descriptor.input(0).unit_shape();
 
-        assert_eq!(
-            input_shape.len(),
-            2,
-            "Input to RNN must be of [inputs_size, sequence_length] shape, got {:?}",
-            input_shape
-        );
+        if input_shape.len() != 2 {
+            return Err(LayerFromConfigError::WrongInputs(format!(
+                "Input to RNN must be of [inputs_size, sequence_length] shape, got {:?}",
+                input_shape
+            )));
+        }
 
         let input_size = input_shape[0];
         let sequence_length = input_shape[1];
 
         descriptor.add_output(vec![config.hidden_size, sequence_length]);
 
-        let rnn_context = backend
-            .new_rnn_config(
-                Some(config.dropout_probability),
-                Some(config.dropout_seed),
-                sequence_length as i32,
-                config.rnn_type,
-                config.input_mode,
-                config.direction_mode,
-                // Standard is likely to be effective across most parameters. This should be
-                // calculated internal to Juice if modified, allowing user input is likely to be
-                // more confusing than helpful to the end user.
-                // https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNAlgo_t
-                // lists the differences and how we can pick between algorithms automatically.
-                RnnAlgorithm::Standard,
-                input_size as i32,
-                config.hidden_size as i32,
-                config.num_layers as i32,
-            )
-            .unwrap();
+        let rnn_context = backend.new_rnn_config(
+            Some(config.dropout_probability),
+            Some(config.dropout_seed),
+            sequence_length as i32,
+            config.rnn_type,
+            config.input_mode,
+            config.direction_mode,
+            // Standard is likely to be effective across most parameters. This should be
+            // calculated internal to Juice if modified, allowing user input is likely to be
+            // more confusing than helpful to the end user.
+            // https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNAlgo_t
+            // lists the differences and how we can pick between algorithms automatically.
+            RnnAlgorithm::Standard,
+            input_size as i32,
+            config.hidden_size as i32,
+            config.num_layers as i32,
+        )?;
 
         let weights_desc = backend
             .generate_rnn_weight_description(&rnn_context, input_size as i32)
@@ -90,12 +93,12 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
 
         let weights = descriptor.create_params("weights", weights_data, 1.0);
 
-        Rnn {
+        Ok(Rnn {
             descriptor,
             config: config.clone(),
             rnn_context: RefCell::new(rnn_context),
             weights,
-        }
+        })
     }
 }
 
