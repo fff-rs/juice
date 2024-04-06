@@ -38,7 +38,7 @@ where
 
     let mut output = SharedTensor::<T>::new(&[BATCH_SIZE, HIDDEN_SIZE, 1]);
 
-    let rnn_config = backend
+    let mut rnn_config = backend
         .new_rnn_config(
             dropout_probability,
             dropout_seed,
@@ -50,7 +50,6 @@ where
             INPUT_SIZE as i32,
             HIDDEN_SIZE as i32,
             NUM_LAYERS as i32,
-            BATCH_SIZE as i32,
         )
         .unwrap();
 
@@ -67,7 +66,7 @@ where
     let mut dw = SharedTensor::<T>::new(&filter_dimensions);
 
     backend
-        .rnn_forward(&src, &mut output, &rnn_config, &w)
+        .rnn_forward(&src, &mut output, &mut rnn_config, &w)
         .expect("Forward RNN works");
 
     backend

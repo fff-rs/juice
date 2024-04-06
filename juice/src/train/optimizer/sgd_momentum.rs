@@ -70,9 +70,9 @@ impl<B: IBackend + Axpby<f32> + Copy<f32>> Optimizer<B> for SgdWithMomentum {
             // Compute Vᵢ=(1-β)Vᵢ₋₁ + β∇.
             backend
                 .axpby(
-                    &self.momentum,
-                    &change_ref,
                     &self.one_minus_momentum,
+                    &change_ref,
+                    &self.momentum,
                     history,
                 )
                 .unwrap();

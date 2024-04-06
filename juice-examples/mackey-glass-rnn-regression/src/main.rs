@@ -118,7 +118,7 @@ pub(crate) fn train<Framework: IFramework + 'static>(
 {
     // Create the network.
     let net_cfg = create_network();
-    let mut net = Network::from_config(backend, net_cfg, &[vec![1, DATA_COLUMNS]]).unwrap();
+    let mut net = Network::from_config(backend, net_cfg, &[vec![DATA_COLUMNS, 1]]).unwrap();
 
     // Create the trainer with MSE objective function.
     let trainer_config = TrainerConfig {
@@ -131,7 +131,7 @@ pub(crate) fn train<Framework: IFramework + 'static>(
     let mut trainer = Trainer::from_config(backend, trainer_config, &net, &vec![1]);
 
     // Define inputs & labels.
-    let mut input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
+    let mut input = SharedTensor::<f32>::new(&[batch_size, DATA_COLUMNS, 1]);
     let mut label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     // Define Evaluation Method - Using Mean Squared Error
@@ -194,11 +194,11 @@ where
     let weights: WeightsData = serde_json::from_reader(reader)?;
     let net_cfg = create_network();
     let net =
-        Network::from_config_and_weights(backend, net_cfg, &[vec![1, DATA_COLUMNS]], &weights)
+        Network::from_config_and_weights(backend, net_cfg, &[vec![DATA_COLUMNS, 1]], &weights)
             .unwrap();
 
     // Define Input & Labels
-    let mut input = SharedTensor::<f32>::new(&[batch_size, 1, DATA_COLUMNS]);
+    let mut input = SharedTensor::<f32>::new(&[batch_size, DATA_COLUMNS, 1]);
     let mut label = SharedTensor::<f32>::new(&[batch_size, 1]);
 
     // Define Evaluation Method - Using Mean Squared Error

@@ -312,7 +312,6 @@ impl<'a> CapnpRead<'a> for RnnConfig {
 mod tests {
     use std::rc::Rc;
 
-    use conn::Rnn as coRnn;
     use conn::{DirectionMode, RnnAlgorithm, RnnInputMode, RnnNetworkMode};
 
     #[cfg(feature = "cuda")]
@@ -345,6 +344,8 @@ mod tests {
     #[test]
     #[cfg(feature = "cuda")]
     fn rnn_create_layer() {
+        use std::cell::RefCell;
+
         let cfg = RnnConfig {
             hidden_size: 8,
             num_layers: 2,
@@ -381,7 +382,7 @@ mod tests {
         let output_shape = &[input_shape[0], input_shape[1], num_layers];
         let output_data = SharedTensor::<f32>::new(output_shape);
 
-        layer.rnn_config = Some(Rc::from(
+        layer.rnn_config = Some(RefCell::from(
             <Backend<Cuda> as conn::Rnn<f32>>::new_rnn_config(
                 &backend,
                 None,
@@ -402,6 +403,8 @@ mod tests {
     #[test]
     #[cfg(feature = "cuda")]
     fn rnn_roundtrip_pass() {
+        use std::cell::RefCell;
+
         let _ = env_logger::builder()
             .is_test(true)
             .filter_level(log::LevelFilter::Trace)
@@ -467,7 +470,7 @@ mod tests {
         )
         .unwrap();
 
-        layer.rnn_config = Some(Rc::from(config));
+        layer.rnn_config = Some(RefCell::from(config));
 
         let mut weights_data = vec![
             SharedTensor::<f32>::new(&filter_dimensions),
