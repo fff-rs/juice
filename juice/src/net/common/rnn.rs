@@ -59,7 +59,7 @@ impl<B: conn::Rnn<f32>> Rnn<B> {
         let input_size = input_shape[0];
         let sequence_length = input_shape[1];
 
-        descriptor.add_output(vec![config.hidden_size, sequence_length]);
+        descriptor.add_output(vec![config.hidden_size, config.num_layers]);
 
         let rnn_context = backend.new_rnn_config(
             Some(config.dropout_probability),
@@ -113,6 +113,7 @@ impl<B: IBackend + LayerOps<f32>> Layer<B> for Rnn<B> {
             &mut self.rnn_context.borrow_mut(),
             &self.weights.borrow().data,
         )?;
+
         Ok(())
     }
 

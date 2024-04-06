@@ -264,7 +264,7 @@ impl<B: IBackend> Debug for Sequential<B> {
 #[cfg(test)]
 mod tests {
     use crate::net::container::SequentialConfig;
-    use crate::net::{LayerConfig, LayerFromConfigError, Network};
+    use crate::net::{LayerConfig, LayerFromConfigError, Network, NetworkFromConfigError};
     use crate::util::{native_backend, write_batch_sample};
     use co::{Backend, Native, SharedTensor};
 
@@ -335,12 +335,14 @@ mod tests {
         cfg.add_layer("relu2", LayerConfig::Relu).map_input("out2");
 
         let result: Result<Network<Backend<Native>>, _> = Network::from_config(&backend, cfg, &[vec![1]]);
-        assert!(result.is_err());
 
-        assert_eq!(
-            result.err().unwrap(),
-            LayerFromConfigError::NoSuchInternalOutput("out2".to_owned())
-        );
+        match result {
+            Err(NetworkFromConfigError::Layer(LayerFromConfigError::NoSuchInternalOutput(name))) => {
+                assert_eq!(name, "out2");
+            },
+            Err(e) => panic!("Unexpected error {:?}", e),
+            _ => panic!("Expected to fail but it didn't"),
+        }
     }
 
     #[test]
@@ -352,11 +354,13 @@ mod tests {
         cfg.map_output("out2");
 
         let result: Result<Network<Backend<Native>>, _> = Network::from_config(&backend, cfg, &[vec![1]]);
-        assert!(result.is_err());
 
-        assert_eq!(
-            result.err().unwrap(),
-            LayerFromConfigError::NoSuchInternalOutput("out2".to_owned())
-        );
+        match result {
+            Err(NetworkFromConfigError::Layer(LayerFromConfigError::NoSuchInternalOutput(name))) => {
+                assert_eq!(name, "out2");
+            },
+            Err(e) => panic!("Unexpected error {:?}", e),
+            _ => panic!("Expected to fail but it didn't"),
+        }
     }
 }
