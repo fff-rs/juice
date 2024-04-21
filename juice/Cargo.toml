@@ -27,7 +27,7 @@ log = "0.4"
 rand = "0.8"
 num = "0.4"
 capnp = "0.14"
-serde = "1.0"
+serde = { version = "1.0", features = ["derive"] }
 timeit = "0.1"
 thiserror = "1.0"
 
