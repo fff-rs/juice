@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 set -e
 cargo check --tests
-fly -t spearow login -n juice-crashtesters --concourse-url https://ci.spearow.io
-fly -t spearow execute \
+fly -t fff login -n juice-crashtesters --concourse-url https://ci.fff.rs
+fly -t fff execute \
     --tag framework:cuda \
     --tag framework:opencl \
-    -c ./remote-test/test.yml \
-    --input juice=.
+    -c ./test.yml \
+    --input juice=..
