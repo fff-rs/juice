@@ -85,8 +85,8 @@ fn main() {
             .allowlist_var("CUBLAS.*")
             .allowlist_type("[Cc][Uu].*")
             .default_alias_style(bindgen::AliasVariation::TypeAlias)
-            .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-            .rustfmt_bindings(true)
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+            .formatter(bindgen::Formatter::Prettyplease)
             .generate()
             .expect("Unable to generate bindings");
 

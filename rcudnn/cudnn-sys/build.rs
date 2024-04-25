@@ -84,8 +84,8 @@ fn main() {
             .allowlist_function("cu.*")
             .allowlist_var("CUDNN.*")
             .allowlist_type("[Cc][Uu].*")
-            .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-            .rustfmt_bindings(true)
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+            .formatter(bindgen::Formatter::Prettyplease)
             .generate()
             .expect("Unable to generate bindings");
 
