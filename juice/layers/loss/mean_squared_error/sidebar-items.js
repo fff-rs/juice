@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["MeanSquaredError","Mean Squared Error Layer"]]};
+window.SIDEBAR_ITEMS = {"struct":["MeanSquaredError"]};

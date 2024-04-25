@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["Default",""]]};
+window.SIDEBAR_ITEMS = {"trait":["Default"]};

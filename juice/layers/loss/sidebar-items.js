@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["mean_squared_error","Provides Loss & Gradient for Mean Squared Error"],["negative_log_likelihood","TODO: DOC"]]};
+window.SIDEBAR_ITEMS = {"mod":["mean_squared_error","negative_log_likelihood"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["BandMat","Banded Matrix A banded matrix is a matrix where only the diagonal, a number of super-diagonals and a number of sub-diagonals are non-zero. https://en.wikipedia.org/wiki/Band_matrix"]]};
+window.SIDEBAR_ITEMS = {"struct":["BandMat"]};

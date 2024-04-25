@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Context","Defines a Cuda Context."]]};
+window.SIDEBAR_ITEMS = {"struct":["Context"]};

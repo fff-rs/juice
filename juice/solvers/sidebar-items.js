@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["sgd","Provides ISolver implementations based on [Stochastic Gradient Descent][2]. [2]: https://en.wikipedia.org/wiki/Stochastic_gradient_descent"]]};
+window.SIDEBAR_ITEMS = {"mod":["sgd"]};

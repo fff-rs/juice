@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["cblas_c",""],["cblas_d",""],["cblas_i",""],["cblas_s",""],["cblas_z",""]]};
+window.SIDEBAR_ITEMS = {"mod":["cblas_c","cblas_d","cblas_i","cblas_s","cblas_z"]};

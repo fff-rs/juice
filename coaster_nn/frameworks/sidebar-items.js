@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["cuda","Provides NN for a CUDA backend."],["native","Provides NN for a Native backend."]]};
+window.SIDEBAR_ITEMS = {"mod":["cuda","native"]};

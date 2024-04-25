@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["TanH","TanH Activation Layer"]]};
+window.SIDEBAR_ITEMS = {"struct":["TanH"]};

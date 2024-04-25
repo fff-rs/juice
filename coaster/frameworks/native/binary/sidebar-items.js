@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Binary","Defines a host CPU binary."]]};
+window.SIDEBAR_ITEMS = {"struct":["Binary"]};

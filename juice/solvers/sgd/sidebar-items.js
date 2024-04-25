@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["momentum","A [Stochastic Gradient Descent with Momentum][1] [1]: https://en.wikipedia.org/wiki/Stochastic_gradient_descent#Momentum"]]};
+window.SIDEBAR_ITEMS = {"mod":["momentum"]};

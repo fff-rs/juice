@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["cuda","Provides BLAS for a CUDA backend."],["native","Provides BLAS for a Native backend."]]};
+window.SIDEBAR_ITEMS = {"mod":["cuda","native"]};

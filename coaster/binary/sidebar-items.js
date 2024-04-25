@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["IBinary","Defines the functionality for turning a library into backend-specific, executable operations."]]};
+window.SIDEBAR_ITEMS = {"trait":["IBinary"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":[["DATA_COLUMNS",""],["TEST_ROWS",""],["TRAIN_ROWS",""]],"fn":[["add_solver",""],["create_network",""],["data_generator",""],["main",""],["test","Test a the validation subset of data items against the trained network state."],["train","Train, and optionally, save the resulting network state/weights"]],"mod":[["args",""]],"struct":[["Record",""]]};
+window.SIDEBAR_ITEMS = {"constant":["DATA_COLUMNS","TEST_ROWS","TRAIN_ROWS"],"fn":["add_solver","create_network","data_generator","main","test","train"],"mod":["args"],"struct":["Record"]};

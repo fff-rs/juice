@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["ll","Bindings for vector functions."],["ops","Wrappers for vector functions."]],"trait":[["Vector","Methods that allow a type to be used in BLAS functions as a vector."],["VectorOperations",""]]};
+window.SIDEBAR_ITEMS = {"mod":["ll","ops"],"trait":["Vector","VectorOperations"]};

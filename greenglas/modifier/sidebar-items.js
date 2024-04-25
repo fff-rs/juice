@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["Modifier","Allows use of the implemented type as an argument to Set::set."],["Set","A trait providing the set and set_mut methods for all types."]]};
+window.SIDEBAR_ITEMS = {"trait":["Modifier","Set"]};

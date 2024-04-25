@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Crop","Crop Modifier for `Image`"],["Grayscale","Grayscale Modifier for `Image`"],["Resize","Resize Modifier for `Image`"]]};
+window.SIDEBAR_ITEMS = {"struct":["Crop","Grayscale","Resize"]};

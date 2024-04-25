@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["DataType","Defines the available data types for the CUDA cuDNN data representation."],["WrappingError",""]],"mod":[["helper","Provides useful macros for easier NN implementation for CUDA/cuDNN."]],"struct":[["RnnSequenceDescriptors","Struct to hold all Sequence Descriptors for an RNN Pass"]],"trait":[["DataTypeInfo","CuDnn type info for generic use."],["ICudnnDesc",""]]};
+window.SIDEBAR_ITEMS = {"enum":["DataType","WrappingError"],"mod":["helper"],"struct":["RnnSequenceDescriptors"],"trait":["DataTypeInfo","ICudnnDesc"]};

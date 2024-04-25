@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Error","Errors than can occur when synchronizing memory."]],"struct":[["SharedTensor","Container that handles synchronization of [Memory][1] of type `T`. [1]: ../memory/index.html"]],"trait":[["ITensorDesc","Describes the Descriptor of a Tensor."],["IntoTensorDesc","Describes a conversion into a Tensor Descriptor."]],"type":[["TensorDesc","Describes the Descriptor of a SharedTensor."]]};
+window.SIDEBAR_ITEMS = {"enum":["Error"],"struct":["SharedTensor"],"trait":["ITensorDesc","IntoTensorDesc"],"type":["TensorDesc"]};

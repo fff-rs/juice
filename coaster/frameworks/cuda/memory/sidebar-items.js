@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Memory","Defines a Cuda Memory."]]};
+window.SIDEBAR_ITEMS = {"struct":["Memory"]};

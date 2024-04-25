@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"rust_blas":[["impl&lt;A&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.77.2/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"enum\" href=\"rust_blas/math/enum.Trans.html\" title=\"enum rust_blas::math::Trans\">Trans</a>&lt;A&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

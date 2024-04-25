@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["IBlasBinary","Describes the operation binding for a Blas Binary implementation."]]};
+window.SIDEBAR_ITEMS = {"trait":["IBlasBinary"]};

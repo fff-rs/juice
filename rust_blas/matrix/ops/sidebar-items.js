@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["Gemm",""],["Hemm",""],["Her2k",""],["Herk",""],["Symm",""],["Syr2k",""],["Syrk",""],["Trmm",""],["Trsm",""]]};
+window.SIDEBAR_ITEMS = {"trait":["Gemm","Hemm","Her2k","Herk","Symm","Syr2k","Syrk","Trmm","Trsm"]};

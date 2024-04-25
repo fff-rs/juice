@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["DimCheckMode","Enum for specifing the shared weights behaviour"],["FillerType","Enum for specifing the type of Filler."]],"struct":[["WeightConfig","Specifies training configuration for a weight blob."]]};
+window.SIDEBAR_ITEMS = {"enum":["DimCheckMode","FillerType"],"struct":["WeightConfig"]};

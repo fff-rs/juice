@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["Backend","Defines the main and highest struct of Coaster."],["BackendConfig","Provides Backend Configuration."]],"trait":[["IBackend","Describes a Backend."]]};
+window.SIDEBAR_ITEMS = {"struct":["Backend","BackendConfig"],"trait":["IBackend"]};

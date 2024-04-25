@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["cblas_icamax",""],["cblas_idamax",""],["cblas_isamax",""],["cblas_izamax",""]]};
+window.SIDEBAR_ITEMS = {"fn":["cblas_icamax","cblas_idamax","cblas_isamax","cblas_izamax"]};

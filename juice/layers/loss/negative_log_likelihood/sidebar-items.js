@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["NegativeLogLikelihood","NegativeLogLikelihood Loss Layer"],["NegativeLogLikelihoodConfig","Specifies configuration parameters for a NegativeLogLikelihood Layer."]]};
+window.SIDEBAR_ITEMS = {"struct":["NegativeLogLikelihood","NegativeLogLikelihoodConfig"]};

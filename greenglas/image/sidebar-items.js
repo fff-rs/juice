@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["modifiers","The Modifiers form `Image`"]],"struct":[["Image","The Transformable Data Type `Image`"]]};
+window.SIDEBAR_ITEMS = {"mod":["modifiers"],"struct":["Image"]};

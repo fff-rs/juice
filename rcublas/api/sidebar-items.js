@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Operation",""],["PointerMode",""]],"struct":[["Context","Provides a the low-level cuBLAS context."]]};
+window.SIDEBAR_ITEMS = {"enum":["Operation","PointerMode"],"struct":["Context"]};

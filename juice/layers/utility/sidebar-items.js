@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["flatten","Flattens the bottom Blob into a simpler top Blob."],["reshape","Utility layer to give a tensor another shape."]]};
+window.SIDEBAR_ITEMS = {"mod":["flatten","reshape"]};

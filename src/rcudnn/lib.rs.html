@@ -1,219 +1,213 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rcudnn/cudnn/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../rcudnn/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../rcudnn/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><div id="settings-menu" tabindex="-1">
-                                <a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div>
-                        </div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
-<span id="2">2</span>
-<span id="3">3</span>
-<span id="4">4</span>
-<span id="5">5</span>
-<span id="6">6</span>
-<span id="7">7</span>
-<span id="8">8</span>
-<span id="9">9</span>
-<span id="10">10</span>
-<span id="11">11</span>
-<span id="12">12</span>
-<span id="13">13</span>
-<span id="14">14</span>
-<span id="15">15</span>
-<span id="16">16</span>
-<span id="17">17</span>
-<span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
-<span id="53">53</span>
-<span id="54">54</span>
-<span id="55">55</span>
-<span id="56">56</span>
-<span id="57">57</span>
-<span id="58">58</span>
-<span id="59">59</span>
-<span id="60">60</span>
-<span id="61">61</span>
-<span id="62">62</span>
-<span id="63">63</span>
-<span id="64">64</span>
-<span id="65">65</span>
-<span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
-<span id="87">87</span>
-<span id="88">88</span>
-<span id="89">89</span>
-<span id="90">90</span>
-<span id="91">91</span>
-<span id="92">92</span>
-<span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
-<span id="97">97</span>
-<span id="98">98</span>
-<span id="99">99</span>
-<span id="100">100</span>
-<span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
-</pre><pre class="rust"><code><span class="doccomment">//! Provides a safe and convenient wrapper for the [CUDA cuDNN][cudnn] API.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This crate (1.0.0) was developed against cuDNN v3.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Architecture</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! This crate provides three levels of entrace.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! **FFI**&lt;br&gt;</span>
-<span class="doccomment">//! The `ffi` module exposes the foreign function interface and cuDNN specific types. Usually,</span>
-<span class="doccomment">//! there should be no use to touch it if you only want to use cuDNN in you application. The ffi</span>
-<span class="doccomment">//! is provided by the `rust-cudnn-sys` crate and gets reexported here.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! **Low-Level**&lt;br&gt;</span>
-<span class="doccomment">//! The `api` module exposes already a complete and safe wrapper for the cuDNN API, including proper</span>
-<span class="doccomment">//! Rust Errors. Usually there should be not need to use the `API` directly though, as the `Cudnn` module,</span>
-<span class="doccomment">//! as described in the next block, provides all the API functionality but provides a more convenient interface.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! **High-Level**&lt;br&gt;</span>
-<span class="doccomment">//! The `cudnn` module exposes the `Cudnn` struct, which provides a very convenient, easy-to-understand interface</span>
-<span class="doccomment">//! for the cuDNN API. There should be not much need to obtain and read the cuDNN manual. Initialize the Cudnn</span>
-<span class="doccomment">//! struct and you can call the available methods wich are representing all the available cuDNN operations.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Examples</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ```</span>
-<span class="doccomment">//! extern crate rcudnn as cudnn;</span>
-<span class="doccomment">//! extern crate libc;</span>
-<span class="doccomment">//! use cudnn::{Cudnn, TensorDescriptor};</span>
-<span class="doccomment">//! use cudnn::utils::{ScalParams, DataType};</span>
-<span class="doccomment">//! fn main() {</span>
-<span class="doccomment">//! //  Initialize a new cuDNN context and allocates resources.</span>
-<span class="doccomment">//!     let cudnn = Cudnn::new().unwrap();</span>
-<span class="doccomment">//! //  Create a cuDNN Tensor Descriptor for `src` and `dest` memory.</span>
-<span class="doccomment">//!     let src_desc = TensorDescriptor::new(&amp;[2, 2, 2], &amp;[4, 2, 1], DataType::Float).unwrap();</span>
-<span class="doccomment">//!     let dest_desc = TensorDescriptor::new(&amp;[2, 2, 2], &amp;[4, 2, 1], DataType::Float).unwrap();</span>
-<span class="doccomment">//!     let acti = cudnn.init_activation().unwrap();</span>
-<span class="doccomment">//! //  Obtain the `src` and memory pointer on the GPU.</span>
-<span class="doccomment">//! //  NOTE: You wouldn&#39;t do it like that. You need to really allocate memory on the GPU with e.g. CUDA or Collenchyma.</span>
-<span class="doccomment">//!     let src_data: *const ::libc::c_void = ::std::ptr::null();</span>
-<span class="doccomment">//!     let dest_data: *mut ::libc::c_void = ::std::ptr::null_mut();</span>
-<span class="doccomment">//! //  Now you can compute the forward sigmoid activation on your GPU.</span>
-<span class="doccomment">//!     cudnn.sigmoid_forward::&lt;f32&gt;(&amp;acti, &amp;src_desc, src_data, &amp;dest_desc, dest_data, ScalParams::default());</span>
-<span class="doccomment">//! }</span>
-<span class="doccomment">//! ```</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Notes</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! rust-cudnn was developed at [Autumn][autumn] for the Rust Machine Intelligence Framework [Leaf][leaf].</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! rust-cudnn is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the</span>
-<span class="doccomment">//! [Neural Network Plugin][nn]. Rust CUDNN is now maintained by [Juice][juice]</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! [cudnn]: https://developer.nvidia.com/cudnn</span>
-<span class="doccomment">//! [autumn]: https://www.crunchbase.com/organization/autumn-ai</span>
-<span class="doccomment">//! [leaf]: https://github.com/autumnai/leaf</span>
-<span class="doccomment">//! [collenchyma]: https://github.com/autumnai/collenchyma</span>
-<span class="doccomment">//! [nn]: https://github.com/autumnai/collenchyma-nn</span>
-<span class="doccomment">//! [juice]: https://github.com/spearow/juice</span>
-<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="attribute">#![<span class="ident">deny</span>(
-    <span class="ident">clippy::missing_docs</span>,
-    <span class="ident">clippy::missing_debug_implementations</span>,
-    <span class="ident">clippy::missing_copy_implementations</span>,
-    <span class="ident">clippy::trivial_casts</span>,
-    <span class="ident">clippy::trivial_numeric_casts</span>,
-    <span class="ident">clippy::unsafe_code</span>,
-    <span class="ident">clippy::unused_import_braces</span>,
-    <span class="ident">clippy::unused_qualifications</span>,
-    <span class="ident">clippy::complexity</span>
-)]</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `rcudnn/cudnn/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="rcudnn" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../rcudnn/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<a href="#2" id="2">2</a>
+<a href="#3" id="3">3</a>
+<a href="#4" id="4">4</a>
+<a href="#5" id="5">5</a>
+<a href="#6" id="6">6</a>
+<a href="#7" id="7">7</a>
+<a href="#8" id="8">8</a>
+<a href="#9" id="9">9</a>
+<a href="#10" id="10">10</a>
+<a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
+<a href="#49" id="49">49</a>
+<a href="#50" id="50">50</a>
+<a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Provides a safe and convenient wrapper for the [CUDA cuDNN][cudnn] API.
+//!
+//! This crate (1.0.0) was developed against cuDNN v3.
+//!
+//! ## Architecture
+//!
+//! This crate provides three levels of entrace.
+//!
+//! **FFI**&lt;br&gt;
+//! The `ffi` module exposes the foreign function interface and cuDNN specific types. Usually,
+//! there should be no use to touch it if you only want to use cuDNN in you application. The ffi
+//! is provided by the `rust-cudnn-sys` crate and gets reexported here.
+//!
+//! **Low-Level**&lt;br&gt;
+//! The `api` module exposes already a complete and safe wrapper for the cuDNN API, including proper
+//! Rust Errors. Usually there should be not need to use the `API` directly though, as the `Cudnn` module,
+//! as described in the next block, provides all the API functionality but provides a more convenient interface.
+//!
+//! **High-Level**&lt;br&gt;
+//! The `cudnn` module exposes the `Cudnn` struct, which provides a very convenient, easy-to-understand interface
+//! for the cuDNN API. There should be not much need to obtain and read the cuDNN manual. Initialize the Cudnn
+//! struct and you can call the available methods wich are representing all the available cuDNN operations.
+//!
+//! ## Examples
+//!
+//! ```
+//! extern crate rcudnn as cudnn;
+//! extern crate libc;
+//! use cudnn::{Cudnn, TensorDescriptor};
+//! use cudnn::utils::{ScalParams, DataType};
+//! fn main() {
+//! //  Initialize a new cuDNN context and allocates resources.
+//!     let cudnn = Cudnn::new().unwrap();
+//! //  Create a cuDNN Tensor Descriptor for `src` and `dest` memory.
+//!     let src_desc = TensorDescriptor::new(&amp;[2, 2, 2], &amp;[4, 2, 1], DataType::Float).unwrap();
+//!     let dest_desc = TensorDescriptor::new(&amp;[2, 2, 2], &amp;[4, 2, 1], DataType::Float).unwrap();
+//!     let acti = cudnn.init_activation().unwrap();
+//! //  Obtain the `src` and memory pointer on the GPU.
+//! //  NOTE: You wouldn't do it like that. You need to really allocate memory on the GPU with e.g. CUDA or Collenchyma.
+//!     let src_data: *const ::libc::c_void = ::std::ptr::null();
+//!     let dest_data: *mut ::libc::c_void = ::std::ptr::null_mut();
+//! //  Now you can compute the forward sigmoid activation on your GPU.
+//!     cudnn.sigmoid_forward::&lt;f32&gt;(&amp;acti, &amp;src_desc, src_data, &amp;dest_desc, dest_data, ScalParams::default());
+//! }
+//! ```
+//!
+//! ## Notes
+//!
+//! rust-cudnn was developed at [Autumn][autumn] for the Rust Machine Intelligence Framework [Leaf][leaf].
+//!
+//! rust-cudnn is part of the High-Performance Computation Framework [Collenchyma][collenchyma], for the
+//! [Neural Network Plugin][nn]. Rust CUDNN is now maintained by [Juice][juice]
+//!
+//! [cudnn]: https://developer.nvidia.com/cudnn
+//! [autumn]: https://www.crunchbase.com/organization/autumn-ai
+//! [leaf]: https://github.com/autumnai/leaf
+//! [collenchyma]: https://github.com/autumnai/collenchyma
+//! [nn]: https://github.com/autumnai/collenchyma-nn
+//! [juice]: https://github.com/spearow/juice
+</span><span class="attr">#![allow(dead_code)]
+#![deny(
+    clippy::missing_docs,
+    clippy::missing_debug_implementations,
+    clippy::missing_copy_implementations,
+    clippy::trivial_casts,
+    clippy::trivial_numeric_casts,
+    clippy::unsafe_code,
+    clippy::unused_import_braces,
+    clippy::unused_qualifications,
+    clippy::complexity
+)]
 
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">libc</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">num</span>;
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rcudnn_sys</span> <span class="kw">as</span> <span class="ident">ffi</span>;
+</span><span class="kw">extern crate </span>libc;
+<span class="kw">extern crate </span>num;
+<span class="kw">extern crate </span>rcudnn_sys <span class="kw">as </span>ffi;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::activation_descriptor::ActivationDescriptor</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::convolution_descriptor::ConvolutionDescriptor</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::cudnn::Cudnn</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::dropout_descriptor::DropoutDescriptor</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::error::Error</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::filter_descriptor::FilterDescriptor</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::normalization_descriptor::NormalizationDescriptor</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::pooling_descriptor::PoolingDescriptor</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::rnn_descriptor::RnnDescriptor</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::tensor_descriptor</span>::{<span class="ident">tensor_vec_id_c</span>, <span class="ident">TensorDescriptor</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ffi</span>::<span class="kw-2">*</span>;
+<span class="kw">pub use </span><span class="self">self</span>::activation_descriptor::ActivationDescriptor;
+<span class="kw">pub use </span><span class="self">self</span>::convolution_descriptor::ConvolutionDescriptor;
+<span class="kw">pub use </span><span class="self">self</span>::cudnn::Cudnn;
+<span class="kw">pub use </span><span class="self">self</span>::dropout_descriptor::DropoutDescriptor;
+<span class="kw">pub use </span><span class="self">self</span>::error::Error;
+<span class="kw">pub use </span><span class="self">self</span>::filter_descriptor::FilterDescriptor;
+<span class="kw">pub use </span><span class="self">self</span>::normalization_descriptor::NormalizationDescriptor;
+<span class="kw">pub use </span><span class="self">self</span>::pooling_descriptor::PoolingDescriptor;
+<span class="kw">pub use </span><span class="self">self</span>::rnn_descriptor::RnnDescriptor;
+<span class="kw">pub use </span><span class="self">self</span>::tensor_descriptor::{tensor_vec_id_c, TensorDescriptor};
+<span class="kw">pub use </span><span class="kw">crate</span>::ffi::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="doccomment">/// Defines the Cuda cuDNN API.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">API</span>;
+<span class="attr">#[derive(Debug, Copy, Clone)]
+</span><span class="doccomment">/// Defines the Cuda cuDNN API.
+</span><span class="kw">pub struct </span>API;
 
-<span class="kw">mod</span> <span class="ident">activation_descriptor</span>;
-<span class="kw">mod</span> <span class="ident">api</span>;
-<span class="kw">mod</span> <span class="ident">convolution_descriptor</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">cuda</span>;
-<span class="kw">mod</span> <span class="ident">cudnn</span>;
-<span class="kw">mod</span> <span class="ident">dropout_descriptor</span>;
-<span class="kw">mod</span> <span class="ident">error</span>;
-<span class="kw">mod</span> <span class="ident">filter_descriptor</span>;
-<span class="kw">mod</span> <span class="ident">normalization_descriptor</span>;
-<span class="kw">mod</span> <span class="ident">pooling_descriptor</span>;
-<span class="kw">mod</span> <span class="ident">rnn_descriptor</span>;
-<span class="kw">mod</span> <span class="ident">tensor_descriptor</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">utils</span>;
-</code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rcudnn" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.63.0 (4b91a6ea7 2022-08-08)" ></div>
-</body></html>
+<span class="kw">mod </span>activation_descriptor;
+<span class="kw">mod </span>api;
+<span class="kw">mod </span>convolution_descriptor;
+<span class="kw">pub mod </span>cuda;
+<span class="kw">mod </span>cudnn;
+<span class="kw">mod </span>dropout_descriptor;
+<span class="kw">mod </span>error;
+<span class="kw">mod </span>filter_descriptor;
+<span class="kw">mod </span>normalization_descriptor;
+<span class="kw">mod </span>pooling_descriptor;
+<span class="kw">mod </span>rnn_descriptor;
+<span class="kw">mod </span>tensor_descriptor;
+<span class="kw">pub mod </span>utils;
+</code></pre></div></section></main></body></html>
