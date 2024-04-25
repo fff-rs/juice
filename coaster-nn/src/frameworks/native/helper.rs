@@ -20,7 +20,7 @@ pub struct PoolingConfig {
     pub stride: Vec<i32>,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 #[allow(missing_docs)]
 pub struct DropoutConfig {
     pub probability: f32,

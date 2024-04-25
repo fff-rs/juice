@@ -3,11 +3,11 @@ name = "coaster-blas"
 description = "Coaster library for full BLAS support"
 version = "0.4.0"
 authors = [
-    "Bernhard Schuster <bernhard@ahoi.io>",
-    "Lissa Hyacinth <lissahyacinth@gmail.com>",
-    "Paul Kassianik <pkassianik@gmail.com>",
-    "Michael Hirn",
-    "Maximilian Goisser",
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "Paul Kassianik <pkassianik@gmail.com>",
+  "Michael Hirn",
+  "Maximilian Goisser",
 ]
 repository = "https://github.com/spearow/coaster-blas"
 homepage = "https://spearow.io/projects/coaster-blas"
@@ -24,6 +24,10 @@ log = "0.4"
 rust-blas = { version = "0.2", path = "../rust-blas", optional = true }
 # cuda
 rcublas = { version = "0.6", path = "../rcublas/cublas", optional = true }
+
+[dev-dependencies]
+rand = "0.8"
+criterion = "0.4"
 
 [features]
 default = ["native", "cuda"]

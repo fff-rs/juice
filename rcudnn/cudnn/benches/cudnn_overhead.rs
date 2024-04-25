@@ -1,8 +1,5 @@
-#![feature(test)]
-
 extern crate coaster as co;
 extern crate rcudnn;
-extern crate test;
 
 #[cfg(test)]
 mod cudnn_spec {

@@ -87,7 +87,7 @@ impl<B: IBackend> ComputeInputGradient<f32, B> for Reshape {
 
 impl<B: IBackend> ComputeParametersGradient<f32, B> for Reshape {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 /// Specifies configuration parameters for a Reshape Layer.
 pub struct ReshapeConfig {
     /// The target shape that the input should assume.

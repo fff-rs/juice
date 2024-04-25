@@ -3,10 +3,10 @@ use std::fmt;
 use co::prelude::*;
 use coaster as co;
 
+use super::{filled_tensor, uniformly_random_tensor, Epsilon, One, Zero};
 use crate::plugin::{
     self, DirectionMode, RnnAlgorithm, RnnConfig, RnnInputMode, RnnNetworkMode, RnnPaddingMode,
 };
-use crate::tests::{filled_tensor, uniformly_random_tensor, Epsilon, One, Zero};
 use crate::{co::plugin::numeric_helpers::Float, Rnn};
 
 pub fn test_rnn<T, F: IFramework>(backend: Backend<F>)

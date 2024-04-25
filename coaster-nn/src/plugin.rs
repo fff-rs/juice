@@ -2,7 +2,7 @@
 use crate::co::tensor::SharedTensor;
 use std::fmt::Formatter;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Different algorithms to compute the convolution forward algorithm.
 pub enum ConvForwardAlgo {
     /// Attempt to automatically find the best algorithm of all the other available ones.
@@ -45,7 +45,7 @@ impl ConvForwardAlgo {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Different algorithms to compute the gradient with respect to the filter.
 pub enum ConvBackwardFilterAlgo {
     /// Attempt to automatically find the best algorithm of all the other available ones.
@@ -86,7 +86,7 @@ impl ConvBackwardFilterAlgo {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Different algorithms to compute the gradient with respect to the filter.
 pub enum ConvBackwardDataAlgo {
     /// Attempt to automatically find the best algorithm of all the other available ones.
@@ -374,7 +374,7 @@ pub trait Rnn<F>: NN<F> {
     ) -> Result<(), crate::co::error::Error>;
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Network Type for RNN Networks [cudnnRNNMOde_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNMode_t
 pub enum RnnNetworkMode {
@@ -413,7 +413,7 @@ impl RnnNetworkMode {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Input Modes for RNN [cudnnRNNInputMode_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNInputMode_t
 pub enum RnnInputMode {
@@ -447,7 +447,7 @@ impl RnnInputMode {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Direction Mode for RNN [cudnnDirectionMode_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnDirectionMode_t
 pub enum DirectionMode {
@@ -478,7 +478,7 @@ impl DirectionMode {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Algorithm for RNN [cudnnRNNAlgo_t][1]
 /// [1]: https://docs.nvidia.com/deeplearning/sdk/cudnn-api/index.html#cudnnRNNAlgo_t
 ///

@@ -3,7 +3,7 @@
 #[allow(unused)]
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Debug, Copy, Clone, thiserror::Error)]
+#[derive(Debug, Clone, Copy, thiserror::Error)]
 /// Defines cuBLAS errors.
 pub enum Error {
     /// Failure with cuBLAS initialization.

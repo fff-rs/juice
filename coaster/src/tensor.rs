@@ -96,6 +96,12 @@ pub struct SharedTensor<T> {
     phantom: PhantomData<T>,
 }
 
+impl<T> PartialEq for SharedTensor<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.desc == other.desc
+    }
+}
+
 /// Describes the Descriptor of a Tensor.
 pub trait ITensorDesc {
     /// Returns the rank of the Tensor.
@@ -546,7 +552,7 @@ impl<T> SharedTensor<T> {
 }
 
 /// Errors than can occur when synchronizing memory.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum Error {
     /// Error caused by operations with device: allocation, memory synchronization, etc.
     #[error(transparent)]

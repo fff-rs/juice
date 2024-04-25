@@ -3,10 +3,10 @@ name = "coaster-nn"
 description = "coaster plugin providing Neural Network operations"
 version = "0.5.0"
 authors = [
-	"Bernhard Schuster <bernhard@ahoi.io>",
-	"Lissa Hyacinth <lissahyacinth@gmail.com>",
-	"Michael Hirn",
-	"Maximilian Goisser",
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "Michael Hirn",
+  "Maximilian Goisser",
 ]
 repository = "https://github.com/spearow/coaster-nn"
 homepage = "https://spearow.io/coaster-nn"
@@ -17,8 +17,8 @@ license = "MIT OR Apache-2.0"
 edition = "2018"
 
 [dependencies]
-coaster = {  path = "../coaster", version = "0.2", default-features = false }
-rcudnn = {  path = "../rcudnn/cudnn", version = "1.7", optional = true }
+coaster = { path = "../coaster", version = "0.2", default-features = false }
+rcudnn = { path = "../rcudnn/cudnn", version = "1.7", optional = true }
 libc = { version = "0.2", optional = true }
 log = "0.4"
 rand = { version = "0.8", optional = true }
@@ -28,6 +28,8 @@ thiserror = { version = "1.0", optional = true }
 [dev-dependencies]
 env_logger = "0.9"
 num = "0.4"
+criterion = "0.4"
+paste = "1"
 
 [features]
 default = ["native", "cuda"]

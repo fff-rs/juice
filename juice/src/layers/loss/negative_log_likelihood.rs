@@ -126,7 +126,7 @@ impl<B: IBackend> ComputeInputGradient<f32, B> for NegativeLogLikelihood {
 
 impl<B: IBackend> ComputeParametersGradient<f32, B> for NegativeLogLikelihood {}
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 /// Specifies configuration parameters for a NegativeLogLikelihood Layer.
 pub struct NegativeLogLikelihoodConfig {

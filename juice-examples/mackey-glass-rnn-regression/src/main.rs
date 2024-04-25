@@ -3,7 +3,7 @@
 use coaster as co;
 use coaster_nn as conn;
 
-use fs_err::File;
+use fs_err::{File, OpenOptions};
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
@@ -140,15 +140,15 @@ where
     regressor_cfg.add_layer(mse_layer_cfg);
 
     // Setup an Optimiser
-    let mut solver_cfg = SolverConfig {
+    let solver_cfg = SolverConfig {
         minibatch_size: batch_size,
         base_lr: learning_rate,
         momentum,
+        objective: LayerConfig::new("regressor", regressor_cfg),
+        network: LayerConfig::new("network", net_cfg),
         ..SolverConfig::default()
     };
 
-    solver_cfg.network = LayerConfig::new("network", net_cfg);
-    solver_cfg.objective = LayerConfig::new("regressor", regressor_cfg);
     Solver::from_config(backend.clone(), backend, &solver_cfg)
 }
 
@@ -209,6 +209,12 @@ pub(crate) fn train<Framework: IFramework + 'static>(
     }
 
     if total > 0 {
+        let mut file = OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(file)
+            .unwrap();
         solver
             .mut_network()
             .save(file)
@@ -227,6 +233,7 @@ pub(crate) fn test<Framework: IFramework + 'static>(
 where
     Backend<Framework>: coaster::IBackend + SolverOps<f32> + LayerOps<f32>,
 {
+    let file = File::open(file)?;
     // Load in a pre-trained network
     let mut network: Layer<Backend<Framework>> = Layer::<Backend<Framework>>::load(backend, file)?;
 

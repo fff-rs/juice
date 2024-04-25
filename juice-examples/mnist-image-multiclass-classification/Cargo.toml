@@ -2,19 +2,21 @@
 name = "example-mnist-classification"
 description = "MNIST Image Multiclass Classification example of Juice"
 version = "0.0.1"
-authors = ["Bernhard Schuster <bernhard@ahoi.io>",
-           "Michael Hirn",
-           "Maximilian Goisser"]
+authors = [
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Michael Hirn",
+  "Maximilian Goisser",
+]
 edition = "2018"
 publish = false
 
 [dependencies]
-greenglas = { path = "../../greenglas" , version = "0.3.0"}
-juice = { path = "../../juice", default-features = false , version = "0.3.0"}
-coaster = { path = "../../coaster", default-features = false , version = "0.2.0"}
-coaster-nn = { path = "../../coaster-nn", default-features = false , version = "0.5.0"}
+greenglas = { path = "../../greenglas", version = "0.3.0" }
+juice = { path = "../../juice", default-features = false, version = "0.3.0" }
+coaster = { path = "../../coaster", default-features = false, version = "0.2.0" }
+coaster-nn = { path = "../../coaster-nn", default-features = false, version = "0.5.0" }
 
-juice-utils = {path = "../juice-utils"}
+juice-utils = { path = "../juice-utils" }
 
 csv = "1"
 hyper = "0.14"

@@ -386,7 +386,7 @@ impl<B: IBackend + LayerOps<f32> + 'static> ComputeParametersGradient<f32, B> fo
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 #[allow(missing_copy_implementations)]
 /// Specifies configuration parameters for a Sequential Layer.
 pub struct SequentialConfig {

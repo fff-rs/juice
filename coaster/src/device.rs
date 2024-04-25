@@ -57,7 +57,7 @@ pub trait MemorySync {
     ) -> Result<(), Error>;
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Defines a generic set of Memory Errors.
 pub enum Error {
     /// No route found for memory transfer between devices

@@ -1,11 +1,21 @@
 [workspace]
 members = [
-		"greenglas", "coaster", "coaster-nn", "coaster-blas", "juice", "rust-blas",
-		"rcudnn/cudnn", "rcudnn/cudnn-sys", "rcublas/cublas", "rcublas/cublas-sys",
-		"juice-examples/juice-utils", "juice-examples/mackey-glass-rnn-regression",
-		"juice-examples/mnist-image-multiclass-classification"]
+  "greenglas",
+  "coaster",
+  "coaster-nn",
+  "coaster-blas",
+  "juice",
+  "rust-blas",
+  "rcudnn/cudnn",
+  "rcudnn/cudnn-sys",
+  "rcublas/cublas",
+  "rcublas/cublas-sys",
+  "juice-examples/juice-utils",
+  "juice-examples/mackey-glass-rnn-regression",
+  "juice-examples/mnist-image-multiclass-classification",
+]
 
-exclude = [ "./rcudnn", "./rcublas", "./juice-examples"]
+exclude = ["./rcudnn", "./rcublas", "./juice-examples"]
 
 [patch.crates-io]
 coaster-nn = { path = "./coaster-nn" }

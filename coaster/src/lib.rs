@@ -26,7 +26,7 @@
 //!
 //! But writing code for devices would often be a good choice as these devices can execute many
 //! operations a lot faster than the native CPUs. GPUs for example can execute operations roughly
-//! one to two orders of magnitudes faster, thanks to better support of parallelizing operations.
+//! one to two orders of ns faster, thanks to better support of parallelizing operations.
 //! OpenCL and CUDA make parallelizing operations super easy.
 //!
 //! With Coaster we eleminate the pain points of writing device code, so you can run your code

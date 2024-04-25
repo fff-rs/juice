@@ -7,8 +7,8 @@ use std::fmt;
 use crate::co::plugin::numeric_helpers::Float;
 use crate::co::prelude::*;
 
+use super::{filled_tensor, tensor_assert_eq, Epsilon};
 use crate::plugin::{Relu, ReluPointwise, Sigmoid, SigmoidPointwise, Tanh, TanhPointwise};
-use crate::tests::{filled_tensor, tensor_assert_eq, Epsilon};
 
 const DIMS: [usize; 4] = [3, 1, 2, 2];
 

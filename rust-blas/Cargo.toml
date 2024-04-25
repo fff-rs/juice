@@ -2,10 +2,10 @@
 name = "rust-blas"
 version = "0.2.0"
 authors = [
-	"Paul Kassianik <pkassianik@gmail.com>",
-	"Lissa Hyacinth <lissahyacinth@gmail.com>",
-	"Bernhard Schuster <bernhard@ahoi.io>",
-	"Michael Yang <mikkyangg@gmail.com>",
+  "Paul Kassianik <pkassianik@gmail.com>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Michael Yang <mikkyangg@gmail.com>",
 ]
 description = "BLAS bindings and wrappers, fork of rblas"
 documentation = "http://mikkyang.github.io/rust-blas/doc/rblas/index.html"

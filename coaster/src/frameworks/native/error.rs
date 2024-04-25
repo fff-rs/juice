@@ -1,7 +1,7 @@
 /// Defines a generic set of Native Errors.
 use std::{error, fmt};
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Defines the Native Error.
 pub enum Error {
     /// Failure related to allocation, syncing memory

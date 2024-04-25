@@ -3,10 +3,10 @@ name = "coaster"
 description = "high-performance computation on any hardware"
 version = "0.2.0"
 authors = [
-    "Bernhard Schuster <bernhard@ahoi.io>",
-    "Lissa Hyacinth <lissahyacinth@gmail.com>",
-    "Michael Hirn",
-    "Maximilian Goisser",
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "Michael Hirn",
+  "Maximilian Goisser",
 ]
 edition = "2018"
 repository = "https://github.com/spearow/coaster"
@@ -30,10 +30,11 @@ rcublas = { version = "0.6", path = "../rcublas/cublas", optional = true }
 [dev-dependencies]
 coaster-nn = { path = "../coaster-nn", default-features = false }
 trybuild = "1.0"
+criterion = "0.4"
 
 [features]
 default = ["native"]
 native = []
 cuda = ["rcudnn", "rcublas"]
 opencl = []
-unstable_alloc = [] # faster but unstable memory allocation on native machines
+unstable_alloc = []          # faster but unstable memory allocation on native machines

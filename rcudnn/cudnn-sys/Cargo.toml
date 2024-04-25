@@ -3,10 +3,7 @@ name = "rcudnn-sys"
 description = "FFI bindings to cuDNN"
 version = "0.5.0"
 edition = "2018"
-authors = [
-    "Bernhard Schuster <bernhard@ahoi.io>",
-    "Maximilian Goisser"
-]
+authors = ["Bernhard Schuster <bernhard@ahoi.io>", "Maximilian Goisser"]
 repository = "https://github.com/spearow/juice"
 homepage = "https://github.com/spearow/juice/tree/master/rcudnn/cublas-sys"
 keywords = ["cudnn", "cuda", "nvidia", "sys"]

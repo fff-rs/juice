@@ -258,7 +258,7 @@ impl ::std::default::Default for Linear {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[allow(missing_copy_implementations)]
 /// Specifies configuration parameters for a Linear Layer.
 pub struct LinearConfig {

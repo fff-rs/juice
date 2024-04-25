@@ -4,9 +4,9 @@ description = "safe Rust wrapper for CUDA's cuBLAS"
 version = "0.6.0"
 edition = "2018"
 authors = [
-	"Bernhard Schuster <bernhard@ahoi.io>",
-	"Lissa Hyacinth <lissahyacinth@gmail.com>",
-	"Maximilian Goisser",
+  "Bernhard Schuster <bernhard@ahoi.io>",
+  "Lissa Hyacinth <lissahyacinth@gmail.com>",
+  "Maximilian Goisser",
 ]
 homepage = "https://github.com/spearow/juice/tree/master/rcublas"
 repository = "https://github.com/spearow/juice"

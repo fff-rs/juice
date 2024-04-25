@@ -9,7 +9,8 @@ use crate::co::prelude::*;
 use std::env;
 
 use std::rc::Rc;
-use std::sync::{RwLock, Arc};
+#[cfg(all(feature = "cuda", not(feature = "native")))]
+use std::sync::{Arc, RwLock};
 
 fn main() {
     env_logger::init();
@@ -116,6 +117,7 @@ fn bench_alexnet() {
         "Try running with `cargo run --release --no-default-features --features cuda --example benchmarks alexnet`."
     );
 }
+
 #[cfg(all(feature = "cuda", not(feature = "native")))]
 fn bench_alexnet() {
     let mut cfg = SequentialConfig::default();
