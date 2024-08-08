@@ -26,7 +26,11 @@ pub fn write_to_memory<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data
 }
 
 /// Write into a native Coaster Memory with a offset.
-pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBox, data: &[T], offset: usize) {
+pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(
+    mem: &mut FlatBox,
+    data: &[T],
+    offset: usize,
+) {
     let mem_buffer = mem.as_mut_slice::<f32>();
     for (index, datum) in data.iter().enumerate() {
         // mem_buffer[index + offset] = *datum;
@@ -41,7 +45,11 @@ pub fn write_to_memory_offset<T: NumCast + ::std::marker::Copy>(mem: &mut FlatBo
 /// is assumed to be the batchsize.
 ///
 /// Allocates memory on a Native Backend if neccessary.
-pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedTensor<f32>, data: &[T], i: usize) {
+pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(
+    tensor: &mut SharedTensor<f32>,
+    data: &[T],
+    i: usize,
+) {
     let native_backend = native_backend();
     let tensor_desc = tensor.desc();
     let batch_size = tensor_desc[0];
@@ -59,7 +67,10 @@ pub fn write_batch_sample<T: NumCast + ::std::marker::Copy>(tensor: &mut SharedT
 pub fn native_scalar<T: NumCast + ::std::marker::Copy>(scalar: T) -> SharedTensor<T> {
     let native = native_backend();
     let mut shared_scalar = SharedTensor::<T>::new(&[1]);
-    write_to_memory(shared_scalar.write_only(native.device()).unwrap(), &[scalar]);
+    write_to_memory(
+        shared_scalar.write_only(native.device()).unwrap(),
+        &[scalar],
+    );
     shared_scalar
 }
 
@@ -70,6 +81,39 @@ pub fn cast_vec_usize_to_i32(input: Vec<usize>) -> Vec<i32> {
         out.push(*i as i32);
     }
     out
+}
+
+pub fn format_tensor(tensor: &SharedTensor<f32>) -> String {
+    let native = native_backend();
+
+    let mut output = String::new();
+
+    if tensor.desc().len() == 1
+        || (tensor.desc().len() == 2 && (tensor.desc()[0] == 1 || tensor.desc()[1] == 1))
+    {
+        // One-dimensional, print as a single row.
+        let native_data: &[f32] = tensor.read(native.device()).unwrap().as_slice();
+        for v in native_data {
+            output += &format!("{:.5} ", v);
+        }
+        output += "\n";
+    } else {
+        // Use first dimension a row number.
+        let rows = tensor.desc()[0];
+        let columns = tensor.desc().iter().skip(1).fold(1, |acc, d| acc * d);
+        let native_data: &[f32] = tensor.read(native.device()).unwrap().as_slice();
+        for row in 0..rows {
+            for col in 0..columns {
+                output += &format!("{:.5} ", native_data[row * columns + col]);
+            }
+            output += "\n"; 
+        }
+    }
+    output
+}
+
+pub fn print_tensor(tensor: &SharedTensor<f32>) {
+    println!("{}", &format_tensor(tensor));
 }
 
 /// Extends IBlas with Axpby

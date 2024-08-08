@@ -10,8 +10,7 @@ use co::frameworks::cuda::get_cuda_backend;
 #[cfg(not(feature = "cuda"))]
 use co::frameworks::native::get_native_backend;
 use co::prelude::*;
-use juice::layer::*;
-use juice::layers::*;
+use juice::net::*;
 use juice::solver::*;
 use juice::util::*;
 use juice_utils::{download_datasets, unzip_datasets};
@@ -131,7 +130,7 @@ fn main() {
         );
     }
 }
-
+/*
 #[cfg(all(feature = "cuda"))]
 fn add_conv_net(
     mut net_cfg: SequentialConfig,
@@ -164,7 +163,7 @@ fn add_conv_net(
         "linear1",
         LinearConfig { output_size: 500 },
     ));
-    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerConfig::Sigmoid));
     net_cfg.add_layer(LayerConfig::new(
         "linear2",
         LinearConfig { output_size: 10 },
@@ -192,26 +191,25 @@ fn add_mlp(
 ) -> SequentialConfig {
     net_cfg.add_layer(LayerConfig::new(
         "reshape",
-        LayerType::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
+        LayerConfig::Reshape(ReshapeConfig::of_shape(&[batch_size, pixel_count])),
     ));
     net_cfg.add_layer(LayerConfig::new(
         "linear1",
-        LayerType::Linear(LinearConfig { output_size: 1568 }),
+        LayerConfig::Linear(LinearConfig { output_size: 1568 }),
     ));
-    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerType::Sigmoid));
+    net_cfg.add_layer(LayerConfig::new("sigmoid", LayerConfig::Sigmoid));
     net_cfg.add_layer(LayerConfig::new(
         "linear2",
-        LayerType::Linear(LinearConfig { output_size: 10 }),
+        LayerConfig::Linear(LinearConfig { output_size: 10 }),
     ));
     net_cfg
 }
-
-fn add_linear_net(mut net_cfg: SequentialConfig) -> SequentialConfig {
-    net_cfg.add_layer(LayerConfig::new(
+*/
+fn add_linear_net(net_cfg: SequentialConfig) -> SequentialConfig{
+    net_cfg.with_layer(
         "linear",
-        LayerType::Linear(LinearConfig { output_size: 10 }),
-    ));
-    net_cfg
+        LayerConfig::Linear(LinearConfig { output_size: 10 }),
+    )
 }
 
 fn run_mnist(
@@ -250,25 +248,19 @@ fn run_mnist(
     let momentum = momentum.unwrap_or(0f32);
 
     let mut net_cfg = SequentialConfig::default();
-    net_cfg.add_input("data", &[batch_size, pixel_dim, pixel_dim]);
-    net_cfg.force_backward = true;
 
-    net_cfg = match &*model_name.unwrap_or("none".to_owned()) {
-        "conv" => add_conv_net(net_cfg, batch_size, pixel_dim),
-        "mlp" => add_mlp(net_cfg, batch_size, pixel_count),
-        "linear" => add_linear_net(net_cfg),
+    match &*model_name.unwrap_or("none".to_owned()) {
+        // "conv" => add_conv_net(net_cfg, batch_size, pixel_dim),
+        // "mlp" => add_mlp(net_cfg, batch_size, pixel_count),
+        "linear" => net_cfg = add_linear_net(net_cfg),
         _ => panic!("Unknown model. Try one of [linear, mlp, conv]"),
     };
 
-    net_cfg.add_layer(LayerConfig::new("log_softmax", LayerType::LogSoftmax));
+    net_cfg = net_cfg.with_layer("log_softmax", LayerConfig::LogSoftmax);
 
-    let mut classifier_cfg = SequentialConfig::default();
-    classifier_cfg.add_input("network_out", &[batch_size, 10]);
-    classifier_cfg.add_input("label", &[batch_size, 1]);
     // set up nll loss
-    let nll_layer_cfg = NegativeLogLikelihoodConfig { num_classes: 10 };
-    let nll_cfg = LayerConfig::new("nll", LayerType::NegativeLogLikelihood(nll_layer_cfg));
-    classifier_cfg.add_layer(nll_cfg);
+    let classifier_cfg =
+        LayerConfig::NegativeLogLikelihood(NegativeLogLikelihoodConfig { num_classes: 10 });
 
     // set up backends
     #[cfg(all(feature = "cuda"))]
@@ -283,9 +275,14 @@ fn run_mnist(
         momentum,
         ..SolverConfig::default()
     };
-    solver_cfg.network = LayerConfig::new("network", net_cfg);
-    solver_cfg.objective = LayerConfig::new("classifier", classifier_cfg);
-    let mut solver = Solver::from_config(backend.clone(), backend.clone(), &solver_cfg);
+    solver_cfg.network = LayerConfig::Sequential(net_cfg);
+    solver_cfg.objective = classifier_cfg;
+    let mut solver = Solver::from_config(
+        backend.clone(),
+        &solver_cfg,
+        &[vec![pixel_dim, pixel_dim]],
+        &vec![1],
+    );
 
     // set up confusion matrix
     let mut classification_evaluator = ::juice::solver::ConfusionMatrix::new(10);
@@ -311,9 +308,8 @@ fn run_mnist(
             targets.push(label_val as usize);
         }
         // train the network!
-        let infered_out = solver.train_minibatch(inp_lock.clone(), label_lock.clone());
+        let mut infered = solver.train_minibatch(inp_lock.clone(), label_lock.clone());
 
-        let mut infered = infered_out.write().unwrap();
         let predictions = classification_evaluator.get_predictions(&mut infered);
 
         classification_evaluator.add_samples(&predictions, &targets);

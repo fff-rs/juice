@@ -1,3 +1,5 @@
+/*
+
 #[macro_use]
 extern crate timeit;
 
@@ -583,3 +585,7 @@ fn bench_vgg_a() {
         }
     }
 }
+*/
+
+
+fn main() {}

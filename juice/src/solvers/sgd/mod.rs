@@ -17,7 +17,6 @@
 //!
 //! [backprop]: https://en.wikipedia.org/wiki/Backpropagation
 //! [gd]: https://en.wikipedia.org/wiki/Gradient_descent
-
 pub use self::momentum::Momentum;
 
 /// Implement [ISolver][1] for [SGD solvers][2].
@@ -26,39 +25,49 @@ pub use self::momentum::Momentum;
 #[macro_export]
 macro_rules! impl_isolver_sgd {
     ($t:ty) => {
-        impl<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> ISolver<SolverB, NetB>
-            for $t
+        impl<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static>
+            ISolver<SolverB, NetB> for $t
         {
             /// Initialize the SGD Momentum solver, allocating memory for its history.
-            fn init(&mut self, net: &Layer<NetB>) {
-                self.history = Vec::with_capacity(net.learnable_weights_gradients().len());
+            fn init(&mut self, weight_shapes: &[TensorDesc]) {
+                self.history = Vec::with_capacity(weight_shapes.len());
 
-                for weight_gradient in net.learnable_weights_gradients() {
-                    let shape = weight_gradient.read().unwrap().desc().clone();
-                    let mut tensor = SharedTensor::new(&shape);
+                for shape in weight_shapes {
+                    let mut tensor = SharedTensor::new(shape);
 
                     let filler = crate::weight::FillerType::Constant { value: 0f32 };
                     filler.fill(&mut tensor);
 
-                    let history_tensor = Arc::new(RwLock::new(tensor));
-                    self.history.push(history_tensor);
+                    self.history.push(tensor);
                 }
             }
 
-            fn compute_update(&mut self, config: &SolverConfig, net: &mut Layer<NetB>, iter: usize) {
+            fn compute_update(
+                &mut self,
+                config: &SolverConfig,
+                weight_gradients: &[(Rc<RefCell<SharedTensor<f32>>>, f32)],
+                iter: usize,
+            ) {
                 let rate = config.get_learning_rate(iter);
 
-                SGDSolver::<SolverB, NetB>::clip_gradients(self, config, net);
-                for (weight_id, weight_gradient) in net.learnable_weights_gradients().iter().enumerate() {
-                    SGDSolver::<SolverB, NetB>::normalize(self, config, weight_gradient);
+                SGDSolver::<SolverB, NetB>::clip_gradients(
+                    self,
+                    config,
+                    &weight_gradients.iter().map(|(t, r)| t.clone()).collect::<Vec<_>>(),
+                );
+                for (weight_id, (weights_data, learning_rate)) in
+                    weight_gradients.iter().enumerate()
+                {
+                    SGDSolver::<SolverB, NetB>::normalize(self, config, &mut weights_data.borrow_mut());
+
                     // SGDSolver::<SolverB, NetB>::regularize(self, config, weight_gradient, net.weights_weight_decay()[weight_id]);
                     SGDSolver::<SolverB, NetB>::compute_update_value(
                         self,
                         config,
-                        weight_gradient,
+                        &mut weights_data.borrow_mut(),
                         weight_id,
-                        &rate,
-                        &net.learnable_weights_lr()[weight_id].unwrap(),
+                        rate,
+                        *learning_rate,
                     );
                 }
             }

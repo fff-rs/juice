@@ -14,12 +14,12 @@
 //! It also makes solving more stable.
 
 use crate::co::prelude::*;
-use crate::layer::*;
+
 use crate::solver::*;
 use crate::solvers::SGDSolver;
 use crate::util::*;
 use std::rc::Rc;
-use std::sync::{Arc, RwLock};
+use std::cell::RefCell;
 
 #[derive(Debug)]
 /// Stochastic Gradient Descent with Momentum.
@@ -28,7 +28,7 @@ use std::sync::{Arc, RwLock};
 /// [1]: ./index.html
 pub struct Momentum<SolverB: IBackend + SolverOps<f32>> {
     /// The gradient update from the previous iteration for each blob.
-    history: Vec<ArcLock<SharedTensor<f32>>>,
+    history: Vec<SharedTensor<f32>>,
     /// The backend used for computing the gradient.
     backend: Rc<SolverB>,
 
@@ -56,14 +56,16 @@ impl<SolverB: IBackend + SolverOps<f32>> Momentum<SolverB> {
     }
 }
 
-impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGDSolver<B, NetB> for Momentum<B> {
+impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGDSolver<B, NetB>
+    for Momentum<B>
+{
     fn compute_update_value(
         &mut self,
         config: &SolverConfig,
-        weight_gradient: &ArcLock<SharedTensor<f32>>,
+        weight_gradient: &mut SharedTensor<f32>,
         history_blob_id: usize,
-        global_lr: &f32,
-        blob_lr: &f32,
+        global_lr: f32,
+        blob_lr: f32,
     ) {
         // PERF: check if value is changed before writing it
         crate::weight::FillerType::Constant {
@@ -71,24 +73,25 @@ impl<B: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f32> + 'static> SGD
         }
         .fill(&mut self.lr);
 
-        crate::weight::FillerType::Constant { value: config.momentum }.fill(&mut self.momentum);
+        crate::weight::FillerType::Constant {
+            value: config.momentum,
+        }
+        .fill(&mut self.momentum);
 
-        let backend = ISolver::<B, NetB>::backend(self);
+        let backend : &B = &self.backend;
         let device = IBackend::device(backend);
 
-        let history_blob = &self.history[history_blob_id];
+        let history_blob = &mut self.history[history_blob_id];
         Axpby::axpby(
             backend,
             &self.lr,
-            &weight_gradient.read().unwrap(),
+            weight_gradient,
             &self.momentum,
-            &mut history_blob.write().unwrap(),
+            history_blob,
         )
         .unwrap();
 
-        backend
-            .copy(&history_blob.read().unwrap(), &mut weight_gradient.write().unwrap())
-            .unwrap();
+        backend.copy(history_blob, weight_gradient).unwrap();
     }
 }
 

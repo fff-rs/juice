@@ -27,12 +27,14 @@
 //! [minimum]: http://mathworld.wolfram.com/GlobalMinimum.html
 //! [backprop]: https://en.wikipedia.org/wiki/Backpropagation
 
+use std::rc::Rc;
+use std::cell::RefCell;
+
 #[allow(unused_import_braces)]
 pub use self::sgd::Momentum;
 pub mod sgd;
 
 use crate::co::{IBackend, SharedTensor};
-use crate::layer::*;
 use crate::solver::*;
 use crate::util::*;
 
@@ -40,10 +42,10 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
     fn compute_update_value(
         &mut self,
         config: &SolverConfig,
-        weight_blob: &ArcLock<SharedTensor<f32>>,
+        weight_gradient: &mut SharedTensor<f32>,
         history_blob_id: usize,
-        global_lr: &f32,
-        blob_lr: &f32,
+        global_lr: f32,
+        blob_lr: f32,
     );
 
     /// [Clip gradients][1] when they exceed [SolverConfig.clip_gradients][2].
@@ -59,20 +61,19 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
     /// [3]: https://en.wikipedia.org/wiki/Recurrent_neural_network
     /// [4]: https://en.wikipedia.org/wiki/Norm_(mathematics)#Euclidean_norm
     #[allow(unused_must_use)]
-    fn clip_gradients<B: IBackend + LayerOps<f32> + 'static>(&self, config: &SolverConfig, net: &mut Layer<B>) {
+    fn clip_gradients(&self, config: &SolverConfig, weight_gradients: &[Rc<RefCell<SharedTensor<f32>>>]) {
         // skip clipping gradients if SolverConfig.clip_gradients is set to None
         if let Some(clip_threshold) = config.clip_gradients {
             let native = native_backend();
 
-            let net_gradients = net.learnable_weights_gradients();
             let mut sumsq_diff = 0f32;
             let backend = self.backend();
-            for net_gradient in net_gradients.clone() {
-                let gradient = net_gradient.read().unwrap();
+            for net_gradient in weight_gradients {
+                let gradient = &net_gradient.borrow();
                 // PERF: preallocate tensor once
                 let mut result = SharedTensor::new(&[1]);
                 // gradient.sumsq_diff(self.backend(), &mut result);
-                self.backend().dot(&gradient, &gradient, &mut result);
+                self.backend().dot(gradient, gradient, &mut result);
 
                 let sumsq_diff_slice = result.read(native.device()).unwrap().as_slice::<f32>();
                 sumsq_diff += sumsq_diff_slice[0];
@@ -88,8 +89,8 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
 
                 let mut scale_shared = native_scalar(scale_factor);
 
-                for weight_gradient in net_gradients {
-                    let mut gradient = weight_gradient.write().unwrap();
+                for weight_gradient in weight_gradients {
+                    let mut gradient = weight_gradient.borrow_mut();
                     backend.scal(&mut scale_shared, &mut gradient);
                 }
             }
@@ -102,15 +103,14 @@ trait SGDSolver<SolverB: IBackend + SolverOps<f32>, NetB: IBackend + LayerOps<f3
     /// To counteract that we are accumulating the gradients over multiple samples,
     /// we need to scale the gradients down to the equivalent of a single sample.</br>
     /// E.g. with a `minibatch_size` of 4 we need to scale the gradient by 0.25 (= 1/4).
-    fn normalize(&self, config: &SolverConfig, weight_blob: &ArcLock<SharedTensor<f32>>) {
+    fn normalize(&self, config: &SolverConfig, weight_blob: &mut SharedTensor<f32>) {
         if config.minibatch_size > 1 {
             let scale_factor = 1f32 / config.minibatch_size as f32;
-            let mut gradient = weight_blob.write().unwrap();
             let native = native_backend();
 
             let mut scale_factor_shared = native_scalar(scale_factor);
             // self.backend().scal_plain(&scale_factor_shared, &mut gradient).unwrap();
-            self.backend().scal(&mut scale_factor_shared, &mut gradient).unwrap();
+            self.backend().scal(&mut scale_factor_shared, weight_blob).unwrap();
         }
     }
 
