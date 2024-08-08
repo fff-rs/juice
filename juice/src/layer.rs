@@ -545,10 +545,22 @@ impl<B: IBackend> Layer<B> {
             // reshape input tensor to the reshaped shape
             let old_shape = self.input_blobs_data[input_i].read().unwrap().desc().clone();
             if old_shape.size() != reshaped_shape.size() {
-                panic!(
-                    "Input Shape Mismatch\nExpected {:?}\nActual {:?}",
-                    reshaped_shape, old_shape
+                eprintln!(
+                    "Input Shape Mismatch at layer {}\nLayer has input shape {:?}\nInput given has shape {:?}",
+                    self.name, reshaped_shape, old_shape
                 );
+                if reshaped_shape[1..] == old_shape[1..] {
+                    eprintln!("This may be a batch size error");
+                    eprintln!("Expected batch size {} but got batch size {}.", reshaped_shape[0], old_shape[0]);
+                }
+                else if reshaped_shape[1..] == old_shape {
+                    eprintln!("This may be a batch size error");
+                    eprintln!("Expected batch size {} but got batch size {}.", reshaped_shape[0], 1);
+                }
+                if reshaped_shape == old_shape[1..] {
+                    eprintln!("You may have forgotten to specify a batch size in your model input.");
+                }
+                panic!();
             }
             self.input_blobs_data[input_i]
                 .write()

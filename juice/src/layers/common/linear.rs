@@ -89,6 +89,9 @@ impl<B: IBackend + LayerOps<f32>> ILayer<B> for Linear {
         output_data: &mut Vec<ArcLock<SharedTensor<f32>>>,
         output_gradient: &mut Vec<ArcLock<SharedTensor<f32>>>,
     ) {
+        if input_data.len() == 0 {
+            panic!("Linear layer expected input, but none was given.");
+        }
         let input = input_data[0].read().unwrap();
         let batch_size = input.desc()[0];
         // reshape top
